@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Vector;
+import com.moma.auxiliary.Plotting;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -280,6 +282,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 		final float[] fkt = getSimpleGapSeparationValues( img );
 
+//		Plotting.PlotArray(fkt)
+//		Plotting.PlotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
+
 		if ( fkt.length > 0 ) {
 			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
 			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
@@ -287,7 +292,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				ra.setPosition( i, 0 );
 				ra.get().set( fkt[ i ] );
 			}
-
 			isParaMaxFlowComponentTree = false;
 			componentTree = buildIntensityTree( raiFkt );
 		}
@@ -479,9 +483,11 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * Trying to look there a bit smarter... ;)
+	 * This calculates the max intensities inside growthlane along the diagonals of a moving square subsection of the image.
+	 * It does this along a single frame of {@link img}, where the frame index and center-pixel of the current rectangle ROI
+	 * is defined by the {@link Point} array {@link imgLocations}. 
 	 *
-	 * @param img
+	 * @param img: multidimensional image stack
 	 * @param wellPoints
 	 * @return
 	 */
@@ -489,8 +495,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		// special case: growth line does not exist in this frame
 		if ( imgLocations.size() == 0 ) return new float[ 0 ];
 
-		final int maxOffsetX = 9; //TODO
-		final int maxOffsetY = 9; //TODO
+		final int maxOffsetX = 9; // half of the horizontal range of the rectangle 
+		final int maxOffsetY = 9; // half of the vertical range of the rectangle
 
 		int centerX = getAvgXpos();
 		int centerZ = imgLocations.get( 0 ).getIntPosition( 2 );
@@ -521,7 +527,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				int summands = 0;
 				for ( int currentOffsetX = -maxOffsetX; currentOffsetX <= maxOffsetX; currentOffsetX++ ) {
 					final float x = centerX + currentOffsetX;
-					final float y = centerY + ( ( float ) currentOffsetY / maxOffsetX ) * currentOffsetX;
+					final float y = centerY + ( ( float ) currentOffsetY / maxOffsetX ) * currentOffsetX; // NOTE-MM-2019-05-27: ( float ) currentOffsetY * (( float )  currentOffsetX / maxOffsetX) is normalizing currentOffsetX to interval [-1,1]
 					rraImg.setPosition( new float[] { x, y } );
 					summedIntensities += rraImg.get().get();
 					summands++;
@@ -537,7 +543,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		}
 
 //		dIntensity = SimpleFunctionAnalysis.normalizeDoubleArray( dIntensity, 0.0, 1.0 );
-
 		return dIntensity;
 	}
 

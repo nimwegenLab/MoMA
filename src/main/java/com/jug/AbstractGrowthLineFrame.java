@@ -495,6 +495,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		// special case: growth line does not exist in this frame
 		if ( imgLocations.size() == 0 ) return new float[ 0 ];
 
+//		ImageJFunctions.show( img );
+		
 		final int maxOffsetX = 9; // half of the horizontal range of the rectangle 
 		final int maxOffsetY = 9; // half of the vertical range of the rectangle
 

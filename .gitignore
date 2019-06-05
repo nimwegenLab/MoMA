@@ -11,3 +11,4 @@
 !*.dll
 !*.jnilib
 !*.exe
+dependency-reduced-pom.xml

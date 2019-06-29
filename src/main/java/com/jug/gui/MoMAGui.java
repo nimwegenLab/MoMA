@@ -716,9 +716,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		for ( int i = 0; i < yAvg.length; i++ ) {
 			yAvg[ i ] = constY;
 		}
-		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) );
-		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) );
-		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) );
+		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) ); // Note-MM-2019-06-10: blue plot line
+		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) ); // Note-MM-2019-06-10: green plot line
+		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) ); // Note-MM-2019-06-10: red plot line
 
 		plot.setFixedBounds( 1, 0.0, 1.0 );
 

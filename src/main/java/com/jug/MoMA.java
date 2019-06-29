@@ -76,6 +76,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 
 /**
  * @author jug
@@ -341,6 +342,7 @@ public class MoMA {
 		if ( showIJ ) new ImageJ();
 
 		opService = new Context(OpService.class).service(OpService.class);
+		OpService opService1 = new Context(OpService.class).service(OpService.class);
 
 //		// ===== set look and feel ========================================================================
 //		try {

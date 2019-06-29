@@ -3,7 +3,9 @@
  */
 package com.jug;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -12,7 +14,18 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutionException;
+
+import org.scijava.Context;
+import org.scijava.app.StatusService;
+import org.scijava.command.CommandModule;
+import org.scijava.command.CommandService;
+import org.scijava.io.IOService;
+import org.scijava.ui.UIService;
+
 import com.moma.auxiliary.Plotting;
+
+import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
 import com.jug.lp.AbstractAssignment;
@@ -26,9 +39,19 @@ import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.filteredcomponents.FilteredComponent;
 
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
+import net.imagej.DefaultDataset;
+import net.imagej.ops.OpService;
+import net.imagej.tensorflow.TensorFlowService;
+import net.imglib2.Cursor;
+import net.imglib2.FinalInterval;
+import net.imglib2.FinalRealInterval;
+import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
@@ -36,6 +59,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
@@ -150,7 +174,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * @return the componentTree
 	 */
-	public ComponentForest< C > getComponentTree() {
+	public ComponentForest< C > getComponentTree() { // MM-2019-06-10: This should probably be called getComponentForest?!
 		return componentTree;
 	}
 
@@ -279,8 +303,14 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * @param img
 	 */
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img ) {
+		Img<FloatType> imgTmp = runNetwork(img);
+		
+		uiService.show(imgTmp);
 
-		final float[] fkt = getSimpleGapSeparationValues( img );
+		
+		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
+		
+//		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 
 //		Plotting.PlotArray(fkt)
 //		Plotting.PlotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
@@ -295,6 +325,122 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			isParaMaxFlowComponentTree = false;
 			componentTree = buildIntensityTree( raiFkt );
 		}
+	}
+
+	
+//	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
+//	{
+//		final RandomAccess< T > in = source.randomAccess();
+//		final Cursor< T > out = target.localizingCursor();
+//		while ( out.hasNext() )
+//		{
+//			out.fwd();
+//			in.setPosition( out );
+//			final T type = out.get();
+//			type.set( in.get() );
+//		}
+//	}
+	
+//    public < T extends Type< T > > void copy( final RandomAccessible< T > source,
+//            final IterableInterval< T > target )
+//        {
+//            // create a cursor that automatically localizes itself on every move
+//            Cursor< T > targetCursor = target.localizingCursor();
+//            RandomAccess< T > sourceRandomAccess = source.randomAccess();
+//     
+//            // iterate over the input cursor
+//            while ( targetCursor.hasNext())
+//            {
+//                // move input cursor forward
+//                targetCursor.fwd();
+//     
+//                // set the output cursor to the position of the input cursor
+//                sourceRandomAccess.setPosition( targetCursor );
+//     
+//                // set the value of this pixel of the output image, every Type supports T.set( T type )
+//                targetCursor.get().set( sourceRandomAccess.get() );
+//            }
+//        }
+	
+	private UIService uiService;
+	
+	private Img<FloatType> runNetwork(Img<FloatType> img) {
+		// TODO Auto-generated method stub
+		try {
+//			Context context = new Context(CommandService.class,StatusService.class,TensorFlowService.class,DatasetService.class);
+			Context context = new Context();
+			CommandService commandService = context.service(CommandService.class);
+			DatasetService datasetService = context.service(DatasetService.class);
+			OpService ops = context.service(OpService.class);
+			uiService = context.service(UIService.class);
+			IOService io = context.service(IOService.class);
+
+			io.save(img, "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/test_images/output_image_from_moma.tif");
+//			io.save(img, "/home/micha/Documents/01_work/output_image_from_moma.tif");
+			
+//			uiService.show("Image", img);
+			
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
+		
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,img.dimension(1)-512,0}, new long[] {68, img.dimension(1)-1,img.dimension(2)-1} ));
+
+
+			//			final Img< FloatType > newImg = new CellImgFactory<>( new FloatType() ).create( newImgView );
+//			copy( newImgView, newImg );
+//			
+//			uiService.show("Image", newImg);
+//
+//			uiService.show("Image", newImgView);
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+//			uiService.show("Image", newImg);
+			
+//			uiService.show("Image", img);
+//			newImg = Views.rotate(newImg, 0, 1);
+//
+//			uiService.show("Image", newImg);
+
+//			System.out.println(commandService);
+			Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!
+//			Dataset dataset = datasetService.create(newImg); // WHY DO WE NEED ZEROMIN HERE?!
+			
+//			uiService.show("dataset", dataset);
+			
+//	        DefaultDataset dataset = new DefaultDataset(context, img);
+//	        setImgPlus
+			final CommandModule module = commandService.run(
+					GenericNetwork.class, false,
+					"input", dataset,
+					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
+	//				"batchSize", 10,
+	//				"batchAxis", Axes.TIME.getLabel(),
+					"normalizeInput", false,
+					"blockMultiple", 8,
+					"nTiles", 1,
+					"showProgressDialog", true).get();
+			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
+			
+			Img<FloatType> tmpNew = tmp.factory().create(tmp);
+			
+			ops.image().invert(tmpNew, tmp);
+			
+//			uiService.show(tmpNew);
+			
+			return tmpNew;
+			
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	/**
@@ -479,7 +625,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
-		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, false );
+		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, true );
 	}
 
 	/**
@@ -495,8 +641,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		// special case: growth line does not exist in this frame
 		if ( imgLocations.size() == 0 ) return new float[ 0 ];
 
-//		ImageJFunctions.show( img );
-		
 		final int maxOffsetX = 9; // half of the horizontal range of the rectangle 
 		final int maxOffsetY = 9; // half of the vertical range of the rectangle
 
@@ -518,6 +662,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory< FloatType >() );
 		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
 
+		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
+		ImageJFunctions.show( Views.interval(Views.raster(rrImg),interval));
+		
 		final float[] dIntensity = new float[ imgLocations.size() ]; //  + 1
 		for ( int i = 0; i < imgLocations.size(); i++ ) {
 			final int centerY = imgLocations.get( i ).getIntPosition( 1 );
@@ -544,6 +691,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			dIntensity[ i ] = maxDiagonalAvg;
 		}
 
+//		System.out.println(Arrays.toString(dIntensity));
 //		dIntensity = SimpleFunctionAnalysis.normalizeDoubleArray( dIntensity, 0.0, 1.0 );
 		return dIntensity;
 	}

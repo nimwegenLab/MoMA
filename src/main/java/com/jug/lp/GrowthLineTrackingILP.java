@@ -435,7 +435,7 @@ public class GrowthLineTrackingILP {
 	 */
 	public float localIntensityBasedCost( final int t, final Component< ?, ? > ctNode ) {
 		//TODO kotz
-		final float[] gapSepFkt = gl.getFrames().get( t ).getSimpleGapSeparationValues( MoMA.instance.getImgTemp() );
+		final float[] gapSepFkt = gl.getFrames().get( t ).getSimpleGapSeparationValues( MoMA.instance.getImgTemp() ); // MM-2019-06-10: PERFORMANCE WARNING: this appears to all the calculation work again for each node; could perhaps be optimized.
 		return CostFactory.getIntensitySegmentationCost( ctNode, gapSepFkt );
 	}
 

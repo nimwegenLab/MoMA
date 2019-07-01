@@ -175,6 +175,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		final FilteredComponentTree< T > tree =
 				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, filter, generator.linkedList );
 		BuildComponentTree.buildComponentTree( input, generator, tree, darkToBright );
+		
 		return tree;
 	}
 

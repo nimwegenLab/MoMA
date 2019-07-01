@@ -82,6 +82,7 @@
 	<properties>
         <license.licenseName>BSD_3</license.licenseName>
 		<license.copyrightOwners>Max-Plack Institute of Molecular Cell Biology and Genetics, Dresden</license.copyrightOwners>
+		<main-class>com.jug.MoMA</main-class>
 	</properties>
 
 	<repositories>
@@ -170,6 +171,12 @@
             <artifactId>deeplearning4j-ui_2.10</artifactId>
             <version>1.0.0-beta4</version>
         </dependency>
+
+		<dependency>
+			<groupId>sc.fiji</groupId>
+			<artifactId>Interactive_3D_Surface_Plot</artifactId>
+			<version>3.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

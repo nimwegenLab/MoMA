@@ -21,11 +21,15 @@ import org.scijava.app.StatusService;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 import org.scijava.io.IOService;
+import org.scijava.plugin.PluginService;
 import org.scijava.ui.UIService;
 
 import com.moma.auxiliary.Plotting;
 
 import de.csbdresden.csbdeep.commands.GenericNetwork;
+import ij.IJ;
+import ij.ImagePlus;
+import io.scif.jj2000.j2k.NotImplementedError;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 
 import com.jug.lp.AbstractAssignment;
@@ -58,13 +62,18 @@ import net.imglib2.RealRandomAccessible;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
+import net.imglib2.loops.LoopBuilder;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -218,37 +227,37 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		return imgLocations.size();
 	}
 
-	/**
-	 * Reads out all image intensities along the GrowthLine center (green
-	 * pixels).
-	 *
-	 * @param img
-	 *            - an Img.
-	 * @return a float array containing the image intensities in
-	 *         <code>img</code> at the points given in wellPoints.
-	 */
-	private float[] getInvertedIntensitiesAtImgLocations( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
-		final float[] ret = new float[ imgLocations.size() ];
-
-		//here now a trick to make <3d images also comply to the code below
-		IntervalView< FloatType > ivImg = Views.interval( img, img );
-		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
-			ivImg = Views.addDimension( ivImg, 0, 0 );
-		}
-		final RandomAccess< FloatType > raImg3d = ivImg.randomAccess();
-
-		int i = 0;
-		for ( final Point p_orig : imgLocations ) {
-			final Point p = new Point( p_orig );
-			if ( imgIsPreCropped ) {
-				p.setPosition( 0, 2 );
-				p.move( MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2 - getAvgXpos(), 0 );
-			}
-			raImg3d.setPosition( p );
-			ret[ i++ ] = 1.0f - raImg3d.get().get();
-		}
-		return ret;
-	}
+//	/**
+//	 * Reads out all image intensities along the GrowthLine center (green
+//	 * pixels).
+//	 *
+//	 * @param img
+//	 *            - an Img.
+//	 * @return a float array containing the image intensities in
+//	 *         <code>img</code> at the points given in wellPoints.
+//	 */
+//	private float[] getInvertedIntensitiesAtImgLocations( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
+//		final float[] ret = new float[ imgLocations.size() ];
+//
+//		//here now a trick to make <3d images also comply to the code below
+//		IntervalView< FloatType > ivImg = Views.interval( img, img );
+//		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
+//			ivImg = Views.addDimension( ivImg, 0, 0 );
+//		}
+//		final RandomAccess< FloatType > raImg3d = ivImg.randomAccess();
+//
+//		int i = 0;
+//		for ( final Point p_orig : imgLocations ) {
+//			final Point p = new Point( p_orig );
+//			if ( imgIsPreCropped ) {
+//				p.setPosition( 0, 2 );
+//				p.move( MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2 - getAvgXpos(), 0 );
+//			}
+//			raImg3d.setPosition( p );
+//			ret[ i++ ] = 1.0f - raImg3d.get().get();
+//		}
+//		return ret;
+//	}
 
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
@@ -305,8 +314,13 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img ) {
 		Img<FloatType> imgTmp = runNetwork(img);
 		
-		uiService.show(imgTmp);
-
+		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
+//		ops.convert().imageType(out, in, typeConverter)
+		
+//		Img<FloatType> imgTmpNew  = ImgFaco
+//		ops.convert().imageType(out, imgTmp, typeConverter)
+//		
+//		ImageJFunctions.C
 		
 		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 		
@@ -314,7 +328,29 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 //		Plotting.PlotArray(fkt)
 //		Plotting.PlotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
+//		ops.wrap
+//		ops.math().
+		
+//		RandomAccessibleInterval imgTmpScaled = ops.transform().scaleView(imgTmp, new double[] {1.0,255.0}, new NLinearInterpolatorFactory());
+		Pair<FloatType, FloatType> res = ops.stats().minMax(imgTmp);
+		System.out.println(res.getA());
+		System.out.println(res.getB());
+		IterableInterval<FloatType> tmp = ops.image().normalize(imgTmp);
+//		uiService.show(imgTmp); 
+//		(RandomAccessibleIntveral) imgTmpNew;
+//		ops.stats().minMax(imgTmp);
 
+		ImagePlus imp = ImageJFunctions.wrap(Views.hyperSlice(imgTmp, 2, 0), "my image");
+		IJ.run(imp, "3D Surface Plot", "");
+
+//		ImagePlus imp = ImageJFunctions.wrap(imgTmp, "my image");
+//		imp.show();
+
+
+		//		IJ.show("image",imp);
+		
+//		new Interactive_3D_Surface_Plot()
+		
 		if ( fkt.length > 0 ) {
 			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
 			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
@@ -325,7 +361,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			isParaMaxFlowComponentTree = false;
 			componentTree = buildIntensityTree( raiFkt );
 		}
-	}
+
+//		componentTree = buildIntensityTree( imgTmp );
+//		System.out.println("bla");
+}
 
 	
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
@@ -363,6 +402,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //        }
 	
 	private UIService uiService;
+	private OpService ops;
 	
 	private Img<FloatType> runNetwork(Img<FloatType> img) {
 		// TODO Auto-generated method stub
@@ -371,7 +411,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			Context context = new Context();
 			CommandService commandService = context.service(CommandService.class);
 			DatasetService datasetService = context.service(DatasetService.class);
-			OpService ops = context.service(OpService.class);
+			PluginService plugs = context.service(PluginService.class);
+			System.out.println(plugs.getPlugins());
+			ops = context.service(OpService.class);
 			uiService = context.service(UIService.class);
 			IOService io = context.service(IOService.class);
 
@@ -427,9 +469,11 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			Img<FloatType> tmpNew = tmp.factory().create(tmp);
 			
 			ops.image().invert(tmpNew, tmp);
-			
+			FloatType val = new FloatType();
+			val.set(1); 
+			addValue(tmpNew, val);
 //			uiService.show(tmpNew);
-			
+//			ImageJFunctions.
 			return tmpNew;
 			
 		} catch (InterruptedException e) {
@@ -443,6 +487,28 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		return null;
 	}
 
+	public static <T extends NativeType<T> & RealType<T>> RandomAccessibleInterval<T> addValue( 
+			final Img<T> tmpNew , T d)
+	{
+		Img<T> out = tmpNew.copy();
+//		ArrayImg<T, ?> out = factory.create(tmpNew);
+		LoopBuilder.setImages( tmpNew, out ).forEachPixel((x,y) -> {
+			x.add(d);
+			y.set(x);
+		});
+		return out;
+	}
+
+//	private Img<FloatType> AddOne(Img<FloatType> im){
+//		ArrayImgFactory<T> factory = new ArrayImgFactory<>(Views.flatIterable(img).firstElement().copy());
+//		ArrayImg<T, ?> out = factory.create(img);
+//		LoopBuilder.setImages( img, out ).forEachPixel((x,y) -> y.set(x));
+//		return out;
+//		
+//		throw new NotImplementedError();
+//	}
+
+	
 	/**
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
@@ -662,8 +728,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory< FloatType >() );
 		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
 
-		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
-		ImageJFunctions.show( Views.interval(Views.raster(rrImg),interval));
+//		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
+//		ImageJFunctions.show( Views.interval(Views.raster(rrImg),interval));
 		
 		final float[] dIntensity = new float[ imgLocations.size() ]; //  + 1
 		for ( int i = 0; i < imgLocations.size(); i++ ) {

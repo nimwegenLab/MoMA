@@ -314,7 +314,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img ) {
 		Img<FloatType> imgTmp = runNetwork(img);
 		
-		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
+		uiService.show(imgTmp);
+//		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
 //		ops.convert().imageType(out, in, typeConverter)
 		
 //		Img<FloatType> imgTmpNew  = ImgFaco
@@ -715,7 +716,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 		if ( imgIsPreCropped ) {
 			centerX = MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2;
-			centerZ = 0;
+//			centerZ = 0;
 		}
 
 		//here now a trick to make <3d images also comply to the code below

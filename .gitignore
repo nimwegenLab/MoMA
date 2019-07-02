@@ -4,7 +4,7 @@
 /target/
 .classpath
 .project
-/.idea/
+#/.idea/
 
 # Allow
 !*.so

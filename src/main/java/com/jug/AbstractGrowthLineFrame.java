@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import com.jug.util.filteredcomponents.FilteredComponentTree;
 import ij.gui.Plot;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
@@ -327,16 +328,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		(RandomAccessibleIntveral) imgTmpNew;
 //		ops.stats().minMax(imgTmp);
 
-			Plotting.surfacePlot(imgTmp, 2, 5);
+//		Plotting.surfacePlot(imgTmp, 2, 5);
 
-//		ImagePlus imp = ImageJFunctions.wrap(imgTmp, "my image");
-//		imp.show();
-
-
-		//		IJ.show("image",imp);
-		
-//		new Interactive_3D_Surface_Plot()
-		
 //		if ( fkt.length > 0 ) {
 //			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
 //			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
@@ -349,8 +342,11 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		}
 
 //		componentTree = buildIntensityTree( imgTmp );
+
 		componentTree = buildIntensityTree( Views.hyperSlice(imgTmp, 2, frameIndex) );
-//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
+		Plotting.drawComponentTree(componentTree);
+
+		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
 //		tmp2.printPixelList(0);
 //		printPixelList(tmp2.nodes[0].pixelList);
 	}

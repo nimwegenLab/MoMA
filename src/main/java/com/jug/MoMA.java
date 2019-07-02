@@ -1784,10 +1784,12 @@ public class MoMA {
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;
+			int frameCounter = 0;
 			System.out.print( "   Working on GL#" + i + " of " + getGrowthLines().size() + "... " );
 			for ( final GrowthLineFrame glf : gl.getFrames() ) {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imgTemp );
+				glf.generateSimpleSegmentationHypotheses( imgTemp, frameCounter );
+				frameCounter++;
 			}
 			System.out.println( " ...done!" );
 		}

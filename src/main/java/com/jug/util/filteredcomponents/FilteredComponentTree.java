@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.BuildComponentTree;
 import net.imglib2.algorithm.componenttree.Component;
@@ -180,6 +181,37 @@ public final class FilteredComponentTree< T extends Type< T > >
 	}
 
 	private final ArrayList< FilteredComponent< T > > nodes;
+	
+	/*
+	 * Print the length of all nodes in the tree recursively.
+	 */
+	public void printPixelList(int nodeIndex) {
+//		roots;
+		FilteredComponent< T > node = nodes.get(nodeIndex);
+		PixelList pixelList = node.pixelList;
+		for(Localizable pixel: pixelList)
+		{
+//			int[] currentPosition = new int[3];
+//			pixel.localize(currentPosition);
+			int posX = pixel.getIntPosition(0);
+			int posY = pixel.getIntPosition(1);
+			System.out.println("X="+posX+"Y="+posY);
+		}
+	}
+
+	/**
+	  * Print the coordinates of the pixel position belonging to the node with index nodeIndex.
+      */
+	public void printNodePixelCoordinates(int nodeIndex) {
+		FilteredComponent< T > node = nodes.get(nodeIndex);
+		PixelList pixelList = node.pixelList;
+		for(Localizable pixel: pixelList)
+		{
+			int posX = pixel.getIntPosition(0);
+			int posY = pixel.getIntPosition(1);
+			System.out.println("X="+posX+"Y="+posY);
+		}
+	}
 
 	private final HashSet< FilteredComponent< T > > roots;
 

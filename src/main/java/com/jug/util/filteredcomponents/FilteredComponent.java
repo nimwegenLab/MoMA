@@ -56,7 +56,7 @@ public final class FilteredComponent< T extends Type< T > >
 	/**
 	 * Pixels in the component.
 	 */
-	private PixelList pixelList;
+	public PixelList pixelList;
 
 	/**
 	 * Pixels in the extended component.

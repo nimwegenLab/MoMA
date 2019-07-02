@@ -724,16 +724,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 		// ComponentTreeNodes
 		// ------------------
-		if ( ilp != null ) {
-			dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
-		}
+		dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
 	}
 
 	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {
 		final int numCTNs = ComponentTreeUtils.countNodes( ct );
 		final float[][] xydxdyCTNBorders = new float[ numCTNs ][ 4 ];
 		final int t = sliderTime.getValue();
-		final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
 
 		int i = 0;
 		for ( final C root : ct.roots() ) {
@@ -747,9 +744,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //					if ( cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
 //						System.out.print( String.format( "%8.4f;\t", ilp.localParamaxflowBasedCost( t, ctn ) ) );
 //					} else {
-					System.out.print( String.format(
-							"%8.4f;\t",
-							ilp.localIntensityBasedCost( t, ctn ) ) );
+					if ( ilp != null ) {
+						System.out.print( String.format(
+								"%8.4f;\t",
+								ilp.localIntensityBasedCost( t, ctn ) ) );
+					}
 //					}
 					i++;
 				}
@@ -758,16 +757,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				System.out.println( "" );
 			}
 
-			i = 0;
-			for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
-				final Component< FloatType, ? > ctn = hyp.getWrappedHypothesis();
-				addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
-				i++;
+			if ( ilp != null ) {
+				final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
+				i = 0;
+				for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
+					final Component< FloatType, ? > ctn = hyp.getWrappedHypothesis();
+					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
+					i++;
+				}
 			}
 		}
 		plot.addBoxPlot( "Seg. Hypothesis", new Color( 127, 127, 127, 255 ), Util.makeDoubleArray2d( xydxdyCTNBorders ) );
-		if ( ilp.getOptimalSegmentation( t ).size() > 0 ) {
-			plot.addBoxPlot( "Active Seg. Hypothesis", new Color( 255, 0, 0, 255 ), Util.makeDoubleArray2d( xydxdyCTNBordersActive ) );
+		if ( ilp != null ) {
+			if ( ilp.getOptimalSegmentation( t ).size() > 0 ) {
+				final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
+				plot.addBoxPlot( "Active Seg. Hypothesis", new Color( 255, 0, 0, 255 ), Util.makeDoubleArray2d( xydxdyCTNBordersActive ) );
+			}
 		}
 	}
 
@@ -786,8 +791,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		if ( ctn instanceof FilteredComponent ) {
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 		}
-		while ( componentIterator.hasNext() ) {
-			final int pos = componentIterator.next().getIntPosition( 0 );
+		while ( componentIterator.hasNext() ) { // MM-2019-07-01: Here we determine the y-boundaries of the component for drawing
+			final int pos = componentIterator.next().getIntPosition( 1 ); 
 			min = Math.min( min, pos );
 			max = Math.max( max, pos );
 		}
@@ -1364,9 +1369,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 */
 	public void prepareOptimization() {
 		System.out.println( "Filling in CT hypotheses where needed..." );
+		int frameIndex = 0;
 		for ( final GrowthLineFrame glf : model.getCurrentGL().getFrames() ) {
 			if ( glf.getComponentTree() == null ) {
-				glf.generateSimpleSegmentationHypotheses( MoMA.instance.getImgTemp() );
+				glf.generateSimpleSegmentationHypotheses( MoMA.instance.getImgTemp(), frameIndex );
+				frameIndex++;
 			}
 		}
 
@@ -1534,9 +1541,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	}
 
 	private void activateSimpleHypothesesForGL( final GrowthLine gl ) {
+		int frameIndex = 0;
 		for ( final GrowthLineFrame glf : gl.getFrames() ) {
 			System.out.print( "." );
-			glf.generateSimpleSegmentationHypotheses( model.mm.getImgTemp() );
+			glf.generateSimpleSegmentationHypotheses( model.mm.getImgTemp(), frameIndex );
+			frameIndex++;
 		}
 		System.out.println( "" );
 	}

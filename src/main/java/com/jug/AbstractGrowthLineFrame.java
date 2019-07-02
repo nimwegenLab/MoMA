@@ -42,6 +42,7 @@ import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.filteredcomponents.FilteredComponent;
+import com.jug.util.filteredcomponents.FilteredComponentTree;
 
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
@@ -61,6 +62,7 @@ import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -311,7 +313,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *
 	 * @param img
 	 */
-	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img ) {
+	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
 		Img<FloatType> imgTmp = runNetwork(img);
 		
 		uiService.show(imgTmp);
@@ -323,7 +325,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		
 //		ImageJFunctions.C
 		
-		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
+//		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 		
 //		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 
@@ -352,20 +354,26 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		
 //		new Interactive_3D_Surface_Plot()
 		
-		if ( fkt.length > 0 ) {
-			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
-			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
-			for ( int i = 0; i < fkt.length; i++ ) {
-				ra.setPosition( i, 0 );
-				ra.get().set( fkt[ i ] );
-			}
-			isParaMaxFlowComponentTree = false;
-			componentTree = buildIntensityTree( raiFkt );
-		}
+//		if ( fkt.length > 0 ) {
+//			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
+//			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
+//			for ( int i = 0; i < fkt.length; i++ ) {
+//				ra.setPosition( i, 0 );
+//				ra.get().set( fkt[ i ] );
+//			}
+//			isParaMaxFlowComponentTree = false;
+//			componentTree = buildIntensityTree( raiFkt );
+//		}
 
 //		componentTree = buildIntensityTree( imgTmp );
-//		System.out.println("bla");
-}
+		componentTree = buildIntensityTree( Views.hyperSlice(imgTmp, 2, frameIndex) );
+//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
+//		tmp2.printPixelList(0);
+//		printPixelList(tmp2.nodes[0].pixelList);
+	}
+	
+
+	
 
 	
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )

@@ -321,10 +321,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		ops.math().
 		
 //		RandomAccessibleInterval imgTmpScaled = ops.transform().scaleView(imgTmp, new double[] {1.0,255.0}, new NLinearInterpolatorFactory());
-		Pair<FloatType, FloatType> res = ops.stats().minMax(imgTmp);
-		System.out.println(res.getA());
-		System.out.println(res.getB());
-		IterableInterval<FloatType> tmp = ops.image().normalize(imgTmp);
+//		Pair<FloatType, FloatType> res = ops.stats().minMax(imgTmp);
+//		System.out.println(res.getA());
+//		System.out.println(res.getB());
+//		IterableInterval<FloatType> tmp = ops.image().normalize(imgTmp);
 //		uiService.show(imgTmp); 
 //		(RandomAccessibleIntveral) imgTmpNew;
 //		ops.stats().minMax(imgTmp);

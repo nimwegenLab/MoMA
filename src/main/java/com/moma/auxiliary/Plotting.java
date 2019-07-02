@@ -30,8 +30,9 @@ public class Plotting {
 	public static < C extends Component< FloatType, C >> void drawComponentTree(ComponentForest< C > ct){
 //		ct.
 //		final Img<ARGBType> componentImage = ArrayImgs.argbs( 32, 512 );
-		final Img<IntType> componentImage = ArrayImgs.ints( 32, 512 );
 //		final ArrayList< RandomAccessibleInterval< UnsignedByteType > > slices = new ArrayList<>();
+
+		final ArrayList< RandomAccessibleInterval< UnsignedByteType > > slices = new ArrayList<>();
 
 //		final Img<UnsignedByteType> output = new ArrayImgFactory<>(new UnsignedByteType()).create(img);
 //		final RandomAccess<UnsignedByteType> out = output.randomAccess();
@@ -47,24 +48,26 @@ public class Plotting {
 			ArrayList< C > componentList = new ArrayList< C >();
 			componentList.add( root );
 			while ( componentList.size() > 0 ) {
+				final RandomAccessibleInterval<UnsignedByteType> componentImageSlice = ArrayImgs.unsignedBytes( 32, 512 );
 				for ( final Component< ?, ? > ctn : componentList ) {
-					drawComponent( ctn, i, componentLevel, componentImage );
+					drawComponent( ctn, i, componentLevel, componentImageSlice );
 					i++;
 				}
+				slices.add(componentImageSlice);
 				componentList = ComponentTreeUtils.getAllChildren( componentList );
 				System.out.println("componentList.size(): "+componentList.size());
 				componentLevel++;
 			}
 		}
-		ImageJFunctions.show(componentImage);
+		ImageJFunctions.show(Views.stack(slices));
 	}
 
-	private static void drawComponent( final Component< ?, ? > ctn, final int index, final int level, Img<IntType> image ) {
+	private static void drawComponent( final Component< ?, ? > ctn, final int index, final int level, RandomAccessibleInterval<UnsignedByteType> image ) {
 		int xMin = Integer.MAX_VALUE;
 		int xMax = Integer.MIN_VALUE;
 		int yMin = Integer.MAX_VALUE;
 		int yMax = Integer.MIN_VALUE;
-		RandomAccess<IntType> out = image.randomAccess();
+		RandomAccess<UnsignedByteType> out = image.randomAccess();
 
 		Iterator<Localizable> componentIterator = ctn.iterator();
 		while(componentIterator.hasNext()){
@@ -79,7 +82,7 @@ public class Plotting {
 			///////////// Draw component to image ///////////////////
 			out.setPosition(location);
 //			out.get().set(new ARGBType(ARGBType.blue(level)));
-			out.get().set(level);
+			out.get().set(255);
 //			in.fwd();
 //			out.setPosition(in);
 //			out.get().set(in.get());

@@ -5,7 +5,6 @@ package com.jug;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -16,8 +15,8 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
 
+import ij.gui.Plot;
 import org.scijava.Context;
-import org.scijava.app.StatusService;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 import org.scijava.io.IOService;
@@ -27,10 +26,6 @@ import org.scijava.ui.UIService;
 import com.moma.auxiliary.Plotting;
 
 import de.csbdresden.csbdeep.commands.GenericNetwork;
-import ij.IJ;
-import ij.ImagePlus;
-import io.scif.jj2000.j2k.NotImplementedError;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -42,31 +37,21 @@ import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.filteredcomponents.FilteredComponent;
-import com.jug.util.filteredcomponents.FilteredComponentTree;
 
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
-import net.imagej.DefaultDataset;
 import net.imagej.ops.OpService;
-import net.imagej.tensorflow.TensorFlowService;
-import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
-import net.imglib2.FinalRealInterval;
 import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
-import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealRandomAccess;
 import net.imglib2.RealRandomAccessible;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.cell.CellImgFactory;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.NativeType;
@@ -316,7 +301,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
 		Img<FloatType> imgTmp = runNetwork(img);
 		
-		uiService.show(imgTmp);
 //		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
 //		ops.convert().imageType(out, in, typeConverter)
 		
@@ -329,8 +313,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		
 //		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 
-//		Plotting.PlotArray(fkt)
-//		Plotting.PlotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
+//		Plotting.plotArray(fkt)
+//		Plotting.plotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
 //		ops.wrap
 //		ops.math().
 		
@@ -343,8 +327,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		(RandomAccessibleIntveral) imgTmpNew;
 //		ops.stats().minMax(imgTmp);
 
-		ImagePlus imp = ImageJFunctions.wrap(Views.hyperSlice(imgTmp, 2, 0), "my image");
-		IJ.run(imp, "3D Surface Plot", "");
+			Plotting.surfacePlot(imgTmp, 2, 5);
 
 //		ImagePlus imp = ImageJFunctions.wrap(imgTmp, "my image");
 //		imp.show();

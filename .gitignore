@@ -13,3 +13,4 @@
 !*.exe
 dependency-reduced-pom.xml
 .settings/
+.idea/workspace.xml

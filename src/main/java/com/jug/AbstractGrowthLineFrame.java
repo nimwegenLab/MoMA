@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 import com.jug.util.filteredcomponents.FilteredComponentTree;
 import ij.gui.Plot;
+import net.imglib2.type.numeric.integer.IntType;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;

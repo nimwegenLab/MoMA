@@ -1,15 +1,25 @@
 package com.moma.auxiliary;
 
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.filteredcomponents.FilteredComponentTree;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
+import net.imglib2.Cursor;
 import net.imglib2.Localizable;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
@@ -18,6 +28,19 @@ import java.util.Iterator;
 public class Plotting {
 
 	public static < C extends Component< FloatType, C >> void drawComponentTree(ComponentForest< C > ct){
+//		ct.
+//		final Img<ARGBType> componentImage = ArrayImgs.argbs( 32, 512 );
+		final Img<IntType> componentImage = ArrayImgs.ints( 32, 512 );
+//		final ArrayList< RandomAccessibleInterval< UnsignedByteType > > slices = new ArrayList<>();
+
+//		final Img<UnsignedByteType> output = new ArrayImgFactory<>(new UnsignedByteType()).create(img);
+//		final RandomAccess<UnsignedByteType> out = output.randomAccess();
+//		final Cursor<UnsignedByteType> in = sampledImgNew.cursor();
+		if ( ct instanceof FilteredComponentTree) {
+			FilteredComponentTree fct = (FilteredComponentTree) ct;
+//			fct.
+		}
+
 		int i = 0;
 		for ( final C root : ct.roots() ) {
 			int componentLevel = 0;
@@ -25,7 +48,7 @@ public class Plotting {
 			componentList.add( root );
 			while ( componentList.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : componentList ) {
-					drawComponent( ctn, i, componentLevel );
+					drawComponent( ctn, i, componentLevel, componentImage );
 					i++;
 				}
 				componentList = ComponentTreeUtils.getAllChildren( componentList );
@@ -33,22 +56,34 @@ public class Plotting {
 				componentLevel++;
 			}
 		}
+		ImageJFunctions.show(componentImage);
 	}
 
-	private static void drawComponent( final Component< ?, ? > ctn, final int index, final int level ) {
+	private static void drawComponent( final Component< ?, ? > ctn, final int index, final int level, Img<IntType> image ) {
 		int xMin = Integer.MAX_VALUE;
 		int xMax = Integer.MIN_VALUE;
 		int yMin = Integer.MAX_VALUE;
 		int yMax = Integer.MIN_VALUE;
+		RandomAccess<IntType> out = image.randomAccess();
 
 		Iterator<Localizable> componentIterator = ctn.iterator();
 		while(componentIterator.hasNext()){
-			final int xPos = componentIterator.next().getIntPosition( 0 );
+			Localizable location = componentIterator.next();
+			final int xPos =  location.getIntPosition( 0 );
 			xMin = Math.min( xMin, xPos );
 			xMax = Math.max( xMax, xPos );
-			final int yPos = componentIterator.next().getIntPosition( 1 );
+			final int yPos = location.getIntPosition( 1 );
 			yMin = Math.min( yMin, yPos );
 			yMax = Math.max( yMax, yPos );
+
+			///////////// Draw component to image ///////////////////
+			out.setPosition(location);
+//			out.get().set(new ARGBType(ARGBType.blue(level)));
+			out.get().set(level);
+//			in.fwd();
+//			out.setPosition(in);
+//			out.get().set(in.get());
+//			image.
 		}
 		System.out.println("Component "+index+":");
 		System.out.println("\tlevel: "+level);

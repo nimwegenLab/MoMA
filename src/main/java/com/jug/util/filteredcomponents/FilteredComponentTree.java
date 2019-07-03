@@ -21,6 +21,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.util.Util;
+import net.imglib2.util.ValuePair;
 
 /**
  * Component tree of an image stored as a tree of {@link FilteredComponent}s.
@@ -128,6 +129,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final T type,
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int maxComponentWidth,
 			final Filter filter,
 			final boolean darkToBright ) {
 		final ImgFactory< LongType > imgFactory =
@@ -138,6 +140,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 				imgFactory,
 				minComponentSize,
 				maxComponentSize,
+				maxComponentWidth,
 				filter,
 				darkToBright );
 	}
@@ -168,13 +171,14 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final ImgFactory< LongType > imgFactory,
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int maxComponentWidth,
 			final Filter filter,
 			final boolean darkToBright ) {
 		final T max = type.createVariable();
 		max.setReal( darkToBright ? type.getMaxValue() : type.getMinValue() );
 		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator< T >( max, input, imgFactory );
 		final FilteredComponentTree< T > tree =
-				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, filter, generator.linkedList );
+				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, maxComponentWidth, filter, generator.linkedList );
 		BuildComponentTree.buildComponentTree( input, generator, tree, darkToBright );
 		
 		return tree;
@@ -215,6 +219,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	private final HashSet< FilteredComponent< T > > roots;
 
+	private int maxComponentWidth = 1000;
+
 	private final long minComponentSize;
 
 	private final long maxComponentSize;
@@ -230,12 +236,14 @@ public final class FilteredComponentTree< T extends Type< T > >
 	private FilteredComponentTree(
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int maxComponentWidth,
 			final Filter filter,
 			final Img< LongType > linkedList ) {
 		roots = new HashSet< FilteredComponent< T > >();
 		nodes = new ArrayList< FilteredComponent< T > >();
 		this.minComponentSize = minComponentSize;
 		this.maxComponentSize = maxComponentSize;
+		this.maxComponentWidth = maxComponentWidth;
 		if ( filter.type().equals( FilterType.MAX_GROWTH_PER_STEP ) )
 		{
 			this.filterByGrowthRatio = false;
@@ -259,10 +267,26 @@ public final class FilteredComponentTree< T extends Type< T > >
 		this.linkedList = linkedList;
 	}
 
+	private ValuePair<Integer,Integer> getComponentLimits(Iterator<Localizable> pixelPositionIterator, int dim){
+		int min = Integer.MAX_VALUE;
+		int max = Integer.MIN_VALUE;
+
+		while(pixelPositionIterator.hasNext()){
+			Localizable location = pixelPositionIterator.next();
+			final int pos =  location.getIntPosition( dim );
+			min = Math.min( min, pos );
+			max = Math.max( max, pos );
+		}
+		return new ValuePair<Integer,Integer>(min,max);
+	}
+
 	@Override
 	public void emit( final FilteredPartialComponent< T > intermediate ) {
 		final long size = intermediate.pixelList.size();
-		if ( size >= minComponentSize && size <= maxComponentSize ) {
+		final ValuePair<Integer,Integer> componentLimits = getComponentLimits(intermediate.pixelList.iterator(), 0);
+		int width = componentLimits.b - componentLimits.a;
+
+		if ( size >= minComponentSize && size <= maxComponentSize && width <= maxComponentWidth) {
 			int numChildren = 0;
 			if ( intermediate.emittedComponent != null ) ++numChildren;
 			for ( final FilteredPartialComponent< T > c : intermediate.children )

@@ -741,23 +741,23 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
 					addBoxAtIndex( i, ctn, xydxdyCTNBorders, ySegmentationData, level );
-//					if ( cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
-//						System.out.print( String.format( "%8.4f;\t", ilp.localParamaxflowBasedCost( t, ctn ) ) );
-//					} else {
 					if ( ilp != null ) {
 						System.out.print( String.format(
 								"%8.4f;\t",
 								ilp.localIntensityBasedCost( t, ctn ) ) );
 					}
-//					}
 					i++;
 				}
 				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
 				level++;
 				System.out.println( "" );
 			}
+		}
+		plot.addBoxPlot( "Seg. Hypothesis", new Color( 127, 127, 127, 255 ), Util.makeDoubleArray2d( xydxdyCTNBorders ) );
 
-			if ( ilp != null ) {
+		// Plot the segments, which are part of the optimal solution
+		if ( ilp != null ) {
+			if ( ilp.getOptimalSegmentation( t ).size() > 0 ) {
 				final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
 				i = 0;
 				for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
@@ -765,12 +765,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
 					i++;
 				}
-			}
-		}
-		plot.addBoxPlot( "Seg. Hypothesis", new Color( 127, 127, 127, 255 ), Util.makeDoubleArray2d( xydxdyCTNBorders ) );
-		if ( ilp != null ) {
-			if ( ilp.getOptimalSegmentation( t ).size() > 0 ) {
-				final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
 				plot.addBoxPlot( "Active Seg. Hypothesis", new Color( 255, 0, 0, 255 ), Util.makeDoubleArray2d( xydxdyCTNBordersActive ) );
 			}
 		}

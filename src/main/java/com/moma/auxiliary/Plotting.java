@@ -88,10 +88,10 @@ public class Plotting {
 //			out.get().set(in.get());
 //			image.
 		}
-		System.out.println("Component "+index+":");
-		System.out.println("\tlevel: "+level);
-		System.out.println("\txSize: "+xMin+", "+xMax);
-		System.out.println("\tySize: "+yMin+", "+yMax);
+//		System.out.println("Component "+index+":");
+//		System.out.println("\tlevel: "+level);
+//		System.out.println("\txSize: "+xMin+", "+xMax);
+//		System.out.println("\tySize: "+yMin+", "+yMax);
 	}
 
 	public static void surfacePlot(final RandomAccessibleInterval<FloatType> img, final int dimension, final long position){

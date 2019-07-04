@@ -89,71 +89,12 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final float[] gapSepFkt ) {
-		if(true) return -0.1f;
+		float cost = -0.1f;
 
 		final ValuePair< Integer, Integer > segInterval =
 				ComponentTreeUtils.getTreeNodeInterval( ctNode );
 		final int a = segInterval.getA().intValue();
 		final int b = segInterval.getB().intValue();
-
-		// 'reduced' in this context means the part inside interval [a,b] that lies between local minima
-		// closest to a (towards the right) and b (towards the left).
-		// To avoid not finding those minima in case we go first one pixel up, we first find the closes max.
-
-		int aReduced = SimpleFunctionAnalysis.getRighthandLocalMax( gapSepFkt, a ).a.intValue();
-		aReduced = SimpleFunctionAnalysis.getRighthandLocalMin( gapSepFkt, aReduced ).a.intValue();
-		int bReduced = SimpleFunctionAnalysis.getLefthandLocalMax( gapSepFkt, b ).a.intValue();
-		bReduced = SimpleFunctionAnalysis.getLefthandLocalMin( gapSepFkt, bReduced ).a.intValue();
-		if ( aReduced > bReduced ) {
-			aReduced = bReduced = SimpleFunctionAnalysis.getMin( gapSepFkt, a, b ).a.intValue();
-		}
-
-		final float l = gapSepFkt[ a ];
-		final float r = gapSepFkt[ b ];
-
-		// maxReduced is the  highest point within [a,b], excluding the slopes up towards a and b.
-		final float maxReduced = SimpleFunctionAnalysis.getMax( gapSepFkt, aReduced, bReduced ).b.floatValue();
-		final float min = SimpleFunctionAnalysis.getMin( gapSepFkt, a, b ).b.floatValue();
-
-		// The latest shitty hack: get max gradient in [a,b], then check if gradient at a or b is flatter
-		// and make the negative cost smaller if a or b have a flat gradient.
-		final int span = 2;
-		float[] diff = SimpleFunctionAnalysis.differentiateFloatArray( gapSepFkt, span );
-		diff = SimpleFunctionAnalysis.elementWiseAbs( diff );
-		final float maxDiff =
-				SimpleFunctionAnalysis.getMax(
-						diff,
-						Math.max( 0, a - span ),
-						Math.max( 0, Math.min( diff.length - 1, b - span ) ) ).b;
-		diff = SimpleFunctionAnalysis.elementWiseDivide( diff, maxDiff );
-		float avgBorderGradientDivisor =
-				1f / ( Math.min(
-						diff[ Math.max( 0, a - span ) ],
-						diff[ Math.max( 0, Math.min( diff.length - 1, b - span ) ) ] ) );
-		avgBorderGradientDivisor -= 1f;
-		avgBorderGradientDivisor /= 4;
-		avgBorderGradientDivisor += 1f;
-
-		final float maxRimHeight = Math.max( l, r ) - min;
-		final float reducedMaxHeight = maxReduced - min;
-		final float averageSegmentValue = SimpleFunctionAnalysis.getAvg( gapSepFkt, a, b );
-
-		float cost = -( maxRimHeight - reducedMaxHeight ) + MoMA.MIN_GAP_CONTRAST;
-		if ( cost < 0 ) {
-			cost /= avgBorderGradientDivisor;
-		}
-
-		// Special case: min-value is above average gap-sep-fkt value (happens often at the very top)
-		// * Note: we compare median value with average obtained +- some context above and below because
-		// * sometimes there are some cells in a brighter band on top fraction of GL.
-		final int localA = Math.max( a - 150, 0 );
-		final int localB = Math.min( b + 150, gapSepFkt.length - 1 );
-		final float avgFktValue = SimpleFunctionAnalysis.getSum( gapSepFkt, localA, localB ) / ( localB-localA );
-		final float medianSegmentValue = SimpleFunctionAnalysis.getMedian( gapSepFkt, a, b );
-		final float distAboveMedian = medianSegmentValue - avgFktValue;
-		if ( distAboveMedian > 0f ) {
-			cost += distAboveMedian * Math.pow( 1 + distAboveMedian, 8.0 );
-		}
 
 		// cell is too small
 		if ( a > 0 && b + 1 < gapSepFkt.length && b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!

@@ -93,7 +93,6 @@ public class CostFactory {
 				ComponentTreeUtils.getTreeNodeInterval( ctNode );
 		final int a = segInterval.getA().intValue();
 		final int b = segInterval.getB().intValue();
-		final int relSegLen = ( b - a ) / gapSepFkt.length;
 
 		// 'reduced' in this context means the part inside interval [a,b] that lies between local minima
 		// closest to a (towards the right) and b (towards the left).

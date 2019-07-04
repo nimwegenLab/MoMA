@@ -67,7 +67,7 @@ public class GrowthLineTrackingILP {
 	public static final int ASSIGNMENT_MAPPING = 1;
 	public static final int ASSIGNMENT_DIVISION = 2;
 
-	public static final float CUTOFF_COST = 3.0f;
+	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored
 
 	public static GRBEnv env;
 	public static CostManager costManager;
@@ -207,7 +207,7 @@ public class GrowthLineTrackingILP {
 			createSegmentationHypotheses( t );
 			enumerateAndAddAssignments( t - 1 );
 		}
-		// add exit essignments to last (hidden/duplicated) timepoint
+		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently we the duplicate frame in that MoMA adds is on purpose!
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps );
@@ -435,7 +435,7 @@ public class GrowthLineTrackingILP {
 	 */
 	public float localIntensityBasedCost( final int t, final Component< ?, ? > ctNode ) {
 		//TODO kotz
-		final float[] gapSepFkt = gl.getFrames().get( t ).getSimpleGapSeparationValues( MoMA.instance.getImgTemp() ); // MM-2019-06-10: PERFORMANCE WARNING: this appears to all the calculation work again for each node; could perhaps be optimized.
+		final float[] gapSepFkt = gl.getFrames().get( t ).getSimpleGapSeparationValues( MoMA.instance.getImgTemp() );
 		return CostFactory.getIntensitySegmentationCost( ctNode, gapSepFkt );
 	}
 

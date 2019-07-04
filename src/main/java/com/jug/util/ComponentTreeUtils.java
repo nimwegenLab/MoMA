@@ -73,9 +73,9 @@ public class ComponentTreeUtils {
 			final Hypothesis< Component< FloatType, ? >> to,
 			final Hypothesis< Component< FloatType, ? >> from,
 			final int numPixels ) {
-		final ValuePair< Integer, Integer > candMinMax = to.getLocation();
-		final ValuePair< Integer, Integer > refMinMax = from.getLocation();
-		return ( candMinMax.getA().intValue() - refMinMax.getB().intValue() ) > numPixels;
+		final ValuePair< Integer, Integer > toMinMax = to.getLocation();
+		final ValuePair< Integer, Integer > fromMinMax = from.getLocation();
+		return ( toMinMax.getA().intValue() - fromMinMax.getB().intValue() ) > numPixels;
 	}
 
 	/**

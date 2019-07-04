@@ -96,7 +96,7 @@ public class ComponentTreeUtils {
 		int max = Integer.MIN_VALUE;
 		final Iterator< Localizable > componentIterator = node.iterator();
 		while ( componentIterator.hasNext() ) {
-			final int pos = componentIterator.next().getIntPosition( 0 );
+			final int pos = componentIterator.next().getIntPosition( 1 );
 			min = Math.min( min, pos );
 			max = Math.max( max, pos );
 		}
@@ -123,7 +123,7 @@ public class ComponentTreeUtils {
 		int max = Integer.MIN_VALUE;
 		final Iterator< Localizable > componentIterator = node.iteratorExtended();
 		while ( componentIterator.hasNext() ) {
-			final int pos = componentIterator.next().getIntPosition( 0 );
+			final int pos = componentIterator.next().getIntPosition( 1 );
 			min = Math.min( min, pos );
 			max = Math.max( max, pos );
 		}

@@ -89,6 +89,8 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final float[] gapSepFkt ) {
+		if(true) return -0.1f;
+
 		final ValuePair< Integer, Integer > segInterval =
 				ComponentTreeUtils.getTreeNodeInterval( ctNode );
 		final int a = segInterval.getA().intValue();

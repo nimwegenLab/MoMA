@@ -22,11 +22,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.jug.lp.*;
 import org.math.plot.Plot2DPanel;
 
 import com.jug.GrowthLine;
@@ -36,8 +38,6 @@ import com.jug.export.CellStatsExporter;
 import com.jug.export.HtmlOverviewExporter;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
-import com.jug.lp.GrowthLineTrackingILP;
-import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
@@ -725,6 +725,52 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		// ComponentTreeNodes
 		// ------------------
 		dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
+		if(ilp != null){
+			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "Segment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "ExitAssignment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "MappingAssignment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "DivisionAssignment" );
+		}
+	}
+
+	private < C extends Component< FloatType, C > > void printCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp, String costType ) {
+		final int t = sliderTime.getValue();
+		System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
+		for ( final C root : ct.roots() ) {
+			System.out.println( "" );
+			int level = 0;
+			ArrayList< C > ctnLevel = new ArrayList< C >();
+			ctnLevel.add( root );
+			while ( ctnLevel.size() > 0 ) {
+				for ( final Component< ?, ? > ctn : ctnLevel ) {
+					if(costType == "Segment") {
+						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
+					}
+					else{
+						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
+						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
+							if(costType == "ExitAssignment"){
+								if(ass instanceof ExitAssignment)
+									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
+							}
+							else if(costType == "MappingAssignment"){
+								if(ass instanceof MappingAssignment)
+									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
+							}
+							else if(costType == "DivisionAssignment"){
+								if(ass instanceof DivisionAssignment)
+									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
+							}
+						}
+					}
+				}
+				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
+				level++;
+				System.out.println( "" );
+			}
+		}
+		System.out.print("##################### STOP PRINTING COSTS: " + costType + " #####################");
+		System.out.println( "" );
 	}
 
 	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {

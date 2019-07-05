@@ -129,6 +129,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final T type,
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int minComponentWidth,
 			final int maxComponentWidth,
 			final Filter filter,
 			final boolean darkToBright ) {
@@ -140,6 +141,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 				imgFactory,
 				minComponentSize,
 				maxComponentSize,
+				minComponentWidth,
 				maxComponentWidth,
 				filter,
 				darkToBright );
@@ -171,6 +173,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final ImgFactory< LongType > imgFactory,
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int minComponentWidth,
 			final int maxComponentWidth,
 			final Filter filter,
 			final boolean darkToBright ) {
@@ -178,7 +181,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		max.setReal( darkToBright ? type.getMaxValue() : type.getMinValue() );
 		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator< T >( max, input, imgFactory );
 		final FilteredComponentTree< T > tree =
-				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, maxComponentWidth, filter, generator.linkedList );
+				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, minComponentWidth, maxComponentWidth, filter, generator.linkedList );
 		BuildComponentTree.buildComponentTree( input, generator, tree, darkToBright );
 		
 		return tree;
@@ -221,6 +224,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	private int maxComponentWidth = 1000;
 
+	private int minComponentWidth = 0;
+
 	private final long minComponentSize;
 
 	private final long maxComponentSize;
@@ -236,6 +241,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 	private FilteredComponentTree(
 			final long minComponentSize,
 			final long maxComponentSize,
+			final int minComponentWidth,
 			final int maxComponentWidth,
 			final Filter filter,
 			final Img< LongType > linkedList ) {
@@ -243,6 +249,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		nodes = new ArrayList< FilteredComponent< T > >();
 		this.minComponentSize = minComponentSize;
 		this.maxComponentSize = maxComponentSize;
+		this.minComponentWidth = minComponentWidth;
 		this.maxComponentWidth = maxComponentWidth;
 		if ( filter.type().equals( FilterType.MAX_GROWTH_PER_STEP ) )
 		{
@@ -286,7 +293,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		final ValuePair<Integer,Integer> componentLimits = getComponentLimits(intermediate.pixelList.iterator(), 0);
 		int width = componentLimits.b - componentLimits.a;
 
-		if ( size >= minComponentSize && size <= maxComponentSize && width <= maxComponentWidth) {
+		if ( size >= minComponentSize && size <= maxComponentSize && width <= maxComponentWidth && width >= minComponentWidth) {
 			int numChildren = 0;
 			if ( intermediate.emittedComponent != null ) ++numChildren;
 			for ( final FilteredPartialComponent< T > c : intermediate.children )

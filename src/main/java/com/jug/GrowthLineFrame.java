@@ -39,6 +39,7 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 				new FloatType(),
 				200, // MoMA.MIN_CELL_LENGTH,
 				Long.MAX_VALUE, //2000, // Long.MAX_VALUE,
+				2,
 				10,
 				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
 				false ); // DarkToBright=true

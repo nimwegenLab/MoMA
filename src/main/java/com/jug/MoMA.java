@@ -18,6 +18,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -28,7 +29,14 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
+import de.csbdresden.csbdeep.commands.GenericNetwork;
+import net.imagej.Dataset;
+import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
+import net.imglib2.FinalInterval;
+import net.imglib2.loops.LoopBuilder;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.RealType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -76,7 +84,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.scijava.Context;
+import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
+import org.scijava.io.IOService;
+import org.scijava.plugin.PluginService;
+import org.scijava.ui.UIService;
 
 /**
  * @author jug
@@ -786,6 +798,7 @@ public class MoMA {
 	private List< Img< FloatType >> rawChannelImgs;
 	private Img< FloatType > imgRaw;
 	private Img< FloatType > imgTemp;
+	private Img< FloatType > imgProbs;
 	private Img< ARGBType > imgAnnotated;
 	private Img< FloatType > imgClassified;
 	private Img< ShortType > imgSegmented;
@@ -848,6 +861,13 @@ public class MoMA {
 	 */
 	public Img< FloatType > getImgTemp() {
 		return imgTemp;
+	}
+
+	/**
+	 * @return the imgProbs
+	 */
+	public Img< FloatType > getImgProbs() {
+		return imgProbs;
 	}
 
 	/**
@@ -1762,7 +1782,6 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	public void generateAllSimpleSegmentationHypotheses() {
-
 		// ------ GAUSS -----------------------------
 
 		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
@@ -1778,6 +1797,8 @@ public class MoMA {
 			}
 		}
 
+		imgProbs = runNetwork(imgTemp);
+
 		// ------ DETECTION --------------------------
 
 		System.out.println( "" );
@@ -1788,12 +1809,113 @@ public class MoMA {
 			System.out.print( "   Working on GL#" + i + " of " + getGrowthLines().size() + "... " );
 			for ( final GrowthLineFrame glf : gl.getFrames() ) {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imgTemp, frameCounter );
+				glf.generateSimpleSegmentationHypotheses( imgProbs, frameCounter );
 				frameCounter++;
 			}
 			System.out.println( " ...done!" );
 		}
 	}
+
+
+	private UIService uiService;
+	private OpService ops;
+
+	private Img<FloatType> runNetwork(Img<FloatType> img) {
+		// TODO Auto-generated method stub
+		try {
+//			Context context = new Context(CommandService.class,StatusService.class,TensorFlowService.class,DatasetService.class);
+			Context context = new Context();
+			CommandService commandService = context.service(CommandService.class);
+			DatasetService datasetService = context.service(DatasetService.class);
+			PluginService plugs = context.service(PluginService.class);
+			System.out.println(plugs.getPlugins());
+			ops = context.service(OpService.class);
+			uiService = context.service(UIService.class);
+			IOService io = context.service(IOService.class);
+
+			io.save(img, "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/test_images/output_image_from_moma.tif");
+//			io.save(img, "/home/micha/Documents/01_work/output_image_from_moma.tif");
+
+//			uiService.show("Image", img);
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,img.dimension(1)-512,0}, new long[] {68, img.dimension(1)-1,img.dimension(2)-1} ));
+
+
+			//			final Img< FloatType > newImg = new CellImgFactory<>( new FloatType() ).create( newImgView );
+//			copy( newImgView, newImg );
+//
+//			uiService.show("Image", newImg);
+//
+//			uiService.show("Image", newImgView);
+
+//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
+//			uiService.show("Image", newImg);
+
+//			uiService.show("Image", img);
+//			newImg = Views.rotate(newImg, 0, 1);
+//
+//			uiService.show("Image", newImg);
+
+//			System.out.println(commandService);
+			Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!
+//			Dataset dataset = datasetService.create(newImg); // WHY DO WE NEED ZEROMIN HERE?!
+
+//			uiService.show("dataset", dataset);
+
+//	        DefaultDataset dataset = new DefaultDataset(context, img);
+//	        setImgPlus
+			final CommandModule module = commandService.run(
+					GenericNetwork.class, false,
+					"input", dataset,
+					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
+					//				"batchSize", 10,
+					//				"batchAxis", Axes.TIME.getLabel(),
+					"normalizeInput", false,
+					"blockMultiple", 8,
+					"nTiles", 1,
+					"showProgressDialog", true).get();
+			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
+
+			Img<FloatType> tmpNew = tmp.factory().create(tmp);
+
+			ops.image().invert(tmpNew, tmp);
+			FloatType val = new FloatType();
+			val.set(1);
+			addValue(tmpNew, val);
+//			uiService.show(tmpNew);
+//			ImageJFunctions.
+			return tmpNew;
+
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+
+	public static <T extends NativeType<T> & RealType<T>> RandomAccessibleInterval<T> addValue(
+			final Img<T> tmpNew , T d)
+	{
+		Img<T> out = tmpNew.copy();
+//		ArrayImg<T, ?> out = factory.create(tmpNew);
+		LoopBuilder.setImages( tmpNew, out ).forEachPixel((x, y) -> {
+			x.add(d);
+			y.set(x);
+		});
+		return out;
+	}
+
 
 	/**
 	 * Creates and triggers filling of mmILP, containing all

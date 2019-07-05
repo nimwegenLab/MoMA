@@ -10,7 +10,9 @@ import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -88,20 +90,32 @@ public class CostFactory {
 	 * @param gapSepFkt
 	 * @return
 	 */
-	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final float[] gapSepFkt ) {
-		float cost = -0.1f;
+	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
+        final float minPixelProbability =
+                ComponentTreeUtils.getTreeNodeMinIntensity( ctNode, imageProbabilities );
 
-		final ValuePair< Integer, Integer > segInterval =
+		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
+
+//		float cost;
+//        if(minPixelProbability>0.2){
+//        	cost = 100;
+//		}
+//        else{
+//			cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
+//		}
+
+        final ValuePair< Integer, Integer > segInterval =
 				ComponentTreeUtils.getTreeNodeInterval( ctNode );
 		final int a = segInterval.getA().intValue();
 		final int b = segInterval.getB().intValue();
 
 		// cell is too small
-		if ( a > 0 && b + 1 < gapSepFkt.length && b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
+		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
 			cost = 100;
 		}
-		return cost * 2f;
-	}
+//		return cost * 2f;
+        return cost;
+    }
 
 	/**
 	 * @param ctNode

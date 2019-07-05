@@ -38,11 +38,14 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 import net.imglib2.Localizable;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 
 /**
  * @author jug
@@ -434,9 +437,8 @@ public class GrowthLineTrackingILP {
 	 * @return
 	 */
 	public float localIntensityBasedCost( final int t, final Component< ?, ? > ctNode ) {
-		//TODO kotz
-		final float[] gapSepFkt = gl.getFrames().get( t ).getSimpleGapSeparationValues( MoMA.instance.getImgTemp() );
-		return CostFactory.getIntensitySegmentationCost( ctNode, gapSepFkt );
+		RandomAccessibleInterval<FloatType> img = Views.hyperSlice( MoMA.instance.getImgProbs(), 2, t);
+		return CostFactory.getIntensitySegmentationCost( ctNode, img );
 	}
 
 	/**

@@ -8,9 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.imglib2.Localizable;
+import net.imglib2.RandomAccess;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.ComponentTree;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -79,11 +82,8 @@ public class ComponentTreeUtils {
 	}
 
 	/**
-	 * Returns the smallest and largest value on the x-axis that is spanned by
-	 * this component-tree-node.
-	 * Note that this function really only makes sense if the comp.-tree was
-	 * built on a one-dimensional image (as it is the case for my current
-	 * MotherMachine stuff...)
+	 * Returns the smallest and largest value on the y-axis that is spanned by
+	 * this component-tree-node, which is in direction of the growthlane.
 	 *
 	 * @param node
 	 *            the node in question.
@@ -101,6 +101,29 @@ public class ComponentTreeUtils {
 			max = Math.max( max, pos );
 		}
 		return new ValuePair< Integer, Integer >( new Integer( min ), new Integer( max ) );
+	}
+
+	/**
+	 * Returns the minimal pixel intensity of the component.
+	 *
+	 * @param node
+	 *            the node in question.
+	 * @return a <code>Pair</code> or two <code>Integers</code> giving the
+	 *         leftmost and rightmost point on the x-axis that is covered by
+	 *         this component-tree-node respectively.
+	 */
+	public static Float getTreeNodeMinIntensity(final Component< ?, ? > node, final RandomAccessibleInterval<FloatType> img) {
+		float minimumPixelIntensity = Float.MAX_VALUE;
+        RandomAccess<FloatType> ra = img.randomAccess();
+		final Iterator< Localizable > componentIterator = node.iterator();
+        FloatType currentPixelValue;
+		while ( componentIterator.hasNext() ) {
+            Localizable pos = componentIterator.next();
+            ra.setPosition(pos);
+            currentPixelValue = ra.get();
+			minimumPixelIntensity = Math.min( minimumPixelIntensity, currentPixelValue.getRealFloat() );
+		}
+		return minimumPixelIntensity;
 	}
 
 	/**

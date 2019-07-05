@@ -1836,7 +1836,7 @@ public class MoMA {
 			uiService = context.service(UIService.class);
 			IOService io = context.service(IOService.class);
 
-			uiService.show("Original Image", img);
+//			uiService.show("Original Image", img);
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
@@ -1893,7 +1893,7 @@ public class MoMA {
 //			FloatType val = new FloatType();
 //			val.set(1);
 //			addValue(tmpNew, val);
-			uiService.show("Processed Image", outputImg);
+//			uiService.show("Processed Image", outputImg);
 			return outputImg;
 
 		} catch (InterruptedException e) {

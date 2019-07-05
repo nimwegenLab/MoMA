@@ -14,6 +14,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -113,7 +114,7 @@ public class ComponentTreeUtils {
 	 *         this component-tree-node respectively.
 	 */
 	public static Float getTreeNodeMinIntensity(final Component< ?, ? > node, final RandomAccessibleInterval<FloatType> img) {
-		float minimumPixelIntensity = Float.MAX_VALUE;
+	    float minimumPixelIntensity = Float.MAX_VALUE;
         RandomAccess<FloatType> ra = img.randomAccess();
 		final Iterator< Localizable > componentIterator = node.iterator();
         FloatType currentPixelValue;
@@ -122,7 +123,9 @@ public class ComponentTreeUtils {
             ra.setPosition(pos);
             currentPixelValue = ra.get();
 			minimumPixelIntensity = Math.min( minimumPixelIntensity, currentPixelValue.getRealFloat() );
+//            ra.get().set(1.0f);
 		}
+//		ImageJFunctions.show(img, "Segment Image");
 		return minimumPixelIntensity;
 	}
 

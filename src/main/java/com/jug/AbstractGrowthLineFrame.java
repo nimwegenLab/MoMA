@@ -311,7 +311,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		
 //		ImageJFunctions.C
 		
-		final float[] fkt = getSimpleGapSeparationValues( img );
+//		final float[] fkt = getSimpleGapSeparationValues( img );
 		
 //		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 
@@ -349,7 +349,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //        componentTree = buildIntensityTree(intervalView);
 
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
-		Plotting.drawComponentTree(componentTree);
+//		Plotting.drawComponentTree(componentTree);
 
 		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
 //		tmp2.printPixelList(0);

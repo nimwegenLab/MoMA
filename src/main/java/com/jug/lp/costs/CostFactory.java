@@ -109,10 +109,14 @@ public class CostFactory {
 		final int a = segInterval.getA().intValue();
 		final int b = segInterval.getB().intValue();
 
-		// cell is too small
+        // cell is too small
 		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
 			cost = 100;
 		}
+
+//        System.out.println("minPixelProbability: " + minPixelProbability);
+//        System.out.println("cost: " + cost);
+//        System.out.println("segment length: " + (b - a));
 //		return cost * 2f;
         return cost;
     }

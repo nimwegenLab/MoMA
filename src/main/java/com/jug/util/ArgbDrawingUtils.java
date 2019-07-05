@@ -29,13 +29,13 @@ public class ArgbDrawingUtils {
 	public static void taintComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
 
-		switch ( ctn.iterator().next().numDimensions() ) {
-		case 1:
+//		switch ( ctn.iterator().next().numDimensions() ) {
+//		case 1:
 			taint1dComponentTreeNodeFaintGreen( ctn, raArgbImg, offsetX, offsetY );
-			break;
-		default:
-			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-		}
+//			break;
+//		default:
+//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
+//		}
 	}
 
 	/**
@@ -47,13 +47,13 @@ public class ArgbDrawingUtils {
 	public static void taintForcedComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
 
-		switch ( ctn.iterator().next().numDimensions() ) {
-		case 1:
+//		switch ( ctn.iterator().next().numDimensions() ) {
+//		case 1:
 			taint1dComponentTreeNodeYellow( ctn, raArgbImg, offsetX, offsetY );
-			break;
-		default:
-			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-		}
+//			break;
+//		default:
+//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
+//		}
 	}
 
 	/**
@@ -71,13 +71,13 @@ public class ArgbDrawingUtils {
 			final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
 
-		switch ( ctn.iterator().next().numDimensions() ) {
-		case 1:
+//		switch ( ctn.iterator().next().numDimensions() ) {
+//		case 1:
 			taint1dComponentTreeNodeGrey( isPruneRoot, ctn, raArgbImg, offsetX, offsetY );
-			break;
-		default:
-			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-		}
+//			break;
+//		default:
+//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
+//		}
 	}
 
 	/**
@@ -89,13 +89,13 @@ public class ArgbDrawingUtils {
 	public static void taintInactiveComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
 
-		switch ( ctn.iterator().next().numDimensions() ) {
-		case 1:
+//		switch ( ctn.iterator().next().numDimensions() ) {
+//		case 1:
 			taint1dComponentTreeNodeRed( ctn, raArgbImg, offsetX, offsetY );
-			break;
-		default:
-			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-		}
+//			break;
+//		default:
+//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
+//		}
 	}
 
 	/**
@@ -113,7 +113,7 @@ public class ArgbDrawingUtils {
 		int minCoreYpos = Integer.MAX_VALUE;
 		int maxCoreYpos = Integer.MIN_VALUE;
 		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 0 );
+			final int ypos = componentIterator.next().getIntPosition( 1 );
 			minCoreYpos = Math.min( minCoreYpos, ypos );
 			maxCoreYpos = Math.max( maxCoreYpos, ypos );
 
@@ -135,7 +135,7 @@ public class ArgbDrawingUtils {
 		if ( ctn instanceof FilteredComponent ) {
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				minYpos = Math.min( minYpos, ypos );
 				maxYpos = Math.max( maxYpos, ypos );
 
@@ -156,7 +156,7 @@ public class ArgbDrawingUtils {
 
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
 					continue;
 				}
@@ -194,7 +194,7 @@ public class ArgbDrawingUtils {
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 		}
 		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 0 );
+			final int ypos = componentIterator.next().getIntPosition( 1 );
 			final Point p = new Point( offsetX, offsetY + ypos );
 			final int delta = 15;
 			for ( int i = -delta; i <= delta; i++ ) {
@@ -225,7 +225,7 @@ public class ArgbDrawingUtils {
 		int minCoreYpos = Integer.MAX_VALUE;
 		int maxCoreYpos = Integer.MIN_VALUE;
 		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 0 );
+			final int ypos = componentIterator.next().getIntPosition( 1 );
 			minCoreYpos = Math.min( minCoreYpos, ypos );
 			maxCoreYpos = Math.max( maxCoreYpos, ypos );
 
@@ -247,7 +247,7 @@ public class ArgbDrawingUtils {
 		if ( ctn instanceof FilteredComponent ) {
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				minYpos = Math.min( minYpos, ypos );
 				maxYpos = Math.max( maxYpos, ypos );
 
@@ -268,7 +268,7 @@ public class ArgbDrawingUtils {
 
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
 					continue;
 				}
@@ -313,7 +313,7 @@ public class ArgbDrawingUtils {
 		int minCoreYpos = Integer.MAX_VALUE;
 		int maxCoreYpos = Integer.MIN_VALUE;
 		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 0 );
+			final int ypos = componentIterator.next().getIntPosition( 1 );
 			minCoreYpos = Math.min( minCoreYpos, ypos );
 			maxCoreYpos = Math.max( maxCoreYpos, ypos );
 
@@ -349,7 +349,7 @@ public class ArgbDrawingUtils {
 		if ( ctn instanceof FilteredComponent ) {
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				minYpos = Math.min( minYpos, ypos );
 				maxYpos = Math.max( maxYpos, ypos );
 
@@ -380,7 +380,7 @@ public class ArgbDrawingUtils {
 
 			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
 			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
+				final int ypos = componentIterator.next().getIntPosition( 1 );
 				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
 					continue;
 				}

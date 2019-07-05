@@ -311,7 +311,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //		
 //		ImageJFunctions.C
 		
-//		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
+		final float[] fkt = getSimpleGapSeparationValues( img );
 		
 //		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
 
@@ -344,7 +344,11 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 //		componentTree = buildIntensityTree( imgTmp );
 
-		componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
+//        FinalInterval roiForComponentGeneration = new FinalInterval(new long[]{0, MoMA.GL_OFFSET_BOTTOM}, new long[]{img.dimension(0), img.dimension(1) - MoMA.GL_OFFSET_TOP});
+//        IntervalView<FloatType> intervalView = Views.interval(Views.hyperSlice(img, 2, frameIndex), roiForComponentGeneration);
+//        componentTree = buildIntensityTree(intervalView);
+
+        componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
 		Plotting.drawComponentTree(componentTree);
 
 		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;

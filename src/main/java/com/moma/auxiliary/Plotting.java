@@ -37,9 +37,12 @@ public class Plotting {
 //		final Img<UnsignedByteType> output = new ArrayImgFactory<>(new UnsignedByteType()).create(img);
 //		final RandomAccess<UnsignedByteType> out = output.randomAccess();
 //		final Cursor<UnsignedByteType> in = sampledImgNew.cursor();
+		long xDim = 0;
+		long yDim = 0;
 		if ( ct instanceof FilteredComponentTree) {
 			FilteredComponentTree fct = (FilteredComponentTree) ct;
-//			fct.
+			xDim = fct.getLinkedList().dimension(0);
+			yDim = fct.getLinkedList().dimension(1);
 		}
 
 		int i = 0;
@@ -48,7 +51,7 @@ public class Plotting {
 			ArrayList< C > componentList = new ArrayList< C >();
 			componentList.add( root );
 			while ( componentList.size() > 0 ) {
-				final RandomAccessibleInterval<UnsignedByteType> componentImageSlice = ArrayImgs.unsignedBytes( 32, 512 );
+				final RandomAccessibleInterval<UnsignedByteType> componentImageSlice = ArrayImgs.unsignedBytes( xDim, yDim );
 				for ( final Component< ?, ? > ctn : componentList ) {
 					drawComponent( ctn, i, componentLevel, componentImageSlice );
 					i++;

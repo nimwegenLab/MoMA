@@ -34,9 +34,11 @@ import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.util.Intervals;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -1819,11 +1821,12 @@ public class MoMA {
 
 	private UIService uiService;
 	private OpService ops;
-
+	/**
+	 * Load and run the Tensor-Flow network on the images to create probability maps
+	 * of the cell-location.
+	 */
 	private Img<FloatType> runNetwork(Img<FloatType> img) {
-		// TODO Auto-generated method stub
 		try {
-//			Context context = new Context(CommandService.class,StatusService.class,TensorFlowService.class,DatasetService.class);
 			Context context = new Context();
 			CommandService commandService = context.service(CommandService.class);
 			DatasetService datasetService = context.service(DatasetService.class);
@@ -1833,10 +1836,7 @@ public class MoMA {
 			uiService = context.service(UIService.class);
 			IOService io = context.service(IOService.class);
 
-			io.save(img, "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/test_images/output_image_from_moma.tif");
-//			io.save(img, "/home/micha/Documents/01_work/output_image_from_moma.tif");
-
-//			uiService.show("Image", img);
+			uiService.show("Original Image", img);
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
@@ -1844,12 +1844,9 @@ public class MoMA {
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,img.dimension(1)-512,0}, new long[] {68, img.dimension(1)-1,img.dimension(2)-1} ));
+			FinalInterval roiForNetworkProcessing = new FinalInterval(new long[]{37, img.dimension(1) - 512, 0}, new long[]{68, img.dimension(1) - 1, img.dimension(2) - 1});
+			IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
 
-
-			//			final Img< FloatType > newImg = new CellImgFactory<>( new FloatType() ).create( newImgView );
-//			copy( newImgView, newImg );
-//
 //			uiService.show("Image", newImg);
 //
 //			uiService.show("Image", newImgView);
@@ -1882,22 +1879,26 @@ public class MoMA {
 					"showProgressDialog", true).get();
 			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
 
-			Img<FloatType> tmpNew = tmp.factory().create(tmp);
+			// copy back the probabilities to image of same size as original image
+			final Img<FloatType> outputImg = img.factory().create(img);
+			IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
+			LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( ( in, out ) -> out.set( in ) );
 
-			ops.image().invert(tmpNew, tmp);
+//			uiService.show("img", img);
+//			uiService.show("outputImg", outputImg);
+
+			Img<FloatType> tmpNew = outputImg.factory().create(outputImg);
+
+			ops.image().invert(tmpNew, outputImg);
 			FloatType val = new FloatType();
 			val.set(1);
 			addValue(tmpNew, val);
-//			uiService.show(tmpNew);
-//			ImageJFunctions.
+			uiService.show("Processed Image", tmpNew);
 			return tmpNew;
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		} catch (ExecutionException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

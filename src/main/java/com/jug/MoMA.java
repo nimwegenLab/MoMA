@@ -1887,14 +1887,14 @@ public class MoMA {
 //			uiService.show("img", img);
 //			uiService.show("outputImg", outputImg);
 
-			Img<FloatType> tmpNew = outputImg.factory().create(outputImg);
+//			Img<FloatType> tmpNew = outputImg.factory().create(outputImg);
 
-			ops.image().invert(tmpNew, outputImg);
-			FloatType val = new FloatType();
-			val.set(1);
-			addValue(tmpNew, val);
-			uiService.show("Processed Image", tmpNew);
-			return tmpNew;
+//			ops.image().invert(tmpNew, outputImg);
+//			FloatType val = new FloatType();
+//			val.set(1);
+//			addValue(tmpNew, val);
+			uiService.show("Processed Image", outputImg);
+			return outputImg;
 
 		} catch (InterruptedException e) {
 			e.printStackTrace();

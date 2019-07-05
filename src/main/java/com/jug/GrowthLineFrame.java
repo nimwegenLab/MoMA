@@ -41,7 +41,7 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 				Long.MAX_VALUE, //2000, // Long.MAX_VALUE,
 				10,
 				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
-				true ); // DarkToBright=true
+				false ); // DarkToBright=true
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}
 

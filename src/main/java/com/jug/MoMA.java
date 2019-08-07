@@ -37,8 +37,11 @@ import net.imglib2.FinalInterval;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.util.Intervals;
+import net.imglib2.util.Pair;
+import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -1818,6 +1821,34 @@ public class MoMA {
 		}
 	}
 
+	private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lower_percentile, double upper_percentile) {
+		int dim = 2;
+		long limit = image.dimension(dim);
+		for(int i=0; i<limit; i++){
+
+			RandomAccessibleInterval<FloatType> view = Views.hyperSlice( image, dim, i );
+
+			float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lower_percentile).getRealFloat();
+			float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upper_percentile).getRealFloat();
+			Pair<FloatType, FloatType> result = ops.stats().minMax(image);
+	//		float min = result.getA().getRealFloat();
+	//		float max = result.getB().getRealFloat();
+			Pair<FloatType, FloatType> result1 = ops.stats().minMax((Iterable<FloatType>) view);
+			float intensityDifference = max_percentile - min_percentile;
+			((Iterable<FloatType>) view).forEach(t -> {
+				final float val = t.getRealFloat();
+				if (val < min_percentile) t.set(0);
+				else if (val > max_percentile) t.set(1.0f);
+				else t.set((val - min_percentile) / intensityDifference);
+			});
+			Pair<FloatType, FloatType> result2 = ops.stats().minMax((Iterable<FloatType>) view);
+			System.out.println( "break" );
+		}
+
+		Pair<FloatType, FloatType> result2 = ops.stats().minMax(image);
+
+		return image;
+	}
 
 	private UIService uiService;
 	private OpService ops;
@@ -1830,13 +1861,15 @@ public class MoMA {
 			Context context = new Context();
 			CommandService commandService = context.service(CommandService.class);
 			DatasetService datasetService = context.service(DatasetService.class);
-			PluginService plugs = context.service(PluginService.class);
-			System.out.println(plugs.getPlugins());
+//			PluginService plugs = context.service(PluginService.class);
+//			System.out.println(plugs.getPlugins());
 			ops = context.service(OpService.class);
 			uiService = context.service(UIService.class);
-			IOService io = context.service(IOService.class);
+//			IOService io = context.service(IOService.class);
 
-//			uiService.show("Original Image", img);
+			uiService.show("Original Image", img);
+
+			img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));

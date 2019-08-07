@@ -1877,7 +1877,12 @@ public class MoMA {
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-			FinalInterval roiForNetworkProcessing = new FinalInterval(new long[]{37, img.dimension(1) - 512, 0}, new long[]{68, img.dimension(1) - 1, img.dimension(2) - 1});
+
+//			ExtendedRandomAccessibleInterval newImg2 = Views.extendValue(img, new FloatType(5));
+//			IntervalView<FloatType> newImg22 = Views.interval(newImg2, roiForNetworkProcessing);
+//			uiService.show("extended image", newImg22);
+
+			FinalInterval roiForNetworkProcessing = new FinalInterval(new long[]{22, img.dimension(1) - 512, 0}, new long[]{85, img.dimension(1) - 1, img.dimension(2) - 1});
 			IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
 
 //			uiService.show("Image", newImg);
@@ -1903,7 +1908,14 @@ public class MoMA {
 			final CommandModule module = commandService.run(
 					GenericNetwork.class, false,
 					"input", dataset,
-					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/tensorflow_model_csbdeep.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/models/20190805-132335_c44e6f01/tensorflow_model_csbdeep.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/models/20190805-135715_5547a42c/tensorflow_model_csbdeep.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/models/20190805-154947/tensorflow_model_csbdeep.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/tensorflow_model_csbdeep.zip",
+					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_testing/model/models/20190806-144212_a7d26436/tensorflow_model_csbdeep_512x64.zip",
 					//				"batchSize", 10,
 					//				"batchAxis", Axes.TIME.getLabel(),
 					"normalizeInput", false,
@@ -1926,7 +1938,7 @@ public class MoMA {
 //			FloatType val = new FloatType();
 //			val.set(1);
 //			addValue(tmpNew, val);
-//			uiService.show("Processed Image", outputImg);
+			uiService.show("Processed Image", outputImg);
 			return outputImg;
 
 		} catch (InterruptedException e) {

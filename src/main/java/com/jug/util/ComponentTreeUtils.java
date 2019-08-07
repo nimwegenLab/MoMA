@@ -113,8 +113,9 @@ public class ComponentTreeUtils {
 	 *         leftmost and rightmost point on the x-axis that is covered by
 	 *         this component-tree-node respectively.
 	 */
-	public static Float getTreeNodeMinIntensity(final Component< ?, ? > node, final RandomAccessibleInterval<FloatType> img) {
+	public static ValuePair<Float, Float> getTreeNodeMinMaxIntensity(final Component< ?, ? > node, final RandomAccessibleInterval<FloatType> img) {
 	    float minimumPixelIntensity = Float.MAX_VALUE;
+		float maximumPixelIntensity = Float.MIN_VALUE;
         RandomAccess<FloatType> ra = img.randomAccess();
 		final Iterator< Localizable > componentIterator = node.iterator();
         FloatType currentPixelValue;
@@ -123,10 +124,11 @@ public class ComponentTreeUtils {
             ra.setPosition(pos);
             currentPixelValue = ra.get();
 			minimumPixelIntensity = Math.min( minimumPixelIntensity, currentPixelValue.getRealFloat() );
+			maximumPixelIntensity = Math.max( maximumPixelIntensity, currentPixelValue.getRealFloat() );
 //            ra.get().set(1.0f);
 		}
 //		ImageJFunctions.show(img, "Segment Image");
-		return minimumPixelIntensity;
+		return new ValuePair<>(minimumPixelIntensity, maximumPixelIntensity);
 	}
 
 	/**

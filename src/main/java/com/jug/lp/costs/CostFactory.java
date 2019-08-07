@@ -12,7 +12,6 @@ import com.jug.util.SimpleFunctionAnalysis;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -91,9 +90,9 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
-        final float minPixelProbability =
-                ComponentTreeUtils.getTreeNodeMinIntensity( ctNode, imageProbabilities );
-
+		ValuePair<Float, Float> pixelProbabilities = ComponentTreeUtils.getTreeNodeMinMaxIntensity(ctNode, imageProbabilities);
+		float minPixelProbability = pixelProbabilities.a;
+//		float maxPixelProbability = pixelProbabilities.b;
 		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
 
 //		float cost;
@@ -119,6 +118,7 @@ public class CostFactory {
 //        System.out.println("segment length: " + (b - a));
 //		return cost * 2f;
         return cost;
+//		return -0.2f;
     }
 
 	/**

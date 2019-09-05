@@ -284,7 +284,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 			min = Math.min( min, pos );
 			max = Math.max( max, pos );
 		}
-		return new ValuePair<Integer,Integer>(min,max);
+		return new ValuePair<>(min, max);
 	}
 
 	@Override

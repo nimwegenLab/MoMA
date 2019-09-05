@@ -1871,6 +1871,8 @@ public class MoMA {
 
 			img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
 
+			ImageJFunctions.show(img, "Normalized Image");
+
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
 
@@ -1881,10 +1883,16 @@ public class MoMA {
 //			ExtendedRandomAccessibleInterval newImg2 = Views.extendValue(img, new FloatType(5));
 //			IntervalView<FloatType> newImg22 = Views.interval(newImg2, roiForNetworkProcessing);
 //			uiService.show("extended image", newImg22);
-
-			FinalInterval roiForNetworkProcessing = new FinalInterval(new long[]{22, img.dimension(1) - 512, 0}, new long[]{85, img.dimension(1) - 1, img.dimension(2) - 1});
+            long model_input_width = 32;
+            long model_input_height = 512;
+            long start_index_horz = img.dimension(0)/2 - model_input_width/2;
+            long end_index_horz = start_index_horz + model_input_width - 1;
+            FinalInterval roiForNetworkProcessing = new FinalInterval(
+                    new long[]{start_index_horz, img.dimension(1) - model_input_height, 0},
+                    new long[]{end_index_horz, img.dimension(1) - 1, img.dimension(2) - 1}
+                    );
 			IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
-
+			ImageJFunctions.show(newImg, "Unet ROI");
 //			uiService.show("Image", newImg);
 //
 //			uiService.show("Image", newImgView);
@@ -1916,7 +1924,9 @@ public class MoMA {
 //					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-154947/tensorflow_model_csbdeep.zip",
 //					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
 //					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-113655_d57e9849/tensorflow_model_csbdeep_512x64.zip",
-					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip",
+//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip",
+//                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190814-113528_5f72bf24/tensorflow_model.zip",
+                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip",
 //					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
 //					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip",
 
@@ -1927,6 +1937,7 @@ public class MoMA {
 					"nTiles", 1,
 					"showProgressDialog", true).get();
 			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
+			ImageJFunctions.show(tmp, "Unet ROI processed");
 
 			// copy back the probabilities to image of same size as original image
 			final Img<FloatType> outputImg = img.factory().create(img);
@@ -1942,7 +1953,8 @@ public class MoMA {
 //			FloatType val = new FloatType();
 //			val.set(1);
 //			addValue(tmpNew, val);
-			uiService.show("Processed Image", outputImg);
+//			uiService.show("Processed Image", outputImg);
+			ImageJFunctions.show(outputImg, "Processed Image");
 			return outputImg;
 
 		} catch (InterruptedException e) {

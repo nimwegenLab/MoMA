@@ -1612,18 +1612,18 @@ public class MoMA {
 				}
 			}
 
-			if ( maxWellCenters > 1 ) {
-				final String msg =
-						"ERROR: Two maxima in a single pixel row found while looking for GL centerline at  frame " + frameIdx + ".\nPlease check input images or adjust (increase?) SIGMA_GL_DETECTION_X in properties.";
-				System.out.println( msg );
-				if ( !HEADLESS ) {
-					JOptionPane.showMessageDialog(
-							getGui(),
-							msg,
-							"Error while looking for GL centerline...",
-							JOptionPane.ERROR_MESSAGE );
-				}
-			}
+//			if ( maxWellCenters > 1 ) {
+//				final String msg =
+//						"ERROR: Two maxima in a single pixel row found while looking for GL centerline at  frame " + frameIdx + ".\nPlease check input images or adjust (increase?) SIGMA_GL_DETECTION_X in properties.";
+//				System.out.println( msg );
+//				if ( !HEADLESS ) {
+//					JOptionPane.showMessageDialog(
+//							getGui(),
+//							msg,
+//							"Error while looking for GL centerline...",
+//							JOptionPane.ERROR_MESSAGE );
+//				}
+//			}
 
 			// add filtered points to 'glCenterPoints'
 			this.glCenterPoints.add( frameWellCenters );

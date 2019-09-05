@@ -1789,18 +1789,18 @@ public class MoMA {
 	public void generateAllSimpleSegmentationHypotheses() {
 		// ------ GAUSS -----------------------------
 
-		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
-			System.out.print( " ...Note: smoothing performed before building GapHypotheses... " );
-			final int n = imgTemp.numDimensions();
-			final double[] sigmas = new double[ n ];
-			sigmas[ 0 ] = SIGMA_PRE_SEGMENTATION_X;
-			sigmas[ 1 ] = SIGMA_PRE_SEGMENTATION_Y;
-			try {
-				Gauss3.gauss( sigmas, Views.extendMirrorDouble( imgTemp ), imgTemp );
-			} catch ( final IncompatibleTypeException e ) {
-				e.printStackTrace();
-			}
-		}
+//		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
+//			System.out.print( " ...Note: smoothing performed before building GapHypotheses... " );
+//			final int n = imgTemp.numDimensions();
+//			final double[] sigmas = new double[ n ];
+//			sigmas[ 0 ] = SIGMA_PRE_SEGMENTATION_X;
+//			sigmas[ 1 ] = SIGMA_PRE_SEGMENTATION_Y;
+//			try {
+//				Gauss3.gauss( sigmas, Views.extendMirrorDouble( imgTemp ), imgTemp );
+//			} catch ( final IncompatibleTypeException e ) {
+//				e.printStackTrace();
+//			}
+//		}
 
 		imgProbs = runNetwork(imgTemp);
 

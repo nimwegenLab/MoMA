@@ -1411,8 +1411,11 @@ public class MoMA {
 		// load channels separately into Img objects
 		rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
 
+//		Context context = new Context();
+//		ops = context.service(OpService.class);
 
 		imgRaw = rawChannelImgs.get( 0 );
+//		Pair<FloatType, FloatType> result1 = ops.stats().minMax(Views.hyperSlice(imgRaw, 2, 1));
 
 		// setup ARGB image (that will eventually contain annotations)
 		System.out.print( "Spawning off annotation image (ARGB)..." );

@@ -2105,7 +2105,7 @@ public class MoMA {
 		System.out.println( " done!" );
 
 		System.out.print( "Normalize loaded images..." );
-		normalizePerFrame( imgTemp, MoMA.GL_OFFSET_TOP, MoMA.GL_OFFSET_BOTTOM );
+//		normalizePerFrame( imgTemp, MoMA.GL_OFFSET_TOP, MoMA.GL_OFFSET_BOTTOM );
 		System.out.println( " done!" );
 
 		System.out.print( "Generating Segmentation Hypotheses..." );

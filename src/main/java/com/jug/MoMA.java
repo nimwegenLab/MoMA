@@ -2101,7 +2101,7 @@ public class MoMA {
 		System.out.print( "Subtracting background..." );
 		// ...and make temp image be the same
 		resetImgTempToRaw();
-		subtractBackgroundInTemp();
+//		subtractBackgroundInTemp();
 		System.out.println( " done!" );
 
 		System.out.print( "Normalize loaded images..." );

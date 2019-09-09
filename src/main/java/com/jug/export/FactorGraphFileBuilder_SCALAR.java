@@ -195,7 +195,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 */
 	public int addFactor( final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
 
-		String str = Integer.toString( functionId ) + " ";
+		String str = functionId + " ";
 		if ( varIds.size() == 0 ) {
 			System.err.println( "No varIds!!!!!!" );
 		}

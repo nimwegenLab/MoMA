@@ -737,7 +737,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		final int t = sliderTime.getValue();
 		System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
 		for ( final C root : ct.roots() ) {
-			System.out.println( "" );
+			System.out.println();
 			int level = 0;
 			ArrayList< C > ctnLevel = new ArrayList< C >();
 			ctnLevel.add( root );
@@ -766,11 +766,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				}
 				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
 				level++;
-				System.out.println( "" );
+				System.out.println();
 			}
 		}
 		System.out.print("##################### STOP PRINTING COSTS: " + costType + " #####################");
-		System.out.println( "" );
+		System.out.println();
 	}
 
 	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {
@@ -780,7 +780,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 		int i = 0;
 		for ( final C root : ct.roots() ) {
-			System.out.println( "" );
+			System.out.println();
 			int level = 0;
 			ArrayList< C > ctnLevel = new ArrayList< C >();
 			ctnLevel.add( root );
@@ -796,7 +796,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				}
 				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
 				level++;
-				System.out.println( "" );
+				System.out.println();
 			}
 		}
 		plot.addBoxPlot( "Seg. Hypothesis", new Color( 127, 127, 127, 255 ), Util.makeDoubleArray2d( xydxdyCTNBorders ) );
@@ -1587,7 +1587,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			glf.generateSimpleSegmentationHypotheses( model.mm.getImgProbs(), frameIndex );
 			frameIndex++;
 		}
-		System.out.println( "" );
+		System.out.println();
 	}
 
 	/**

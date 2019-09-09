@@ -239,8 +239,8 @@ public class Util {
 	private static long[] getTopLeftInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
 		final long left = middle - MoMA.GL_WIDTH_IN_PIXELS / 2;
-		final long top = limits.getA() + MoMA.GL_OFFSET_TOP;;
-		return new long[] { left, top };
+		final long top = limits.getA() + MoMA.GL_OFFSET_TOP;
+        return new long[] { left, top };
 	}
 
 	/**

@@ -44,7 +44,7 @@ public class GrowthLineSegmentationMagic {
 			max[ 2 ]++;
 		}
 
-		final SubsampleIntervalView< FloatType > subsampleGapClass = ( SubsampleIntervalView< FloatType > ) Views.subsample( Views.interval( classified, min, max ), 1, 1, 2 );
+		final SubsampleIntervalView< FloatType > subsampleGapClass = Views.subsample( Views.interval( classified, min, max ), 1, 1, 2 );
 
 //		ImageJFunctions.show( subsampleGapClass );
 

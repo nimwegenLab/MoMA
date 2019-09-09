@@ -48,7 +48,7 @@ public class DoubleTypeImgLoader {
 		return loadTiffsFromFolder( strFolder, -1, -1, ( String[] ) null );
 	}
 
-	public static List< Img< DoubleType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws ImgIOException, IncompatibleTypeException, Exception {
+	public static List< Img< DoubleType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = new FilenameFilter() {
@@ -351,7 +351,7 @@ public class DoubleTypeImgLoader {
 		return loadPathAsStack( strFolder, -1, -1, normalize, ( String[] ) null );
 	}
 
-	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws ImgIOException, IncompatibleTypeException, Exception {
+	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws Exception {
 
 		final List< Img< DoubleType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -379,7 +379,7 @@ public class DoubleTypeImgLoader {
 		return stack;
 	}
 
-	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadMMPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws ImgIOException, IncompatibleTypeException, Exception {
+	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadMMPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws Exception {
 
 		final List< Img< DoubleType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, normalize, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -453,7 +453,7 @@ public class DoubleTypeImgLoader {
 	 *         <code>Img<DoubleType></code>.
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > List< Img< DoubleType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws ImgIOException, IncompatibleTypeException, Exception {
+	public static < T extends RealType< T > & NativeType< T > > List< Img< DoubleType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws Exception {
 		final List< Img< DoubleType >> ret = new ArrayList< Img< DoubleType >>();
 
 		final File folder = new File( strFolder );
@@ -469,7 +469,7 @@ public class DoubleTypeImgLoader {
 
 					@Override
 					public boolean accept( final File dir, final String name ) {
-						return name.contains( ".tif" ) && ( ( filterString != null ) ? name.contains( filterString ) : true ) && name.contains( tString ) && name.contains( cString );
+						return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( tString ) && name.contains( cString );
 					}
 				};
 				final File[] listOfFiles = folder.listFiles( filter );
@@ -587,7 +587,7 @@ public class DoubleTypeImgLoader {
 
 			@Override
 			public boolean accept( final File dir, final String name ) {
-				return name.contains( ".tif" ) && ( ( filterString != null ) ? name.contains( filterString ) : true ) && name.contains( prefix );
+				return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( prefix );
 			}
 		};
 		final File[] listOfFiles = folder.listFiles( filter );

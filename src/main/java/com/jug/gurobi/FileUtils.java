@@ -29,15 +29,8 @@ import java.util.jar.JarFile;
 public class FileUtils {
 	public static boolean copyFile(final File toCopy, final File destFile) {
 		try {
-			if ( FileUtils.copyStream( new FileInputStream( toCopy ),
-					new FileOutputStream( destFile ) ) )
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return FileUtils.copyStream(new FileInputStream(toCopy),
+					new FileOutputStream(destFile));
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}

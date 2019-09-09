@@ -192,7 +192,7 @@ public class CellStatsExporter {
 			Collections.sort( pixelVals );
 
 			final int numPercentiles = 20;
-			final float ret[] = new float[ numPercentiles - 1 ];
+			final float[] ret = new float[ numPercentiles - 1 ];
 			for ( int i = 1; i < numPercentiles; i++ ) {
 				final int index = ( i * pixelVals.size() / numPercentiles ) - 1;
 				ret[ i - 1 ] = pixelVals.get( index );
@@ -209,7 +209,7 @@ public class CellStatsExporter {
 				System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS );
 			}
 
-			final float ret[] = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];
+			final float[] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];
 			int idx = 0;
 			for ( int i = ( int ) columnBoxInChannel.min( 0 ); i <= columnBoxInChannel.max( 0 ); i++ ) {
 				final IntervalView< FloatType > column = Views.hyperSlice( columnBoxInChannel, 0, i );
@@ -227,7 +227,7 @@ public class CellStatsExporter {
 		 * @return
 		 */
 		public float[][] getIntensities( final IntervalView< FloatType > columnBoxInChannel ) {
-			final float ret[][] = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ][ ( int ) columnBoxInChannel.dimension( 1 ) ];
+			final float[][] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ][ ( int ) columnBoxInChannel.dimension( 1 ) ];
 			int y = 0;
 			for ( int j = ( int ) columnBoxInChannel.min( 1 ); j <= columnBoxInChannel.max( 1 ); j++ ) {
 				final IntervalView< FloatType > row = Views.hyperSlice( columnBoxInChannel, 1, j );

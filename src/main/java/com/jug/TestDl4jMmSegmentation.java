@@ -63,7 +63,7 @@ public class TestDl4jMmSegmentation{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        double data[] = new double[28 * 28];
+        double[] data = new double[28 * 28];
         for(int i = 0; i < 28; i++){
             for(int j = 0; j < 28; j++){
                 data[i * 28 + j] = (double)img.getRGB(i, j) / 255.0;
@@ -132,7 +132,7 @@ public class TestDl4jMmSegmentation{
     	System.out.println(ySize);
     	System.out.println(zSize);
 
-    	double data[] = new double[xSize * ySize];
+    	double[] data = new double[xSize * ySize];
         for(int x = 0; x < xSize; x++){ 
             for(int y = 0; y < ySize; y++){
             	r.setPosition(x,0);

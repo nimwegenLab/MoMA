@@ -222,7 +222,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 	@Override
 	public void windowDeactivated( final WindowEvent e ) {}
 
-	public static void main( final String args[] ) {
+	public static void main( final String[] args) {
 		final JFrameSnapper snapper = new JFrameSnapper();
 
 		final JFrame frame = new JFrame( "frame 0" );

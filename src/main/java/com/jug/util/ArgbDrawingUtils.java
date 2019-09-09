@@ -202,8 +202,8 @@ public class ArgbDrawingUtils {
 				imgPos[ 0 ] += i;
 				raArgbImg.setPosition( imgPos );
 				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min( 100, ( 255 - ARGBType.red( curCol ) ) ) / 1;;
-				final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( curCol ) ) ) / 4;
+				final int redToUse = Math.min( 100, ( 255 - ARGBType.red( curCol ) ) ) / 1;
+                final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( curCol ) ) ) / 4;
 				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
 			}

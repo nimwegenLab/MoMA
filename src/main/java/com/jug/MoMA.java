@@ -641,11 +641,7 @@ public class MoMA {
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
 		GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) ) );
 		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
-		if ( GL_OFFSET_BOTTOM == -1 ) {
-			GL_OFFSET_BOTTOM_AUTODETECT = true;
-		} else {
-			GL_OFFSET_BOTTOM_AUTODETECT = false;
-		}
+		GL_OFFSET_BOTTOM_AUTODETECT = GL_OFFSET_BOTTOM == -1;
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
 		MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
@@ -1029,7 +1025,7 @@ public class MoMA {
 			@Override
 			public void write( final int b ) throws IOException {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print( String.valueOf( ( char ) b ) );
+				original.print((char) b);
 			}
 
 			@Override
@@ -1051,7 +1047,7 @@ public class MoMA {
 			@Override
 			public void write( final int b ) throws IOException {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print( String.valueOf( ( char ) b ) );
+				original.print((char) b);
 			}
 
 			@Override
@@ -1486,7 +1482,7 @@ public class MoMA {
 
 				final IntervalView< FloatType > frame = Views.hyperSlice( imgTemp, 2, f );
 
-				float rowAvgs[] = new float[ glfY2 - glfY1 + 1 ];
+				float[] rowAvgs = new float[ glfY2 - glfY1 + 1 ];
 				int colCount = 0;
 				// Look to the left if you are not the first GLF
 				if ( glfX > MoMA.BGREM_TEMPLATE_XMAX ) {
@@ -1809,7 +1805,7 @@ public class MoMA {
 
 		// ------ DETECTION --------------------------
 
-		System.out.println( "" );
+		System.out.println();
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;

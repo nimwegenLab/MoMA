@@ -44,7 +44,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		Iterable< FilteredComponent< T > >,
 		PartialComponent.Handler< FilteredPartialComponent< T > > {
 
-	private static enum FilterType {
+	private enum FilterType {
 		MAX_GROWTH_PER_STEP, MAX_GROWTH_PER_STEP_RATIO, MAX_GROWTH_PER_STEP_RATIO_WITH_MINIMAL_ABS_INC
 	}
 

@@ -79,7 +79,7 @@ public class MMTrainer implements Runnable {
 		final GRBVar[] vars = model.getVars();
 		for ( final GRBVar var : vars ) {
 			try {
-				assmnt.put( var, ( var.get( GRB.DoubleAttr.X ) > .5 ) ? true : false );
+				assmnt.put( var, var.get(GRB.DoubleAttr.X) > .5);
 			} catch ( final GRBException e ) {
 				e.printStackTrace();
 			}

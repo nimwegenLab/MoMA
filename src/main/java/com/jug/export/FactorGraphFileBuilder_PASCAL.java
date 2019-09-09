@@ -81,7 +81,7 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * @return the id of the variable just added.
 	 */
 	public int addVar( final int cardinality ) {
-		var_line += Integer.toString( cardinality ) + " ";
+		var_line += cardinality + " ";
 		return next_var_id++;
 	}
 

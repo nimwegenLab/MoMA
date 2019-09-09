@@ -50,33 +50,11 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		frames.add( frame );
 	}
 
-	public void removeFrame( final JFrame frame ) {
-		frame.removeComponentListener( this );
-		frame.removeWindowListener( this );
-
-		activeSnappings.remove( frame );
-		currentFramePositions.remove( frame );
-
-		frames.remove( frame );
-	}
-
-	public boolean getSnappingPolicy() {
+    public boolean getSnappingPolicy() {
 		return snappingPolicy;
 	}
 
-	public void setSnappingPolicy( final boolean bool ) {
-		snappingPolicy = bool;
-	}
-
-	public void setSnappingDistance( final int i ) {
-		snappingDistance = i;
-	}
-
-	public int getSnappingDistance() {
-		return snappingDistance;
-	}
-
-	@Override
+    @Override
 	public void componentMoved( final ComponentEvent e ) {
 //		System.out.println( "componentMoved -- " + ( ( JFrame ) e.getComponent() ).getName() );
 		try {

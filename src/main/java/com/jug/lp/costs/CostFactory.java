@@ -57,21 +57,7 @@ public class CostFactory {
 		return new ValuePair< Float, float[] >( costDeltaL, new float[] { costDeltaL } );
 	}
 
-	public static float getIntensityMismatchCost( final float oldIntensity, final float newIntensity ) {
-//		latestCostEvaluation = String.format( "c_v = 0.0" );
-		return 0f;
-//		final float deltaV = Math.max( 0.0f, newIntensity - oldIntensity ); // nur heller werden wird bestraft!
-//		final float power = 1.0f;
-//		final float freeUntil = 0.1f;
-//		float costDeltaV = 0.0f;
-//		if ( deltaV > freeUntil ) { // significant jump
-//			costDeltaV = deltaV * ( float ) Math.pow( 1.0 + ( deltaV - freeUntil ), power );
-//		}
-//		latestCostEvaluation = String.format( "c_v = %.4f * %.4f^%.1f = %.4f", deltaV, 1 + deltaV, power, costDeltaV );
-//		return costDeltaV;
-	}
-
-	public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
+    public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
 		final float deltaS = Math.abs( sizeFirstChild - sizeSecondChild ) / Math.min( sizeFirstChild, sizeSecondChild );
 		float power = 2.0f;
 		float costDeltaL = 0.0f;
@@ -121,46 +107,7 @@ public class CostFactory {
 //		return -0.2f;
     }
 
-	/**
-	 * @param ctNode
-	 * @param gapSepFkt
-	 * @return
-	 */
-	public static float getParamaxflowSegmentationCost( final Component< ?, ? > ctNode, final float[] gapSepFkt ) {
-		final ValuePair< Integer, Integer > segInterval =
-				ComponentTreeUtils.getTreeNodeInterval( ctNode );
-		final int a = segInterval.getA().intValue();
-		final int b = segInterval.getB().intValue();
-
-		final float plateauDerivativeThreshold = 0.0000f; //some epsilon
-		int aReduced = SimpleFunctionAnalysis.getRighthandLocalMinOrPlateau( gapSepFkt, a, plateauDerivativeThreshold ).a.intValue();
-		int bReduced = SimpleFunctionAnalysis.getLefthandLocalMinOrPlateau( gapSepFkt, b, plateauDerivativeThreshold ).a.intValue();
-		if ( aReduced > bReduced ) {
-			aReduced = bReduced = SimpleFunctionAnalysis.getMin( gapSepFkt, a, b ).a.intValue();
-		}
-
-		final float avgBottomVal = SimpleFunctionAnalysis.getAvg( gapSepFkt, a, b );
-		float maxReduced = SimpleFunctionAnalysis.getMax( gapSepFkt, aReduced, bReduced ).b.floatValue();
-		maxReduced = Math.max( maxReduced, avgBottomVal ); // tricky but I like it!
-
-		final float segmentLengthInPercentGL = ( b - a ) / ( ( float ) gapSepFkt.length );
-
-		// Special case: min-value is above average gap-sep-fkt value (happens often at the very top)
-		final float avgFktValue = SimpleFunctionAnalysis.getAvg( gapSepFkt );
-		final float distAboveAvg = Math.max( 0.0f, avgBottomVal - avgFktValue );
-		final float penaltyHeight = distAboveAvg * ( float ) Math.pow( 1.0 + distAboveAvg, 5 );
-		final float incentiveHeight = ( 1.0f - maxReduced );
-
-		float cost = ( penaltyHeight * segmentLengthInPercentGL ) - ( incentiveHeight * segmentLengthInPercentGL );
-
-		// cell is too small
-		if ( a > 0 && b + 1 < gapSepFkt.length && b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
-			cost = 100;
-		}
-		return cost;
-	}
-
-	/**
+    /**
 	 * @param from
 	 * @return
 	 */

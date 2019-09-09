@@ -130,16 +130,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return cost;
 	}
 
-	/**
-	 * @param cost
-	 *            the cost to set
-	 * @throws GRBException
-	 */
-	public void setCost( final float cost ) throws GRBException {
-		getGRBVar().set( GRB.DoubleAttr.ObjVal, cost );
-	}
-
-	/**
+    /**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 * @throws GRBException
 	 */

@@ -78,39 +78,6 @@ import net.imglib2.view.Views;
  */
 public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C > > {
 
-	private class CompareComponentTreeNodes< T extends Type< T > > implements Comparator< Component< T, ? > > {
-
-		/**
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		@SuppressWarnings( "unchecked" )
-		@Override
-		public int compare( final Component< T, ? > o1, final Component< T, ? > o2 ) {
-
-			// FilteredComponent
-			if ( false || o1 instanceof FilteredComponent< ? > && o2 instanceof FilteredComponent< ? > ) { // igitt...
-																											// instanceof!
-				final FilteredComponent< FloatType > fc1 = ( FilteredComponent< FloatType > ) o1;
-				final FilteredComponent< FloatType > fc2 = ( FilteredComponent< FloatType > ) o2;
-				return ( int ) ( ( fc1.maxValue().get() - fc1.minValue().get() ) - fc2.maxValue().get() - fc2.minValue().get() ) * -1;
-			}
-
-			// MSER
-			// if ( false || o1 instanceof MserComponentTreeNode< ? > && o2
-			// instanceof MserComponentTreeNode< ? >) { // igitt... instanceof!
-			// final MserComponentTreeNode<FloatType> mser1 =
-			// (MserComponentTreeNode<FloatType>) o1;
-			// final MserComponentTreeNode<FloatType> mser2 =
-			// (MserComponentTreeNode<FloatType>) o2;
-			// return (int) ( (mser1.maxValue().get()-mser1.minValue().get()) -
-			// mser2.maxValue().get()-mser2.minValue().get() ) * -1;
-			// }
-
-			// System.out.println("Warning: defaultComparison of ComponentTreeNodes applied!");
-			return ( int ) ( o1.size() - o2.size() ) * -1;
-		}
-	}
-
 	// -------------------------------------------------------------------------------------
 	// private fields
 	// -------------------------------------------------------------------------------------
@@ -120,38 +87,19 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 */
 	private List< Point > imgLocations;
 	private float[] simpleSepValues; // lazy evaluation -- gets computed when
-										// getSimpleGapSeparationValues is called...
-	private float[] awesomeSepValues; // lazy evaluation -- gets computed when
-										// getAwesomeGapSeparationValues is called...
+	// getAwesomeGapSeparationValues is called...
 	private GrowthLine parent;
 	private ComponentForest< C > componentTree;
-	private boolean isParaMaxFlowComponentTree = false;
-	private RandomAccessibleInterval< LongType > paramaxflowSumImage; // lazy evaluation -- gets computed when neede first time
-	private long paramaxflowSolutions;
 
 	// -------------------------------------------------------------------------------------
 	// setters and getters
 	// -------------------------------------------------------------------------------------
-	/**
-	 * @return the location
-	 */
-	public List< Point > getImgLocations() {
-		return imgLocations;
-	}
 
 	/**
 	 * @return the location
 	 */
 	public List< Point > getMirroredImgLocations() {
 		return flipAtCenter( imgLocations );
-	}
-
-	/**
-	 * @param location
-	 *            the location to set
-	 */
-	public void setImgLocations( final List< Point > locations ) {
-		this.imgLocations = locations;
 	}
 
 	/**
@@ -268,16 +216,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				return new Integer( o1.getIntPosition( 1 ) ).compareTo( new Integer( o2.getIntPosition( 1 ) ) );
 			}
 		} );
-	}
-
-	/**
-	 * Gets a detected center point of a GrowthsLine.
-	 *
-	 * @param idx
-	 *            - index of the Point to be returned.
-	 */
-	public Point getPoint( final int idx ) {
-		return ( imgLocations.get( idx ) );
 	}
 
 	/**
@@ -432,57 +370,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //	protected abstract ComponentForest< C > buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt );
 
 	/**
-	 * So far this function is pretty stupid: I traverse the entire component
-	 * tree, put each node in a priority queue, take then the numComponents
-	 * first elements out of it, put them in a ArrayList and give them back to
-	 * the caller. Efficiency: O(turbo-puke) !!
-	 *
-	 * @param numComponents
-	 * @return null, if there are less components in the tree then the callee
-	 *         requested
-	 */
-	public List< Component< FloatType, ? > > getComponentHypothesis( final int numComponents ) {
-		if ( componentTree == null ) return null;
-
-		final PriorityQueue< Component< FloatType, ? > > queue = new PriorityQueue< Component< FloatType, ? > >( 1, new CompareComponentTreeNodes< FloatType >() );
-		final List< Component< FloatType, ? > > listNext = new LinkedList< Component< FloatType, ? > >();
-		queue.addAll( componentTree.roots() );
-		listNext.addAll( componentTree.roots() );
-
-		// go down the tree until you find the right amount of components
-		// return from within loop, on failure break and return null
-		while ( !listNext.isEmpty() ) {
-			final Component< FloatType, ? > node = listNext.remove( 0 );
-			listNext.addAll( node.getChildren() );
-			queue.addAll( node.getChildren() );
-		}
-
-		if ( queue.size() < numComponents ) { return null; }
-
-		final ArrayList< Component< FloatType, ? > > ret = new ArrayList< Component< FloatType, ? > >( numComponents );
-		for ( int i = 0; i < numComponents; i++ ) {
-			ret.add( queue.poll() );
-		}
-		return ret;
-	}
-
-	/**
-	 * @param img
-	 * @param wellPoints
-	 * @return
-	 */
-	public float[] getCenterLineValues( final Img< FloatType > img ) {
-		final RandomAccess< FloatType > raImg = img.randomAccess();
-
-		final float[] dIntensity = new float[ imgLocations.size() ];
-		for ( int i = 0; i < imgLocations.size(); i++ ) {
-			raImg.setPosition( imgLocations.get( i ) );
-			dIntensity[ i ] = raImg.get().get();
-		}
-		return dIntensity;
-	}
-
-	/**
 	 * @param img
 	 * @param wellPoints
 	 * @return
@@ -505,10 +392,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * @return
 	 */
 	public float[] getSimpleGapSeparationValues( final Img< FloatType > img ) {
-		return getSimpleGapSeparationValues( img, false );
-	}
-
-	public float[] getSimpleGapSeparationValues( final Img< FloatType > img, final boolean forceRecomputation ) {
 		if ( simpleSepValues == null ) {
 			if ( img == null ) return null;
 			simpleSepValues = getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img );

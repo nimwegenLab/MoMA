@@ -155,21 +155,6 @@ public class FactorGraphFileBuilder_SCALAR {
 	}
 
 	/**
-	 * Builds a unary factor-string and adds it.
-	 *
-	 * @param functionId
-	 *            id of the function this factor utilizes.
-	 * @param varId
-	 *            the variable id for this unary factor.
-	 * @return the id of the factor just added.
-	 */
-	public int addFactor( final int functionId, final int varId, final List< Integer > regionIds ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		varIds.add( new Integer( varId ) );
-		return addFactor( functionId, varIds, regionIds );
-	}
-
-	/**
 	 * Builds a factor-string and adds it.
 	 *
 	 * @param functionId

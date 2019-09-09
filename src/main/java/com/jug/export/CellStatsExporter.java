@@ -502,8 +502,6 @@ public class CellStatsExporter {
 				}
 
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get( segmentRecord.frame );
-				final List< Point > centerLine = glf.getImgLocations();
-//				final double height = Util.evaluatePolygonLength( centerLine, limits.getA(), limits.getB() );
 
 				final int numCells = glf.getSolutionStats_numCells();
 				final int cellPos = glf.getSolutionStats_cellPos( segmentRecord.hyp );

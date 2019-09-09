@@ -41,7 +41,6 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -494,7 +493,7 @@ public class GrowthLineTrackingILP {
 
 			final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, String.format( "a_%d^EXIT--%d", t, hyp.getId() ) );
 			final List< Hypothesis< Component< FloatType, ? >>> Hup = LpUtils.getHup( hyp, hyps );
-			final ExitAssignment ea = new ExitAssignment( t, newLPVar, this, nodes, edgeSets, Hup, hyp );
+			final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp );
 			nodes.addAssignment( t, ea );
 			edgeSets.addToRightNeighborhood( hyp, ea );
 			i++;
@@ -758,7 +757,7 @@ public class GrowthLineTrackingILP {
 									System.err.println( "Division cost mismatch!" );
 								}
 
-								final DivisionAssignment da = new DivisionAssignment( t, newLPVar, this, nodes, edgeSets, from, to, lowerNeighbor );
+								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, nodes, edgeSets, from, to, lowerNeighbor );
 								nodes.addAssignment( t, da );
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );
@@ -802,9 +801,6 @@ public class GrowthLineTrackingILP {
 		final long sizeToL = toLower.getWrappedHypothesis().size();
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
-
-		final float valueFrom = from.getWrappedHypothesis().value().get();
-		final float valueTo = 0.5f * ( toUpper.getWrappedHypothesis().value().get() + toLower.getWrappedHypothesis().value().get() );
 
 		final float oldPosU = intervalFrom.getA().intValue();
 		final float newPosU = intervalToU.getA().intValue();

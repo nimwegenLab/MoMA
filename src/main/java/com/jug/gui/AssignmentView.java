@@ -188,26 +188,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		this.repaint();
 	}
 
-	/**
-	 * Turns of filtering by type, turns on filtering by cost, and shows all the
-	 * given data.
-	 *
-	 * @param data
-	 *            a <code>HashMap</code> containing pairs of segmentation
-	 *            hypothesis at some time-point t and assignments towards t+1.
-	 */
-	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final boolean doFilterActive, final float minCostToShow, final float maxCostToShow ) {
-		doFilterDataByType = false;
-		setData( data, doFilterActive );
-
-		doFilterDataByCost = true;
-		this.setCostFilterMin( minCostToShow );
-		this.setCostFilterMax( maxCostToShow );
-
-		this.repaint();
-	}
-
-	/**
+    /**
 	 * Turns on filtering by type and shows only the filtered data.
 	 *
 	 * @param data
@@ -302,27 +283,22 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		final int type = assignment.getType();
 
 		final Graphics2D g2 = ( Graphics2D ) g;
-		final Dimension size = getSize();
 
 		if ( type == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
-			drawExitAssignment( g, g2, ( ExitAssignment ) assignment, size );
+			drawExitAssignment(g2, ( ExitAssignment ) assignment);
 		} else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
-			drawMappingAssignment( g, g2, ( MappingAssignment ) assignment, size );
+			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
 		} else if ( type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
-			drawDivisionAssignment( g, g2, ( DivisionAssignment ) assignment, size );
+			drawDivisionAssignment(g2, ( DivisionAssignment ) assignment);
 		}
 	}
 
 	/**
 	 * This methods draws the given mapping-assignment into the component.
-	 *
-	 * @param g
 	 * @param g2
 	 * @param ma
-	 *            a mapping-assignment that should be visualized.
-	 * @param size
 	 */
-	private void drawMappingAssignment( final Graphics g, final Graphics2D g2, final MappingAssignment ma, final Dimension size ) {
+	private void drawMappingAssignment(final Graphics2D g2, final MappingAssignment ma) {
 		final Hypothesis< Component< FloatType, ? >> leftHyp = ma.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? >> rightHyp = ma.getDestinationHypothesis();
 
@@ -412,14 +388,10 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 	/**
 	 * This methods draws the given division-assignment into the component.
-	 *
-	 * @param g
 	 * @param g2
 	 * @param da
-	 *            a division-assignment that should be visualized.
-	 * @param size
 	 */
-	private void drawDivisionAssignment( final Graphics g, final Graphics2D g2, final DivisionAssignment da, final Dimension size ) {
+	private void drawDivisionAssignment(final Graphics2D g2, final DivisionAssignment da) {
 		final Hypothesis< Component< FloatType, ? >> leftHyp = da.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? >> rightHypUpper = da.getUpperDesinationHypothesis();
 		final Hypothesis< Component< FloatType, ? >> rightHypLower = da.getLowerDesinationHypothesis();
@@ -521,14 +493,10 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 	/**
 	 * This methods draws the given exit-assignment into the component.
-	 *
-	 * @param g
 	 * @param g2
 	 * @param ea
-	 *            a exit-assignment that should be visualized.
-	 * @param size
 	 */
-	private void drawExitAssignment( final Graphics g, final Graphics2D g2, final ExitAssignment ea, final Dimension size ) {
+	private void drawExitAssignment(final Graphics2D g2, final ExitAssignment ea) {
 		final Hypothesis< Component< FloatType, ? >> hyp = ea.getAssociatedHypothesis();
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
 

@@ -158,9 +158,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 	private MenuItem menuTrain;
 
-	// Trainer-related
-	private MMTrainerGui trainerGui;
-
 	// -------------------------------------------------------------------------------------
 	// construction & gui creation
 	// -------------------------------------------------------------------------------------
@@ -1049,20 +1046,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					new DialogPropertiesEditor( this, MoMA.props );
 			propsEditor.setVisible( true );
 		}
-		if ( e.getSource().equals( menuTrain ) ) {
-			final MoMAGui self = this;
-
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					self.trainerGui = new MMTrainerGui( self );
-					self.trainerGui.setVisible( true );
-				}
-			} );
-			t.start();
-
-		}
 		if ( e.getSource().equals( menuLoad ) ) {
 
 			final MoMAGui self = this;
@@ -1196,7 +1179,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "Using existing ILP (possibly containing user-defined ground-truth bits)..." );
 				}
 				System.out.println( "Saving ILP as FactorGraph..." );
-//				model.getCurrentGL().getIlp().exportFG_PASCAL( file );
 				model.getCurrentGL().getIlp().exportFG_PAUL( file );
 				System.out.println( "...done!" );
 			}

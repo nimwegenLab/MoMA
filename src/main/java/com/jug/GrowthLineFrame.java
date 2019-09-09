@@ -25,11 +25,8 @@ import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStepRat
 public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent< FloatType > > {
 
 	final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
-//	final Filter maxGrowthPerStepRatio = new MaxGrowthPerStepRatio( 0.075 );
-	final Filter maxGrowthPerStepRatioWithMinimalAbsoluteIncrease =
-			new MaxGrowthPerStepRatioWithMinimalAbsoluteIncrease( 0.05, 6 );
 
-	/**
+    /**
 	 * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
 	 */
 	@Override

@@ -29,14 +29,14 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	/**
 	 * Creates an DivisionAssignment.
 	 *
+	 * @param to1
+	 * @param to2
 	 * @param nodes
 	 * @param edges
 	 * @param from
-	 * @param to1
-	 * @param to2
 	 * @throws GRBException
 	 */
-	public DivisionAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> toUpper, final Hypothesis< Component< FloatType, ? >> toLower ) throws GRBException {
+	public DivisionAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> from, final Hypothesis<Component<FloatType, ?>> toUpper, final Hypothesis<Component<FloatType, ?>> toLower) throws GRBException {
 		super( GrowthLineTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp );
 		this.from = from;
 		this.toUpper = toUpper;

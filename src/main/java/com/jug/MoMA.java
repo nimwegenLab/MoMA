@@ -34,14 +34,10 @@ import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Intervals;
 import net.imglib2.util.Pair;
-import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -91,8 +87,6 @@ import net.imglib2.view.Views;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
-import org.scijava.io.IOService;
-import org.scijava.plugin.PluginService;
 import org.scijava.ui.UIService;
 
 /**
@@ -584,7 +578,6 @@ public class MoMA {
 
 		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********
 		final String jlp = System.getProperty( "java.library.path" );
-//		System.out.println( jlp );
 		try {
 			new GRBEnv( "MoMA_gurobi.log" );
 		} catch ( final GRBException e ) {

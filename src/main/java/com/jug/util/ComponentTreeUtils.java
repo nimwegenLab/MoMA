@@ -139,7 +139,6 @@ public class ComponentTreeUtils {
 	 *         leftmost and rightmost point on the x-axis that is covered by
 	 *         this component-tree-node respectively.
 	 */
-	@SuppressWarnings( "unchecked" )
 	public static ValuePair< Integer, Integer > getExtendedTreeNodeInterval(
 			final FilteredComponent< ? > node ) {
 		int min = Integer.MAX_VALUE;

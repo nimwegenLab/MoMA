@@ -835,7 +835,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * View.offset according to the current offset settings. Note: this method
 	 * does not and should not invoke a repaint!
 	 */
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	@SuppressWarnings( { "unchecked"} )
 	public void dataToDisplayChanged() {
 
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();

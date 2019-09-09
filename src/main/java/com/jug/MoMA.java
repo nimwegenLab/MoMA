@@ -1227,7 +1227,6 @@ public class MoMA {
 	 * @return instance of {@link Properties} containing the key-value pairs
 	 *         found in that file.
 	 */
-	@SuppressWarnings( "resource" )
 	private Properties loadParams() {
 		InputStream is = null;
 		final Properties defaultProps = new Properties();

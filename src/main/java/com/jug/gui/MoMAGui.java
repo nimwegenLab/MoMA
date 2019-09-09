@@ -426,7 +426,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	}
 
 	/**
-	 * @param panelCurationViewHelper
 	 * @return
 	 */
 	private JPanel buildSegmentationAndAssignmentView() {
@@ -1327,7 +1326,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	}
 
 	/**
-	 * @param self
 	 * @return
 	 */
 	public void prepareOptimization() {
@@ -1591,8 +1589,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * @param endFrame
 	 * @param startFrame
 	 *
-	 * @param folder
-	 *            path to folder in which to store PNGs.
 	 */
 	private void exportHtmlTrackingOverview( final File htmlFileToSaveTo, final int startFrame, final int endFrame ) {
 		System.out.println( "Exporting html tracking overview..." );

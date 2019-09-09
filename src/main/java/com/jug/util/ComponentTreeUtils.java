@@ -40,7 +40,6 @@ public class ComponentTreeUtils {
 	}
 
 	/**
-	 * @param root
 	 * @param leaves
 	 */
 	private static < C extends Component< ?, C > > void recursivelyAddLeaves( final C node, final List< C > leaves ) {
@@ -68,7 +67,6 @@ public class ComponentTreeUtils {
 
 	/**
 	 * @param to
-	 * @param hyp
 	 * @return
 	 */
 	public static boolean isBelowByMoreThen(
@@ -172,7 +170,6 @@ public class ComponentTreeUtils {
 	// }
 
 	/**
-	 * @param to
 	 * @return
 	 */
 	public static List< Component< FloatType, ? >> getRightNeighbors( final Component< FloatType, ? > node ) {
@@ -224,7 +221,6 @@ public class ComponentTreeUtils {
 	}
 
 	/**
-	 * @param root
 	 * @return
 	 */
 	public static < C extends Component< ?, C > > int countNodes( final C ctn ) {
@@ -249,7 +245,6 @@ public class ComponentTreeUtils {
 	}
 
 	/**
-	 * @param root
 	 * @param list
 	 */
 	private static < C extends Component< ?, C > > void addListOfNodes( final C ctn, final ArrayList< C > list ) {

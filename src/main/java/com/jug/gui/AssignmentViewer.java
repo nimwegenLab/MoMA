@@ -51,8 +51,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	// construction
 	// -------------------------------------------------------------------------------------
 	/**
-	 * @param dimension
-	 */
+     */
 	public AssignmentViewer( final int height, final MoMAGui callbackGui ) {
 		this.gui = callbackGui;
 		this.setBorder( BorderFactory.createEmptyBorder( 0, 0, 0, 0 ) );

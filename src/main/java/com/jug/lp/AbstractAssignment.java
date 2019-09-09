@@ -41,7 +41,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * Creates an assignment...
 	 *
 	 * @param type
-	 * @param cost
 	 */
 	public AbstractAssignment( final int type, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp ) {
 		this.setType( type );
@@ -108,8 +107,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	/**
-	 * @param model
-	 *            GRBModel instance (the ILP)
 	 */
 	public void setGrowthLineTrackingILP( final GrowthLineTrackingILP ilp ) {
 		this.ilp = ilp;

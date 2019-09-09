@@ -29,8 +29,6 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	/**
 	 * Creates an DivisionAssignment.
 	 *
-	 * @param to1
-	 * @param to2
 	 * @param nodes
 	 * @param edges
 	 * @param from
@@ -50,18 +48,14 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 * specific constrains...
 	 *
 	 * @throws GRBException
-	 * @see com.jug.lp.AbstractAssignment#addConstraintsToLP(gurobi.GRBModel,
-	 *      com.jug.lp.AssignmentsAndHypotheses,
-	 *      com.jug.lp.HypothesisNeighborhoods)
-	 */
+     */
 	@Override
 	public void addConstraintsToLP() throws GRBException {}
 
 	/**
 	 * Division assignments do not come with constraints.
 	 *
-	 * @see com.jug.lp.AbstractAssignment#getConstraint()
-	 */
+     */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {}
 

@@ -26,7 +26,7 @@ import net.imglib2.util.ValuePair;
 /**
  * Component tree of an image stored as a tree of {@link FilteredComponent}s.
  * This class is used both to represent and build the tree. For building the
- * tree {@link Component.Handler} is implemented to gather
+ * tree {@link PartialComponent.Handler} is implemented to gather
  * {@link FilteredPartialComponent} emitted by {@link ComponentTree}. Only
  * components in a specific size range are accepted. The tree contains only one
  * {@link FilteredComponent} per branch. This is the component with the highest
@@ -106,8 +106,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	/**
 	 * Build a component tree from an input image. Calls
-	 * {@link #buildComponentTree(RandomAccessibleInterval, RealType, ImgFactory, boolean)}
-	 * using an {@link ArrayImgFactory} or {@link CellImgFactory} depending on
+	 *
+     * using an {@link ArrayImgFactory} or {@link CellImgFactory} depending on
 	 * input image size.
 	 *
 	 * @param input

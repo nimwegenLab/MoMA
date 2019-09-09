@@ -310,7 +310,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
 	 *
-	 * @param img
 	 */
 //	public void generateAwesomeSegmentationHypotheses( final Img< FloatType > img ) {
 //
@@ -335,7 +334,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * @param img
-	 * @param wellPoints
 	 * @return
 	 */
 	public float[] getMirroredCenterLineValues( final Img< FloatType > img ) {
@@ -429,7 +427,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Trying to look there a bit smarter... ;)
 	 *
 	 * @param img
-	 * @param wellPoints
 	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
@@ -438,11 +435,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * This calculates the max intensities inside growthlane along the diagonals of a moving square subsection of the image.
-	 * It does this along a single frame of {@link img}, where the frame index and center-pixel of the current rectangle ROI
-	 * is defined by the {@link Point} array {@link imgLocations}. 
+	 * It does this along a single frame of {@link RandomAccessibleInterval img}, where the frame index and center-pixel of the current rectangle ROI
+	 * is defined by the {@link Point} array {@link List<Point> imgLocations}.
 	 *
 	 * @param img: multidimensional image stack
-	 * @param wellPoints
 	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
@@ -508,8 +504,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Draws the GrowthLine center line into the given annotation
 	 * <code>Img</code>.
 	 *
-	 * @param img
-	 *            the Img to draw into.
 	 */
 	public void drawCenterLine( final Img< ARGBType > imgAnnotated ) {
 		drawCenterLine( imgAnnotated, null );

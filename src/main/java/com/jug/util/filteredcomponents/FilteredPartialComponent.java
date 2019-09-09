@@ -47,7 +47,7 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 	 * @param value
 	 *            (initial) threshold value {@see #getValue()}.
 	 * @param generator
-	 *            the {@link PixelListComponentGenerator#linkedList} is used to
+	 *            the  is used to
 	 *            store the {@link #pixelList}.
 	 */
 	FilteredPartialComponent( final T value, final FilteredPartialComponentGenerator< T > generator )

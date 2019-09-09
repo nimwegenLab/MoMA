@@ -668,7 +668,6 @@ public class GrowthLineTrackingILP {
 	 * place.
 	 *
 	 * @param fromCost
-	 * @param toCost
 	 * @param divisionCosts
 	 * @return
 	 */
@@ -778,12 +777,6 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param from
 	 *            the segmentation hypothesis from which the mapping originates.
-	 * @param to
-	 *            the upper (left) segmentation hypothesis towards which the
-	 *            mapping-assignment leads.
-	 * @param lowerNeighbor
-	 *            the lower (right) segmentation hypothesis towards which the
-	 *            mapping-assignment leads.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis (plus the vector of cost contributions/feature
 	 *         values).
@@ -986,8 +979,6 @@ public class GrowthLineTrackingILP {
 	 * segmentation hypothesis along such a path can be chosen during the convex
 	 * optimization.
 	 *
-	 * @param ctRoot
-	 * @param pbcId
 	 * @param t
 	 * @throws GRBException
 	 */
@@ -1070,8 +1061,6 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param ctNode
 	 * @param t
-	 * @param functions
-	 * @param factors
 	 */
 	private < C extends Component< ?, C > > void recursivelyAddPathBlockingConstraints( final C ctNode, final int t, final FactorGraphFileBuilder_SCALAR fgFile ) {
 
@@ -1883,9 +1872,6 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param hyp2add
 	 *            the hypothesis for which the constraint should be installed.
-	 * @param hyp2remove
-	 *            the hypothesis at conflicting location for which this type of
-	 *            constraint needs to be removed. (Can be 'null'!)
 	 * @throws GRBException
 	 */
 	public void addSegmentInSolutionConstraint( final Hypothesis< Component< FloatType, ? >> hyp2add, final List< Hypothesis< Component< FloatType, ? >>> hyps2remove ) throws GRBException {
@@ -2297,7 +2283,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param value
 	 */
 	public void ignoreBeyond( final int t ) {
 		if ( t + 1 >= gl.size() ) {
@@ -2364,7 +2349,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param value
 	 */
 	public void freezeBefore( final int t ) {
 		for ( int i = 0; i <= t; i++ ) {
@@ -2376,7 +2360,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param i
 	 */
 	public void freezeAssignmentsAsAre( final int t ) {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =

@@ -12,8 +12,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.LongType;
 
 /**
- * Implementation of {@link Component.Generator} for creating
- * {@link PixelListComponentIntermediate} components. According to the
+ * Implementation of {@link PartialComponent.Generator}. According to the
  * dimensions of the input image it creates a {@link LongType} {@link Img} to
  * store the {@link PixelList} used in the components.
  *

@@ -1302,9 +1302,6 @@ public class MoMA {
 	 * Saves a file 'mm.properties' in the current folder. This file contains
 	 * all MotherMachine specific properties as key-value pairs.
 	 *
-	 * @param props
-	 *            an instance of {@link Properties} containing all key-value
-	 *            pairs used by the MotherMachine.
 	 */
 	public void saveParams(final File f) {
 		try {
@@ -1450,8 +1447,6 @@ public class MoMA {
 	 * Simple but effective method to subtract uneven illumination from the
 	 * growth-line data.
 	 *
-	 * @param img
-	 *            DoubleType image stack.
 	 */
 	private void subtractBackgroundInTemp() {
 

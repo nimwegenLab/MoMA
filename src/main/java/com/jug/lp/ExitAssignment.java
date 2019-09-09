@@ -48,9 +48,6 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 
 	/**
 	 * @throws GRBException
-	 * @see com.jug.lp.AbstractAssignment#addConstraintsToLP(gurobi.GRBModel,
-	 *      com.jug.lp.AssignmentsAndHypotheses,
-	 *      com.jug.lp.HypothesisNeighborhoods)
 	 */
 	@Override
 	public void addConstraintsToLP() throws GRBException {
@@ -109,7 +106,6 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	/**
 	 * Adds a list of constraints and factors as strings.
 	 *
-	 * @see com.jug.lp.AbstractAssignment#getConstraint()
 	 */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {

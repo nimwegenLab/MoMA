@@ -78,7 +78,6 @@ public class GrowthLine {
 	}
 
 	/**
-	 * @param f
 	 * @return
 	 */
 	public GrowthLineFrame get( final int i ) {

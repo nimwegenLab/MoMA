@@ -71,7 +71,6 @@ public class CostFactory {
 
 	/**
 	 * @param ctNode
-	 * @param gapSepFkt
 	 * @return
 	 */
 	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {

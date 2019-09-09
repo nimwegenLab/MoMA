@@ -47,9 +47,6 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * specific constrains...
 	 *
 	 * @throws GRBException
-	 * @see com.jug.lp.AbstractAssignment#addConstraintsToLP(gurobi.GRBModel,
-	 *      com.jug.lp.AssignmentsAndHypotheses,
-	 *      com.jug.lp.HypothesisNeighborhoods)
 	 */
 	@Override
 	public void addConstraintsToLP() throws GRBException {}
@@ -57,7 +54,6 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	/**
 	 * Mapping assignments do not come with constraints.
 	 *
-	 * @see com.jug.lp.AbstractAssignment#getConstraint()
 	 */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {}

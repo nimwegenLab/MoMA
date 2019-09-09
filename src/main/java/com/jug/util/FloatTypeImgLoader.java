@@ -288,9 +288,6 @@ public class FloatTypeImgLoader {
 	 * Assumptions: filename contains channel info in format "_c%04d".
 	 * 
 	 * @param listOfFiles
-	 * @param normalizationFilterString
-	 *            if filename contains this string (not case sensitive), then
-	 *            the loaded image will be normalized to [0,1].
 	 * @return
 	 * @throws ImgIOException
 	 */
@@ -380,11 +377,6 @@ public class FloatTypeImgLoader {
 	}
 
 	/**
-	 * @param listOfFiles
-	 * @param imgFactory
-	 * @param images
-	 * @param imageOpener
-	 * @param i
 	 * @return
 	 * @throws ImgIOException
 	 */
@@ -619,7 +611,6 @@ public class FloatTypeImgLoader {
 	}
 
 	/**
-	 * @param channelImgs
 	 * @return
 	 * @throws ImgIOException
 	 */

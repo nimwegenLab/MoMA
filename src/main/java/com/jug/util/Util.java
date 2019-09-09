@@ -167,7 +167,6 @@ public class Util {
 	/**
 	 * @param channelFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< FloatType > getColumnBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -181,7 +180,6 @@ public class Util {
 	/**
 	 * @param channelFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< FloatType > getIntensityBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -195,7 +193,6 @@ public class Util {
 	/**
 	 * @param segmentedFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< ShortType > getClassificationBoxInImg( final IntervalView< ShortType > segmentedFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -222,7 +219,6 @@ public class Util {
 	}
 
 	/**
-	 * @param channelFrame
 	 * @param hyp
 	 * @return
 	 */
@@ -255,8 +251,6 @@ public class Util {
 	}
 
 	/**
-	 * @param sizeEstimationBoxInChannel0
-	 * @param d
 	 * @return
 	 */
 	public static int countPixelsAboveThreshold( final IntervalView< ShortType > segmentedFrame, final float threshold ) {

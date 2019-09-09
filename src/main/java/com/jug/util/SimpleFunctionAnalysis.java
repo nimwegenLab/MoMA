@@ -239,7 +239,6 @@ public class SimpleFunctionAnalysis {
 	}
 
 	/**
-	 * @param intensities
 	 * @return
 	 */
 	public static float getSum( final float[] fktValues ) {
@@ -478,7 +477,6 @@ public class SimpleFunctionAnalysis {
 	}
 
 	/**
-	 * @param gapSepFkt
 	 * @return
 	 */
 	public static float getMedian( final float[] fkt, final int i, final int j ) {

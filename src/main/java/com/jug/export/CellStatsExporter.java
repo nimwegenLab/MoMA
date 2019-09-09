@@ -171,7 +171,6 @@ public class CellStatsExporter {
 		}
 
 		/**
-		 * @param channel
 		 * @return
 		 */
 		public long[] computeChannelHistogram( final IterableInterval< FloatType > view, final float min, final float max ) {
@@ -200,7 +199,6 @@ public class CellStatsExporter {
 		}
 
 		/**
-		 * @param segmentBoxInChannel
 		 * @return
 		 */
 		public float[] computeChannelColumnIntensities( final IntervalView< FloatType > columnBoxInChannel ) {

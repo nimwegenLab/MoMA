@@ -22,7 +22,6 @@ public class ArgbDrawingUtils {
 
 	/**
 	 * @param ctn
-	 * @param raAnnotationImg
 	 * @param offsetX
 	 * @param offsetY
 	 */
@@ -40,7 +39,6 @@ public class ArgbDrawingUtils {
 
 	/**
 	 * @param ctn
-	 * @param raAnnotationImg
 	 * @param offsetX
 	 * @param offsetY
 	 */
@@ -59,7 +57,6 @@ public class ArgbDrawingUtils {
 	/**
 	 * @param isPruneRoot
 	 * @param ctn
-	 * @param raAnnotationImg
 	 * @param offsetX
 	 * @param offsetY
 	 */
@@ -82,7 +79,6 @@ public class ArgbDrawingUtils {
 
 	/**
 	 * @param ctn
-	 * @param raAnnotationImg
 	 * @param offsetX
 	 * @param offsetY
 	 */

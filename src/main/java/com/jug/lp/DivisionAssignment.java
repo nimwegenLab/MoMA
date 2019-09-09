@@ -110,6 +110,6 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 */
 	@Override
 	public List< String > getConstraintsToSave_PASCAL() {
-		return new ArrayList< String >();
+		return new ArrayList<>();
 	}
 }

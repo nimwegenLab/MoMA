@@ -11,7 +11,6 @@ import com.jug.util.filteredcomponents.FilteredComponent;
 import com.jug.util.filteredcomponents.FilteredComponentTree;
 import com.jug.util.filteredcomponents.FilteredComponentTree.Filter;
 import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStep;
-import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStepRatioWithMinimalAbsoluteIncrease;
 
 /**
  * @author jug

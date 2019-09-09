@@ -21,11 +21,11 @@ public class FactorGraphFileBuilder_PASCAL {
 	int next_fac_id = 0;
 	int next_con_id = 0;
 
-	List< String > var_comment_lines = new ArrayList< String >();
+	List< String > var_comment_lines = new ArrayList<>();
 	String  var_line = "";
-	List< String > fkt_lines = new ArrayList< String >();
-	List< String > fac_lines = new ArrayList< String >();
-	List< String > constraint_lines = new ArrayList< String >();
+	List< String > fkt_lines = new ArrayList<>();
+	List< String > fac_lines = new ArrayList<>();
+	List< String > constraint_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.

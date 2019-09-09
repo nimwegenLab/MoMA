@@ -51,29 +51,24 @@ public class DoubleTypeImgLoader {
 	public static List< Img< DoubleType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws Exception {
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				boolean isMatching = name.contains( ".tif" );
-				for ( final String filter : filterStrings ) {
-					isMatching = isMatching && name.contains( filter );
-				}
-				if ( isMatching == true ) {
-					final String strTime = name.split( "_t" )[ 1 ].substring( 0, 4 );
-					final int time = Integer.parseInt( strTime );
-					if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
-						isMatching = false;
-					}
-				}
-				return isMatching;
+		final FilenameFilter filter = (dir, name) -> {
+			boolean isMatching = name.contains( ".tif" );
+			for ( final String filter1 : filterStrings ) {
+				isMatching = isMatching && name.contains(filter1);
 			}
+			if (isMatching) {
+				final String strTime = name.split( "_t" )[ 1 ].substring( 0, 4 );
+				final int time = Integer.parseInt( strTime );
+				if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
+					isMatching = false;
+				}
+			}
+			return isMatching;
 		};
 		final File[] listOfFiles = folder.listFiles( filter );
 		if ( listOfFiles == null ) { throw new Exception( "Given argument is not a valid folder!" ); }
 
-		final List< Img< DoubleType >> images = loadTiffs( listOfFiles );
-		return images;
+		return loadTiffs( listOfFiles );
 	}
 
 	/**
@@ -91,29 +86,24 @@ public class DoubleTypeImgLoader {
 	public static List< Img< DoubleType >> loadMMTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings ) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				boolean isMatching = name.contains( ".tif" );
-				for ( final String filter : filterStrings ) {
-					isMatching = isMatching && name.contains( filter );
-				}
-				if ( isMatching == true ) {
-					final String strTime = name.split( "_t" )[ 1 ].substring( 0, 4 );
-					final int time = Integer.parseInt( strTime );
-					if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
-						isMatching = false;
-					}
-				}
-				return isMatching;
+		final FilenameFilter filter = (dir, name) -> {
+			boolean isMatching = name.contains( ".tif" );
+			for ( final String filter1 : filterStrings ) {
+				isMatching = isMatching && name.contains(filter1);
 			}
+			if (isMatching) {
+				final String strTime = name.split( "_t" )[ 1 ].substring( 0, 4 );
+				final int time = Integer.parseInt( strTime );
+				if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
+					isMatching = false;
+				}
+			}
+			return isMatching;
 		};
 		final File[] listOfFiles = folder.listFiles( filter );
 		if ( listOfFiles == null ) { throw new Exception( "Given argument is not a valid folder!" ); }
 
-		final List< Img< DoubleType >> images = loadMMTiffSequence( listOfFiles, normalize );
-		return images;
+		return loadMMTiffSequence( listOfFiles, normalize );
 	}
 
 	/**
@@ -125,7 +115,7 @@ public class DoubleTypeImgLoader {
 		final int numProcessors = Prefs.getThreads();
 		final int numThreads = Math.min( listOfFiles.length, numProcessors );
 
-		final List< Img< DoubleType > > images = new ArrayList< Img< DoubleType > >( listOfFiles.length );
+		final List< Img< DoubleType > > images = new ArrayList<>(listOfFiles.length);
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
 			images.add( null );
 		}
@@ -167,7 +157,7 @@ public class DoubleTypeImgLoader {
 		for ( final Thread thread : threads ) {
 			try {
 				thread.join();
-			} catch ( final InterruptedException e ) {}
+			} catch ( final InterruptedException ignored) {}
 		}
 
 		return images;
@@ -188,7 +178,7 @@ public class DoubleTypeImgLoader {
 		final int numProcessors = Prefs.getThreads();
 		final int numThreads = Math.min( listOfFiles.length, numProcessors );
 
-		final List< Img< DoubleType > > images = new ArrayList< Img< DoubleType > >( listOfFiles.length );
+		final List< Img< DoubleType > > images = new ArrayList<>(listOfFiles.length);
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
 			images.add( null );
 		}
@@ -234,7 +224,7 @@ public class DoubleTypeImgLoader {
 		for ( final Thread thread : threads ) {
 			try {
 				thread.join();
-			} catch ( final InterruptedException e ) {}
+			} catch ( final InterruptedException ignored) {}
 		}
 
 		return images;
@@ -250,15 +240,14 @@ public class DoubleTypeImgLoader {
 	 * @throws ImgIOException
 	 */
 	public static Img< DoubleType > loadTiff( final File file ) throws ImgIOException {
-		final ImgFactory< DoubleType > imgFactory = new ArrayImgFactory< DoubleType >();
+		final ImgFactory< DoubleType > imgFactory = new ArrayImgFactory<>();
 		final ImgOpener imageOpener = new ImgOpener();
 
 		System.out.print( "\n >> Loading file '" + file.getName() + "' ..." );
 //		final List< SCIFIOImgPlus< DoubleType >> imgs = imageOpener.openImgs( file.getAbsolutePath(), imgFactory, new DoubleType() );
 //		final Img< DoubleType > img = imgs.get( 0 ).getImg();
-		final Img< DoubleType > img = ImagePlusAdapter.wrapReal( IJ.openImage( file.getAbsolutePath() ) );
-//		ImageJFunctions.show( img );
-		return img;
+		//		ImageJFunctions.show( img );
+		return (Img<DoubleType>) ImagePlusAdapter.wrapReal( IJ.openImage( file.getAbsolutePath() ) );
 	}
 
 	/**
@@ -454,24 +443,18 @@ public class DoubleTypeImgLoader {
 	 * @throws Exception
 	 */
 	public static < T extends RealType< T > & NativeType< T > > List< Img< DoubleType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws Exception {
-		final List< Img< DoubleType >> ret = new ArrayList< Img< DoubleType >>();
+		final List< Img< DoubleType >> ret = new ArrayList<>();
 
 		final File folder = new File( strFolder );
 
 		for ( int t = tmin; t <= tmax; t++ ) {
 			final String tString = String.format( "_t%0" + numDigits + "d", t );
 
-			final List< Img< DoubleType > > channelImgs = new ArrayList< Img< DoubleType > >();
+			final List< Img< DoubleType > > channelImgs = new ArrayList<>();
 			for ( int c = cmin; c <= cmax; c++ ) {
 				final String cString = String.format( "_c%0" + numDigits + "d", c );
 
-				final FilenameFilter filter = new FilenameFilter() {
-
-					@Override
-					public boolean accept( final File dir, final String name ) {
-						return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( tString ) && name.contains( cString );
-					}
-				};
+				final FilenameFilter filter = (dir, name) -> name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( tString ) && name.contains( cString );
 				final File[] listOfFiles = folder.listFiles( filter );
 				if ( listOfFiles.length == 0 || listOfFiles == null ) { throw new Exception( String.format( "Missing file for t=%d and c=%d", t, c ) ); }
 				if ( listOfFiles.length > 1 ) { throw new Exception( String.format( "Multiple matching files for t=%d and c=%d", t, c ) ); }
@@ -583,35 +566,31 @@ public class DoubleTypeImgLoader {
 		int max = -1;
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( prefix );
-			}
-		};
+		final FilenameFilter filter = (dir, name) -> name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( prefix );
 		final File[] listOfFiles = folder.listFiles( filter );
 		if ( listOfFiles == null ) return max;
 
-		for ( int i = 0; i < listOfFiles.length; i++ ) {
-			String str = listOfFiles[ i ].getName();
-			str = str.substring( str.indexOf( prefix ) + prefix.length() );
-			int muh = str.indexOf( "_" );
-			int mah = str.indexOf( "." );
-			if ( muh == -1 ) muh = Integer.MAX_VALUE;
-			if ( mah == -1 ) mah = Integer.MAX_VALUE;
-			if ( muh == Integer.MAX_VALUE && mah == Integer.MAX_VALUE ) { throw new NumberFormatException(); }
-			str = str.substring( 0, Math.min( muh, mah ) );
+        for (File listOfFile : listOfFiles) {
+            String str = listOfFile.getName();
+            str = str.substring(str.indexOf(prefix) + prefix.length());
+            int muh = str.indexOf("_");
+            int mah = str.indexOf(".");
+            if (muh == -1) muh = Integer.MAX_VALUE;
+            if (mah == -1) mah = Integer.MAX_VALUE;
+            if (muh == Integer.MAX_VALUE && mah == Integer.MAX_VALUE) {
+                throw new NumberFormatException();
+            }
+            str = str.substring(0, Math.min(muh, mah));
 
-			int num = -1;
-			try {
-				num = Integer.parseInt( str );
-			} catch ( final NumberFormatException nfe ) {
-				throw new Exception( "Naming convention in given folder do not comply to rules... Bad user! ;)" );
-			}
+            int num = -1;
+            try {
+                num = Integer.parseInt(str);
+            } catch (final NumberFormatException nfe) {
+                throw new Exception("Naming convention in given folder do not comply to rules... Bad user! ;)");
+            }
 
-			if ( max < num ) max = num;
-		}
+            if (max < num) max = num;
+        }
 
 		return max;
 	}

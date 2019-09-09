@@ -8,7 +8,6 @@ import java.util.List;
 import com.jug.MoMA;
 import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.SimpleFunctionAnalysis;
 
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -37,7 +36,7 @@ public class CostFactory {
 		deltaH = Math.abs( deltaH );
 		costDeltaH = deltaH * ( float ) Math.pow( 1 + deltaH, power );
 //		latestCostEvaluation = String.format( "c_h = %.4f * %.4f^%.1f = %.4f", deltaH, 1 + deltaH, power, costDeltaH );
-		return new ValuePair< Float, float[] >( costDeltaH, new float[] { costDeltaH } );
+		return new ValuePair<>(costDeltaH, new float[]{costDeltaH});
 	}
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
@@ -54,7 +53,7 @@ public class CostFactory {
 		deltaL = Math.abs( deltaL );
 		costDeltaL += deltaL * ( float ) Math.pow( 1 + deltaL, power );
 //		latestCostEvaluation = String.format( "c_l = %.4f * %.4f^%.1f = %.4f", deltaL, 1 + deltaL, power, costDeltaL );
-		return new ValuePair< Float, float[] >( costDeltaL, new float[] { costDeltaL } );
+		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
 	}
 
     public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
@@ -91,8 +90,8 @@ public class CostFactory {
 
         final ValuePair< Integer, Integer > segInterval =
 				ComponentTreeUtils.getTreeNodeInterval( ctNode );
-		final int a = segInterval.getA().intValue();
-		final int b = segInterval.getB().intValue();
+		final int a = segInterval.getA();
+		final int b = segInterval.getB();
 
         // cell is too small
 		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!

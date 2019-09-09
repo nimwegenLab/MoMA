@@ -44,7 +44,7 @@ public class GrowthLine {
 	// constructors
 	// -------------------------------------------------------------------------------------
 	public GrowthLine() {
-		this.frames = new ArrayList< GrowthLineFrame >();
+		this.frames = new ArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------

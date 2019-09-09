@@ -82,7 +82,7 @@ extends AbstractUnaryHybridCF<RandomAccessibleInterval<IMG_T>, List<Point>> {
 
 	@Override
 	public List<Point> createOutput(final RandomAccessibleInterval<IMG_T> input) {
-		return new ArrayList< Point >();
+		return new ArrayList<>();
 	}
 
 }

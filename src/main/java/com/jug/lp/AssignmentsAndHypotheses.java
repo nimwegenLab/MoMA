@@ -42,9 +42,9 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	// construction
 	// -------------------------------------------------------------------------------------
 	public AssignmentsAndHypotheses() {
-		a_t = new ArrayList< List< A > >();
-		h_t = new ArrayList< List< H > >();
-		hmap = new HashMap< Object, H >();
+		a_t = new ArrayList<>();
+		h_t = new ArrayList<>();
+		hmap = new HashMap<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -56,8 +56,8 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 * <code>a_t</code> and <code>h_t</code>.
 	 */
 	public void addTimeStep() {
-		a_t.add( new ArrayList< A >() );
-		h_t.add( new ArrayList< H >() );
+		a_t.add(new ArrayList<>() );
+		h_t.add(new ArrayList<>() );
 	}
 
 	/**

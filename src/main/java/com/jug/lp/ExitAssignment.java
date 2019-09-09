@@ -83,7 +83,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 */
 	@Override
 	public List< String > getConstraintsToSave_PASCAL() {
-		final ArrayList< String > ret = new ArrayList< String >();
+		final ArrayList< String > ret = new ArrayList<>();
 
 		String constraint = "";
 		constraint += String.format( "(%d,%d,1)", Hup.size(), this.getVarIdx() );
@@ -113,11 +113,11 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		final List< Integer > coeffs = new ArrayList< Integer >();
+		final List< Integer > varIds = new ArrayList<>();
+		final List< Integer > coeffs = new ArrayList<>();
 
 		// expr.addTerm( Hup.size(), this.getGRBVar() );
-		coeffs.add( new Integer( Hup.size() ) );
+		coeffs.add(Hup.size());
 //		varIds.add( new Integer( this.getVarIdx() ) );
 
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
@@ -128,7 +128,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 					}
 					// add term if assignment is NOT another exit-assignment
 					// expr.addTerm( 1.0, a_j.getGRBVar() );
-					coeffs.add( new Integer( 1 ) );
+					coeffs.add(1);
 //					varIds.add( new Integer( a_j.getVarIdx() ) );
 				}
 			}

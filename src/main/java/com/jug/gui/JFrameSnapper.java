@@ -35,16 +35,16 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 	private final HashMap< JFrame, Point > currentFramePositions;
 
 	public JFrameSnapper() {
-		frames = new Vector< JFrame >();
-		activeSnappings = new HashMap< JFrame, Set< JFrame >>();
-		currentFramePositions = new HashMap< JFrame, Point >();
+		frames = new Vector<>();
+		activeSnappings = new HashMap<>();
+		currentFramePositions = new HashMap<>();
 	}
 
 	public void addFrame( final JFrame frame ) {
 		frame.addComponentListener( this );
 		frame.addWindowListener( this );
 
-		activeSnappings.put( frame, new HashSet< JFrame >() );
+		activeSnappings.put( frame, new HashSet<>() );
 		currentFramePositions.put( frame, frame.getLocation() );
 
 		frames.add( frame );

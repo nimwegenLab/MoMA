@@ -20,7 +20,7 @@ public class TypedComponentForest< T, C extends Component< T, C > > implements C
 
 	static < T, C extends Component< T, C > > TypedComponentForest< T, C > create( final ComponentForest< C > f )
 	{
-		return new TypedComponentForest< T, C >( f );
+		return new TypedComponentForest<>(f);
 	}
 
 	/**

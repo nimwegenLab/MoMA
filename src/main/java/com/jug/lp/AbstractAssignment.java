@@ -200,13 +200,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		try {
 			ilp.model.update();
 			System.out.print( "Running ILP with new ground-(un)truth knowledge in new thread!" );
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					ilp.run();
-				}
-			} );
+			final Thread t = new Thread(() -> ilp.run());
 			t.start();
 		} catch ( final GRBException e ) {
 			e.printStackTrace();

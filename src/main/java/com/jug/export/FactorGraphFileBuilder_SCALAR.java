@@ -20,9 +20,9 @@ public class FactorGraphFileBuilder_SCALAR {
 	int next_fkt_id = 0;
 	int next_fac_id = 0;
 
-	List< String > var_lines = new ArrayList< String >();
-	List< String > fkt_lines = new ArrayList< String >();
-	List< String > fac_lines = new ArrayList< String >();
+	List< String > var_lines = new ArrayList<>();
+	List< String > fkt_lines = new ArrayList<>();
+	List< String > fac_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.
@@ -147,10 +147,10 @@ public class FactorGraphFileBuilder_SCALAR {
 	 * @return the id of the factor just added.
 	 */
 	public int addFactor( final int functionId, final int varId, final int regionId ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		varIds.add( new Integer( varId ) );
-		final List< Integer > regionIds = new ArrayList< Integer >();
-		regionIds.add( new Integer( regionId ) );
+		final List< Integer > varIds = new ArrayList<>();
+		varIds.add(varId);
+		final List< Integer > regionIds = new ArrayList<>();
+		regionIds.add(regionId);
 		return addFactor( functionId, varIds, regionIds );
 	}
 
@@ -164,8 +164,8 @@ public class FactorGraphFileBuilder_SCALAR {
 	 * @return the id of the factor just added.
 	 */
 	public int addFactor( final int functionId, final List< Integer > varIds, final int regionId ) {
-		final List< Integer > regionIds = new ArrayList< Integer >();
-		regionIds.add( new Integer( regionId ) );
+		final List< Integer > regionIds = new ArrayList<>();
+		regionIds.add(regionId);
 		return addFactor( functionId, varIds, regionIds );
 	}
 

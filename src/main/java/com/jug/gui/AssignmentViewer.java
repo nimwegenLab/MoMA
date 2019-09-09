@@ -83,21 +83,17 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 		final String[] namesToRoll =
 				{ "OPT", "M", "D", "E", "GT" };
 		final AssignmentViewer me = this;
-		final ChangeListener changeListener = new ChangeListener() {
-
-			@Override
-			public void stateChanged( final ChangeEvent changeEvent ) {
-				final JTabbedPane sourceTabbedPane = ( JTabbedPane ) changeEvent.getSource();
-				if ( sourceTabbedPane.getSelectedComponent().equals( nextHackTab ) ) {
-					final int oldIdx = curTabIdx;
-					curTabIdx++;
-					if ( curTabIdx >= tabsToRoll.length ) curTabIdx = 0;
-					me.add( namesToRoll[ curTabIdx ], tabsToRoll[ curTabIdx ] );
-					me.remove( tabsToRoll[ oldIdx ] );
-					me.setSelectedIndex( 1 );
-				}
-			}
-		};
+		final ChangeListener changeListener = changeEvent -> {
+            final JTabbedPane sourceTabbedPane = ( JTabbedPane ) changeEvent.getSource();
+            if ( sourceTabbedPane.getSelectedComponent().equals( nextHackTab ) ) {
+                final int oldIdx = curTabIdx;
+                curTabIdx++;
+                if ( curTabIdx >= tabsToRoll.length ) curTabIdx = 0;
+                me.add( namesToRoll[ curTabIdx ], tabsToRoll[ curTabIdx ] );
+                me.remove( tabsToRoll[ oldIdx ] );
+                me.setSelectedIndex( 1 );
+            }
+        };
 
 		activeAssignments.display( data, true );
 		inactiveMappingAssignments.display( data, false, GrowthLineTrackingILP.ASSIGNMENT_MAPPING );

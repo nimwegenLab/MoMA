@@ -59,7 +59,7 @@ public class FloatTypeImgLoader {
 
 	private static ArrayList<Img<FloatType>> loadTiffsFromFile(String filename, int minTime, int maxTime, int minChannel, int maxChannel) {
 
-		ArrayList<Img<FloatType>> rawChannelImgs = new ArrayList< Img< FloatType >>();
+		ArrayList<Img<FloatType>> rawChannelImgs = new ArrayList<>();
 
 		ImagePlus imp = IJ.openImage(filename);
 
@@ -118,7 +118,7 @@ public class FloatTypeImgLoader {
 
 	private static ArrayList<Img<FloatType>> loadTiffsFromFolder(String path, int minTime, int maxTime, int minChannel, int maxChannel) {
 
-		ArrayList<Img<FloatType>> rawChannelImgs = new ArrayList< Img< FloatType >>();
+		ArrayList<Img<FloatType>> rawChannelImgs = new ArrayList<>();
 		for ( int cIdx = minChannel; cIdx <= maxChannel; cIdx++ ) {
 
 			// load tiffs from folder
@@ -160,28 +160,23 @@ public class FloatTypeImgLoader {
 	public static List< Img< FloatType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws Exception {
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				boolean isMatching = name.contains( ".tif" );
-				for ( final String filter : filterStrings ) {
-					isMatching = isMatching && name.contains( filter );
-				}
-				if ( isMatching == true ) {
-					final int time = getTimeFromFilename(name);
-					if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
-						isMatching = false;
-					}
-				}
-				return isMatching;
+		final FilenameFilter filter = (dir, name) -> {
+			boolean isMatching = name.contains( ".tif" );
+			for ( final String filter1 : filterStrings ) {
+				isMatching = isMatching && name.contains(filter1);
 			}
+			if (isMatching) {
+				final int time = getTimeFromFilename(name);
+				if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
+					isMatching = false;
+				}
+			}
+			return isMatching;
 		};
 		final File[] listOfFiles = folder.listFiles( filter );
 		if ( listOfFiles == null ) { throw new Exception( "Given argument is not a valid folder!" ); }
 
-		final List< Img< FloatType >> images = loadTiffs( listOfFiles );
-		return images;
+		return loadTiffs( listOfFiles );
 	}
 
 	/**
@@ -199,29 +194,24 @@ public class FloatTypeImgLoader {
 	public static List< Img< FloatType >> loadMMTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings ) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				boolean isMatching = name.contains( ".tif" );
-				for ( final String filter : filterStrings ) {
-					isMatching = isMatching && name.contains( filter );
-				}
-				if ( isMatching == true ) {
-					final int time = getTimeFromFilename(name);
-					if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
-						isMatching = false;
-					}
-				}
-				return isMatching;
+		final FilenameFilter filter = (dir, name) -> {
+			boolean isMatching = name.contains( ".tif" );
+			for ( final String filter1 : filterStrings ) {
+				isMatching = isMatching && name.contains(filter1);
 			}
+			if (isMatching) {
+				final int time = getTimeFromFilename(name);
+				if ( ( minTime != -1 && time < minTime ) || ( maxTime != -1 && time > maxTime ) ) {
+					isMatching = false;
+				}
+			}
+			return isMatching;
 		};
 		final File[] listOfFiles = folder.listFiles( filter );
 		Arrays.sort( listOfFiles ); // LINUX does not do that by default!
 		if ( listOfFiles == null ) { throw new Exception( "Given argument is not a valid folder!" ); }
 
-		final List< Img< FloatType >> images = loadMMTiffSequence( listOfFiles, normalize );
-		return images;
+		return loadMMTiffSequence( listOfFiles, normalize );
 	}
 
 	/**
@@ -230,7 +220,7 @@ public class FloatTypeImgLoader {
 	 * @throws ImgIOException
 	 */
 	public static List< Img< FloatType >> loadTiffs( final File[] listOfFiles ) throws ImgIOException {
-		final List< Img< FloatType > > images = new ArrayList< Img< FloatType > >( listOfFiles.length );
+		final List< Img< FloatType > > images = new ArrayList<>(listOfFiles.length);
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
 			images.add( null );
 		}
@@ -305,7 +295,7 @@ public class FloatTypeImgLoader {
 	 * @throws ImgIOException
 	 */
 	public static List< Img< FloatType >> loadMMTiffSequence( final File[] listOfFiles, final boolean normalize ) throws ImgIOException {
-		final List< Img< FloatType > > images = new ArrayList< Img< FloatType > >( listOfFiles.length );
+		final List< Img< FloatType > > images = new ArrayList<>(listOfFiles.length);
 
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
 			images.add( null );
@@ -409,8 +399,7 @@ public class FloatTypeImgLoader {
 
 		//alert! this does not always work, just try with the test images or FloatTypeImgLoaderTest class
 		//final Img< FloatType > img = ImagePlusAdapter.wrapReal( IJ.openImage( file.getAbsolutePath() ) );
-		final Img< FloatType > img = ImagePlusAdapter.convertFloat( IJ.openImage( file.getAbsolutePath() ) );
-		return img;
+		return ImagePlusAdapter.convertFloat( IJ.openImage( file.getAbsolutePath() ) );
 	}
 
 	/**
@@ -605,24 +594,18 @@ public class FloatTypeImgLoader {
 	 * @throws Exception
 	 */
 	public static < T extends RealType< T > & NativeType< T > > List< Img< FloatType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws Exception {
-		final List< Img< FloatType >> ret = new ArrayList< Img< FloatType >>();
+		final List< Img< FloatType >> ret = new ArrayList<>();
 
 		final File folder = new File( strFolder );
 
 		for ( int t = tmin; t <= tmax; t++ ) {
 			final String tString = String.format( "_t%0" + numDigits + "d", t );
 
-			final List< Img< FloatType > > channelImgs = new ArrayList< Img< FloatType > >();
+			final List< Img< FloatType > > channelImgs = new ArrayList<>();
 			for ( int c = cmin; c <= cmax; c++ ) {
 				final String cString = String.format( "_c%0" + numDigits + "d", c );
 
-				final FilenameFilter filter = new FilenameFilter() {
-
-					@Override
-					public boolean accept( final File dir, final String name ) {
-						return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( tString ) && name.contains( cString );
-					}
-				};
+				final FilenameFilter filter = (dir, name) -> name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( tString ) && name.contains( cString );
 				final File[] listOfFiles = folder.listFiles( filter );
 				if ( listOfFiles.length == 0 || listOfFiles == null ) { throw new Exception( String.format( "Missing file for t=%d and c=%d", t, c ) ); }
 				if ( listOfFiles.length > 1 ) { throw new Exception( String.format( "Multiple matching files for t=%d and c=%d", t, c ) ); }
@@ -734,20 +717,14 @@ public class FloatTypeImgLoader {
 		int max = -1;
 
 		final File folder = new File( strFolder );
-		final FilenameFilter filter = new FilenameFilter() {
-
-			@Override
-			public boolean accept( final File dir, final String name ) {
-				return name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( prefix );
-			}
-		};
+		final FilenameFilter filter = (dir, name) -> name.contains( ".tif" ) && ((filterString == null) || name.contains(filterString)) && name.contains( prefix );
 		final File[] listOfFiles = folder.listFiles( filter );
 		if ( listOfFiles == null ) return max;
 
-		for ( int i = 0; i < listOfFiles.length; i++ ) {
-			String str = listOfFiles[ i ].getName();
+        for (File listOfFile : listOfFiles) {
+            String str = listOfFile.getName();
 
-			final int num = getParameterFromFilename(str, prefix);
+            final int num = getParameterFromFilename(str, prefix);
 			/*
 			str = str.substring( str.indexOf( prefix ) + prefix.length() );
 			int muh = str.indexOf( "_" );
@@ -764,8 +741,8 @@ public class FloatTypeImgLoader {
 				throw new Exception( "Naming convention in given folder do not comply to rules... Bad user! ;)" );
 			}*/
 
-			if ( max < num ) max = num;
-		}
+            if (max < num) max = num;
+        }
 
 		return max;
 	}
@@ -817,11 +794,6 @@ public class FloatTypeImgLoader {
 	}
 
 
-	public static FileFilter tifFilter = new FileFilter() {
-		@Override
-		public boolean accept(File pathname) {
-			return pathname.getName().endsWith(".tif");
-		}
-	};
+	public static FileFilter tifFilter = pathname -> pathname.getName().endsWith(".tif");
 
 }

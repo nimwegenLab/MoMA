@@ -76,7 +76,7 @@ public final class FilteredComponent< T extends Type< T > >
 
 	FilteredComponent( final FilteredPartialComponent< T > intermediate )
 	{
-		children = new ArrayList< FilteredComponent< T > >();
+		children = new ArrayList<>();
 		parent = null;
 		minValue = intermediate.getValue().copy();
 		maxValue = intermediate.getValue().copy();
@@ -211,9 +211,9 @@ public final class FilteredComponent< T extends Type< T > >
 	}
 
 	private void evaluatePixelListExtended() {
-		this.pixelListExtended = new ArrayList< Localizable >();
+		this.pixelListExtended = new ArrayList<>();
 
-		final ArrayList< FilteredComponent< T >> siblings = new ArrayList< FilteredComponent< T > >();
+		final ArrayList< FilteredComponent< T >> siblings = new ArrayList<>();
 		if ( parent != null ) {
 			for ( final FilteredComponent< T > comp : parent.children ) {
 				if ( !comp.equals( this ) ) {

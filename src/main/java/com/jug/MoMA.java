@@ -676,8 +676,8 @@ public class MoMA {
 			boolean pos_ok = false;
 			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			final GraphicsDevice[] gs = ge.getScreenDevices();
-			for ( int i = 0; i < gs.length; i++ ) {
-				if ( gs[ i ].getDefaultConfiguration().getBounds().contains( new java.awt.Point( GUI_POS_X, GUI_POS_Y ) ) ) {
+			for (GraphicsDevice g : gs) {
+				if (g.getDefaultConfiguration().getBounds().contains(new java.awt.Point(GUI_POS_X, GUI_POS_Y))) {
 					pos_ok = true;
 				}
 			}
@@ -912,7 +912,7 @@ public class MoMA {
 
 			imgClassified = new ArrayImgFactory< FloatType >().create( imgTemp, new FloatType() );
 			imgSegmented = new ArrayImgFactory< ShortType >().create( imgTemp, new ShortType() );
-			final RealFloatProbMapToSegmentation< FloatType > converter = new RealFloatProbMapToSegmentation< FloatType >( 0.5f );
+			final RealFloatProbMapToSegmentation< FloatType > converter = new RealFloatProbMapToSegmentation<>(0.5f);
 
 			final int numProcessors = Prefs.getThreads();
 			final int numThreads = Math.min( ( int ) getImgTemp().dimension( 2 ), numProcessors );
@@ -959,7 +959,7 @@ public class MoMA {
 			for ( final Thread thread : threads ) {
 				try {
 					thread.join();
-				} catch ( final InterruptedException e ) {}
+				} catch ( final InterruptedException ignored) {}
 			}
 
 			// clean up
@@ -1060,13 +1060,7 @@ public class MoMA {
 	}
 
 	private void updateConsoleTextArea( final String text ) {
-		SwingUtilities.invokeLater( new Runnable() {
-
-			@Override
-			public void run() {
-				consoleWindowTextArea.append( text );
-			}
-		} );
+		SwingUtilities.invokeLater(() -> consoleWindowTextArea.append( text ));
 	}
 
 	/**
@@ -1550,8 +1544,8 @@ public class MoMA {
 	 */
 	private void findGrowthLines() {
 
-		this.setGrowthLines( new ArrayList< GrowthLine >() );
-		this.glCenterPoints = new ArrayList< List< List< Point >>>();
+		this.setGrowthLines(new ArrayList<>() );
+		this.glCenterPoints = new ArrayList<>();
 
 		List< List< Point > > frameWellCenters;
 
@@ -1569,7 +1563,7 @@ public class MoMA {
 
 		// ------ FIND AND FILTER MAXIMA -------------
 
-		final List< List< GrowthLineFrame >> collectionOfFrames = new ArrayList< List< GrowthLineFrame >>();
+		final List< List< GrowthLineFrame >> collectionOfFrames = new ArrayList<>();
 
 		for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
 			final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
@@ -1622,7 +1616,7 @@ public class MoMA {
 
 			// ------ DISTRIBUTE POINTS TO CORRESPONDING GROWTH LINES -------
 
-			final List< GrowthLineFrame > glFrames = new ArrayList< GrowthLineFrame >();
+			final List< GrowthLineFrame > glFrames = new ArrayList<>();
 
 			final Point pOrig = new Point( 3 );
 			pOrig.setPosition( frameIdx, 2 ); // location in original Img (will
@@ -1717,7 +1711,7 @@ public class MoMA {
 			}
 		}
 		// copy the max-GLs frame into this.growthLines
-		this.setGrowthLines( new ArrayList< GrowthLine >( maxGLsPerFrame ) );
+		this.setGrowthLines(new ArrayList<>(maxGLsPerFrame) );
 		for ( int i = 0; i < maxGLsPerFrame; i++ ) {
 			getGrowthLines().add( new GrowthLine() );
 			getGrowthLines().get( i ).add( collectionOfFrames.get( maxGLsPerFrameIdx ).get( i ) );
@@ -1822,10 +1816,6 @@ public class MoMA {
 
 			float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lower_percentile).getRealFloat();
 			float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upper_percentile).getRealFloat();
-			Pair<FloatType, FloatType> result = ops.stats().minMax(image);
-	//		float min = result.getA().getRealFloat();
-	//		float max = result.getB().getRealFloat();
-			Pair<FloatType, FloatType> result1 = ops.stats().minMax((Iterable<FloatType>) view);
 			float intensityDifference = max_percentile - min_percentile;
 			((Iterable<FloatType>) view).forEach(t -> {
 				final float val = t.getRealFloat();
@@ -1833,12 +1823,7 @@ public class MoMA {
 				else if (val > max_percentile) t.set(1.0f);
 				else t.set((val - min_percentile) / intensityDifference);
 			});
-			Pair<FloatType, FloatType> result2 = ops.stats().minMax((Iterable<FloatType>) view);
-			System.out.println( "break" );
 		}
-
-		Pair<FloatType, FloatType> result2 = ops.stats().minMax(image);
-
 		return image;
 	}
 
@@ -1949,9 +1934,7 @@ public class MoMA {
 			ImageJFunctions.show(outputImg, "Processed Image");
 			return outputImg;
 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 		return null;

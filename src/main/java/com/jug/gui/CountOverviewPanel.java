@@ -45,7 +45,7 @@ public class CountOverviewPanel extends JPanel {
 	}
 
 	private void buildGui() {
-		columnNames = new Vector< String >();
+		columnNames = new Vector<>();
 		columnNames.add( String.format( " #C" ) );
 		columnNames.add( String.format( " #D" ) );
 		columnNames.add( String.format( " #E" ) );
@@ -81,9 +81,6 @@ public class CountOverviewPanel extends JPanel {
 
 			@Override
 			public void changeSelection( final int rowIndex, final int columnIndex, final boolean toggle, final boolean extend ) {
-				try {
-					// content?
-				} catch ( final Exception e ) {}
 				// make the selection change
 				super.changeSelection( rowIndex, columnIndex, toggle, extend );
 			}
@@ -100,13 +97,13 @@ public class CountOverviewPanel extends JPanel {
 	 * @param currentGL
 	 */
 	public void showData( final GrowthLine currentGL ) {
-		data = new Vector< Vector< String > >();
+		data = new Vector<>();
 
 		int sumOfCells = 0;
 		if ( currentGL != null && currentGL.getIlp() != null ) {
 			// collect data
 			for ( final GrowthLineFrame glf : currentGL.getFrames() ) {
-				final Vector< String > row = new Vector< String >();
+				final Vector< String > row = new Vector<>();
 
 				int cells = 0;
 				int exits = 0;

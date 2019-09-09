@@ -19,7 +19,7 @@ public class TypedComponentTree< T, C extends Component< T, C > > implements Com
 
 	static < T, C extends Component< T, C > > TypedComponentTree< T, C > create( final ComponentTree< C > f )
 	{
-		return new TypedComponentTree< T, C >( f );
+		return new TypedComponentTree<>(f);
 	}
 
 	/**

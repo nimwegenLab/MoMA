@@ -299,8 +299,7 @@ class RangeSliderUI extends BasicSliderUI {
      */
     private Shape createThumbShape(final int width, final int height) {
         // Use circular shape.
-        final Ellipse2D shape = new Ellipse2D.Double(0, 0, width, height);
-        return shape;
+        return new Ellipse2D.Double(0, 0, width, height);
     }
 
     /**

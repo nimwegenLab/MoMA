@@ -135,7 +135,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 		this.isPruneRoot = value;
 
 		final LinkedList< Hypothesis< Component< FloatType, ? > > > queue =
-				new LinkedList< Hypothesis< Component< FloatType, ? > > >();
+                new LinkedList<>();
 		// TODO there will be no time, but this is of course not nice...
 		queue.add( ( Hypothesis< Component< FloatType, ? > > ) this );
 		while ( !queue.isEmpty() ) {

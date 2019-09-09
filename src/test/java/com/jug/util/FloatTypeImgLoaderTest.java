@@ -112,9 +112,9 @@ public class FloatTypeImgLoaderTest {
         String foldername32bit = resaveTifAsTifSequence(filename32bit);
         ArrayList<Img<FloatType>> listFolder32Bit = FloatTypeImgLoader.loadTiffsFromFileOrFolder(foldername32bit, 1, 5, 1, 2);
 
-        Assert.assertTrue(listFile8Bit.size() == listFile32Bit.size());
-        Assert.assertTrue(listFile8Bit.size() == listFolder8Bit.size());
-        Assert.assertTrue(listFile8Bit.size() == listFolder32Bit.size());
+        Assert.assertEquals(listFile8Bit.size(), listFile32Bit.size());
+        Assert.assertEquals(listFile8Bit.size(), listFolder8Bit.size());
+        Assert.assertEquals(listFile8Bit.size(), listFolder32Bit.size());
 
         // do for every channel...
         for (int i = 0; i < listFolder8Bit.size(); i++) {

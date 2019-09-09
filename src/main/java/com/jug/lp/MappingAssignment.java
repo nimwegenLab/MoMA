@@ -95,7 +95,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 */
 	@Override
 	public List< String > getConstraintsToSave_PASCAL() {
-		return new ArrayList< String >();
+		return new ArrayList<>();
 	}
 
 }

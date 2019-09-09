@@ -13,8 +13,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.ComponentTree;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -32,7 +30,7 @@ public class ComponentTreeUtils {
 	 * @return
 	 */
 	public static < C extends Component< ?, C > > List< C > getListOfLeavesInOrder( final ComponentTree< C > tree ) {
-		final List< C > leaves = new ArrayList< C >();
+		final List< C > leaves = new ArrayList<>();
 
 		for ( final C root : tree.roots() ) {
 			recursivelyAddLeaves( root, leaves );
@@ -65,7 +63,7 @@ public class ComponentTreeUtils {
 			final Hypothesis< Component< FloatType, ? >> hyp ) {
 		final ValuePair< Integer, Integer > candMinMax = candidate.getLocation();
 		final ValuePair< Integer, Integer > refMinMax = hyp.getLocation();
-		return candMinMax.getB().intValue() < refMinMax.getA().intValue();
+		return candMinMax.getB() < refMinMax.getA();
 	}
 
 	/**
@@ -79,7 +77,7 @@ public class ComponentTreeUtils {
 			final int numPixels ) {
 		final ValuePair< Integer, Integer > toMinMax = to.getLocation();
 		final ValuePair< Integer, Integer > fromMinMax = from.getLocation();
-		return ( toMinMax.getA().intValue() - fromMinMax.getB().intValue() ) > numPixels;
+		return (toMinMax.getA() - fromMinMax.getB()) > numPixels;
 	}
 
 	/**
@@ -95,13 +93,12 @@ public class ComponentTreeUtils {
 	public static ValuePair< Integer, Integer > getTreeNodeInterval( final Component< ?, ? > node ) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
-		final Iterator< Localizable > componentIterator = node.iterator();
-		while ( componentIterator.hasNext() ) {
-			final int pos = componentIterator.next().getIntPosition( 1 );
-			min = Math.min( min, pos );
-			max = Math.max( max, pos );
+		for (Localizable localizable : node) {
+			final int pos = localizable.getIntPosition(1);
+			min = Math.min(min, pos);
+			max = Math.max(max, pos);
 		}
-		return new ValuePair< Integer, Integer >( new Integer( min ), new Integer( max ) );
+		return new ValuePair<>(min, max);
 	}
 
 	/**
@@ -155,7 +152,7 @@ public class ComponentTreeUtils {
 			min = Math.min( min, pos );
 			max = Math.max( max, pos );
 		}
-		return new ValuePair< Integer, Integer >( new Integer( min ), new Integer( max ) );
+		return new ValuePair<>(min, max);
 	}
 
 	// public static float[] getFunctionValues( final Component<
@@ -179,7 +176,7 @@ public class ComponentTreeUtils {
 	 * @return
 	 */
 	public static List< Component< FloatType, ? >> getRightNeighbors( final Component< FloatType, ? > node ) {
-		final ArrayList< Component< FloatType, ? >> ret = new ArrayList< Component< FloatType, ? >>();
+		final ArrayList< Component< FloatType, ? >> ret = new ArrayList<>();
 
 		Component< FloatType, ? > rightNeighbor = getRightNeighbor( node );
 		if ( rightNeighbor != null ) {
@@ -243,7 +240,7 @@ public class ComponentTreeUtils {
 	 * @return
 	 */
 	public static < C extends Component< ?, C > > List< C > getListOfNodes( final ComponentForest< C > ct ) {
-		final ArrayList< C > ret = new ArrayList< C >();
+		final ArrayList< C > ret = new ArrayList<>();
 		for ( final C root : ct.roots() ) {
 			ret.add( root );
 			addListOfNodes( root, ret );
@@ -267,7 +264,7 @@ public class ComponentTreeUtils {
 	 * @return
 	 */
 	public static < C extends Component< ?, C > > ArrayList< C > getAllChildren( final ArrayList< C > ctnLevel ) {
-		final ArrayList< C > nextCtnLevel = new ArrayList< C >();
+		final ArrayList< C > nextCtnLevel = new ArrayList<>();
 		for ( final C ctn : ctnLevel ) {
 			for ( final C child : ctn.getChildren() ) {
 				nextCtnLevel.add( child );

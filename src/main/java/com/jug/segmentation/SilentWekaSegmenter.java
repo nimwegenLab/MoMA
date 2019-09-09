@@ -31,7 +31,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 
 	public boolean loadClassifier( final String directory, final String filename ) {
 		// Try to load Weka model (classifier and train header)
-		if ( false == wekaSegmentation.loadClassifier( directory + filename ) ) {
+		if (!wekaSegmentation.loadClassifier(directory + filename)) {
 			IJ.error( "Error when loading Weka classifier from file: " + directory + filename );
 			System.out.println( "Error: classifier could not be loaded from '" + directory + filename + "'." );
 			return false;
@@ -48,14 +48,14 @@ public class SilentWekaSegmenter< T extends NumericType > {
 	}
 
 	public RandomAccessibleInterval< T > classifyPixels( final RandomAccessibleInterval< T > img, final boolean probabilityMaps ) {
-		final List< RandomAccessibleInterval< T >> rais = new ArrayList< RandomAccessibleInterval< T >>();
+		final List< RandomAccessibleInterval< T >> rais = new ArrayList<>();
 		rais.add( img );
 		return ( classifyPixels( rais, probabilityMaps ) ).get( 0 );
 	}
 
 	public List< RandomAccessibleInterval< T >> classifyPixels( final List< RandomAccessibleInterval< T >> raiList, final boolean probabilityMaps ) {
 
-		final List< RandomAccessibleInterval< T >> results = new ArrayList< RandomAccessibleInterval< T >>( raiList );
+		final List< RandomAccessibleInterval< T >> results = new ArrayList<>(raiList);
 
 		final int numProcessors = 1; // Prefs.getThreads();
 		final int numThreads = Math.min( raiList.size(), numProcessors );
@@ -117,7 +117,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		for ( final Thread thread : threads ) {
 			try {
 				thread.join();
-			} catch ( final InterruptedException e ) {}
+			} catch ( final InterruptedException ignored) {}
 		}
 
 		return results;

@@ -308,7 +308,7 @@ public class Util {
 
 	static ArrayList<IntervalView<FloatType>> slice(RandomAccessibleInterval<FloatType> inImg)
 	{
-		ArrayList<IntervalView<FloatType>> result = new ArrayList<IntervalView<FloatType>>();
+		ArrayList<IntervalView<FloatType>> result = new ArrayList<>();
 
 		for (long z = inImg.min(2); z <= inImg.max(2); z++) {
 			IntervalView<FloatType> sliceImg = Views.hyperSlice(inImg, 2, z);

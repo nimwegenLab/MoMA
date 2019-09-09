@@ -60,12 +60,12 @@ final class FilteredPartialComponentGenerator< T extends Type< T > > implements 
 	@Override
 	public FilteredPartialComponent< T > createComponent( final T value )
 	{
-		return new FilteredPartialComponent< T >( value, this );
+		return new FilteredPartialComponent<>(value, this);
 	}
 
 	@Override
 	public FilteredPartialComponent< T > createMaxComponent()
 	{
-		return new FilteredPartialComponent< T >( maxValue, this );
+		return new FilteredPartialComponent<>(maxValue, this);
 	}
 }

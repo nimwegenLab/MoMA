@@ -16,7 +16,7 @@ public class GrowthLineSegmentationMagic {
 	static SilentWekaSegmenter< FloatType > classifier;
 
 	public static void setClassifier( final String folder, final String file ) {
-		classifier = new SilentWekaSegmenter< FloatType >( folder, file );
+		classifier = new SilentWekaSegmenter<>(folder, file);
 	}
 
 	public static void setClassifier( final SilentWekaSegmenter< FloatType > newClassifier ) {
@@ -39,7 +39,6 @@ public class GrowthLineSegmentationMagic {
 			max[ 2 ]++;
 		}
 
-		final SubsampleIntervalView< FloatType > subsampleGapClass = Views.subsample( Views.interval( classified, min, max ), 1, 1, 2 );
-		return subsampleGapClass;
+		return Views.subsample( Views.interval( classified, min, max ), 1, 1, 2 );
 	}
 }

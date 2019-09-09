@@ -3,31 +3,13 @@
  */
 package com.jug;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-
-import com.jug.util.filteredcomponents.FilteredComponentTree;
-import ij.gui.Plot;
-import net.imglib2.type.numeric.integer.IntType;
-import org.scijava.Context;
-import org.scijava.command.CommandModule;
-import org.scijava.command.CommandService;
-import org.scijava.io.IOService;
-import org.scijava.plugin.PluginService;
-import org.scijava.ui.UIService;
-
-import com.moma.auxiliary.Plotting;
-
-import de.csbdresden.csbdeep.commands.GenericNetwork;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -38,13 +20,7 @@ import com.jug.lp.MappingAssignment;
 import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
-import net.imagej.Dataset;
-import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
-import net.imglib2.FinalInterval;
-import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -55,14 +31,8 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
-import net.imglib2.loops.LoopBuilder;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -151,7 +121,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	// constructors
 	// -------------------------------------------------------------------------------------
 	public AbstractGrowthLineFrame() {
-		imgLocations = new ArrayList< Point >();
+		imgLocations = new ArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -209,13 +179,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *
 	 */
 	public void sortPoints() {
-		Collections.sort( imgLocations, new Comparator< Point >() {
-
-			@Override
-			public int compare( final Point o1, final Point o2 ) {
-				return new Integer( o1.getIntPosition( 1 ) ).compareTo( new Integer( o2.getIntPosition( 1 ) ) );
-			}
-		} );
+		imgLocations.sort((o1, o2) -> new Integer(o1.getIntPosition(1)).compareTo(o2.getIntPosition(1)));
 	}
 
 	/**
@@ -503,7 +467,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		}
 
 		final RealRandomAccessible< FloatType > rrImg =
-				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory< FloatType >() );
+				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory<>() );
 		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
 
 //		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
@@ -528,7 +492,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				diagonalAverages[ nextAverageIdx ] = summedIntensities / summands;
 				nextAverageIdx++;
 			}
-			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax( diagonalAverages ).b.floatValue();
+			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax(diagonalAverages).b;
 
 			// dIntensity[i] = maxDiagonalAvg - totalAverageIntensity;
 			// dIntensity[i] = maxDiagonalAvg - minIntensity;
@@ -687,7 +651,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 */
 	private List< Point > flipAtCenter( final List< Point > locations ) {
 		// System.out.println("FLIP FLIP FLIP FLIP FLIP FLIP FLIP FLIP");
-		final ArrayList< Point > ret = new ArrayList< Point >( locations.size() );
+		final ArrayList< Point > ret = new ArrayList<>(locations.size());
 
 		final int centerInX = getAvgXpos();
 		for ( final Point p : locations ) {
@@ -794,57 +758,43 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	public Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> getSolutionStats_limitsAndRightAssType() {
-		final Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> ret = new Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >>();
+		final Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> ret = new Vector<>();
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 
 			final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> aa = getParent().getIlp().getOptimalRightAssignments( this.getTime() ).get( hyp ).iterator().next();
 
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			final Iterator< Localizable > componentIterator = hyp.getWrappedHypothesis().iterator();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
-				min = Math.min( min, ypos );
-				max = Math.max( max, ypos );
+			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+				final int ypos = localizable.getIntPosition(0);
+				min = Math.min(min, ypos);
+				max = Math.max(max, ypos);
 			}
 
-			ret.add( new ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >( new ValuePair< Integer, Integer >( new Integer( min ), new Integer( max ) ), new ValuePair< Integer, Integer >( new Integer( aa.getType() ), new Integer( ( aa.isGroundTruth() || aa.isGroundUntruth() ) ? 1 : 0 ) ) ) );
+			ret.add(new ValuePair<>(new ValuePair<>(min, max), new ValuePair<>(aa.getType(), (aa.isGroundTruth() || aa.isGroundUntruth()) ? 1 : 0)) );
 		}
 
-		Collections.sort( ret, new Comparator< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >>() {
-
-			@Override
-			public int compare( final ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > > o1, final ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > > o2 ) {
-				return o1.a.a.compareTo( o2.a.a );
-			}
-		} );
+		ret.sort((o1, o2) -> o1.a.a.compareTo(o2.a.a));
 		return ret;
 	}
 
 	public Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> getSortedActiveHypsAndPos() {
-		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> positionedHyps = new Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>>();
+		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> positionedHyps = new Vector<>();
 
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 			// find out where this hypothesis is located along the GL
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			final Iterator< Localizable > componentIterator = hyp.getWrappedHypothesis().iterator();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
-				min = Math.min( min, ypos );
-				max = Math.max( max, ypos );
+			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+				final int ypos = localizable.getIntPosition(0);
+				min = Math.min(min, ypos);
+				max = Math.max(max, ypos);
 			}
 
 			if ( !hyp.isPruned() ) {
-				positionedHyps.add( new ValuePair< Integer, Hypothesis< Component< FloatType, ? >> >( -max, hyp ) );
+				positionedHyps.add(new ValuePair<>(-max, hyp) );
 			}
 		}
 
-		Collections.sort( positionedHyps, new Comparator< ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> >() {
-
-			@Override
-			public int compare( final ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> o1, final ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> o2 ) {
-				return o1.a.compareTo( o2.a );
-			}
-		} );
+		positionedHyps.sort((o1, o2) -> o1.a.compareTo(o2.a));
 
 		return positionedHyps;
 	}

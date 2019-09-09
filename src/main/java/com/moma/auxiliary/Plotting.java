@@ -5,21 +5,15 @@ import com.jug.util.filteredcomponents.FilteredComponentTree;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
-import net.imglib2.Cursor;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Intervals;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
@@ -48,7 +42,7 @@ public class Plotting {
 		int i = 0;
 		for ( final C root : ct.roots() ) {
 			int componentLevel = 0;
-			ArrayList< C > componentList = new ArrayList< C >();
+			ArrayList< C > componentList = new ArrayList<>();
 			componentList.add( root );
 			while ( componentList.size() > 0 ) {
 				final RandomAccessibleInterval<UnsignedByteType> componentImageSlice = ArrayImgs.unsignedBytes( xDim, yDim );
@@ -72,25 +66,23 @@ public class Plotting {
 		int yMax = Integer.MIN_VALUE;
 		RandomAccess<UnsignedByteType> out = image.randomAccess();
 
-		Iterator<Localizable> componentIterator = ctn.iterator();
-		while(componentIterator.hasNext()){
-			Localizable location = componentIterator.next();
-			final int xPos =  location.getIntPosition( 0 );
-			xMin = Math.min( xMin, xPos );
-			xMax = Math.max( xMax, xPos );
-			final int yPos = location.getIntPosition( 1 );
-			yMin = Math.min( yMin, yPos );
-			yMax = Math.max( yMax, yPos );
+        for (Localizable location : ctn) {
+            final int xPos = location.getIntPosition(0);
+            xMin = Math.min(xMin, xPos);
+            xMax = Math.max(xMax, xPos);
+            final int yPos = location.getIntPosition(1);
+            yMin = Math.min(yMin, yPos);
+            yMax = Math.max(yMax, yPos);
 
-			///////////// Draw component to image ///////////////////
-			out.setPosition(location);
+            ///////////// Draw component to image ///////////////////
+            out.setPosition(location);
 //			out.get().set(new ARGBType(ARGBType.blue(level)));
-			out.get().set(255);
+            out.get().set(255);
 //			in.fwd();
 //			out.setPosition(in);
 //			out.get().set(in.get());
 //			image.
-		}
+        }
 //		System.out.println("Component "+index+":");
 //		System.out.println("\tlevel: "+level);
 //		System.out.println("\txSize: "+xMin+", "+xMax);

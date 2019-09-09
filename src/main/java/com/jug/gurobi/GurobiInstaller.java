@@ -79,9 +79,7 @@ public class GurobiInstaller {
 
             try {
                 new GRBEnv( "MoMA_gurobi.log" );
-            } catch ( final GRBException e ) {
-                restartNeccessary = true;
-            } catch ( final UnsatisfiedLinkError ulr ) {
+            } catch ( final GRBException | UnsatisfiedLinkError e ) {
                 restartNeccessary = true;
             }
 

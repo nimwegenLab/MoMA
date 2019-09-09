@@ -18,7 +18,6 @@ import com.jug.lp.MappingAssignment;
 
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 
 /**
  * @author jug
@@ -28,12 +27,12 @@ public class FactorGraphFileBuilder_PAUL {
 	int next_t = 0;
 	int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
 
-	List< String > lines = new ArrayList< String >();
+	List< String > lines = new ArrayList<>();
 
 	final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
 
 	public FactorGraphFileBuilder_PAUL() {
-		mapHypId = new HashMap< Hypothesis< Component< FloatType, ? > >, Integer >();
+		mapHypId = new HashMap<>();
 		lines.add( "# EXPORTED MM-TRACKING (jug@mpi-cbg.de)\n" );
 		lines.add( "# objective_value = NOT_COMPUTED" );
 		lines.add( "# SEGMENTS" );
@@ -42,7 +41,7 @@ public class FactorGraphFileBuilder_PAUL {
 	}
 
 	public FactorGraphFileBuilder_PAUL( final double optimal_energy ) {
-		mapHypId = new HashMap< Hypothesis< Component< FloatType, ? > >, Integer >();
+		mapHypId = new HashMap<>();
 		lines.add( "# EXPORTED MM-TRACKING (jug@mpi-cbg.de)\n" );
 		lines.add( "# objective_value = " + optimal_energy );
 		lines.add( "# SEGMENTS" );

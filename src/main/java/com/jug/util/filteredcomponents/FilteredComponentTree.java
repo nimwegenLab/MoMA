@@ -179,9 +179,9 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final boolean darkToBright ) {
 		final T max = type.createVariable();
 		max.setReal( darkToBright ? type.getMaxValue() : type.getMinValue() );
-		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator< T >( max, input, imgFactory );
+		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator<>(max, input, imgFactory);
 		final FilteredComponentTree< T > tree =
-				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, minComponentWidth, maxComponentWidth, filter, generator.linkedList );
+                new FilteredComponentTree<>(minComponentSize, maxComponentSize, minComponentWidth, maxComponentWidth, filter, generator.linkedList);
 		BuildComponentTree.buildComponentTree( input, generator, tree, darkToBright );
 		
 		return tree;
@@ -245,8 +245,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final int maxComponentWidth,
 			final Filter filter,
 			final Img< LongType > linkedList ) {
-		roots = new HashSet< FilteredComponent< T > >();
-		nodes = new ArrayList< FilteredComponent< T > >();
+		roots = new HashSet<>();
+		nodes = new ArrayList<>();
 		this.minComponentSize = minComponentSize;
 		this.maxComponentSize = maxComponentSize;
 		this.minComponentWidth = minComponentWidth;
@@ -334,7 +334,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 			if ( createNewComponent ) {
 				// create new node
-				final FilteredComponent< T > component = new FilteredComponent< T >( intermediate );
+				final FilteredComponent< T > component = new FilteredComponent<>(intermediate);
 				for ( final FilteredComponent< T > c : component.children )
 					roots.remove( c );
 				roots.add( component );

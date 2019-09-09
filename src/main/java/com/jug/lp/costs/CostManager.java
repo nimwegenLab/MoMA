@@ -32,8 +32,8 @@ public class CostManager {
 		this.numDivisionFeatures = numDivisionFeatures;
 
 		this.weights = new double[ numFeatures ];
-		this.featureList = new ArrayList< float[] >();
-		this.var2row = new HashMap< GRBVar, Integer >();
+		this.featureList = new ArrayList<>();
+		this.var2row = new HashMap<>();
 	}
 
 	public int getDimensions() {

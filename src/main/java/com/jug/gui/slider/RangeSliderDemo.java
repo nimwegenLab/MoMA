@@ -42,13 +42,10 @@ public class RangeSliderDemo extends JPanel {
         rangeSlider.setMaximum(10);
         
         // Add listener to update display.
-        rangeSlider.addChangeListener(new ChangeListener() {
-            @Override
-			public void stateChanged(ChangeEvent e) {
-                RangeSlider slider = (RangeSlider) e.getSource();
-                rangeSliderValue1.setText(String.valueOf(slider.getValue()));
-                rangeSliderValue2.setText(String.valueOf(slider.getUpperValue()));
-            }
+        rangeSlider.addChangeListener(e -> {
+            RangeSlider slider = (RangeSlider) e.getSource();
+            rangeSliderValue1.setText(String.valueOf(slider.getValue()));
+            rangeSliderValue2.setText(String.valueOf(slider.getUpperValue()));
         });
 
         add(rangeSliderLabel1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
@@ -99,11 +96,6 @@ public class RangeSliderDemo extends JPanel {
             ex.printStackTrace();
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-			public void run() {
-                new RangeSliderDemo().display();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new RangeSliderDemo().display());
     }
 }

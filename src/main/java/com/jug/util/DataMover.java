@@ -85,8 +85,7 @@ public class DataMover {
 		for ( int i = 0; i < blueprint.numDimensions(); i++ ) {
 			dims[ i ] = blueprint.dimension( i );
 		}
-		final Img< T > ret = new ArrayImgFactory< T >().create( dims, type );
-		return ret;
+		return new ArrayImgFactory< T >().create( dims, type );
 	}
 
 	/**

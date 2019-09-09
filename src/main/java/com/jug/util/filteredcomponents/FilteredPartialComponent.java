@@ -54,7 +54,7 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 	{
 		pixelList = new PixelList( generator.linkedList.randomAccess(), generator.dimensions );
 		this.value = value.copy();
-		children = new ArrayList< FilteredPartialComponent< T > >();
+		children = new ArrayList<>();
 		emittedComponent = null;
 	}
 

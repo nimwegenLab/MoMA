@@ -102,7 +102,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	public void setScreenImage( final GrowthLineFrame glf, final IntervalView< FloatType > viewImg ) {
 		setEmptyScreenImage();
-		this.projector = new IterableIntervalProjector2D< FloatType, ARGBType >( 0, 1, viewImg, screenImage, new RealARGBConverter< FloatType >( 0, 1 ) );
+		this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
 		this.view = viewImg;
 		this.glf = glf;
 		this.repaint();

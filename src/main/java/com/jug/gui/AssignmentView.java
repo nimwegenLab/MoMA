@@ -68,7 +68,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	private boolean doFilterDataByType = false;
 	private int filterAssignmentType;
 
-	private boolean doFilterDataByCost = false;
+	private boolean doFilterDataByCost;
 	private float filterMinCost = -100f;
 	private float filterMaxCost = 100f;
 

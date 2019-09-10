@@ -185,9 +185,8 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *            the strings to be added.
 	 */
 	public void addConstraints(final List< String > lines ) {
-		int last_id = -1;
 		for ( final String line : lines ) {
-			last_id = addConstraint( line );
+			addConstraint( line );
 		}
 	}
 

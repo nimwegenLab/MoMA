@@ -59,11 +59,11 @@ public class CellStatsExporter {
 		private static final int UPPER = -2;
 
 		boolean exists = true;
-		int id = -1;
-		int pid = -1;
-		int tbirth = -1;
-		int daughterTypeOrPosition = SegmentRecord.UNKNOWN;
-		int frame = 0;
+		int id;
+		int pid;
+		int tbirth;
+		int daughterTypeOrPosition;
+		int frame;
 
 		final List< Integer > genealogy;
 
@@ -356,7 +356,7 @@ public class CellStatsExporter {
 		// -------------------------------------------------------------------
 
 		System.out.println( "Exporting collected cell-statistics..." );
-		Writer out = null;
+		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( file ) );
 
@@ -579,7 +579,7 @@ public class CellStatsExporter {
 			} else if (segmentRecord.terminated_by == SegmentRecord.ENDOFTRACKING) {
 //				// UGLY TRICK ALERT: remember the trick to fix the tracking towards the last frame?
 //				// Yes, we double the last frame. This also means that we should not export this fake frame, ergo we remove it here!
-				String deleted = "";
+				String deleted;
 				do {
 					deleted = linesToExport.remove(linesToExport.size() - 1);
 				}
@@ -609,7 +609,7 @@ public class CellStatsExporter {
 		final Vector< Vector< String >> dataToExport = getTracksExportData();
 
 		System.out.println( "Exporting data..." );
-		Writer out = null;
+		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( file ) );
 

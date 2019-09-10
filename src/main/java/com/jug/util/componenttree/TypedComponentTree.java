@@ -43,7 +43,6 @@ class TypedComponentTree< T, C extends Component< T, C > > implements ComponentT
 	{
 		final RandomAccessibleInterval< DoubleType > input = null;
 		TypedComponentTree< DoubleType, ? extends Component< DoubleType, ? > > tree;
-		tree = TypedComponentTree.create( PixelListComponentTree.buildComponentTree( input, new DoubleType(), true ) );
-//		tree = TypedComponentForest.create( MserTree.buildMserTree( input, 0, 0, 0, 0, 0, true ) );
+		TypedComponentTree.create( PixelListComponentTree.buildComponentTree( input, new DoubleType(), true ) );
 	}
 }

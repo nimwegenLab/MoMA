@@ -49,7 +49,7 @@ public class HtmlOverviewExporter {
 			return;
 		}
 
-		Writer out = null;
+		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( htmlFile ) );
 

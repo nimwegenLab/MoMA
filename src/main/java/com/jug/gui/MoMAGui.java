@@ -447,7 +447,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		txtNumCells.addActionListener(e -> {
 			model.getCurrentGL().getIlp().autosave();
 
-			int numCells = 0;
+			int numCells;
 			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 			try {
 				numCells = Integer.parseInt( txtNumCells.getText() );

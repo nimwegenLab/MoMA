@@ -457,7 +457,7 @@ public class MoMA {
 			}
 		}
 
-		File outputFolder = null;
+		File outputFolder;
 		if ( !cmd.hasOption( "o" ) ) {
 			if ( inputFolder == null ) {
 				System.out.println( "Error: Output folder would be set to a 'null' input folder! Please check your command line arguments..." );
@@ -1099,12 +1099,12 @@ public class MoMA {
 	 */
 	private File showStartupDialog( final JFrame guiFrame, final String datapath ) {
 
-		File file = null;
+		File file;
 		final String parentFolder = datapath.substring( 0, datapath.lastIndexOf( File.separatorChar ) );
 
 		// DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED
 
-		int decision = 0;
+		int decision;
 		if ( datapath.equals( System.getProperty( "user.home" ) ) ) {
 			decision = JOptionPane.NO_OPTION;
 		} else {
@@ -1161,7 +1161,7 @@ public class MoMA {
 	 * @return an instance of {@link File} pointing at the selected folder.
 	 */
 	private File showFolderChooser( final JFrame guiFrame, final String path ) {
-		File selectedFile = null;
+		File selectedFile;
 
 		if ( SystemUtils.IS_OS_MAC ) {
 			// --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS ---
@@ -1215,7 +1215,7 @@ public class MoMA {
 	 *         found in that file.
 	 */
 	private Properties loadParams() {
-		InputStream is = null;
+		InputStream is;
 		final Properties defaultProps = new Properties();
 
 		// First try loading from the current directory

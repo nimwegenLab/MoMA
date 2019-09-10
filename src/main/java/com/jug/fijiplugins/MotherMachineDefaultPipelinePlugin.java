@@ -121,7 +121,7 @@ class MotherMachineDefaultPipelinePlugin implements PlugIn {
             executeSplitting = false;
         }
 
-        int numberOfTimePoints = 0;
+        int numberOfTimePoints;
         int numberOfChannels = 0;
         if (executeRegistration) {
 

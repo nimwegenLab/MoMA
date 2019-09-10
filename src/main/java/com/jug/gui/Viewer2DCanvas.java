@@ -182,13 +182,12 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		String strToShow = "";
 		String str2ToShow = " ";
 		if ( !this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null ) {
-			float cost = Float.NaN;
 			//TODO NOT nice... do something against that, please!
 			final int t = glf.getTime();
 			Hypothesis< Component< FloatType, ? > > hyp =
 					glf.getParent().getIlp().getOptimalSegmentationAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
 			if ( hyp != null ) {
-				cost = hyp.getCosts();
+				float cost = hyp.getCosts();
 				strToShow = String.format( "c=%.4f", cost );
 				str2ToShow = "-";
 			}

@@ -503,7 +503,7 @@ class RangeSliderUI extends BasicSliderUI {
          * value in the slider.
          */
         private void moveLowerThumb() {
-            int thumbMiddle = 0;
+            int thumbMiddle;
 
             switch (slider.getOrientation()) {
             case SwingConstants.VERTICAL:
@@ -561,7 +561,7 @@ class RangeSliderUI extends BasicSliderUI {
          * value in the slider.
          */
         private void moveUpperThumb() {
-            int thumbMiddle = 0;
+            int thumbMiddle;
 
             switch (slider.getOrientation()) {
             case SwingConstants.VERTICAL:

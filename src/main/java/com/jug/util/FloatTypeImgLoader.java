@@ -437,7 +437,7 @@ public class FloatTypeImgLoader {
 
 		final List< Img< FloatType >> imageList = loadTiffsFromFolder( strFolder );
 
-		Img< FloatType > stack = null;
+		Img< FloatType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long channels = imageList.get( 0 ).dimension( 2 );
@@ -489,7 +489,7 @@ public class FloatTypeImgLoader {
 		final List< Img< FloatType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
 
-		Img< FloatType > stack = null;
+		Img< FloatType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long frames = imageList.size();
@@ -517,7 +517,7 @@ public class FloatTypeImgLoader {
 		final List< Img< FloatType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, normalize, filter );
 		if ( imageList.size() == 0 ) return null;
 
-		Img< FloatType > stack = null;
+		Img< FloatType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long frames = imageList.size();
@@ -618,7 +618,7 @@ public class FloatTypeImgLoader {
 
 		if ( imageList.get( 0 ).numDimensions() != 2 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
-		Img< FloatType > retImage = null;
+		Img< FloatType > retImage;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long channels = imageList.size();
@@ -653,7 +653,7 @@ public class FloatTypeImgLoader {
 
 		if ( frameList.get( 0 ).numDimensions() != 3 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
-		Img< FloatType > retImage = null;
+		Img< FloatType > retImage;
 		final long width = frameList.get( 0 ).dimension( 0 );
 		final long height = frameList.get( 0 ).dimension( 1 );
 		final long channels = frameList.get( 0 ).dimension( 2 );

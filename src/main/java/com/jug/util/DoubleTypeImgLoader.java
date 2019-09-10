@@ -285,7 +285,7 @@ class DoubleTypeImgLoader {
 
 		final List< Img< DoubleType >> imageList = loadTiffsFromFolder( strFolder );
 
-		Img< DoubleType > stack = null;
+		Img< DoubleType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long channels = imageList.get( 0 ).dimension( 2 );
@@ -337,7 +337,7 @@ class DoubleTypeImgLoader {
 		final List< Img< DoubleType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
 
-		Img< DoubleType > stack = null;
+		Img< DoubleType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long frames = imageList.size();
@@ -365,7 +365,7 @@ class DoubleTypeImgLoader {
 		final List< Img< DoubleType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, normalize, filter );
 		if ( imageList.size() == 0 ) return null;
 
-		Img< DoubleType > stack = null;
+		Img< DoubleType > stack;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long frames = imageList.size();
@@ -467,7 +467,7 @@ class DoubleTypeImgLoader {
 
 		if ( imageList.get( 0 ).numDimensions() != 2 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
-		Img< DoubleType > retImage = null;
+		Img< DoubleType > retImage;
 		final long width = imageList.get( 0 ).dimension( 0 );
 		final long height = imageList.get( 0 ).dimension( 1 );
 		final long channels = imageList.size();
@@ -502,7 +502,7 @@ class DoubleTypeImgLoader {
 
 		if ( frameList.get( 0 ).numDimensions() != 3 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
-		Img< DoubleType > retImage = null;
+		Img< DoubleType > retImage;
 		final long width = frameList.get( 0 ).dimension( 0 );
 		final long height = frameList.get( 0 ).dimension( 1 );
 		final long channels = frameList.get( 0 ).dimension( 2 );
@@ -573,7 +573,7 @@ class DoubleTypeImgLoader {
             }
             str = str.substring(0, Math.min(muh, mah));
 
-            int num = -1;
+            int num;
             try {
                 num = Integer.parseInt(str);
             } catch (final NumberFormatException nfe) {

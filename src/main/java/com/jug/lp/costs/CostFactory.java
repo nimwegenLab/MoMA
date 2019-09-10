@@ -24,8 +24,8 @@ public class CostFactory {
 
 	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition, final float normalizer ) {
 		float deltaH = ( oldPosition - newPosition ) / normalizer;
-		float power = 0.0f;
-		float costDeltaH = 0.0f;
+		float power;
+		float costDeltaH;
 		if ( deltaH > 0 ) { // upward migration
 			deltaH = Math.max( 0, deltaH - 0.05f ); // going upwards for up to 5% is for free...
 			power = 3.0f;
@@ -41,7 +41,7 @@ public class CostFactory {
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
 		float deltaL = ( newSize - oldSize ) / normalizer;
-		float power = 0.0f;
+		float power;
 		float costDeltaL = 0.0f;
 		if ( deltaL > 0 ) { // growth
 			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
@@ -59,7 +59,7 @@ public class CostFactory {
     public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
 		final float deltaS = Math.abs( sizeFirstChild - sizeSecondChild ) / Math.min( sizeFirstChild, sizeSecondChild );
 		float power = 2.0f;
-		float costDeltaL = 0.0f;
+		float costDeltaL;
 		if ( deltaS > 1.15 ) {
 			power = 7.0f;
 		}

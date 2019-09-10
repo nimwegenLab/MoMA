@@ -485,7 +485,7 @@ public class GrowthLineTrackingILP {
 	private void addExitAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> hyps ) throws GRBException {
 		if ( hyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			cost = costModulationForSubstitutedILP( hyp.getCosts() );
@@ -515,7 +515,7 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
@@ -709,7 +709,7 @@ public class GrowthLineTrackingILP {
 	private void addDivisionAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {

@@ -60,12 +60,11 @@ public class GrowthLine {
 	/**
 	 * @param frame
 	 *            the GrowthLineFrame to be appended as last frame
-	 * @return true, if add was successful.
-	 */
-	public boolean add( final GrowthLineFrame frame ) {
+     */
+	public void add(final GrowthLineFrame frame ) {
 		frame.setParent( this );
-		return frames.add( frame );
-	}
+        frames.add(frame);
+    }
 
 	/**
 	 * @param frame

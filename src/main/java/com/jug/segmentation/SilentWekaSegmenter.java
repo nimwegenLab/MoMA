@@ -29,23 +29,21 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		loadClassifier( directory, filename );
 	}
 
-	private boolean loadClassifier(final String directory, final String filename) {
+	private void loadClassifier(final String directory, final String filename) {
 		// Try to load Weka model (classifier and train header)
 		if (!wekaSegmentation.loadClassifier(directory + filename)) {
 			IJ.error( "Error when loading Weka classifier from file: " + directory + filename );
 			System.out.println( "Error: classifier could not be loaded from '" + directory + filename + "'." );
-			return false;
+			return;
 		}
 
 		System.out.println( "Read header from " + directory + filename + " (number of attributes = " + wekaSegmentation.getTrainHeader().numAttributes() + ")" );
 
 		if ( wekaSegmentation.getTrainHeader().numAttributes() < 1 ) {
 			IJ.error( "Error", "No attributes were found on the model header loaded from " + directory + filename );
-			return false;
-		}
+        }
 
-		return true;
-	}
+    }
 
 	public RandomAccessibleInterval< T > classifyPixels( final RandomAccessibleInterval< T > img, final boolean probabilityMaps ) {
 		final List< RandomAccessibleInterval< T >> rais = new ArrayList<>();

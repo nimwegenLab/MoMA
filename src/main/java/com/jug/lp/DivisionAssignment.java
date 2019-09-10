@@ -28,9 +28,8 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 * @param nodes
 	 * @param edges
 	 * @param from
-	 * @throws GRBException
-	 */
-	public DivisionAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> from, final Hypothesis<Component<FloatType, ?>> toUpper, final Hypothesis<Component<FloatType, ?>> toLower) throws GRBException {
+     */
+	public DivisionAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> from, final Hypothesis<Component<FloatType, ?>> toUpper, final Hypothesis<Component<FloatType, ?>> toLower) {
 		super( GrowthLineTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp );
 		this.from = from;
 		this.toUpper = toUpper;
@@ -41,10 +40,9 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 * This method is void. DIVISION assignments do not come with assignment
 	 * specific constrains...
 	 *
-	 * @throws GRBException
      */
 	@Override
-	public void addConstraintsToLP() throws GRBException {}
+	public void addConstraintsToLP() {}
 
 	/**
 	 * Division assignments do not come with constraints.

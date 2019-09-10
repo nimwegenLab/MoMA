@@ -111,14 +111,13 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * Adds a function given a list of variable indices.
 	 *
 	 * @param varIdx
-	 * @return
 	 */
-	public int addFkt( final int... varIdx ) {
+	public void addFkt(final int... varIdx ) {
 		String line = "" + varIdx.length + " ";
 		for ( final int idx : varIdx ) {
 			line += "" + idx + " ";
 		}
-		return addFkt( line );
+		addFkt(line);
 	}
 
 	/**
@@ -147,14 +146,13 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * Adds a unary factor given by a list of tensor values.
 	 *
 	 * @param unaries
-	 * @return
 	 */
-	public int addFactor( final float... unaries ) {
+	public void addFactor(final float... unaries ) {
 		String line = "" + unaries.length + "\n\t";
 		for ( final float c : unaries ) {
 			line += "" + c + " ";
 		}
-		return addFactor( line );
+		addFactor(line);
 	}
 
 	/**
@@ -185,15 +183,12 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param lines
 	 *            the strings to be added.
-	 * @return the id of the last factor added, or -1 in case the given list was
-	 *         empty.
 	 */
-	public int addConstraints( final List< String > lines ) {
+	public void addConstraints(final List< String > lines ) {
 		int last_id = -1;
 		for ( final String line : lines ) {
 			last_id = addConstraint( line );
 		}
-		return last_id;
 	}
 
 	/**

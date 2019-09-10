@@ -28,9 +28,8 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * @param edges
 	 * @param from
 	 * @param to
-	 * @throws GRBException
-	 */
-	public MappingAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) throws GRBException {
+     */
+	public MappingAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) {
 		super( GrowthLineTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
 		this.from = from;
 		this.to = to;
@@ -40,10 +39,9 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * This method is void. MAPPING assignments do not come with assignment
 	 * specific constrains...
 	 *
-	 * @throws GRBException
-	 */
+     */
 	@Override
-	public void addConstraintsToLP() throws GRBException {}
+	public void addConstraintsToLP() {}
 
 	/**
 	 * Mapping assignments do not come with constraints.

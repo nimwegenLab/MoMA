@@ -144,14 +144,13 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varId
 	 *            the variable id for this unary factor.
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final int varId, final int regionId ) {
+	public void addFactor(final int functionId, final int varId, final int regionId ) {
 		final List< Integer > varIds = new ArrayList<>();
 		varIds.add(varId);
 		final List< Integer > regionIds = new ArrayList<>();
 		regionIds.add(regionId);
-		return addFactor( functionId, varIds, regionIds );
+		addFactor(functionId, varIds, regionIds);
 	}
 
 	/**
@@ -161,12 +160,11 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varIds
 	 *            list of variables connected with this factor
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final List< Integer > varIds, final int regionId ) {
+	public void addFactor(final int functionId, final List< Integer > varIds, final int regionId ) {
 		final List< Integer > regionIds = new ArrayList<>();
 		regionIds.add(regionId);
-		return addFactor( functionId, varIds, regionIds );
+		addFactor(functionId, varIds, regionIds);
 	}
 
 	/**

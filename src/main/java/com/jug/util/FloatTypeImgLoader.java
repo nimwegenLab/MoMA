@@ -702,9 +702,8 @@ public class FloatTypeImgLoader {
 	 *            int-value. (Note: the int must terminate with either '_' or
 	 *            '.'!)
 	 * @return The maximum int-value found.
-	 * @throws Exception
 	 */
-	private static int figureMaxCounterFromFolder(final String strFolder, final String filterString, final String prefix) throws Exception {
+	private static int figureMaxCounterFromFolder(final String strFolder, final String filterString, final String prefix) {
 		int max = -1;
 
 		final File folder = new File( strFolder );

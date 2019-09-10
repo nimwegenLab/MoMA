@@ -1006,13 +1006,13 @@ public class MoMA {
 			private final PrintStream original = new PrintStream( System.out );
 
 			@Override
-			public void write( final int b ) throws IOException {
+			public void write( final int b ) {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
 				original.print((char) b);
 			}
 
 			@Override
-			public void write( final byte[] b, final int off, final int len ) throws IOException {
+			public void write( final byte[] b, final int off, final int len ) {
 				updateConsoleTextArea( new String( b, off, len ) );
 				original.print( new String( b, off, len ) );
 			}
@@ -1028,13 +1028,13 @@ public class MoMA {
 			private final PrintStream original = new PrintStream( System.out );
 
 			@Override
-			public void write( final int b ) throws IOException {
+			public void write( final int b ) {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
 				original.print((char) b);
 			}
 
 			@Override
-			public void write( final byte[] b, final int off, final int len ) throws IOException {
+			public void write( final byte[] b, final int off, final int len ) {
 				updateConsoleTextArea( new String( b, off, len ) );
 				original.print( new String( b, off, len ) );
 			}

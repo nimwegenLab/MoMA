@@ -34,9 +34,8 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @param nodes
 	 * @param edges
 	 * @param who
-	 * @throws GRBException
-	 */
-	public ExitAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) throws GRBException {
+     */
+	public ExitAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) {
 		super( GrowthLineTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
 		this.Hup = Hup;
 		this.edges = edges;

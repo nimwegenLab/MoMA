@@ -2106,7 +2106,7 @@ public class MoMA {
 		for ( int i = rowTimeAverages.size() / 2; i < rowTimeAverages.size(); i++ ) {
 			lowerHalfAvg += rowTimeAverages.get( i ).get();
 		}
-		lowerHalfAvg /= rowTimeAverages.size() / 2;
+		lowerHalfAvg /= rowTimeAverages.size() / 2.0;
 
 		// compute average of lowest 3 (or such) rows
 		float lowestRowsAvg = 0;

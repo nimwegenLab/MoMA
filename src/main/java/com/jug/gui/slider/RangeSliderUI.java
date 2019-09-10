@@ -348,7 +348,7 @@ class RangeSliderUI extends BasicSliderUI {
     @Override
 	public void scrollByUnit(final int direction) {
         synchronized (slider) {
-            final int delta = 1 * ((direction > 0) ? POSITIVE_SCROLL : NEGATIVE_SCROLL);
+            final int delta = ((direction > 0) ? POSITIVE_SCROLL : NEGATIVE_SCROLL);
 
             if (upperThumbSelected) {
                 final int oldValue = ((RangeSlider) slider).getUpperValue();

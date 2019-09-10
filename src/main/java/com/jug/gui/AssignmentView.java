@@ -394,7 +394,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		final int y4 = MoMA.GL_OFFSET_TOP + limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int x5 = this.width / 3;
 		final int y5 =
-				MoMA.GL_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET + ( 2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + 1 * (limitsRightUpper.getB() + limitsRightLower.getA()) / 2 ) / 3;
+				MoMA.GL_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET + ( 2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2 ) / 3;
 		final int y6 = MoMA.GL_OFFSET_TOP + limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int y7 = MoMA.GL_OFFSET_TOP + limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 

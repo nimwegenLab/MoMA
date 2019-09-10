@@ -120,7 +120,7 @@ public class ArgbDrawingUtils {
 				raArgbImg.setPosition( imgPos );
 				final int curCol = raArgbImg.get().get();
 				final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-				final int greenToUse = Math.min( 35, ( 255 - ARGBType.green( curCol ) ) ) / 1;
+				final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
 				final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
 			}
@@ -143,7 +143,7 @@ public class ArgbDrawingUtils {
 						raArgbImg.setPosition( imgPos );
 						final int curCol = raArgbImg.get().get();
 						final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-						final int greenToUse = Math.min( 200, ( 255 - ARGBType.green( curCol ) ) ) / 1;
+						final int greenToUse = Math.min(200, (255 - ARGBType.green(curCol)));
 						final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
 						raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
 					}
@@ -168,7 +168,7 @@ public class ArgbDrawingUtils {
 					raArgbImg.setPosition( imgPos );
 					final int curCol = raArgbImg.get().get();
 					final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-					final int greenToUse = Math.min( 200, ( 255 - ARGBType.green( curCol ) ) ) / 1;
+					final int greenToUse = Math.min(200, (255 - ARGBType.green(curCol)));
 					final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
 //					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + redToUse, ARGBType.green( curCol ) + greenToUse, ARGBType.blue( curCol ) + blueToUse, ARGBType.alpha( curCol ) ) ) );
 					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
@@ -198,7 +198,7 @@ public class ArgbDrawingUtils {
 				imgPos[ 0 ] += i;
 				raArgbImg.setPosition( imgPos );
 				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min( 100, ( 255 - ARGBType.red( curCol ) ) ) / 1;
+				final int redToUse = Math.min(100, (255 - ARGBType.red(curCol)));
                 final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( curCol ) ) ) / 4;
 				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
@@ -231,7 +231,7 @@ public class ArgbDrawingUtils {
 				imgPos[ 0 ] += i;
 				raArgbImg.setPosition( imgPos );
 				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min( 100, ( 255 - ARGBType.red( curCol ) ) ) / 1;
+				final int redToUse = Math.min(100, (255 - ARGBType.red(curCol)));
 				final int greenToUse = ( int ) ( Math.min( 75, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
 				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
@@ -254,7 +254,7 @@ public class ArgbDrawingUtils {
 						imgPos[ 0 ] += i;
 						raArgbImg.setPosition( imgPos );
 						final int curCol = raArgbImg.get().get();
-						final int redToUse = Math.min( 150, ( 255 - ARGBType.red( curCol ) ) ) / 1;
+						final int redToUse = Math.min(150, (255 - ARGBType.red(curCol)));
 						final int greenToUse = ( int ) ( Math.min( 150, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
 						final int blueToUse = Math.min( 50, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 						raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
@@ -279,7 +279,7 @@ public class ArgbDrawingUtils {
 					imgPos[ 0 ] += i;
 					raArgbImg.setPosition( imgPos );
 					final int curCol = raArgbImg.get().get();
-					final int redToUse = Math.min( 150, ( 255 - ARGBType.red( curCol ) ) ) / 1;
+					final int redToUse = Math.min(150, (255 - ARGBType.red(curCol)));
 					final int greenToUse = ( int ) ( Math.min( 150, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
 					final int blueToUse = Math.min( 50, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 //					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + redToUse, ARGBType.green( curCol ) + greenToUse, ARGBType.blue( curCol ) + blueToUse, ARGBType.alpha( curCol ) ) ) );

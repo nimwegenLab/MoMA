@@ -1257,7 +1257,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					if ( !( sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum() ) ) {
 						final int extent =
 								sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-						sliderTrackingRange.setUpperValue( 0 + extent );
+						sliderTrackingRange.setUpperValue(extent);
 					}
 					sliderTrackingRange.setValue( 0 );
 

@@ -747,7 +747,7 @@ public class GrowthLineTrackingILP {
 									System.err.println( "Division cost mismatch!" );
 								}
 
-								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, nodes, edgeSets, from, to, lowerNeighbor );
+								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
 								nodes.addAssignment( t, da );
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );

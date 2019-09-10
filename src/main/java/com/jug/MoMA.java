@@ -131,7 +131,7 @@ public class MoMA {
 	 */
 	public static int GL_WIDTH_IN_PIXELS = 20;
 	public static int GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = 100;
-	public static int GL_PIXEL_PADDING_IN_VIEWS = 15;
+	public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
 	public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
 
 	/**

@@ -65,7 +65,7 @@ public class CellStatsExporter {
 		int daughterTypeOrPosition = SegmentRecord.UNKNOWN;
 		int frame = 0;
 
-		List< Integer > genealogy;
+		final List< Integer > genealogy;
 
 		Hypothesis< Component< FloatType, ? >> hyp;
 		private int terminated_by = Integer.MIN_VALUE;

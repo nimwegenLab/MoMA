@@ -785,6 +785,6 @@ public class FloatTypeImgLoader {
 	}
 
 
-	public static FileFilter tifFilter = pathname -> pathname.getName().endsWith(".tif");
+	public static final FileFilter tifFilter = pathname -> pathname.getName().endsWith(".tif");
 
 }

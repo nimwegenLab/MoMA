@@ -22,9 +22,9 @@ import javax.swing.event.ChangeListener;
 class RangeSliderDemo extends JPanel {
 
 	private static final long serialVersionUID = 2431987178328113873L;
-    private JLabel rangeSliderValue1 = new JLabel();
-    private JLabel rangeSliderValue2 = new JLabel();
-    private RangeSlider rangeSlider = new RangeSlider();
+    private final JLabel rangeSliderValue1 = new JLabel();
+    private final JLabel rangeSliderValue2 = new JLabel();
+    private final RangeSlider rangeSlider = new RangeSlider();
 
     private RangeSliderDemo() {
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));

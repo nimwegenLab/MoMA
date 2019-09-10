@@ -68,7 +68,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	// fields
 	// -------------------------------------------------------------------------------------
-	public MoMAModel model;
+	public final MoMAModel model;
 
 	/**
 	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
@@ -119,10 +119,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JButton btnExportHtml;
 	private JButton btnExportData;
 
-	private String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-	private String itemChannel0 = "Raw Channel 0";
-	private String itemChannel1 = "Raw Channel 1";
-	private String itemChannel2 = "Raw Channel 2";
+	private final String itemChannel0BGSubtr = "BG-subtr. Ch.0";
+	private final String itemChannel0 = "Raw Channel 0";
+	private final String itemChannel1 = "Raw Channel 1";
+	private final String itemChannel2 = "Raw Channel 2";
 //	String itemPMFRF = "PMFRF Sum Image";
 //	String itemClassified = "RF BG Probability";
 //	String itemSegmented = "RF Cell Segmentation";

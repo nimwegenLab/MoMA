@@ -9,7 +9,7 @@ package com.jug.util;
  */
 public class OSValidator {
 
-    private static String OS = System.getProperty("os.name").toLowerCase();
+    private static final String OS = System.getProperty("os.name").toLowerCase();
 
     public static void main(final String[] args) {
 

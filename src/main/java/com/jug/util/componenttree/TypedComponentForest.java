@@ -11,7 +11,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 class TypedComponentForest< T, C extends Component< T, C > > implements ComponentForest< C >
 {
-	private ComponentForest< C > forest;
+	private final ComponentForest< C > forest;
 
 	private TypedComponentForest(final ComponentForest<C> f)
 	{

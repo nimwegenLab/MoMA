@@ -62,7 +62,7 @@ class CountOverviewPanel extends JPanel {
 		table = new JTable( model ) {
 
 			private static final long serialVersionUID = -5757310501730411649L;
-			DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
+			final DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
 
 			{ //initializer block
 				renderRight.setHorizontalAlignment( SwingConstants.CENTER );

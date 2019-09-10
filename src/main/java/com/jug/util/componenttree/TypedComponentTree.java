@@ -10,7 +10,7 @@ import net.imglib2.type.numeric.real.DoubleType;
 
 class TypedComponentTree< T, C extends Component< T, C > > implements ComponentTree< C >
 {
-	private ComponentTree< C > tree;
+	private final ComponentTree< C > tree;
 
 	private TypedComponentTree(final ComponentTree<C> f)
 	{

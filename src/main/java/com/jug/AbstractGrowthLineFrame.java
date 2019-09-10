@@ -55,7 +55,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Points at all the detected GrowthLine centers associated with this
 	 * GrowthLine.
 	 */
-	private List< Point > imgLocations;
+	private final List< Point > imgLocations;
 	private float[] simpleSepValues; // lazy evaluation -- gets computed when
 	// getAwesomeGapSeparationValues is called...
 	private GrowthLine parent;

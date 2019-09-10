@@ -57,13 +57,13 @@ public class GrowthLineTrackingILP {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
-	private static int OPTIMIZATION_NEVER_PERFORMED = 0;
-	private static int OPTIMAL = 1;
-	private static int INFEASIBLE = 2;
-	private static int UNBOUNDED = 3;
-	private static int SUBOPTIMAL = 4;
-	private static int NUMERIC = 5;
-	private static int LIMIT_REACHED = 6;
+	private static final int OPTIMIZATION_NEVER_PERFORMED = 0;
+	private static final int OPTIMAL = 1;
+	private static final int INFEASIBLE = 2;
+	private static final int UNBOUNDED = 3;
+	private static final int SUBOPTIMAL = 4;
+	private static final int NUMERIC = 5;
+	private static final int LIMIT_REACHED = 6;
 
 	public static final int ASSIGNMENT_EXIT = 0;
 	public static final int ASSIGNMENT_MAPPING = 1;

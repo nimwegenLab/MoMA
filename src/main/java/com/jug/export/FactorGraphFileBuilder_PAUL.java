@@ -27,7 +27,7 @@ public class FactorGraphFileBuilder_PAUL {
 	private int next_t = 0;
 	private int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
 
-	private List< String > lines = new ArrayList<>();
+	private final List< String > lines = new ArrayList<>();
 
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
 

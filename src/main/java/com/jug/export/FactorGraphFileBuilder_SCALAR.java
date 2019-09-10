@@ -20,9 +20,9 @@ public class FactorGraphFileBuilder_SCALAR {
 	private int next_fkt_id = 0;
 	private int next_fac_id = 0;
 
-	private List< String > var_lines = new ArrayList<>();
-	private List< String > fkt_lines = new ArrayList<>();
-	private List< String > fac_lines = new ArrayList<>();
+	private final List< String > var_lines = new ArrayList<>();
+	private final List< String > fkt_lines = new ArrayList<>();
+	private final List< String > fac_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.

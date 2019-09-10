@@ -74,17 +74,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
 	 * (left one in active assignments view).
 	 */
-	IntervalView< FloatType > viewImgLeftActive;
+	private IntervalView< FloatType > viewImgLeftActive;
 	/**
 	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
 	 * (center one in active assignments view).
 	 */
-	IntervalView< FloatType > viewImgCenterActive;
+	private IntervalView< FloatType > viewImgCenterActive;
 	/**
 	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
 	 * (right one in active assignments view).
 	 */
-	IntervalView< FloatType > viewImgRightActive;
+	private IntervalView< FloatType > viewImgRightActive;
 
 	// show helper lines in IntervalViews?
 	private boolean showSegmentationAnnotations = true;
@@ -93,13 +93,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	// gui-fields
 	// -------------------------------------------------------------------------------------
-	public Viewer2DCanvas imgCanvasActiveLeft;
+	private Viewer2DCanvas imgCanvasActiveLeft;
 	public Viewer2DCanvas imgCanvasActiveCenter;
-	public Viewer2DCanvas imgCanvasActiveRight;
+	private Viewer2DCanvas imgCanvasActiveRight;
 
 	public JSlider sliderGL;
 	public JSlider sliderTime;
-	public RangeSlider sliderTrackingRange;
+	private RangeSlider sliderTrackingRange;
 	private JLabel lblCurrentTime;
 
 	private JTabbedPane tabsViews;
@@ -108,7 +108,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JPanel panelDetailedDataView;
 	private Plot2DPanel plot;
 
-	public AssignmentViewer leftAssignmentViewer;
+	private AssignmentViewer leftAssignmentViewer;
 	public AssignmentViewer rightAssignmentViewer;
 
 	private JCheckBox cbAutosave;
@@ -119,10 +119,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JButton btnExportHtml;
 	private JButton btnExportData;
 
-	String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-	String itemChannel0 = "Raw Channel 0";
-	String itemChannel1 = "Raw Channel 1";
-	String itemChannel2 = "Raw Channel 2";
+	private String itemChannel0BGSubtr = "BG-subtr. Ch.0";
+	private String itemChannel0 = "Raw Channel 0";
+	private String itemChannel1 = "Raw Channel 1";
+	private String itemChannel2 = "Raw Channel 2";
 //	String itemPMFRF = "PMFRF Sum Image";
 //	String itemClassified = "RF BG Probability";
 //	String itemSegmented = "RF Cell Segmentation";
@@ -1326,7 +1326,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	/**
 	 * @return
 	 */
-	public void prepareOptimization() {
+	private void prepareOptimization() {
 		System.out.println( "Filling in CT hypotheses where needed..." );
 		int frameIndex = 0;
 		for ( final GrowthLineFrame glf : model.getCurrentGL().getFrames() ) {
@@ -1349,7 +1349,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * Depending on which checkboxes are checked, fix ALL respective
 	 * segmentations and assignments to current ILP state.
 	 */
-	protected void setAllVariablesFixedWhereChecked() {
+	private void setAllVariablesFixedWhereChecked() {
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 		final int t = sliderTime.getValue();
 		if ( ilp != null ) {
@@ -1376,7 +1376,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * segmentations and assignments if they are clamped to any value in the
 	 * ILP.
 	 */
-	protected void setAllVariablesFreeWhereChecked() {
+	private void setAllVariablesFreeWhereChecked() {
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 		final int t = sliderTime.getValue();
 		if ( ilp != null ) {

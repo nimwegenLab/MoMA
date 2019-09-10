@@ -58,25 +58,25 @@ public class CellStatsExporter {
 		private static final int LOWER = -1;
 		private static final int UPPER = -2;
 
-		public boolean exists = true;
-		public int id = -1;
-		public int pid = -1;
-		public int tbirth = -1;
-		public int daughterTypeOrPosition = SegmentRecord.UNKNOWN;
-		public int frame = 0;
+		boolean exists = true;
+		int id = -1;
+		int pid = -1;
+		int tbirth = -1;
+		int daughterTypeOrPosition = SegmentRecord.UNKNOWN;
+		int frame = 0;
 
-		public List< Integer > genealogy;
+		List< Integer > genealogy;
 
-		public Hypothesis< Component< FloatType, ? >> hyp;
+		Hypothesis< Component< FloatType, ? >> hyp;
 		private int terminated_by = Integer.MIN_VALUE;
 
-		public SegmentRecord(
-				final Hypothesis< Component< FloatType, ? >> hyp,
-				final int id,
-				final int pid,
-				final int tbirth,
-				final int daughterTypeOrPosition,
-				final List< Integer > genealogy ) {
+		SegmentRecord(
+                final Hypothesis<Component<FloatType, ?>> hyp,
+                final int id,
+                final int pid,
+                final int tbirth,
+                final int daughterTypeOrPosition,
+                final List<Integer> genealogy) {
 			this.hyp = hyp;
 			this.id = id;
 			this.pid = pid;
@@ -86,12 +86,12 @@ public class CellStatsExporter {
 			this.frame = 0;
 		}
 
-		public SegmentRecord(
-				final Hypothesis< Component< FloatType, ? >> hyp,
-				final int id,
-				final int pid,
-				final int tbirth,
-				final int daughterTypeOrPosition ) {
+		SegmentRecord(
+                final Hypothesis<Component<FloatType, ?>> hyp,
+                final int id,
+                final int pid,
+                final int tbirth,
+                final int daughterTypeOrPosition) {
 			this.hyp = hyp;
 			this.id = id;
 			this.pid = pid;
@@ -102,7 +102,7 @@ public class CellStatsExporter {
 			this.frame = 0;
 		}
 
-		public SegmentRecord( final SegmentRecord point, final int frameOffset ) {
+		SegmentRecord(final SegmentRecord point, final int frameOffset) {
 			this.hyp = point.hyp;
 			this.id = point.id;
 			this.pid = point.pid;
@@ -134,7 +134,7 @@ public class CellStatsExporter {
 		/**
 		 * @return
 		 */
-		public SegmentRecord nextSegmentInTime( final GrowthLineTrackingILP ilp ) {
+        SegmentRecord nextSegmentInTime(final GrowthLineTrackingILP ilp) {
 			SegmentRecord ret = this;
 
 			exists = true;
@@ -166,14 +166,14 @@ public class CellStatsExporter {
 		/**
 		 * @return true if the current segment is valid.
 		 */
-		public boolean exists() {
+        boolean exists() {
 			return exists;
 		}
 
 		/**
 		 * @return
 		 */
-		public long[] computeChannelHistogram( final IterableInterval< FloatType > view, final float min, final float max ) {
+        long[] computeChannelHistogram(final IterableInterval<FloatType> view, final float min, final float max) {
 			final Histogram1d< FloatType > histogram = new Histogram1d<>(view, new Real1dBinMapper<>(min, max, 20, false));
 			return histogram.toLongArray();
 		}
@@ -182,7 +182,7 @@ public class CellStatsExporter {
 		 * @param channel
 		 * @return
 		 */
-		public float[] computeChannelPercentile( final IterableInterval< FloatType > channel ) {
+        float[] computeChannelPercentile(final IterableInterval<FloatType> channel) {
 			final List< Float > pixelVals = new ArrayList<>();
 			for ( final FloatType ftPixel : channel ) {
 				pixelVals.add( ftPixel.get() );
@@ -201,7 +201,7 @@ public class CellStatsExporter {
 		/**
 		 * @return
 		 */
-		public float[] computeChannelColumnIntensities( final IntervalView< FloatType > columnBoxInChannel ) {
+        float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
 			if ( MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
 				System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS );
 			}
@@ -223,7 +223,7 @@ public class CellStatsExporter {
 		 * @param columnBoxInChannel
 		 * @return
 		 */
-		public float[][] getIntensities( final IntervalView< FloatType > columnBoxInChannel ) {
+        float[][] getIntensities(final IntervalView<FloatType> columnBoxInChannel) {
 			final float[][] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ][ ( int ) columnBoxInChannel.dimension( 1 ) ];
 			int y = 0;
 			for ( int j = ( int ) columnBoxInChannel.min( 1 ); j <= columnBoxInChannel.max( 1 ); j++ ) {
@@ -241,7 +241,7 @@ public class CellStatsExporter {
 		/**
 		 * @return
 		 */
-		public String getGenealogyString() {
+        String getGenealogyString() {
 			String ret = "";
 			for ( final int dt : genealogy ) {
 				if ( dt == SegmentRecord.UPPER ) {
@@ -268,7 +268,7 @@ public class CellStatsExporter {
 		this.gui = gui;
 	}
 
-	public boolean showConfigDialog() {
+	private boolean showConfigDialog() {
 		final DialogCellStatsExportSetup dialog =
 				new DialogCellStatsExportSetup( gui, MoMA.EXPORT_USER_INPUTS, MoMA.EXPORT_DO_TRACK_EXPORT, MoMA.EXPORT_INCLUDE_HISTOGRAMS, MoMA.EXPORT_INCLUDE_QUANTILES, MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS, MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES);
 		dialog.ask();
@@ -349,7 +349,7 @@ public class CellStatsExporter {
 	 * @param file
 	 * @throws GRBException
 	 */
-	public void exportCellStats( final File file ) throws GRBException {
+    private void exportCellStats(final File file) throws GRBException {
 
 		// ------- THE MAGIC *** THE MAGIC *** THE MAGIC *** THE MAGIG -------
 		final Vector< String > linesToExport = getCellStatsExportData();
@@ -604,7 +604,7 @@ public class CellStatsExporter {
 		return linesToExport;
 	}
 
-	public void exportTracks( final File file ) {
+	private void exportTracks(final File file) {
 
 		final Vector< Vector< String >> dataToExport = getTracksExportData();
 

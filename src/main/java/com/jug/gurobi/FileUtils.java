@@ -26,8 +26,8 @@ import java.util.jar.JarFile;
  * Organization: MPI-CBG Dresden
  * Date: October 2016
  */
-public class FileUtils {
-	public static boolean copyFile(final File toCopy, final File destFile) {
+class FileUtils {
+	private static boolean copyFile(final File toCopy, final File destFile) {
 		try {
 			return FileUtils.copyStream(new FileInputStream(toCopy),
 					new FileOutputStream(destFile));
@@ -57,8 +57,8 @@ public class FileUtils {
 		return true;
 	}
 
-	public static boolean copyJarResourcesRecursively(final File destDir,
-			final JarURLConnection jarConnection) throws IOException
+	private static boolean copyJarResourcesRecursively(final File destDir,
+                                                       final JarURLConnection jarConnection) throws IOException
 	{
 		final JarFile jarFile = jarConnection.getJarFile();
 

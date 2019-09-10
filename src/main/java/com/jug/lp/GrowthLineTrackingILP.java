@@ -57,13 +57,13 @@ public class GrowthLineTrackingILP {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
-	public static int OPTIMIZATION_NEVER_PERFORMED = 0;
-	public static int OPTIMAL = 1;
-	public static int INFEASIBLE = 2;
-	public static int UNBOUNDED = 3;
-	public static int SUBOPTIMAL = 4;
-	public static int NUMERIC = 5;
-	public static int LIMIT_REACHED = 6;
+	private static int OPTIMIZATION_NEVER_PERFORMED = 0;
+	private static int OPTIMAL = 1;
+	private static int INFEASIBLE = 2;
+	private static int UNBOUNDED = 3;
+	private static int SUBOPTIMAL = 4;
+	private static int NUMERIC = 5;
+	private static int LIMIT_REACHED = 6;
 
 	public static final int ASSIGNMENT_EXIT = 0;
 	public static final int ASSIGNMENT_MAPPING = 1;
@@ -71,8 +71,8 @@ public class GrowthLineTrackingILP {
 
 	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored
 
-	public static GRBEnv env;
-	public static CostManager costManager;
+	private static GRBEnv env;
+	private static CostManager costManager;
 
 	// -------------------------------------------------------------------------------------
 	// fields
@@ -84,7 +84,7 @@ public class GrowthLineTrackingILP {
 
 	public final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes =
 			new AssignmentsAndHypotheses<>();
-	public final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets =
+	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets =
 			new HypothesisNeighborhoods<>();
 
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr > ignoreSegmentConstraints =
@@ -928,7 +928,7 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 *
 	 */
-	public void addPathBlockingConstraints() throws GRBException {
+	private void addPathBlockingConstraints() throws GRBException {
 		// For each time-point
 		for ( int t = 0; t < gl.size(); t++ ) {
 			// Get the full component tree
@@ -938,7 +938,7 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	public List< String > getPathBlockingConstraints_PASCAL() {
+	private List< String > getPathBlockingConstraints_PASCAL() {
 		final ArrayList< String > ret = new ArrayList<>();
 
 		// For each time-point
@@ -1111,7 +1111,7 @@ public class GrowthLineTrackingILP {
 	 * assignment coming from t-1 we need to continue its interpretation by
 	 * finding an active assignment towards t+1.
 	 */
-	public void addExplainationContinuityConstraints() throws GRBException {
+	private void addExplainationContinuityConstraints() throws GRBException {
 		int eccId = 0;
 
 		// For each time-point
@@ -1138,7 +1138,7 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	public List< String > getExplainationContinuityConstraints_PASCAL() {
+	private List< String > getExplainationContinuityConstraints_PASCAL() {
 		final ArrayList< String > ret = new ArrayList<>();
 
 		// For each time-point
@@ -1380,7 +1380,7 @@ public class GrowthLineTrackingILP {
 	 *         that correspond to the active segmentation hypothesis (chosen by
 	 *         the optimization procedure).
 	 */
-	public List< Hypothesis< Component< FloatType, ? > > > getOptimalHypotheses( final int t ) {
+	private List< Hypothesis< Component< FloatType, ? > > > getOptimalHypotheses(final int t) {
 		final ArrayList< Hypothesis< Component< FloatType, ? > > > ret = new ArrayList<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );

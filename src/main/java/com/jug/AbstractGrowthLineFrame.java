@@ -68,7 +68,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * @return the location
 	 */
-	public List< Point > getMirroredImgLocations() {
+	private List< Point > getMirroredImgLocations() {
 		return flipAtCenter( imgLocations );
 	}
 
@@ -120,7 +120,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public AbstractGrowthLineFrame() {
+	AbstractGrowthLineFrame() {
 		imgLocations = new ArrayList<>();
 	}
 

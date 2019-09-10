@@ -167,16 +167,16 @@ public final class FilteredComponentTree< T extends Type< T > >
 	 *            bright to dark (false)
 	 * @return component tree of the image.
 	 */
-	public static < T extends RealType< T > > FilteredComponentTree< T > buildComponentTree(
-			final RandomAccessibleInterval< T > input,
+	private static < T extends RealType< T > > FilteredComponentTree< T > buildComponentTree(
+			final RandomAccessibleInterval<T> input,
 			final T type,
-			final ImgFactory< LongType > imgFactory,
+			final ImgFactory<LongType> imgFactory,
 			final long minComponentSize,
 			final long maxComponentSize,
 			final int minComponentWidth,
 			final int maxComponentWidth,
 			final Filter filter,
-			final boolean darkToBright ) {
+			final boolean darkToBright) {
 		final T max = type.createVariable();
 		max.setReal( darkToBright ? type.getMaxValue() : type.getMinValue() );
 		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator<>(max, input, imgFactory);

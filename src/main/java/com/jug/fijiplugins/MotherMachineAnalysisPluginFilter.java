@@ -13,7 +13,7 @@ import java.io.File;
  * Author: Robert Haase, Scientific Computing Facility, MPI-CBG Dresden, rhaase@mpi-cbg.de
  * Date: October 2016
  */
-public class MotherMachineAnalysisPluginFilter implements PlugInFilter {
+class MotherMachineAnalysisPluginFilter implements PlugInFilter {
 
     @Override
     public int setup(String s, ImagePlus imagePlus) {

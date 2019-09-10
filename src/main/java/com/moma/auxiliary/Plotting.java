@@ -19,7 +19,7 @@ import net.imglib2.view.Views;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Plotting {
+class Plotting {
 
 	public static < C extends Component< FloatType, C >> void drawComponentTree(ComponentForest< C > ct){
 //		ct.
@@ -98,7 +98,7 @@ public class Plotting {
 		plotArray(y, null, null, null);
 	}
 	
-	static public void plotArray(float[] y, String title, String xLabel, String yLabel) {
+	private static void plotArray(float[] y, String title, String xLabel, String yLabel) {
 		int[] x_vals = java.util.stream.IntStream.rangeClosed(0, y.length).toArray();
 		float[] xvals_new = new float[x_vals.length];
 		for(int i=0; i<x_vals.length; i++) {

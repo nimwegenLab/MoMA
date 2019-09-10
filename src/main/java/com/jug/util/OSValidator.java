@@ -46,7 +46,7 @@ public class OSValidator {
 
     }
 
-    public static boolean isSolaris() {
+    private static boolean isSolaris() {
 
 		return (OS.contains("sunos"));
 

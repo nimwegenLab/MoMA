@@ -14,7 +14,7 @@ import com.jug.util.ComponentTreeUtils;
 /**
  * @author jug
  */
-public class LpUtils {
+class LpUtils {
 
 	/**
 	 * Builds and returns the set Hup (given as a List). Hup is defines as the

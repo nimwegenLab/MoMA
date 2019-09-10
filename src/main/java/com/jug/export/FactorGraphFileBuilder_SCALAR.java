@@ -16,20 +16,20 @@ import java.util.List;
  */
 public class FactorGraphFileBuilder_SCALAR {
 
-	int next_var_id = 0;
-	int next_fkt_id = 0;
-	int next_fac_id = 0;
+	private int next_var_id = 0;
+	private int next_fkt_id = 0;
+	private int next_fac_id = 0;
 
-	List< String > var_lines = new ArrayList<>();
-	List< String > fkt_lines = new ArrayList<>();
-	List< String > fac_lines = new ArrayList<>();
+	private List< String > var_lines = new ArrayList<>();
+	private List< String > fkt_lines = new ArrayList<>();
+	private List< String > fac_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumVars() {
+    private int getNumVars() {
 		return next_var_id;
 	}
 
@@ -38,7 +38,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumFunctions() {
+    private int getNumFunctions() {
 		return next_fkt_id;
 	}
 
@@ -47,7 +47,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumFactors() {
+    private int getNumFactors() {
 		return next_fac_id;
 	}
 
@@ -132,7 +132,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            the string to be added.
 	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final String line ) {
+    private int addFactor(final String line) {
 		fac_lines.add( line );
 		return next_fac_id++;
 	}

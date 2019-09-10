@@ -21,7 +21,7 @@ import ij.plugin.PlugIn;
  * Author: Robert Haase, Scientific Computing Facility, MPI-CBG Dresden, rhaase@mpi-cbg.de
  * Date: October 2016
  */
-public class MotherMachineDefaultPipelinePlugin implements PlugIn {
+class MotherMachineDefaultPipelinePlugin implements PlugIn {
 
     private static String currentDir = Prefs.getDefaultDirectory();
 

@@ -10,7 +10,7 @@ import java.net.URL;
  * Organization: MPI-CBG Dresden
  * Date: October 2016
  */
-public class NativeLibrary
+class NativeLibrary
 {
 	public static boolean copyLibraries( final URL pluginUrl ) throws URISyntaxException, MalformedURLException
 	{

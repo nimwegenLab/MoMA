@@ -9,16 +9,16 @@ import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.componenttree.pixellist.PixelListComponentTree;
 import net.imglib2.type.numeric.real.DoubleType;
 
-public class TypedComponentForest< T, C extends Component< T, C > > implements ComponentForest< C >
+class TypedComponentForest< T, C extends Component< T, C > > implements ComponentForest< C >
 {
-	ComponentForest< C > forest;
+	private ComponentForest< C > forest;
 
-	public TypedComponentForest( final ComponentForest< C > f )
+	private TypedComponentForest(final ComponentForest<C> f)
 	{
 		this.forest = f;
 	}
 
-	static < T, C extends Component< T, C > > TypedComponentForest< T, C > create( final ComponentForest< C > f )
+	private static < T, C extends Component< T, C > > TypedComponentForest< T, C > create(final ComponentForest<C> f)
 	{
 		return new TypedComponentForest<>(f);
 	}

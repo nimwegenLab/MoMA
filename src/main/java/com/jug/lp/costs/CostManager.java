@@ -49,7 +49,7 @@ public class CostManager {
 		System.arraycopy( weights, 0, this.weights, 0, numFeatures );
 	}
 
-	public void addRow( final GRBVar var, final float[] values ) {
+	private void addRow(final GRBVar var, final float[] values) {
 		if ( values.length != numFeatures ) { throw new IllegalArgumentException( "Given feature values do not match featureList dimensions" ); }
 		var2row.put( var, featureList.size() );
 		featureList.add( values );

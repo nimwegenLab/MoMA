@@ -110,7 +110,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 * @param filterMinCost
 	 * @param filterMaxCost
 	 */
-	public AssignmentView( final int height, final float filterMinCost, final float filterMaxCost ) {
+    private AssignmentView(final int height, final float filterMinCost, final float filterMaxCost) {
 		if ( OSValidator.isUnix() ) {
 			HEIGHT_OFFSET = -10;
 			ASSIGNMENT_DISPLAY_OFFSET = -7;
@@ -217,7 +217,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_DIVISION</code>, or
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_EXIT</code>.
 	 */
-	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final boolean doFilterActive, final int typeToFilter, final float minCostToShow, final float maxCostToShow ) {
+    private void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, final boolean doFilterActive, final int typeToFilter, final float minCostToShow, final float maxCostToShow) {
 		assert ( typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_EXIT || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_MAPPING || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
 		doFilterDataByType = true;
 		this.filterAssignmentType = typeToFilter;

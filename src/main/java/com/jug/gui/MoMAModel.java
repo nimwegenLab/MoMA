@@ -21,7 +21,7 @@ public class MoMAModel {
 	/**
 	 * The MotherMachine instance we wrap here
 	 */
-	protected MoMA mm;
+    MoMA mm;
 
 	private int currentGLidx;
 	private int currentGLFidx;

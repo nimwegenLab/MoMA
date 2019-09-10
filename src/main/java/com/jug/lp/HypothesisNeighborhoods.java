@@ -108,7 +108,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 * @return true, if such a neighborhood exists (might be empty though), or
 	 *         false if it does not.
 	 */
-	public boolean hasLeftNeighborhoods( final H h ) {
+    private boolean hasLeftNeighborhoods(final H h) {
 		return getLeftNeighborhood( h ) != null;
 	}
 
@@ -121,7 +121,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 * @return true, if such a neighborhood exists (might be empty though), or
 	 *         false if it does not.
 	 */
-	public boolean hasRightNeighborhoods( final H h ) {
+    private boolean hasRightNeighborhoods(final H h) {
 		return getRightNeighborhood( h ) != null;
 	}
 

@@ -31,7 +31,7 @@ import com.jug.lp.Hypothesis;
  * @author jug
  * 
  */
-public class CountOverviewPanel extends JPanel {
+class CountOverviewPanel extends JPanel {
 
 	private static final long serialVersionUID = -7527124790229560330L;
 

@@ -19,14 +19,14 @@ import javax.swing.event.ChangeListener;
 /**
  * Demo application panel to display a range slider.
  */
-public class RangeSliderDemo extends JPanel {
+class RangeSliderDemo extends JPanel {
 
 	private static final long serialVersionUID = 2431987178328113873L;
     private JLabel rangeSliderValue1 = new JLabel();
     private JLabel rangeSliderValue2 = new JLabel();
     private RangeSlider rangeSlider = new RangeSlider();
 
-    public RangeSliderDemo() {
+    private RangeSliderDemo() {
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         setLayout(new GridBagLayout());
 
@@ -60,7 +60,7 @@ public class RangeSliderDemo extends JPanel {
             GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     }
     
-    public void display() {
+    private void display() {
         // Initialize values.
         rangeSlider.setValue(3);
         rangeSlider.setUpperValue(7);

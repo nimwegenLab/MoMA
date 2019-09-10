@@ -18,7 +18,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class RealFloatNormalizeConverter< R extends RealType< R > > implements Converter< R, FloatType > {
 
-	float num;
+	private float num;
 
 	public RealFloatNormalizeConverter( final float num ) {
 		this.num = num;

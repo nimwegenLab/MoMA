@@ -28,10 +28,10 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 	public class HypLoc {
 
-		protected int t = -1;
-		protected ValuePair< Integer, Integer > limits;
+		int t = -1;
+		ValuePair< Integer, Integer > limits;
 
-		public HypLoc( final int t, final T segment ) {
+		HypLoc(final int t, final T segment) {
 			this.t = t;
 			if ( segment instanceof FilteredComponent ) {
 				this.limits =
@@ -181,7 +181,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	/**
 	 * @param value
 	 */
-	public void setPruned( final boolean value ) {
+	void setPruned(final boolean value) {
 		this.isPruned = value;
 	}
 

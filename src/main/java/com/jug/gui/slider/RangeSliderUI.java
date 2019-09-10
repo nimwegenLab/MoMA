@@ -365,7 +365,7 @@ class RangeSliderUI extends BasicSliderUI {
      * locations and repaints the slider if the value change is not caused by
      * dragging a thumb.
      */
-    public class ChangeHandler implements ChangeListener {
+    class ChangeHandler implements ChangeListener {
         @Override
 		public void stateChanged(final ChangeEvent arg0) {
             if (!lowerDragging && !upperDragging) {
@@ -378,7 +378,7 @@ class RangeSliderUI extends BasicSliderUI {
     /**
      * Listener to handle mouse movements in the slider track.
      */
-    public class RangeTrackListener extends TrackListener {
+    class RangeTrackListener extends TrackListener {
 
         @Override
         public void mousePressed(final MouseEvent e) {

@@ -14,16 +14,16 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-public class JFrameSnapper extends ComponentAdapter implements WindowListener {
+class JFrameSnapper extends ComponentAdapter implements WindowListener {
 
-	public final static int NORTH = 100;
-	public final static int WEST = 101;
-	public final static int EAST = 102;
-	public final static int SOUTH = 103;
-	public final static int NORTH_ONLY = 104;
-	public final static int WEST_ONLY = 105;
-	public final static int EAST_ONLY = 106;
-	public final static int SOUTH_ONLY = 107;
+	private final static int NORTH = 100;
+	private final static int WEST = 101;
+	private final static int EAST = 102;
+	private final static int SOUTH = 103;
+	private final static int NORTH_ONLY = 104;
+	private final static int WEST_ONLY = 105;
+	private final static int EAST_ONLY = 106;
+	private final static int SOUTH_ONLY = 107;
 
 	private final Vector< JFrame > frames;
 	private JFrame currentlyMovingFrame;
@@ -32,13 +32,13 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 	private final HashMap< JFrame, Set< JFrame >> activeSnappings;
 	private final HashMap< JFrame, Point > currentFramePositions;
 
-	public JFrameSnapper() {
+	private JFrameSnapper() {
 		frames = new Vector<>();
 		activeSnappings = new HashMap<>();
 		currentFramePositions = new HashMap<>();
 	}
 
-	public void addFrame( final JFrame frame ) {
+	private void addFrame(final JFrame frame) {
 		frame.addComponentListener( this );
 		frame.addWindowListener( this );
 
@@ -48,7 +48,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		frames.add( frame );
 	}
 
-    public boolean getSnappingPolicy() {
+    private boolean getSnappingPolicy() {
 		boolean snappingPolicy = true;
 		return snappingPolicy;
 	}
@@ -111,7 +111,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		return ( recOne.intersects( recTwo ) );
 	}
 
-	public void snapFrames( final JFrame snappingFrame, final JFrame anchorFrame, final int edge ) {
+	private void snapFrames(final JFrame snappingFrame, final JFrame anchorFrame, final int edge) {
 		currentlyMovingFrame = null;
 
 		switch ( edge ) {

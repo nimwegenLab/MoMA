@@ -131,7 +131,7 @@ public class SimpleFunctionAnalysis {
 		return getMin( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static ValuePair< Integer, Float > getMin( final float[] fktValues, final int from, final int to ) {
+	private static ValuePair< Integer, Float > getMin(final float[] fktValues, final int from, final int to) {
 		int minPos = from;
 		float min = fktValues[ from ];
 		for ( int i = from; i <= to; i++ ) {
@@ -147,7 +147,7 @@ public class SimpleFunctionAnalysis {
 		return getMax( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static ValuePair< Integer, Float > getMax( final float[] fktValues, final int from, final int to ) {
+	private static ValuePair< Integer, Float > getMax(final float[] fktValues, final int from, final int to) {
 		int maxPos = from;
 		float max = fktValues[ from ];
 		for ( int i = from; i <= to; i++ ) {
@@ -163,7 +163,7 @@ public class SimpleFunctionAnalysis {
 		return getLefthandLocalMinOrPlateau( fktValues, idx, 0.0f );
 	}
 
-	public static ValuePair< Integer, Float > getLefthandLocalMinOrPlateau( final float[] fktValues, final int idx, final float plateauDerivativeThreshold ) {
+	private static ValuePair< Integer, Float > getLefthandLocalMinOrPlateau(final float[] fktValues, final int idx, final float plateauDerivativeThreshold) {
 		int i = idx;
 		while ( i > 0 && fktValues[ i - 1 ] + plateauDerivativeThreshold <= fktValues[ i ] ) {
 			i--;
@@ -185,7 +185,7 @@ public class SimpleFunctionAnalysis {
 		return getRighthandLocalMinOrPlateau( fktValues, idx, 0.0f );
 	}
 
-	public static ValuePair< Integer, Float > getRighthandLocalMinOrPlateau( final float[] fktValues, final int idx, final float plateauDerivativeThreshold ) {
+	private static ValuePair< Integer, Float > getRighthandLocalMinOrPlateau(final float[] fktValues, final int idx, final float plateauDerivativeThreshold) {
 		int i = idx;
 		while ( i + 1 < fktValues.length && fktValues[ i ] >= fktValues[ i + 1 ] + plateauDerivativeThreshold ) {
 			i++;
@@ -221,7 +221,7 @@ public class SimpleFunctionAnalysis {
 		return differentiateFloatArray( array, 1 );
 	}
 
-	public static float[] differentiateFloatArray( final float[] array, final int span ) {
+	private static float[] differentiateFloatArray(final float[] array, final int span) {
 		final float[] ret = new float[ array.length - 2 * span ];
 		for ( int i = span; i < array.length - span; i++ ) {
 			ret[ i - span ] =
@@ -245,7 +245,7 @@ public class SimpleFunctionAnalysis {
 		return getSum( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static float getSum( final float[] fktValues, final int from, final int to ) {
+	private static float getSum(final float[] fktValues, final int from, final int to) {
 		float sum = 0;
 		for ( int i = from; i <= to; i++ ) {
 			sum += fktValues[ i ];
@@ -424,7 +424,7 @@ public class SimpleFunctionAnalysis {
 	 * @param fkt
 	 * @return
 	 */
-	public static float[] flipSign( final float[] fkt ) {
+	private static float[] flipSign(final float[] fkt) {
 		final float[] ret = new float[ fkt.length ];
 		for ( int i = 0; i < fkt.length; i++ ) {
 			ret[ i ] = fkt[ i ] * -1;
@@ -438,7 +438,7 @@ public class SimpleFunctionAnalysis {
 	 * @param fkt
 	 * @return
 	 */
-	public static ValuePair< Integer, Integer > getHighestMonotoneIncreasingSegment( final float[] fkt, final int i, final int j ) {
+	private static ValuePair< Integer, Integer > getHighestMonotoneIncreasingSegment(final float[] fkt, final int i, final int j) {
 		int idxStart = i;
 		int idxEnd = j;
 

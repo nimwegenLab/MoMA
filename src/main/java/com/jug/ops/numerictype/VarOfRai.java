@@ -19,7 +19,7 @@ import org.scijava.plugin.Plugin;
  *
  */
 @Plugin(type = Op.class)
-public class VarOfRai<T extends NumericType<T> & NativeType<T> > 
+class VarOfRai<T extends NumericType<T> & NativeType<T> >
 extends AbstractUnaryHybridCF<RandomAccessibleInterval<T>, T> {
 
 	@Override

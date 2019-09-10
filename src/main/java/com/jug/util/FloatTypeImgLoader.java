@@ -153,11 +153,11 @@ public class FloatTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static List< Img< FloatType >> loadTiffsFromFolder( final String strFolder ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static List< Img< FloatType >> loadTiffsFromFolder(final String strFolder) throws ImgIOException, IncompatibleTypeException, Exception {
 		return loadTiffsFromFolder( strFolder, -1, -1, ( String[] ) null );
 	}
 
-	public static List< Img< FloatType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws Exception {
+	private static List< Img< FloatType >> loadTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final String... filterStrings) throws Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = (dir, name) -> {
@@ -191,7 +191,7 @@ public class FloatTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static List< Img< FloatType >> loadMMTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static List< Img< FloatType >> loadMMTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = (dir, name) -> {
@@ -219,7 +219,7 @@ public class FloatTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static List< Img< FloatType >> loadTiffs( final File[] listOfFiles ) throws ImgIOException {
+	private static List< Img< FloatType >> loadTiffs(final File[] listOfFiles) throws ImgIOException {
 		final List< Img< FloatType > > images = new ArrayList<>(listOfFiles.length);
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
 			images.add( null );
@@ -237,7 +237,7 @@ public class FloatTypeImgLoader {
 			final int numThread;
 			final int numThreads;
 
-			public ImageProcessingThread( final int numThread, final int numThreads ) {
+			ImageProcessingThread(final int numThread, final int numThreads) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 			}
@@ -291,7 +291,7 @@ public class FloatTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static List< Img< FloatType >> loadMMTiffSequence( final File[] listOfFiles, final boolean normalize ) throws ImgIOException {
+	private static List< Img< FloatType >> loadMMTiffSequence(final File[] listOfFiles, final boolean normalize) throws ImgIOException {
 		final List< Img< FloatType > > images = new ArrayList<>(listOfFiles.length);
 
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
@@ -310,7 +310,7 @@ public class FloatTypeImgLoader {
 			final int numThread;
 			final int numThreads;
 
-			public ImageProcessingThread( final int numThread, final int numThreads ) {
+			ImageProcessingThread(final int numThread, final int numThreads) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 			}
@@ -380,7 +380,7 @@ public class FloatTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static Img< FloatType > loadTiff( final File file ) throws ImgIOException {
+	private static Img< FloatType > loadTiff(final File file) throws ImgIOException {
 //	    ALERT: THOSE FOLLOWING TWO LINES CAUSE THREAD LEAK!!!!
 //		final ImgFactory< FloatType > imgFactory = new ArrayImgFactory< FloatType >();
 //		final ImgOpener imageOpener = new ImgOpener();
@@ -433,7 +433,7 @@ public class FloatTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsChannelStack( final String strFolder ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsChannelStack(final String strFolder) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final List< Img< FloatType >> imageList = loadTiffsFromFolder( strFolder );
 
@@ -480,11 +480,11 @@ public class FloatTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack( final String strFolder, final boolean normalize ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder, final boolean normalize) throws ImgIOException, IncompatibleTypeException, Exception {
 		return loadPathAsStack( strFolder, -1, -1, normalize, ( String[] ) null );
 	}
 
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter) throws Exception {
 
 		final List< Img< FloatType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -512,7 +512,7 @@ public class FloatTypeImgLoader {
 		return stack;
 	}
 
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadMMPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadMMPathAsStack(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter) throws Exception {
 
 		final List< Img< FloatType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, normalize, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -585,7 +585,7 @@ public class FloatTypeImgLoader {
 	 *         <code>Img<FloatType></code>.
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > List< Img< FloatType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > List< Img< FloatType >> load2DTiffSequenceAsListOfMultiChannelImgs(final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits) throws Exception {
 		final List< Img< FloatType >> ret = new ArrayList<>();
 
 		final File folder = new File( strFolder );
@@ -614,7 +614,7 @@ public class FloatTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static Img< FloatType > makeMultiChannelImage( final List< Img< FloatType >> imageList ) throws ImgIOException {
+	private static Img< FloatType > makeMultiChannelImage(final List<Img<FloatType>> imageList) throws ImgIOException {
 
 		if ( imageList.get( 0 ).numDimensions() != 2 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
@@ -704,7 +704,7 @@ public class FloatTypeImgLoader {
 	 * @return The maximum int-value found.
 	 * @throws Exception
 	 */
-	public static int figureMaxCounterFromFolder( final String strFolder, final String filterString, final String prefix ) throws Exception {
+	private static int figureMaxCounterFromFolder(final String strFolder, final String filterString, final String prefix) throws Exception {
 		int max = -1;
 
 		final File folder = new File( strFolder );

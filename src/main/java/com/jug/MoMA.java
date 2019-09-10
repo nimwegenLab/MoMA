@@ -115,8 +115,8 @@ public class MoMA {
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image
 	 * data. Used while searching the growth line centers.
 	 */
-	public static float SIGMA_GL_DETECTION_X = 20f;
-	public static float SIGMA_GL_DETECTION_Y = 0f;
+	private static float SIGMA_GL_DETECTION_X = 20f;
+	private static float SIGMA_GL_DETECTION_Y = 0f;
 
 	/**
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image
@@ -139,7 +139,7 @@ public class MoMA {
 	 * the left and right image border will be neglected. Reason: detection not
 	 * reliable if well is truncated.
 	 */
-	public static int GL_OFFSET_LATERAL = 20;
+	private static int GL_OFFSET_LATERAL = 20;
 
 	/**
 	 * Prior knowledge: hard offset in detected well center lines - will be cut
@@ -153,7 +153,7 @@ public class MoMA {
 	 * be launched when data is read from disk.
 	 */
 	public static int GL_OFFSET_BOTTOM = -1;
-	public static boolean GL_OFFSET_BOTTOM_AUTODETECT = true;
+	private static boolean GL_OFFSET_BOTTOM_AUTODETECT = true;
 
 	/**
 	 * Maximum offset in x direction (with respect to growth line center) to
@@ -183,7 +183,7 @@ public class MoMA {
 	/**
 	 * Prior knowledge: minimal contrast of a gap (also used for MSERs)
 	 */
-	public static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
+	private static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
 													// value that will basically
 													// not filter anything...
 	/**
@@ -193,19 +193,19 @@ public class MoMA {
 	 * classification is flat, the original (simple) mehod might still offer
 	 * some modulation!
 	 */
-	public static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
+	private static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
 
 	/**
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during segmentation.
 	 */
-	public static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
+	private static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
 
 	/**
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during cell-stats export for cell-size estimation.
 	 */
-	public static String CELLSIZE_CLASSIFIER_MODEL_FILE = "CellSizeClassifier.model";
+	private static String CELLSIZE_CLASSIFIER_MODEL_FILE = "CellSizeClassifier.model";
 
 	/**
 	 * Global switch that turns the use of the weka classifier for paramaxflow
@@ -858,14 +858,14 @@ public class MoMA {
 	 * @param imgTemp
 	 *            the imgTemp to set
 	 */
-	public void setImgTemp( final Img< FloatType > imgTemp ) {
+	private void setImgTemp(final Img<FloatType> imgTemp) {
 		this.imgTemp = imgTemp;
 	}
 
 	/**
 	 * @return the imgRendered
 	 */
-	public Img< ARGBType > getImgAnnotated() {
+	private Img< ARGBType > getImgAnnotated() {
 		return imgAnnotated;
 	}
 
@@ -913,7 +913,7 @@ public class MoMA {
 				final int numThread;
 				final int numThreads;
 
-				public ImageProcessingThread( final int numThread, final int numThreads ) {
+				ImageProcessingThread(final int numThread, final int numThreads) {
 					this.numThread = numThread;
 					this.numThreads = numThreads;
 				}
@@ -974,7 +974,7 @@ public class MoMA {
 	 * @param growthLines
 	 *            the growthLines to set
 	 */
-	public void setGrowthLines( final List< GrowthLine > growthLines ) {
+	private void setGrowthLines(final List<GrowthLine> growthLines) {
 		this.growthLines = growthLines;
 	}
 
@@ -1282,7 +1282,7 @@ public class MoMA {
 		return props;
 	}
 
-	public void saveParams() {
+	private void saveParams() {
 		final File f = new File( "mm.properties" );
 		saveParams (f);
 	}
@@ -1413,14 +1413,14 @@ public class MoMA {
 	/**
 	 * Resets imgTemp to contain the raw data from imgRaw.
 	 */
-	public void resetImgTempToRaw() {
+	private void resetImgTempToRaw() {
 		setImgTemp( imgRaw.copy() );
 	}
 
 	/**
 	 * Resets imgTemp to contain the raw data from imgRaw.
 	 */
-	public void resetImgAnnotatedLike( final Img< FloatType > img ) {
+	private void resetImgAnnotatedLike(final Img<FloatType> img) {
 		imgAnnotated = DataMover.createEmptyArrayImgLike( img, new ARGBType() );
 	}
 
@@ -1762,7 +1762,7 @@ public class MoMA {
 	 * GrowthLine.findGapHypotheses(Img). Note that this function always uses
 	 * the image data in 'imgTemp'.
 	 */
-	public void generateAllSimpleSegmentationHypotheses() {
+	private void generateAllSimpleSegmentationHypotheses() {
 		// ------ GAUSS -----------------------------
 
 //		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
@@ -2140,7 +2140,7 @@ public class MoMA {
 	/**
 	 * @param datasetName the datasetName to set
 	 */
-	public void setDatasetName( final String datasetName ) {
+	private void setDatasetName(final String datasetName) {
 		this.datasetName = datasetName;
 		if ( MoMA.getGuiFrame() != null ) {
 			MoMA.getGuiFrame().setTitle( String.format( "%s -- %s", MoMA.VERSION_STRING, this.datasetName ) );

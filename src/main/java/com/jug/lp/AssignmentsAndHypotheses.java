@@ -55,7 +55,7 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 * This shrinks down to appending an inner <code>List</code> to
 	 * <code>a_t</code> and <code>h_t</code>.
 	 */
-	public void addTimeStep() {
+    private void addTimeStep() {
 		a_t.add(new ArrayList<>() );
 		h_t.add(new ArrayList<>() );
 	}

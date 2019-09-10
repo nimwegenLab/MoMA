@@ -25,7 +25,7 @@ import com.jug.util.OSValidator;
 /**
  * @author jug
  */
-public class DialogAssignmentViewSetup extends JDialog implements ActionListener {
+class DialogAssignmentViewSetup extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -3564705333556776780L;
 

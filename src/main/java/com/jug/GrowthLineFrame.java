@@ -23,7 +23,7 @@ import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStep;
  */
 public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent< FloatType > > {
 
-	final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
+	private final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
 
     /**
 	 * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)

@@ -222,7 +222,7 @@ public class ComponentTreeUtils {
 	/**
 	 * @return
 	 */
-	public static < C extends Component< ?, C > > int countNodes( final C ctn ) {
+	private static < C extends Component< ?, C > > int countNodes(final C ctn) {
 		int nodeCount = ctn.getChildren().size();
 		for ( final C child : ctn.getChildren() ) {
 			nodeCount += countNodes( child );

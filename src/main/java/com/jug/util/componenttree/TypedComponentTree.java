@@ -8,16 +8,16 @@ import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.algorithm.componenttree.pixellist.PixelListComponentTree;
 import net.imglib2.type.numeric.real.DoubleType;
 
-public class TypedComponentTree< T, C extends Component< T, C > > implements ComponentTree< C >
+class TypedComponentTree< T, C extends Component< T, C > > implements ComponentTree< C >
 {
-	ComponentTree< C > tree;
+	private ComponentTree< C > tree;
 
-	public TypedComponentTree( final ComponentTree< C > f )
+	private TypedComponentTree(final ComponentTree<C> f)
 	{
 		this.tree = f;
 	}
 
-	static < T, C extends Component< T, C > > TypedComponentTree< T, C > create( final ComponentTree< C > f )
+	private static < T, C extends Component< T, C > > TypedComponentTree< T, C > create(final ComponentTree<C> f)
 	{
 		return new TypedComponentTree<>(f);
 	}

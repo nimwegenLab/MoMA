@@ -21,7 +21,7 @@ import trainableSegmentation.WekaSegmentation;
 public class SilentWekaSegmenter< T extends NumericType > {
 
 	/** reference to the segmentation backend */
-	WekaSegmentation wekaSegmentation = null;
+    private WekaSegmentation wekaSegmentation = null;
 
 	public SilentWekaSegmenter( final String directory, final String filename ) {
 		// instantiate segmentation backend
@@ -29,7 +29,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		loadClassifier( directory, filename );
 	}
 
-	public boolean loadClassifier( final String directory, final String filename ) {
+	private boolean loadClassifier(final String directory, final String filename) {
 		// Try to load Weka model (classifier and train header)
 		if (!wekaSegmentation.loadClassifier(directory + filename)) {
 			IJ.error( "Error when loading Weka classifier from file: " + directory + filename );
@@ -53,7 +53,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		return ( classifyPixels( rais, probabilityMaps ) ).get( 0 );
 	}
 
-	public List< RandomAccessibleInterval< T >> classifyPixels( final List< RandomAccessibleInterval< T >> raiList, final boolean probabilityMaps ) {
+	private List< RandomAccessibleInterval< T >> classifyPixels(final List<RandomAccessibleInterval<T>> raiList, final boolean probabilityMaps) {
 
 		final List< RandomAccessibleInterval< T >> results = new ArrayList<>(raiList);
 
@@ -76,7 +76,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 
 			final List< RandomAccessibleInterval< T >> raiListOutputs;
 
-			public ImageProcessingThread( final int numThread, final int numThreads, final List< RandomAccessibleInterval< T >> raiList, final List< RandomAccessibleInterval< T >> raiListOutputs ) {
+			ImageProcessingThread(final int numThread, final int numThreads, final List<RandomAccessibleInterval<T>> raiList, final List<RandomAccessibleInterval<T>> raiListOutputs) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 				this.raiList = raiList;

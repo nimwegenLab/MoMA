@@ -31,7 +31,7 @@ import net.imglib2.view.Views;
  * @author jug
  * 
  */
-public class DoubleTypeImgLoader {
+class DoubleTypeImgLoader {
 
 	/**
 	 * Loads all files containing ".tif" from a folder given by foldername.
@@ -44,11 +44,11 @@ public class DoubleTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static List< Img< DoubleType >> loadTiffsFromFolder( final String strFolder ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static List< Img< DoubleType >> loadTiffsFromFolder(final String strFolder) throws ImgIOException, IncompatibleTypeException, Exception {
 		return loadTiffsFromFolder( strFolder, -1, -1, ( String[] ) null );
 	}
 
-	public static List< Img< DoubleType >> loadTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final String... filterStrings ) throws Exception {
+	private static List< Img< DoubleType >> loadTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final String... filterStrings) throws Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = (dir, name) -> {
@@ -83,7 +83,7 @@ public class DoubleTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static List< Img< DoubleType >> loadMMTiffsFromFolder( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static List< Img< DoubleType >> loadMMTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = (dir, name) -> {
@@ -111,7 +111,7 @@ public class DoubleTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static List< Img< DoubleType >> loadTiffs( final File[] listOfFiles ) throws ImgIOException {
+	private static List< Img< DoubleType >> loadTiffs(final File[] listOfFiles) throws ImgIOException {
 		final int numProcessors = Prefs.getThreads();
 		final int numThreads = Math.min( listOfFiles.length, numProcessors );
 
@@ -129,7 +129,7 @@ public class DoubleTypeImgLoader {
 			final int numThread;
 			final int numThreads;
 
-			public ImageProcessingThread( final int numThread, final int numThreads ) {
+			ImageProcessingThread(final int numThread, final int numThreads) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 			}
@@ -171,7 +171,7 @@ public class DoubleTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static List< Img< DoubleType >> loadMMTiffSequence( final File[] listOfFiles, final boolean normalize ) throws ImgIOException {
+	private static List< Img< DoubleType >> loadMMTiffSequence(final File[] listOfFiles, final boolean normalize) throws ImgIOException {
 		final int numProcessors = Prefs.getThreads();
 		final int numThreads = Math.min( listOfFiles.length, numProcessors );
 
@@ -189,7 +189,7 @@ public class DoubleTypeImgLoader {
 			final int numThread;
 			final int numThreads;
 
-			public ImageProcessingThread( final int numThread, final int numThreads ) {
+			ImageProcessingThread(final int numThread, final int numThreads) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 			}
@@ -231,7 +231,7 @@ public class DoubleTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static Img< DoubleType > loadTiff( final File file ) throws ImgIOException {
+	private static Img< DoubleType > loadTiff(final File file) throws ImgIOException {
 		final ImgFactory< DoubleType > imgFactory = new ArrayImgFactory<>();
 		final ImgOpener imageOpener = new ImgOpener();
 
@@ -281,7 +281,7 @@ public class DoubleTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsChannelStack( final String strFolder ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsChannelStack(final String strFolder) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final List< Img< DoubleType >> imageList = loadTiffsFromFolder( strFolder );
 
@@ -328,11 +328,11 @@ public class DoubleTypeImgLoader {
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack( final String strFolder, final boolean normalize ) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack(final String strFolder, final boolean normalize) throws ImgIOException, IncompatibleTypeException, Exception {
 		return loadPathAsStack( strFolder, -1, -1, normalize, ( String[] ) null );
 	}
 
-	public static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack( final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter ) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< DoubleType > loadPathAsStack(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter) throws Exception {
 
 		final List< Img< DoubleType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -434,7 +434,7 @@ public class DoubleTypeImgLoader {
 	 *         <code>Img<DoubleType></code>.
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > List< Img< DoubleType >> load2DTiffSequenceAsListOfMultiChannelImgs( final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits ) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > List< Img< DoubleType >> load2DTiffSequenceAsListOfMultiChannelImgs(final String strFolder, final String filterString, final int tmin, final int tmax, final int cmin, final int cmax, final int numDigits) throws Exception {
 		final List< Img< DoubleType >> ret = new ArrayList<>();
 
 		final File folder = new File( strFolder );
@@ -463,7 +463,7 @@ public class DoubleTypeImgLoader {
 	 * @return
 	 * @throws ImgIOException
 	 */
-	public static Img< DoubleType > makeMultiChannelImage( final List< Img< DoubleType >> imageList ) throws ImgIOException {
+	private static Img< DoubleType > makeMultiChannelImage(final List<Img<DoubleType>> imageList) throws ImgIOException {
 
 		if ( imageList.get( 0 ).numDimensions() != 2 ) { throw new ImgIOException( "MultiChannel image can only be composed out of 2d images (so far)." ); }
 
@@ -553,7 +553,7 @@ public class DoubleTypeImgLoader {
 	 * @return The maximum int-value found.
 	 * @throws Exception
 	 */
-	public static int figureMaxCounterFromFolder( final String strFolder, final String filterString, final String prefix ) throws Exception {
+	private static int figureMaxCounterFromFolder(final String strFolder, final String filterString, final String prefix) throws Exception {
 		int max = -1;
 
 		final File folder = new File( strFolder );

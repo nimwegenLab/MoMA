@@ -104,7 +104,7 @@ public final class FilteredComponent< T extends Type< T > >
 	 *
 	 * @return the image threshold that created the extremal region.
 	 */
-	public T maxValue()
+	private T maxValue()
 	{
 		return maxValue;
 	}
@@ -126,7 +126,7 @@ public final class FilteredComponent< T extends Type< T > >
 	 *
 	 * @return number of pixels in the extremal region.
 	 */
-	public long maxSize()
+	private long maxSize()
 	{
 		return pixelList.size();
 	}
@@ -190,7 +190,7 @@ public final class FilteredComponent< T extends Type< T > >
 
 	// Trials for extended size etc.
 	// =============================
-	public long maxSizeExtended() {
+	private long maxSizeExtended() {
 		evaluatePixelListExtendedIfNeeded();
 		return pixelListExtended.size();
 	}

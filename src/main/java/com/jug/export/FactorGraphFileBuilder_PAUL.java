@@ -24,12 +24,12 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class FactorGraphFileBuilder_PAUL {
 
-	int next_t = 0;
-	int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
+	private int next_t = 0;
+	private int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
 
-	List< String > lines = new ArrayList<>();
+	private List< String > lines = new ArrayList<>();
 
-	final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
+	private final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
 
 	public FactorGraphFileBuilder_PAUL() {
 		mapHypId = new HashMap<>();

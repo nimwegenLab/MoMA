@@ -13,7 +13,7 @@ import net.imglib2.view.Views;
  */
 public class GrowthLineSegmentationMagic {
 
-	static SilentWekaSegmenter< FloatType > classifier;
+	private static SilentWekaSegmenter< FloatType > classifier;
 
 	public static void setClassifier( final String folder, final String file ) {
 		classifier = new SilentWekaSegmenter<>(folder, file);

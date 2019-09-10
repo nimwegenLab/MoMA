@@ -20,7 +20,7 @@ import net.imglib2.view.Views;
  *
  */
 @Plugin(type = Op.class)
-public class FindLocationAboveThreshold<IMG_T extends Type< IMG_T > & Comparable< IMG_T >>  
+class FindLocationAboveThreshold<IMG_T extends Type< IMG_T > & Comparable< IMG_T >>
 extends AbstractUnaryHybridCF<RandomAccessibleInterval<IMG_T>, Cursor<IMG_T>> {
 		
     private IMG_T cmpVal;

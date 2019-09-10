@@ -318,13 +318,16 @@ class RangeSliderUI extends BasicSliderUI {
         slider.repaint(upperUnionRect.x, upperUnionRect.y, upperUnionRect.width, upperUnionRect.height);
     }
 
+
+    private final Object lock = new Object();
+
     /**
      * Moves the selected thumb in the specified direction by a block increment.
      * This method is called when the user presses the Page Up or Down keys.
      */
     @Override
 	public void scrollByBlock(final int direction) {
-        synchronized (slider) {
+        synchronized (lock) {
             int blockIncrement = (slider.getMaximum() - slider.getMinimum()) / 10;
             if (blockIncrement <= 0 && slider.getMaximum() > slider.getMinimum()) {
                 blockIncrement = 1;
@@ -347,7 +350,7 @@ class RangeSliderUI extends BasicSliderUI {
      */
     @Override
 	public void scrollByUnit(final int direction) {
-        synchronized (slider) {
+        synchronized (lock) {
             final int delta = ((direction > 0) ? POSITIVE_SCROLL : NEGATIVE_SCROLL);
 
             if (upperThumbSelected) {

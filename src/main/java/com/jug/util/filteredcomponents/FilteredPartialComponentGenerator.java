@@ -3,7 +3,6 @@ package com.jug.util.filteredcomponents;
 import java.util.LinkedList;
 
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.PartialComponent;
 import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.img.Img;

@@ -17,7 +17,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 class Plotting {
 

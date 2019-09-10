@@ -116,23 +116,20 @@ class JFrameSnapper extends ComponentAdapter implements WindowListener {
 
 		switch ( edge ) {
 		case NORTH_ONLY:
-			if ( !getSnappingPolicy() ) break;
+            case EAST_ONLY:
+            case WEST_ONLY:
+            case SOUTH_ONLY:
+                if ( !getSnappingPolicy() ) break;
 		case NORTH:
 			snappingFrame.setLocation( anchorFrame.getX(), anchorFrame.getY() - anchorFrame.getHeight() );
 			break;
-		case SOUTH_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case SOUTH:
+            case SOUTH:
 			snappingFrame.setLocation( anchorFrame.getX(), anchorFrame.getY() + anchorFrame.getHeight() );
 			break;
-		case WEST_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case WEST:
+            case WEST:
 			snappingFrame.setLocation( anchorFrame.getX() - snappingFrame.getWidth(), anchorFrame.getY() );
 			break;
-		case EAST_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case EAST:
+            case EAST:
 			snappingFrame.setLocation( anchorFrame.getX() + anchorFrame.getWidth(), anchorFrame.getY() );
 			break;
 		}

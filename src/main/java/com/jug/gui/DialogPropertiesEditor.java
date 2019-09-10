@@ -118,38 +118,18 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
             String BGREM = "Background removal";
             switch (key) {
                 case "BGREM_TEMPLATE_XMIN":
-                    property.setCategory(BGREM);
-                    property.setShortDescription(key);
-                    break;
+                case "BGREM_X_OFFSET":
                 case "BGREM_TEMPLATE_XMAX":
                     property.setCategory(BGREM);
                     property.setShortDescription(key);
                     break;
-                case "BGREM_X_OFFSET":
-                    property.setCategory(BGREM);
-                    property.setShortDescription(key);
-                    break;
                 case "GL_WIDTH_IN_PIXELS":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
-                case "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
-                case "GL_OFFSET_BOTTOM":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
-                case "GL_OFFSET_TOP":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
-                case "GL_OFFSET_LATERAL":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
+                case "MIN_GAP_CONTRAST":
                 case "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS":
+                case "GL_OFFSET_LATERAL":
+                case "GL_OFFSET_TOP":
+                case "GL_OFFSET_BOTTOM":
+                case "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS":
                     property.setCategory(GL);
                     property.setShortDescription(key);
                     break;
@@ -157,37 +137,16 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setCategory(TRA);
                     property.setShortDescription(key);
                     break;
-                case "MIN_GAP_CONTRAST":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
                 case "SIGMA_PRE_SEGMENTATION_X":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    break;
+                case "SIGMA_GL_DETECTION_Y":
+                case "SIGMA_GL_DETECTION_X":
                 case "SIGMA_PRE_SEGMENTATION_Y":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     break;
-                case "SIGMA_GL_DETECTION_X":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    break;
-                case "SIGMA_GL_DETECTION_Y":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    break;
                 case "SEGMENTATION_MIX_CT_INTO_PMFRF":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    property.setEditable(false);
-                    break;
-                case "SEGMENTATION_CLASSIFIER_MODEL_FILE":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    property.setEditable(false);
-                    break;
                 case "CELLSIZE_CLASSIFIER_MODEL_FILE":
+                case "SEGMENTATION_CLASSIFIER_MODEL_FILE":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(false);
@@ -196,9 +155,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setShortDescription(key);
                     break;
                 case "GUROBI_TIME_LIMIT":
-                    property.setCategory(GRB);
-                    property.setShortDescription(key);
-                    break;
                 case "GUROBI_MAX_OPTIMALITY_GAP":
                     property.setCategory(GRB);
                     property.setShortDescription(key);

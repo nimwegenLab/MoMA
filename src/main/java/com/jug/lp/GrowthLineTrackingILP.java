@@ -847,10 +847,8 @@ public class GrowthLineTrackingILP {
 				featureValues[ i++ ] = f;
 				break;
 			case 1:
-				featureValues[ i++ ] = 0;
-				break;
-			case 2:
-				featureValues[ i++ ] = 0;
+				case 2:
+					featureValues[ i++ ] = 0;
 				break;
 			}
 		}
@@ -860,23 +858,19 @@ public class GrowthLineTrackingILP {
 				featureValues[ i++ ] = 0;
 				break;
 			case 1:
-				featureValues[ i++ ] = f;
-				break;
-			case 2:
-				featureValues[ i++ ] = f;
+				case 2:
+					featureValues[ i++ ] = f;
 				break;
 			}
 		}
 		featureValues[ i++ ] = costDeltaS;
 		switch ( c ) {
 		case 0:
-			featureValues[ i++ ] = costDeltaS;
+			case 2:
+				featureValues[ i++ ] = costDeltaS;
 			break;
 		case 1:
 			featureValues[ i++ ] = 0;
-			break;
-		case 2:
-			featureValues[ i++ ] = costDeltaS;
 			break;
 		}
 		featureValues[ i++ ] = costDivisionLikelihood;

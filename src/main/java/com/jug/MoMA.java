@@ -1115,36 +1115,6 @@ public class MoMA {
 		} else {
 			file = showFolderChooser( guiFrame, parentFolder );
 		}
-
-		// CLASSIFIER TO BE LOADED --- CLASSIFIER TO BE LOADED --- CLASSIFIER TO BE LOADED
-
-//		final String message = "Should this classifier be used:\n" + SEGMENTATION_CLASSIFIER_MODEL_FILE + "\n\nIn case you want to choose a different one, please select 'No'...";
-//		final String title = "MotherMachine Classifier Selection";
-//		decision = JOptionPane.showConfirmDialog( guiFrame, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
-//		if ( decision == JOptionPane.YES_OPTION ) {
-//			GrowthLineSegmentationMagic.setClassifier( SEGMENTATION_CLASSIFIER_MODEL_FILE, "" );
-//		} else {
-//			final FileDialog fd = new FileDialog( guiFrame, "Select classifier model file...", FileDialog.LOAD );
-//			fd.setDirectory( SEGMENTATION_CLASSIFIER_MODEL_FILE );
-//			fd.setFilenameFilter( new FilenameFilter() {
-//
-//				@Override
-//				public boolean accept( final File dir, final String name ) {
-//					final String lowercaseName = name.toLowerCase();
-//					if ( lowercaseName.endsWith( ".model" ) ) {
-//						return true;
-//					} else {
-//						return false;
-//					}
-//				}
-//			} );
-//			fd.setVisible( true );
-//			final String filename = fd.getDirectory() + "/" + fd.getFile();
-//			if ( filename != null ) {
-//				SEGMENTATION_CLASSIFIER_MODEL_FILE = filename;
-//			}
-//		}
-
 		return file;
 	}
 
@@ -1166,7 +1136,6 @@ public class MoMA {
 			System.setProperty( "apple.awt.fileDialogForDirectories", "true" );
 			final FileDialog fd = new FileDialog( guiFrame, "Select folder containing image sequence...", FileDialog.LOAD );
 			fd.setDirectory( path );
-//			fd.setLocation(50,50);
 			fd.setVisible( true );
 			selectedFile = new File( fd.getDirectory() + "/" + fd.getFile() );
 			if ( fd.getFile() == null ) {
@@ -1828,11 +1797,11 @@ public class MoMA {
 			UIService uiService = context.service(UIService.class);
 //			IOService io = context.service(IOService.class);
 
-			uiService.show("Original Image", img);
+//			uiService.show("Original Image", img);
 
 			img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
 
-			ImageJFunctions.show(img, "Normalized Image");
+//			ImageJFunctions.show(img, "Normalized Image");
 
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
 //			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
@@ -1853,7 +1822,7 @@ public class MoMA {
                     new long[]{end_index_horz, img.dimension(1) - 1, img.dimension(2) - 1}
                     );
 			IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
-			ImageJFunctions.show(newImg, "Unet ROI");
+//			ImageJFunctions.show(newImg, "Unet ROI");
 //			uiService.show("Image", newImg);
 //
 //			uiService.show("Image", newImgView);
@@ -1898,7 +1867,7 @@ public class MoMA {
 					"nTiles", 1,
 					"showProgressDialog", true).get();
 			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
-			ImageJFunctions.show(tmp, "Unet ROI processed");
+//			ImageJFunctions.show(tmp, "Unet ROI processed");
 
 			// copy back the probabilities to image of same size as original image
 			final Img<FloatType> outputImg = img.factory().create(img);
@@ -1915,7 +1884,7 @@ public class MoMA {
 //			val.set(1);
 //			addValue(tmpNew, val);
 //			uiService.show("Processed Image", outputImg);
-			ImageJFunctions.show(outputImg, "Processed Image");
+//			ImageJFunctions.show(outputImg, "Processed Image");
 			return outputImg;
 
 		} catch (InterruptedException | ExecutionException e) {

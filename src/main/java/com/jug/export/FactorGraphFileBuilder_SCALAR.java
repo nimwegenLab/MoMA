@@ -127,11 +127,10 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-    private int addFactor(final String line) {
+    private void addFactor(final String line) {
 		fac_lines.add( line );
-		return next_fac_id++;
+		next_fac_id++;
 	}
 
 	/**

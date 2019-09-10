@@ -56,7 +56,7 @@ public class Utilities {
             return new String[] {};
         }
 
-        ArrayList<String> folderNameList = new ArrayList<String>();
+        ArrayList<String> folderNameList = new ArrayList<>();
 
         for (File subfile : file.listFiles()) {
             if (subfile.isDirectory() && !subfile.isHidden()) {

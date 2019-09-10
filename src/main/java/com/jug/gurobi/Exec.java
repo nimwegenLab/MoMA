@@ -17,7 +17,7 @@ import java.io.OutputStreamWriter;
  * Organization: MPI-CBG Dresden
  * Date: October 2016
  */
-public class Exec
+class Exec
 {
 	static public void runGrbgetkey( String... commands )
 	{

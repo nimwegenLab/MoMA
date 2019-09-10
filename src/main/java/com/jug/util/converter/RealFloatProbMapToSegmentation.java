@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util.converter;
 
 import net.imglib2.converter.Converter;
@@ -18,7 +15,7 @@ import net.imglib2.type.numeric.integer.ShortType;
  */
 public class RealFloatProbMapToSegmentation< R extends RealType< R > > implements Converter< R, ShortType > {
 
-	float threshold;
+	private final float threshold;
 
 	public RealFloatProbMapToSegmentation( final float threshold ) {
 		this.threshold = threshold;

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.awt.BorderLayout;
@@ -21,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -68,23 +66,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	// fields
 	// -------------------------------------------------------------------------------------
-	public MoMAModel model;
-
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (left one in active assignments view).
-	 */
-	IntervalView< FloatType > viewImgLeftActive;
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (center one in active assignments view).
-	 */
-	IntervalView< FloatType > viewImgCenterActive;
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (right one in active assignments view).
-	 */
-	IntervalView< FloatType > viewImgRightActive;
+	public final MoMAModel model;
 
 	// show helper lines in IntervalViews?
 	private boolean showSegmentationAnnotations = true;
@@ -93,13 +75,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	// gui-fields
 	// -------------------------------------------------------------------------------------
-	public Viewer2DCanvas imgCanvasActiveLeft;
+	private Viewer2DCanvas imgCanvasActiveLeft;
 	public Viewer2DCanvas imgCanvasActiveCenter;
-	public Viewer2DCanvas imgCanvasActiveRight;
+	private Viewer2DCanvas imgCanvasActiveRight;
 
 	public JSlider sliderGL;
 	public JSlider sliderTime;
-	public RangeSlider sliderTrackingRange;
+	private RangeSlider sliderTrackingRange;
 	private JLabel lblCurrentTime;
 
 	private JTabbedPane tabsViews;
@@ -108,7 +90,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JPanel panelDetailedDataView;
 	private Plot2DPanel plot;
 
-	public AssignmentViewer leftAssignmentViewer;
+	private AssignmentViewer leftAssignmentViewer;
 	public AssignmentViewer rightAssignmentViewer;
 
 	private JCheckBox cbAutosave;
@@ -119,10 +101,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JButton btnExportHtml;
 	private JButton btnExportData;
 
-	String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-	String itemChannel0 = "Raw Channel 0";
-	String itemChannel1 = "Raw Channel 1";
-	String itemChannel2 = "Raw Channel 2";
+	private final String itemChannel0 = "Raw Channel 0";
+	private final String itemChannel1 = "Raw Channel 1";
+	private final String itemChannel2 = "Raw Channel 2";
 //	String itemPMFRF = "PMFRF Sum Image";
 //	String itemClassified = "RF BG Probability";
 //	String itemSegmented = "RF Cell Segmentation";
@@ -155,11 +136,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private MenuItem menuSave;
 
 	private MenuItem menuSaveFG;
-
-	private MenuItem menuTrain;
-
-	// Trainer-related
-	private MMTrainerGui trainerGui;
 
 	// -------------------------------------------------------------------------------------
 	// construction & gui creation
@@ -210,10 +186,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		menuShowImgRaw.addActionListener( this );
 		menuShowImgTemp = new MenuItem( "Show BG-subtrackted imges..." );
 		menuShowImgTemp.addActionListener( this );
-		menuTrain = new MenuItem( "Show trainer window..." );
+		MenuItem menuTrain = new MenuItem("Show trainer window...");
 		menuTrain.addActionListener( this );
 		menuView.add( menuViewShowConsole );
-		menuView.add( menuTrain );
+		menuView.add(menuTrain);
 		menuView.addSeparator();
 		menuView.add( menuShowImgRaw );
 		menuView.add( menuShowImgTemp );
@@ -429,7 +405,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	}
 
 	/**
-	 * @param panelCurationViewHelper
 	 * @return
 	 */
 	private JPanel buildSegmentationAndAssignmentView() {
@@ -449,42 +424,34 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		txtNumCells = new JTextField( "?", 2 );
 		txtNumCells.setHorizontalAlignment( SwingConstants.CENTER );
 		txtNumCells.setMaximumSize( txtNumCells.getPreferredSize() );
-		txtNumCells.addActionListener( new ActionListener() {
+		txtNumCells.addActionListener(e -> {
+			model.getCurrentGL().getIlp().autosave();
 
-			@Override
-			public void actionPerformed( final ActionEvent e ) {
-				model.getCurrentGL().getIlp().autosave();
-
-				int numCells = 0;
-				final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-				try {
-					numCells = Integer.parseInt( txtNumCells.getText() );
-				} catch ( final NumberFormatException nfe ) {
-					numCells = -1;
-					txtNumCells.setText( "?" );
-					ilp.removeSegmentsInFrameCountConstraint( model.getCurrentTime() );
-				}
-				if ( numCells != -1 ) {
-					try {
-						ilp.removeSegmentsInFrameCountConstraint( model.getCurrentTime() );
-						ilp.addSegmentsInFrameCountConstraint( model.getCurrentTime(), numCells );
-					} catch ( final GRBException e1 ) {
-						e1.printStackTrace();
-					}
-				}
-
-				final Thread t = new Thread( new Runnable() {
-
-					@Override
-					public void run() {
-						model.getCurrentGL().runILP();
-						dataToDisplayChanged();
-						sliderTime.requestFocus();
-					}
-				} );
-				t.start();
+			int numCells;
+			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+			try {
+				numCells = Integer.parseInt( txtNumCells.getText() );
+			} catch ( final NumberFormatException nfe ) {
+				numCells = -1;
+				txtNumCells.setText( "?" );
+				ilp.removeSegmentsInFrameCountConstraint( model.getCurrentTime() );
 			}
-		} );
+			if ( numCells != -1 ) {
+				try {
+					ilp.removeSegmentsInFrameCountConstraint( model.getCurrentTime() );
+					ilp.addSegmentsInFrameCountConstraint( model.getCurrentTime(), numCells );
+				} catch ( final GRBException e1 ) {
+					e1.printStackTrace();
+				}
+			}
+
+			final Thread t = new Thread(() -> {
+				model.getCurrentGL().runILP();
+				dataToDisplayChanged();
+				sliderTime.requestFocus();
+			});
+			t.start();
+		});
 
 		panelIsee.add( Box.createHorizontalGlue() );
 		panelIsee.add( labelNumCells1 );
@@ -496,7 +463,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		final JPanel panelDropdown = new JPanel();
 		panelDropdown.setLayout( new BoxLayout( panelDropdown, BoxLayout.LINE_AXIS ) );
 		cbWhichImgToShow = new JComboBox();
-		cbWhichImgToShow.addItem( itemChannel0BGSubtr );
+		String itemChannel0BGSubtr = "BG-subtr. Ch.0";
+		cbWhichImgToShow.addItem(itemChannel0BGSubtr);
 		cbWhichImgToShow.addItem( itemChannel0 );
 		if ( model.mm.getRawChannelImgs().size() > 1 ) {
 			cbWhichImgToShow.addItem( itemChannel1 );
@@ -507,13 +475,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //		cbWhichImgToShow.addItem( itemPMFRF );
 //		cbWhichImgToShow.addItem( itemClassified );
 //		cbWhichImgToShow.addItem( itemSegmented );
-		cbWhichImgToShow.addActionListener( new ActionListener() {
-
-			@Override
-			public void actionPerformed( final ActionEvent e ) {
-				dataToDisplayChanged();
-			}
-		} );
+		cbWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
 
 		panelDropdown.add( Box.createHorizontalGlue() );
 		panelDropdown.add( cbWhichImgToShow );
@@ -713,9 +675,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //		}
 		final float[] yAvg = new float[ yMidline.length ];
 		final float constY = SimpleFunctionAnalysis.getSum( ySegmentationData ) / ySegmentationData.length;
-		for ( int i = 0; i < yAvg.length; i++ ) {
-			yAvg[ i ] = constY;
-		}
+		Arrays.fill(yAvg, constY);
 		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) ); // Note-MM-2019-06-10: blue plot line
 		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) ); // Note-MM-2019-06-10: green plot line
 		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) ); // Note-MM-2019-06-10: red plot line
@@ -737,27 +697,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		final int t = sliderTime.getValue();
 		System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
 		for ( final C root : ct.roots() ) {
-			System.out.println( "" );
+			System.out.println();
 			int level = 0;
-			ArrayList< C > ctnLevel = new ArrayList< C >();
+			ArrayList< C > ctnLevel = new ArrayList<>();
 			ctnLevel.add( root );
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
-					if(costType == "Segment") {
+					if(costType.equals("Segment")) {
 						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
 					}
 					else{
 						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
 						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
-							if(costType == "ExitAssignment"){
+							if(costType.equals("ExitAssignment")){
 								if(ass instanceof ExitAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
-							else if(costType == "MappingAssignment"){
+							else if(costType.equals("MappingAssignment")){
 								if(ass instanceof MappingAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
-							else if(costType == "DivisionAssignment"){
+							else if(costType.equals("DivisionAssignment")){
 								if(ass instanceof DivisionAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
@@ -766,11 +726,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				}
 				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
 				level++;
-				System.out.println( "" );
+				System.out.println();
 			}
 		}
 		System.out.print("##################### STOP PRINTING COSTS: " + costType + " #####################");
-		System.out.println( "" );
+		System.out.println();
 	}
 
 	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {
@@ -780,9 +740,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 		int i = 0;
 		for ( final C root : ct.roots() ) {
-			System.out.println( "" );
+			System.out.println();
 			int level = 0;
-			ArrayList< C > ctnLevel = new ArrayList< C >();
+			ArrayList< C > ctnLevel = new ArrayList<>();
 			ctnLevel.add( root );
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
@@ -796,7 +756,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				}
 				ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
 				level++;
-				System.out.println( "" );
+				System.out.println();
 			}
 		}
 		plot.addBoxPlot( "Seg. Hypothesis", new Color( 127, 127, 127, 255 ), Util.makeDoubleArray2d( xydxdyCTNBorders ) );
@@ -853,7 +813,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * View.offset according to the current offset settings. Note: this method
 	 * does not and should not invoke a repaint!
 	 */
-	@SuppressWarnings( { "unchecked", "rawtypes" } )
+	@SuppressWarnings( { "unchecked"} )
 	public void dataToDisplayChanged() {
 
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
@@ -875,8 +835,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 			if ( model.getCurrentGLFsPredecessor() != null ) {
 				final GrowthLineFrame glf = model.getCurrentGLFsPredecessor();
-				viewImgLeftActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive );
+				/**
+				 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+				 * (left one in active assignments view).
+				 */
+				IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive);
 			} else {
 				// show something empty
 				imgCanvasActiveLeft.setEmptyScreenImage();
@@ -886,8 +850,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 			if ( model.getCurrentGLFsSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() ) { // hence copy of last frame for border-problem avoidance
 				final GrowthLineFrame glf = model.getCurrentGLFsSuccessor();
-				viewImgRightActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveRight.setScreenImage( glf, viewImgRightActive );
+				/**
+				 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+				 * (right one in active assignments view).
+				 */
+				IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+				imgCanvasActiveRight.setScreenImage( glf, viewImgRightActive);
 			} else {
 				// show something empty
 				imgCanvasActiveRight.setEmptyScreenImage();
@@ -903,9 +871,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //			if ( paramaxflowSumImageFloatTyped != null && cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
 //				imgCanvasActiveCenter.setScreenImage( glf, paramaxflowSumImageFloatTyped );
 //			} else
+			/**
+			 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+			 * (center one in active assignments view).
+			 */
+			IntervalView<FloatType> viewImgCenterActive;
 			if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel0 ) ) {
 				viewImgCenterActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel1 ) ) {
 				final IntervalView< FloatType > viewToShow = Views.hyperSlice( model.mm.getRawChannelImgs().get( 1 ), 2, glf.getOffsetF() );
 				Util.computeMinMax( Views.iterable( viewToShow ), min, max );
@@ -917,7 +890,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 										new FloatType() ),
 								glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
 								glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel2 ) ) {
 				final IntervalView< FloatType > viewToShow = Views.hyperSlice( model.mm.getRawChannelImgs().get( 2 ), 2, glf.getOffsetF() );
 				Util.computeMinMax( Views.iterable( viewToShow ), min, max );
@@ -929,7 +902,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 										new FloatType() ),
 								glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
 								glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 //			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemClassified ) ) {
 //				final Thread t = new Thread() {
 //
@@ -952,7 +925,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //				t.start();
 			} else { // BG-subtracted Channel 0 selected or PMFRF not available
 				viewImgCenterActive = Views.offset( Views.hyperSlice( model.mm.getImgTemp(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			}
 
 //			if ( glf.isParaMaxFlowComponentTree() ) {
@@ -1049,20 +1022,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					new DialogPropertiesEditor( this, MoMA.props );
 			propsEditor.setVisible( true );
 		}
-		if ( e.getSource().equals( menuTrain ) ) {
-			final MoMAGui self = this;
-
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					self.trainerGui = new MMTrainerGui( self );
-					self.trainerGui.setVisible( true );
-				}
-			} );
-			t.start();
-
-		}
 		if ( e.getSource().equals( menuLoad ) ) {
 
 			final MoMAGui self = this;
@@ -1134,11 +1093,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 								}
 							}
 						}
-					} catch ( final NumberFormatException e ) {
-						e.printStackTrace();
-					} catch ( final HeadlessException e ) {
-						e.printStackTrace();
-					} catch ( final IOException e ) {
+					} catch ( final NumberFormatException | IOException | HeadlessException e ) {
 						e.printStackTrace();
 					}
 				}
@@ -1196,7 +1151,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "Using existing ILP (possibly containing user-defined ground-truth bits)..." );
 				}
 				System.out.println( "Saving ILP as FactorGraph..." );
-//				model.getCurrentGL().getIlp().exportFG_PASCAL( file );
 				model.getCurrentGL().getIlp().exportFG_PAUL( file );
 				System.out.println( "...done!" );
 			}
@@ -1237,61 +1191,46 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //			}
 //		}
 		if ( e.getSource().equals( bCheckBoxLineSet ) ) {
-			final Thread t = new Thread( new Runnable() {
+			final Thread t = new Thread(() -> {
+				model.getCurrentGL().getIlp().autosave();
 
-				@Override
-				public void run() {
-					model.getCurrentGL().getIlp().autosave();
+				setAllVariablesFixedWhereChecked();
 
-					setAllVariablesFixedWhereChecked();
+				System.out.println( "Finding optimal result..." );
+				model.getCurrentGL().runILP();
+				System.out.println( "...done!" );
 
-					System.out.println( "Finding optimal result..." );
-					model.getCurrentGL().runILP();
-					System.out.println( "...done!" );
-
-					sliderTime.requestFocus();
-					dataToDisplayChanged();
-				}
-
-			} );
+				sliderTime.requestFocus();
+				dataToDisplayChanged();
+			});
 			t.start();
 		}
 		if ( e.getSource().equals( bCheckBoxLineReset ) ) {
-			final Thread t = new Thread( new Runnable() {
+			final Thread t = new Thread(() -> {
+				model.getCurrentGL().getIlp().autosave();
 
-				@Override
-				public void run() {
-					model.getCurrentGL().getIlp().autosave();
+				setAllVariablesFreeWhereChecked();
 
-					setAllVariablesFreeWhereChecked();
+				System.out.println( "Finding optimal result..." );
+				model.getCurrentGL().runILP();
+				System.out.println( "...done!" );
 
-					System.out.println( "Finding optimal result..." );
-					model.getCurrentGL().runILP();
-					System.out.println( "...done!" );
-
-					sliderTime.requestFocus();
-					dataToDisplayChanged();
-				}
-
-			} );
+				sliderTime.requestFocus();
+				dataToDisplayChanged();
+			});
 			t.start();
 		}
 		if ( e.getSource().equals( bFreezeHistory ) ) {
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					final int t = sliderTime.getValue();
-					if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
-						final int extent =
-								sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-						sliderTrackingRange.setUpperValue( t - 1 + extent );
-						btnOptimizeMore.doClick();
-					}
-					sliderTrackingRange.setValue( t - 1 );
+			final Thread t = new Thread(() -> {
+				final int t1 = sliderTime.getValue();
+				if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
+					final int extent =
+							sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
+					sliderTrackingRange.setUpperValue( t1 - 1 + extent );
+					btnOptimizeMore.doClick();
 				}
-
-			} );
+				sliderTrackingRange.setValue( t1 - 1 );
+			});
 			t.start();
 		}
 		if ( e.getSource().equals( btnRestart ) ) {
@@ -1303,57 +1242,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 							JOptionPane.YES_NO_OPTION );
 
 			if ( choise == JOptionPane.OK_OPTION ) {
-    			final Thread t = new Thread( new Runnable() {
+    			final Thread t = new Thread(() -> {
+					model.getCurrentGL().getIlp().autosave();
 
-    				@Override
-    				public void run() {
-						model.getCurrentGL().getIlp().autosave();
+					prepareOptimization();
 
-    					prepareOptimization();
-
-    					if ( !( sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum() ) ) {
-    						final int extent =
-    								sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-    						sliderTrackingRange.setUpperValue( 0 + extent );
-    					}
-    					sliderTrackingRange.setValue( 0 );
-
-    					model.getCurrentGL().getIlp().freezeBefore( sliderTrackingRange.getValue() );
-						if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
-							// this is needed because of the duplication of the last time-point
-							model.getCurrentGL().getIlp().ignoreBeyond( sliderTrackingRange.getUpperValue() );
-						}
-
-    					System.out.println( "Finding optimal result..." );
-    					model.getCurrentGL().runILP();
-    					System.out.println( "...done!" );
-
-    					dataToDisplayChanged();
-    				}
-
-    			} );
-    			t.start();
-			}
-		}
-		if ( e.getSource().equals( btnOptimizeMore ) ) {
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					if ( model.getCurrentGL().getIlp() == null ) {
-						prepareOptimization();
-						sliderTrackingRange.setValue( 0 );
-					}
-
-					if ( sliderTime.getValue() > sliderTrackingRange.getUpperValue() ) {
-						sliderTrackingRange.setUpperValue( sliderTime.getValue() );
-					}
-					if ( sliderTime.getValue() < sliderTrackingRange.getValue() ) {
-						final int len =
+					if ( !( sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum() ) ) {
+						final int extent =
 								sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-						sliderTrackingRange.setValue( sliderTime.getValue() - len / 2 );
-						sliderTrackingRange.setUpperValue( sliderTime.getValue() + len / 2 + len % 2 );
+						sliderTrackingRange.setUpperValue(extent);
 					}
+					sliderTrackingRange.setValue( 0 );
 
 					model.getCurrentGL().getIlp().freezeBefore( sliderTrackingRange.getValue() );
 					if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
@@ -1366,29 +1265,47 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "...done!" );
 
 					dataToDisplayChanged();
+				});
+    			t.start();
+			}
+		}
+		if ( e.getSource().equals( btnOptimizeMore ) ) {
+			final Thread t = new Thread(() -> {
+				if ( model.getCurrentGL().getIlp() == null ) {
+					prepareOptimization();
+					sliderTrackingRange.setValue( 0 );
 				}
 
-			} );
+				if ( sliderTime.getValue() > sliderTrackingRange.getUpperValue() ) {
+					sliderTrackingRange.setUpperValue( sliderTime.getValue() );
+				}
+				if ( sliderTime.getValue() < sliderTrackingRange.getValue() ) {
+					final int len =
+							sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
+					sliderTrackingRange.setValue( sliderTime.getValue() - len / 2 );
+					sliderTrackingRange.setUpperValue( sliderTime.getValue() + len / 2 + len % 2 );
+				}
+
+				model.getCurrentGL().getIlp().freezeBefore( sliderTrackingRange.getValue() );
+				if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
+					// this is needed because of the duplication of the last time-point
+					model.getCurrentGL().getIlp().ignoreBeyond( sliderTrackingRange.getUpperValue() );
+				}
+
+				System.out.println( "Finding optimal result..." );
+				model.getCurrentGL().runILP();
+				System.out.println( "...done!" );
+
+				dataToDisplayChanged();
+			});
 			t.start();
 		}
 		if ( e.getSource().equals( btnExportHtml ) ) {
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					exportHtmlOverview();
-				}
-			} );
+			final Thread t = new Thread(this::exportHtmlOverview);
 			t.start();
 		}
 		if ( e.getSource().equals( btnExportData ) ) {
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					exportDataFiles();
-				}
-			} );
+			final Thread t = new Thread(this::exportDataFiles);
 			t.start();
 		}
 		setFocusToTimeSlider();
@@ -1396,18 +1313,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 	private void setFocusToTimeSlider() {
 
-		SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
-				sliderTime.requestFocusInWindow();
-			}
-		} );
+		SwingUtilities.invokeLater(() -> sliderTime.requestFocusInWindow());
 	}
 
 	/**
-	 * @param self
 	 * @return
 	 */
-	public void prepareOptimization() {
+	private void prepareOptimization() {
 		System.out.println( "Filling in CT hypotheses where needed..." );
 		int frameIndex = 0;
 		for ( final GrowthLineFrame glf : model.getCurrentGL().getFrames() ) {
@@ -1430,7 +1342,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * Depending on which checkboxes are checked, fix ALL respective
 	 * segmentations and assignments to current ILP state.
 	 */
-	protected void setAllVariablesFixedWhereChecked() {
+	private void setAllVariablesFixedWhereChecked() {
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 		final int t = sliderTime.getValue();
 		if ( ilp != null ) {
@@ -1457,7 +1369,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * segmentations and assignments if they are clamped to any value in the
 	 * ILP.
 	 */
-	protected void setAllVariablesFreeWhereChecked() {
+	private void setAllVariablesFreeWhereChecked() {
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 		final int t = sliderTime.getValue();
 		if ( ilp != null ) {
@@ -1520,7 +1432,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		int startFrame = 1;
 		int endFrame = sliderTime.getMaximum() + 1;
 
-		File file = new File( String.format( MoMA.STATS_OUTPUT_PATH + String.format( "/index.html" ) ) );
+		File file = new File(MoMA.STATS_OUTPUT_PATH + "/index.html");
 
 		if ( !MoMA.HEADLESS ) {
 			final JFileChooser fc = new JFileChooser();
@@ -1587,20 +1499,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			glf.generateSimpleSegmentationHypotheses( model.mm.getImgProbs(), frameIndex );
 			frameIndex++;
 		}
-		System.out.println( "" );
+		System.out.println();
 	}
 
-	/**
-	 * Goes over all glfs of the current gl and activates the awesome,
-	 * RF-classified + paramaxflow hypotheses.
+	/*
+	  Goes over all glfs of the current gl and activates the awesome,
+	  RF-classified + paramaxflow hypotheses.
 	 */
 //	private void activateAwesomeHypothesesForCurrentGL() {
 //		activateAwesomeHypothesesForGL( model.getCurrentGL() );
 //	}
 
-	/**
-	 * Goes over all glfs of the given gl and activates the awesome,
-	 * RF-classified + paramaxflow hypotheses.
+	/*
+	  Goes over all glfs of the given gl and activates the awesome,
+	  RF-classified + paramaxflow hypotheses.
 	 */
 //	private void activateAwesomeHypothesesForGL( final GrowthLine gl ) {
 //		// Since I am gonna mix CT and PMFRF, I have to also ensure to have the CT ones available
@@ -1668,8 +1580,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * @param endFrame
 	 * @param startFrame
 	 *
-	 * @param folder
-	 *            path to folder in which to store PNGs.
 	 */
 	private void exportHtmlTrackingOverview( final File htmlFileToSaveTo, final int startFrame, final int endFrame ) {
 		System.out.println( "Exporting html tracking overview..." );
@@ -1689,12 +1599,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 */
 	public void focusOnSliderTime() {
 
-		SwingUtilities.invokeLater(new Runnable() {
-			@Override
-			public void run() {
-				sliderTime.requestFocus();
-			}
-		});
+		SwingUtilities.invokeLater(() -> sliderTime.requestFocus());
 	}
 
 	/**

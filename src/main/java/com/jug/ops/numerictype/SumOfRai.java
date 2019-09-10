@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.jug.ops.numerictype;
 
 import net.imagej.ops.Op;

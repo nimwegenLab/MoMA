@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.HashMap;
@@ -14,7 +11,7 @@ import java.util.Set;
  *
  * @author jug
  */
-public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssignment< H > > {
+class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssignment< H > > {
 
 	// -------------------------------------------------------------------------------------
 	// fields
@@ -33,8 +30,8 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	// construction
 	// -------------------------------------------------------------------------------------
 	public HypothesisNeighborhoods() {
-		rightNeighborhoods = new HashMap< H, Set< A > >();
-		leftNeighborhoods = new HashMap< H, Set< A > >();
+		rightNeighborhoods = new HashMap<>();
+		leftNeighborhoods = new HashMap<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -108,7 +105,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 * @return true, if such a neighborhood exists (might be empty though), or
 	 *         false if it does not.
 	 */
-	public boolean hasLeftNeighborhoods( final H h ) {
+    private boolean hasLeftNeighborhoods(final H h) {
 		return getLeftNeighborhood( h ) != null;
 	}
 
@@ -121,7 +118,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 * @return true, if such a neighborhood exists (might be empty though), or
 	 *         false if it does not.
 	 */
-	public boolean hasRightNeighborhoods( final H h ) {
+    private boolean hasRightNeighborhoods(final H h) {
 		return getRightNeighborhood( h ) != null;
 	}
 
@@ -149,7 +146,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 */
 	public boolean addToLeftNeighborhood ( final H h, final A a ) {
 		if ( ! hasLeftNeighborhoods( h ) ) {
-			leftNeighborhoods.put( h, new HashSet< A >() );
+			leftNeighborhoods.put( h, new HashSet<>() );
 		}
 		return getLeftNeighborhood( h ).add( a );
 	}
@@ -166,7 +163,7 @@ public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends Abstr
 	 */
 	public boolean addToRightNeighborhood( final H h, final A a ) {
 		if ( !hasRightNeighborhoods( h ) ) {
-			rightNeighborhoods.put( h, new HashSet< A >() );
+			rightNeighborhoods.put( h, new HashSet<>() );
 		}
 		return getRightNeighborhood( h ).add( a );
 	}

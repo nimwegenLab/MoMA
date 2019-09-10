@@ -76,7 +76,7 @@ public final class FilteredComponent< T extends Type< T > >
 
 	FilteredComponent( final FilteredPartialComponent< T > intermediate )
 	{
-		children = new ArrayList< FilteredComponent< T > >();
+		children = new ArrayList<>();
 		parent = null;
 		minValue = intermediate.getValue().copy();
 		maxValue = intermediate.getValue().copy();
@@ -104,7 +104,7 @@ public final class FilteredComponent< T extends Type< T > >
 	 *
 	 * @return the image threshold that created the extremal region.
 	 */
-	public T maxValue()
+	private T maxValue()
 	{
 		return maxValue;
 	}
@@ -126,7 +126,7 @@ public final class FilteredComponent< T extends Type< T > >
 	 *
 	 * @return number of pixels in the extremal region.
 	 */
-	public long maxSize()
+	private long maxSize()
 	{
 		return pixelList.size();
 	}
@@ -190,7 +190,7 @@ public final class FilteredComponent< T extends Type< T > >
 
 	// Trials for extended size etc.
 	// =============================
-	public long maxSizeExtended() {
+	private long maxSizeExtended() {
 		evaluatePixelListExtendedIfNeeded();
 		return pixelListExtended.size();
 	}
@@ -211,9 +211,9 @@ public final class FilteredComponent< T extends Type< T > >
 	}
 
 	private void evaluatePixelListExtended() {
-		this.pixelListExtended = new ArrayList< Localizable >();
+		this.pixelListExtended = new ArrayList<>();
 
-		final ArrayList< FilteredComponent< T >> siblings = new ArrayList< FilteredComponent< T > >();
+		final ArrayList< FilteredComponent< T >> siblings = new ArrayList<>();
 		if ( parent != null ) {
 			for ( final FilteredComponent< T > comp : parent.children ) {
 				if ( !comp.equals( this ) ) {
@@ -243,7 +243,7 @@ public final class FilteredComponent< T extends Type< T > >
 		}
 	}
 
-	private final long minSquaredDistToPixel( final Localizable refPixel ) {
+	private long minSquaredDistToPixel(final Localizable refPixel ) {
 		long minSquaredDist = Long.MAX_VALUE;
 		for ( final Localizable pixel : this.pixelList ) {
 			long squaredDist = 0;

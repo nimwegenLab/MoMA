@@ -8,19 +8,19 @@ import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.algorithm.componenttree.pixellist.PixelListComponentTree;
 import net.imglib2.type.numeric.real.DoubleType;
 
-public class TypedComponentTree< T, C extends Component< T, C > > implements ComponentTree< C >
+class TypedComponentTree< T, C extends Component< T, C > > implements ComponentTree< C >
 {
-	ComponentTree< C > tree;
+	private final ComponentTree< C > tree;
 
-	public TypedComponentTree( final ComponentTree< C > f )
+	private TypedComponentTree(final ComponentTree<C> f)
 	{
 		this.tree = f;
 	}
 
-	static < T, C extends Component< T, C > > TypedComponentTree< T, C > create( final ComponentTree< C > f )
+	private static < T, C extends Component< T, C > > void create(final ComponentTree<C> f)
 	{
-		return new TypedComponentTree< T, C >( f );
-	}
+        new TypedComponentTree<>(f);
+    }
 
 	/**
 	 * Get the set of root nodes of this component forest.
@@ -43,7 +43,6 @@ public class TypedComponentTree< T, C extends Component< T, C > > implements Com
 	{
 		final RandomAccessibleInterval< DoubleType > input = null;
 		TypedComponentTree< DoubleType, ? extends Component< DoubleType, ? > > tree;
-		tree = TypedComponentTree.create( PixelListComponentTree.buildComponentTree( input, new DoubleType(), true ) );
-//		tree = TypedComponentForest.create( MserTree.buildMserTree( input, 0, 0, 0, 0, 0, true ) );
+		TypedComponentTree.create( PixelListComponentTree.buildComponentTree( input, new DoubleType(), true ) );
 	}
 }

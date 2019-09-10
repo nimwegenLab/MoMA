@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util;
 
 import java.awt.Color;
@@ -48,7 +45,7 @@ public class Util {
 	 *
 	 * @return location of the point as a new long[]
 	 */
-	final static public long[] pointLocation( final Point point ) {
+	static public long[] pointLocation( final Point point ) {
 		final long[] dimensions = new long[ point.numDimensions() ];
 		for ( int i = 0; i < point.numDimensions(); i++ )
 			dimensions[ i ] = point.getLongPosition( i );
@@ -167,7 +164,6 @@ public class Util {
 	/**
 	 * @param channelFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< FloatType > getColumnBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -181,7 +177,6 @@ public class Util {
 	/**
 	 * @param channelFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< FloatType > getIntensityBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -195,7 +190,6 @@ public class Util {
 	/**
 	 * @param segmentedFrame
 	 * @param hyp
-	 * @param avgXpos
 	 * @return
 	 */
 	public static IntervalView< ShortType > getClassificationBoxInImg( final IntervalView< ShortType > segmentedFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
@@ -222,7 +216,6 @@ public class Util {
 	}
 
 	/**
-	 * @param channelFrame
 	 * @param hyp
 	 * @return
 	 */
@@ -239,8 +232,8 @@ public class Util {
 	private static long[] getTopLeftInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
 		final long left = middle - MoMA.GL_WIDTH_IN_PIXELS / 2;
-		final long top = limits.getA() + MoMA.GL_OFFSET_TOP;;
-		return new long[] { left, top };
+		final long top = limits.getA() + MoMA.GL_OFFSET_TOP;
+        return new long[] { left, top };
 	}
 
 	/**
@@ -255,8 +248,6 @@ public class Util {
 	}
 
 	/**
-	 * @param sizeEstimationBoxInChannel0
-	 * @param d
 	 * @return
 	 */
 	public static int countPixelsAboveThreshold( final IntervalView< ShortType > segmentedFrame, final float threshold ) {
@@ -308,7 +299,7 @@ public class Util {
 
 	static ArrayList<IntervalView<FloatType>> slice(RandomAccessibleInterval<FloatType> inImg)
 	{
-		ArrayList<IntervalView<FloatType>> result = new ArrayList<IntervalView<FloatType>>();
+		ArrayList<IntervalView<FloatType>> result = new ArrayList<>();
 
 		for (long z = inImg.min(2); z <= inImg.max(2); z++) {
 			IntervalView<FloatType> sliceImg = Views.hyperSlice(inImg, 2, z);

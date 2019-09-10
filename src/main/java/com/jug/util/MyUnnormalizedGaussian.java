@@ -1,13 +1,10 @@
-/**
- *
- */
 package com.jug.util;
 
 
 /**
  * @author jug
  */
-public class MyUnnormalizedGaussian {
+class MyUnnormalizedGaussian {
 
 	private final double height;
 	private final double mean;

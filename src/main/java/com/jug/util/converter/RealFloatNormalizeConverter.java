@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util.converter;
 
 import net.imglib2.converter.Converter;
@@ -18,7 +15,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class RealFloatNormalizeConverter< R extends RealType< R > > implements Converter< R, FloatType > {
 
-	float num;
+	private final float num;
 
 	public RealFloatNormalizeConverter( final float num ) {
 		this.num = num;

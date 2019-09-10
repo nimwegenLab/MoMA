@@ -299,8 +299,7 @@ class RangeSliderUI extends BasicSliderUI {
      */
     private Shape createThumbShape(final int width, final int height) {
         // Use circular shape.
-        final Ellipse2D shape = new Ellipse2D.Double(0, 0, width, height);
-        return shape;
+        return new Ellipse2D.Double(0, 0, width, height);
     }
 
     /**
@@ -319,13 +318,16 @@ class RangeSliderUI extends BasicSliderUI {
         slider.repaint(upperUnionRect.x, upperUnionRect.y, upperUnionRect.width, upperUnionRect.height);
     }
 
+
+    private final Object lock = new Object();
+
     /**
      * Moves the selected thumb in the specified direction by a block increment.
      * This method is called when the user presses the Page Up or Down keys.
      */
     @Override
 	public void scrollByBlock(final int direction) {
-        synchronized (slider) {
+        synchronized (lock) {
             int blockIncrement = (slider.getMaximum() - slider.getMinimum()) / 10;
             if (blockIncrement <= 0 && slider.getMaximum() > slider.getMinimum()) {
                 blockIncrement = 1;
@@ -348,8 +350,8 @@ class RangeSliderUI extends BasicSliderUI {
      */
     @Override
 	public void scrollByUnit(final int direction) {
-        synchronized (slider) {
-            final int delta = 1 * ((direction > 0) ? POSITIVE_SCROLL : NEGATIVE_SCROLL);
+        synchronized (lock) {
+            final int delta = ((direction > 0) ? POSITIVE_SCROLL : NEGATIVE_SCROLL);
 
             if (upperThumbSelected) {
                 final int oldValue = ((RangeSlider) slider).getUpperValue();
@@ -366,7 +368,7 @@ class RangeSliderUI extends BasicSliderUI {
      * locations and repaints the slider if the value change is not caused by
      * dragging a thumb.
      */
-    public class ChangeHandler implements ChangeListener {
+    class ChangeHandler implements ChangeListener {
         @Override
 		public void stateChanged(final ChangeEvent arg0) {
             if (!lowerDragging && !upperDragging) {
@@ -379,7 +381,7 @@ class RangeSliderUI extends BasicSliderUI {
     /**
      * Listener to handle mouse movements in the slider track.
      */
-    public class RangeTrackListener extends TrackListener {
+    class RangeTrackListener extends TrackListener {
 
         @Override
         public void mousePressed(final MouseEvent e) {
@@ -504,7 +506,7 @@ class RangeSliderUI extends BasicSliderUI {
          * value in the slider.
          */
         private void moveLowerThumb() {
-            int thumbMiddle = 0;
+            int thumbMiddle;
 
             switch (slider.getOrientation()) {
             case SwingConstants.VERTICAL:
@@ -554,7 +556,6 @@ class RangeSliderUI extends BasicSliderUI {
                 break;
 
             default:
-                return;
             }
         }
 
@@ -563,7 +564,7 @@ class RangeSliderUI extends BasicSliderUI {
          * value in the slider.
          */
         private void moveUpperThumb() {
-            int thumbMiddle = 0;
+            int thumbMiddle;
 
             switch (slider.getOrientation()) {
             case SwingConstants.VERTICAL:
@@ -613,7 +614,6 @@ class RangeSliderUI extends BasicSliderUI {
                 break;
 
             default:
-                return;
             }
         }
     }

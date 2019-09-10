@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util;
 
 import java.util.ArrayList;
@@ -34,7 +31,7 @@ public class SimpleFunctionAnalysis {
 	 * @return
 	 */
 	public static int[] getMaxima( final float[] fktValues, final int minLeftFlankWidth, final int minRightFlankWidth ) {
-		final List< Integer > retInt = new ArrayList< Integer >();
+		final List< Integer > retInt = new ArrayList<>();
 		for ( int center = minLeftFlankWidth; center < fktValues.length - minRightFlankWidth; center++ ) {
 			boolean maximum = true;
 			int cmp;
@@ -48,7 +45,7 @@ public class SimpleFunctionAnalysis {
 				}
 			}
 			if ( maximum ) {
-				retInt.add( new Integer( center ) );
+				retInt.add(center);
 				center += minRightFlankWidth;
 			}
 		}
@@ -56,7 +53,7 @@ public class SimpleFunctionAnalysis {
 		// build int array to return it
 		final int[] ret = new int[ retInt.size() ];
 		for ( int i = 0; i < retInt.size(); i++ ) {
-			ret[ i ] = retInt.get( i ).intValue();
+			ret[ i ] = retInt.get(i);
 		}
 		return ret;
 
@@ -82,7 +79,7 @@ public class SimpleFunctionAnalysis {
 	 */
 	public static float[] getExteremalPointHeights( final float[] fktValues, final int minLeftFlankWidth, final int minRightFlankWidth ) {
 
-		final List< Float > retFloat = new ArrayList< Float >();
+		final List< Float > retFloat = new ArrayList<>();
 		for ( int center = minLeftFlankWidth; center < fktValues.length - minRightFlankWidth; center++ ) {
 			boolean maximum = true;
 			int cmp;
@@ -96,7 +93,7 @@ public class SimpleFunctionAnalysis {
 				}
 			}
 			if ( maximum ) {
-				retFloat.add( new Float( -fktValues[ center ] ) ); // tricky '-' for decreasing sort oder
+				retFloat.add(-fktValues[center]); // tricky '-' for decreasing sort oder
 				center += minRightFlankWidth;
 			}
 		}
@@ -113,7 +110,7 @@ public class SimpleFunctionAnalysis {
 				}
 			}
 			if ( minimum ) {
-				retFloat.add( new Float( -fktValues[ center ] ) ); // tricky '-' for decreasing sort oder
+				retFloat.add(-fktValues[center]); // tricky '-' for decreasing sort oder
 				center += minRightFlankWidth;
 			}
 		}
@@ -122,7 +119,7 @@ public class SimpleFunctionAnalysis {
 		// build float array to return it
 		final float[] ret = new float[ retFloat.size() ];
 		for ( int i = 0; i < retFloat.size(); i++ ) {
-			ret[ i ] = -retFloat.get( i ).floatValue(); // undo the decreasing sort oder trick (see above)
+			ret[ i ] = -retFloat.get(i); // undo the decreasing sort oder trick (see above)
 		}
 		return ret;
 	}
@@ -131,7 +128,7 @@ public class SimpleFunctionAnalysis {
 		return getMin( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static ValuePair< Integer, Float > getMin( final float[] fktValues, final int from, final int to ) {
+	private static ValuePair< Integer, Float > getMin(final float[] fktValues, final int from, final int to) {
 		int minPos = from;
 		float min = fktValues[ from ];
 		for ( int i = from; i <= to; i++ ) {
@@ -140,14 +137,14 @@ public class SimpleFunctionAnalysis {
 				min = fktValues[ i ];
 			}
 		}
-		return new ValuePair< Integer, Float >( Integer.valueOf( minPos ), Float.valueOf( min ) );
+		return new ValuePair<>(minPos, min);
 	}
 
 	public static ValuePair< Integer, Float > getMax( final float[] fktValues ) {
 		return getMax( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static ValuePair< Integer, Float > getMax( final float[] fktValues, final int from, final int to ) {
+	private static ValuePair< Integer, Float > getMax(final float[] fktValues, final int from, final int to) {
 		int maxPos = from;
 		float max = fktValues[ from ];
 		for ( int i = from; i <= to; i++ ) {
@@ -156,20 +153,20 @@ public class SimpleFunctionAnalysis {
 				max = fktValues[ i ];
 			}
 		}
-		return new ValuePair< Integer, Float >( Integer.valueOf( maxPos ), Float.valueOf( max ) );
+		return new ValuePair<>(maxPos, max);
 	}
 
 	public static ValuePair< Integer, Float > getLefthandLocalMin( final float[] fktValues, final int idx ) {
 		return getLefthandLocalMinOrPlateau( fktValues, idx, 0.0f );
 	}
 
-	public static ValuePair< Integer, Float > getLefthandLocalMinOrPlateau( final float[] fktValues, final int idx, final float plateauDerivativeThreshold ) {
+	private static ValuePair< Integer, Float > getLefthandLocalMinOrPlateau(final float[] fktValues, final int idx, final float plateauDerivativeThreshold) {
 		int i = idx;
 		while ( i > 0 && fktValues[ i - 1 ] + plateauDerivativeThreshold <= fktValues[ i ] ) {
 			i--;
 		}
 		if ( i > 0 ) i--; // since we really want the min
-		return new ValuePair< Integer, Float >( Integer.valueOf( i ), Float.valueOf( fktValues[ i ] ) );
+		return new ValuePair<>(i, fktValues[i]);
 	}
 
 	public static ValuePair< Integer, Float > getLefthandLocalMax( final float[] fktValues, final int idx ) {
@@ -178,20 +175,20 @@ public class SimpleFunctionAnalysis {
 			i--;
 		}
 		if ( i > 0 ) i--; // since we really want the max
-		return new ValuePair< Integer, Float >( Integer.valueOf( i ), Float.valueOf( fktValues[ i ] ) );
+		return new ValuePair<>(i, fktValues[i]);
 	}
 
 	public static ValuePair< Integer, Float > getRighthandLocalMin( final float[] fktValues, final int idx ) {
 		return getRighthandLocalMinOrPlateau( fktValues, idx, 0.0f );
 	}
 
-	public static ValuePair< Integer, Float > getRighthandLocalMinOrPlateau( final float[] fktValues, final int idx, final float plateauDerivativeThreshold ) {
+	private static ValuePair< Integer, Float > getRighthandLocalMinOrPlateau(final float[] fktValues, final int idx, final float plateauDerivativeThreshold) {
 		int i = idx;
 		while ( i + 1 < fktValues.length && fktValues[ i ] >= fktValues[ i + 1 ] + plateauDerivativeThreshold ) {
 			i++;
 		}
 		if ( i + 1 < fktValues.length ) i++; // since we really want the min
-		return new ValuePair< Integer, Float >( Integer.valueOf( i ), Float.valueOf( fktValues[ i ] ) );
+		return new ValuePair<>(i, fktValues[i]);
 	}
 
 	public static ValuePair< Integer, Float > getRighthandLocalMax( final float[] fktValues, final int idx ) {
@@ -200,7 +197,7 @@ public class SimpleFunctionAnalysis {
 			i++;
 		}
 		if ( i + 1 < fktValues.length ) i++; // since we really want the max
-		return new ValuePair< Integer, Float >( Integer.valueOf( i ), Float.valueOf( fktValues[ i ] ) );
+		return new ValuePair<>(i, fktValues[i]);
 	}
 
 	public static float[] normalizeFloatArray( final float[] array, final float min, final float max ) {
@@ -221,7 +218,7 @@ public class SimpleFunctionAnalysis {
 		return differentiateFloatArray( array, 1 );
 	}
 
-	public static float[] differentiateFloatArray( final float[] array, final int span ) {
+	private static float[] differentiateFloatArray(final float[] array, final int span) {
 		final float[] ret = new float[ array.length - 2 * span ];
 		for ( int i = span; i < array.length - span; i++ ) {
 			ret[ i - span ] =
@@ -233,20 +230,19 @@ public class SimpleFunctionAnalysis {
 	public static float[] filterAbove( final float[] array, final float threshold ) {
 		final float[] ret = new float[ array.length ];
 		for ( int i = 0; i < array.length; i++ ) {
-			ret[ i ] = ( array[ i ] > threshold ) ? array[ i ] : threshold;
+			ret[ i ] = Math.max(array[i], threshold);
 		}
 		return ret;
 	}
 
 	/**
-	 * @param intensities
 	 * @return
 	 */
 	public static float getSum( final float[] fktValues ) {
 		return getSum( fktValues, 0, fktValues.length - 1 );
 	}
 
-	public static float getSum( final float[] fktValues, final int from, final int to ) {
+	private static float getSum(final float[] fktValues, final int from, final int to) {
 		float sum = 0;
 		for ( int i = from; i <= to; i++ ) {
 			sum += fktValues[ i ];
@@ -280,7 +276,7 @@ public class SimpleFunctionAnalysis {
 		// border case
 		if ( fkt.length == 0 ) return new int[ 0 ];
 
-		final ArrayList< Integer > valleyBorders = new ArrayList< Integer >();
+		final ArrayList< Integer > valleyBorders = new ArrayList<>();
 
 		final float energyLeakageFactor = 0.33f;
 		final float initialEnergy = 0.02f;
@@ -364,7 +360,6 @@ public class SimpleFunctionAnalysis {
 				if ( deltaH <= 0 && idx > 0 ) {
 					valleys[ idx ] = valleyId;
 					idx--;
-					continue;
 				} else {
 					if ( idx == 0 ) {
 						valleys[ 0 ] = valleyId;
@@ -374,27 +369,26 @@ public class SimpleFunctionAnalysis {
 					state = RUN_RIGHT;
 //		    System.out.print(" ; "+idx+">");
 					energy = initialEnergy;
-					continue;
 				}
 			}
 		}
 //	System.out.println("");
 
 		// find the marble-value borders
-		valleyBorders.add( new Integer( 0 ) );
+		valleyBorders.add(0);
 		valleyId = valleys[ 0 ];
 		for ( int i = 0; i < valleys.length - 1; i++ ) { // -1 is just because above I was to lazy to make a meaningful entry at the last position
 			if ( valleyId != valleys[ i ] ) {
 				valleyId = valleys[ i ];
-				valleyBorders.add( new Integer( i ) );
+				valleyBorders.add(i);
 			}
 		}
-		valleyBorders.add( new Integer( valleys.length - 1 ) );
+		valleyBorders.add(valleys.length - 1);
 
 		// convert to int[]
 		final int[] ret = new int[ valleyBorders.size() ];
 		for ( int i = 0; i < ret.length; i++ ) {
-			ret[ i ] = valleyBorders.get( i ).intValue();
+			ret[ i ] = valleyBorders.get(i);
 		}
 		return ret;
 	}
@@ -425,7 +419,7 @@ public class SimpleFunctionAnalysis {
 	 * @param fkt
 	 * @return
 	 */
-	public static float[] flipSign( final float[] fkt ) {
+	private static float[] flipSign(final float[] fkt) {
 		final float[] ret = new float[ fkt.length ];
 		for ( int i = 0; i < fkt.length; i++ ) {
 			ret[ i ] = fkt[ i ] * -1;
@@ -439,7 +433,7 @@ public class SimpleFunctionAnalysis {
 	 * @param fkt
 	 * @return
 	 */
-	public static ValuePair< Integer, Integer > getHighestMonotoneIncreasingSegment( final float[] fkt, final int i, final int j ) {
+	private static ValuePair< Integer, Integer > getHighestMonotoneIncreasingSegment(final float[] fkt, final int i, final int j) {
 		int idxStart = i;
 		int idxEnd = j;
 
@@ -456,14 +450,13 @@ public class SimpleFunctionAnalysis {
 					idxEnd = idx;
 				}
 				idxLatestStart = idx;
-				continue;
 			}
 		}
 		if ( idxEnd == j - 1 && getHeightDifference( fkt, j - 1, j ) >= 0 ) {
 			idxEnd = j;
 		}
 
-		return new ValuePair< Integer, Integer >( new Integer( idxStart ), new Integer( idxEnd ) );
+		return new ValuePair<>(idxStart, idxEnd);
 	}
 
 	/**
@@ -478,7 +471,6 @@ public class SimpleFunctionAnalysis {
 	}
 
 	/**
-	 * @param gapSepFkt
 	 * @return
 	 */
 	public static float getMedian( final float[] fkt, final int i, final int j ) {

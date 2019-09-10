@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.ArrayList;
@@ -23,9 +20,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
 
 	private final List< Hypothesis< Component< FloatType, ? >>> Hup;
-	@SuppressWarnings( "unused" )
-	private final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes;
-	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
+    private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
 	private final Hypothesis< Component< FloatType, ? >> who;
 
 	private static int dcId = 0;
@@ -36,21 +31,16 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @param nodes
 	 * @param edges
 	 * @param who
-	 * @throws GRBException
-	 */
-	public ExitAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final List< Hypothesis< Component< FloatType, ? >>> Hup, final Hypothesis< Component< FloatType, ? >> who ) throws GRBException {
+     */
+	public ExitAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) {
 		super( GrowthLineTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
 		this.Hup = Hup;
 		this.edges = edges;
-		this.nodes = nodes;
-		this.who = who;
+        this.who = who;
 	}
 
 	/**
 	 * @throws GRBException
-	 * @see com.jug.lp.AbstractAssignment#addConstraintsToLP(gurobi.GRBModel,
-	 *      com.jug.lp.AssignmentsAndHypotheses,
-	 *      com.jug.lp.HypothesisNeighborhoods)
 	 */
 	@Override
 	public void addConstraintsToLP() throws GRBException {
@@ -83,10 +73,10 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 */
 	@Override
 	public List< String > getConstraintsToSave_PASCAL() {
-		final ArrayList< String > ret = new ArrayList< String >();
+		final ArrayList< String > ret = new ArrayList<>();
 
-		String constraint = "";
-		constraint += String.format( "(%d,%d,1)", Hup.size(), this.getVarIdx() );
+		StringBuilder constraint = new StringBuilder();
+		constraint.append(String.format("(%d,%d,1)", Hup.size(), this.getVarIdx()));
 
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
@@ -95,29 +85,28 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 						continue;
 					}
 					// add term if assignment is NOT another exit-assignment
-					constraint += String.format( "+(1,%d,1)", a_j.getVarIdx() );
+					constraint.append(String.format("+(1,%d,1)", a_j.getVarIdx()));
 				}
 			}
 		}
 
-		constraint += String.format( " <= %d", Hup.size() );
+		constraint.append(String.format(" <= %d", Hup.size()));
 
-		ret.add( constraint );
+		ret.add(constraint.toString());
 		return ret;
 	}
 
 	/**
 	 * Adds a list of constraints and factors as strings.
 	 *
-	 * @see com.jug.lp.AbstractAssignment#getConstraint()
 	 */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		final List< Integer > coeffs = new ArrayList< Integer >();
+		final List< Integer > varIds = new ArrayList<>();
+		final List< Integer > coeffs = new ArrayList<>();
 
 		// expr.addTerm( Hup.size(), this.getGRBVar() );
-		coeffs.add( new Integer( Hup.size() ) );
+		coeffs.add(Hup.size());
 //		varIds.add( new Integer( this.getVarIdx() ) );
 
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
@@ -128,7 +117,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 					}
 					// add term if assignment is NOT another exit-assignment
 					// expr.addTerm( 1.0, a_j.getGRBVar() );
-					coeffs.add( new Integer( 1 ) );
+					coeffs.add(1);
 //					varIds.add( new Integer( a_j.getVarIdx() ) );
 				}
 			}

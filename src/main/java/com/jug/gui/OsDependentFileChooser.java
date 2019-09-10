@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.awt.Component;
@@ -26,7 +23,7 @@ public class OsDependentFileChooser {
 			final String path,
 			final String title ) {
 
-		JFrame frame = null;
+		JFrame frame;
 		try {
 			frame = ( JFrame ) SwingUtilities.getWindowAncestor( parent );
 		} catch ( final ClassCastException e ) {
@@ -80,7 +77,7 @@ public class OsDependentFileChooser {
 
 	public static File showSaveFolderChooser( final Component parent, final String path, final String title ) {
 
-		JFrame frame = null;
+		JFrame frame;
 		try {
 			frame = ( JFrame ) SwingUtilities.getWindowAncestor( parent );
 		} catch ( final ClassCastException e ) {
@@ -137,7 +134,7 @@ public class OsDependentFileChooser {
 			final String title,
 			final ExtensionFileFilter fileFilter ) {
 
-		JFrame frame = null;
+		JFrame frame;
 		try {
 			frame = ( JFrame ) SwingUtilities.getWindowAncestor( parent );
 		} catch ( final ClassCastException e ) {
@@ -203,7 +200,7 @@ public class OsDependentFileChooser {
 			final String title,
 			final ExtensionFileFilter fileFilter ) {
 
-		JFrame frame = null;
+		JFrame frame;
 		try {
 			frame = ( JFrame ) SwingUtilities.getWindowAncestor( parent );
 		} catch ( final ClassCastException e ) {

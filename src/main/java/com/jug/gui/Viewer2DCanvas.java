@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.awt.Color;
@@ -27,7 +24,6 @@ import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -56,10 +52,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 
 	// tracking the mouse (when dragging)
 	private boolean isDragging;
-	private int dragX;
-	private int dragY;
 
-	private final MoMAGui mmgui;
+    private final MoMAGui mmgui;
 
 	private static final int OFFSET_DISPLAY_COSTS = -25;
 	private static int SYSTEM_SPECIFIC_POINTER_CORRECTION;
@@ -102,7 +96,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	public void setScreenImage( final GrowthLineFrame glf, final IntervalView< FloatType > viewImg ) {
 		setEmptyScreenImage();
-		this.projector = new IterableIntervalProjector2D< FloatType, ARGBType >( 0, 1, viewImg, screenImage, new RealARGBConverter< FloatType >( 0, 1 ) );
+		this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
 		this.view = viewImg;
 		this.glf = glf;
 		this.repaint();
@@ -185,13 +179,12 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		String strToShow = "";
 		String str2ToShow = " ";
 		if ( !this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null ) {
-			float cost = Float.NaN;
 			//TODO NOT nice... do something against that, please!
 			final int t = glf.getTime();
 			Hypothesis< Component< FloatType, ? > > hyp =
 					glf.getParent().getIlp().getOptimalSegmentationAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
 			if ( hyp != null ) {
-				cost = hyp.getCosts();
+				float cost = hyp.getCosts();
 				strToShow = String.format( "c=%.4f", cost );
 				str2ToShow = "-";
 			}
@@ -327,8 +320,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	public void mouseDragged( final MouseEvent e ) {
 		if ( e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3 ) {
 			this.isDragging = true;
-			this.dragX = e.getX();
-			this.dragY = e.getY();
+            int dragX = e.getX();
+            int dragY = e.getY();
 		}
 		repaint();
 	}

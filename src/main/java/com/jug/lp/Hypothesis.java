@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import gurobi.GRBConstr;
@@ -28,10 +25,10 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 	public class HypLoc {
 
-		protected int t = -1;
-		protected ValuePair< Integer, Integer > limits;
+		final int t;
+		final ValuePair< Integer, Integer > limits;
 
-		public HypLoc( final int t, final T segment ) {
+		HypLoc(final int t, final T segment) {
 			this.t = t;
 			if ( segment instanceof FilteredComponent ) {
 				this.limits =
@@ -135,7 +132,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 		this.isPruneRoot = value;
 
 		final LinkedList< Hypothesis< Component< FloatType, ? > > > queue =
-				new LinkedList< Hypothesis< Component< FloatType, ? > > >();
+                new LinkedList<>();
 		// TODO there will be no time, but this is of course not nice...
 		queue.add( ( Hypothesis< Component< FloatType, ? > > ) this );
 		while ( !queue.isEmpty() ) {
@@ -181,7 +178,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	/**
 	 * @param value
 	 */
-	public void setPruned( final boolean value ) {
+	void setPruned(final boolean value) {
 		this.isPruned = value;
 	}
 

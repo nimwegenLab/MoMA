@@ -14,69 +14,46 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-public class JFrameSnapper extends ComponentAdapter implements WindowListener {
+class JFrameSnapper extends ComponentAdapter implements WindowListener {
 
-	public final static int NORTH = 100;
-	public final static int WEST = 101;
-	public final static int EAST = 102;
-	public final static int SOUTH = 103;
-	public final static int NORTH_ONLY = 104;
-	public final static int WEST_ONLY = 105;
-	public final static int EAST_ONLY = 106;
-	public final static int SOUTH_ONLY = 107;
+	private final static int NORTH = 100;
+	private final static int WEST = 101;
+	private final static int EAST = 102;
+	private final static int SOUTH = 103;
+	private final static int NORTH_ONLY = 104;
+	private final static int WEST_ONLY = 105;
+	private final static int EAST_ONLY = 106;
+	private final static int SOUTH_ONLY = 107;
 
 	private final Vector< JFrame > frames;
 	private JFrame currentlyMovingFrame;
-	private int snappingDistance = 25;
-	private boolean snappingPolicy = true;
 	private Rectangle recOne, recTwo;
 
 	private final HashMap< JFrame, Set< JFrame >> activeSnappings;
 	private final HashMap< JFrame, Point > currentFramePositions;
 
-	public JFrameSnapper() {
-		frames = new Vector< JFrame >();
-		activeSnappings = new HashMap< JFrame, Set< JFrame >>();
-		currentFramePositions = new HashMap< JFrame, Point >();
+	private JFrameSnapper() {
+		frames = new Vector<>();
+		activeSnappings = new HashMap<>();
+		currentFramePositions = new HashMap<>();
 	}
 
-	public void addFrame( final JFrame frame ) {
+	private void addFrame(final JFrame frame) {
 		frame.addComponentListener( this );
 		frame.addWindowListener( this );
 
-		activeSnappings.put( frame, new HashSet< JFrame >() );
+		activeSnappings.put( frame, new HashSet<>() );
 		currentFramePositions.put( frame, frame.getLocation() );
 
 		frames.add( frame );
 	}
 
-	public void removeFrame( final JFrame frame ) {
-		frame.removeComponentListener( this );
-		frame.removeWindowListener( this );
-
-		activeSnappings.remove( frame );
-		currentFramePositions.remove( frame );
-
-		frames.remove( frame );
-	}
-
-	public boolean getSnappingPolicy() {
+    private boolean getSnappingPolicy() {
+		boolean snappingPolicy = true;
 		return snappingPolicy;
 	}
 
-	public void setSnappingPolicy( final boolean bool ) {
-		snappingPolicy = bool;
-	}
-
-	public void setSnappingDistance( final int i ) {
-		snappingDistance = i;
-	}
-
-	public int getSnappingDistance() {
-		return snappingDistance;
-	}
-
-	@Override
+    @Override
 	public void componentMoved( final ComponentEvent e ) {
 //		System.out.println( "componentMoved -- " + ( ( JFrame ) e.getComponent() ).getName() );
 		try {
@@ -85,7 +62,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 			if ( currentlyMovingFrame == e.getComponent() ) {
 //				System.out.println( "  is currently moving" );
 				final Point newPosition = e.getComponent().getLocation();
-				final LinkedList<JFrame> fifo = new LinkedList<JFrame>(activeSnappings.get( currentlyMovingFrame ));
+				final LinkedList<JFrame> fifo = new LinkedList<>(activeSnappings.get(currentlyMovingFrame));
 				int emergencyKill = 10;
 				while ( emergencyKill > 0 && !fifo.isEmpty() ) {
 					emergencyKill--;
@@ -134,28 +111,25 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		return ( recOne.intersects( recTwo ) );
 	}
 
-	public void snapFrames( final JFrame snappingFrame, final JFrame anchorFrame, final int edge ) {
+	private void snapFrames(final JFrame snappingFrame, final JFrame anchorFrame, final int edge) {
 		currentlyMovingFrame = null;
 
 		switch ( edge ) {
 		case NORTH_ONLY:
-			if ( !getSnappingPolicy() ) break;
+            case EAST_ONLY:
+            case WEST_ONLY:
+            case SOUTH_ONLY:
+                if ( !getSnappingPolicy() ) break;
 		case NORTH:
 			snappingFrame.setLocation( anchorFrame.getX(), anchorFrame.getY() - anchorFrame.getHeight() );
 			break;
-		case SOUTH_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case SOUTH:
+            case SOUTH:
 			snappingFrame.setLocation( anchorFrame.getX(), anchorFrame.getY() + anchorFrame.getHeight() );
 			break;
-		case WEST_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case WEST:
+            case WEST:
 			snappingFrame.setLocation( anchorFrame.getX() - snappingFrame.getWidth(), anchorFrame.getY() );
 			break;
-		case EAST_ONLY:
-			if ( !getSnappingPolicy() ) break;
-		case EAST:
+            case EAST:
 			snappingFrame.setLocation( anchorFrame.getX() + anchorFrame.getWidth(), anchorFrame.getY() );
 			break;
 		}
@@ -182,19 +156,20 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		final int z1 = frame1.getX(), w1 = frame1.getY(), z2 = z1 + frame1.getWidth(), w2 = w1 + frame1.getHeight();
 		final int x1 = movingFrame.getX(), y1 = movingFrame.getY(), x2 = x1 + movingFrame.getWidth(), y2 = y1 + movingFrame.getHeight();
 
-		if ( Math.abs( z1 - x1 ) < this.snappingDistance && Math.abs( w2 - y1 ) < this.snappingDistance )
+		int snappingDistance = 25;
+		if ( Math.abs( z1 - x1 ) < snappingDistance && Math.abs( w2 - y1 ) < snappingDistance)
 			return NORTH;
-		if ( Math.abs( z1 - x1 ) < this.snappingDistance && Math.abs( w1 - y2 ) < this.snappingDistance )
+		if ( Math.abs( z1 - x1 ) < snappingDistance && Math.abs( w1 - y2 ) < snappingDistance)
 			return SOUTH;
-		if ( Math.abs( z2 - x1 ) < this.snappingDistance && Math.abs( w1 - y1 ) < this.snappingDistance )
+		if ( Math.abs( z2 - x1 ) < snappingDistance && Math.abs( w1 - y1 ) < snappingDistance)
 			return WEST;
-		if ( Math.abs( z1 - x2 ) < this.snappingDistance && Math.abs( w2 - y2 ) < this.snappingDistance )
+		if ( Math.abs( z1 - x2 ) < snappingDistance && Math.abs( w2 - y2 ) < snappingDistance)
 			return EAST;
 
-		if ( Math.abs( z2 - x1 ) < this.snappingDistance ) return WEST_ONLY;
-		if ( Math.abs( z1 - x2 ) < this.snappingDistance ) return EAST_ONLY;
-		if ( Math.abs( w2 - y1 ) < this.snappingDistance ) return NORTH_ONLY;
-		if ( Math.abs( w1 - y2 ) < this.snappingDistance ) return SOUTH_ONLY;
+		if ( Math.abs( z2 - x1 ) < snappingDistance) return WEST_ONLY;
+		if ( Math.abs( z1 - x2 ) < snappingDistance) return EAST_ONLY;
+		if ( Math.abs( w2 - y1 ) < snappingDistance) return NORTH_ONLY;
+		if ( Math.abs( w1 - y2 ) < snappingDistance) return SOUTH_ONLY;
 		return -1;
 	}
 
@@ -222,7 +197,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 	@Override
 	public void windowDeactivated( final WindowEvent e ) {}
 
-	public static void main( final String args[] ) {
+	public static void main( final String[] args) {
 		final JFrameSnapper snapper = new JFrameSnapper();
 
 		final JFrame frame = new JFrame( "frame 0" );

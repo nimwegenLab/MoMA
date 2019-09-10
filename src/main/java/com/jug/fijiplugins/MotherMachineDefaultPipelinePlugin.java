@@ -21,7 +21,7 @@ import ij.plugin.PlugIn;
  * Author: Robert Haase, Scientific Computing Facility, MPI-CBG Dresden, rhaase@mpi-cbg.de
  * Date: October 2016
  */
-public class MotherMachineDefaultPipelinePlugin implements PlugIn {
+class MotherMachineDefaultPipelinePlugin implements PlugIn {
 
     private static String currentDir = Prefs.getDefaultDirectory();
 
@@ -64,9 +64,7 @@ public class MotherMachineDefaultPipelinePlugin implements PlugIn {
         }
         String inputFolder = gd.getNextString();
 
-        if (s.equals("file")) {
-            //inputFolder = inputFolder.substring(0, inputFolder.length() - 1);
-        } else {
+        if (!s.equals("file")) {
             if (!inputFolder.endsWith("/")) {
                 inputFolder = inputFolder + "/";
             }
@@ -121,7 +119,7 @@ public class MotherMachineDefaultPipelinePlugin implements PlugIn {
             executeSplitting = false;
         }
 
-        int numberOfTimePoints = 0;
+        int numberOfTimePoints;
         int numberOfChannels = 0;
         if (executeRegistration) {
 

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.List;
@@ -26,7 +23,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	private int type;
 
-	protected GrowthLineTrackingILP ilp;
+	GrowthLineTrackingILP ilp;
 
 	private int exportVarIdx = -1;
 	private GRBVar ilpVar;
@@ -39,11 +36,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 * Creates an assignment...
-	 *
-	 * @param type
-	 * @param cost
 	 */
-	public AbstractAssignment( final int type, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp ) {
+	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp) {
 		this.setType( type );
 		setGRBVar( ilpVariable );
 		setGrowthLineTrackingILP( ilp );
@@ -62,7 +56,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @param type
 	 *            the type to set
 	 */
-	public void setType( final int type ) {
+	void setType(final int type) {
 		this.type = type;
 	}
 
@@ -92,7 +86,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @param ilpVar
 	 *            the ilpVar to set
 	 */
-	public void setGRBVar( final GRBVar ilpVar ) {
+	private void setGRBVar(final GRBVar ilpVar) {
 		this.ilpVar = ilpVar;
 	}
 
@@ -108,16 +102,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	/**
-	 * @param model
-	 *            GRBModel instance (the ILP)
 	 */
-	public void setGrowthLineTrackingILP( final GrowthLineTrackingILP ilp ) {
+	private void setGrowthLineTrackingILP(final GrowthLineTrackingILP ilp) {
 		this.ilp = ilp;
 	}
 
 	/**
 	 * @return the cost
-	 * @throws GRBException
 	 */
 	public float getCost() {
 		float cost = 0;
@@ -130,18 +121,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return cost;
 	}
 
-	/**
-	 * @param cost
-	 *            the cost to set
-	 * @throws GRBException
-	 */
-	public void setCost( final float cost ) throws GRBException {
-		getGRBVar().set( GRB.DoubleAttr.ObjVal, cost );
-	}
-
-	/**
+    /**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
-	 * @throws GRBException
 	 */
 	public boolean isChoosen() throws GRBException {
 		return ( getGRBVar().get( GRB.DoubleAttr.X ) == 1.0 );
@@ -150,16 +131,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 * Abstract method that will, once implemented, add a set of assignment
 	 * related constraints to the ILP (model) later to be solved by Gurobi.
-	 *
-	 * @throws GRBException
 	 */
 	public abstract void addConstraintsToLP() throws GRBException;
 
 	/**
 	 * Abstract method that will, once implemented, build the constraint
 	 * representations needed to save the FG.
-	 *
-	 * @throws GRBException
 	 */
 	public abstract List< String > getConstraintsToSave_PASCAL();
 
@@ -170,52 +147,31 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public abstract void addFunctionsAndFactors( FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds );
 
-	/**
-	 * @return
-	 */
 	public boolean isGroundTruth() {
 		return isGroundTruth;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isGroundUntruth() {
 		return isGroundUntruth;
 	}
 
-	/**
-	 *
-	 */
 	public void setGroundTruth( final boolean groundTruth ) {
 		this.isGroundTruth = groundTruth;
 		this.isGroundUntruth = false;
 		addOrRemoveGroundTroothConstraint( groundTruth );
 	}
 
-	/**
-	 *
-	 */
 	public void setGroundUntruth( final boolean groundUntruth ) {
 		this.isGroundTruth = false;
 		this.isGroundUntruth = groundUntruth;
 		addOrRemoveGroundTroothConstraint( groundUntruth );
 	}
 
-	/**
-	 *
-	 */
 	public void reoptimize() {
 		try {
 			ilp.model.update();
 			System.out.print( "Running ILP with new ground-(un)truth knowledge in new thread!" );
-			final Thread t = new Thread( new Runnable() {
-
-				@Override
-				public void run() {
-					ilp.run();
-				}
-			} );
+			final Thread t = new Thread(() -> ilp.run());
 			t.start();
 		} catch ( final GRBException e ) {
 			e.printStackTrace();
@@ -253,7 +209,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	/**
-	 * @param value
+	 * @param value set if assignment is pruned
 	 */
 	public void setPruned( final boolean value ) {
 		this.isPruned = value;
@@ -261,7 +217,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 *
-	 * @return
+	 * @return if assignment is pruned
 	 */
 	public boolean isPruned() {
 		return isPruned;

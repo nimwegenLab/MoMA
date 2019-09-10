@@ -26,18 +26,11 @@ import java.util.jar.JarFile;
  * Organization: MPI-CBG Dresden
  * Date: October 2016
  */
-public class FileUtils {
-	public static boolean copyFile(final File toCopy, final File destFile) {
+class FileUtils {
+	private static boolean copyFile(final File toCopy, final File destFile) {
 		try {
-			if ( FileUtils.copyStream( new FileInputStream( toCopy ),
-					new FileOutputStream( destFile ) ) )
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
+			return FileUtils.copyStream(new FileInputStream(toCopy),
+					new FileOutputStream(destFile));
 		} catch (final FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -64,8 +57,8 @@ public class FileUtils {
 		return true;
 	}
 
-	public static boolean copyJarResourcesRecursively(final File destDir,
-			final JarURLConnection jarConnection) throws IOException
+	private static boolean copyJarResourcesRecursively(final File destDir,
+                                                       final JarURLConnection jarConnection) throws IOException
 	{
 		final JarFile jarFile = jarConnection.getJarFile();
 
@@ -129,7 +122,7 @@ public class FileUtils {
 		try {
 			final byte[] buf = new byte[1024];
 
-			int len = 0;
+			int len;
 			while ((len = is.read(buf)) > 0) {
 				os.write(buf, 0, len);
 			}

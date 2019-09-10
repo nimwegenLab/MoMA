@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.export;
 
 import java.io.BufferedWriter;
@@ -18,22 +15,21 @@ import com.jug.lp.MappingAssignment;
 
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 
 /**
  * @author jug
  */
 public class FactorGraphFileBuilder_PAUL {
 
-	int next_t = 0;
-	int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
+	private int next_t = 0;
+	private int next_hyp_id = -1; //will be set to 0 in markNextTimepoint()
 
-	List< String > lines = new ArrayList< String >();
+	private final List< String > lines = new ArrayList<>();
 
-	final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
+	private final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
 
 	public FactorGraphFileBuilder_PAUL() {
-		mapHypId = new HashMap< Hypothesis< Component< FloatType, ? > >, Integer >();
+		mapHypId = new HashMap<>();
 		lines.add( "# EXPORTED MM-TRACKING (jug@mpi-cbg.de)\n" );
 		lines.add( "# objective_value = NOT_COMPUTED" );
 		lines.add( "# SEGMENTS" );
@@ -42,7 +38,7 @@ public class FactorGraphFileBuilder_PAUL {
 	}
 
 	public FactorGraphFileBuilder_PAUL( final double optimal_energy ) {
-		mapHypId = new HashMap< Hypothesis< Component< FloatType, ? > >, Integer >();
+		mapHypId = new HashMap<>();
 		lines.add( "# EXPORTED MM-TRACKING (jug@mpi-cbg.de)\n" );
 		lines.add( "# objective_value = " + optimal_energy );
 		lines.add( "# SEGMENTS" );
@@ -70,18 +66,18 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param hyps
 	 */
 	public void addPathBlockingConstraint( final List< Hypothesis< Component< FloatType, ? > > > hyps ) {
-		String str = "CONFSET ";// + hyps.get( 0 ).getTime();
+		StringBuilder str = new StringBuilder("CONFSET ");// + hyps.get( 0 ).getTime();
 		boolean first = true;
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps ) {
 			if ( first ) {
 				first = false;
 			} else {
-				str += " + ";
+				str.append(" + ");
 			}
-			str += String.format( "%d %d", hyp.getTime(), mapHypId.get( hyp ) );
+			str.append(String.format("%d %d", hyp.getTime(), mapHypId.get(hyp)));
 		}
-		str += " <= 1";
-		lines.add( str );
+		str.append(" <= 1");
+		lines.add(str.toString());
 	}
 
 	/**
@@ -120,9 +116,6 @@ public class FactorGraphFileBuilder_PAUL {
 	public int addHyp( final GrowthLineTrackingILP ilp, final Hypothesis< Component< FloatType, ? > > hyp ) {
 		mapHypId.put( hyp, next_hyp_id );
 		final double exitCost = ilp.costModulationForSubstitutedILP( hyp.getCosts() );
-//		if ( hyp.getTime() == ilp.getGrowthLine().size() - 1 ) {
-//			exitCost = 0;
-//		}
 		lines.add( String.format( "H %d %d %.16f (%d,%d)", next_hyp_id, hyp.getId(), 0f, hyp.getLocation().a, hyp.getLocation().b ) );
 																			// the hypcosts are all 0 because we fold them into
 																			// the assignments according to the way we substitute
@@ -164,8 +157,6 @@ public class FactorGraphFileBuilder_PAUL {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
-		final Pair< Float, float[] > costPair =
-				ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower );
 		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower ).getA();
 		final double cost = ilp.costModulationForSubstitutedILP(
 				sourceHypothesis.getCosts(),

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.ArrayList;
@@ -42,9 +39,9 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	// construction
 	// -------------------------------------------------------------------------------------
 	public AssignmentsAndHypotheses() {
-		a_t = new ArrayList< List< A > >();
-		h_t = new ArrayList< List< H > >();
-		hmap = new HashMap< Object, H >();
+		a_t = new ArrayList<>();
+		h_t = new ArrayList<>();
+		hmap = new HashMap<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -55,9 +52,9 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 * This shrinks down to appending an inner <code>List</code> to
 	 * <code>a_t</code> and <code>h_t</code>.
 	 */
-	public void addTimeStep() {
-		a_t.add( new ArrayList< A >() );
-		h_t.add( new ArrayList< H >() );
+    private void addTimeStep() {
+		a_t.add(new ArrayList<>() );
+		h_t.add(new ArrayList<>() );
 	}
 
 	/**
@@ -70,14 +67,13 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 *            should be added.
 	 * @param a
 	 *            the assignment to be added.
-	 * @return true, if the assignment could be added to <code>a_t</code>.
-	 */
-	public boolean addAssignment( final int t, final A a ) {
+     */
+	public void addAssignment(final int t, final A a ) {
 		while ( t >= a_t.size() ) {
 			addTimeStep();
 		}
-		return a_t.get( t ).add( a );
-	}
+        a_t.get(t).add(a);
+    }
 
 	/**
 	 * Returns all time-points in a <code>List</code>, containing all stored
@@ -115,18 +111,15 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 *            should be added.
 	 * @param h
 	 *            the segmentation hypothesis to be added.
-	 * @return true, if the hypothesis could be added to <code>h_t</code>.
-	 */
-	public boolean addHypothesis( final int t, final H h ) {
+     */
+	public void addHypothesis(final int t, final H h ) {
 		while ( t >= h_t.size() ) {
 			addTimeStep();
 		}
 		if ( h_t.get( t ).add( h ) ) {
 			hmap.put( h.getWrappedHypothesis(), h );
-			return true;
-		}
-		return false;
-	}
+        }
+    }
 
 	/**
 	 * Returns all time-points in a <code>List</code>, containing all stored

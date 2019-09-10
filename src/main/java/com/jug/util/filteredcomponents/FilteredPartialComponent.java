@@ -47,14 +47,14 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 	 * @param value
 	 *            (initial) threshold value {@see #getValue()}.
 	 * @param generator
-	 *            the {@link PixelListComponentGenerator#linkedList} is used to
+	 *            the  is used to
 	 *            store the {@link #pixelList}.
 	 */
 	FilteredPartialComponent( final T value, final FilteredPartialComponentGenerator< T > generator )
 	{
 		pixelList = new PixelList( generator.linkedList.randomAccess(), generator.dimensions );
 		this.value = value.copy();
-		children = new ArrayList< FilteredPartialComponent< T > >();
+		children = new ArrayList<>();
 		emittedComponent = null;
 	}
 
@@ -86,7 +86,7 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 	@Override
 	public String toString()
 	{
-		String s = "{" + value.toString() + " : ";
+		StringBuilder s = new StringBuilder("{" + value.toString() + " : ");
 		boolean first = true;
 		for ( final Localizable l : pixelList )
 		{
@@ -96,9 +96,9 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 			}
 			else
 			{
-				s += ", ";
+				s.append(", ");
 			}
-			s += l.toString();
+			s.append(l.toString());
 		}
 		return s + "}";
 	}

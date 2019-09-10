@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug;
 
 import net.imglib2.RandomAccessibleInterval;
@@ -11,7 +8,6 @@ import com.jug.util.filteredcomponents.FilteredComponent;
 import com.jug.util.filteredcomponents.FilteredComponentTree;
 import com.jug.util.filteredcomponents.FilteredComponentTree.Filter;
 import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStep;
-import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStepRatioWithMinimalAbsoluteIncrease;
 
 /**
  * @author jug
@@ -24,12 +20,9 @@ import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStepRat
  */
 public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent< FloatType > > {
 
-	final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
-//	final Filter maxGrowthPerStepRatio = new MaxGrowthPerStepRatio( 0.075 );
-	final Filter maxGrowthPerStepRatioWithMinimalAbsoluteIncrease =
-			new MaxGrowthPerStepRatioWithMinimalAbsoluteIncrease( 0.05, 6 );
+	private final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
 
-	/**
+    /**
 	 * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
 	 */
 	@Override
@@ -46,8 +39,8 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}
 
-	/**
-	 * @see com.jug.AbstractGrowthLineFrame#buildParaMaxFlowSumTree(net.imglib2.RandomAccessibleInterval)
+	/*
+	  @see com.jug.AbstractGrowthLineFrame#buildParaMaxFlowSumTree(net.imglib2.RandomAccessibleInterval)
 	 */
 //	@Override
 //	protected ComponentForest< FilteredComponent< FloatType >> buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt ) {

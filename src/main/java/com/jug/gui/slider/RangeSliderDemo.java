@@ -13,26 +13,24 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 /**
  * Demo application panel to display a range slider.
  */
-public class RangeSliderDemo extends JPanel {
+class RangeSliderDemo extends JPanel {
 
 	private static final long serialVersionUID = 2431987178328113873L;
-	private JLabel rangeSliderLabel1 = new JLabel();
-    private JLabel rangeSliderValue1 = new JLabel();
-    private JLabel rangeSliderLabel2 = new JLabel();
-    private JLabel rangeSliderValue2 = new JLabel();
-    private RangeSlider rangeSlider = new RangeSlider();
+    private final JLabel rangeSliderValue1 = new JLabel();
+    private final JLabel rangeSliderValue2 = new JLabel();
+    private final RangeSlider rangeSlider = new RangeSlider();
 
-    public RangeSliderDemo() {
+    private RangeSliderDemo() {
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         setLayout(new GridBagLayout());
-        
+
+        JLabel rangeSliderLabel1 = new JLabel();
         rangeSliderLabel1.setText("Lower value:");
+        JLabel rangeSliderLabel2 = new JLabel();
         rangeSliderLabel2.setText("Upper value:");
         rangeSliderValue1.setHorizontalAlignment(SwingConstants.LEFT);
         rangeSliderValue2.setHorizontalAlignment(SwingConstants.LEFT);
@@ -42,13 +40,10 @@ public class RangeSliderDemo extends JPanel {
         rangeSlider.setMaximum(10);
         
         // Add listener to update display.
-        rangeSlider.addChangeListener(new ChangeListener() {
-            @Override
-			public void stateChanged(ChangeEvent e) {
-                RangeSlider slider = (RangeSlider) e.getSource();
-                rangeSliderValue1.setText(String.valueOf(slider.getValue()));
-                rangeSliderValue2.setText(String.valueOf(slider.getUpperValue()));
-            }
+        rangeSlider.addChangeListener(e -> {
+            RangeSlider slider = (RangeSlider) e.getSource();
+            rangeSliderValue1.setText(String.valueOf(slider.getValue()));
+            rangeSliderValue2.setText(String.valueOf(slider.getUpperValue()));
         });
 
         add(rangeSliderLabel1, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
@@ -63,7 +58,7 @@ public class RangeSliderDemo extends JPanel {
             GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     }
     
-    public void display() {
+    private void display() {
         // Initialize values.
         rangeSlider.setValue(3);
         rangeSlider.setUpperValue(7);
@@ -99,11 +94,6 @@ public class RangeSliderDemo extends JPanel {
             ex.printStackTrace();
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-			public void run() {
-                new RangeSliderDemo().display();
-            }
-        });
+        SwingUtilities.invokeLater(() -> new RangeSliderDemo().display());
     }
 }

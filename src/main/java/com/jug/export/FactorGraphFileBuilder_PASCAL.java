@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.export;
 
 import java.io.BufferedWriter;
@@ -16,23 +13,23 @@ import java.util.List;
  */
 public class FactorGraphFileBuilder_PASCAL {
 
-	int next_var_id = 0;
-	int next_fkt_id = 0;
-	int next_fac_id = 0;
-	int next_con_id = 0;
+	private int next_var_id = 0;
+	private int next_fkt_id = 0;
+	private int next_fac_id = 0;
+	private int next_con_id = 0;
 
-	List< String > var_comment_lines = new ArrayList< String >();
-	String  var_line = "";
-	List< String > fkt_lines = new ArrayList< String >();
-	List< String > fac_lines = new ArrayList< String >();
-	List< String > constraint_lines = new ArrayList< String >();
+	private final List< String > var_comment_lines = new ArrayList<>();
+	private String  var_line = "";
+	private final List< String > fkt_lines = new ArrayList<>();
+	private final List< String > fac_lines = new ArrayList<>();
+	private final List< String > constraint_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumVars() {
+    private int getNumVars() {
 		return next_var_id;
 	}
 
@@ -81,7 +78,7 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * @return the id of the variable just added.
 	 */
 	public int addVar( final int cardinality ) {
-		var_line += Integer.toString( cardinality ) + " ";
+		var_line += cardinality + " ";
 		return next_var_id++;
 	}
 
@@ -100,25 +97,23 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the function just added.
 	 */
-	public int addFkt( final String line ) {
+    private void addFkt(final String line) {
 		fkt_lines.add( line );
-		return next_fkt_id++;
+		next_fkt_id++;
 	}
 
 	/**
 	 * Adds a function given a list of variable indices.
 	 *
 	 * @param varIdx
-	 * @return
 	 */
-	public int addFkt( final int... varIdx ) {
-		String line = "" + varIdx.length + " ";
+	public void addFkt(final int... varIdx ) {
+		StringBuilder line = new StringBuilder("" + varIdx.length + " ");
 		for ( final int idx : varIdx ) {
-			line += "" + idx + " ";
+			line.append(idx).append(" ");
 		}
-		return addFkt( line );
+		addFkt(line.toString());
 	}
 
 	/**
@@ -136,25 +131,23 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final String line ) {
+    private void addFactor(final String line) {
 		fac_lines.add( line );
-		return next_fac_id++;
+		next_fac_id++;
 	}
 
 	/**
 	 * Adds a unary factor given by a list of tensor values.
 	 *
 	 * @param unaries
-	 * @return
 	 */
-	public int addFactor( final float... unaries ) {
-		String line = "" + unaries.length + "\n\t";
+	public void addFactor(final float... unaries ) {
+		StringBuilder line = new StringBuilder("" + unaries.length + "\n\t");
 		for ( final float c : unaries ) {
-			line += "" + c + " ";
+			line.append(c).append(" ");
 		}
-		return addFactor( line );
+		addFactor(line.toString());
 	}
 
 	/**
@@ -172,11 +165,10 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-	public int addConstraint( final String line ) {
+    private void addConstraint(final String line) {
 		constraint_lines.add( line );
-		return next_con_id++;
+		next_con_id++;
 	}
 
 	/**
@@ -185,15 +177,11 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param lines
 	 *            the strings to be added.
-	 * @return the id of the last factor added, or -1 in case the given list was
-	 *         empty.
 	 */
-	public int addConstraints( final List< String > lines ) {
-		int last_id = -1;
+	public void addConstraints(final List< String > lines ) {
 		for ( final String line : lines ) {
-			last_id = addConstraint( line );
+			addConstraint( line );
 		}
-		return last_id;
 	}
 
 	/**

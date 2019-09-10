@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.ArrayList;
@@ -8,7 +5,6 @@ import java.util.List;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
-import gurobi.GRBException;
 import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -18,11 +14,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class MappingAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
 
-	@SuppressWarnings( "unused" )
-	private final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes;
-	@SuppressWarnings( "unused" )
-	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> from;
+    private final Hypothesis< Component< FloatType, ? >> from;
 	private final Hypothesis< Component< FloatType, ? >> to;
 
 	/**
@@ -32,32 +24,24 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * @param edges
 	 * @param from
 	 * @param to
-	 * @throws GRBException
-	 */
-	public MappingAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) throws GRBException {
+     */
+	public MappingAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) {
 		super( GrowthLineTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
 		this.from = from;
 		this.to = to;
-		this.edges = edges;
-		this.nodes = nodes;
-	}
+    }
 
 	/**
 	 * This method is void. MAPPING assignments do not come with assignment
 	 * specific constrains...
 	 *
-	 * @throws GRBException
-	 * @see com.jug.lp.AbstractAssignment#addConstraintsToLP(gurobi.GRBModel,
-	 *      com.jug.lp.AssignmentsAndHypotheses,
-	 *      com.jug.lp.HypothesisNeighborhoods)
-	 */
+     */
 	@Override
-	public void addConstraintsToLP() throws GRBException {}
+	public void addConstraintsToLP() {}
 
 	/**
 	 * Mapping assignments do not come with constraints.
 	 *
-	 * @see com.jug.lp.AbstractAssignment#getConstraint()
 	 */
 	@Override
 	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {}
@@ -95,7 +79,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 */
 	@Override
 	public List< String > getConstraintsToSave_PASCAL() {
-		return new ArrayList< String >();
+		return new ArrayList<>();
 	}
 
 }

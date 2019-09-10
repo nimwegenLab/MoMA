@@ -1,33 +1,6 @@
-/**
- *
- */
 package com.jug;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.Vector;
-import java.util.concurrent.ExecutionException;
-
-import com.jug.util.filteredcomponents.FilteredComponentTree;
-import ij.gui.Plot;
-import net.imglib2.type.numeric.integer.IntType;
-import org.scijava.Context;
-import org.scijava.command.CommandModule;
-import org.scijava.command.CommandService;
-import org.scijava.io.IOService;
-import org.scijava.plugin.PluginService;
-import org.scijava.ui.UIService;
-
-import com.moma.auxiliary.Plotting;
-
-import de.csbdresden.csbdeep.commands.GenericNetwork;
+import java.util.*;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -38,13 +11,7 @@ import com.jug.lp.MappingAssignment;
 import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
-import net.imagej.Dataset;
-import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
-import net.imglib2.FinalInterval;
-import net.imglib2.IterableInterval;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -55,14 +22,8 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
-import net.imglib2.loops.LoopBuilder;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.LongType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -78,39 +39,6 @@ import net.imglib2.view.Views;
  */
 public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C > > {
 
-	private class CompareComponentTreeNodes< T extends Type< T > > implements Comparator< Component< T, ? > > {
-
-		/**
-		 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-		 */
-		@SuppressWarnings( "unchecked" )
-		@Override
-		public int compare( final Component< T, ? > o1, final Component< T, ? > o2 ) {
-
-			// FilteredComponent
-			if ( false || o1 instanceof FilteredComponent< ? > && o2 instanceof FilteredComponent< ? > ) { // igitt...
-																											// instanceof!
-				final FilteredComponent< FloatType > fc1 = ( FilteredComponent< FloatType > ) o1;
-				final FilteredComponent< FloatType > fc2 = ( FilteredComponent< FloatType > ) o2;
-				return ( int ) ( ( fc1.maxValue().get() - fc1.minValue().get() ) - fc2.maxValue().get() - fc2.minValue().get() ) * -1;
-			}
-
-			// MSER
-			// if ( false || o1 instanceof MserComponentTreeNode< ? > && o2
-			// instanceof MserComponentTreeNode< ? >) { // igitt... instanceof!
-			// final MserComponentTreeNode<FloatType> mser1 =
-			// (MserComponentTreeNode<FloatType>) o1;
-			// final MserComponentTreeNode<FloatType> mser2 =
-			// (MserComponentTreeNode<FloatType>) o2;
-			// return (int) ( (mser1.maxValue().get()-mser1.minValue().get()) -
-			// mser2.maxValue().get()-mser2.minValue().get() ) * -1;
-			// }
-
-			// System.out.println("Warning: defaultComparison of ComponentTreeNodes applied!");
-			return ( int ) ( o1.size() - o2.size() ) * -1;
-		}
-	}
-
 	// -------------------------------------------------------------------------------------
 	// private fields
 	// -------------------------------------------------------------------------------------
@@ -118,40 +46,21 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Points at all the detected GrowthLine centers associated with this
 	 * GrowthLine.
 	 */
-	private List< Point > imgLocations;
+	private final List< Point > imgLocations;
 	private float[] simpleSepValues; // lazy evaluation -- gets computed when
-										// getSimpleGapSeparationValues is called...
-	private float[] awesomeSepValues; // lazy evaluation -- gets computed when
-										// getAwesomeGapSeparationValues is called...
+	// getAwesomeGapSeparationValues is called...
 	private GrowthLine parent;
 	private ComponentForest< C > componentTree;
-	private boolean isParaMaxFlowComponentTree = false;
-	private RandomAccessibleInterval< LongType > paramaxflowSumImage; // lazy evaluation -- gets computed when neede first time
-	private long paramaxflowSolutions;
 
 	// -------------------------------------------------------------------------------------
 	// setters and getters
 	// -------------------------------------------------------------------------------------
-	/**
-	 * @return the location
-	 */
-	public List< Point > getImgLocations() {
-		return imgLocations;
-	}
 
 	/**
 	 * @return the location
 	 */
-	public List< Point > getMirroredImgLocations() {
+	private List< Point > getMirroredImgLocations() {
 		return flipAtCenter( imgLocations );
-	}
-
-	/**
-	 * @param location
-	 *            the location to set
-	 */
-	public void setImgLocations( final List< Point > locations ) {
-		this.imgLocations = locations;
 	}
 
 	/**
@@ -202,8 +111,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public AbstractGrowthLineFrame() {
-		imgLocations = new ArrayList< Point >();
+	AbstractGrowthLineFrame() {
+		imgLocations = new ArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -250,34 +159,13 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
-	 *
-	 * @param point
 	 */
 	public void addPoint( final Point point ) {
 		imgLocations.add( point );
 	}
 
-	/**
-	 *
-	 */
 	public void sortPoints() {
-		Collections.sort( imgLocations, new Comparator< Point >() {
-
-			@Override
-			public int compare( final Point o1, final Point o2 ) {
-				return new Integer( o1.getIntPosition( 1 ) ).compareTo( new Integer( o2.getIntPosition( 1 ) ) );
-			}
-		} );
-	}
-
-	/**
-	 * Gets a detected center point of a GrowthsLine.
-	 *
-	 * @param idx
-	 *            - index of the Point to be returned.
-	 */
-	public Point getPoint( final int idx ) {
-		return ( imgLocations.get( idx ) );
+		imgLocations.sort(Comparator.comparingInt(o -> o.getIntPosition(1)));
 	}
 
 	/**
@@ -297,8 +185,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
-	 *
-	 * @param img
 	 */
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
 //		Img<FloatType> imgTmp = runNetwork(img);
@@ -408,7 +294,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
 	 *
-	 * @param img
 	 */
 //	public void generateAwesomeSegmentationHypotheses( final Img< FloatType > img ) {
 //
@@ -431,62 +316,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 //	protected abstract ComponentForest< C > buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt );
 
-	/**
-	 * So far this function is pretty stupid: I traverse the entire component
-	 * tree, put each node in a priority queue, take then the numComponents
-	 * first elements out of it, put them in a ArrayList and give them back to
-	 * the caller. Efficiency: O(turbo-puke) !!
-	 *
-	 * @param numComponents
-	 * @return null, if there are less components in the tree then the callee
-	 *         requested
-	 */
-	public List< Component< FloatType, ? > > getComponentHypothesis( final int numComponents ) {
-		if ( componentTree == null ) return null;
-
-		final PriorityQueue< Component< FloatType, ? > > queue = new PriorityQueue< Component< FloatType, ? > >( 1, new CompareComponentTreeNodes< FloatType >() );
-		final List< Component< FloatType, ? > > listNext = new LinkedList< Component< FloatType, ? > >();
-		queue.addAll( componentTree.roots() );
-		listNext.addAll( componentTree.roots() );
-
-		// go down the tree until you find the right amount of components
-		// return from within loop, on failure break and return null
-		while ( !listNext.isEmpty() ) {
-			final Component< FloatType, ? > node = listNext.remove( 0 );
-			listNext.addAll( node.getChildren() );
-			queue.addAll( node.getChildren() );
-		}
-
-		if ( queue.size() < numComponents ) { return null; }
-
-		final ArrayList< Component< FloatType, ? > > ret = new ArrayList< Component< FloatType, ? > >( numComponents );
-		for ( int i = 0; i < numComponents; i++ ) {
-			ret.add( queue.poll() );
-		}
-		return ret;
-	}
-
-	/**
-	 * @param img
-	 * @param wellPoints
-	 * @return
-	 */
-	public float[] getCenterLineValues( final Img< FloatType > img ) {
-		final RandomAccess< FloatType > raImg = img.randomAccess();
-
-		final float[] dIntensity = new float[ imgLocations.size() ];
-		for ( int i = 0; i < imgLocations.size(); i++ ) {
-			raImg.setPosition( imgLocations.get( i ) );
-			dIntensity[ i ] = raImg.get().get();
-		}
-		return dIntensity;
-	}
-
-	/**
-	 * @param img
-	 * @param wellPoints
-	 * @return
-	 */
 	public float[] getMirroredCenterLineValues( final Img< FloatType > img ) {
 		final RandomAccess< FloatType > raImg = img.randomAccess();
 		final List< Point > mirroredImgLocations = getMirroredImgLocations();
@@ -500,15 +329,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * GapSep guesses based on the intensity image alone
-	 *
-	 * @param img
-	 * @return
 	 */
 	public float[] getSimpleGapSeparationValues( final Img< FloatType > img ) {
-		return getSimpleGapSeparationValues( img, false );
-	}
-
-	public float[] getSimpleGapSeparationValues( final Img< FloatType > img, final boolean forceRecomputation ) {
 		if ( simpleSepValues == null ) {
 			if ( img == null ) return null;
 			simpleSepValues = getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img );
@@ -523,9 +345,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Because the GL stops there and below come dark, dark pixels.
 	 * This is a way out. (How well this does in cases where the bottom cell
 	 * moves up considerably has to be seen...)
-	 *
-	 * @param fkt
-	 * @return
 	 */
 	private float[] avoidMotherCellSegmentationFlickering( final float[] fkt ) {
 		final int[] maximaLocations = SimpleFunctionAnalysis.getMaxima( fkt, 1, 1 );
@@ -542,48 +361,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * GapSep guesses based on the awesome paramaxflow-sum-image...
-	 *
-	 * @param img
-	 * @return
-	 */
-//	public float[] getAwesomeGapSeparationValues( final Img< FloatType > img ) {
-//		if ( img == null ) return null;
-//
-//		// I will pray for forgiveness... in March... I promise... :(
-//		IntervalView< FloatType > paramaxflowSumImageFloatTyped = getParamaxflowSumImageFloatTyped( null );
-//		if ( paramaxflowSumImageFloatTyped == null ) {
-//			final long left = getOffsetX() - MoMA.GL_PIXEL_PADDING_IN_VIEWS - MoMA.GL_WIDTH_IN_PIXELS / 2;
-//			final long right = getOffsetX() + MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2 + MoMA.GL_WIDTH_IN_PIXELS % 2;
-//			final long top = img.min( 1 );
-//			final long bottom = img.max( 1 );
-//			final IntervalView< FloatType > viewCropped = Views.interval( Views.hyperSlice( img, 2, getOffsetF() ), new long[] { left, top }, new long[] { right, bottom } );
-//			paramaxflowSumImageFloatTyped = getParamaxflowSumImageFloatTyped( viewCropped );
-//		}
-//
-//		awesomeSepValues = getInvertedIntensitiesAtImgLocations( paramaxflowSumImageFloatTyped, true );
-//
-//		// special case: simple value is better then trained random forest: leave some simple value in there and
-//		// it might help to divide at right spots
-//		if ( MoMA.SEGMENTATION_MIX_CT_INTO_PMFRF > 0.00001 ) {
-//			final float percSimpleToStay = MoMA.SEGMENTATION_MIX_CT_INTO_PMFRF;
-//			if ( simpleSepValues == null ) {
-//				simpleSepValues = getSimpleGapSeparationValues( img );
-//			}
-//			for ( int i = 0; i < Math.min( simpleSepValues.length, awesomeSepValues.length ); i++ ) {
-//				awesomeSepValues[ i ] = percSimpleToStay * simpleSepValues[ i ] + ( 1.0f - percSimpleToStay ) * awesomeSepValues[ i ];
-//			}
-//		}
-//
-//		return awesomeSepValues;
-//	}
-
-	/**
 	 * Trying to look there a bit smarter... ;)
-	 *
-	 * @param img
-	 * @param wellPoints
-	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
 		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, true );
@@ -591,12 +369,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * This calculates the max intensities inside growthlane along the diagonals of a moving square subsection of the image.
-	 * It does this along a single frame of {@link img}, where the frame index and center-pixel of the current rectangle ROI
-	 * is defined by the {@link Point} array {@link imgLocations}. 
-	 *
-	 * @param img: multidimensional image stack
-	 * @param wellPoints
-	 * @return
+	 * It does this along a single frame of {@link RandomAccessibleInterval img}, where the frame index and center-pixel of the current rectangle ROI
+	 * is defined by the {@link Point} array {@link List<Point> imgLocations}.
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
 		// special case: growth line does not exist in this frame
@@ -620,7 +394,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		}
 
 		final RealRandomAccessible< FloatType > rrImg =
-				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory< FloatType >() );
+				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory<>() );
 		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
 
 //		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
@@ -645,7 +419,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 				diagonalAverages[ nextAverageIdx ] = summedIntensities / summands;
 				nextAverageIdx++;
 			}
-			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax( diagonalAverages ).b.floatValue();
+			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax(diagonalAverages).b;
 
 			// dIntensity[i] = maxDiagonalAvg - totalAverageIntensity;
 			// dIntensity[i] = maxDiagonalAvg - minIntensity;
@@ -661,8 +435,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Draws the GrowthLine center line into the given annotation
 	 * <code>Img</code>.
 	 *
-	 * @param img
-	 *            the Img to draw into.
 	 */
 	public void drawCenterLine( final Img< ARGBType > imgAnnotated ) {
 		drawCenterLine( imgAnnotated, null );
@@ -799,12 +571,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * @param locations
-	 * @return
+     * flip point locations at center of this growthline
 	 */
 	private List< Point > flipAtCenter( final List< Point > locations ) {
-		// System.out.println("FLIP FLIP FLIP FLIP FLIP FLIP FLIP FLIP");
-		final ArrayList< Point > ret = new ArrayList< Point >( locations.size() );
+		final ArrayList< Point > ret = new ArrayList<>(locations.size());
 
 		final int centerInX = getAvgXpos();
 		for ( final Point p : locations ) {
@@ -825,42 +595,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * @return
-	 */
-//	public IntervalView< LongType > getParamaxflowSumImage( final IntervalView< FloatType > viewGLF ) {
-//		if ( paramaxflowSumImage == null ) {
-//			if ( viewGLF == null ) { return null; }
-//			if ( !MoMA.USE_CLASSIFIER_FOR_PMF ) {
-//				this.paramaxflowSumImage = GrowthLineSegmentationMagic.returnParamaxflowRegionSums( viewGLF );
-//			} else {
-//				this.paramaxflowSumImage = GrowthLineSegmentationMagic.returnClassificationBoostedParamaxflowRegionSums( viewGLF );
-//			}
-//			this.paramaxflowSolutions = GrowthLineSegmentationMagic.getNumSolutions();
-//		}
-//
-//		return Views.interval( paramaxflowSumImage, Views.zeroMin( viewGLF ) );
-//	}
-
-//	public IntervalView< FloatType > getParamaxflowSumImageFloatTyped( final IntervalView< FloatType > viewGLF ) {
-//		if ( paramaxflowSumImage == null ) {
-//			if ( viewGLF == null ) { return null; }
-//			getParamaxflowSumImage( viewGLF );
-//		}
-//
-//		return Views.interval( Converters.convert( paramaxflowSumImage, new RealFloatNormalizeConverter( this.paramaxflowSolutions ), new FloatType() ), paramaxflowSumImage );
-//	}
-//
-//	/**
-//	 * @return the isParaMaxFlowComponentTree
-//	 */
-//	public boolean isParaMaxFlowComponentTree() {
-//		return isParaMaxFlowComponentTree;
-//	}
-
-	/**
 	 * Returns the number of cells in this GLF.
-	 *
-	 * @return
 	 */
 	public int getSolutionStats_numCells() {
 		int cells = 0;
@@ -877,7 +612,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Returns the position of the given hypothesis in the GL.
 	 *
-	 * @param hyp
 	 * @return the uppermost segmented cell would return a 1. For each active
 	 *         segmentation that is strictly above the given hypothesis the
 	 *         return value is increased by 1.
@@ -911,57 +645,43 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	public Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> getSolutionStats_limitsAndRightAssType() {
-		final Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> ret = new Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >>();
+		final Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> ret = new Vector<>();
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 
 			final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> aa = getParent().getIlp().getOptimalRightAssignments( this.getTime() ).get( hyp ).iterator().next();
 
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			final Iterator< Localizable > componentIterator = hyp.getWrappedHypothesis().iterator();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
-				min = Math.min( min, ypos );
-				max = Math.max( max, ypos );
+			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+				final int ypos = localizable.getIntPosition(0);
+				min = Math.min(min, ypos);
+				max = Math.max(max, ypos);
 			}
 
-			ret.add( new ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >( new ValuePair< Integer, Integer >( new Integer( min ), new Integer( max ) ), new ValuePair< Integer, Integer >( new Integer( aa.getType() ), new Integer( ( aa.isGroundTruth() || aa.isGroundUntruth() ) ? 1 : 0 ) ) ) );
+			ret.add(new ValuePair<>(new ValuePair<>(min, max), new ValuePair<>(aa.getType(), (aa.isGroundTruth() || aa.isGroundUntruth()) ? 1 : 0)) );
 		}
 
-		Collections.sort( ret, new Comparator< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >>() {
-
-			@Override
-			public int compare( final ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > > o1, final ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > > o2 ) {
-				return o1.a.a.compareTo( o2.a.a );
-			}
-		} );
+		ret.sort(Comparator.comparing(o -> o.a.a));
 		return ret;
 	}
 
 	public Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> getSortedActiveHypsAndPos() {
-		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> positionedHyps = new Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>>();
+		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > >>> positionedHyps = new Vector<>();
 
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 			// find out where this hypothesis is located along the GL
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			final Iterator< Localizable > componentIterator = hyp.getWrappedHypothesis().iterator();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 0 );
-				min = Math.min( min, ypos );
-				max = Math.max( max, ypos );
+			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+				final int ypos = localizable.getIntPosition(0);
+				min = Math.min(min, ypos);
+				max = Math.max(max, ypos);
 			}
 
 			if ( !hyp.isPruned() ) {
-				positionedHyps.add( new ValuePair< Integer, Hypothesis< Component< FloatType, ? >> >( -max, hyp ) );
+				positionedHyps.add(new ValuePair<>(-max, hyp) );
 			}
 		}
 
-		Collections.sort( positionedHyps, new Comparator< ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> >() {
-
-			@Override
-			public int compare( final ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> o1, final ValuePair< Integer, Hypothesis< Component< FloatType, ? >>> o2 ) {
-				return o1.a.compareTo( o2.a );
-			}
-		} );
+		positionedHyps.sort(Comparator.comparing(o -> o.a));
 
 		return positionedHyps;
 	}

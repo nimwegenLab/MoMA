@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.export;
 
 import java.io.BufferedWriter;
@@ -16,20 +13,20 @@ import java.util.List;
  */
 public class FactorGraphFileBuilder_SCALAR {
 
-	int next_var_id = 0;
-	int next_fkt_id = 0;
-	int next_fac_id = 0;
+	private int next_var_id = 0;
+	private int next_fkt_id = 0;
+	private int next_fac_id = 0;
 
-	List< String > var_lines = new ArrayList< String >();
-	List< String > fkt_lines = new ArrayList< String >();
-	List< String > fac_lines = new ArrayList< String >();
+	private final List< String > var_lines = new ArrayList<>();
+	private final List< String > fkt_lines = new ArrayList<>();
+	private final List< String > fac_lines = new ArrayList<>();
 
 	/**
 	 * Returns the number of variables added so far.
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumVars() {
+    private int getNumVars() {
 		return next_var_id;
 	}
 
@@ -38,7 +35,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumFunctions() {
+    private int getNumFunctions() {
 		return next_fkt_id;
 	}
 
@@ -47,7 +44,7 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @return surprise! ;)
 	 */
-	public int getNumFactors() {
+    private int getNumFactors() {
 		return next_fac_id;
 	}
 
@@ -107,12 +104,12 @@ public class FactorGraphFileBuilder_SCALAR {
 	 * @return the id of the function just added.
 	 */
 	public int addConstraintFkt( final List< Integer > coeffs, final String comp, final int rhs ) {
-		String str = "constraint " + coeffs.size() + " ";
+		StringBuilder str = new StringBuilder("constraint " + coeffs.size() + " ");
 		for ( final int i : coeffs ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
-		str += " " + comp + " " + rhs;
-		return addFkt( str );
+		str.append(" ").append(comp).append(" ").append(rhs);
+		return addFkt(str.toString());
 	}
 
 	/**
@@ -130,11 +127,10 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final String line ) {
+    private void addFactor(final String line) {
 		fac_lines.add( line );
-		return next_fac_id++;
+		next_fac_id++;
 	}
 
 	/**
@@ -144,29 +140,13 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varId
 	 *            the variable id for this unary factor.
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final int varId, final int regionId ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		varIds.add( new Integer( varId ) );
-		final List< Integer > regionIds = new ArrayList< Integer >();
-		regionIds.add( new Integer( regionId ) );
-		return addFactor( functionId, varIds, regionIds );
-	}
-
-	/**
-	 * Builds a unary factor-string and adds it.
-	 *
-	 * @param functionId
-	 *            id of the function this factor utilizes.
-	 * @param varId
-	 *            the variable id for this unary factor.
-	 * @return the id of the factor just added.
-	 */
-	public int addFactor( final int functionId, final int varId, final List< Integer > regionIds ) {
-		final List< Integer > varIds = new ArrayList< Integer >();
-		varIds.add( new Integer( varId ) );
-		return addFactor( functionId, varIds, regionIds );
+	public void addFactor(final int functionId, final int varId, final int regionId ) {
+		final List< Integer > varIds = new ArrayList<>();
+		varIds.add(varId);
+		final List< Integer > regionIds = new ArrayList<>();
+		regionIds.add(regionId);
+		addFactor(functionId, varIds, regionIds);
 	}
 
 	/**
@@ -176,12 +156,11 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varIds
 	 *            list of variables connected with this factor
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final List< Integer > varIds, final int regionId ) {
-		final List< Integer > regionIds = new ArrayList< Integer >();
-		regionIds.add( new Integer( regionId ) );
-		return addFactor( functionId, varIds, regionIds );
+	public void addFactor(final int functionId, final List< Integer > varIds, final int regionId ) {
+		final List< Integer > regionIds = new ArrayList<>();
+		regionIds.add(regionId);
+		addFactor(functionId, varIds, regionIds);
 	}
 
 	/**
@@ -191,24 +170,23 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varIds
 	 *            list of variables connected with this factor
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
+	public void addFactor(final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
 
-		String str = Integer.toString( functionId ) + " ";
+		StringBuilder str = new StringBuilder(functionId + " ");
 		if ( varIds.size() == 0 ) {
 			System.err.println( "No varIds!!!!!!" );
 		}
 		for ( final int i : varIds ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
 		if ( regionIds.size() == 0 ) {
 			System.err.println( "No regionIds!!!!!!" );
 		}
 		for ( final int i : regionIds ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
-		return addFactor( str );
+		addFactor(str.toString());
 	}
 
 	/**

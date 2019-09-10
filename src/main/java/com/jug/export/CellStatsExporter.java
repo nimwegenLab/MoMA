@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.export;
 
 import java.io.File;
@@ -35,7 +32,6 @@ import com.jug.util.filteredcomponents.FilteredComponent;
 
 import gurobi.GRBException;
 import net.imglib2.IterableInterval;
-import net.imglib2.Point;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
@@ -49,7 +45,7 @@ import net.imglib2.view.Views;
  */
 public class CellStatsExporter {
 
-	final class SegmentRecord {
+	static final class SegmentRecord {
 
 		private static final int ENDOFTRACKING = 1234;
 		private static final int USER_PRUNING = 4321;
@@ -59,25 +55,25 @@ public class CellStatsExporter {
 		private static final int LOWER = -1;
 		private static final int UPPER = -2;
 
-		public boolean exists = true;
-		public int id = -1;
-		public int pid = -1;
-		public int tbirth = -1;
-		public int daughterTypeOrPosition = SegmentRecord.UNKNOWN;
-		public int frame = 0;
+		boolean exists = true;
+		int id;
+		int pid;
+		int tbirth;
+		int daughterTypeOrPosition;
+		int frame;
 
-		public List< Integer > genealogy;
+		final List< Integer > genealogy;
 
-		public Hypothesis< Component< FloatType, ? >> hyp;
+		Hypothesis< Component< FloatType, ? >> hyp;
 		private int terminated_by = Integer.MIN_VALUE;
 
-		public SegmentRecord(
-				final Hypothesis< Component< FloatType, ? >> hyp,
-				final int id,
-				final int pid,
-				final int tbirth,
-				final int daughterTypeOrPosition,
-				final List< Integer > genealogy ) {
+		SegmentRecord(
+                final Hypothesis<Component<FloatType, ?>> hyp,
+                final int id,
+                final int pid,
+                final int tbirth,
+                final int daughterTypeOrPosition,
+                final List<Integer> genealogy) {
 			this.hyp = hyp;
 			this.id = id;
 			this.pid = pid;
@@ -87,36 +83,36 @@ public class CellStatsExporter {
 			this.frame = 0;
 		}
 
-		public SegmentRecord(
-				final Hypothesis< Component< FloatType, ? >> hyp,
-				final int id,
-				final int pid,
-				final int tbirth,
-				final int daughterTypeOrPosition ) {
+		SegmentRecord(
+                final Hypothesis<Component<FloatType, ?>> hyp,
+                final int id,
+                final int pid,
+                final int tbirth,
+                final int daughterTypeOrPosition) {
 			this.hyp = hyp;
 			this.id = id;
 			this.pid = pid;
 			this.tbirth = tbirth;
 			this.daughterTypeOrPosition = daughterTypeOrPosition;
-			this.genealogy = new ArrayList< Integer >();
+			this.genealogy = new ArrayList<>();
 			genealogy.add( daughterTypeOrPosition );
 			this.frame = 0;
 		}
 
-		public SegmentRecord( final SegmentRecord point, final int frameOffset ) {
+		SegmentRecord(final SegmentRecord point, final int frameOffset) {
 			this.hyp = point.hyp;
 			this.id = point.id;
 			this.pid = point.pid;
 			this.tbirth = point.tbirth;
 			this.daughterTypeOrPosition = point.daughterTypeOrPosition;
 			this.frame = point.frame + frameOffset;
-			this.genealogy = new ArrayList< Integer >( point.genealogy );
+			this.genealogy = new ArrayList<>(point.genealogy);
 		}
 
 		@Override
 		public SegmentRecord clone() {
 			final SegmentRecord ret =
-					new SegmentRecord( this.hyp, this.id, this.pid, this.tbirth, this.daughterTypeOrPosition, this.genealogy );
+					new SegmentRecord(this.hyp, this.id, this.pid, this.tbirth, this.daughterTypeOrPosition, this.genealogy);
 			ret.exists = this.exists;
 			ret.frame = this.frame;
 			ret.terminated_by = this.terminated_by;
@@ -135,7 +131,7 @@ public class CellStatsExporter {
 		/**
 		 * @return
 		 */
-		public SegmentRecord nextSegmentInTime( final GrowthLineTrackingILP ilp ) {
+        SegmentRecord nextSegmentInTime(final GrowthLineTrackingILP ilp) {
 			SegmentRecord ret = this;
 
 			exists = true;
@@ -147,7 +143,7 @@ public class CellStatsExporter {
 				} else if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
 					final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
 					if ( !ma.isPruned() ) {
-						ret = new SegmentRecord( this, 1 );
+						ret = new SegmentRecord(this, 1);
 						ret.hyp = ma.getDestinationHypothesis();
 					} else {
 						terminated_by = SegmentRecord.USER_PRUNING;
@@ -167,16 +163,15 @@ public class CellStatsExporter {
 		/**
 		 * @return true if the current segment is valid.
 		 */
-		public boolean exists() {
+        boolean exists() {
 			return exists;
 		}
 
 		/**
-		 * @param channel
 		 * @return
 		 */
-		public long[] computeChannelHistogram( final IterableInterval< FloatType > view, final float min, final float max ) {
-			final Histogram1d< FloatType > histogram = new Histogram1d< FloatType >( view, new Real1dBinMapper< FloatType >( min, max, 20, false ) );
+        long[] computeChannelHistogram(final IterableInterval<FloatType> view, final float min, final float max) {
+			final Histogram1d< FloatType > histogram = new Histogram1d<>(view, new Real1dBinMapper<>(min, max, 20, false));
 			return histogram.toLongArray();
 		}
 
@@ -184,15 +179,15 @@ public class CellStatsExporter {
 		 * @param channel
 		 * @return
 		 */
-		public float[] computeChannelPercentile( final IterableInterval< FloatType > channel ) {
-			final List< Float > pixelVals = new ArrayList< Float >();
+        float[] computeChannelPercentile(final IterableInterval<FloatType> channel) {
+			final List< Float > pixelVals = new ArrayList<>();
 			for ( final FloatType ftPixel : channel ) {
 				pixelVals.add( ftPixel.get() );
 			}
 			Collections.sort( pixelVals );
 
 			final int numPercentiles = 20;
-			final float ret[] = new float[ numPercentiles - 1 ];
+			final float[] ret = new float[ numPercentiles - 1 ];
 			for ( int i = 1; i < numPercentiles; i++ ) {
 				final int index = ( i * pixelVals.size() / numPercentiles ) - 1;
 				ret[ i - 1 ] = pixelVals.get( index );
@@ -201,15 +196,14 @@ public class CellStatsExporter {
 		}
 
 		/**
-		 * @param segmentBoxInChannel
 		 * @return
 		 */
-		public float[] computeChannelColumnIntensities( final IntervalView< FloatType > columnBoxInChannel ) {
+        float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
 			if ( MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
 				System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS );
 			}
 
-			final float ret[] = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];
+			final float[] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];
 			int idx = 0;
 			for ( int i = ( int ) columnBoxInChannel.min( 0 ); i <= columnBoxInChannel.max( 0 ); i++ ) {
 				final IntervalView< FloatType > column = Views.hyperSlice( columnBoxInChannel, 0, i );
@@ -226,8 +220,8 @@ public class CellStatsExporter {
 		 * @param columnBoxInChannel
 		 * @return
 		 */
-		public float[][] getIntensities( final IntervalView< FloatType > columnBoxInChannel ) {
-			final float ret[][] = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ][ ( int ) columnBoxInChannel.dimension( 1 ) ];
+        float[][] getIntensities(final IntervalView<FloatType> columnBoxInChannel) {
+			final float[][] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ][ ( int ) columnBoxInChannel.dimension( 1 ) ];
 			int y = 0;
 			for ( int j = ( int ) columnBoxInChannel.min( 1 ); j <= columnBoxInChannel.max( 1 ); j++ ) {
 				final IntervalView< FloatType > row = Views.hyperSlice( columnBoxInChannel, 1, j );
@@ -244,22 +238,22 @@ public class CellStatsExporter {
 		/**
 		 * @return
 		 */
-		public String getGenealogyString() {
-			String ret = "";
+        String getGenealogyString() {
+			StringBuilder ret = new StringBuilder();
 			for ( final int dt : genealogy ) {
 				if ( dt == SegmentRecord.UPPER ) {
-					ret = ret + "T";
+					ret.append("T");
 				} else
 				if ( dt == SegmentRecord.LOWER ) {
-					ret = ret + "B";
+					ret.append("B");
 				} else
 				if ( dt == SegmentRecord.UNKNOWN ) {
-					ret = ret + "U";
+					ret.append("U");
 				} else {
-					ret = ret + dt;
+					ret.append(dt);
 				}
 			}
-			return ret;
+			return ret.toString();
 		}
 	}
 
@@ -271,7 +265,7 @@ public class CellStatsExporter {
 		this.gui = gui;
 	}
 
-	public boolean showConfigDialog() {
+	private boolean showConfigDialog() {
 		final DialogCellStatsExportSetup dialog =
 				new DialogCellStatsExportSetup( gui, MoMA.EXPORT_USER_INPUTS, MoMA.EXPORT_DO_TRACK_EXPORT, MoMA.EXPORT_INCLUDE_HISTOGRAMS, MoMA.EXPORT_INCLUDE_QUANTILES, MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS, MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES);
 		dialog.ask();
@@ -352,14 +346,14 @@ public class CellStatsExporter {
 	 * @param file
 	 * @throws GRBException
 	 */
-	public void exportCellStats( final File file ) throws GRBException {
+    private void exportCellStats(final File file) throws GRBException {
 
 		// ------- THE MAGIC *** THE MAGIC *** THE MAGIC *** THE MAGIG -------
 		final Vector< String > linesToExport = getCellStatsExportData();
 		// -------------------------------------------------------------------
 
 		System.out.println( "Exporting collected cell-statistics..." );
-		Writer out = null;
+		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( file ) );
 
@@ -384,26 +378,26 @@ public class CellStatsExporter {
 
 		final String loadedDataFolder = MoMA.props.getProperty( "import_path", "BUG -- could not get property 'import_path' while exporting cell statistics..." );
 		final int numCurrGL = gui.sliderGL.getValue();
-		final Vector< String > linesToExport = new Vector< String >();
+		final Vector< String > linesToExport = new Vector<>();
 
 		final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get( 0 );
 		final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
 		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > > > > segmentsInFirstFrameSorted =
 				firstGLF.getSortedActiveHypsAndPos();
-		final List< SegmentRecord > startingPoints = new ArrayList< SegmentRecord >();
+		final List< SegmentRecord > startingPoints = new ArrayList<>();
 
 		int nextCellId = 0;
-		final LinkedList< SegmentRecord > queue = new LinkedList< SegmentRecord >();
+		final LinkedList< SegmentRecord > queue = new LinkedList<>();
 
 		int cellNum = 0;
 		for ( final ValuePair< Integer, Hypothesis< Component< FloatType, ? > > > valuePair : segmentsInFirstFrameSorted ) {
 
 			cellNum++;
 			final SegmentRecord point =
-					new SegmentRecord( valuePair.b, nextCellId++, -1, -1, cellNum );
+					new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellNum);
 			startingPoints.add( point );
 
-			final SegmentRecord prepPoint = new SegmentRecord( point, 1 );
+			final SegmentRecord prepPoint = new SegmentRecord(point, 1);
 			prepPoint.hyp = point.hyp;
 
 			if ( !prepPoint.hyp.isPruned() ) {
@@ -421,7 +415,7 @@ public class CellStatsExporter {
 			// MAPPING -- JUST DROP SEGMENT STATS
 			if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
 				final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
-				final SegmentRecord next = new SegmentRecord( prepPoint, 1 );
+				final SegmentRecord next = new SegmentRecord(prepPoint, 1);
 				next.hyp = ma.getDestinationHypothesis();
 				if ( !prepPoint.hyp.isPruned() ) {
 					queue.add( next );
@@ -438,7 +432,7 @@ public class CellStatsExporter {
 				prepPoint.hyp = da.getLowerDesinationHypothesis();
 				prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
 				if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > gui.sliderTime.getMaximum() ) ) {
-					final SegmentRecord newPoint = new SegmentRecord( prepPoint, 0 );
+					final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
 					newPoint.genealogy.add( SegmentRecord.LOWER );
 					startingPoints.add( newPoint.clone() );
 					newPoint.frame++;
@@ -450,7 +444,7 @@ public class CellStatsExporter {
 				prepPoint.hyp = da.getUpperDesinationHypothesis();
 				prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
 				if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > gui.sliderTime.getMaximum() ) ) {
-					final SegmentRecord newPoint = new SegmentRecord( prepPoint, 0 );
+					final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
 					newPoint.genealogy.add( SegmentRecord.UPPER );
 					startingPoints.add( newPoint.clone() );
 					newPoint.frame++;
@@ -490,114 +484,110 @@ public class CellStatsExporter {
 		linesToExport.add( String.format("trackRegionInterval = [%d,%d]", MoMA.GL_OFFSET_TOP, h - 1 - MoMA.GL_OFFSET_BOTTOM ) );
 
 		// Export all cells (we found all their starting segments above)
-		for ( int cid = 0; cid < startingPoints.size(); cid++ ) {
-			SegmentRecord segmentRecord = startingPoints.get( cid );
-
-			linesToExport.add( segmentRecord.toString() );
+		for (SegmentRecord segmentRecord : startingPoints) {
+			linesToExport.add(segmentRecord.toString());
 			do {
-				ValuePair< Integer, Integer > limits =
-						ComponentTreeUtils.getTreeNodeInterval( segmentRecord.hyp.getWrappedHypothesis() );
-				if ( segmentRecord.hyp.getWrappedHypothesis() instanceof FilteredComponent ) {
-					limits = ComponentTreeUtils.getExtendedTreeNodeInterval( ( FilteredComponent< ? > ) segmentRecord.hyp.getWrappedHypothesis() );
+				ValuePair<Integer, Integer> limits =
+						ComponentTreeUtils.getTreeNodeInterval(segmentRecord.hyp.getWrappedHypothesis());
+				if (segmentRecord.hyp.getWrappedHypothesis() instanceof FilteredComponent) {
+					limits = ComponentTreeUtils.getExtendedTreeNodeInterval((FilteredComponent<?>) segmentRecord.hyp.getWrappedHypothesis());
 				}
 
-				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get( segmentRecord.frame );
-				final List< Point > centerLine = glf.getImgLocations();
-//				final double height = Util.evaluatePolygonLength( centerLine, limits.getA(), limits.getB() );
+				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
 
 				final int numCells = glf.getSolutionStats_numCells();
-				final int cellPos = glf.getSolutionStats_cellPos( segmentRecord.hyp );
+				final int cellPos = glf.getSolutionStats_cellPos(segmentRecord.hyp);
 
 				final String genealogy = segmentRecord.getGenealogyString();
 
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
-				linesToExport.add( String.format(
+				linesToExport.add(String.format(
 						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; num_pixels_in_box=%d; genealogy=%s",
 						segmentRecord.frame,
 						cellPos,
 						numCells,
 						limits.getA(),
 						limits.getB(),
-						Util.getSegmentBoxPixelCount( segmentRecord.hyp, firstGLF.getAvgXpos() ),
-						genealogy ) );
+						Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()),
+						genealogy));
 
 				// export info per image channel
-				for ( int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++ ) {
-					final IntervalView< FloatType > channelFrame = Views.hyperSlice( MoMA.instance.getRawChannelImgs().get( c ), 2, segmentRecord.frame );
-					final IterableInterval< FloatType > segmentBoxInChannel = Util.getSegmentBoxInImg( channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos() );
+				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+					final IterableInterval<FloatType> segmentBoxInChannel = Util.getSegmentBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
 
 					final FloatType min = new FloatType();
 					final FloatType max = new FloatType();
-					Util.computeMinMax( segmentBoxInChannel, min, max );
+					Util.computeMinMax(segmentBoxInChannel, min, max);
 
-					if ( MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
-						final long[] hist = segmentRecord.computeChannelHistogram( segmentBoxInChannel, min.get(), max.get() );
-						String histStr = String.format( "\t\tch=%d; output=HISTOGRAM", c );
-						histStr += String.format( "; min=%8.3f; max=%8.3f", min.get(), max.get() );
-						for ( final long value : hist ) {
-							histStr += String.format( "; %5d", value );
+					if (MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
+						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
+						StringBuilder histStr = new StringBuilder(String.format("\t\tch=%d; output=HISTOGRAM", c));
+						histStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
+						for (final long value : hist) {
+							histStr.append(String.format("; %5d", value));
 						}
-						linesToExport.add( histStr );
+						linesToExport.add(histStr.toString());
 					}
 
-					if ( MoMA.EXPORT_INCLUDE_QUANTILES) {
-						final float[] percentile = segmentRecord.computeChannelPercentile( segmentBoxInChannel );
-						String percentileStr = String.format( "\t\tch=%d; output=PERCENTILES", c );
-						percentileStr += String.format( "; min=%8.3f; max=%8.3f", min.get(), max.get() );
-						for ( final float value : percentile ) {
-							percentileStr += String.format( "; %8.3f", value );
+					if (MoMA.EXPORT_INCLUDE_QUANTILES) {
+						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
+						StringBuilder percentileStr = new StringBuilder(String.format("\t\tch=%d; output=PERCENTILES", c));
+						percentileStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
+						for (final float value : percentile) {
+							percentileStr.append(String.format("; %8.3f", value));
 						}
-						linesToExport.add( percentileStr );
+						linesToExport.add(percentileStr.toString());
 					}
 
-					if ( MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
-						final IntervalView< FloatType > columnBoxInChannel = Util.getColumnBoxInImg( channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos() );
-						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities( columnBoxInChannel );
-						String colIntensityStr = String.format( "\t\tch=%d; output=COLUMN_INTENSITIES", c );
-						for ( final float value : column_intensities ) {
-							colIntensityStr += String.format( "; %.3f", value );
+					if (MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
+						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
+						StringBuilder colIntensityStr = new StringBuilder(String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c));
+						for (final float value : column_intensities) {
+							colIntensityStr.append(String.format("; %.3f", value));
 						}
-						linesToExport.add( colIntensityStr );
+						linesToExport.add(colIntensityStr.toString());
 					}
 
-					if ( MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
-						final IntervalView< FloatType > intensityBoxInChannel = Util.getIntensityBoxInImg( channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos() );
-						final float[][] intensities = segmentRecord.getIntensities( intensityBoxInChannel );
-						String intensityStr = String.format( "\t\tch=%d; output=PIXEL_INTENSITIES", c );
-						for ( int y = 0; y < intensities[ 0 ].length; y++ ) {
-							for ( int x = 0; x < intensities.length; x++ ) {
-								intensityStr += String.format( ";%.3f", intensities[ x ][ y ] );
+					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
+						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
+						StringBuilder intensityStr = new StringBuilder(String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c));
+						for (int y = 0; y < intensities[0].length; y++) {
+							for (float[] intensity : intensities) {
+								intensityStr.append(String.format(";%.3f", intensity[y]));
 							}
-							intensityStr += " ";
+							intensityStr.append(" ");
 						}
-						linesToExport.add( intensityStr );
+						linesToExport.add(intensityStr.toString());
 					}
 				}
-				segmentRecord = segmentRecord.nextSegmentInTime( ilp );
+				segmentRecord = segmentRecord.nextSegmentInTime(ilp);
 			}
-			while ( segmentRecord.exists() );
+			while (segmentRecord.exists());
 
-			if ( segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
-				linesToExport.add( "\tEXIT\n" );
-			} else if ( segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
-				linesToExport.add( "\tDIVISION\n" );
-			} else if ( segmentRecord.terminated_by == SegmentRecord.USER_PRUNING ) {
-				linesToExport.add( "\tUSER_PRUNING\n" );
-			} else if ( segmentRecord.terminated_by == SegmentRecord.ENDOFTRACKING ) {
+			if (segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+				linesToExport.add("\tEXIT\n");
+			} else if (segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+				linesToExport.add("\tDIVISION\n");
+			} else if (segmentRecord.terminated_by == SegmentRecord.USER_PRUNING) {
+				linesToExport.add("\tUSER_PRUNING\n");
+			} else if (segmentRecord.terminated_by == SegmentRecord.ENDOFTRACKING) {
 //				// UGLY TRICK ALERT: remember the trick to fix the tracking towards the last frame?
 //				// Yes, we double the last frame. This also means that we should not export this fake frame, ergo we remove it here!
-				String deleted = "";
+				String deleted;
 				do {
-					deleted = linesToExport.remove( linesToExport.size() - 1 );
+					deleted = linesToExport.remove(linesToExport.size() - 1);
 				}
-				while ( !deleted.trim().startsWith( "frame" ) );
-				linesToExport.add( "\tENDOFDATA\n" );
+				while (!deleted.trim().startsWith("frame"));
+				linesToExport.add("\tENDOFDATA\n");
 			} else {
-				linesToExport.add( "\tGUROBI_EXCEPTION\n" );
+				linesToExport.add("\tGUROBI_EXCEPTION\n");
 			}
 
 			// REPORT PROGRESS if needbe
-			if ( !MoMA.HEADLESS ) {
+			if (!MoMA.HEADLESS) {
 				dialogProgress.hasProgressed();
 			}
 		}
@@ -611,12 +601,12 @@ public class CellStatsExporter {
 		return linesToExport;
 	}
 
-	public void exportTracks( final File file ) {
+	private void exportTracks(final File file) {
 
 		final Vector< Vector< String >> dataToExport = getTracksExportData();
 
 		System.out.println( "Exporting data..." );
-		Writer out = null;
+		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( file ) );
 
@@ -649,19 +639,19 @@ public class CellStatsExporter {
 		final String loadedDataFolder = MoMA.props.getProperty( "import_path", "BUG -- could not get property 'import_path' while exporting tracks..." );
 		final int numCurrGL = gui.sliderGL.getValue();
 		final int numGLFs = gui.model.getCurrentGL().getFrames().size();
-		final Vector< Vector< String >> dataToExport = new Vector< Vector< String >>();
+		final Vector< Vector< String >> dataToExport = new Vector<>();
 
-		final Vector< String > firstLine = new Vector< String >();
+		final Vector< String > firstLine = new Vector<>();
 		firstLine.add( loadedDataFolder );
 		dataToExport.add( firstLine );
-		final Vector< String > secondLine = new Vector< String >();
+		final Vector< String > secondLine = new Vector<>();
 		secondLine.add( "" + numCurrGL );
 		secondLine.add( "" + numGLFs );
 		dataToExport.add( secondLine );
 
 		int i = 0;
 		for ( final GrowthLineFrame glf : gui.model.getCurrentGL().getFrames() ) {
-			final Vector< String > newRow = new Vector< String >();
+			final Vector< String > newRow = new Vector<>();
 			newRow.add( "" + i );
 
 			final int numCells = glf.getSolutionStats_numCells();
@@ -669,10 +659,10 @@ public class CellStatsExporter {
 
 			newRow.add( "" + numCells );
 			for ( final ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > > elem : data ) {
-				final int min = elem.a.a.intValue();
-				final int max = elem.a.b.intValue();
-				final int type = elem.b.a.intValue();
-				final int user_touched = elem.b.b.intValue();
+				final int min = elem.a.a;
+				final int max = elem.a.b;
+				final int type = elem.b.a;
+				final int user_touched = elem.b.b;
 				newRow.add( String.format( "%3d, %3d, %3d, %3d", min, max, type, user_touched ) );
 			}
 

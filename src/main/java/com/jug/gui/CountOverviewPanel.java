@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.awt.BorderLayout;
@@ -31,7 +28,7 @@ import com.jug.lp.Hypothesis;
  * @author jug
  * 
  */
-public class CountOverviewPanel extends JPanel {
+class CountOverviewPanel extends JPanel {
 
 	private static final long serialVersionUID = -7527124790229560330L;
 
@@ -45,11 +42,11 @@ public class CountOverviewPanel extends JPanel {
 	}
 
 	private void buildGui() {
-		columnNames = new Vector< String >();
-		columnNames.add( String.format( " #C" ) );
-		columnNames.add( String.format( " #D" ) );
-		columnNames.add( String.format( " #E" ) );
-		columnNames.add( String.format( " CCC" ) );
+		columnNames = new Vector<>();
+		columnNames.add(" #C");
+		columnNames.add(" #D");
+		columnNames.add(" #E");
+		columnNames.add(" CCC");
 
 		totalCellCount = new JLabel();
 		totalCellCount.setFont( totalCellCount.getFont().deriveFont( Font.BOLD ) );
@@ -62,7 +59,7 @@ public class CountOverviewPanel extends JPanel {
 		table = new JTable( model ) {
 
 			private static final long serialVersionUID = -5757310501730411649L;
-			DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
+			final DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
 
 			{ //initializer block
 				renderRight.setHorizontalAlignment( SwingConstants.CENTER );
@@ -81,9 +78,6 @@ public class CountOverviewPanel extends JPanel {
 
 			@Override
 			public void changeSelection( final int rowIndex, final int columnIndex, final boolean toggle, final boolean extend ) {
-				try {
-					// content?
-				} catch ( final Exception e ) {}
 				// make the selection change
 				super.changeSelection( rowIndex, columnIndex, toggle, extend );
 			}
@@ -100,13 +94,13 @@ public class CountOverviewPanel extends JPanel {
 	 * @param currentGL
 	 */
 	public void showData( final GrowthLine currentGL ) {
-		data = new Vector< Vector< String > >();
+		data = new Vector<>();
 
 		int sumOfCells = 0;
 		if ( currentGL != null && currentGL.getIlp() != null ) {
 			// collect data
 			for ( final GrowthLineFrame glf : currentGL.getFrames() ) {
-				final Vector< String > row = new Vector< String >();
+				final Vector< String > row = new Vector<>();
 
 				int cells = 0;
 				int exits = 0;

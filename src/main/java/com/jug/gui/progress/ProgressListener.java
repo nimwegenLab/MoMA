@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.jug.gui.progress;
 
 /**
@@ -8,5 +5,5 @@ package com.jug.gui.progress;
  */
 public interface ProgressListener {
 
-	public void hasProgressed();
+	void hasProgressed();
 }

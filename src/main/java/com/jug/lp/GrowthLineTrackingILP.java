@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.io.BufferedReader;
@@ -12,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -41,7 +37,6 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -58,13 +53,13 @@ public class GrowthLineTrackingILP {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
-	public static int OPTIMIZATION_NEVER_PERFORMED = 0;
-	public static int OPTIMAL = 1;
-	public static int INFEASIBLE = 2;
-	public static int UNBOUNDED = 3;
-	public static int SUBOPTIMAL = 4;
-	public static int NUMERIC = 5;
-	public static int LIMIT_REACHED = 6;
+	private static final int OPTIMIZATION_NEVER_PERFORMED = 0;
+	private static final int OPTIMAL = 1;
+	private static final int INFEASIBLE = 2;
+	private static final int UNBOUNDED = 3;
+	private static final int SUBOPTIMAL = 4;
+	private static final int NUMERIC = 5;
+	private static final int LIMIT_REACHED = 6;
 
 	public static final int ASSIGNMENT_EXIT = 0;
 	public static final int ASSIGNMENT_MAPPING = 1;
@@ -72,8 +67,8 @@ public class GrowthLineTrackingILP {
 
 	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored
 
-	public static GRBEnv env;
-	public static CostManager costManager;
+	private static GRBEnv env;
+	private static CostManager costManager;
 
 	// -------------------------------------------------------------------------------------
 	// fields
@@ -84,14 +79,14 @@ public class GrowthLineTrackingILP {
 	private int status = OPTIMIZATION_NEVER_PERFORMED;
 
 	public final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes =
-			new AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > >();
-	public final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets =
-			new HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+			new AssignmentsAndHypotheses<>();
+	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets =
+			new HypothesisNeighborhoods<>();
 
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr > ignoreSegmentConstraints =
-			new HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr >();
+			new HashMap<>();
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr > freezeSegmentConstraints =
-			new HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr >();
+			new HashMap<>();
 
 	private int pbcId = 0;
 
@@ -131,7 +126,7 @@ public class GrowthLineTrackingILP {
 			e.printStackTrace();
 		}
 
-		this.progressListener = new ArrayList< ProgressListener >();
+		this.progressListener = new ArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -335,8 +330,8 @@ public class GrowthLineTrackingILP {
 
 			final List< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmts_t = nodes.getAssignmentsAt( t );
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmt : assmts_t ) {
-				final List< Integer > regionIds = new ArrayList< Integer >();
-				regionIds.add( new Integer( regionId ) );
+				final List< Integer > regionIds = new ArrayList<>();
+				regionIds.add(regionId);
 				assmt.addFunctionsAndFactors( fgFile, regionIds );
 			}
 
@@ -354,21 +349,21 @@ public class GrowthLineTrackingILP {
 				fgFile.addFactorComment( "--- FAC-SECTION :: Explanation-Continuity Constraints ------" );
 
 				for ( final Hypothesis< Component< FloatType, ? > > hyp : nodes.getHypothesesAt( t ) ) {
-					final List< Integer > varIds = new ArrayList< Integer >();
-					final List< Integer > coeffs = new ArrayList< Integer >();
+					final List< Integer > varIds = new ArrayList<>();
+					final List< Integer > coeffs = new ArrayList<>();
 
 					if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
 						for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
 							//expr.addTerm( 1.0, a_j.getGRBVar() );
-							coeffs.add( new Integer( 1 ) );
-							varIds.add( new Integer( a_j.getVarIdx() ) );
+							coeffs.add(1);
+							varIds.add(a_j.getVarIdx());
 						}
 					}
 					if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
 						for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
 							//expr.addTerm( -1.0, a_j.getGRBVar() );
-							coeffs.add( new Integer( -1 ) );
-							varIds.add( new Integer( a_j.getVarIdx() ) );
+							coeffs.add(-1);
+							varIds.add(a_j.getVarIdx());
 						}
 					}
 
@@ -423,7 +418,7 @@ public class GrowthLineTrackingILP {
 //		} else {
 			cost = localIntensityBasedCost( t, ctNode );
 //		}
-		nodes.addHypothesis( t, new Hypothesis< Component< FloatType, ? > >( t, ctNode, cost ) );
+		nodes.addHypothesis( t, new Hypothesis<>(t, ctNode, cost) );
 
 		// do the same for all children
 		for ( final Component< FloatType, ? > ctChild : ctNode.getChildren() ) {
@@ -441,12 +436,7 @@ public class GrowthLineTrackingILP {
 		return CostFactory.getIntensitySegmentationCost( ctNode, img );
 	}
 
-	/**
-	 * @param t
-	 * @param ctNode
-	 * @return
-	 */
-//	public float localParamaxflowBasedCost( final int t, final Component< ?, ? > ctNode ) {
+	//	public float localParamaxflowBasedCost( final int t, final Component< ?, ? > ctNode ) {
 //		//TODO kotz
 //		final float[] gapSepFkt = gl.getFrames().get( t ).getAwesomeGapSeparationValues( MoMA.instance.getImgTemp() );
 //		return CostFactory.getParamaxflowSegmentationCost( ctNode, gapSepFkt );
@@ -487,14 +477,14 @@ public class GrowthLineTrackingILP {
 	private void addExitAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> hyps ) throws GRBException {
 		if ( hyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			cost = costModulationForSubstitutedILP( hyp.getCosts() );
 
 			final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, String.format( "a_%d^EXIT--%d", t, hyp.getId() ) );
 			final List< Hypothesis< Component< FloatType, ? >>> Hup = LpUtils.getHup( hyp, hyps );
-			final ExitAssignment ea = new ExitAssignment( t, newLPVar, this, nodes, edgeSets, Hup, hyp );
+			final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp );
 			nodes.addAssignment( t, ea );
 			edgeSets.addToRightNeighborhood( hyp, ea );
 			i++;
@@ -517,7 +507,7 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
@@ -555,10 +545,10 @@ public class GrowthLineTrackingILP {
 
 						final MappingAssignment ma = new MappingAssignment( t, newLPVar, this, nodes, edgeSets, from, to );
 						nodes.addAssignment( t, ma );
-						if ( edgeSets.addToRightNeighborhood( from, ma ) == false ) {
+						if (!edgeSets.addToRightNeighborhood(from, ma)) {
 							System.err.println( "ERROR: Mapping-assignment could not be added to right neighborhood!" );
 						}
-						if ( edgeSets.addToLeftNeighborhood( to, ma ) == false ) {
+						if (!edgeSets.addToLeftNeighborhood(to, ma)) {
 							System.err.println( "ERROR: Mapping-assignment could not be added to left neighborhood!" );
 						}
 						j++;
@@ -594,10 +584,10 @@ public class GrowthLineTrackingILP {
 		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
 		final ValuePair< Integer, Integer > intervalTo = to.getLocation();
 
-		final float oldPosU = intervalFrom.getA().intValue();
-		final float newPosU = intervalTo.getA().intValue();
-		final float oldPosL = intervalFrom.getB().intValue();
-		final float newPosL = intervalTo.getB().intValue();
+		final float oldPosU = intervalFrom.getA();
+		final float newPosU = intervalTo.getA();
+		final float oldPosL = intervalFrom.getB();
+		final float newPosL = intervalTo.getB();
 
 		final float glLength = gl.get( 0 ).size();
 
@@ -618,7 +608,7 @@ public class GrowthLineTrackingILP {
 		// contrast at bottom, hence we trick this condition in here not to loose the mother -- which would
 		// mean to loose all future tracks!!!)
 		boolean onlyH = false;
-		if ( intervalTo.getA().intValue() == 0 || intervalTo.getB().intValue() + 1 >= glLength ) {
+		if (intervalTo.getA() == 0 || intervalTo.getB() + 1 >= glLength ) {
 			onlyH = true;
 			cost = costDeltaH; // + costDeltaV;
 		}
@@ -643,7 +633,7 @@ public class GrowthLineTrackingILP {
 		// weights = [ 0.5, 0.5, 0, 1 ]
 
 //		System.out.println( String.format( ">>> %f + %f + %f = %f", costDeltaL, costDeltaV, costDeltaH, cost ) );
-		return new ValuePair< Float, float[] >( cost, featureValues );
+		return new ValuePair<>(cost, featureValues);
 	}
 
 	/**
@@ -669,7 +659,6 @@ public class GrowthLineTrackingILP {
 	 * place.
 	 *
 	 * @param fromCost
-	 * @param toCost
 	 * @param divisionCosts
 	 * @return
 	 */
@@ -712,7 +701,7 @@ public class GrowthLineTrackingILP {
 	private void addDivisionAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost = 0.0f;
+		float cost;
 
 		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
@@ -758,7 +747,7 @@ public class GrowthLineTrackingILP {
 									System.err.println( "Division cost mismatch!" );
 								}
 
-								final DivisionAssignment da = new DivisionAssignment( t, newLPVar, this, nodes, edgeSets, from, to, lowerNeighbor );
+								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
 								nodes.addAssignment( t, da );
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );
@@ -779,12 +768,6 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param from
 	 *            the segmentation hypothesis from which the mapping originates.
-	 * @param to
-	 *            the upper (left) segmentation hypothesis towards which the
-	 *            mapping-assignment leads.
-	 * @param lowerNeighbor
-	 *            the lower (right) segmentation hypothesis towards which the
-	 *            mapping-assignment leads.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis (plus the vector of cost contributions/feature
 	 *         values).
@@ -803,13 +786,10 @@ public class GrowthLineTrackingILP {
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 
-		final float valueFrom = from.getWrappedHypothesis().value().get();
-		final float valueTo = 0.5f * ( toUpper.getWrappedHypothesis().value().get() + toLower.getWrappedHypothesis().value().get() );
-
-		final float oldPosU = intervalFrom.getA().intValue();
-		final float newPosU = intervalToU.getA().intValue();
-		final float oldPosL = intervalFrom.getB().intValue();
-		final float newPosL = intervalToL.getB().intValue();
+		final float oldPosU = intervalFrom.getA();
+		final float newPosU = intervalToU.getA();
+		final float oldPosL = intervalFrom.getB();
+		final float newPosL = intervalToL.getB();
 
 		final float glLength = gl.get( 0 ).size();
 
@@ -828,7 +808,7 @@ public class GrowthLineTrackingILP {
 		// Border case bullshit
 		// if the upper cell touches the upper border (then don't count shrinking and be nicer to uneven)
 		int c = 0;
-		if ( intervalToU.getA().intValue() == 0 || intervalToL.getB().intValue() + 1 >= glLength ) {
+		if (intervalToU.getA() == 0 || intervalToL.getB() + 1 >= glLength ) {
 			// In case the upper cell is still at least like 1/2 in
 			if ( ( 1.0 * sizeToU ) / ( 1.0 * sizeToL ) > 0.5 ) {
 				c = 1;
@@ -867,10 +847,8 @@ public class GrowthLineTrackingILP {
 				featureValues[ i++ ] = f;
 				break;
 			case 1:
-				featureValues[ i++ ] = 0;
-				break;
-			case 2:
-				featureValues[ i++ ] = 0;
+				case 2:
+					featureValues[ i++ ] = 0;
 				break;
 			}
 		}
@@ -880,23 +858,19 @@ public class GrowthLineTrackingILP {
 				featureValues[ i++ ] = 0;
 				break;
 			case 1:
-				featureValues[ i++ ] = f;
-				break;
-			case 2:
-				featureValues[ i++ ] = f;
+				case 2:
+					featureValues[ i++ ] = f;
 				break;
 			}
 		}
 		featureValues[ i++ ] = costDeltaS;
 		switch ( c ) {
 		case 0:
-			featureValues[ i++ ] = costDeltaS;
+			case 2:
+				featureValues[ i++ ] = costDeltaS;
 			break;
 		case 1:
 			featureValues[ i++ ] = 0;
-			break;
-		case 2:
-			featureValues[ i++ ] = costDeltaS;
 			break;
 		}
 		featureValues[ i++ ] = costDivisionLikelihood;
@@ -922,7 +896,7 @@ public class GrowthLineTrackingILP {
 		// weights = [ 0.5, 0.5, 0, 1, 1, 0, 1, 1, 0, 0.1, 0.03 ]
 
 //		System.out.println( String.format( ">>> %f + %f + %f + %f = %f", costDeltaL, costDeltaV, costDeltaH, costDeltaS, cost ) );
-		return new ValuePair< Float, float[] >( cost, featureValues );
+		return new ValuePair<>(cost, featureValues);
 	}
 
 	/**
@@ -939,7 +913,7 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 *
 	 */
-	public void addPathBlockingConstraints() throws GRBException {
+	private void addPathBlockingConstraints() throws GRBException {
 		// For each time-point
 		for ( int t = 0; t < gl.size(); t++ ) {
 			// Get the full component tree
@@ -949,8 +923,8 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	public List< String > getPathBlockingConstraints_PASCAL() {
-		final ArrayList< String > ret = new ArrayList< String >();
+	private List< String > getPathBlockingConstraints_PASCAL() {
+		final ArrayList< String > ret = new ArrayList<>();
 
 		// For each time-point
 		for ( int t = 0; t < gl.size(); t++ ) {
@@ -990,8 +964,6 @@ public class GrowthLineTrackingILP {
 	 * segmentation hypothesis along such a path can be chosen during the convex
 	 * optimization.
 	 *
-	 * @param ctRoot
-	 * @param pbcId
 	 * @param t
 	 * @throws GRBException
 	 */
@@ -1040,7 +1012,7 @@ public class GrowthLineTrackingILP {
 		if ( ctNode.getChildren().size() == 0 ) {
 			C runnerNode = ctNode;
 
-			String constraint = "";
+			StringBuilder constraint = new StringBuilder();
 			while ( runnerNode != null ) {
 				@SuppressWarnings( "unchecked" )
 				final Hypothesis< Component< FloatType, ? > > hypothesis =
@@ -1052,15 +1024,15 @@ public class GrowthLineTrackingILP {
 
 				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : edgeSets.getRightNeighborhood( hypothesis ) ) {
-						constraint += String.format( "(%d,1)+", a.getVarIdx() );
+						constraint.append(String.format("(%d,1)+", a.getVarIdx()));
 					}
 				}
 				runnerNode = runnerNode.getParent();
 			}
 			if ( constraint.length() > 0 ) {
-				constraint = constraint.substring( 0, constraint.length() - 1 );
-				constraint += " <= 1";
-				constraints.add( constraint );
+				constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1));
+				constraint.append(" <= 1");
+				constraints.add(constraint.toString());
 			}
 		} else {
 			// if ctNode is a inner node -> recursion
@@ -1074,16 +1046,14 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param ctNode
 	 * @param t
-	 * @param functions
-	 * @param factors
 	 */
 	private < C extends Component< ?, C > > void recursivelyAddPathBlockingConstraints( final C ctNode, final int t, final FactorGraphFileBuilder_SCALAR fgFile ) {
 
 		// if ctNode is a leave node -> add constraint (by going up the list of
 		// parents and building up the constraint)
 		if ( ctNode.getChildren().size() == 0 ) {
-			final List< Integer > varIds = new ArrayList< Integer >();
-			final List< Integer > coeffs = new ArrayList< Integer >();
+			final List< Integer > varIds = new ArrayList<>();
+			final List< Integer > coeffs = new ArrayList<>();
 
 			C runnerNode = ctNode;
 
@@ -1098,7 +1068,7 @@ public class GrowthLineTrackingILP {
 				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a : edgeSets.getRightNeighborhood( hypothesis ) ) {
 						// exprR.addTerm( 1.0, a.getGRBVar() );
-						coeffs.add( new Integer( 1 ) );
+						coeffs.add(1);
 //						varIds.add( new Integer( a.getVarIdx() ) );
 					}
 				}
@@ -1126,7 +1096,7 @@ public class GrowthLineTrackingILP {
 	 * assignment coming from t-1 we need to continue its interpretation by
 	 * finding an active assignment towards t+1.
 	 */
-	public void addExplainationContinuityConstraints() throws GRBException {
+	private void addExplainationContinuityConstraints() throws GRBException {
 		int eccId = 0;
 
 		// For each time-point
@@ -1153,31 +1123,31 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	public List< String > getExplainationContinuityConstraints_PASCAL() {
-		final ArrayList< String > ret = new ArrayList< String >();
+	private List< String > getExplainationContinuityConstraints_PASCAL() {
+		final ArrayList< String > ret = new ArrayList<>();
 
 		// For each time-point
 		for ( int t = 1; t < gl.size() - 1; t++ ) { // !!! sparing out the border !!!
 
 			for ( final Hypothesis< Component< FloatType, ? > > hyp : nodes.getHypothesesAt( t ) ) {
-				String constraint = "";
+				StringBuilder constraint = new StringBuilder();
 
 				if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
-						constraint += String.format( "(%d,1)+", a_j.getVarIdx() );
+						constraint.append(String.format("(%d,1)+", a_j.getVarIdx()));
 					}
 				}
 				if ( constraint.length() > 0 ) {
-					constraint = constraint.substring( 0, constraint.length() - 1 ); //remove last '+' sign
+					constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1)); //remove last '+' sign
 				}
 				if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
-						constraint += String.format( "-(%d,1)", a_j.getVarIdx() );
+						constraint.append(String.format("-(%d,1)", a_j.getVarIdx()));
 					}
 				}
 
-				constraint += " == 0";
-				ret.add( constraint );
+				constraint.append(" == 0");
+				ret.add(constraint.toString());
 			}
 		}
 		return ret;
@@ -1326,7 +1296,7 @@ public class GrowthLineTrackingILP {
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
 					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
-			if ( ctnLimits.getA().intValue() <= gapSepYPos && ctnLimits.getB().intValue() >= gapSepYPos ) { return h; }
+			if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos ) { return h; }
 		}
 		return null;
 	}
@@ -1344,7 +1314,7 @@ public class GrowthLineTrackingILP {
 	 *         conflict with the given hypothesis. (Overlap in space!)
 	 */
 	public List< Hypothesis< Component< FloatType, ? >>> getOptimalSegmentationsInConflict( final int t, final Hypothesis< Component< FloatType, ? >> hyp ) {
-		final List< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList< Hypothesis< Component< FloatType, ? >>>();
+		final List< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList<>();
 
 		final ValuePair< Integer, Integer > interval =
 				ComponentTreeUtils.getTreeNodeInterval( hyp.getWrappedHypothesis() );
@@ -1355,9 +1325,9 @@ public class GrowthLineTrackingILP {
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
 					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
-			if ( ( ctnLimits.getA().intValue() <= startpos && ctnLimits.getB().intValue() >= startpos ) || // overlap at top
-			( ctnLimits.getA().intValue() <= endpos && ctnLimits.getB().intValue() >= endpos ) ||    // overlap at bottom
-			( ctnLimits.getA().intValue() >= startpos && ctnLimits.getB().intValue() <= endpos ) ) {  // fully contained inside
+			if ( (ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos ) || // overlap at top
+			(ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos ) ||    // overlap at bottom
+			(ctnLimits.getA() >= startpos && ctnLimits.getB() <= endpos ) ) {  // fully contained inside
 				ret.add( h );
 			}
 		}
@@ -1370,13 +1340,13 @@ public class GrowthLineTrackingILP {
 	 * @return
 	 */
 	public List< Hypothesis< Component< FloatType, ? >>> getSegmentsAtLocation( final int t, final int gapSepYPos ) {
-		final List< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList< Hypothesis< Component< FloatType, ? >>>();
+		final List< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
 					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
-			if ( ctnLimits.getA().intValue() <= gapSepYPos && ctnLimits.getB().intValue() >= gapSepYPos ) {  // fully contained inside
+			if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos ) {  // fully contained inside
 				ret.add( h );
 			}
 		}
@@ -1395,8 +1365,8 @@ public class GrowthLineTrackingILP {
 	 *         that correspond to the active segmentation hypothesis (chosen by
 	 *         the optimization procedure).
 	 */
-	public List< Hypothesis< Component< FloatType, ? > > > getOptimalHypotheses( final int t ) {
-		final ArrayList< Hypothesis< Component< FloatType, ? > > > ret = new ArrayList< Hypothesis< Component< FloatType, ? > > >();
+	private List< Hypothesis< Component< FloatType, ? > > > getOptimalHypotheses(final int t) {
+		final ArrayList< Hypothesis< Component< FloatType, ? > > > ret = new ArrayList<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 
@@ -1464,7 +1434,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 1 );
 		assert ( t < nodes.getNumberOfTimeSteps() );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 
@@ -1472,7 +1442,7 @@ public class GrowthLineTrackingILP {
 			try {
 				final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ola = getOptimalLeftAssignment( hyp );
 				if ( ola != null ) {
-					final HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > oneElemSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+					final HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > oneElemSet = new HashSet<>();
 					oneElemSet.add( ola );
 					ret.put( hyp, oneElemSet );
 				}
@@ -1524,7 +1494,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 0 );
 		assert ( t < nodes.getNumberOfTimeSteps() - 1 );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 
@@ -1534,7 +1504,7 @@ public class GrowthLineTrackingILP {
 			try {
 				final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ora = getOptimalRightAssignment( hyp );
 				if ( ora != null ) {
-					final HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > oneElemSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+					final HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > oneElemSet = new HashSet<>();
 					oneElemSet.add( ora );
 					ret.put( hyp, oneElemSet );
 				}
@@ -1605,7 +1575,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 1 );
 		assert ( t < nodes.getNumberOfTimeSteps() );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = this.getOptimalHypotheses( t );
 
@@ -1619,7 +1589,7 @@ public class GrowthLineTrackingILP {
 					if ( !a.isChoosen() ) {
 						Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > innerSet = ret.get( hyp );
 						if ( innerSet == null ) {
-							innerSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+							innerSet = new HashSet<>();
 							innerSet.add( a );
 							ret.put( hyp, innerSet );
 						} else {
@@ -1662,7 +1632,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 0 );
 		assert ( t < nodes.getNumberOfTimeSteps() - 1 );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = this.getOptimalHypotheses( t );
 
@@ -1676,7 +1646,7 @@ public class GrowthLineTrackingILP {
 					if ( !a.isChoosen() ) {
 						Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > innerSet = ret.get( hyp );
 						if ( innerSet == null ) {
-							innerSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+							innerSet = new HashSet<>();
 							innerSet.add( a );
 							ret.put( hyp, innerSet );
 						} else {
@@ -1709,7 +1679,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 1 );
 		assert ( t < nodes.getNumberOfTimeSteps() );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = this.getOptimalHypotheses( t );
 
@@ -1721,7 +1691,7 @@ public class GrowthLineTrackingILP {
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : set ) {
 				Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > innerSet = ret.get( hyp );
 				if ( innerSet == null ) {
-					innerSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+					innerSet = new HashSet<>();
 					innerSet.add( a );
 					ret.put( hyp, innerSet );
 				} else {
@@ -1750,7 +1720,7 @@ public class GrowthLineTrackingILP {
 		assert ( t >= 0 );
 		assert ( t < nodes.getNumberOfTimeSteps() - 1 );
 
-		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > >();
+		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap<>();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = this.getOptimalHypotheses( t );
 
@@ -1762,7 +1732,7 @@ public class GrowthLineTrackingILP {
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : set ) {
 				Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > innerSet = ret.get( hyp );
 				if ( innerSet == null ) {
-					innerSet = new HashSet< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >();
+					innerSet = new HashSet<>();
 					innerSet.add( a );
 					ret.put( hyp, innerSet );
 				} else {
@@ -1870,9 +1840,10 @@ public class GrowthLineTrackingILP {
 	 * @return
 	 */
 	private boolean isComponentContainingYpos( final Component< FloatType, ? > comp, final int gapSepYPos ) {
-		final Iterator< Localizable > componentIterator = comp.iterator();
-		while ( componentIterator.hasNext() ) {
-			if ( gapSepYPos == componentIterator.next().getIntPosition( 0 ) ) { return true; }
+		for (Localizable localizable : comp) {
+			if (gapSepYPos == localizable.getIntPosition(0)) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -1886,9 +1857,6 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @param hyp2add
 	 *            the hypothesis for which the constraint should be installed.
-	 * @param hyp2remove
-	 *            the hypothesis at conflicting location for which this type of
-	 *            constraint needs to be removed. (Can be 'null'!)
 	 * @throws GRBException
 	 */
 	public void addSegmentInSolutionConstraint( final Hypothesis< Component< FloatType, ? >> hyp2add, final List< Hypothesis< Component< FloatType, ? >>> hyps2remove ) throws GRBException {
@@ -2065,7 +2033,7 @@ public class GrowthLineTrackingILP {
 	public void loadState( final File file ) throws IOException {
 		final BufferedReader reader = new BufferedReader( new FileReader( file ) );
 
-		final List< Hypothesis< ? >> pruneRoots = new ArrayList< Hypothesis< ? >>();
+		final List< Hypothesis< ? >> pruneRoots = new ArrayList<>();
 
 		final int timeOffset = MoMA.getMinTime();
 
@@ -2300,7 +2268,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param value
 	 */
 	public void ignoreBeyond( final int t ) {
 		if ( t + 1 >= gl.size() ) {
@@ -2367,7 +2334,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param value
 	 */
 	public void freezeBefore( final int t ) {
 		for ( int i = 0; i <= t; i++ ) {
@@ -2379,7 +2345,6 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * @param i
 	 */
 	public void freezeAssignmentsAsAre( final int t ) {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =
@@ -2527,7 +2492,7 @@ public class GrowthLineTrackingILP {
 		if ( ctNode.getChildren().size() == 0 ) {
 			Component< ?, ? > runnerNode = ctNode;
 
-			final List< Hypothesis< Component< FloatType, ? > > > hyps = new ArrayList< Hypothesis< Component< FloatType, ? > > >();
+			final List< Hypothesis< Component< FloatType, ? > > > hyps = new ArrayList<>();
 			while ( runnerNode != null ) {
 				@SuppressWarnings( "unchecked" )
 				final Hypothesis< Component< FloatType, ? > > hypothesis =

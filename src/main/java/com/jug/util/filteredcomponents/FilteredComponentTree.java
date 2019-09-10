@@ -7,7 +7,6 @@ import java.util.Iterator;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.BuildComponentTree;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.algorithm.componenttree.PartialComponent;
@@ -26,7 +25,7 @@ import net.imglib2.util.ValuePair;
 /**
  * Component tree of an image stored as a tree of {@link FilteredComponent}s.
  * This class is used both to represent and build the tree. For building the
- * tree {@link Component.Handler} is implemented to gather
+ * tree {@link PartialComponent.Handler} is implemented to gather
  * {@link FilteredPartialComponent} emitted by {@link ComponentTree}. Only
  * components in a specific size range are accepted. The tree contains only one
  * {@link FilteredComponent} per branch. This is the component with the highest
@@ -44,7 +43,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 		Iterable< FilteredComponent< T > >,
 		PartialComponent.Handler< FilteredPartialComponent< T > > {
 
-	private static enum FilterType {
+	private enum FilterType {
 		MAX_GROWTH_PER_STEP, MAX_GROWTH_PER_STEP_RATIO, MAX_GROWTH_PER_STEP_RATIO_WITH_MINIMAL_ABS_INC
 	}
 
@@ -106,8 +105,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	/**
 	 * Build a component tree from an input image. Calls
-	 * {@link #buildComponentTree(RandomAccessibleInterval, RealType, ImgFactory, boolean)}
-	 * using an {@link ArrayImgFactory} or {@link CellImgFactory} depending on
+	 *
+     * using an {@link ArrayImgFactory} or {@link CellImgFactory} depending on
 	 * input image size.
 	 *
 	 * @param input
@@ -167,21 +166,21 @@ public final class FilteredComponentTree< T extends Type< T > >
 	 *            bright to dark (false)
 	 * @return component tree of the image.
 	 */
-	public static < T extends RealType< T > > FilteredComponentTree< T > buildComponentTree(
-			final RandomAccessibleInterval< T > input,
+	private static < T extends RealType< T > > FilteredComponentTree< T > buildComponentTree(
+			final RandomAccessibleInterval<T> input,
 			final T type,
-			final ImgFactory< LongType > imgFactory,
+			final ImgFactory<LongType> imgFactory,
 			final long minComponentSize,
 			final long maxComponentSize,
 			final int minComponentWidth,
 			final int maxComponentWidth,
 			final Filter filter,
-			final boolean darkToBright ) {
+			final boolean darkToBright) {
 		final T max = type.createVariable();
 		max.setReal( darkToBright ? type.getMaxValue() : type.getMinValue() );
-		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator< T >( max, input, imgFactory );
+		final FilteredPartialComponentGenerator< T > generator = new FilteredPartialComponentGenerator<>(max, input, imgFactory);
 		final FilteredComponentTree< T > tree =
-				new FilteredComponentTree< T >( minComponentSize, maxComponentSize, minComponentWidth, maxComponentWidth, filter, generator.linkedList );
+                new FilteredComponentTree<>(minComponentSize, maxComponentSize, minComponentWidth, maxComponentWidth, filter, generator.linkedList);
 		BuildComponentTree.buildComponentTree( input, generator, tree, darkToBright );
 		
 		return tree;
@@ -222,9 +221,9 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	private final HashSet< FilteredComponent< T > > roots;
 
-	private int maxComponentWidth = 1000;
+	private final int maxComponentWidth;
 
-	private int minComponentWidth = 0;
+	private final int minComponentWidth;
 
 	private final long minComponentSize;
 
@@ -245,8 +244,8 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final int maxComponentWidth,
 			final Filter filter,
 			final Img< LongType > linkedList ) {
-		roots = new HashSet< FilteredComponent< T > >();
-		nodes = new ArrayList< FilteredComponent< T > >();
+		roots = new HashSet<>();
+		nodes = new ArrayList<>();
 		this.minComponentSize = minComponentSize;
 		this.maxComponentSize = maxComponentSize;
 		this.minComponentWidth = minComponentWidth;
@@ -334,7 +333,7 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 			if ( createNewComponent ) {
 				// create new node
-				final FilteredComponent< T > component = new FilteredComponent< T >( intermediate );
+				final FilteredComponent< T > component = new FilteredComponent<>(intermediate);
 				for ( final FilteredComponent< T > c : component.children )
 					roots.remove( c );
 				roots.add( component );

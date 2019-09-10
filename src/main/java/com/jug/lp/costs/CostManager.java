@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp.costs;
 
 import java.util.ArrayList;
@@ -32,8 +29,8 @@ public class CostManager {
 		this.numDivisionFeatures = numDivisionFeatures;
 
 		this.weights = new double[ numFeatures ];
-		this.featureList = new ArrayList< float[] >();
-		this.var2row = new HashMap< GRBVar, Integer >();
+		this.featureList = new ArrayList<>();
+		this.var2row = new HashMap<>();
 	}
 
 	public int getDimensions() {
@@ -49,7 +46,7 @@ public class CostManager {
 		System.arraycopy( weights, 0, this.weights, 0, numFeatures );
 	}
 
-	public void addRow( final GRBVar var, final float[] values ) {
+	private void addRow(final GRBVar var, final float[] values) {
 		if ( values.length != numFeatures ) { throw new IllegalArgumentException( "Given feature values do not match featureList dimensions" ); }
 		var2row.put( var, featureList.size() );
 		featureList.add( values );

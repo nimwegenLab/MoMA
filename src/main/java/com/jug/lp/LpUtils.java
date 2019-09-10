@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.util.ArrayList;
@@ -14,7 +11,7 @@ import com.jug.util.ComponentTreeUtils;
 /**
  * @author jug
  */
-public class LpUtils {
+class LpUtils {
 
 	/**
 	 * Builds and returns the set Hup (given as a List). Hup is defines as the
@@ -29,7 +26,7 @@ public class LpUtils {
 	 *         segmentation hypothesis hyp.
 	 */
 	public static List< Hypothesis< Component< FloatType, ? >>> getHup( final Hypothesis< Component< FloatType, ? >> hyp, final List< Hypothesis< Component< FloatType, ? >>> hyps ) {
-		final List< Hypothesis< Component< FloatType, ? >>> Hup = new ArrayList< Hypothesis< Component< FloatType, ? >>>();
+		final List< Hypothesis< Component< FloatType, ? >>> Hup = new ArrayList<>();
 		for ( final Hypothesis< Component< FloatType, ? >> candidate : hyps ) {
 			if ( ComponentTreeUtils.isAbove( candidate, hyp ) ) {
 				Hup.add( candidate );

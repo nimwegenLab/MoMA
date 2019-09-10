@@ -7,7 +7,7 @@ import gurobi.GRBException;
 import com.jug.MoMA;
 import com.jug.gui.progress.DialogGurobiProgress;
 
-public class GurobiCallback extends GRBCallback {
+class GurobiCallback extends GRBCallback {
 
 //	private final double lastiter;
 	private double lastnode;

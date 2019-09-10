@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.segmentation;
 
 import ij.IJ;
@@ -21,7 +18,7 @@ import trainableSegmentation.WekaSegmentation;
 public class SilentWekaSegmenter< T extends NumericType > {
 
 	/** reference to the segmentation backend */
-	WekaSegmentation wekaSegmentation = null;
+    private final WekaSegmentation wekaSegmentation;
 
 	public SilentWekaSegmenter( final String directory, final String filename ) {
 		// instantiate segmentation backend
@@ -29,33 +26,31 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		loadClassifier( directory, filename );
 	}
 
-	public boolean loadClassifier( final String directory, final String filename ) {
+	private void loadClassifier(final String directory, final String filename) {
 		// Try to load Weka model (classifier and train header)
-		if ( false == wekaSegmentation.loadClassifier( directory + filename ) ) {
+		if (!wekaSegmentation.loadClassifier(directory + filename)) {
 			IJ.error( "Error when loading Weka classifier from file: " + directory + filename );
 			System.out.println( "Error: classifier could not be loaded from '" + directory + filename + "'." );
-			return false;
+			return;
 		}
 
 		System.out.println( "Read header from " + directory + filename + " (number of attributes = " + wekaSegmentation.getTrainHeader().numAttributes() + ")" );
 
 		if ( wekaSegmentation.getTrainHeader().numAttributes() < 1 ) {
 			IJ.error( "Error", "No attributes were found on the model header loaded from " + directory + filename );
-			return false;
-		}
+        }
 
-		return true;
-	}
+    }
 
 	public RandomAccessibleInterval< T > classifyPixels( final RandomAccessibleInterval< T > img, final boolean probabilityMaps ) {
-		final List< RandomAccessibleInterval< T >> rais = new ArrayList< RandomAccessibleInterval< T >>();
+		final List< RandomAccessibleInterval< T >> rais = new ArrayList<>();
 		rais.add( img );
 		return ( classifyPixels( rais, probabilityMaps ) ).get( 0 );
 	}
 
-	public List< RandomAccessibleInterval< T >> classifyPixels( final List< RandomAccessibleInterval< T >> raiList, final boolean probabilityMaps ) {
+	private List< RandomAccessibleInterval< T >> classifyPixels(final List<RandomAccessibleInterval<T>> raiList, final boolean probabilityMaps) {
 
-		final List< RandomAccessibleInterval< T >> results = new ArrayList< RandomAccessibleInterval< T >>( raiList );
+		final List< RandomAccessibleInterval< T >> results = new ArrayList<>(raiList);
 
 		final int numProcessors = 1; // Prefs.getThreads();
 		final int numThreads = Math.min( raiList.size(), numProcessors );
@@ -76,7 +71,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 
 			final List< RandomAccessibleInterval< T >> raiListOutputs;
 
-			public ImageProcessingThread( final int numThread, final int numThreads, final List< RandomAccessibleInterval< T >> raiList, final List< RandomAccessibleInterval< T >> raiListOutputs ) {
+			ImageProcessingThread(final int numThread, final int numThreads, final List<RandomAccessibleInterval<T>> raiList, final List<RandomAccessibleInterval<T>> raiListOutputs) {
 				this.numThread = numThread;
 				this.numThreads = numThreads;
 				this.raiList = raiList;
@@ -117,7 +112,7 @@ public class SilentWekaSegmenter< T extends NumericType > {
 		for ( final Thread thread : threads ) {
 			try {
 				thread.join();
-			} catch ( final InterruptedException e ) {}
+			} catch ( final InterruptedException ignored) {}
 		}
 
 		return results;

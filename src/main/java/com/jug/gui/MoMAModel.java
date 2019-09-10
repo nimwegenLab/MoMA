@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import com.jug.GrowthLine;
@@ -21,7 +18,7 @@ public class MoMAModel {
 	/**
 	 * The MotherMachine instance we wrap here
 	 */
-	protected MoMA mm;
+	final MoMA mm;
 
 	private int currentGLidx;
 	private int currentGLFidx;

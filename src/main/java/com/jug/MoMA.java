@@ -34,14 +34,9 @@ import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
-import net.imglib2.util.Intervals;
-import net.imglib2.util.Pair;
-import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -63,8 +58,8 @@ import com.jug.util.DataMover;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.converter.RealFloatProbMapToSegmentation;
 
-/**
- * Main class for the MotherMachine project.
+/*
+  Main class for the MotherMachine project.
  */
 
 import gurobi.GRBEnv;
@@ -91,8 +86,6 @@ import net.imglib2.view.Views;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
-import org.scijava.io.IOService;
-import org.scijava.plugin.PluginService;
 import org.scijava.ui.UIService;
 
 /**
@@ -121,8 +114,8 @@ public class MoMA {
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image
 	 * data. Used while searching the growth line centers.
 	 */
-	public static float SIGMA_GL_DETECTION_X = 20f;
-	public static float SIGMA_GL_DETECTION_Y = 0f;
+	private static float SIGMA_GL_DETECTION_X = 20f;
+	private static float SIGMA_GL_DETECTION_Y = 0f;
 
 	/**
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image
@@ -137,7 +130,7 @@ public class MoMA {
 	 */
 	public static int GL_WIDTH_IN_PIXELS = 20;
 	public static int GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = 100;
-	public static int GL_PIXEL_PADDING_IN_VIEWS = 15;
+	public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
 	public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
 
 	/**
@@ -145,7 +138,7 @@ public class MoMA {
 	 * the left and right image border will be neglected. Reason: detection not
 	 * reliable if well is truncated.
 	 */
-	public static int GL_OFFSET_LATERAL = 20;
+	private static int GL_OFFSET_LATERAL = 20;
 
 	/**
 	 * Prior knowledge: hard offset in detected well center lines - will be cut
@@ -159,7 +152,7 @@ public class MoMA {
 	 * be launched when data is read from disk.
 	 */
 	public static int GL_OFFSET_BOTTOM = -1;
-	public static boolean GL_OFFSET_BOTTOM_AUTODETECT = true;
+	private static boolean GL_OFFSET_BOTTOM_AUTODETECT = true;
 
 	/**
 	 * Maximum offset in x direction (with respect to growth line center) to
@@ -189,7 +182,7 @@ public class MoMA {
 	/**
 	 * Prior knowledge: minimal contrast of a gap (also used for MSERs)
 	 */
-	public static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
+	private static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
 													// value that will basically
 													// not filter anything...
 	/**
@@ -199,19 +192,19 @@ public class MoMA {
 	 * classification is flat, the original (simple) mehod might still offer
 	 * some modulation!
 	 */
-	public static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
+	private static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
 
 	/**
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during segmentation.
 	 */
-	public static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
+	private static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
 
 	/**
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during cell-stats export for cell-size estimation.
 	 */
-	public static String CELLSIZE_CLASSIFIER_MODEL_FILE = "CellSizeClassifier.model";
+	private static String CELLSIZE_CLASSIFIER_MODEL_FILE = "CellSizeClassifier.model";
 
 	/**
 	 * Global switch that turns the use of the weka classifier for paramaxflow
@@ -267,24 +260,10 @@ public class MoMA {
 	public static Properties props;
 
 	/**
-	 * Default x-position of the main GUI-window. This value will be used if the
-	 * values in the properties file are not fitting on any of the currently
-	 * attached screens.
-	 */
-	private static int DEFAULT_GUI_POS_X = 100;
-
-	/**
 	 * X-position of the main GUI-window. This value will be loaded from and
 	 * stored in the properties file!
 	 */
 	private static int GUI_POS_X;
-
-	/**
-	 * Default y-position of the main GUI-window. This value will be used if the
-	 * values in the properties file are not fitting on any of the currently
-	 * attached screens.
-	 */
-	private static int DEFAULT_GUI_POS_Y = 100;
 
 	/**
 	 * Y-position of the main GUI-window. This value will be loaded from and
@@ -330,10 +309,6 @@ public class MoMA {
 	public static double GUROBI_TIME_LIMIT = 15.0;
 	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
 
-	/**
-	 * Control if ImageJ and loaded data will be shown...
-	 */
-	private static boolean showIJ = false;
 	private static MoMAGui gui;
 
 	/**
@@ -356,7 +331,11 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		if ( showIJ ) new ImageJ();
+		/*
+		  Control if ImageJ and loaded data will be shown...
+		 */
+		boolean showIJ = false;
+		if (showIJ) new ImageJ();
 
 		opService = new Context(OpService.class).service(OpService.class);
 		OpService opService1 = new Context(OpService.class).service(OpService.class);
@@ -478,7 +457,7 @@ public class MoMA {
 			}
 		}
 
-		File outputFolder = null;
+		File outputFolder;
 		if ( !cmd.hasOption( "o" ) ) {
 			if ( inputFolder == null ) {
 				System.out.println( "Error: Output folder would be set to a 'null' input folder! Please check your command line arguments..." );
@@ -584,7 +563,6 @@ public class MoMA {
 
 		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********
 		final String jlp = System.getProperty( "java.library.path" );
-//		System.out.println( jlp );
 		try {
 			new GRBEnv( "MoMA_gurobi.log" );
 		} catch ( final GRBException e ) {
@@ -641,11 +619,7 @@ public class MoMA {
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
 		GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) ) );
 		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
-		if ( GL_OFFSET_BOTTOM == -1 ) {
-			GL_OFFSET_BOTTOM_AUTODETECT = true;
-		} else {
-			GL_OFFSET_BOTTOM_AUTODETECT = false;
-		}
+		GL_OFFSET_BOTTOM_AUTODETECT = GL_OFFSET_BOTTOM == -1;
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
 		MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
@@ -662,8 +636,14 @@ public class MoMA {
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
 		GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble( props.getProperty( "GUROBI_MAX_OPTIMALITY_GAP", Double.toString( GUROBI_MAX_OPTIMALITY_GAP ) ) );
 
-		GUI_POS_X = Integer.parseInt( props.getProperty( "GUI_POS_X", Integer.toString( DEFAULT_GUI_POS_X ) ) );
-		GUI_POS_Y = Integer.parseInt( props.getProperty( "GUI_POS_Y", Integer.toString( DEFAULT_GUI_POS_X ) ) );
+		/*
+		  Default x-position of the main GUI-window. This value will be used if the
+		  values in the properties file are not fitting on any of the currently
+		  attached screens.
+		 */
+		int DEFAULT_GUI_POS_X = 100;
+		GUI_POS_X = Integer.parseInt( props.getProperty( "GUI_POS_X", Integer.toString(DEFAULT_GUI_POS_X) ) );
+		GUI_POS_Y = Integer.parseInt( props.getProperty( "GUI_POS_Y", Integer.toString(DEFAULT_GUI_POS_X) ) );
 		GUI_WIDTH = Integer.parseInt( props.getProperty( "GUI_WIDTH", Integer.toString( GUI_WIDTH ) ) );
 		GUI_HEIGHT = Integer.parseInt( props.getProperty( "GUI_HEIGHT", Integer.toString( GUI_HEIGHT ) ) );
 		GUI_CONSOLE_WIDTH = Integer.parseInt( props.getProperty( "GUI_CONSOLE_WIDTH", Integer.toString( GUI_CONSOLE_WIDTH ) ) );
@@ -687,8 +667,8 @@ public class MoMA {
 			boolean pos_ok = false;
 			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			final GraphicsDevice[] gs = ge.getScreenDevices();
-			for ( int i = 0; i < gs.length; i++ ) {
-				if ( gs[ i ].getDefaultConfiguration().getBounds().contains( new java.awt.Point( GUI_POS_X, GUI_POS_Y ) ) ) {
+			for (GraphicsDevice g : gs) {
+				if (g.getDefaultConfiguration().getBounds().contains(new java.awt.Point(GUI_POS_X, GUI_POS_Y))) {
 					pos_ok = true;
 				}
 			}
@@ -696,6 +676,12 @@ public class MoMA {
 			// fall back onto default values...
 			if ( !pos_ok ) {
 				GUI_POS_X = DEFAULT_GUI_POS_X;
+				/*
+				  Default y-position of the main GUI-window. This value will be used if the
+				  values in the properties file are not fitting on any of the currently
+				  attached screens.
+				 */
+				int DEFAULT_GUI_POS_Y = 100;
 				GUI_POS_Y = DEFAULT_GUI_POS_Y;
 			}
 		}
@@ -738,7 +724,7 @@ public class MoMA {
 		// ------------------------------------------------------------------------------------------------------
 
 		// show loaded and annotated data
-		if ( showIJ ) {
+		if (showIJ) {
 			new ImageJ();
 			ImageJFunctions.show( main.imgRaw, "Rotated & cropped raw data" );
 			// ImageJFunctions.show( main.imgTemp, "Temporary" );
@@ -783,8 +769,6 @@ public class MoMA {
 
 			if (!running_as_Fiji_plugin) {
 				System.exit( 11 );
-			} else {
-				return;
 			}
 		}
 	}
@@ -807,14 +791,6 @@ public class MoMA {
 	private Img< ARGBType > imgAnnotated;
 	private Img< FloatType > imgClassified;
 	private Img< ShortType > imgSegmented;
-
-	/**
-	 * Contains all detected growth line center points. The structure goes in
-	 * line with image data: Outermost list: one element per frame (image in
-	 * stack). 2nd list: one element per detected growth-line. 3rd list: one
-	 * element (Point) per location downwards along the growth line.
-	 */
-	private List< List< List< Point >>> glCenterPoints;
 
 	/**
 	 * Contains all GrowthLines found in the given data.
@@ -879,14 +855,14 @@ public class MoMA {
 	 * @param imgTemp
 	 *            the imgTemp to set
 	 */
-	public void setImgTemp( final Img< FloatType > imgTemp ) {
+	private void setImgTemp(final Img<FloatType> imgTemp) {
 		this.imgTemp = imgTemp;
 	}
 
 	/**
 	 * @return the imgRendered
 	 */
-	public Img< ARGBType > getImgAnnotated() {
+	private Img< ARGBType > getImgAnnotated() {
 		return imgAnnotated;
 	}
 
@@ -923,7 +899,7 @@ public class MoMA {
 
 			imgClassified = new ArrayImgFactory< FloatType >().create( imgTemp, new FloatType() );
 			imgSegmented = new ArrayImgFactory< ShortType >().create( imgTemp, new ShortType() );
-			final RealFloatProbMapToSegmentation< FloatType > converter = new RealFloatProbMapToSegmentation< FloatType >( 0.5f );
+			final RealFloatProbMapToSegmentation< FloatType > converter = new RealFloatProbMapToSegmentation<>(0.5f);
 
 			final int numProcessors = Prefs.getThreads();
 			final int numThreads = Math.min( ( int ) getImgTemp().dimension( 2 ), numProcessors );
@@ -934,7 +910,7 @@ public class MoMA {
 				final int numThread;
 				final int numThreads;
 
-				public ImageProcessingThread( final int numThread, final int numThreads ) {
+				ImageProcessingThread(final int numThread, final int numThreads) {
 					this.numThread = numThread;
 					this.numThreads = numThreads;
 				}
@@ -970,7 +946,7 @@ public class MoMA {
 			for ( final Thread thread : threads ) {
 				try {
 					thread.join();
-				} catch ( final InterruptedException e ) {}
+				} catch ( final InterruptedException ignored) {}
 			}
 
 			// clean up
@@ -995,7 +971,7 @@ public class MoMA {
 	 * @param growthLines
 	 *            the growthLines to set
 	 */
-	public void setGrowthLines( final List< GrowthLine > growthLines ) {
+	private void setGrowthLines(final List<GrowthLine> growthLines) {
 		this.growthLines = growthLines;
 	}
 
@@ -1027,19 +1003,19 @@ public class MoMA {
 			private final PrintStream original = new PrintStream( System.out );
 
 			@Override
-			public void write( final int b ) throws IOException {
+			public void write( final int b ) {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print( String.valueOf( ( char ) b ) );
+				original.print((char) b);
 			}
 
 			@Override
-			public void write( final byte[] b, final int off, final int len ) throws IOException {
+			public void write( final byte[] b, final int off, final int len ) {
 				updateConsoleTextArea( new String( b, off, len ) );
 				original.print( new String( b, off, len ) );
 			}
 
 			@Override
-			public void write( final byte[] b ) throws IOException {
+			public void write( final byte[] b ) {
 				write( b, 0, b.length );
 			}
 		};
@@ -1049,19 +1025,19 @@ public class MoMA {
 			private final PrintStream original = new PrintStream( System.out );
 
 			@Override
-			public void write( final int b ) throws IOException {
+			public void write( final int b ) {
 				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print( String.valueOf( ( char ) b ) );
+				original.print((char) b);
 			}
 
 			@Override
-			public void write( final byte[] b, final int off, final int len ) throws IOException {
+			public void write( final byte[] b, final int off, final int len ) {
 				updateConsoleTextArea( new String( b, off, len ) );
 				original.print( new String( b, off, len ) );
 			}
 
 			@Override
-			public void write( final byte[] b ) throws IOException {
+			public void write( final byte[] b ) {
 				write( b, 0, b.length );
 			}
 		};
@@ -1071,13 +1047,7 @@ public class MoMA {
 	}
 
 	private void updateConsoleTextArea( final String text ) {
-		SwingUtilities.invokeLater( new Runnable() {
-
-			@Override
-			public void run() {
-				consoleWindowTextArea.append( text );
-			}
-		} );
+		SwingUtilities.invokeLater(() -> consoleWindowTextArea.append( text ));
 	}
 
 	/**
@@ -1111,8 +1081,6 @@ public class MoMA {
 				saveParams();
 				if (!running_as_Fiji_plugin) {
 					System.exit(0);
-				} else {
-					return;
 				}
 			}
 		} );
@@ -1129,12 +1097,12 @@ public class MoMA {
 	 */
 	private File showStartupDialog( final JFrame guiFrame, final String datapath ) {
 
-		File file = null;
+		File file;
 		final String parentFolder = datapath.substring( 0, datapath.lastIndexOf( File.separatorChar ) );
 
 		// DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED
 
-		int decision = 0;
+		int decision;
 		if ( datapath.equals( System.getProperty( "user.home" ) ) ) {
 			decision = JOptionPane.NO_OPTION;
 		} else {
@@ -1191,7 +1159,7 @@ public class MoMA {
 	 * @return an instance of {@link File} pointing at the selected folder.
 	 */
 	private File showFolderChooser( final JFrame guiFrame, final String path ) {
-		File selectedFile = null;
+		File selectedFile;
 
 		if ( SystemUtils.IS_OS_MAC ) {
 			// --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS --- ON MAC SYSTEMS ---
@@ -1244,9 +1212,8 @@ public class MoMA {
 	 * @return instance of {@link Properties} containing the key-value pairs
 	 *         found in that file.
 	 */
-	@SuppressWarnings( "resource" )
 	private Properties loadParams() {
-		InputStream is = null;
+		InputStream is;
 		final Properties defaultProps = new Properties();
 
 		// First try loading from the current directory
@@ -1310,7 +1277,7 @@ public class MoMA {
 		return props;
 	}
 
-	public void saveParams() {
+	private void saveParams() {
 		final File f = new File( "mm.properties" );
 		saveParams (f);
 	}
@@ -1319,9 +1286,6 @@ public class MoMA {
 	 * Saves a file 'mm.properties' in the current folder. This file contains
 	 * all MotherMachine specific properties as key-value pairs.
 	 *
-	 * @param props
-	 *            an instance of {@link Properties} containing all key-value
-	 *            pairs used by the MotherMachine.
 	 */
 	public void saveParams(final File f) {
 		try {
@@ -1444,14 +1408,14 @@ public class MoMA {
 	/**
 	 * Resets imgTemp to contain the raw data from imgRaw.
 	 */
-	public void resetImgTempToRaw() {
+	private void resetImgTempToRaw() {
 		setImgTemp( imgRaw.copy() );
 	}
 
 	/**
 	 * Resets imgTemp to contain the raw data from imgRaw.
 	 */
-	public void resetImgAnnotatedLike( final Img< FloatType > img ) {
+	private void resetImgAnnotatedLike(final Img<FloatType> img) {
 		imgAnnotated = DataMover.createEmptyArrayImgLike( img, new ARGBType() );
 	}
 
@@ -1467,8 +1431,6 @@ public class MoMA {
 	 * Simple but effective method to subtract uneven illumination from the
 	 * growth-line data.
 	 *
-	 * @param img
-	 *            DoubleType image stack.
 	 */
 	private void subtractBackgroundInTemp() {
 
@@ -1486,7 +1448,7 @@ public class MoMA {
 
 				final IntervalView< FloatType > frame = Views.hyperSlice( imgTemp, 2, f );
 
-				float rowAvgs[] = new float[ glfY2 - glfY1 + 1 ];
+				float[] rowAvgs = new float[ glfY2 - glfY1 + 1 ];
 				int colCount = 0;
 				// Look to the left if you are not the first GLF
 				if ( glfX > MoMA.BGREM_TEMPLATE_XMAX ) {
@@ -1561,8 +1523,14 @@ public class MoMA {
 	 */
 	private void findGrowthLines() {
 
-		this.setGrowthLines( new ArrayList< GrowthLine >() );
-		this.glCenterPoints = new ArrayList< List< List< Point >>>();
+		this.setGrowthLines(new ArrayList<>() );
+		/*
+		  Contains all detected growth line center points. The structure goes in
+		  line with image data: Outermost list: one element per frame (image in
+		  stack). 2nd list: one element per detected growth-line. 3rd list: one
+		  element (Point) per location downwards along the growth line.
+		 */
+		List<List<List<Point>>> glCenterPoints = new ArrayList<>();
 
 		List< List< Point > > frameWellCenters;
 
@@ -1580,7 +1548,7 @@ public class MoMA {
 
 		// ------ FIND AND FILTER MAXIMA -------------
 
-		final List< List< GrowthLineFrame >> collectionOfFrames = new ArrayList< List< GrowthLineFrame >>();
+		final List< List< GrowthLineFrame >> collectionOfFrames = new ArrayList<>();
 
 		for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
 			final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
@@ -1629,11 +1597,11 @@ public class MoMA {
 //			}
 
 			// add filtered points to 'glCenterPoints'
-			this.glCenterPoints.add( frameWellCenters );
+			glCenterPoints.add( frameWellCenters );
 
 			// ------ DISTRIBUTE POINTS TO CORRESPONDING GROWTH LINES -------
 
-			final List< GrowthLineFrame > glFrames = new ArrayList< GrowthLineFrame >();
+			final List< GrowthLineFrame > glFrames = new ArrayList<>();
 
 			final Point pOrig = new Point( 3 );
 			pOrig.setPosition( frameIdx, 2 ); // location in original Img (will
@@ -1728,7 +1696,7 @@ public class MoMA {
 			}
 		}
 		// copy the max-GLs frame into this.growthLines
-		this.setGrowthLines( new ArrayList< GrowthLine >( maxGLsPerFrame ) );
+		this.setGrowthLines(new ArrayList<>(maxGLsPerFrame) );
 		for ( int i = 0; i < maxGLsPerFrame; i++ ) {
 			getGrowthLines().add( new GrowthLine() );
 			getGrowthLines().get( i ).add( collectionOfFrames.get( maxGLsPerFrameIdx ).get( i ) );
@@ -1789,7 +1757,7 @@ public class MoMA {
 	 * GrowthLine.findGapHypotheses(Img). Note that this function always uses
 	 * the image data in 'imgTemp'.
 	 */
-	public void generateAllSimpleSegmentationHypotheses() {
+	private void generateAllSimpleSegmentationHypotheses() {
 		// ------ GAUSS -----------------------------
 
 //		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
@@ -1809,7 +1777,7 @@ public class MoMA {
 
 		// ------ DETECTION --------------------------
 
-		System.out.println( "" );
+		System.out.println();
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;
@@ -1833,10 +1801,6 @@ public class MoMA {
 
 			float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lower_percentile).getRealFloat();
 			float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upper_percentile).getRealFloat();
-			Pair<FloatType, FloatType> result = ops.stats().minMax(image);
-	//		float min = result.getA().getRealFloat();
-	//		float max = result.getB().getRealFloat();
-			Pair<FloatType, FloatType> result1 = ops.stats().minMax((Iterable<FloatType>) view);
 			float intensityDifference = max_percentile - min_percentile;
 			((Iterable<FloatType>) view).forEach(t -> {
 				final float val = t.getRealFloat();
@@ -1844,16 +1808,10 @@ public class MoMA {
 				else if (val > max_percentile) t.set(1.0f);
 				else t.set((val - min_percentile) / intensityDifference);
 			});
-			Pair<FloatType, FloatType> result2 = ops.stats().minMax((Iterable<FloatType>) view);
-			System.out.println( "break" );
 		}
-
-		Pair<FloatType, FloatType> result2 = ops.stats().minMax(image);
-
 		return image;
 	}
 
-	private UIService uiService;
 	private OpService ops;
 	/**
 	 * Load and run the Tensor-Flow network on the images to create probability maps
@@ -1867,7 +1825,7 @@ public class MoMA {
 //			PluginService plugs = context.service(PluginService.class);
 //			System.out.println(plugs.getPlugins());
 			ops = context.service(OpService.class);
-			uiService = context.service(UIService.class);
+			UIService uiService = context.service(UIService.class);
 //			IOService io = context.service(IOService.class);
 
 			uiService.show("Original Image", img);
@@ -1960,9 +1918,7 @@ public class MoMA {
 			ImageJFunctions.show(outputImg, "Processed Image");
 			return outputImg;
 
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (InterruptedException | ExecutionException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -2146,7 +2102,7 @@ public class MoMA {
 		for ( int i = rowTimeAverages.size() / 2; i < rowTimeAverages.size(); i++ ) {
 			lowerHalfAvg += rowTimeAverages.get( i ).get();
 		}
-		lowerHalfAvg /= rowTimeAverages.size() / 2;
+		lowerHalfAvg /= rowTimeAverages.size() / 2.0;
 
 		// compute average of lowest 3 (or such) rows
 		float lowestRowsAvg = 0;
@@ -2179,7 +2135,7 @@ public class MoMA {
 	/**
 	 * @param datasetName the datasetName to set
 	 */
-	public void setDatasetName( final String datasetName ) {
+	private void setDatasetName(final String datasetName) {
 		this.datasetName = datasetName;
 		if ( MoMA.getGuiFrame() != null ) {
 			MoMA.getGuiFrame().setTitle( String.format( "%s -- %s", MoMA.VERSION_STRING, this.datasetName ) );

@@ -303,11 +303,11 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		final ValuePair< Integer, Integer > limitsRight = rightHyp.getLocation();
 
 		final int x1 = 0;
-		final int y1 = MoMA.GL_OFFSET_TOP + limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int x2 = 0;
-		final int y2 = MoMA.GL_OFFSET_TOP + limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-		final int y3 = MoMA.GL_OFFSET_TOP + limitsRight.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-		final int y4 = MoMA.GL_OFFSET_TOP + limitsRight.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y3 = limitsRight.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y4 = limitsRight.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
 		final GeneralPath polygon = new GeneralPath();
 		polygon.moveTo( x1, y1 );
@@ -384,16 +384,16 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		final ValuePair< Integer, Integer > limitsRightLower = rightHypLower.getLocation();
 
 		final int x1 = 0;
-		final int y1 = MoMA.GL_OFFSET_TOP + limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int x2 = 0;
-		final int y2 = MoMA.GL_OFFSET_TOP + limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-		final int y3 = MoMA.GL_OFFSET_TOP + limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-		final int y4 = MoMA.GL_OFFSET_TOP + limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int x5 = this.width / 3;
 		final int y5 =
-				MoMA.GL_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET + ( 2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2 ) / 3;
-		final int y6 = MoMA.GL_OFFSET_TOP + limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-		final int y7 = MoMA.GL_OFFSET_TOP + limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+				ASSIGNMENT_DISPLAY_OFFSET + ( 2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2 ) / 3;
+		final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
 		final GeneralPath polygon = new GeneralPath();
 		polygon.moveTo( x1, y1 );
@@ -469,7 +469,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 		final int x1 = 0;
 		final int x2 = this.getWidth() / 5;
-		final int y1 = MoMA.GL_OFFSET_TOP + limits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+		final int y1 = limits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 		final int y2 = y1 + limits.getB() - limits.getA();
 
 		if ( !this.isDragging && this.isMouseOver && this.mousePosX > x1 && this.mousePosX < x2 && this.mousePosY > y1 && this.mousePosY < y2 ) {

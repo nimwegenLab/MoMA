@@ -518,19 +518,19 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
 				ArgbDrawingUtils.taintForcedComponentTreeNode(
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			} else {
 				ArgbDrawingUtils.taintComponentTreeNode(
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			}
 		}
 	}
@@ -554,7 +554,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			}
 		}
 
-		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY + MoMA.GL_OFFSET_TOP );
+		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
 	}
 
 	/**

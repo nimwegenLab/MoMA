@@ -36,7 +36,7 @@ public final class FilteredComponent< T extends Type< T > >
 	/**
 	 * parent node in the {@link FilteredComponentTree}.
 	 */
-	private final FilteredComponent< T > parent;
+	private FilteredComponent< T > parent;
 
 	/**
 	 * Minimum threshold value of the connected component.

@@ -171,9 +171,8 @@ public class FactorGraphFileBuilder_SCALAR {
 	 *            id of the function this factor utilizes.
 	 * @param varIds
 	 *            list of variables connected with this factor
-	 * @return the id of the factor just added.
 	 */
-	public int addFactor( final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
+	public void addFactor(final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
 
 		StringBuilder str = new StringBuilder(functionId + " ");
 		if ( varIds.size() == 0 ) {
@@ -188,7 +187,7 @@ public class FactorGraphFileBuilder_SCALAR {
 		for ( final int i : regionIds ) {
 			str.append(i).append(" ");
 		}
-		return addFactor(str.toString());
+		addFactor(str.toString());
 	}
 
 	/**

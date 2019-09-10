@@ -29,12 +29,12 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 /**
  * @author jug
  */
-public class DialogPropertiesEditor extends JDialog implements ActionListener {
+class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -5529104109524798394L;
 	private static final PropEditedListener propEditListener = new PropEditedListener();
 
-	protected static class PropEditedListener implements PropertyChangeListener {
+	static class PropEditedListener implements PropertyChangeListener {
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent evt ) {

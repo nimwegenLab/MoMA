@@ -221,9 +221,9 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	private final HashSet< FilteredComponent< T > > roots;
 
-	private int maxComponentWidth;
+	private final int maxComponentWidth;
 
-	private int minComponentWidth;
+	private final int minComponentWidth;
 
 	private final long minComponentSize;
 

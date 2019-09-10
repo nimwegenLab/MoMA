@@ -97,11 +97,10 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the function just added.
 	 */
-    private int addFkt(final String line) {
+    private void addFkt(final String line) {
 		fkt_lines.add( line );
-		return next_fkt_id++;
+		next_fkt_id++;
 	}
 
 	/**
@@ -132,11 +131,10 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-    private int addFactor(final String line) {
+    private void addFactor(final String line) {
 		fac_lines.add( line );
-		return next_fac_id++;
+		next_fac_id++;
 	}
 
 	/**
@@ -167,11 +165,10 @@ public class FactorGraphFileBuilder_PASCAL {
 	 *
 	 * @param line
 	 *            the string to be added.
-	 * @return the id of the factor just added.
 	 */
-    private int addConstraint(final String line) {
+    private void addConstraint(final String line) {
 		constraint_lines.add( line );
-		return next_con_id++;
+		next_con_id++;
 	}
 
 	/**

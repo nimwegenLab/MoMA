@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @author jug
  */
-public class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssignment< H > > {
+class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssignment< H > > {
 
 	// -------------------------------------------------------------------------------------
 	// fields

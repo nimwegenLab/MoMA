@@ -17,10 +17,10 @@ class TypedComponentTree< T, C extends Component< T, C > > implements ComponentT
 		this.tree = f;
 	}
 
-	private static < T, C extends Component< T, C > > TypedComponentTree< T, C > create(final ComponentTree<C> f)
+	private static < T, C extends Component< T, C > > void create(final ComponentTree<C> f)
 	{
-		return new TypedComponentTree<>(f);
-	}
+        new TypedComponentTree<>(f);
+    }
 
 	/**
 	 * Get the set of root nodes of this component forest.

@@ -18,7 +18,7 @@ import trainableSegmentation.WekaSegmentation;
 public class SilentWekaSegmenter< T extends NumericType > {
 
 	/** reference to the segmentation backend */
-    private WekaSegmentation wekaSegmentation;
+    private final WekaSegmentation wekaSegmentation;
 
 	public SilentWekaSegmenter( final String directory, final String filename ) {
 		// instantiate segmentation backend

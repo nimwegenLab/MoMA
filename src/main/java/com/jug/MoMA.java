@@ -1016,7 +1016,7 @@ public class MoMA {
 			}
 
 			@Override
-			public void write( final byte[] b ) throws IOException {
+			public void write( final byte[] b ) {
 				write( b, 0, b.length );
 			}
 		};
@@ -1038,7 +1038,7 @@ public class MoMA {
 			}
 
 			@Override
-			public void write( final byte[] b ) throws IOException {
+			public void write( final byte[] b ) {
 				write( b, 0, b.length );
 			}
 		};

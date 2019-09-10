@@ -25,7 +25,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 	public class HypLoc {
 
-		int t;
+		final int t;
 		final ValuePair< Integer, Integer > limits;
 
 		HypLoc(final int t, final T segment) {

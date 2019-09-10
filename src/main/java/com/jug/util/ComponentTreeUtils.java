@@ -260,9 +260,7 @@ public class ComponentTreeUtils {
 	public static < C extends Component< ?, C > > ArrayList< C > getAllChildren( final ArrayList< C > ctnLevel ) {
 		final ArrayList< C > nextCtnLevel = new ArrayList<>();
 		for ( final C ctn : ctnLevel ) {
-			for ( final C child : ctn.getChildren() ) {
-				nextCtnLevel.add( child );
-			}
+            nextCtnLevel.addAll(ctn.getChildren());
 		}
 		return nextCtnLevel;
 	}

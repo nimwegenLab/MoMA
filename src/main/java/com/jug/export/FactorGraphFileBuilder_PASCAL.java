@@ -113,11 +113,11 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * @param varIdx
 	 */
 	public void addFkt(final int... varIdx ) {
-		String line = "" + varIdx.length + " ";
+		StringBuilder line = new StringBuilder("" + varIdx.length + " ");
 		for ( final int idx : varIdx ) {
-			line += "" + idx + " ";
+			line.append("").append(idx).append(" ");
 		}
-		addFkt(line);
+		addFkt(line.toString());
 	}
 
 	/**
@@ -148,11 +148,11 @@ public class FactorGraphFileBuilder_PASCAL {
 	 * @param unaries
 	 */
 	public void addFactor(final float... unaries ) {
-		String line = "" + unaries.length + "\n\t";
+		StringBuilder line = new StringBuilder("" + unaries.length + "\n\t");
 		for ( final float c : unaries ) {
-			line += "" + c + " ";
+			line.append("").append(c).append(" ");
 		}
-		addFactor(line);
+		addFactor(line.toString());
 	}
 
 	/**

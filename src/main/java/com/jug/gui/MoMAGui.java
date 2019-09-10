@@ -1439,7 +1439,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		int startFrame = 1;
 		int endFrame = sliderTime.getMaximum() + 1;
 
-		File file = new File( String.format( MoMA.STATS_OUTPUT_PATH + String.format( "/index.html" ) ) );
+		File file = new File(MoMA.STATS_OUTPUT_PATH + "/index.html");
 
 		if ( !MoMA.HEADLESS ) {
 			final JFileChooser fc = new JFileChooser();

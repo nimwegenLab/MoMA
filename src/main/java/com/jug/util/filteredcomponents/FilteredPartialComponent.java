@@ -86,7 +86,7 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 	@Override
 	public String toString()
 	{
-		String s = "{" + value.toString() + " : ";
+		StringBuilder s = new StringBuilder("{" + value.toString() + " : ");
 		boolean first = true;
 		for ( final Localizable l : pixelList )
 		{
@@ -96,9 +96,9 @@ final class FilteredPartialComponent< T extends Type< T > > implements PartialCo
 			}
 			else
 			{
-				s += ", ";
+				s.append(", ");
 			}
-			s += l.toString();
+			s.append(l.toString());
 		}
 		return s + "}";
 	}

@@ -46,10 +46,10 @@ class CountOverviewPanel extends JPanel {
 
 	private void buildGui() {
 		columnNames = new Vector<>();
-		columnNames.add( String.format( " #C" ) );
-		columnNames.add( String.format( " #D" ) );
-		columnNames.add( String.format( " #E" ) );
-		columnNames.add( String.format( " CCC" ) );
+		columnNames.add(" #C");
+		columnNames.add(" #D");
+		columnNames.add(" #E");
+		columnNames.add(" CCC");
 
 		totalCellCount = new JLabel();
 		totalCellCount.setFont( totalCellCount.getFont().deriveFont( Font.BOLD ) );

@@ -78,8 +78,8 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	public List< String > getConstraintsToSave_PASCAL() {
 		final ArrayList< String > ret = new ArrayList<>();
 
-		String constraint = "";
-		constraint += String.format( "(%d,%d,1)", Hup.size(), this.getVarIdx() );
+		StringBuilder constraint = new StringBuilder();
+		constraint.append(String.format("(%d,%d,1)", Hup.size(), this.getVarIdx()));
 
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
@@ -88,14 +88,14 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 						continue;
 					}
 					// add term if assignment is NOT another exit-assignment
-					constraint += String.format( "+(1,%d,1)", a_j.getVarIdx() );
+					constraint.append(String.format("+(1,%d,1)", a_j.getVarIdx()));
 				}
 			}
 		}
 
-		constraint += String.format( " <= %d", Hup.size() );
+		constraint.append(String.format(" <= %d", Hup.size()));
 
-		ret.add( constraint );
+		ret.add(constraint.toString());
 		return ret;
 	}
 

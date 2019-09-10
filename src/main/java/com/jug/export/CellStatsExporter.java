@@ -242,21 +242,21 @@ public class CellStatsExporter {
 		 * @return
 		 */
         String getGenealogyString() {
-			String ret = "";
+			StringBuilder ret = new StringBuilder();
 			for ( final int dt : genealogy ) {
 				if ( dt == SegmentRecord.UPPER ) {
-					ret = ret + "T";
+					ret.append("T");
 				} else
 				if ( dt == SegmentRecord.LOWER ) {
-					ret = ret + "B";
+					ret.append("B");
 				} else
 				if ( dt == SegmentRecord.UNKNOWN ) {
-					ret = ret + "U";
+					ret.append("U");
 				} else {
-					ret = ret + dt;
+					ret.append(dt);
 				}
 			}
-			return ret;
+			return ret.toString();
 		}
 	}
 
@@ -525,45 +525,45 @@ public class CellStatsExporter {
 
 					if (MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
 						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
-						String histStr = String.format("\t\tch=%d; output=HISTOGRAM", c);
-						histStr += String.format("; min=%8.3f; max=%8.3f", min.get(), max.get());
+						StringBuilder histStr = new StringBuilder(String.format("\t\tch=%d; output=HISTOGRAM", c));
+						histStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
 						for (final long value : hist) {
-							histStr += String.format("; %5d", value);
+							histStr.append(String.format("; %5d", value));
 						}
-						linesToExport.add(histStr);
+						linesToExport.add(histStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_QUANTILES) {
 						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
-						String percentileStr = String.format("\t\tch=%d; output=PERCENTILES", c);
-						percentileStr += String.format("; min=%8.3f; max=%8.3f", min.get(), max.get());
+						StringBuilder percentileStr = new StringBuilder(String.format("\t\tch=%d; output=PERCENTILES", c));
+						percentileStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
 						for (final float value : percentile) {
-							percentileStr += String.format("; %8.3f", value);
+							percentileStr.append(String.format("; %8.3f", value));
 						}
-						linesToExport.add(percentileStr);
+						linesToExport.add(percentileStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
 						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
 						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
-						String colIntensityStr = String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c);
+						StringBuilder colIntensityStr = new StringBuilder(String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c));
 						for (final float value : column_intensities) {
-							colIntensityStr += String.format("; %.3f", value);
+							colIntensityStr.append(String.format("; %.3f", value));
 						}
-						linesToExport.add(colIntensityStr);
+						linesToExport.add(colIntensityStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
 						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
 						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
-						String intensityStr = String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c);
+						StringBuilder intensityStr = new StringBuilder(String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c));
 						for (int y = 0; y < intensities[0].length; y++) {
 							for (float[] intensity : intensities) {
-								intensityStr += String.format(";%.3f", intensity[y]);
+								intensityStr.append(String.format(";%.3f", intensity[y]));
 							}
-							intensityStr += " ";
+							intensityStr.append(" ");
 						}
-						linesToExport.add(intensityStr);
+						linesToExport.add(intensityStr.toString());
 					}
 				}
 				segmentRecord = segmentRecord.nextSegmentInTime(ilp);

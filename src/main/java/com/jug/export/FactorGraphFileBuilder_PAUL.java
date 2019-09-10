@@ -69,18 +69,18 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param hyps
 	 */
 	public void addPathBlockingConstraint( final List< Hypothesis< Component< FloatType, ? > > > hyps ) {
-		String str = "CONFSET ";// + hyps.get( 0 ).getTime();
+		StringBuilder str = new StringBuilder("CONFSET ");// + hyps.get( 0 ).getTime();
 		boolean first = true;
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps ) {
 			if ( first ) {
 				first = false;
 			} else {
-				str += " + ";
+				str.append(" + ");
 			}
-			str += String.format( "%d %d", hyp.getTime(), mapHypId.get( hyp ) );
+			str.append(String.format("%d %d", hyp.getTime(), mapHypId.get(hyp)));
 		}
-		str += " <= 1";
-		lines.add( str );
+		str.append(" <= 1");
+		lines.add(str.toString());
 	}
 
 	/**

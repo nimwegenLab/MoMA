@@ -107,12 +107,12 @@ public class FactorGraphFileBuilder_SCALAR {
 	 * @return the id of the function just added.
 	 */
 	public int addConstraintFkt( final List< Integer > coeffs, final String comp, final int rhs ) {
-		String str = "constraint " + coeffs.size() + " ";
+		StringBuilder str = new StringBuilder("constraint " + coeffs.size() + " ");
 		for ( final int i : coeffs ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
-		str += " " + comp + " " + rhs;
-		return addFkt( str );
+		str.append(" ").append(comp).append(" ").append(rhs);
+		return addFkt(str.toString());
 	}
 
 	/**
@@ -178,20 +178,20 @@ public class FactorGraphFileBuilder_SCALAR {
 	 */
 	public int addFactor( final int functionId, final List< Integer > varIds, final List< Integer > regionIds ) {
 
-		String str = functionId + " ";
+		StringBuilder str = new StringBuilder(functionId + " ");
 		if ( varIds.size() == 0 ) {
 			System.err.println( "No varIds!!!!!!" );
 		}
 		for ( final int i : varIds ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
 		if ( regionIds.size() == 0 ) {
 			System.err.println( "No regionIds!!!!!!" );
 		}
 		for ( final int i : regionIds ) {
-			str += i + " ";
+			str.append(i).append(" ");
 		}
-		return addFactor( str );
+		return addFactor(str.toString());
 	}
 
 	/**

@@ -1026,7 +1026,7 @@ public class GrowthLineTrackingILP {
 		if ( ctNode.getChildren().size() == 0 ) {
 			C runnerNode = ctNode;
 
-			String constraint = "";
+			StringBuilder constraint = new StringBuilder();
 			while ( runnerNode != null ) {
 				@SuppressWarnings( "unchecked" )
 				final Hypothesis< Component< FloatType, ? > > hypothesis =
@@ -1038,15 +1038,15 @@ public class GrowthLineTrackingILP {
 
 				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : edgeSets.getRightNeighborhood( hypothesis ) ) {
-						constraint += String.format( "(%d,1)+", a.getVarIdx() );
+						constraint.append(String.format("(%d,1)+", a.getVarIdx()));
 					}
 				}
 				runnerNode = runnerNode.getParent();
 			}
 			if ( constraint.length() > 0 ) {
-				constraint = constraint.substring( 0, constraint.length() - 1 );
-				constraint += " <= 1";
-				constraints.add( constraint );
+				constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1));
+				constraint.append(" <= 1");
+				constraints.add(constraint.toString());
 			}
 		} else {
 			// if ctNode is a inner node -> recursion
@@ -1144,24 +1144,24 @@ public class GrowthLineTrackingILP {
 		for ( int t = 1; t < gl.size() - 1; t++ ) { // !!! sparing out the border !!!
 
 			for ( final Hypothesis< Component< FloatType, ? > > hyp : nodes.getHypothesesAt( t ) ) {
-				String constraint = "";
+				StringBuilder constraint = new StringBuilder();
 
 				if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
-						constraint += String.format( "(%d,1)+", a_j.getVarIdx() );
+						constraint.append(String.format("(%d,1)+", a_j.getVarIdx()));
 					}
 				}
 				if ( constraint.length() > 0 ) {
-					constraint = constraint.substring( 0, constraint.length() - 1 ); //remove last '+' sign
+					constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1)); //remove last '+' sign
 				}
 				if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
-						constraint += String.format( "-(%d,1)", a_j.getVarIdx() );
+						constraint.append(String.format("-(%d,1)", a_j.getVarIdx()));
 					}
 				}
 
-				constraint += " == 0";
-				ret.add( constraint );
+				constraint.append(" == 0");
+				ret.add(constraint.toString());
 			}
 		}
 		return ret;

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.ops.cursor;
 
 import java.util.ArrayList;

@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util.converter;
 
 import net.imglib2.converter.Converter;

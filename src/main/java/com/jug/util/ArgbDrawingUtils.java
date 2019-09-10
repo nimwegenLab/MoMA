@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util;
 
 import java.util.Iterator;

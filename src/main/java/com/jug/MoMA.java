@@ -58,8 +58,8 @@ import com.jug.util.DataMover;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.converter.RealFloatProbMapToSegmentation;
 
-/**
- * Main class for the MotherMachine project.
+/*
+  Main class for the MotherMachine project.
  */
 
 import gurobi.GRBEnv;
@@ -331,8 +331,8 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		/**
-		 * Control if ImageJ and loaded data will be shown...
+		/*
+		  Control if ImageJ and loaded data will be shown...
 		 */
 		boolean showIJ = false;
 		if (showIJ) new ImageJ();
@@ -636,10 +636,10 @@ public class MoMA {
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
 		GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble( props.getProperty( "GUROBI_MAX_OPTIMALITY_GAP", Double.toString( GUROBI_MAX_OPTIMALITY_GAP ) ) );
 
-		/**
-		 * Default x-position of the main GUI-window. This value will be used if the
-		 * values in the properties file are not fitting on any of the currently
-		 * attached screens.
+		/*
+		  Default x-position of the main GUI-window. This value will be used if the
+		  values in the properties file are not fitting on any of the currently
+		  attached screens.
 		 */
 		int DEFAULT_GUI_POS_X = 100;
 		GUI_POS_X = Integer.parseInt( props.getProperty( "GUI_POS_X", Integer.toString(DEFAULT_GUI_POS_X) ) );
@@ -676,10 +676,10 @@ public class MoMA {
 			// fall back onto default values...
 			if ( !pos_ok ) {
 				GUI_POS_X = DEFAULT_GUI_POS_X;
-				/**
-				 * Default y-position of the main GUI-window. This value will be used if the
-				 * values in the properties file are not fitting on any of the currently
-				 * attached screens.
+				/*
+				  Default y-position of the main GUI-window. This value will be used if the
+				  values in the properties file are not fitting on any of the currently
+				  attached screens.
 				 */
 				int DEFAULT_GUI_POS_Y = 100;
 				GUI_POS_Y = DEFAULT_GUI_POS_Y;
@@ -1526,11 +1526,11 @@ public class MoMA {
 	private void findGrowthLines() {
 
 		this.setGrowthLines(new ArrayList<>() );
-		/**
-		 * Contains all detected growth line center points. The structure goes in
-		 * line with image data: Outermost list: one element per frame (image in
-		 * stack). 2nd list: one element per detected growth-line. 3rd list: one
-		 * element (Point) per location downwards along the growth line.
+		/*
+		  Contains all detected growth line center points. The structure goes in
+		  line with image data: Outermost list: one element per frame (image in
+		  stack). 2nd list: one element per detected growth-line. 3rd list: one
+		  element (Point) per location downwards along the growth line.
 		 */
 		List<List<List<Point>>> glCenterPoints = new ArrayList<>();
 

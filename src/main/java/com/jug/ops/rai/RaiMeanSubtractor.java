@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.jug.ops.rai;
 
 import com.jug.ops.numerictype.MeanOfRai;

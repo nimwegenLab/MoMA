@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.awt.BorderLayout;
@@ -1508,17 +1505,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		System.out.println();
 	}
 
-	/**
-	 * Goes over all glfs of the current gl and activates the awesome,
-	 * RF-classified + paramaxflow hypotheses.
+	/*
+	  Goes over all glfs of the current gl and activates the awesome,
+	  RF-classified + paramaxflow hypotheses.
 	 */
 //	private void activateAwesomeHypothesesForCurrentGL() {
 //		activateAwesomeHypothesesForGL( model.getCurrentGL() );
 //	}
 
-	/**
-	 * Goes over all glfs of the given gl and activates the awesome,
-	 * RF-classified + paramaxflow hypotheses.
+	/*
+	  Goes over all glfs of the given gl and activates the awesome,
+	  RF-classified + paramaxflow hypotheses.
 	 */
 //	private void activateAwesomeHypothesesForGL( final GrowthLine gl ) {
 //		// Since I am gonna mix CT and PMFRF, I have to also ensure to have the CT ones available

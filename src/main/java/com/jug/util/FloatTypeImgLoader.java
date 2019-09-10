@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.util;
 
 import ij.IJ;

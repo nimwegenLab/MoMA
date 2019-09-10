@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp.costs;
 
 import java.util.List;

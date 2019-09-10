@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.export;
 
 import java.io.BufferedWriter;

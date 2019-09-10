@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.lp;
 
 import java.io.BufferedReader;
@@ -439,12 +436,7 @@ public class GrowthLineTrackingILP {
 		return CostFactory.getIntensitySegmentationCost( ctNode, img );
 	}
 
-	/**
-	 * @param t
-	 * @param ctNode
-	 * @return
-	 */
-//	public float localParamaxflowBasedCost( final int t, final Component< ?, ? > ctNode ) {
+	//	public float localParamaxflowBasedCost( final int t, final Component< ?, ? > ctNode ) {
 //		//TODO kotz
 //		final float[] gapSepFkt = gl.getFrames().get( t ).getAwesomeGapSeparationValues( MoMA.instance.getImgTemp() );
 //		return CostFactory.getParamaxflowSegmentationCost( ctNode, gapSepFkt );

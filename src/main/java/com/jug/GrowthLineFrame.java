@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug;
 
 import net.imglib2.RandomAccessibleInterval;
@@ -42,8 +39,8 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}
 
-	/**
-	 * @see com.jug.AbstractGrowthLineFrame#buildParaMaxFlowSumTree(net.imglib2.RandomAccessibleInterval)
+	/*
+	  @see com.jug.AbstractGrowthLineFrame#buildParaMaxFlowSumTree(net.imglib2.RandomAccessibleInterval)
 	 */
 //	@Override
 //	protected ComponentForest< FilteredComponent< FloatType >> buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt ) {

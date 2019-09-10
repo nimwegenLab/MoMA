@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.segmentation;
 
 import ij.IJ;

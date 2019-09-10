@@ -1,6 +1,3 @@
-/**
- *
- */
 package com.jug.gui;
 
 import java.util.HashMap;

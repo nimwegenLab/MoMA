@@ -62,7 +62,7 @@ class JFrameSnapper extends ComponentAdapter implements WindowListener {
 			if ( currentlyMovingFrame == e.getComponent() ) {
 //				System.out.println( "  is currently moving" );
 				final Point newPosition = e.getComponent().getLocation();
-				final LinkedList<JFrame> fifo = new LinkedList<JFrame>(activeSnappings.get( currentlyMovingFrame ));
+				final LinkedList<JFrame> fifo = new LinkedList<>(activeSnappings.get(currentlyMovingFrame));
 				int emergencyKill = 10;
 				while ( emergencyKill > 0 && !fifo.isEmpty() ) {
 					emergencyKill--;

@@ -3,10 +3,7 @@
  */
 package com.jug;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -176,7 +173,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *
 	 */
 	public void sortPoints() {
-		imgLocations.sort((o1, o2) -> new Integer(o1.getIntPosition(1)).compareTo(o2.getIntPosition(1)));
+		imgLocations.sort((o1, o2) -> Integer.compare(o1.getIntPosition(1), o2.getIntPosition(1)));
 	}
 
 	/**
@@ -764,7 +761,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			ret.add(new ValuePair<>(new ValuePair<>(min, max), new ValuePair<>(aa.getType(), (aa.isGroundTruth() || aa.isGroundUntruth()) ? 1 : 0)) );
 		}
 
-		ret.sort((o1, o2) -> o1.a.a.compareTo(o2.a.a));
+		ret.sort(Comparator.comparing(o -> o.a.a));
 		return ret;
 	}
 
@@ -785,7 +782,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			}
 		}
 
-		positionedHyps.sort((o1, o2) -> o1.a.compareTo(o2.a));
+		positionedHyps.sort(Comparator.comparing(o -> o.a));
 
 		return positionedHyps;
 	}

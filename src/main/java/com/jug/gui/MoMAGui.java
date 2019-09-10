@@ -1308,11 +1308,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			t.start();
 		}
 		if ( e.getSource().equals( btnExportHtml ) ) {
-			final Thread t = new Thread(() -> exportHtmlOverview());
+			final Thread t = new Thread(this::exportHtmlOverview);
 			t.start();
 		}
 		if ( e.getSource().equals( btnExportData ) ) {
-			final Thread t = new Thread(() -> exportDataFiles());
+			final Thread t = new Thread(this::exportDataFiles);
 			t.start();
 		}
 		setFocusToTimeSlider();

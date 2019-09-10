@@ -261,24 +261,10 @@ public class MoMA {
 	public static Properties props;
 
 	/**
-	 * Default x-position of the main GUI-window. This value will be used if the
-	 * values in the properties file are not fitting on any of the currently
-	 * attached screens.
-	 */
-	private static int DEFAULT_GUI_POS_X = 100;
-
-	/**
 	 * X-position of the main GUI-window. This value will be loaded from and
 	 * stored in the properties file!
 	 */
 	private static int GUI_POS_X;
-
-	/**
-	 * Default y-position of the main GUI-window. This value will be used if the
-	 * values in the properties file are not fitting on any of the currently
-	 * attached screens.
-	 */
-	private static int DEFAULT_GUI_POS_Y = 100;
 
 	/**
 	 * Y-position of the main GUI-window. This value will be loaded from and
@@ -324,10 +310,6 @@ public class MoMA {
 	public static double GUROBI_TIME_LIMIT = 15.0;
 	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
 
-	/**
-	 * Control if ImageJ and loaded data will be shown...
-	 */
-	private static boolean showIJ = false;
 	private static MoMAGui gui;
 
 	/**
@@ -350,7 +332,11 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		if ( showIJ ) new ImageJ();
+		/**
+		 * Control if ImageJ and loaded data will be shown...
+		 */
+		boolean showIJ = false;
+		if (showIJ) new ImageJ();
 
 		opService = new Context(OpService.class).service(OpService.class);
 		OpService opService1 = new Context(OpService.class).service(OpService.class);
@@ -651,8 +637,14 @@ public class MoMA {
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
 		GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble( props.getProperty( "GUROBI_MAX_OPTIMALITY_GAP", Double.toString( GUROBI_MAX_OPTIMALITY_GAP ) ) );
 
-		GUI_POS_X = Integer.parseInt( props.getProperty( "GUI_POS_X", Integer.toString( DEFAULT_GUI_POS_X ) ) );
-		GUI_POS_Y = Integer.parseInt( props.getProperty( "GUI_POS_Y", Integer.toString( DEFAULT_GUI_POS_X ) ) );
+		/**
+		 * Default x-position of the main GUI-window. This value will be used if the
+		 * values in the properties file are not fitting on any of the currently
+		 * attached screens.
+		 */
+		int DEFAULT_GUI_POS_X = 100;
+		GUI_POS_X = Integer.parseInt( props.getProperty( "GUI_POS_X", Integer.toString(DEFAULT_GUI_POS_X) ) );
+		GUI_POS_Y = Integer.parseInt( props.getProperty( "GUI_POS_Y", Integer.toString(DEFAULT_GUI_POS_X) ) );
 		GUI_WIDTH = Integer.parseInt( props.getProperty( "GUI_WIDTH", Integer.toString( GUI_WIDTH ) ) );
 		GUI_HEIGHT = Integer.parseInt( props.getProperty( "GUI_HEIGHT", Integer.toString( GUI_HEIGHT ) ) );
 		GUI_CONSOLE_WIDTH = Integer.parseInt( props.getProperty( "GUI_CONSOLE_WIDTH", Integer.toString( GUI_CONSOLE_WIDTH ) ) );
@@ -685,6 +677,12 @@ public class MoMA {
 			// fall back onto default values...
 			if ( !pos_ok ) {
 				GUI_POS_X = DEFAULT_GUI_POS_X;
+				/**
+				 * Default y-position of the main GUI-window. This value will be used if the
+				 * values in the properties file are not fitting on any of the currently
+				 * attached screens.
+				 */
+				int DEFAULT_GUI_POS_Y = 100;
 				GUI_POS_Y = DEFAULT_GUI_POS_Y;
 			}
 		}
@@ -727,7 +725,7 @@ public class MoMA {
 		// ------------------------------------------------------------------------------------------------------
 
 		// show loaded and annotated data
-		if ( showIJ ) {
+		if (showIJ) {
 			new ImageJ();
 			ImageJFunctions.show( main.imgRaw, "Rotated & cropped raw data" );
 			// ImageJFunctions.show( main.imgTemp, "Temporary" );
@@ -796,14 +794,6 @@ public class MoMA {
 	private Img< ARGBType > imgAnnotated;
 	private Img< FloatType > imgClassified;
 	private Img< ShortType > imgSegmented;
-
-	/**
-	 * Contains all detected growth line center points. The structure goes in
-	 * line with image data: Outermost list: one element per frame (image in
-	 * stack). 2nd list: one element per detected growth-line. 3rd list: one
-	 * element (Point) per location downwards along the growth line.
-	 */
-	private List< List< List< Point >>> glCenterPoints;
 
 	/**
 	 * Contains all GrowthLines found in the given data.
@@ -1539,7 +1529,13 @@ public class MoMA {
 	private void findGrowthLines() {
 
 		this.setGrowthLines(new ArrayList<>() );
-		this.glCenterPoints = new ArrayList<>();
+		/**
+		 * Contains all detected growth line center points. The structure goes in
+		 * line with image data: Outermost list: one element per frame (image in
+		 * stack). 2nd list: one element per detected growth-line. 3rd list: one
+		 * element (Point) per location downwards along the growth line.
+		 */
+		List<List<List<Point>>> glCenterPoints = new ArrayList<>();
 
 		List< List< Point > > frameWellCenters;
 
@@ -1606,7 +1602,7 @@ public class MoMA {
 //			}
 
 			// add filtered points to 'glCenterPoints'
-			this.glCenterPoints.add( frameWellCenters );
+			glCenterPoints.add( frameWellCenters );
 
 			// ------ DISTRIBUTE POINTS TO CORRESPONDING GROWTH LINES -------
 
@@ -1821,7 +1817,6 @@ public class MoMA {
 		return image;
 	}
 
-	private UIService uiService;
 	private OpService ops;
 	/**
 	 * Load and run the Tensor-Flow network on the images to create probability maps
@@ -1835,7 +1830,7 @@ public class MoMA {
 //			PluginService plugs = context.service(PluginService.class);
 //			System.out.println(plugs.getPlugins());
 			ops = context.service(OpService.class);
-			uiService = context.service(UIService.class);
+			UIService uiService = context.service(UIService.class);
 //			IOService io = context.service(IOService.class);
 
 			uiService.show("Original Image", img);

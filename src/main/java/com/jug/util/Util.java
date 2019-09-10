@@ -48,7 +48,7 @@ public class Util {
 	 *
 	 * @return location of the point as a new long[]
 	 */
-	final static public long[] pointLocation( final Point point ) {
+	static public long[] pointLocation( final Point point ) {
 		final long[] dimensions = new long[ point.numDimensions() ];
 		for ( int i = 0; i < point.numDimensions(); i++ )
 			dimensions[ i ] = point.getLongPosition( i );

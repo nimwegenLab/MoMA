@@ -27,8 +27,6 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 
 	private final Vector< JFrame > frames;
 	private JFrame currentlyMovingFrame;
-	private int snappingDistance = 25;
-	private boolean snappingPolicy = true;
 	private Rectangle recOne, recTwo;
 
 	private final HashMap< JFrame, Set< JFrame >> activeSnappings;
@@ -51,6 +49,7 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 	}
 
     public boolean getSnappingPolicy() {
+		boolean snappingPolicy = true;
 		return snappingPolicy;
 	}
 
@@ -160,19 +159,20 @@ public class JFrameSnapper extends ComponentAdapter implements WindowListener {
 		final int z1 = frame1.getX(), w1 = frame1.getY(), z2 = z1 + frame1.getWidth(), w2 = w1 + frame1.getHeight();
 		final int x1 = movingFrame.getX(), y1 = movingFrame.getY(), x2 = x1 + movingFrame.getWidth(), y2 = y1 + movingFrame.getHeight();
 
-		if ( Math.abs( z1 - x1 ) < this.snappingDistance && Math.abs( w2 - y1 ) < this.snappingDistance )
+		int snappingDistance = 25;
+		if ( Math.abs( z1 - x1 ) < snappingDistance && Math.abs( w2 - y1 ) < snappingDistance)
 			return NORTH;
-		if ( Math.abs( z1 - x1 ) < this.snappingDistance && Math.abs( w1 - y2 ) < this.snappingDistance )
+		if ( Math.abs( z1 - x1 ) < snappingDistance && Math.abs( w1 - y2 ) < snappingDistance)
 			return SOUTH;
-		if ( Math.abs( z2 - x1 ) < this.snappingDistance && Math.abs( w1 - y1 ) < this.snappingDistance )
+		if ( Math.abs( z2 - x1 ) < snappingDistance && Math.abs( w1 - y1 ) < snappingDistance)
 			return WEST;
-		if ( Math.abs( z1 - x2 ) < this.snappingDistance && Math.abs( w2 - y2 ) < this.snappingDistance )
+		if ( Math.abs( z1 - x2 ) < snappingDistance && Math.abs( w2 - y2 ) < snappingDistance)
 			return EAST;
 
-		if ( Math.abs( z2 - x1 ) < this.snappingDistance ) return WEST_ONLY;
-		if ( Math.abs( z1 - x2 ) < this.snappingDistance ) return EAST_ONLY;
-		if ( Math.abs( w2 - y1 ) < this.snappingDistance ) return NORTH_ONLY;
-		if ( Math.abs( w1 - y2 ) < this.snappingDistance ) return SOUTH_ONLY;
+		if ( Math.abs( z2 - x1 ) < snappingDistance) return WEST_ONLY;
+		if ( Math.abs( z1 - x2 ) < snappingDistance) return EAST_ONLY;
+		if ( Math.abs( w2 - y1 ) < snappingDistance) return NORTH_ONLY;
+		if ( Math.abs( w1 - y2 ) < snappingDistance) return SOUTH_ONLY;
 		return -1;
 	}
 

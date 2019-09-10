@@ -23,9 +23,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
 
 	private final List< Hypothesis< Component< FloatType, ? >>> Hup;
-	@SuppressWarnings( "unused" )
-	private final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes;
-	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
+    private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
 	private final Hypothesis< Component< FloatType, ? >> who;
 
 	private static int dcId = 0;
@@ -42,8 +40,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		super( GrowthLineTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
 		this.Hup = Hup;
 		this.edges = edges;
-		this.nodes = nodes;
-		this.who = who;
+        this.who = who;
 	}
 
 	/**

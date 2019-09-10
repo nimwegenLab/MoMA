@@ -243,7 +243,7 @@ public final class FilteredComponent< T extends Type< T > >
 		}
 	}
 
-	private final long minSquaredDistToPixel( final Localizable refPixel ) {
+	private long minSquaredDistToPixel(final Localizable refPixel ) {
 		long minSquaredDist = Long.MAX_VALUE;
 		for ( final Localizable pixel : this.pixelList ) {
 			long squaredDist = 0;

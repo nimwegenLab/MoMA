@@ -156,8 +156,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 	private MenuItem menuSaveFG;
 
-	private MenuItem menuTrain;
-
 	// -------------------------------------------------------------------------------------
 	// construction & gui creation
 	// -------------------------------------------------------------------------------------
@@ -207,10 +205,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		menuShowImgRaw.addActionListener( this );
 		menuShowImgTemp = new MenuItem( "Show BG-subtrackted imges..." );
 		menuShowImgTemp.addActionListener( this );
-		menuTrain = new MenuItem( "Show trainer window..." );
+		MenuItem menuTrain = new MenuItem("Show trainer window...");
 		menuTrain.addActionListener( this );
 		menuView.add( menuViewShowConsole );
-		menuView.add( menuTrain );
+		menuView.add(menuTrain);
 		menuView.addSeparator();
 		menuView.add( menuShowImgRaw );
 		menuView.add( menuShowImgTemp );

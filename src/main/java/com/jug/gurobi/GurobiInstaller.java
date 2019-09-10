@@ -97,14 +97,14 @@ public class GurobiInstaller {
 
 
 
-    private static final void addHyperLink(final GenericDialog gd, final String msg, final String url )
+    private static void addHyperLink(final GenericDialog gd, final String msg, final String url )
     {
         gd.addMessage( msg + "\n", new Font( Font.SANS_SERIF, Font.ITALIC + Font.BOLD, 12 ) );
         MultiLineLabel text =  (MultiLineLabel) gd.getMessage();
         addHyperLinkListener( text, url );
     }
 
-    private static final void addHyperLinkListener( final MultiLineLabel text, final String myURL )
+    private static void addHyperLinkListener(final MultiLineLabel text, final String myURL )
     {
         if ( text != null && myURL != null )
         {

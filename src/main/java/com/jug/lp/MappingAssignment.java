@@ -18,11 +18,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class MappingAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
 
-	@SuppressWarnings( "unused" )
-	private final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes;
-	@SuppressWarnings( "unused" )
-	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> from;
+    private final Hypothesis< Component< FloatType, ? >> from;
 	private final Hypothesis< Component< FloatType, ? >> to;
 
 	/**
@@ -38,9 +34,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 		super( GrowthLineTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
 		this.from = from;
 		this.to = to;
-		this.edges = edges;
-		this.nodes = nodes;
-	}
+    }
 
 	/**
 	 * This method is void. MAPPING assignments do not come with assignment

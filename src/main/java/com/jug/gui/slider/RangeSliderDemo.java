@@ -22,17 +22,17 @@ import javax.swing.event.ChangeListener;
 public class RangeSliderDemo extends JPanel {
 
 	private static final long serialVersionUID = 2431987178328113873L;
-	private JLabel rangeSliderLabel1 = new JLabel();
     private JLabel rangeSliderValue1 = new JLabel();
-    private JLabel rangeSliderLabel2 = new JLabel();
     private JLabel rangeSliderValue2 = new JLabel();
     private RangeSlider rangeSlider = new RangeSlider();
 
     public RangeSliderDemo() {
         setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         setLayout(new GridBagLayout());
-        
+
+        JLabel rangeSliderLabel1 = new JLabel();
         rangeSliderLabel1.setText("Lower value:");
+        JLabel rangeSliderLabel2 = new JLabel();
         rangeSliderLabel2.setText("Upper value:");
         rangeSliderValue1.setHorizontalAlignment(SwingConstants.LEFT);
         rangeSliderValue2.setHorizontalAlignment(SwingConstants.LEFT);

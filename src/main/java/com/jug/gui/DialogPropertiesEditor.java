@@ -106,13 +106,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static class PropFactory {
 
-		private static String BGREM = "Background removal";
-		private static String GL = "GrowthLine props";
-		private static String TRA = "Tracking props";
-		private static String SEG = "Segmentation props";
-		private static String GRB = "GUROBI props";
-
-		public static Property buildFor(final String key, final Object value) {
+        public static Property buildFor(final String key, final Object value) {
 			final DefaultProperty property = new DefaultProperty();
 			property.setDisplayName( key );
 			property.setName( key );
@@ -120,6 +114,11 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
 			property.setType( String.class );
 			property.addPropertyChangeListener( propEditListener );
 
+            String GRB = "GUROBI props";
+            String SEG = "Segmentation props";
+            String TRA = "Tracking props";
+            String GL = "GrowthLine props";
+            String BGREM = "Background removal";
             switch (key) {
                 case "BGREM_TEMPLATE_XMIN":
                     property.setCategory(BGREM);

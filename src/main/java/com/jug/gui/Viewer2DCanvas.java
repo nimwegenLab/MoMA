@@ -56,10 +56,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 
 	// tracking the mouse (when dragging)
 	private boolean isDragging;
-	private int dragX;
-	private int dragY;
 
-	private final MoMAGui mmgui;
+    private final MoMAGui mmgui;
 
 	private static final int OFFSET_DISPLAY_COSTS = -25;
 	private static int SYSTEM_SPECIFIC_POINTER_CORRECTION;
@@ -327,8 +325,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	public void mouseDragged( final MouseEvent e ) {
 		if ( e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3 ) {
 			this.isDragging = true;
-			this.dragX = e.getX();
-			this.dragY = e.getY();
+            int dragX = e.getX();
+            int dragY = e.getY();
 		}
 		repaint();
 	}

@@ -18,11 +18,7 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class DivisionAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
 
-	@SuppressWarnings( "unused" )
-	private final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes;
-	@SuppressWarnings( "unused" )
-	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> from;
+    private final Hypothesis< Component< FloatType, ? >> from;
 	private final Hypothesis< Component< FloatType, ? >> toUpper;
 	private final Hypothesis< Component< FloatType, ? >> toLower;
 
@@ -39,9 +35,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 		this.from = from;
 		this.toUpper = toUpper;
 		this.toLower = toLower;
-		this.edges = edges;
-		this.nodes = nodes;
-	}
+    }
 
 	/**
 	 * This method is void. DIVISION assignments do not come with assignment

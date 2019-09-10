@@ -68,22 +68,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	public final MoMAModel model;
 
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (left one in active assignments view).
-	 */
-	private IntervalView< FloatType > viewImgLeftActive;
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (center one in active assignments view).
-	 */
-	private IntervalView< FloatType > viewImgCenterActive;
-	/**
-	 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-	 * (right one in active assignments view).
-	 */
-	private IntervalView< FloatType > viewImgRightActive;
-
 	// show helper lines in IntervalViews?
 	private boolean showSegmentationAnnotations = true;
 
@@ -117,7 +101,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private JButton btnExportHtml;
 	private JButton btnExportData;
 
-	private final String itemChannel0BGSubtr = "BG-subtr. Ch.0";
 	private final String itemChannel0 = "Raw Channel 0";
 	private final String itemChannel1 = "Raw Channel 1";
 	private final String itemChannel2 = "Raw Channel 2";
@@ -480,7 +463,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		final JPanel panelDropdown = new JPanel();
 		panelDropdown.setLayout( new BoxLayout( panelDropdown, BoxLayout.LINE_AXIS ) );
 		cbWhichImgToShow = new JComboBox();
-		cbWhichImgToShow.addItem( itemChannel0BGSubtr );
+		String itemChannel0BGSubtr = "BG-subtr. Ch.0";
+		cbWhichImgToShow.addItem(itemChannel0BGSubtr);
 		cbWhichImgToShow.addItem( itemChannel0 );
 		if ( model.mm.getRawChannelImgs().size() > 1 ) {
 			cbWhichImgToShow.addItem( itemChannel1 );
@@ -719,21 +703,21 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			ctnLevel.add( root );
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
-					if(costType == "Segment") {
+					if(costType.equals("Segment")) {
 						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
 					}
 					else{
 						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
 						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
-							if(costType == "ExitAssignment"){
+							if(costType.equals("ExitAssignment")){
 								if(ass instanceof ExitAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
-							else if(costType == "MappingAssignment"){
+							else if(costType.equals("MappingAssignment")){
 								if(ass instanceof MappingAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
-							else if(costType == "DivisionAssignment"){
+							else if(costType.equals("DivisionAssignment")){
 								if(ass instanceof DivisionAssignment)
 									System.out.print( String.format( "%8.4f;\t", ass.getCost() ) );
 							}
@@ -851,8 +835,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 			if ( model.getCurrentGLFsPredecessor() != null ) {
 				final GrowthLineFrame glf = model.getCurrentGLFsPredecessor();
-				viewImgLeftActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive );
+				/**
+				 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+				 * (left one in active assignments view).
+				 */
+				IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive);
 			} else {
 				// show something empty
 				imgCanvasActiveLeft.setEmptyScreenImage();
@@ -862,8 +850,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 			if ( model.getCurrentGLFsSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() ) { // hence copy of last frame for border-problem avoidance
 				final GrowthLineFrame glf = model.getCurrentGLFsSuccessor();
-				viewImgRightActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveRight.setScreenImage( glf, viewImgRightActive );
+				/**
+				 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+				 * (right one in active assignments view).
+				 */
+				IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+				imgCanvasActiveRight.setScreenImage( glf, viewImgRightActive);
 			} else {
 				// show something empty
 				imgCanvasActiveRight.setEmptyScreenImage();
@@ -879,9 +871,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //			if ( paramaxflowSumImageFloatTyped != null && cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
 //				imgCanvasActiveCenter.setScreenImage( glf, paramaxflowSumImageFloatTyped );
 //			} else
+			/**
+			 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+			 * (center one in active assignments view).
+			 */
+			IntervalView<FloatType> viewImgCenterActive;
 			if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel0 ) ) {
 				viewImgCenterActive = Views.offset( Views.hyperSlice( model.mm.getImgRaw(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel1 ) ) {
 				final IntervalView< FloatType > viewToShow = Views.hyperSlice( model.mm.getRawChannelImgs().get( 1 ), 2, glf.getOffsetF() );
 				Util.computeMinMax( Views.iterable( viewToShow ), min, max );
@@ -893,7 +890,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 										new FloatType() ),
 								glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
 								glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemChannel2 ) ) {
 				final IntervalView< FloatType > viewToShow = Views.hyperSlice( model.mm.getRawChannelImgs().get( 2 ), 2, glf.getOffsetF() );
 				Util.computeMinMax( Views.iterable( viewToShow ), min, max );
@@ -905,7 +902,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 										new FloatType() ),
 								glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
 								glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 //			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemClassified ) ) {
 //				final Thread t = new Thread() {
 //
@@ -928,7 +925,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //				t.start();
 			} else { // BG-subtracted Channel 0 selected or PMFRF not available
 				viewImgCenterActive = Views.offset( Views.hyperSlice( model.mm.getImgTemp(), 2, glf.getOffsetF() ), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive );
+				imgCanvasActiveCenter.setScreenImage( glf, viewImgCenterActive);
 			}
 
 //			if ( glf.isParaMaxFlowComponentTree() ) {

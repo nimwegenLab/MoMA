@@ -769,7 +769,6 @@ public class MoMA {
 
 			if (!running_as_Fiji_plugin) {
 				System.exit( 11 );
-			} else {
 			}
 		}
 	}
@@ -1082,7 +1081,6 @@ public class MoMA {
 				saveParams();
 				if (!running_as_Fiji_plugin) {
 					System.exit(0);
-				} else {
 				}
 			}
 		} );

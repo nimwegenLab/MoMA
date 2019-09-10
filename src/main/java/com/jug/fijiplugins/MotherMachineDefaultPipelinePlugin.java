@@ -64,9 +64,7 @@ class MotherMachineDefaultPipelinePlugin implements PlugIn {
         }
         String inputFolder = gd.getNextString();
 
-        if (s.equals("file")) {
-            //inputFolder = inputFolder.substring(0, inputFolder.length() - 1);
-        } else {
+        if (!s.equals("file")) {
             if (!inputFolder.endsWith("/")) {
                 inputFolder = inputFolder + "/";
             }

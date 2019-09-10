@@ -21,6 +21,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -693,9 +694,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //		}
 		final float[] yAvg = new float[ yMidline.length ];
 		final float constY = SimpleFunctionAnalysis.getSum( ySegmentationData ) / ySegmentationData.length;
-		for ( int i = 0; i < yAvg.length; i++ ) {
-			yAvg[ i ] = constY;
-		}
+		Arrays.fill(yAvg, constY);
 		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) ); // Note-MM-2019-06-10: blue plot line
 		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) ); // Note-MM-2019-06-10: green plot line
 		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) ); // Note-MM-2019-06-10: red plot line

@@ -233,7 +233,7 @@ public class SimpleFunctionAnalysis {
 	public static float[] filterAbove( final float[] array, final float threshold ) {
 		final float[] ret = new float[ array.length ];
 		for ( int i = 0; i < array.length; i++ ) {
-			ret[ i ] = ( array[ i ] > threshold ) ? array[ i ] : threshold;
+			ret[ i ] = Math.max(array[i], threshold);
 		}
 		return ret;
 	}
@@ -363,7 +363,6 @@ public class SimpleFunctionAnalysis {
 				if ( deltaH <= 0 && idx > 0 ) {
 					valleys[ idx ] = valleyId;
 					idx--;
-					continue;
 				} else {
 					if ( idx == 0 ) {
 						valleys[ 0 ] = valleyId;
@@ -373,7 +372,6 @@ public class SimpleFunctionAnalysis {
 					state = RUN_RIGHT;
 //		    System.out.print(" ; "+idx+">");
 					energy = initialEnergy;
-					continue;
 				}
 			}
 		}
@@ -455,7 +453,6 @@ public class SimpleFunctionAnalysis {
 					idxEnd = idx;
 				}
 				idxLatestStart = idx;
-				continue;
 			}
 		}
 		if ( idxEnd == j - 1 && getHeightDifference( fkt, j - 1, j ) >= 0 ) {

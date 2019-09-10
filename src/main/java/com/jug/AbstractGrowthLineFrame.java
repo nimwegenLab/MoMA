@@ -173,7 +173,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *
 	 */
 	public void sortPoints() {
-		imgLocations.sort((o1, o2) -> Integer.compare(o1.getIntPosition(1), o2.getIntPosition(1)));
+		imgLocations.sort(Comparator.comparingInt(o -> o.getIntPosition(1)));
 	}
 
 	/**

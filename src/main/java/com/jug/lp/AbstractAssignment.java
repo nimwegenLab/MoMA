@@ -36,8 +36,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 * Creates an assignment...
-	 *
-	 * @param type
 	 */
 	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp) {
 		this.setType( type );
@@ -111,7 +109,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 * @return the cost
-	 * @throws GRBException
 	 */
 	public float getCost() {
 		float cost = 0;
@@ -126,7 +123,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
     /**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
-	 * @throws GRBException
 	 */
 	public boolean isChoosen() throws GRBException {
 		return ( getGRBVar().get( GRB.DoubleAttr.X ) == 1.0 );
@@ -135,16 +131,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 * Abstract method that will, once implemented, add a set of assignment
 	 * related constraints to the ILP (model) later to be solved by Gurobi.
-	 *
-	 * @throws GRBException
 	 */
 	public abstract void addConstraintsToLP() throws GRBException;
 
 	/**
 	 * Abstract method that will, once implemented, build the constraint
 	 * representations needed to save the FG.
-	 *
-	 * @throws GRBException
 	 */
 	public abstract List< String > getConstraintsToSave_PASCAL();
 
@@ -155,41 +147,26 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public abstract void addFunctionsAndFactors( FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds );
 
-	/**
-	 * @return
-	 */
 	public boolean isGroundTruth() {
 		return isGroundTruth;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isGroundUntruth() {
 		return isGroundUntruth;
 	}
 
-	/**
-	 *
-	 */
 	public void setGroundTruth( final boolean groundTruth ) {
 		this.isGroundTruth = groundTruth;
 		this.isGroundUntruth = false;
 		addOrRemoveGroundTroothConstraint( groundTruth );
 	}
 
-	/**
-	 *
-	 */
 	public void setGroundUntruth( final boolean groundUntruth ) {
 		this.isGroundTruth = false;
 		this.isGroundUntruth = groundUntruth;
 		addOrRemoveGroundTroothConstraint( groundUntruth );
 	}
 
-	/**
-	 *
-	 */
 	public void reoptimize() {
 		try {
 			ilp.model.update();
@@ -232,7 +209,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	/**
-	 * @param value
+	 * @param value set if assignment is pruned
 	 */
 	public void setPruned( final boolean value ) {
 		this.isPruned = value;
@@ -240,7 +217,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 *
-	 * @return
+	 * @return if assignment is pruned
 	 */
 	public boolean isPruned() {
 		return isPruned;

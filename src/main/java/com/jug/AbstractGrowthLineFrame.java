@@ -159,16 +159,11 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
-	 *
-	 * @param point
 	 */
 	public void addPoint( final Point point ) {
 		imgLocations.add( point );
 	}
 
-	/**
-	 *
-	 */
 	public void sortPoints() {
 		imgLocations.sort(Comparator.comparingInt(o -> o.getIntPosition(1)));
 	}
@@ -190,8 +185,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
-	 *
-	 * @param img
 	 */
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
 //		Img<FloatType> imgTmp = runNetwork(img);
@@ -323,10 +316,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 //	protected abstract ComponentForest< C > buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt );
 
-	/**
-	 * @param img
-	 * @return
-	 */
 	public float[] getMirroredCenterLineValues( final Img< FloatType > img ) {
 		final RandomAccess< FloatType > raImg = img.randomAccess();
 		final List< Point > mirroredImgLocations = getMirroredImgLocations();
@@ -340,9 +329,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * GapSep guesses based on the intensity image alone
-	 *
-	 * @param img
-	 * @return
 	 */
 	public float[] getSimpleGapSeparationValues( final Img< FloatType > img ) {
 		if ( simpleSepValues == null ) {
@@ -359,9 +345,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Because the GL stops there and below come dark, dark pixels.
 	 * This is a way out. (How well this does in cases where the bottom cell
 	 * moves up considerably has to be seen...)
-	 *
-	 * @param fkt
-	 * @return
 	 */
 	private float[] avoidMotherCellSegmentationFlickering( final float[] fkt ) {
 		final int[] maximaLocations = SimpleFunctionAnalysis.getMaxima( fkt, 1, 1 );
@@ -379,9 +362,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * Trying to look there a bit smarter... ;)
-	 *
-	 * @param img
-	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
 		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, true );
@@ -391,9 +371,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * This calculates the max intensities inside growthlane along the diagonals of a moving square subsection of the image.
 	 * It does this along a single frame of {@link RandomAccessibleInterval img}, where the frame index and center-pixel of the current rectangle ROI
 	 * is defined by the {@link Point} array {@link List<Point> imgLocations}.
-	 *
-	 * @param img: multidimensional image stack
-	 * @return
 	 */
 	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
 		// special case: growth line does not exist in this frame
@@ -594,11 +571,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * @param locations
-	 * @return
+     * flip point locations at center of this growthline
 	 */
 	private List< Point > flipAtCenter( final List< Point > locations ) {
-		// System.out.println("FLIP FLIP FLIP FLIP FLIP FLIP FLIP FLIP");
 		final ArrayList< Point > ret = new ArrayList<>(locations.size());
 
 		final int centerInX = getAvgXpos();
@@ -621,8 +596,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 	/**
 	 * Returns the number of cells in this GLF.
-	 *
-	 * @return
 	 */
 	public int getSolutionStats_numCells() {
 		int cells = 0;
@@ -639,7 +612,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Returns the position of the given hypothesis in the GL.
 	 *
-	 * @param hyp
 	 * @return the uppermost segmented cell would return a 1. For each active
 	 *         segmentation that is strictly above the given hypothesis the
 	 *         return value is increased by 1.

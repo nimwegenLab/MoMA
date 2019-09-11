@@ -183,8 +183,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 		return tree;
 	}
 
-	private final ArrayList< FilteredComponent< T > > nodes;
-	
 	private final HashSet< FilteredComponent< T > > roots;
 
 	private final int maxComponentWidth;
@@ -211,7 +209,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 			final Filter filter,
 			final Img< LongType > linkedList ) {
 		roots = new HashSet<>();
-		nodes = new ArrayList<>();
 		this.minComponentSize = minComponentSize;
 		this.maxComponentSize = maxComponentSize;
 		this.minComponentWidth = minComponentWidth;
@@ -304,7 +301,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 				for ( final FilteredComponent< T > c : component.children )
 					roots.remove( c );
 				roots.add( component );
-				nodes.add( component );
 			}
 		} else {
 			intermediate.children.clear();

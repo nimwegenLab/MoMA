@@ -9,9 +9,12 @@ import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.ArgbDrawingUtils;
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 
+import com.jug.util.componenttree.SimpleComponentTree;
+import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -235,6 +238,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //        componentTree = buildIntensityTree(intervalView);
 
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
+		componentTree = new SimpleComponentTree(componentTree);
+		Set<C> roots = componentTree.roots();
+		System.out.println("done");
+//		componentTree = ComponentTreeUtils.filterByComponentsWidth(componentTree, 10);
 //		Plotting.drawComponentTree(componentTree);
 
 		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;

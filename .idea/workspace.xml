@@ -4,9 +4,17 @@
     <option name="SPLITTER_PROPORTION" value="0.28932893" />
     <option name="GROUP_BY_SEVERITY" value="true" />
     <option name="FILTER_RESOLVED_ITEMS" value="false" />
+    <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e6d32ef3-5f88-43a4-821a-4ddb00531878" name="Default Changelist" comment="" />
+    <list default="true" id="e6d32ef3-5f88-43a4-821a-4ddb00531878" name="Default Changelist" comment="Code-Inspector-Fix: Fix some more reported issues.">
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/export/CellStatsExporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/export/CellStatsExporter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/util/filteredcomponents/FilteredComponentTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/util/filteredcomponents/FilteredComponentTree.java" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,7 +34,7 @@
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
-        <entry key="$PROJECT_DIR$" value="debug/010" />
+        <entry key="$PROJECT_DIR$" value="mmell-1-remove-unused-code" />
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -109,6 +117,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.com.jug.util in MotherMachine_" />
+        <item itemvalue="JUnit.com.jug.util in MotherMachine_" />
       </list>
     </recent_temporary>
   </component>
@@ -136,6 +145,7 @@
       <workItem from="1567688731884" duration="236000" />
       <workItem from="1568038022584" duration="10561000" />
       <workItem from="1568100687993" duration="8888000" />
+      <workItem from="1568186005650" duration="4389000" />
     </task>
     <task id="LOCAL-00001" summary="Add changes to workspace.xml">
       <created>1567688041984</created>
@@ -375,7 +385,21 @@
       <option name="project" value="LOCAL" />
       <updated>1568109320538</updated>
     </task>
-    <option name="localTasksCounter" value="35" />
+    <task id="LOCAL-00035" summary="Comment and remove code.">
+      <created>1568121946145</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1568121946145</updated>
+    </task>
+    <task id="LOCAL-00036" summary="Remove usage of GL_OFFSET_BOTTOM">
+      <created>1568122026944</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1568122026944</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -397,8 +421,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="Remove redundant warning suppression." />
-    <MESSAGE value="Change to compiler.xml" />
     <MESSAGE value="IntelliJ code inspector: remove redundant declarations/modifiers, etc" />
     <MESSAGE value="Inspector-Fix: Declaration access can be weaker inspection&#10;&#10;Reports all fields, methods or classes, found in the specified inspection scope, that may have their access modifier narrowed down." />
     <MESSAGE value="Code-Inspector-Fix: Declarations can have final modifier&#10;&#10;Reports all fields, methods or classes, found in the specified inspection scope, that may have a final modifier added to their declarations." />
@@ -422,21 +444,37 @@
     <MESSAGE value="Code-Inspector-Fix: Issues under section 'Redundant return value'" />
     <MESSAGE value="Code-Inspector-Fix: Issues under section 'Java -&gt; Verbose or redundant code constructs -&gt; Duplicate branches in 'switch''" />
     <MESSAGE value="Code-Inspector-Fix: Fix some more reported issues." />
-    <option name="LAST_COMMIT_MESSAGE" value="Code-Inspector-Fix: Fix some more reported issues." />
+    <MESSAGE value="Comment and remove code." />
+    <MESSAGE value="Remove usage of GL_OFFSET_BOTTOM" />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove usage of GL_OFFSET_BOTTOM" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java</url>
-          <line>298</line>
+          <line>305</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java</url>
-          <line>269</line>
+          <line>276</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java</url>
+          <line>279</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/jug/gui/MoMAGui.java</url>
+          <line>696</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.NullPointerException" package="java.lang" />
+          <option name="timeStamp" value="24" />
+        </breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>

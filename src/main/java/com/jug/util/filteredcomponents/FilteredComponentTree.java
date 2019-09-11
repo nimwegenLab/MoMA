@@ -39,8 +39,6 @@ import net.imglib2.util.ValuePair;
 public final class FilteredComponentTree< T extends Type< T > >
 		implements
 		ComponentForest< FilteredComponent< T > >,
-		Forest< FilteredComponent< T > >,
-		Iterable< FilteredComponent< T > >,
 		PartialComponent.Handler< FilteredPartialComponent< T > > {
 
 	private enum FilterType {
@@ -48,7 +46,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 	}
 
 	public interface Filter {
-
 		FilterType type();
 	}
 
@@ -188,37 +185,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 
 	private final ArrayList< FilteredComponent< T > > nodes;
 	
-	/*
-	 * Print the length of all nodes in the tree recursively.
-	 */
-	public void printPixelList(int nodeIndex) {
-//		roots;
-		FilteredComponent< T > node = nodes.get(nodeIndex);
-		PixelList pixelList = node.pixelList;
-		for(Localizable pixel: pixelList)
-		{
-//			int[] currentPosition = new int[3];
-//			pixel.localize(currentPosition);
-			int posX = pixel.getIntPosition(0);
-			int posY = pixel.getIntPosition(1);
-			System.out.println("X="+posX+"Y="+posY);
-		}
-	}
-
-	/**
-	  * Print the coordinates of the pixel position belonging to the node with index nodeIndex.
-      */
-	public void printNodePixelCoordinates(int nodeIndex) {
-		FilteredComponent< T > node = nodes.get(nodeIndex);
-		PixelList pixelList = node.pixelList;
-		for(Localizable pixel: pixelList)
-		{
-			int posX = pixel.getIntPosition(0);
-			int posY = pixel.getIntPosition(1);
-			System.out.println("X="+posX+"Y="+posY);
-		}
-	}
-
 	private final HashSet< FilteredComponent< T > > roots;
 
 	private final int maxComponentWidth;
@@ -289,10 +255,11 @@ public final class FilteredComponentTree< T extends Type< T > >
 	@Override
 	public void emit( final FilteredPartialComponent< T > intermediate ) {
 		final long size = intermediate.pixelList.size();
-		final ValuePair<Integer,Integer> componentLimits = getComponentLimits(intermediate.pixelList.iterator(), 0);
-		int width = componentLimits.b - componentLimits.a;
+//		final ValuePair<Integer,Integer> componentLimits = getComponentLimits(intermediate.pixelList.iterator(), 0);
+//		int width = componentLimits.b - componentLimits.a;
 
-		if ( size >= minComponentSize && size <= maxComponentSize && width <= maxComponentWidth && width >= minComponentWidth) {
+//		if ( size >= minComponentSize && size <= maxComponentSize && width <= maxComponentWidth && width >= minComponentWidth) {
+		if ( size >= minComponentSize && size <= maxComponentSize ) {
 			int numChildren = 0;
 			if ( intermediate.emittedComponent != null ) ++numChildren;
 			for ( final FilteredPartialComponent< T > c : intermediate.children )
@@ -342,16 +309,6 @@ public final class FilteredComponentTree< T extends Type< T > >
 		} else {
 			intermediate.children.clear();
 		}
-	}
-
-	/**
-	 * Returns an iterator over all connected components in the tree.
-	 *
-	 * @return iterator over all connected components in the tree.
-	 */
-	@Override
-	public Iterator< FilteredComponent< T > > iterator() {
-		return nodes.iterator();
 	}
 
 	/**

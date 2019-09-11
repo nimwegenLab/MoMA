@@ -26,7 +26,7 @@ public class ComponentTreeUtils {
 	 * @param tree
 	 * @return
 	 */
-	public static < C extends Component< ?, C > > List< C > getListOfLeavesInOrder( final ComponentTree< C > tree ) {
+	public static < C extends Component< ?, C > > List< C > getListOfLeavesInOrder( final ComponentForest< C > tree ) {
 		final List< C > leaves = new ArrayList<>();
 
 		for ( final C root : tree.roots() ) {

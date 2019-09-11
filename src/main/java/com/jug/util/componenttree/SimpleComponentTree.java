@@ -24,15 +24,10 @@ public final class SimpleComponentTree<C extends Component<T, C>, T extends Type
     private final HashSet<C> roots = new HashSet<>();
 
     public SimpleComponentTree(ComponentForest<C> componentForest) {
-        int max_width = 12;
-//            List<C> leaves = ComponentTreeUtils.getListOfLeavesInOrder(ct);
-//            for (C leave: leaves){
-//                if(ComponentWidth(leave) < max_width){
-//
-//                }
-//            }
+        int maxComponentWidth = 20;
+
         for (final C root : componentForest.roots()) {
-            RecursivelyAddAsRootIfValid(root, max_width);
+            RecursivelyAddAsRootIfValid(root, maxComponentWidth);
 
 //                ArrayList< C > ctnLevel = new ArrayList<>();
 //				ctnLevel.add( root );
@@ -51,7 +46,7 @@ public final class SimpleComponentTree<C extends Component<T, C>, T extends Type
 
     private void RecursivelyAddAsRootIfValid(C component, int max_width) {
         int width = ComponentWidth(component);
-        if (width < max_width) {
+        if (width <= max_width) {
             roots.add(component);
         } else {
             List<C> children = component.getChildren();

@@ -7,13 +7,10 @@
     <option name="SCOPE_TYPE" value="3" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e6d32ef3-5f88-43a4-821a-4ddb00531878" name="Default Changelist" comment="Code-Inspector-Fix: Fix some more reported issues.">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+    <list default="true" id="e6d32ef3-5f88-43a4-821a-4ddb00531878" name="Default Changelist" comment="Confirmed the filtering in SimpleComponentTree seems to work as expected.&#10;&#10;* However the value for max_width in SimpleComponentTree is not comparable&#10;with">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/export/CellStatsExporter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/export/CellStatsExporter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/util/filteredcomponents/FilteredComponentTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/util/filteredcomponents/FilteredComponentTree.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/jug/util/componenttree/SimpleComponentTree.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/jug/util/componenttree/SimpleComponentTree.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -145,7 +142,7 @@
       <workItem from="1567688731884" duration="236000" />
       <workItem from="1568038022584" duration="10561000" />
       <workItem from="1568100687993" duration="8888000" />
-      <workItem from="1568186005650" duration="4389000" />
+      <workItem from="1568186005650" duration="6129000" />
     </task>
     <task id="LOCAL-00001" summary="Add changes to workspace.xml">
       <created>1567688041984</created>
@@ -399,7 +396,21 @@
       <option name="project" value="LOCAL" />
       <updated>1568122026944</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Got a working version of SimpleComponentTree working, which is a minimal implementation of ComponentForest.&#10;&#10;* I will use it to filter the components, that I get from FilteredComponentTree.&#10;* I will us it to replace usages of FilteredComponentTree and (hopefully) get a better understanding of its usage.">
+      <created>1568190636399</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1568190636399</updated>
+    </task>
+    <task id="LOCAL-00038" summary="Remove private field `nodes`, which is unused.">
+      <created>1568191042409</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1568191042409</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -421,8 +432,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="IntelliJ code inspector: remove redundant declarations/modifiers, etc" />
-    <MESSAGE value="Inspector-Fix: Declaration access can be weaker inspection&#10;&#10;Reports all fields, methods or classes, found in the specified inspection scope, that may have their access modifier narrowed down." />
     <MESSAGE value="Code-Inspector-Fix: Declarations can have final modifier&#10;&#10;Reports all fields, methods or classes, found in the specified inspection scope, that may have a final modifier added to their declarations." />
     <MESSAGE value="Code-Inspector-Fix: Fix more issues in section &quot;Declaration redundancy&quot;. Some more complicated things were left out for the moment." />
     <MESSAGE value="Code-Inspector-Fix: Unused import inspection" />
@@ -446,7 +455,9 @@
     <MESSAGE value="Code-Inspector-Fix: Fix some more reported issues." />
     <MESSAGE value="Comment and remove code." />
     <MESSAGE value="Remove usage of GL_OFFSET_BOTTOM" />
-    <option name="LAST_COMMIT_MESSAGE" value="Remove usage of GL_OFFSET_BOTTOM" />
+    <MESSAGE value="Got a working version of SimpleComponentTree working, which is a minimal implementation of ComponentForest.&#10;&#10;* I will use it to filter the components, that I get from FilteredComponentTree.&#10;* I will us it to replace usages of FilteredComponentTree and (hopefully) get a better understanding of its usage." />
+    <MESSAGE value="Remove private field `nodes`, which is unused." />
+    <option name="LAST_COMMIT_MESSAGE" value="Remove private field `nodes`, which is unused." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -460,11 +471,6 @@
           <url>file://$PROJECT_DIR$/src/main/java/com/jug/AbstractGrowthLineFrame.java</url>
           <line>276</line>
           <option name="timeStamp" value="2" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/jug/util/ComponentTreeUtils.java</url>
-          <line>279</line>
-          <option name="timeStamp" value="5" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/com/jug/gui/MoMAGui.java</url>

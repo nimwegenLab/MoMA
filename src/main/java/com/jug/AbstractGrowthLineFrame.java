@@ -191,71 +191,12 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * (bacteria).
 	 */
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
-//		Img<FloatType> imgTmp = runNetwork(img);
-
-//		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
-//		ops.convert().imageType(out, in, typeConverter)
-		
-//		Img<FloatType> imgTmpNew  = ImgFaco
-//		ops.convert().imageType(out, imgTmp, typeConverter)
-//		
-//		ImageJFunctions.C
-		
-//		final float[] fkt = getSimpleGapSeparationValues( img );
-		
-//		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
-
-//		Plotting.plotArray(fkt)
-//		Plotting.plotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
-//		ops.wrap
-//		ops.math().
-		
-//		RandomAccessibleInterval imgTmpScaled = ops.transform().scaleView(imgTmp, new double[] {1.0,255.0}, new NLinearInterpolatorFactory());
-//		Pair<FloatType, FloatType> res = ops.stats().minMax(imgTmp);
-//		System.out.println(res.getA());
-//		System.out.println(res.getB());
-//		IterableInterval<FloatType> tmp = ops.image().normalize(imgTmp);
-//		uiService.show(imgTmp); 
-//		(RandomAccessibleIntveral) imgTmpNew;
-//		ops.stats().minMax(imgTmp);
-
-//		Plotting.surfacePlot(imgTmp, 2, 5);
-
-//		if ( fkt.length > 0 ) {
-//			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
-//			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
-//			for ( int i = 0; i < fkt.length; i++ ) {
-//				ra.setPosition( i, 0 );
-//				ra.get().set( fkt[ i ] );
-//			}
-//			isParaMaxFlowComponentTree = false;
-//			componentTree = buildIntensityTree( raiFkt );
-//		}
-
-//		componentTree = buildIntensityTree( imgTmp );
-
-//        FinalInterval roiForComponentGeneration = new FinalInterval(new long[]{0, MoMA.GL_OFFSET_BOTTOM}, new long[]{img.dimension(0), img.dimension(1) - MoMA.GL_OFFSET_TOP});
-//        IntervalView<FloatType> intervalView = Views.interval(Views.hyperSlice(img, 2, frameIndex), roiForComponentGeneration);
-//        componentTree = buildIntensityTree(intervalView);
-
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
-        Set<C> roots_orig = componentTree.roots();
 		ComponentTester<FloatType, C> tester = new ComponentTester<>();
 		componentTree = new SimpleComponentTree(componentTree, tester);
-		Set<C> roots = componentTree.roots();
 		System.out.println("done");
-//		componentTree = ComponentTreeUtils.filterByComponentsWidth(componentTree, 10);
-//		Plotting.drawComponentTree(componentTree);
-
-		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
-//		tmp2.printPixelList(0);
-//		printPixelList(tmp2.nodes[0].pixelList);
 	}
-	
 
-	
-
-	
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
 //	{
 //		final RandomAccess< T > in = source.randomAccess();

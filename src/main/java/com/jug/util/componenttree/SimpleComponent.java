@@ -18,7 +18,7 @@ public final class SimpleComponent <T extends Type<T>>
     /**
      * child nodes in the {@link FilteredComponentTree}.
      */
-    private ArrayList<SimpleComponent< T >> children;
+    private ArrayList<SimpleComponent< T >> children  = new ArrayList<>();
 
     /**
      * parent node in the {@link FilteredComponentTree}.
@@ -38,11 +38,9 @@ public final class SimpleComponent <T extends Type<T>>
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public SimpleComponent(PixelList pixelList, T value, SimpleComponent<T> parent, ArrayList<SimpleComponent< T >> children) {
+    public SimpleComponent(PixelList pixelList, T value) {
         this.pixelList = pixelList;
         this.value = value;
-        this.parent = parent;
-        this.children = children;
     }
 
     @Override
@@ -69,8 +67,8 @@ public final class SimpleComponent <T extends Type<T>>
         return children;
     }
 
-    void setChildren(ArrayList<SimpleComponent< T >> children){
-        this.children = children;
+    void addChild(SimpleComponent< T > child){
+        this.children.add(child);
     }
 
     @Override

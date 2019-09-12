@@ -13,6 +13,7 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 
+import com.jug.util.componenttree.ComponentTester;
 import com.jug.util.componenttree.SimpleComponentTree;
 import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
@@ -239,7 +240,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
         Set<C> roots_orig = componentTree.roots();
-		componentTree = new SimpleComponentTree(componentTree);
+		ComponentTester<FloatType, C> tester = new ComponentTester<>();
+		componentTree = new SimpleComponentTree(componentTree, tester);
 		Set<C> roots = componentTree.roots();
 		System.out.println("done");
 //		componentTree = ComponentTreeUtils.filterByComponentsWidth(componentTree, 10);

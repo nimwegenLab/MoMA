@@ -23,15 +23,16 @@ public final class SimpleComponentTree<T extends Type<T>>
         ComponentForest<SimpleComponent<T>> {
     private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
     private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
+    private IComponentTester<T, FilteredComponent<T>> tester;
 
-    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest) {
-        int maxComponentWidth = 20;
-        CreateTree(componentForest, maxComponentWidth);
+    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest, IComponentTester<T, FilteredComponent<T>> tester) {
+        this.tester = tester;
+        CreateTree(componentForest);
     }
 
-    private void CreateTree(ComponentForest<FilteredComponent<T>> componentForest, int max_width) {
+    private void CreateTree(ComponentForest<FilteredComponent<T>> componentForest) {
         for (final FilteredComponent<T> root : componentForest.roots()) {
-            RecursivelyFindValidComponent(root, max_width);
+            RecursivelyFindValidComponent(root);
         }
         for(SimpleComponent<T> node:nodes){
             if(node.getParent() == null)
@@ -41,28 +42,26 @@ public final class SimpleComponentTree<T extends Type<T>>
         }
     }
 
-    private void RecursivelyFindValidComponent(FilteredComponent<T> sourceComponent, int max_width){
-        int width = ComponentWidth(sourceComponent);
-        if (width <= max_width) {
+    private void RecursivelyFindValidComponent(FilteredComponent<T> sourceComponent){
+        if (tester.IsValid(sourceComponent)) {
             SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent.pixelList, sourceComponent.value());
             nodes.add(newRoot);
-            RecursivelyAddToTree(sourceComponent, newRoot, max_width);
+            RecursivelyAddToTree(sourceComponent, newRoot);
         }
         else{
             for (final FilteredComponent<T> sourceChildren : sourceComponent.getChildren()) {
-                RecursivelyFindValidComponent(sourceChildren, max_width);
+                RecursivelyFindValidComponent(sourceChildren);
             }
         }
     }
 
-    private void RecursivelyAddToTree(FilteredComponent<T> sourceParent, SimpleComponent<T> targetParent, int max_width) {
+    private void RecursivelyAddToTree(FilteredComponent<T> sourceParent, SimpleComponent<T> targetParent) {
         for (final FilteredComponent<T> sourceChild : sourceParent.getChildren()) {
-            int width = ComponentWidth(sourceChild);
-            if (width <= max_width) {  // if child meets condition, add it and with its children
+            if (tester.IsValid(sourceChild)) {  // if child meets condition, add it and with its children
                 SimpleComponent<T> targetChild = CreateTargetChild(targetParent, sourceChild);
-                RecursivelyAddToTree(sourceChild, targetChild, max_width);
+                RecursivelyAddToTree(sourceChild, targetChild);
             } else {  // continue search for deeper component-nodes
-                RecursivelyAddToTree(sourceChild, targetParent, max_width);
+                RecursivelyAddToTree(sourceChild, targetParent);
             }
         }
     }
@@ -80,24 +79,5 @@ public final class SimpleComponentTree<T extends Type<T>>
     public HashSet<SimpleComponent<T>> roots() {
         return roots;
     }
-
-    private int ComponentWidth(Component component) {
-        ValuePair<Integer, Integer> limits = getComponentLimits(component.iterator(), 0);
-        return limits.b - limits.a;
-    }
-
-    private ValuePair<Integer, Integer> getComponentLimits(Iterator<Localizable> pixelPositionIterator, int dim) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-
-        while (pixelPositionIterator.hasNext()) {
-            Localizable location = pixelPositionIterator.next();
-            final int pos = location.getIntPosition(dim);
-            min = Math.min(min, pos);
-            max = Math.max(max, pos);
-        }
-        return new ValuePair<>(min, max);
-    }
-
 }
 

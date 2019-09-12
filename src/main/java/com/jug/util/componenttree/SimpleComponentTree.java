@@ -6,6 +6,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.Type;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -54,21 +55,25 @@ public final class SimpleComponentTree<T extends Type<T>>
         }
     }
 
-    private void RecursivelyAddToTree(FilteredComponent<T> sourceComponent, SimpleComponent<T> targetComponent, int max_width) {
-        int width = ComponentWidth(sourceComponent);
-        if (width <= max_width) {
-            List<FilteredComponent<T>> children = sourceComponent.getChildren();
-            for (final FilteredComponent<T> sourceChild : children) {
-                SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild.pixelList, sourceChild.value());
-                targetChild.setParent(targetComponent);
-                targetComponent.addChild(targetChild);
-                nodes.add(targetChild);
+    private void RecursivelyAddToTree(FilteredComponent<T> sourceParent, SimpleComponent<T> targetParent, int max_width) {
+        for (final FilteredComponent<T> sourceChild : sourceParent.getChildren()) {
+            int width = ComponentWidth(sourceChild);
+            if (width <= max_width) {  // if child meets condition, add it and with its children
+                SimpleComponent<T> targetChild = CreateTargetChild(targetParent, sourceChild);
                 RecursivelyAddToTree(sourceChild, targetChild, max_width);
+            } else {  // continue search for deeper component-nodes
+                RecursivelyAddToTree(sourceChild, targetParent, max_width);
             }
         }
-        else{
-            RecursivelyAddToTree(sourceComponent, targetComponent, max_width);
-        }
+    }
+
+    @NotNull
+    private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, FilteredComponent<T> sourceChild) {
+        SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild.pixelList, sourceChild.value());
+        targetChild.setParent(targetComponent);
+        targetComponent.addChild(targetChild);
+        nodes.add(targetChild);
+        return targetChild;
     }
 
     @Override

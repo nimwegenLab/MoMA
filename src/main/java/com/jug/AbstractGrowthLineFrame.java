@@ -238,8 +238,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 //        componentTree = buildIntensityTree(intervalView);
 
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
+        Set<C> roots_orig = componentTree.roots();
 		componentTree = new SimpleComponentTree(componentTree);
-//		Set<C> roots = componentTree.roots();
+		Set<C> roots = componentTree.roots();
 		System.out.println("done");
 //		componentTree = ComponentTreeUtils.filterByComponentsWidth(componentTree, 10);
 //		Plotting.drawComponentTree(componentTree);

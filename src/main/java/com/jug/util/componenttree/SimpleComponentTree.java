@@ -27,7 +27,7 @@ public final class SimpleComponentTree<C extends Component<T, C>, T extends Type
         int maxComponentWidth = 20;
 
         for (final C root : componentForest.roots()) {
-            RecursivelyAddAsRootIfValid(root, maxComponentWidth);
+            RecursivelyAddNodeIfValid(root, maxComponentWidth);
 
 //                ArrayList< C > ctnLevel = new ArrayList<>();
 //				ctnLevel.add( root );
@@ -44,14 +44,14 @@ public final class SimpleComponentTree<C extends Component<T, C>, T extends Type
 //        nodes.add( component );
     }
 
-    private void RecursivelyAddAsRootIfValid(C component, int max_width) {
+    private void RecursivelyAddNodeIfValid(C component, int max_width) {
         int width = ComponentWidth(component);
         if (width <= max_width) {
             roots.add(component);
         } else {
             List<C> children = component.getChildren();
             for (final C child : children) {
-                RecursivelyAddAsRootIfValid(child, max_width);
+                RecursivelyAddNodeIfValid(child, max_width);
             }
         }
     }

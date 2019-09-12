@@ -21,43 +21,12 @@ public final class SimpleComponentTree<T extends Type<T>>
         implements
         ComponentForest<SimpleComponent<T>> {
     private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
-    private final HashSet<FilteredComponent<T>> roots = new HashSet<>();
-    private final HashSet<SimpleComponent<T>> roots_new = new HashSet<>();
+    private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
 
     public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest) {
         int maxComponentWidth = 20;
-
         CreateTree(componentForest, maxComponentWidth);
-
-//        for (final FilteredComponent<T> root : componentForest.roots()) {
-//            RecursivelyAddNodeIfValid(root, maxComponentWidth);
-//
-////                ArrayList< C > ctnLevel = new ArrayList<>();
-////				ctnLevel.add( root );
-////				while ( ctnLevel.size() > 0 ) {
-////					for ( final Component< ?, ? > ctn : ctnLevel ) {
-////					}
-////					ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
-////				}
-//        }
-
-//        for ( final FilteredComponent< T > c : component.children )
-//            roots.remove( c );
-//        roots.add( component );
-//        nodes.add( component );
     }
-
-//    private void RecursivelyAddNodeIfValid(FilteredComponent<T> component, int max_width) {
-//        int width = ComponentWidth(component);
-//        if (width <= max_width) {
-//            roots.add(component);
-//        } else {
-//            List<FilteredComponent<T>> children = component.getChildren();
-//            for (final FilteredComponent<T> child : children) {
-//                RecursivelyAddNodeIfValid(child, max_width);
-//            }
-//        }
-//    }
 
     private void CreateTree(ComponentForest<FilteredComponent<T>> componentForest, int max_width) {
         for (final FilteredComponent<T> root : componentForest.roots()) {
@@ -66,7 +35,7 @@ public final class SimpleComponentTree<T extends Type<T>>
         for(SimpleComponent<T> node:nodes){
             if(node.getParent() == null)
             {
-                roots_new.add(node);
+                roots.add(node);
             }
         }
     }
@@ -97,28 +66,11 @@ public final class SimpleComponentTree<T extends Type<T>>
                 RecursivelyAddToTree(sourceChild, targetChild, max_width);
             }
         }
-//            List<C> children = component.getChildren();
-//            }
-
-        // if(component.getParent == null)
-//            roots.add(component);
-
-
-
-//        int width = ComponentWidth(component);
-//        if (width <= max_width) {
-//            roots.add(component);
-//        } else {
-//            List<C> children = component.getChildren();
-//            for (final C child : children) {
-//                RecursivelyAddNodeIfValid(child, max_width);
-//            }
-//        }
     }
 
     @Override
     public HashSet<SimpleComponent<T>> roots() {
-        return roots_new;
+        return roots;
     }
 
     private int ComponentWidth(Component component) {

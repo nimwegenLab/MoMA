@@ -66,6 +66,9 @@ public final class SimpleComponentTree<T extends Type<T>>
                 RecursivelyAddToTree(sourceChild, targetChild, max_width);
             }
         }
+        else{
+            RecursivelyAddToTree(sourceComponent, targetComponent, max_width);
+        }
     }
 
     @Override

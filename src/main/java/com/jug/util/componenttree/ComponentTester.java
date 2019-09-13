@@ -14,36 +14,39 @@ public class ComponentTester<T extends Type<T>, C extends Component<T, C>>
         implements
         IComponentTester<T, C> {
 
-    private List<Function<Number, ? extends Number>> testMethods;
+    private List<ILocationTester> testers;
 
-//    public ComponentTester(List<Function<Number, ? extends Number>> testMethods) {
-//        this.testMethods = testMethods;
-//    }
-//public ComponentTester(List<Function<Number, ? extends Number>> testMethods) {
-//    this.testMethods = testMethods;
-//}
+    public ComponentTester(List<ILocationTester> testers) {
+        this.testers = testers;
+    }
 
     @Override
     public boolean IsValid(C component) {
-        int maxComponentWidth = 20;
-        return ComponentWidth(component) <= maxComponentWidth;
-    }
-
-    private int ComponentWidth(Component component) {
-        ValuePair<Integer, Integer> limits = getComponentLimits(component.iterator(), 0);
-        return limits.b - limits.a;
-    }
-
-    private ValuePair<Integer, Integer> getComponentLimits(Iterator<Localizable> pixelPositionIterator, int dim) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-
+        Iterator<Localizable> pixelPositionIterator = component.iterator();
         while (pixelPositionIterator.hasNext()) {
             Localizable location = pixelPositionIterator.next();
-            final int pos = location.getIntPosition(dim);
-            min = Math.min(min, pos);
-            max = Math.max(max, pos);
+            if(!TestersReturnValid(location)){
+                ResetTesters();
+                return false;
+            }
         }
-        return new ValuePair<>(min, max);
+        ResetTesters();
+        return true;
+    }
+
+
+    private boolean TestersReturnValid(Localizable location){
+        for(ILocationTester tester: testers){
+            if(!tester.IsValid(location)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void ResetTesters(){
+        for(ILocationTester tester: testers){
+            tester.Reset();
+        }
     }
 }

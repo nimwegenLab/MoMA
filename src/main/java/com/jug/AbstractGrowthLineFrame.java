@@ -13,8 +13,7 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 
-import com.jug.util.componenttree.ComponentTester;
-import com.jug.util.componenttree.SimpleComponentTree;
+import com.jug.util.componenttree.*;
 import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
@@ -192,10 +191,20 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 */
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
-		ComponentTester<FloatType, C> tester = new ComponentTester<>();
+		ILocationTester ctester = new ComponentExtentTester(20, 0);
+		ArrayList<ILocationTester> testers = new ArrayList<>();
+		testers.add(ctester);
+        ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
 		componentTree = new SimpleComponentTree(componentTree, tester);
 		System.out.println("done");
 	}
+
+//25.9: Project presentation; and group assignment
+//16.09: 	discussion of project design
+//30.10: final presentation
+//
+//
+//optimization values
 
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
 //	{

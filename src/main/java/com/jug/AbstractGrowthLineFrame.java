@@ -1,6 +1,7 @@
 package com.jug;
 
 import java.util.*;
+import java.util.function.Function;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -9,12 +10,10 @@ import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.ArgbDrawingUtils;
-import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 
 import com.jug.util.componenttree.*;
-import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -30,6 +29,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+
+import static com.jug.MoMA.GL_OFFSET_TOP;
 
 /**
  * @author jug
@@ -192,19 +193,15 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
         componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
 		ILocationTester ctester = new ComponentExtentTester(20, 0);
+		Function<Integer, Boolean> condition = (param) -> param >= GL_OFFSET_TOP;
+		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
 		ArrayList<ILocationTester> testers = new ArrayList<>();
 		testers.add(ctester);
+		testers.add(boundaryTester);
         ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
 		componentTree = new SimpleComponentTree(componentTree, tester);
 		System.out.println("done");
 	}
-
-//25.9: Project presentation; and group assignment
-//16.09: 	discussion of project design
-//30.10: final presentation
-//
-//
-//optimization values
 
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
 //	{

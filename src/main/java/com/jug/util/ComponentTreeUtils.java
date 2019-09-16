@@ -9,7 +9,6 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -26,11 +25,11 @@ public class ComponentTreeUtils {
 	 * @param tree
 	 * @return
 	 */
-	public static < C extends Component< ?, C > > List< C > getListOfLeavesInOrder( final ComponentTree< C > tree ) {
+	public static < C extends Component< ?, C > > List< C > getListOfLeavesInOrder( final ComponentForest< C > tree ) {
 		final List< C > leaves = new ArrayList<>();
 
 		for ( final C root : tree.roots() ) {
-			recursivelyAddLeaves( root, leaves );
+			recursivelyAddLeavesToList( root, leaves );
 		}
 
 		return leaves;
@@ -39,12 +38,12 @@ public class ComponentTreeUtils {
 	/**
 	 * @param leaves
 	 */
-	private static < C extends Component< ?, C > > void recursivelyAddLeaves( final C node, final List< C > leaves ) {
+	private static < C extends Component< ?, C > > void recursivelyAddLeavesToList(final C node, final List< C > leaves ) {
 		if ( node.getChildren().size() == 0 ) {
 			leaves.add( node );
 		} else {
 			for ( final C child : node.getChildren() ) {
-				recursivelyAddLeaves( child, leaves );
+				recursivelyAddLeavesToList( child, leaves );
 			}
 		}
 	}

@@ -1,6 +1,7 @@
 package com.jug;
 
 import java.util.*;
+import java.util.function.Function;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -12,6 +13,7 @@ import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 
+import com.jug.util.componenttree.*;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -27,6 +29,9 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+
+import static com.jug.MoMA.GL_OFFSET_BOTTOM;
+import static com.jug.MoMA.GL_OFFSET_TOP;
 
 /**
  * @author jug
@@ -186,66 +191,20 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
 	 */
-	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
-//		Img<FloatType> imgTmp = runNetwork(img);
-
-//		uiService.show(Views.hyperSlice(imgTmp, 2, 0));
-//		ops.convert().imageType(out, in, typeConverter)
-		
-//		Img<FloatType> imgTmpNew  = ImgFaco
-//		ops.convert().imageType(out, imgTmp, typeConverter)
-//		
-//		ImageJFunctions.C
-		
-//		final float[] fkt = getSimpleGapSeparationValues( img );
-		
-//		final float[] fkt = getSimpleGapSeparationValues( imgTmp );
-
-//		Plotting.plotArray(fkt)
-//		Plotting.plotArray(fkt, "Line Intensity Plot", "x [px]", "intensity [a.u.]");
-//		ops.wrap
-//		ops.math().
-		
-//		RandomAccessibleInterval imgTmpScaled = ops.transform().scaleView(imgTmp, new double[] {1.0,255.0}, new NLinearInterpolatorFactory());
-//		Pair<FloatType, FloatType> res = ops.stats().minMax(imgTmp);
-//		System.out.println(res.getA());
-//		System.out.println(res.getB());
-//		IterableInterval<FloatType> tmp = ops.image().normalize(imgTmp);
-//		uiService.show(imgTmp); 
-//		(RandomAccessibleIntveral) imgTmpNew;
-//		ops.stats().minMax(imgTmp);
-
-//		Plotting.surfacePlot(imgTmp, 2, 5);
-
-//		if ( fkt.length > 0 ) {
-//			final RandomAccessibleInterval< FloatType > raiFkt = new ArrayImgFactory< FloatType >().create( new int[] { fkt.length }, new FloatType() );
-//			final RandomAccess< FloatType > ra = raiFkt.randomAccess();
-//			for ( int i = 0; i < fkt.length; i++ ) {
-//				ra.setPosition( i, 0 );
-//				ra.get().set( fkt[ i ] );
-//			}
-//			isParaMaxFlowComponentTree = false;
-//			componentTree = buildIntensityTree( raiFkt );
-//		}
-
-//		componentTree = buildIntensityTree( imgTmp );
-
-//        FinalInterval roiForComponentGeneration = new FinalInterval(new long[]{0, MoMA.GL_OFFSET_BOTTOM}, new long[]{img.dimension(0), img.dimension(1) - MoMA.GL_OFFSET_TOP});
-//        IntervalView<FloatType> intervalView = Views.interval(Views.hyperSlice(img, 2, frameIndex), roiForComponentGeneration);
-//        componentTree = buildIntensityTree(intervalView);
-
-        componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
-//		Plotting.drawComponentTree(componentTree);
-
-		//		FilteredComponentTree tmp2 = (FilteredComponentTree) componentTree;
-//		tmp2.printPixelList(0);
-//		printPixelList(tmp2.nodes[0].pixelList);
+	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
+		componentTree = buildIntensityTree(Views.hyperSlice(img, 2, frameIndex));
+		ILocationTester ctester = new ComponentExtentTester(0, 20);
+		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
+//        if ( lstPoints.get( x ).getIntPosition( 0 ) < GL_OFFSET_LATERAL || lstPoints.get( x ).getIntPosition( 0 ) > imgTemp.dimension( 0 ) - GL_OFFSET_LATERAL ) {
+		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
+		ArrayList<ILocationTester> testers = new ArrayList<>();
+		testers.add(ctester);
+		testers.add(boundaryTester);
+		ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
+		componentTree = new SimpleComponentTree(componentTree, tester);
+		System.out.println("done");
 	}
-	
 
-	
-
-	
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )
 //	{
 //		final RandomAccess< T > in = source.randomAccess();
@@ -518,19 +477,19 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
 				ArgbDrawingUtils.taintForcedComponentTreeNode(
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			} else {
 				ArgbDrawingUtils.taintComponentTreeNode(
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),
-						offsetY + MoMA.GL_OFFSET_TOP );
+						offsetY );
 			}
 		}
 	}
@@ -554,7 +513,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			}
 		}
 
-		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY + MoMA.GL_OFFSET_TOP );
+		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
 	}
 
 	/**

@@ -478,10 +478,10 @@ public class CellStatsExporter {
 
 		// Line 6: bottomOffset
 		linesToExport.add(
-				"glHeight = " + ( h - MoMA.GL_OFFSET_BOTTOM - MoMA.GL_OFFSET_TOP ) + "\n" );
+				"glHeight = " + ( h - MoMA.GL_OFFSET_BOTTOM ) + "\n" );
 
 		// Line 7: track region (pixel row interval we perform tracking within -- this is all but top and bottom offset areas)
-		linesToExport.add( String.format("trackRegionInterval = [%d,%d]", MoMA.GL_OFFSET_TOP, h - 1 - MoMA.GL_OFFSET_BOTTOM ) );
+		linesToExport.add( String.format("trackRegionInterval = [%d]", h - 1 ) );
 
 		// Export all cells (we found all their starting segments above)
 		for (SegmentRecord segmentRecord : startingPoints) {

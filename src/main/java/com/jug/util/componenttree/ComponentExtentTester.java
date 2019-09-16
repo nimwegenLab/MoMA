@@ -10,7 +10,7 @@ public class ComponentExtentTester implements ILocationTester {
     private final int maxValue;
     private final int dim;
 
-    public ComponentExtentTester(int maxValue, int dim) {
+    public ComponentExtentTester(int dim, int maxValue) {
         this.maxValue = maxValue;
         this.dim = dim;
     }

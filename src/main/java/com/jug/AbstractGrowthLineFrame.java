@@ -30,6 +30,7 @@ import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import static com.jug.MoMA.GL_OFFSET_BOTTOM;
 import static com.jug.MoMA.GL_OFFSET_TOP;
 
 /**
@@ -190,15 +191,16 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Using the imglib2 component tree to find the most stable components
 	 * (bacteria).
 	 */
-	public void generateSimpleSegmentationHypotheses( final Img< FloatType > img, int frameIndex ) {
-        componentTree = buildIntensityTree( Views.hyperSlice(img, 2, frameIndex) );
-		ILocationTester ctester = new ComponentExtentTester(20, 0);
-		Function<Integer, Boolean> condition = (param) -> param >= GL_OFFSET_TOP;
+	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
+		componentTree = buildIntensityTree(Views.hyperSlice(img, 2, frameIndex));
+		ILocationTester ctester = new ComponentExtentTester(0, 20);
+//		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
+		Function<Integer, Boolean> condition = (pos) -> pos >= GL_OFFSET_TOP;
 		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
 		ArrayList<ILocationTester> testers = new ArrayList<>();
 		testers.add(ctester);
 		testers.add(boundaryTester);
-        ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
+		ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
 		componentTree = new SimpleComponentTree(componentTree, tester);
 		System.out.println("done");
 	}

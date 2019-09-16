@@ -1043,7 +1043,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 						if ( file != null ) {
 
 							// GL_OFFSET_BOTTOM adjustment if needed...
-							doBottomOffsetAdjustmentIfNecessary( file );
 
 							if ( ilp == null ) {
 								prepareOptimization();
@@ -1056,47 +1055,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					}
 				}
 
-				private void doBottomOffsetAdjustmentIfNecessary( final File file )
-						throws FileNotFoundException {
-					final BufferedReader reader = new BufferedReader( new FileReader( file ) );
-
-					String line;
-					try {
-						while ( ( line = reader.readLine() ) != null ) {
-							// ignore comments and empty lines
-							if ( line.trim().startsWith( "#" ) || line.trim().length() == 0 )
-								continue;
-
-							final String[] columns = line.split( "," );
-							if ( columns.length > 1 ) {
-								final String keyword = columns[ 0 ].trim();
-
-								if ( keyword.equals( "BOTTOM_OFFSET" ) ) {
-									final int newBottomOffset =
-											Integer.parseInt( columns[ 1 ].trim() );
-									if ( MoMA.GL_OFFSET_BOTTOM != newBottomOffset ) {
-										MoMA.GL_OFFSET_BOTTOM = newBottomOffset;
-
-										final String message =
-												" >> Loaded tracking is based on a different value for GL_OFFSET_BOTTOM...\n >> Segmentation hypotheses need to be rebuild, please be patient...";
-										System.out.println( message );
-										if ( !MoMA.HEADLESS ) {
-											JOptionPane.showMessageDialog(
-													MoMA.getGui(),
-													message,
-													"Bottom offset needs adjusting...",
-													JOptionPane.INFORMATION_MESSAGE );
-										}
-										MoMA.instance.restartFromGLSegmentation();
-										MoMA.getGui().dataToDisplayChanged();
-									}
-								}
-							}
-						}
-					} catch ( final NumberFormatException | IOException | HeadlessException e ) {
-						e.printStackTrace();
-					}
-				}
 
 			} );
 			t.start();

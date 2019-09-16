@@ -151,8 +151,7 @@ public class MoMA {
 	 * of from bottom. If set to -1, an automatic bottom offset detection will
 	 * be launched when data is read from disk.
 	 */
-	public static int GL_OFFSET_BOTTOM = -1;
-	private static boolean GL_OFFSET_BOTTOM_AUTODETECT = true;
+	public static int GL_OFFSET_BOTTOM = 0;
 
 	/**
 	 * Maximum offset in x direction (with respect to growth line center) to
@@ -619,7 +618,6 @@ public class MoMA {
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
 		GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) ) );
 		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
-		GL_OFFSET_BOTTOM_AUTODETECT = GL_OFFSET_BOTTOM == -1;
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
 		MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
@@ -1267,9 +1265,6 @@ public class MoMA {
 			props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
 			props.setProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) );
 			int offset = GL_OFFSET_BOTTOM;
-			if ( GL_OFFSET_BOTTOM_AUTODETECT ) {
-				offset = -1;
-			}
 			props.setProperty( "GL_OFFSET_BOTTOM", Integer.toString( offset ) );
 			props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );
 			props.setProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) );
@@ -1542,7 +1537,7 @@ public class MoMA {
 			int maxWellCenters = 0;
 			int maxWellCentersIdx = 0;
 			for ( int y = 0; y < frameWellCenters.size(); y++ ) {
-				if ( y < GL_OFFSET_TOP || y >= imgTemp.dimension( 1 ) - GL_OFFSET_BOTTOM ) {
+				if ( y < GL_OFFSET_TOP || y >= imgTemp.dimension( 1 ) - GL_OFFSET_BOTTOM ) { // this crops the length of the vertical green light to the region between GL_OFFSET_BOTTOM and GL_OFFSET_TOP
 					frameWellCenters.get( y ).clear();
 				} else {
 					if ( maxWellCenters < frameWellCenters.get( y ).size() ) {
@@ -2004,17 +1999,6 @@ public class MoMA {
 			hideConsoleLater = true;
 		}
 
-		if ( GL_OFFSET_BOTTOM_AUTODETECT ) {
-			System.out.print( "Automatic estimation of GL_OFFSET_BOTTOM..." );
-			resetImgTempToRaw();
-			autodetectBottomOffset();
-			System.out.println( " done!" );
-		} else {
-			if ( GL_OFFSET_BOTTOM == -1 ) {
-				System.err.println(
-						"GL_OFFSET_BOTTOM and GL_OFFSET_BOTTOM_AUTODETECT are inconsistent. This is a programmatic problem, please contact the MotherMachine developers!" );
-			}
-		}
 
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
@@ -2042,57 +2026,6 @@ public class MoMA {
 		}
 	}
 
-	/**
-	 * Autodetects bottom offset.
-	 * This is implemented by averaging all pixel-rows over all time-points and
-	 * finding the first entry from below that is above the midpoint between
-	 * average intensity of the lowest 3 rows and the lower half of the GL.
-	 */
-	private void autodetectBottomOffset() {
-
-		final int HEURISTIC_CONSTANT = 2; // that many pixels I move down after finding the onset point
-
-		// Project all images (relevant parts only) + sum rows to single values
-		final long[] mins = new long[getImgTemp().numDimensions()];
-		final long[] maxs = new long[getImgTemp().numDimensions()];
-		getImgTemp().min( mins );
-		getImgTemp().max( maxs );
-		final long xDimLen = getImgTemp().dimension( 0 );
-		// Note: the '/3' below was not there. Basel noted some rare problems by averaging the entire lateral offset range when there was
-		// some brighter background close below the GL (at the imgage border). In their case that came from the cropped numbers below the GL.
-		mins[ 0 ] = xDimLen / 2 - GL_OFFSET_LATERAL / 3; // we use the fact that we know that the GL is in the center of the image given to us
-		maxs[ 0 ] = xDimLen / 2 + GL_OFFSET_LATERAL / 3; // we use the fact that we know that the GL is in the center of the image given to us
-		final RandomAccessibleInterval<FloatType> centralArea = Views.interval( getImgTemp(), mins, maxs );
-		final List< FloatType > rowTimeAverages = new Loops< FloatType, FloatType >()
-				.forEachHyperslice( centralArea, 1, SumOfRai.class, opService);
-
-		// compute average of lower half averages
-		float lowerHalfAvg = 0;
-		for ( int i = rowTimeAverages.size() / 2; i < rowTimeAverages.size(); i++ ) {
-			lowerHalfAvg += rowTimeAverages.get( i ).get();
-		}
-		lowerHalfAvg /= rowTimeAverages.size() / 2.0;
-
-		// compute average of lowest 3 (or such) rows
-		float lowestRowsAvg = 0;
-		final int numRows = 3;
-		for ( int i = rowTimeAverages.size() - numRows; i < rowTimeAverages.size(); i++ ) {
-			lowestRowsAvg += rowTimeAverages.get( i ).get();
-		}
-		lowestRowsAvg /= numRows;
-
-		// Locate bottom onset
-		int bottom_offset = 25;
-		for ( int i = rowTimeAverages.size() - 1; i >= 0; i-- ) {
-			if ( rowTimeAverages.get( i ).get() > ( lowerHalfAvg + lowestRowsAvg ) / 2 ) {
-				bottom_offset = rowTimeAverages.size() - i + 1 - HEURISTIC_CONSTANT;
-				break;
-			}
-		}
-
-		System.out.println( "\n  >> Detected GL_OFFSET_BOTTOM is: " + bottom_offset );
-		GL_OFFSET_BOTTOM = bottom_offset;
-	}
 
 	/**
 	 * @return the datasetName

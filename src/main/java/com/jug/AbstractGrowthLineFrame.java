@@ -194,8 +194,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
 		componentTree = buildIntensityTree(Views.hyperSlice(img, 2, frameIndex));
 		ILocationTester ctester = new ComponentExtentTester(0, 20);
-//		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
-		Function<Integer, Boolean> condition = (pos) -> pos >= GL_OFFSET_TOP;
+		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
 		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
 		ArrayList<ILocationTester> testers = new ArrayList<>();
 		testers.add(ctester);

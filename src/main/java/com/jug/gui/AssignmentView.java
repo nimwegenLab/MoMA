@@ -376,8 +376,8 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 */
 	private void drawDivisionAssignment(final Graphics2D g2, final DivisionAssignment da) {
 		final Hypothesis< Component< FloatType, ? >> leftHyp = da.getSourceHypothesis();
-		final Hypothesis< Component< FloatType, ? >> rightHypUpper = da.getUpperDesinationHypothesis();
-		final Hypothesis< Component< FloatType, ? >> rightHypLower = da.getLowerDesinationHypothesis();
+		final Hypothesis< Component< FloatType, ? >> rightHypLower = da.getUpperDesinationHypothesis();
+		final Hypothesis< Component< FloatType, ? >> rightHypUpper = da.getLowerDesinationHypothesis();
 
 		final ValuePair< Integer, Integer > limitsLeft = leftHyp.getLocation();
 		final ValuePair< Integer, Integer > limitsRightUpper = rightHypUpper.getLocation();

@@ -449,13 +449,13 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @throws GRBException
 	 */
-	private void enumerateAndAddAssignments( final int t ) throws GRBException {
-		final List< Hypothesis< Component< FloatType, ? >>> curHyps = nodes.getHypothesesAt( t );
-		final List< Hypothesis< Component< FloatType, ? >>> nxtHyps = nodes.getHypothesesAt( t + 1 );
+	private void enumerateAndAddAssignments( final int timeStep ) throws GRBException {
+		final List< Hypothesis< Component< FloatType, ? >>> currentHyps = nodes.getHypothesesAt( timeStep );
+		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
 
-		addExitAssignments( t, curHyps );
-		addMappingAssignments( t, curHyps, nxtHyps );
-		addDivisionAssignments( t, curHyps, nxtHyps );
+		addExitAssignments( timeStep, currentHyps );
+		addMappingAssignments( timeStep, currentHyps, nextHyps );
+		addDivisionAssignments( timeStep, currentHyps, nextHyps );
 		this.reportProgress();
 	}
 
@@ -688,7 +688,7 @@ public class GrowthLineTrackingILP {
 	 * that this function also looks for suitable pairs of hypothesis in
 	 * nxtHyps, since division-assignments naturally need two right-neighbors.
 	 *
-	 * @param t
+	 * @param timeStep
 	 *            the time-point from which the <code>curHyps</code> originate.
 	 * @param curHyps
 	 *            a list of hypothesis for which a
@@ -698,14 +698,12 @@ public class GrowthLineTrackingILP {
 	 *            added <code>DivisionAssignments</code> should end at.
 	 * @throws GRBException
 	 */
-	private void addDivisionAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
+	private void addDivisionAssignments( final int timeStep, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
 		float cost;
 
-		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			int j = 0;
 			final float fromCost = from.getCosts();
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
@@ -739,7 +737,7 @@ public class GrowthLineTrackingILP {
 							// weights =  [ 0.1, 0.9, 0.5, 0.5, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.1, 0.03 ]
 							//             -0.6, 1.1, 0.9, 0.6, 1.6, 1.1, 0.3, 0.4, 0.3, 0.8, 1.6, 1.3, 0.02
 							if ( cost <= CUTOFF_COST ) {
-								final String name = String.format( "a_%d^DIVISION--(%d,%d)", t, from.getId(), to.getId() );
+								final String name = String.format( "a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId() );
 								final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
 
 								costManager.addDivisionVariable( newLPVar, featureValues );
@@ -748,17 +746,15 @@ public class GrowthLineTrackingILP {
 								}
 
 								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
-								nodes.addAssignment( t, da );
+								nodes.addAssignment( timeStep, da );
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );
 								edgeSets.addToLeftNeighborhood( lowerNeighbor, da );
-								j++;
 							}
 						}
 					}
 				}
 			}
-			i++;
 		}
 	}
 

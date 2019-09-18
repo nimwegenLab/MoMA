@@ -136,7 +136,7 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 	}
 
 	/**
-	 * Adds an assignment go the left-neighborhood of a segmentation hypothesis.
+	 * Adds an assignment to the left-neighborhood of a segmentation hypothesis.
 	 *
 	 * @param h
 	 *            a hypothesis of type <code>H</code>.

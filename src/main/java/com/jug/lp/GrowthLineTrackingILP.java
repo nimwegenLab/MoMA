@@ -708,9 +708,10 @@ public class GrowthLineTrackingILP {
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-					for ( final Component< FloatType, ? > neighborCTN : ComponentTreeUtils.getRightNeighbors( to.getWrappedHypothesis() ) ) {
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getRightNeighbors(to.getWrappedHypothesis());
+					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
 						@SuppressWarnings( "unchecked" )
-						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( neighborCTN );
+						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
 						if ( lowerNeighbor == null ) {
 							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeris::adDivisionAssignment(...)" );
 						} else {

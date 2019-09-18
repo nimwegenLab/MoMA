@@ -4,7 +4,10 @@ import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.pixellist.PixelList;
+import net.imglib2.img.Img;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.integer.LongType;
+import net.imglib2.view.IntervalView;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,6 +22,20 @@ public final class SimpleComponent<T extends Type<T>>
      * Pixels in the component.
      */
     private final PixelList pixelList;
+    private final IntervalView<T> sourceImage;
+
+    public IntervalView<T> getSourceImage() {
+        return sourceImage;
+    }
+
+    //    public Img<LongType> getLinkedList()
+//    {
+//        return linkedList;
+//    }
+//    public Img< LongType > getLinkedList() {
+//        return pixelList.locationsAccess;
+//    }
+
     /**
      * Maximum threshold value of the connected component.
      */
@@ -41,9 +58,10 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public SimpleComponent(PixelList pixelList, T value) {
+    public SimpleComponent(PixelList pixelList, T value, IntervalView<T> sourceImage) {
         this.pixelList = pixelList;
         this.value = value;
+        this.sourceImage = sourceImage;
     }
 
     @Override

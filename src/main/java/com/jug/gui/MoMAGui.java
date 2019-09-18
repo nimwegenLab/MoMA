@@ -27,6 +27,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.jug.lp.*;
+import com.moma.auxiliary.Plotting;
 import org.math.plot.Plot2DPanel;
 
 import com.jug.GrowthLine;
@@ -97,6 +98,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //	private JButton btnRedoAllHypotheses;
 //	private JButton btnExchangeSegHyps;
 	private JButton btnRestart;
+	private JButton viewSegmentsButton;
 	private JButton btnOptimizeMore;
 	private JButton btnExportHtml;
 	private JButton btnExportData;
@@ -649,7 +651,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		plot = new Plot2DPanel();
 		updatePlotPanels();
 		plot.setPreferredSize( new Dimension( 500, 500 ) );
-		panelDataView.add( plot, BorderLayout.CENTER );
+		panelDataView.add( plot, BorderLayout.NORTH );
+//		panelHorizontalHelper = new JPanel( new FlowLayout( FlowLayout.RIGHT, 5, 0 ) );
+//		panelHorizontalHelper.setBorder( BorderFactory.createEmptyBorder( 3, 0, 5, 0 ) );
+
+		viewSegmentsButton = new JButton( "View Segments" );
+		viewSegmentsButton.addActionListener( this );
+		panelDataView.add( viewSegmentsButton );
 
 		return panelDataView;
 	}
@@ -1265,6 +1273,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		if ( e.getSource().equals( btnExportData ) ) {
 			final Thread t = new Thread(this::exportDataFiles);
 			t.start();
+		}
+		if ( e.getSource().equals( viewSegmentsButton ) ) {
+//			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+
+//			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp().getCurrentGLF();
+//			Object var = model.getCurrentGL().getIlp().getCurrentGLF();
+			Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree());
 		}
 		setFocusToTimeSlider();
 	}

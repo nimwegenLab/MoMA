@@ -192,7 +192,8 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * (bacteria).
 	 */
 	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
-		componentTree = buildIntensityTree(Views.hyperSlice(img, 2, frameIndex));
+		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
+		componentTree = buildIntensityTree(currentImage);
 		ILocationTester ctester = new ComponentExtentTester(0, 20);
 		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
 //        if ( lstPoints.get( x ).getIntPosition( 0 ) < GL_OFFSET_LATERAL || lstPoints.get( x ).getIntPosition( 0 ) > imgTemp.dimension( 0 ) - GL_OFFSET_LATERAL ) {
@@ -201,7 +202,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		testers.add(ctester);
 		testers.add(boundaryTester);
 		ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
-		componentTree = new SimpleComponentTree(componentTree, tester);
+		componentTree = new SimpleComponentTree(componentTree, tester, currentImage);
 		System.out.println("done");
 	}
 

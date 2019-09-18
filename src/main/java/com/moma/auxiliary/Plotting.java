@@ -1,6 +1,7 @@
 package com.moma.auxiliary;
 
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.componenttree.SimpleComponent;
 import com.jug.util.filteredcomponents.FilteredComponentTree;
 import ij.IJ;
 import ij.ImagePlus;
@@ -18,7 +19,7 @@ import net.imglib2.view.Views;
 
 import java.util.ArrayList;
 
-class Plotting {
+public class Plotting {
 
 	public static < C extends Component< FloatType, C >> void drawComponentTree(ComponentForest< C > ct){
 //		ct.
@@ -32,10 +33,16 @@ class Plotting {
 //		final Cursor<UnsignedByteType> in = sampledImgNew.cursor();
 		long xDim = 0;
 		long yDim = 0;
-		if ( ct instanceof FilteredComponentTree) {
-			FilteredComponentTree fct = (FilteredComponentTree) ct;
-			xDim = fct.getLinkedList().dimension(0);
-			yDim = fct.getLinkedList().dimension(1);
+//		if ( ct instanceof FilteredComponentTree) {
+//			FilteredComponentTree fct = (FilteredComponentTree) ct;
+//			xDim = fct.getLinkedList().dimension(0);
+//			yDim = fct.getLinkedList().dimension(1);
+//		}
+		for ( final C root : ct.roots() ) {
+			if ( root instanceof SimpleComponent) {
+				xDim = ((SimpleComponent) root).getSourceImage().dimension(0);
+				yDim = ((SimpleComponent) root).getSourceImage().dimension(1);
+			}
 		}
 
 		int i = 0;
@@ -51,7 +58,6 @@ class Plotting {
 				}
 				slices.add(componentImageSlice);
 				componentList = ComponentTreeUtils.getAllChildren( componentList );
-				System.out.println("componentList.size(): "+componentList.size());
 				componentLevel++;
 			}
 		}

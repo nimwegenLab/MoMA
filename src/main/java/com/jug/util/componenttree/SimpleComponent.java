@@ -8,6 +8,7 @@ import net.imglib2.type.Type;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,7 +29,7 @@ public final class SimpleComponent <T extends Type<T>>
     /**
      * Pixels in the component.
      */
-    public final PixelList pixelList;
+    private final PixelList pixelList;
 
     /**
      * Maximum threshold value of the connected component.
@@ -62,8 +63,15 @@ public final class SimpleComponent <T extends Type<T>>
         this.parent = parent;
     }
 
+    private Boolean childrenWereReversed = false;
+
     @Override
     public List<SimpleComponent<T>> getChildren() {
+        if(!childrenWereReversed){
+            Collections.reverse(children);
+            childrenWereReversed = true;
+        }
+
         return children;
     }
 

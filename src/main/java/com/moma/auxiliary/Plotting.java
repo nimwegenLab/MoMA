@@ -11,14 +11,8 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.Type;
-import net.imglib2.type.numeric.RealType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -43,7 +37,7 @@ public class Plotting {
             while (componentList.size() > 0) {
                 final RandomAccessibleInterval<FloatType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-                    drawComponent(ctn, sourceImage, componentImageSlice);
+                    copyComponentPixelToComponentImage(ctn, sourceImage, componentImageSlice);
                 }
                 slices.add(componentImageSlice);
                 componentList = ComponentTreeUtils.getAllChildren(componentList);
@@ -52,7 +46,9 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(slices));
     }
 
-    private static void drawComponent(final Component<?, ?> ctn, RandomAccessibleInterval<FloatType> sourceImage, RandomAccessibleInterval<FloatType> targetImage) {
+    private static void copyComponentPixelToComponentImage(final Component<?, ?> ctn,
+                                                           RandomAccessibleInterval<FloatType> sourceImage,
+                                                           RandomAccessibleInterval<FloatType> targetImage) {
         RandomAccess<FloatType> source = sourceImage.randomAccess();
         RandomAccess<FloatType> out = targetImage.randomAccess();
 
@@ -60,7 +56,8 @@ public class Plotting {
             source.setPosition(location);
             out.setPosition(location);
 //			out.get().set(new ARGBType(ARGBType.blue(level)));
-            out.get().set(source.get().get());
+            FloatType valueCopy = source.get().copy();
+            out.get().set(valueCopy);
         }
     }
 

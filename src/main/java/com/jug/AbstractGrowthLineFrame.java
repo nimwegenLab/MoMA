@@ -2,6 +2,7 @@ package com.jug;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -195,7 +196,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 		componentTree = buildIntensityTree(currentImage);
 		ILocationTester ctester = new ComponentExtentTester(0, 20);
-		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
+		Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
 //        if ( lstPoints.get( x ).getIntPosition( 0 ) < GL_OFFSET_LATERAL || lstPoints.get( x ).getIntPosition( 0 ) > imgTemp.dimension( 0 ) - GL_OFFSET_LATERAL ) {
 		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
 		ArrayList<ILocationTester> testers = new ArrayList<>();
@@ -471,7 +472,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		}
 
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
-			final Component< FloatType, ? > ctn = hyp.getWrappedHypothesis();
+			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
 			if ( hyp.isPruned() ) {
 				ArgbDrawingUtils.taintPrunedComponentTreeNode(
 						hyp.isPruneRoot(),
@@ -611,7 +612,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> aa = getParent().getIlp().getOptimalRightAssignments( this.getTime() ).get( hyp ).iterator().next();
 
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+			for (Localizable localizable : hyp.getWrappedComponent()) {
 				final int ypos = localizable.getIntPosition(0);
 				min = Math.min(min, ypos);
 				max = Math.max(max, ypos);
@@ -630,7 +631,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 			// find out where this hypothesis is located along the GL
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+			for (Localizable localizable : hyp.getWrappedComponent()) {
 				final int ypos = localizable.getIntPosition(0);
 				min = Math.min(min, ypos);
 				max = Math.max(max, ypos);

@@ -191,7 +191,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			// figure out which hyps are at current location
 			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
 			if ( hyp != null ) {
-				final Component< FloatType, ? > comp = hyp.getWrappedHypothesis();
+				final Component< FloatType, ? > comp = hyp.getWrappedComponent();
 				glf.drawOptionalSegmentation( screenImage, view, comp );
 				if ( str2ToShow.endsWith( "-" ) ) {
 					str2ToShow += "/+";

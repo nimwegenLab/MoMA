@@ -23,15 +23,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Plotting {
-    public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct, List<Hypothesis<Component<FloatType, ?>>> optimalSegs) {
-        final ArrayList<RandomAccessibleInterval<ARGBType>> slices = new ArrayList<>();
+    public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct,
+                                                                             List<Hypothesis<Component<FloatType, ?>>> ilpSelectedHypotheses) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
+        final ArrayList<RandomAccessibleInterval<ARGBType>> slices = new ArrayList<>();
 
-        List<Component<FloatType, ?>> optimalSegs2 = new ArrayList<>();
-        for (Hypothesis<Component<FloatType, ?>> seg : optimalSegs) {
-            optimalSegs2.add(seg.getWrappedHypothesis());
+        List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
+        for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
+            selectedComponents.add(hypothesis.getWrappedComponent());
         }
 
         C first = ct.roots().iterator().next();
@@ -46,7 +47,7 @@ public class Plotting {
             while (componentList.size() > 0) {
                 final RandomAccessibleInterval<ARGBType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-                    boolean val = optimalSegs2.contains(ctn);
+                    boolean val = selectedComponents.contains(ctn);
                     copyComponentPixelToImage(ctn, sourceImage, componentImageSlice, val);
                 }
                 slices.add(componentImageSlice);

@@ -43,7 +43,7 @@ public class Plotting {
             while (componentList.size() > 0) {
                 final RandomAccessibleInterval<FloatType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-                    drawComponent(ctn, componentImageSlice);
+                    drawComponent(ctn, sourceImage, componentImageSlice);
                 }
                 slices.add(componentImageSlice);
                 componentList = ComponentTreeUtils.getAllChildren(componentList);
@@ -52,34 +52,16 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(slices));
     }
 
-    private static void drawComponent(final Component<?, ?> ctn, RandomAccessibleInterval<FloatType> image) {
-        int xMin = Integer.MAX_VALUE;
-        int xMax = Integer.MIN_VALUE;
-        int yMin = Integer.MAX_VALUE;
-        int yMax = Integer.MIN_VALUE;
-        RandomAccess<FloatType> out = image.randomAccess();
+    private static void drawComponent(final Component<?, ?> ctn, RandomAccessibleInterval<FloatType> sourceImage, RandomAccessibleInterval<FloatType> targetImage) {
+        RandomAccess<FloatType> source = sourceImage.randomAccess();
+        RandomAccess<FloatType> out = targetImage.randomAccess();
 
         for (Localizable location : ctn) {
-            final int xPos = location.getIntPosition(0);
-            xMin = Math.min(xMin, xPos);
-            xMax = Math.max(xMax, xPos);
-            final int yPos = location.getIntPosition(1);
-            yMin = Math.min(yMin, yPos);
-            yMax = Math.max(yMax, yPos);
-
-            ///////////// Draw component to image ///////////////////
+            source.setPosition(location);
             out.setPosition(location);
 //			out.get().set(new ARGBType(ARGBType.blue(level)));
-            out.get().set(255);
-//			in.fwd();
-//			out.setPosition(in);
-//			out.get().set(in.get());
-//			image.
+            out.get().set(source.get().get());
         }
-//		System.out.println("Component "+index+":");
-//		System.out.println("\tlevel: "+level);
-//		System.out.println("\txSize: "+xMin+", "+xMax);
-//		System.out.println("\tySize: "+yMin+", "+yMax);
     }
 
     public static void surfacePlot(final RandomAccessibleInterval<FloatType> img, final int dimension, final long position) {

@@ -5,59 +5,59 @@ import com.jug.util.componenttree.SimpleComponent;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
+import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
 
 public class Plotting {
-
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct) {
-        final ArrayList<RandomAccessibleInterval<UnsignedByteType>> slices = new ArrayList<>();
-
-        long xDim = 0;
-        long yDim = 0;
-
-        for (final C root : ct.roots()) { // this is actually just need for a single root, as they all have the same source-image; but I don't know how to do this for a Set<> ATM
-            if (root instanceof SimpleComponent) {
-                xDim = ((SimpleComponent) root).getSourceImage().dimension(0);
-                yDim = ((SimpleComponent) root).getSourceImage().dimension(1);
-            }
+        final ArrayList<RandomAccessibleInterval<FloatType>> slices = new ArrayList<>();
+        if(ct.roots().isEmpty()){
+            throw new ValueException("ct.roots() is empty");
         }
+        C first = ct.roots().iterator().next();
+        IntervalView sourceImage = ((SimpleComponent) first).getSourceImage();
+        long xDim = sourceImage.dimension(0);
+        long yDim = sourceImage.dimension(1);
 
-        int i = 0;
+        ArrayImgFactory<FloatType> imageFactory = new ArrayImgFactory<>(new FloatType());
         for (final C root : ct.roots()) {
-            int componentLevel = 0;
             ArrayList<C> componentList = new ArrayList<>();
             componentList.add(root);
             while (componentList.size() > 0) {
-                final RandomAccessibleInterval<UnsignedByteType> componentImageSlice = ArrayImgs.unsignedBytes(xDim, yDim);
+                final RandomAccessibleInterval<FloatType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-                    drawComponent(ctn, i, componentLevel, componentImageSlice);
-                    i++;
+                    drawComponent(ctn, componentImageSlice);
                 }
                 slices.add(componentImageSlice);
                 componentList = ComponentTreeUtils.getAllChildren(componentList);
-                componentLevel++;
             }
         }
         ImageJFunctions.show(Views.stack(slices));
     }
 
-    private static void drawComponent(final Component<?, ?> ctn, final int index, final int level, RandomAccessibleInterval<UnsignedByteType> image) {
+    private static void drawComponent(final Component<?, ?> ctn, RandomAccessibleInterval<FloatType> image) {
         int xMin = Integer.MAX_VALUE;
         int xMax = Integer.MIN_VALUE;
         int yMin = Integer.MAX_VALUE;
         int yMax = Integer.MIN_VALUE;
-        RandomAccess<UnsignedByteType> out = image.randomAccess();
+        RandomAccess<FloatType> out = image.randomAccess();
 
         for (Localizable location : ctn) {
             final int xPos = location.getIntPosition(0);

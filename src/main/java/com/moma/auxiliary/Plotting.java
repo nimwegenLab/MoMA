@@ -14,6 +14,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -23,8 +24,8 @@ import java.util.List;
 
 public class Plotting {
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct, List<Hypothesis<Component<FloatType, ?>>> optimalSegs) {
-        final ArrayList<RandomAccessibleInterval<FloatType>> slices = new ArrayList<>();
-        if(ct.roots().isEmpty()){
+        final ArrayList<RandomAccessibleInterval<ARGBType>> slices = new ArrayList<>();
+        if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
 
@@ -38,14 +39,13 @@ public class Plotting {
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
 
-        ArrayImgFactory<FloatType> imageFactory = new ArrayImgFactory<>(new FloatType());
+        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
         for (final C root : ct.roots()) {
             ArrayList<C> componentList = new ArrayList<>();
             componentList.add(root);
             while (componentList.size() > 0) {
-                final RandomAccessibleInterval<FloatType> componentImageSlice = imageFactory.create(xDim, yDim);
+                final RandomAccessibleInterval<ARGBType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-//                    Hypothesis<?> node = optimalSegs.findHypothesisContaining(ctn);
                     boolean val = optimalSegs2.contains(ctn);
                     copyComponentPixelToImage(ctn, sourceImage, componentImageSlice, val);
                 }
@@ -58,21 +58,20 @@ public class Plotting {
 
     private static void copyComponentPixelToImage(final Component<?, ?> ctn,
                                                   RandomAccessibleInterval<FloatType> sourceImage,
-                                                  RandomAccessibleInterval<FloatType> targetImage,
+                                                  RandomAccessibleInterval<ARGBType> targetImage,
                                                   boolean ctnIsSelected) {
         RandomAccess<FloatType> source = sourceImage.randomAccess();
-        RandomAccess<FloatType> out = targetImage.randomAccess();
+        RandomAccess<ARGBType> out = targetImage.randomAccess();
 
         for (Localizable location : ctn) {
             source.setPosition(location);
             out.setPosition(location);
-//			out.get().set(new ARGBType(ARGBType.blue(level)));
-            FloatType valueCopy = source.get().copy();
-            if(ctnIsSelected){
-                valueCopy.set(valueCopy.get()/2.0f);
+            int level = (int) (source.get().getRealFloat() * 255);
+            ARGBType value = new ARGBType(ARGBType.rgba(level, level, level, 0));
+            if (ctnIsSelected) {
+                value = new ARGBType(ARGBType.rgba(0, level, 0, 0));
             }
-
-            out.get().set(valueCopy);
+            out.get().set(value);
         }
     }
 

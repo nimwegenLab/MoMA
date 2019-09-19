@@ -627,11 +627,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		bCheckBoxLineReset = new JButton( "reset" );
 		bCheckBoxLineReset.addActionListener( this );
 
+		viewSegmentsButton = new JButton( "View Segments" );
+		viewSegmentsButton.addActionListener( this );
+
+
 		// - - - - - -
 
 		panelView.add( bFreezeHistory, "align center" );
 		panelView.add( panelIsee, "cell 1 2 5 1, align center" );
 		panelView.add( bCheckBoxLineReset, "align center, wrap" );
+		panelView.add( viewSegmentsButton );
 
 		panelDropdown.setBorder( BorderFactory.createEmptyBorder( 15, 0, 0, 0 ) );
 		panelView.add( panelDropdown, "cell 1 3 5 1, align center, wrap" );
@@ -651,13 +656,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		plot = new Plot2DPanel();
 		updatePlotPanels();
 		plot.setPreferredSize( new Dimension( 500, 500 ) );
-		panelDataView.add( plot, BorderLayout.NORTH );
-//		panelHorizontalHelper = new JPanel( new FlowLayout( FlowLayout.RIGHT, 5, 0 ) );
-//		panelHorizontalHelper.setBorder( BorderFactory.createEmptyBorder( 3, 0, 5, 0 ) );
-
-		viewSegmentsButton = new JButton( "View Segments" );
-		viewSegmentsButton.addActionListener( this );
-		panelDataView.add( viewSegmentsButton );
+		panelDataView.add( plot, BorderLayout.CENTER );
 
 		return panelDataView;
 	}

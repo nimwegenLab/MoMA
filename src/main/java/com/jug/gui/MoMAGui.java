@@ -1278,7 +1278,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 //			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp().getCurrentGLF();
 //			Object var = model.getCurrentGL().getIlp().getCurrentGLF();
-			Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree());
+			AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
+			GrowthLineFrame glf = model.getCurrentGLF();
+			final int t = glf.getParent().getFrames().indexOf( glf );
+			List<Hypothesis<Component<FloatType, ?>>> optimalSegs = glf.getParent().getIlp().getOptimalSegmentation(t);
+
+			Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
 		}
 		setFocusToTimeSlider();
 	}

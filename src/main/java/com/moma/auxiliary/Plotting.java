@@ -1,5 +1,6 @@
 package com.moma.auxiliary;
 
+import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;
 import ij.IJ;
@@ -18,13 +19,20 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Plotting {
-    public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct) {
+    public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct, List<Hypothesis<Component<FloatType, ?>>> optimalSegs) {
         final ArrayList<RandomAccessibleInterval<FloatType>> slices = new ArrayList<>();
         if(ct.roots().isEmpty()){
             throw new ValueException("ct.roots() is empty");
         }
+
+        List<Component<FloatType, ?>> optimalSegs2 = new ArrayList<>();
+        for (Hypothesis<Component<FloatType, ?>> seg : optimalSegs) {
+            optimalSegs2.add(seg.getWrappedHypothesis());
+        }
+
         C first = ct.roots().iterator().next();
         IntervalView sourceImage = ((SimpleComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
@@ -37,7 +45,9 @@ public class Plotting {
             while (componentList.size() > 0) {
                 final RandomAccessibleInterval<FloatType> componentImageSlice = imageFactory.create(xDim, yDim);
                 for (final Component<?, ?> ctn : componentList) {
-                    copyComponentPixelToComponentImage(ctn, sourceImage, componentImageSlice);
+//                    Hypothesis<?> node = optimalSegs.findHypothesisContaining(ctn);
+                    boolean val = optimalSegs2.contains(ctn);
+                    copyComponentPixelToImage(ctn, sourceImage, componentImageSlice, val);
                 }
                 slices.add(componentImageSlice);
                 componentList = ComponentTreeUtils.getAllChildren(componentList);
@@ -46,9 +56,10 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(slices));
     }
 
-    private static void copyComponentPixelToComponentImage(final Component<?, ?> ctn,
-                                                           RandomAccessibleInterval<FloatType> sourceImage,
-                                                           RandomAccessibleInterval<FloatType> targetImage) {
+    private static void copyComponentPixelToImage(final Component<?, ?> ctn,
+                                                  RandomAccessibleInterval<FloatType> sourceImage,
+                                                  RandomAccessibleInterval<FloatType> targetImage,
+                                                  boolean ctnIsSelected) {
         RandomAccess<FloatType> source = sourceImage.randomAccess();
         RandomAccess<FloatType> out = targetImage.randomAccess();
 
@@ -57,6 +68,10 @@ public class Plotting {
             out.setPosition(location);
 //			out.get().set(new ARGBType(ARGBType.blue(level)));
             FloatType valueCopy = source.get().copy();
+            if(ctnIsSelected){
+                valueCopy.set(valueCopy.get()/2.0f);
+            }
+
             out.get().set(valueCopy);
         }
     }

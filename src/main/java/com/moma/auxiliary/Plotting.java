@@ -18,9 +18,11 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.javatuples.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Plotting {
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct,
@@ -28,39 +30,45 @@ public class Plotting {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
-        final ArrayList<RandomAccessibleInterval<ARGBType>> slices = new ArrayList<>();
 
+        // get selected components and store them for later reference in consumer
         List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
         for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
             selectedComponents.add(hypothesis.getWrappedComponent());
         }
 
+        // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
         IntervalView sourceImage = ((SimpleComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
-
         ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
-        for (final C root : ct.roots()) {
-            ArrayList<C> componentList = new ArrayList<>();
-            componentList.add(root);
-            while (componentList.size() > 0) {
-                final RandomAccessibleInterval<ARGBType> componentImageSlice = imageFactory.create(xDim, yDim);
-                for (final Component<?, ?> ctn : componentList) {
+
+        // define consumer that will draw components to image and add them to the image stack
+        final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
+        Consumer<Pair<List<C>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
+            List<C> componentOfLevel = levelComponentsListAndLevel.getValue0();
+            {
+                final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
+                for(C ctn : componentOfLevel){
                     boolean val = selectedComponents.contains(ctn);
-                    copyComponentPixelToImage(ctn, sourceImage, componentImageSlice, val);
+                    drawComponentToImage(ctn, sourceImage, componentLevelImage, val);
                 }
-                slices.add(componentImageSlice);
-                componentList = ComponentTreeUtils.getAllChildren(componentList);
+                componentLevelImageStack.add(componentLevelImage);
             }
-        }
-        ImageJFunctions.show(Views.stack(slices));
+        };
+
+        // run for components in each level
+        ComponentTreeUtils.doForEachComponentInTreeLevel(ct, levelComponentsConsumer);
+
+        // show
+        ImageJFunctions.show(Views.stack(componentLevelImageStack));
     }
 
-    private static void copyComponentPixelToImage(final Component<?, ?> ctn,
-                                                  RandomAccessibleInterval<FloatType> sourceImage,
-                                                  RandomAccessibleInterval<ARGBType> targetImage,
-                                                  boolean ctnIsSelected) {
+    private static void drawComponentToImage(final Component<?, ?> ctn,
+                                             RandomAccessibleInterval<FloatType> sourceImage,
+                                             RandomAccessibleInterval<ARGBType> targetImage,
+                                             boolean ctnIsSelected) {
         RandomAccess<FloatType> source = sourceImage.randomAccess();
         RandomAccess<ARGBType> out = targetImage.randomAccess();
 

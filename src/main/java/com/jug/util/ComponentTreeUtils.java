@@ -1,18 +1,22 @@
 package com.jug.util;
 
-import com.jug.lp.Hypothesis;
+import com.jug.lp.*;
 import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.javatuples.Pair;
+import org.javatuples.Quartet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author jug
@@ -266,5 +270,29 @@ public class ComponentTreeUtils {
             runner = runner.getParent();
         }
         return level;
+    }
+
+
+    /**
+     * Works through the component tree and at each tree-level passes a list of all components in that tree level to
+     * componentlevelListConsumer. componentlevelListConsumer takes Pair<List<C>, Integer>, where List<C> is the list of
+     * components in the level and Integer is the number of the level with 0 being the root-level.
+     * @param componentForest componentForest being processed.
+     * @param componentlevelListConsumer consumer of the list of components in the level and corresponding level number.
+     * @param <C> type of component being processed.
+     */
+    public static <C extends Component<FloatType, C>> void doForEachComponentInTreeLevel(final ComponentForest<C> componentForest,
+                                                                                         Consumer<Pair<List<C>, Integer>> componentlevelListConsumer ){
+        int level = 0;
+        ArrayList<C> ctnLevel = new ArrayList<>();
+        for ( final C root : componentForest.roots() ) { // populate the root-level component list
+            ctnLevel.add(root);
+        }
+
+        while ( ctnLevel.size() > 0 ) {
+            componentlevelListConsumer.accept(new Pair<>(ctnLevel, level));
+            ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
+            level++;
+        }
     }
 }

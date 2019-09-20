@@ -131,38 +131,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		return imgLocations.size();
 	}
 
-//	/**
-//	 * Reads out all image intensities along the GrowthLine center (green
-//	 * pixels).
-//	 *
-//	 * @param img
-//	 *            - an Img.
-//	 * @return a float array containing the image intensities in
-//	 *         <code>img</code> at the points given in wellPoints.
-//	 */
-//	private float[] getInvertedIntensitiesAtImgLocations( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
-//		final float[] ret = new float[ imgLocations.size() ];
-//
-//		//here now a trick to make <3d images also comply to the code below
-//		IntervalView< FloatType > ivImg = Views.interval( img, img );
-//		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
-//			ivImg = Views.addDimension( ivImg, 0, 0 );
-//		}
-//		final RandomAccess< FloatType > raImg3d = ivImg.randomAccess();
-//
-//		int i = 0;
-//		for ( final Point p_orig : imgLocations ) {
-//			final Point p = new Point( p_orig );
-//			if ( imgIsPreCropped ) {
-//				p.setPosition( 0, 2 );
-//				p.move( MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2 - getAvgXpos(), 0 );
-//			}
-//			raImg3d.setPosition( p );
-//			ret[ i++ ] = 1.0f - raImg3d.get().get();
-//		}
-//		return ret;
-//	}
-
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
 	 */

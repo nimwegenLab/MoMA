@@ -1277,7 +1277,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
 			GrowthLineFrame glf = model.getCurrentGLF();
 			final int t = glf.getParent().getFrames().indexOf( glf );
-			List<Hypothesis<Component<FloatType, ?>>> optimalSegs = glf.getParent().getIlp().getOptimalSegmentation(t);
+
+			List<Component<FloatType, ?>> optimalSegs = glf.getParent().getIlp().getOptimalComponents(t);
 
 			Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
 		}

@@ -37,6 +37,7 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -1260,15 +1261,22 @@ public class GrowthLineTrackingILP {
 	 *         procedure).
 	 */
 	public List< Hypothesis< Component< FloatType, ? >>> getOptimalSegmentation( final int t ) {
-//		final ArrayList< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList< Hypothesis< Component< FloatType, ? >>>();
-//
-//		final List< Hypothesis< Component< FloatType, ? >>> hyps = getOptimalHypotheses( t );
-//		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
-//			ret.add( h );
-//		}
-//
-//		return ret;
 		return getOptimalHypotheses( t );
+	}
+
+	/**
+	 * Returns the components of the optimal segmentation at time t.
+	 * @param t time
+	 * @return List<Component<FloatType, ?>> list of components at time t that are part of the optimal solution
+	 */
+	public List<Component<FloatType, ?>> getOptimalComponents(final int t){
+		List<Hypothesis<Component<FloatType, ?>>> ilpSelectedHypotheses = getOptimalSegmentation(t);
+
+		List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
+		for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
+			selectedComponents.add(hypothesis.getWrappedComponent());
+		}
+		return selectedComponents;
 	}
 
 	/**

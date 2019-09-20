@@ -26,15 +26,9 @@ import java.util.function.Consumer;
 
 public class Plotting {
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct,
-                                                                             List<Hypothesis<Component<FloatType, ?>>> ilpSelectedHypotheses) {
+                                                                             List<Component<FloatType, ?>> componentsInOptimalSolution) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
-        }
-
-        // get selected components and store them for later reference in consumer
-        List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
-        for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
-            selectedComponents.add(hypothesis.getWrappedComponent());
         }
 
         // create image factory with correct dimensions
@@ -51,7 +45,7 @@ public class Plotting {
             {
                 final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
                 for(C ctn : componentOfLevel){
-                    boolean val = selectedComponents.contains(ctn);
+                    boolean val = componentsInOptimalSolution.contains(ctn);
                     drawComponentToImage(ctn, sourceImage, componentLevelImage, val);
                 }
                 componentLevelImageStack.add(componentLevelImage);

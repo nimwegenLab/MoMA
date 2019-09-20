@@ -1270,22 +1270,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			t.start();
 		}
 		if ( e.getSource().equals( viewSegmentsButton ) ) {
-//			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-
-//			final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp().getCurrentGLF();
-//			Object var = model.getCurrentGL().getIlp().getCurrentGLF();
-			AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
-			GrowthLineFrame glf = model.getCurrentGLF();
-			final int t = glf.getParent().getFrames().indexOf( glf );
-
-			List<Component<FloatType, ?>> optimalSegs = glf.getParent().getIlp().getOptimalComponents(t);
-
-			Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
-		}
+            ShowComponentsOfCurrentTimeStep();
+        }
 		setFocusToTimeSlider();
 	}
 
-	private void setFocusToTimeSlider() {
+    /**
+     * Show a stack of the components of the current time step in a separate window.
+     */
+    private void ShowComponentsOfCurrentTimeStep() {
+        GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
+        if(ilp != null){
+            AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
+            GrowthLineFrame glf = model.getCurrentGLF();
+            final int t = glf.getParent().getFrames().indexOf( glf );
+            optimalSegs = glf.getParent().getIlp().getOptimalComponents(t);
+        }
+        Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
+    }
+
+    private void setFocusToTimeSlider() {
 
 		SwingUtilities.invokeLater(() -> sliderTime.requestFocusInWindow());
 	}

@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static com.jug.util.imglib2.Imglib2Utils.setImageToValue;
+
 public class Plotting {
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct,
                                                                              List<Component<FloatType, ?>> componentsInOptimalSolution) {
@@ -44,6 +46,7 @@ public class Plotting {
             List<C> componentOfLevel = levelComponentsListAndLevel.getValue0();
             {
                 final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
+                setImageToValue(Views.iterable(componentLevelImage), new ARGBType(ARGBType.rgba(100, 0, 0, 0)));
                 for(C ctn : componentOfLevel){
                     boolean val = componentsInOptimalSolution.contains(ctn);
                     drawComponentToImage(ctn, sourceImage, componentLevelImage, val);

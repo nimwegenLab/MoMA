@@ -107,18 +107,18 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getDivisionLikelihoodCost( final Hypothesis< Component< FloatType, ? >> from ) {
-		if ( from.getWrappedHypothesis().getChildren().size() > 2 ) { return 1.5f; }
-		if ( from.getWrappedHypothesis().getChildren().size() <= 1 ) { return 1.5f; }
+		if ( from.getWrappedComponent().getChildren().size() > 2 ) { return 1.5f; }
+		if ( from.getWrappedComponent().getChildren().size() <= 1 ) { return 1.5f; }
 
 		// if two children, eveluate likelihood of being pre-division
-		final List< Component< FloatType, ? > > children = ( List< Component< FloatType, ? >> ) from.getWrappedHypothesis().getChildren();
+		final List< Component< FloatType, ? > > children = ( List< Component< FloatType, ? >> ) from.getWrappedComponent().getChildren();
 //		final float valA = children.get( 0 ).value().get();
 //		final float valB = children.get( 1 ).value().get();
 		final long sizeA = children.get( 0 ).size();
 		final long sizeB = children.get( 1 ).size();
 
-//		final float valParent = from.getWrappedHypothesis().value().get();
-		final long sizeParent = from.getWrappedHypothesis().size();
+//		final float valParent = from.getWrappedComponent().value().get();
+		final long sizeParent = from.getWrappedComponent().size();
 
 		final long deltaSizeAtoB = Math.abs( sizeA - sizeB ) / Math.min( sizeA, sizeB ); // in multiples of smaller one
 		final long deltaSizeABtoP = Math.abs( sizeA + sizeB - sizeParent ) / ( sizeA + sizeB ); // in multiples of A+B

@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.HeadlessException;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
@@ -12,10 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +23,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.jug.lp.*;
+import com.moma.auxiliary.Plotting;
 import org.math.plot.Plot2DPanel;
 
 import com.jug.GrowthLine;
@@ -97,6 +94,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //	private JButton btnRedoAllHypotheses;
 //	private JButton btnExchangeSegHyps;
 	private JButton btnRestart;
+	private JButton viewSegmentsButton;
 	private JButton btnOptimizeMore;
 	private JButton btnExportHtml;
 	private JButton btnExportData;
@@ -625,11 +623,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		bCheckBoxLineReset = new JButton( "reset" );
 		bCheckBoxLineReset.addActionListener( this );
 
+		viewSegmentsButton = new JButton( "View Segments" );
+		viewSegmentsButton.addActionListener( this );
+
+
 		// - - - - - -
 
 		panelView.add( bFreezeHistory, "align center" );
 		panelView.add( panelIsee, "cell 1 2 5 1, align center" );
 		panelView.add( bCheckBoxLineReset, "align center, wrap" );
+		panelView.add( viewSegmentsButton );
 
 		panelDropdown.setBorder( BorderFactory.createEmptyBorder( 15, 0, 0, 0 ) );
 		panelView.add( panelDropdown, "cell 1 3 5 1, align center, wrap" );
@@ -686,14 +689,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		// ------------------
 		dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
 		if(ilp != null){
-			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "Segment" );
-			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "ExitAssignment" );
-			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "MappingAssignment" );
-			printCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp, "DivisionAssignment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "Segment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "MappingAssignment" );
+			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "DivisionAssignment" );
 		}
 	}
 
-	private < C extends Component< FloatType, C > > void printCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp, String costType ) {
+	private < C extends Component< FloatType, C > > void printCosts( final ComponentForest< C > ct, final GrowthLineTrackingILP ilp, String costType ) {
 		final int t = sliderTime.getValue();
 		System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
 		for ( final C root : ct.roots() ) {
@@ -767,7 +770,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				final float[][] xydxdyCTNBordersActive = new float[ ilp.getOptimalSegmentation( t ).size() ][ 4 ];
 				i = 0;
 				for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
-					final Component< FloatType, ? > ctn = hyp.getWrappedHypothesis();
+					final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
 					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
 					i++;
 				}
@@ -1266,10 +1269,28 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			final Thread t = new Thread(this::exportDataFiles);
 			t.start();
 		}
+		if ( e.getSource().equals( viewSegmentsButton ) ) {
+            ShowComponentsOfCurrentTimeStep();
+        }
 		setFocusToTimeSlider();
 	}
 
-	private void setFocusToTimeSlider() {
+    /**
+     * Show a stack of the components of the current time step in a separate window.
+     */
+    private void ShowComponentsOfCurrentTimeStep() {
+        GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
+        if(ilp != null){
+            AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
+            GrowthLineFrame glf = model.getCurrentGLF();
+            final int t = glf.getParent().getFrames().indexOf( glf );
+            optimalSegs = glf.getParent().getIlp().getOptimalComponents(t);
+        }
+        Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
+    }
+
+    private void setFocusToTimeSlider() {
 
 		SwingUtilities.invokeLater(() -> sliderTime.requestFocusInWindow());
 	}

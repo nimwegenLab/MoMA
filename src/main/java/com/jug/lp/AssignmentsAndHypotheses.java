@@ -117,7 +117,7 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 			addTimeStep();
 		}
 		if ( h_t.get( t ).add( h ) ) {
-			hmap.put( h.getWrappedHypothesis(), h );
+			hmap.put( h.getWrappedComponent(), h );
         }
     }
 

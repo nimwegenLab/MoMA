@@ -22,8 +22,12 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 * Creates an DivisionAssignment.
 	 * @param from
 	 */
-	public DivisionAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final Hypothesis<Component<FloatType, ?>> from, final Hypothesis<Component<FloatType, ?>> toUpper, final Hypothesis<Component<FloatType, ?>> toLower) {
-		super( GrowthLineTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp );
+	public DivisionAssignment(final GRBVar ilpVariable,
+							  final GrowthLineTrackingILP ilp,
+							  final Hypothesis<Component<FloatType, ?>> from,
+							  final Hypothesis<Component<FloatType, ?>> toUpper,
+							  final Hypothesis<Component<FloatType, ?>> toLower) {
+		super(GrowthLineTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
 		this.from = from;
 		this.toUpper = toUpper;
 		this.toLower = toLower;

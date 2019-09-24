@@ -2,6 +2,7 @@ package com.jug;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
@@ -130,38 +131,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		return imgLocations.size();
 	}
 
-//	/**
-//	 * Reads out all image intensities along the GrowthLine center (green
-//	 * pixels).
-//	 *
-//	 * @param img
-//	 *            - an Img.
-//	 * @return a float array containing the image intensities in
-//	 *         <code>img</code> at the points given in wellPoints.
-//	 */
-//	private float[] getInvertedIntensitiesAtImgLocations( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
-//		final float[] ret = new float[ imgLocations.size() ];
-//
-//		//here now a trick to make <3d images also comply to the code below
-//		IntervalView< FloatType > ivImg = Views.interval( img, img );
-//		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
-//			ivImg = Views.addDimension( ivImg, 0, 0 );
-//		}
-//		final RandomAccess< FloatType > raImg3d = ivImg.randomAccess();
-//
-//		int i = 0;
-//		for ( final Point p_orig : imgLocations ) {
-//			final Point p = new Point( p_orig );
-//			if ( imgIsPreCropped ) {
-//				p.setPosition( 0, 2 );
-//				p.move( MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2 - getAvgXpos(), 0 );
-//			}
-//			raImg3d.setPosition( p );
-//			ret[ i++ ] = 1.0f - raImg3d.get().get();
-//		}
-//		return ret;
-//	}
-
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
 	 */
@@ -192,16 +161,17 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * (bacteria).
 	 */
 	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
-		componentTree = buildIntensityTree(Views.hyperSlice(img, 2, frameIndex));
+		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
+		componentTree = buildIntensityTree(currentImage);
 		ILocationTester ctester = new ComponentExtentTester(0, 20);
-		Function<Integer, Boolean> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
+		Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
 //        if ( lstPoints.get( x ).getIntPosition( 0 ) < GL_OFFSET_LATERAL || lstPoints.get( x ).getIntPosition( 0 ) > imgTemp.dimension( 0 ) - GL_OFFSET_LATERAL ) {
 		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
 		ArrayList<ILocationTester> testers = new ArrayList<>();
 		testers.add(ctester);
 		testers.add(boundaryTester);
 		ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
-		componentTree = new SimpleComponentTree(componentTree, tester);
+		componentTree = new SimpleComponentTree(componentTree, tester, currentImage);
 		System.out.println("done");
 	}
 
@@ -470,7 +440,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		}
 
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
-			final Component< FloatType, ? > ctn = hyp.getWrappedHypothesis();
+			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
 			if ( hyp.isPruned() ) {
 				ArgbDrawingUtils.taintPrunedComponentTreeNode(
 						hyp.isPruneRoot(),
@@ -610,7 +580,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> aa = getParent().getIlp().getOptimalRightAssignments( this.getTime() ).get( hyp ).iterator().next();
 
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+			for (Localizable localizable : hyp.getWrappedComponent()) {
 				final int ypos = localizable.getIntPosition(0);
 				min = Math.min(min, ypos);
 				max = Math.max(max, ypos);
@@ -629,7 +599,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		for ( final Hypothesis< Component< FloatType, ? > > hyp : getParent().getIlp().getOptimalRightAssignments( this.getTime() ).keySet() ) {
 			// find out where this hypothesis is located along the GL
 			int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-			for (Localizable localizable : hyp.getWrappedHypothesis()) {
+			for (Localizable localizable : hyp.getWrappedComponent()) {
 				final int ypos = localizable.getIntPosition(0);
 				min = Math.min(min, ypos);
 				max = Math.max(max, ypos);

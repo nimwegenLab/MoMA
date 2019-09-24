@@ -71,7 +71,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	/**
 	 * @return the wrapped segmentHypothesis
 	 */
-	public T getWrappedHypothesis() {
+	public T getWrappedComponent() {
 		return wrappedHypothesis;
 	}
 

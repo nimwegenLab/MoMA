@@ -37,6 +37,7 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -449,13 +450,13 @@ public class GrowthLineTrackingILP {
 	 *
 	 * @throws GRBException
 	 */
-	private void enumerateAndAddAssignments( final int t ) throws GRBException {
-		final List< Hypothesis< Component< FloatType, ? >>> curHyps = nodes.getHypothesesAt( t );
-		final List< Hypothesis< Component< FloatType, ? >>> nxtHyps = nodes.getHypothesesAt( t + 1 );
+	private void enumerateAndAddAssignments( final int timeStep ) throws GRBException {
+		final List< Hypothesis< Component< FloatType, ? >>> currentHyps = nodes.getHypothesesAt( timeStep );
+		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
 
-		addExitAssignments( t, curHyps );
-		addMappingAssignments( t, curHyps, nxtHyps );
-		addDivisionAssignments( t, curHyps, nxtHyps );
+		addExitAssignments( timeStep, currentHyps );
+		addMappingAssignments( timeStep, currentHyps, nextHyps );
+		addDivisionAssignments( timeStep, currentHyps, nextHyps );
 		this.reportProgress();
 	}
 
@@ -575,11 +576,11 @@ public class GrowthLineTrackingILP {
 	public Pair< Float, float[] > compatibilityCostOfMapping(
 			final Hypothesis< Component< FloatType, ? > > from,
 			final Hypothesis< Component< FloatType, ? > > to ) {
-		final long sizeFrom = from.getWrappedHypothesis().size();
-		final long sizeTo = to.getWrappedHypothesis().size();
+		final long sizeFrom = from.getWrappedComponent().size();
+		final long sizeTo = to.getWrappedComponent().size();
 
-//		final float valueFrom = from.getWrappedHypothesis().value().get();
-//		final float valueTo = to.getWrappedHypothesis().value().get();
+//		final float valueFrom = from.getWrappedComponent().value().get();
+//		final float valueTo = to.getWrappedComponent().value().get();
 
 		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
 		final ValuePair< Integer, Integer > intervalTo = to.getLocation();
@@ -688,7 +689,7 @@ public class GrowthLineTrackingILP {
 	 * that this function also looks for suitable pairs of hypothesis in
 	 * nxtHyps, since division-assignments naturally need two right-neighbors.
 	 *
-	 * @param t
+	 * @param timeStep
 	 *            the time-point from which the <code>curHyps</code> originate.
 	 * @param curHyps
 	 *            a list of hypothesis for which a
@@ -698,21 +699,20 @@ public class GrowthLineTrackingILP {
 	 *            added <code>DivisionAssignments</code> should end at.
 	 * @throws GRBException
 	 */
-	private void addDivisionAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
+	private void addDivisionAssignments( final int timeStep, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
 		float cost;
 
-		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			int j = 0;
 			final float fromCost = from.getCosts();
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-					for ( final Component< FloatType, ? > neighborCTN : ComponentTreeUtils.getRightNeighbors( to.getWrappedHypothesis() ) ) {
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getRightNeighbors(to.getWrappedComponent());
+					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
 						@SuppressWarnings( "unchecked" )
-						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( neighborCTN );
+						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
 						if ( lowerNeighbor == null ) {
 							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeris::adDivisionAssignment(...)" );
 						} else {
@@ -739,7 +739,7 @@ public class GrowthLineTrackingILP {
 							// weights =  [ 0.1, 0.9, 0.5, 0.5, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.1, 0.03 ]
 							//             -0.6, 1.1, 0.9, 0.6, 1.6, 1.1, 0.3, 0.4, 0.3, 0.8, 1.6, 1.3, 0.02
 							if ( cost <= CUTOFF_COST ) {
-								final String name = String.format( "a_%d^DIVISION--(%d,%d)", t, from.getId(), to.getId() );
+								final String name = String.format( "a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId() );
 								final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
 
 								costManager.addDivisionVariable( newLPVar, featureValues );
@@ -748,17 +748,15 @@ public class GrowthLineTrackingILP {
 								}
 
 								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
-								nodes.addAssignment( t, da );
+								nodes.addAssignment( timeStep, da );
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );
 								edgeSets.addToLeftNeighborhood( lowerNeighbor, da );
-								j++;
 							}
 						}
 					}
 				}
 			}
-			i++;
 		}
 	}
 
@@ -780,9 +778,9 @@ public class GrowthLineTrackingILP {
 		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
 		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
 
-		final long sizeFrom = from.getWrappedHypothesis().size();
-		final long sizeToU = toUpper.getWrappedHypothesis().size();
-		final long sizeToL = toLower.getWrappedHypothesis().size();
+		final long sizeFrom = from.getWrappedComponent().size();
+		final long sizeToU = toUpper.getWrappedComponent().size();
+		final long sizeToL = toLower.getWrappedComponent().size();
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 
@@ -1263,15 +1261,22 @@ public class GrowthLineTrackingILP {
 	 *         procedure).
 	 */
 	public List< Hypothesis< Component< FloatType, ? >>> getOptimalSegmentation( final int t ) {
-//		final ArrayList< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList< Hypothesis< Component< FloatType, ? >>>();
-//
-//		final List< Hypothesis< Component< FloatType, ? >>> hyps = getOptimalHypotheses( t );
-//		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
-//			ret.add( h );
-//		}
-//
-//		return ret;
 		return getOptimalHypotheses( t );
+	}
+
+	/**
+	 * Returns the components of the optimal segmentation at time t.
+	 * @param t time
+	 * @return List<Component<FloatType, ?>> list of components at time t that are part of the optimal solution
+	 */
+	public List<Component<FloatType, ?>> getOptimalComponents(final int t){
+		List<Hypothesis<Component<FloatType, ?>>> ilpSelectedHypotheses = getOptimalSegmentation(t);
+
+		List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
+		for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
+			selectedComponents.add(hypothesis.getWrappedComponent());
+		}
+		return selectedComponents;
 	}
 
 	/**
@@ -1295,7 +1300,7 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = getOptimalHypotheses( t );
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
-					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
+					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedComponent() );
 			if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos ) { return h; }
 		}
 		return null;
@@ -1317,14 +1322,14 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> ret = new ArrayList<>();
 
 		final ValuePair< Integer, Integer > interval =
-				ComponentTreeUtils.getTreeNodeInterval( hyp.getWrappedHypothesis() );
+				ComponentTreeUtils.getTreeNodeInterval( hyp.getWrappedComponent() );
 		final int startpos = interval.getA();
 		final int endpos = interval.getB();
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = getOptimalHypotheses( t );
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
-					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
+					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedComponent() );
 			if ( (ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos ) || // overlap at top
 			(ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos ) ||    // overlap at bottom
 			(ctnLimits.getA() >= startpos && ctnLimits.getB() <= endpos ) ) {  // fully contained inside
@@ -1345,7 +1350,7 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> h : hyps ) {
 			final ValuePair< Integer, Integer > ctnLimits =
-					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedHypothesis() );
+					ComponentTreeUtils.getTreeNodeInterval( h.getWrappedComponent() );
 			if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos ) {  // fully contained inside
 				ret.add( h );
 			}
@@ -1822,7 +1827,7 @@ public class GrowthLineTrackingILP {
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			final Component< FloatType, ? > comp = hyp.getWrappedHypothesis();
+			final Component< FloatType, ? > comp = hyp.getWrappedComponent();
 			final long s = comp.size();
 			if ( isComponentContainingYpos( comp, gapSepYPos ) ) {
 				if ( s < min ) {

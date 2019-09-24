@@ -1,11 +1,10 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.filteredcomponents.FilteredComponent;
-import net.imglib2.Localizable;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.Type;
-import net.imglib2.util.ValuePair;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -23,9 +22,11 @@ public final class SimpleComponentTree<T extends Type<T>>
         ComponentForest<SimpleComponent<T>> {
     private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
     private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
+    private final IntervalView<T> sourceImage;
     private IComponentTester<T, FilteredComponent<T>> tester;
 
-    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest, IComponentTester<T, FilteredComponent<T>> tester) {
+    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest, IComponentTester<T, FilteredComponent<T>> tester, IntervalView<T> sourceImage) {
+        this.sourceImage = sourceImage;
         this.tester = tester;
         CreateTree(componentForest);
     }
@@ -44,7 +45,7 @@ public final class SimpleComponentTree<T extends Type<T>>
 
     private void RecursivelyFindValidComponent(FilteredComponent<T> sourceComponent){
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent.pixelList, sourceComponent.value());
+            SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent.pixelList, sourceComponent.value(), sourceImage);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         }
@@ -68,7 +69,7 @@ public final class SimpleComponentTree<T extends Type<T>>
 
     @NotNull
     private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, FilteredComponent<T> sourceChild) {
-        SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild.pixelList, sourceChild.value());
+        SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild.pixelList, sourceChild.value(), sourceImage);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

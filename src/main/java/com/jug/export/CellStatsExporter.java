@@ -488,9 +488,9 @@ public class CellStatsExporter {
 			linesToExport.add(segmentRecord.toString());
 			do {
 				ValuePair<Integer, Integer> limits =
-						ComponentTreeUtils.getTreeNodeInterval(segmentRecord.hyp.getWrappedHypothesis());
-				if (segmentRecord.hyp.getWrappedHypothesis() instanceof FilteredComponent) {
-					limits = ComponentTreeUtils.getExtendedTreeNodeInterval((FilteredComponent<?>) segmentRecord.hyp.getWrappedHypothesis());
+						ComponentTreeUtils.getTreeNodeInterval(segmentRecord.hyp.getWrappedComponent());
+				if (segmentRecord.hyp.getWrappedComponent() instanceof FilteredComponent) {
+					limits = ComponentTreeUtils.getExtendedTreeNodeInterval((FilteredComponent<?>) segmentRecord.hyp.getWrappedComponent());
 				}
 
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);

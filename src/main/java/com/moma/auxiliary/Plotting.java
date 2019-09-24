@@ -35,7 +35,7 @@ public class Plotting {
 
         // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
-        IntervalView sourceImage = ((SimpleComponent) first).getSourceImage();
+        RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
         ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());

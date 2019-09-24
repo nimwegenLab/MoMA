@@ -163,16 +163,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
 		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 		componentTree = buildIntensityTree(currentImage);
-		Predicate<Integer> widthCondition = (width) -> (width <= 20);
-		ILocationTester ctester = new ComponentExtentTester(0, widthCondition);
-		Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= img.dimension(1) - GL_OFFSET_BOTTOM);
-		ILocationTester boundaryTester = new PixelPositionTester(1, condition);
-		ArrayList<ILocationTester> testers = new ArrayList<>();
-		testers.add(ctester);
-		testers.add(boundaryTester);
-		ComponentTester<FloatType, C> tester = new ComponentTester<>(testers);
-		componentTree = new SimpleComponentTree(componentTree, tester, currentImage);
-		System.out.println("done");
 	}
 
 //	public static < T extends Type< T > > void copy( final Img< T > source, final Img< T > target )

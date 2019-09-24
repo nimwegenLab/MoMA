@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.img.Img;
@@ -22,9 +23,9 @@ public final class SimpleComponent<T extends Type<T>>
      * Pixels in the component.
      */
     private final PixelList pixelList;
-    private final IntervalView<T> sourceImage;
+    private final RandomAccessibleInterval<T> sourceImage;
 
-    public IntervalView<T> getSourceImage() {
+    public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
     }
 
@@ -58,7 +59,7 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public SimpleComponent(PixelList pixelList, T value, IntervalView<T> sourceImage) {
+    public SimpleComponent(PixelList pixelList, T value, RandomAccessibleInterval<T> sourceImage) {
         this.pixelList = pixelList;
         this.value = value;
         this.sourceImage = sourceImage;

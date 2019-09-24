@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.filteredcomponents.FilteredComponent;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
@@ -22,10 +23,10 @@ public final class SimpleComponentTree<T extends Type<T>>
         ComponentForest<SimpleComponent<T>> {
     private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
     private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
-    private final IntervalView<T> sourceImage;
+    private final RandomAccessibleInterval<T> sourceImage;
     private IComponentTester<T, FilteredComponent<T>> tester;
 
-    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest, IComponentTester<T, FilteredComponent<T>> tester, IntervalView<T> sourceImage) {
+    public SimpleComponentTree(ComponentForest<FilteredComponent<T>> componentForest, IComponentTester<T, FilteredComponent<T>> tester, RandomAccessibleInterval<T> sourceImage) {
         this.sourceImage = sourceImage;
         this.tester = tester;
         CreateTree(componentForest);

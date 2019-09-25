@@ -1,9 +1,12 @@
 package com.jug;
 
 import com.jug.util.componenttree.*;
+import net.imglib2.Cursor;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessible;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.type.numeric.real.FloatType;
 
 import com.jug.util.filteredcomponents.FilteredComponent;
@@ -37,15 +40,29 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 	 */
 	@Override
 	protected ComponentForest< FilteredComponent< FloatType >> buildIntensityTree( final RandomAccessibleInterval< FloatType > raiFkt ) {
-		FilteredComponentTree<FloatType> componentTree = FilteredComponentTree.buildComponentTree(
-				raiFkt,
-				new FloatType(),
-				200, // MoMA.MIN_CELL_LENGTH,
-				Long.MAX_VALUE, //2000, // Long.MAX_VALUE,
-				2,
-				12,
-				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
-				false); // DarkToBright=true
+//		FilteredComponentTree<FloatType> componentTree = FilteredComponentTree.buildComponentTree(
+//				raiFkt,
+//				new FloatType(),
+//				200, // MoMA.MIN_CELL_LENGTH,
+//				Long.MAX_VALUE, //2000, // Long.MAX_VALUE,
+//				2,
+//				12,
+//				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
+//				false); // DarkToBright=true
+
+		float threshold = 0.1f;
+		IterableInterval< FloatType > iterableSource = Views.iterable(raiFkt);
+		Cursor<FloatType> cursor = iterableSource.cursor();
+		while(cursor.hasNext()){
+			cursor.next();
+			float val = cursor.get().getRealFloat();
+			if(val > 0.0f && val < threshold){
+				cursor.get().set(0);
+			}
+		}
+
+		MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, 0.5, 0, Long.MAX_VALUE, 1, 0.5, false);
+
 
 		Predicate<Integer> widthCondition = (width) -> (width <= 20);
 		ILocationTester ctester = new ComponentExtentTester(0, widthCondition);
@@ -58,7 +75,8 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 
 //		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 
-		return new SimpleComponentTree(componentTree, tester, raiFkt);
+//		return new SimpleComponentTree(componentTree, tester, raiFkt);
+		return new SimpleComponentTree(componentTree, raiFkt);
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}

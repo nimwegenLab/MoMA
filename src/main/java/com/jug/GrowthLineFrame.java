@@ -87,8 +87,8 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 
 //		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 
-//		return new SimpleComponentTree(componentTree, tester, raiFkt);
-		return new SimpleComponentTree(componentTree, raiFkt);
+		return new SimpleComponentTree(componentTree, raiFkt, tester);
+//		return new SimpleComponentTree(componentTree, raiFkt);
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}

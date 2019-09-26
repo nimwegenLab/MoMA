@@ -5,8 +5,6 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -28,15 +26,46 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private IComponentTester<T, C> tester;
 
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
-        this.sourceImage = sourceImage;
-        this.tester = new DummyComponentTester();
-        CreateTree(componentForest);
+        this(componentForest, sourceImage, new DummyComponentTester());
     }
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, IComponentTester<T, C> tester, RandomAccessibleInterval<T> sourceImage) {
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
         this.sourceImage = sourceImage;
         this.tester = tester;
         CreateTree(componentForest);
+        SortChildrenByPosition();
+    }
+
+    private void SortChildrenByPosition(){
+        for (final SimpleComponent root : roots()) {
+            SortChildrenRecursively(root);
+        }
+    }
+
+    private void SortChildrenRecursively(SimpleComponent parent) {
+        List<SimpleComponent<T, C>> children = parent.getChildren();
+        PositionComparator positionComparator = new PositionComparator(1);
+        children.sort(positionComparator);
+        for(SimpleComponent<T, C> component : children){
+            SortChildrenRecursively(component);
+        }
+    }
+
+    private class PositionComparator implements Comparator<SimpleComponent> {
+        /**
+         * Dimension of the components that will be compared.
+         */
+        private int dim;
+
+        public PositionComparator(int dim) {
+            this.dim = dim;
+        }
+
+        public int compare(SimpleComponent c1, SimpleComponent c2) {
+            if (c1.firstMomentPixelCoordinates()[dim] < c2.firstMomentPixelCoordinates()[dim]) return -1;
+            if (c1.firstMomentPixelCoordinates()[dim] > c2.firstMomentPixelCoordinates()[dim]) return 1;
+            return 0;
+        }
     }
 
     private void CreateTree(ComponentForest<C> componentForest) {

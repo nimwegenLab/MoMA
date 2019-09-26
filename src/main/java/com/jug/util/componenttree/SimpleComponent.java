@@ -4,6 +4,7 @@ import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.componenttree.mser.Mser;
 import net.imglib2.type.Type;
 
 import java.util.ArrayList;
@@ -45,12 +46,6 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
      * parent node in the {@link FilteredComponentTree}.
      */
     private SimpleComponent<T, C> parent;
-    /**
-     * We need to reverse the list of children, so that the division assignment has the children in the correct order
-     * (meaning top and bottom children are assign correctly). This is a hackish work around to solve an issue that I
-     * do not fully understand yet and should probably be fixed here: ComponentTreeUtils.getRightNeighbor(...)
-     */
-    private Boolean childrenWereReversed = false;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
@@ -82,10 +77,6 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
 
     @Override
     public List<SimpleComponent<T, C>> getChildren() {
-        if (!childrenWereReversed) {
-            Collections.reverse(children);
-            childrenWereReversed = true;
-        }
         return children;
     }
 
@@ -96,5 +87,9 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
     @Override
     public Iterator<Localizable> iterator() {
         return wrappedComponent.iterator();
+    }
+
+    public double[] firstMomentPixelCoordinates(){
+        return ((Mser)wrappedComponent).mean();
     }
 }

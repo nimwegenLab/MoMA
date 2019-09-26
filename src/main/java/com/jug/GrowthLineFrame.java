@@ -1,6 +1,7 @@
 package com.jug;
 
 import com.jug.util.componenttree.*;
+import com.moma.auxiliary.Plotting;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessible;
@@ -61,8 +62,13 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 			}
 		}
 
-		MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, 0.5, 0, Long.MAX_VALUE, 1, 0.5, false);
+//		MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, 0.01, 0, Long.MAX_VALUE, 0.0005, 0.4, false);
+		long startTime = System.nanoTime();
+		MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, 0.001, 0, Long.MAX_VALUE, 0.00005, 0.4, false);
+		long stopTime = System.nanoTime();
+		System.out.println("Elapsed time:" + (stopTime-startTime)/1000000);
 
+        Plotting.drawComponentTree2(componentTree, new ArrayList<>());
 
 		Predicate<Integer> widthCondition = (width) -> (width <= 20);
 		ILocationTester ctester = new ComponentExtentTester(0, widthCondition);

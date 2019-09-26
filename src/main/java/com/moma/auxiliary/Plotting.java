@@ -81,6 +81,63 @@ public class Plotting {
         }
     }
 
+
+    public static <C extends Component<FloatType, C>> void drawComponentTree2(ComponentForest<C> ct,
+                                                                              List<Component<FloatType, ?>> componentsInOptimalSolution) {
+        if (ct.roots().isEmpty()) {
+            throw new ValueException("ct.roots() is empty");
+        }
+
+        // create image factory with correct dimensions
+        C first = ct.roots().iterator().next();
+//        IntervalView sourceImage = ((SimpleComponent) first).getSourceImage();
+//        long xDim = sourceImage.dimension(0);
+//        long yDim = sourceImage.dimension(1);
+        long xDim = 106;
+        long yDim = 531;
+
+        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
+
+        // define consumer that will draw components to image and add them to the image stack
+        final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
+        Consumer<Pair<List<C>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
+            List<C> componentOfLevel = levelComponentsListAndLevel.getValue0();
+            {
+                final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
+                for(C ctn : componentOfLevel){
+                    boolean val = componentsInOptimalSolution.contains(ctn);
+                    drawComponentToImage2(ctn, componentLevelImage, val);
+                }
+                componentLevelImageStack.add(componentLevelImage);
+            }
+        };
+
+        // run for components in each level
+        ComponentTreeUtils.doForEachComponentInTreeLevel(ct, levelComponentsConsumer);
+
+        // show
+        ImageJFunctions.show(Views.stack(componentLevelImageStack));
+    }
+
+    private static void drawComponentToImage2(final Component<?, ?> ctn,
+                                              RandomAccessibleInterval<ARGBType> targetImage,
+                                              boolean ctnIsSelected) {
+//        RandomAccess<FloatType> source = sourceImage.randomAccess();
+        RandomAccess<ARGBType> out = targetImage.randomAccess();
+
+        for (Localizable location : ctn) {
+//            source.setPosition(location);
+            out.setPosition(location);
+//            int level = (int) (source.get().getRealFloat() * 255);
+            ARGBType value = new ARGBType(ARGBType.rgba(255, 255, 255, 0));
+            if (ctnIsSelected) {
+                value = new ARGBType(ARGBType.rgba(0, 255, 0, 0));
+            }
+            out.get().set(value);
+        }
+    }
+
+
     public static void surfacePlot(final RandomAccessibleInterval<FloatType> img, final int dimension, final long position) {
         ImagePlus imp = ImageJFunctions.wrap(Views.hyperSlice(img, dimension, position), "my image");
         IJ.run(imp, "3D Surface Plot", "");

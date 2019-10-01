@@ -6,6 +6,7 @@ import com.jug.util.componenttree.SimpleComponent;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
+import ij.gui.TextRoi;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
@@ -20,6 +21,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.javatuples.Pair;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,7 +30,7 @@ import static com.jug.util.imglib2.Imglib2Utils.setImageToValue;
 
 public class Plotting {
     public static <C extends Component<FloatType, C>> void drawComponentTree(ComponentForest<C> ct,
-                                                                             List<Component<FloatType, ?>> componentsInOptimalSolution) {
+                                                                             List<Component<FloatType, ?>> componentsInOptimalSolution, int timeStep) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
@@ -59,7 +61,9 @@ public class Plotting {
         ComponentTreeUtils.doForEachComponentInTreeLevel(ct, levelComponentsConsumer);
 
         // show
-        ImageJFunctions.show(Views.stack(componentLevelImageStack));
+        ImagePlus imp = ImageJFunctions.show(Views.stack(componentLevelImageStack));
+        TextRoi text = new TextRoi(0, 0, String.format("t=%d", timeStep));
+        imp.setOverlay(text, Color.white, 0, Color.black);
     }
 
     private static void drawComponentToImage(final Component<?, ?> ctn,

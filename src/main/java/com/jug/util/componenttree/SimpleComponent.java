@@ -8,7 +8,6 @@ import net.imglib2.algorithm.componenttree.mser.Mser;
 import net.imglib2.type.Type;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -91,5 +90,15 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
 
     public double[] firstMomentPixelCoordinates(){
         return ((Mser)wrappedComponent).mean();
+    }
+
+    public int getNodeLevel() {
+        int nodeLevel = 0;
+        SimpleComponent<T, C> parent = this.getParent();
+        while (parent != null) {
+            nodeLevel++;
+            parent = parent.getParent();
+        }
+        return nodeLevel;
     }
 }

@@ -6,6 +6,7 @@ import com.jug.MoMA;
 import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 
+import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -97,8 +98,12 @@ public class CostFactory {
 //        System.out.println("minPixelProbability: " + minPixelProbability);
 //        System.out.println("cost: " + cost);
 //        System.out.println("segment length: " + (b - a));
-//		return cost * 2f;
-        return cost;
+        int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
+        System.out.println(String.format("%d\t%f", nodeLevel, cost));
+
+		return cost * 2f;
+//        return -1;//
+		// cost;
 //		return -0.2f;
     }
 

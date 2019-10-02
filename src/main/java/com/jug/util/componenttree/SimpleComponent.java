@@ -101,4 +101,8 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
         }
         return nodeLevel;
     }
+
+    public double getMserScore() {
+        return ((Mser) wrappedComponent).score();
+    }
 }

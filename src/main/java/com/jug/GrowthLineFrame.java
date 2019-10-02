@@ -64,11 +64,11 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 
 //		MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, 0.01, 0, Long.MAX_VALUE, 0.0005, 0.4, false);
 //		long startTime = System.nanoTime();
-        final double delta = 0.001;
+        final double delta = 0.02;
         final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
         final long maxValue = Long.MAX_VALUE;
-        final double maxVar = 0.00005;
-        final double minDiversity = 0.4;
+        final double maxVar = 1.0;
+        final double minDiversity = 0.2;
         final boolean darkToBright = false;
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxValue, maxVar, minDiversity, darkToBright);
 //		long stopTime = System.nanoTime();

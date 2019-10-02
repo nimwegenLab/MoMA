@@ -75,7 +75,9 @@ public class CostFactory {
 		ValuePair<Float, Float> pixelProbabilities = ComponentTreeUtils.getTreeNodeMinMaxIntensity(ctNode, imageProbabilities);
 		float minPixelProbability = pixelProbabilities.a;
 //		float maxPixelProbability = pixelProbabilities.b;
-		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
+//		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
+		double mserScore = ((SimpleComponent) ctNode).getMserScore();
+		float cost = (float)(- minPixelProbability - (1 - mserScore * 10)); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
 
 //		float cost;
 //        if(minPixelProbability>0.2){
@@ -99,7 +101,8 @@ public class CostFactory {
 //        System.out.println("cost: " + cost);
 //        System.out.println("segment length: " + (b - a));
         int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
-        System.out.println(String.format("%d\t%f", nodeLevel, cost));
+//		double mserScore = ((SimpleComponent) ctNode).getMserScore();
+        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
 
 		return cost * 2f;
 //        return -1;//

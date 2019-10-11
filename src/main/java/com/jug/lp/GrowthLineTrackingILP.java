@@ -206,7 +206,7 @@ public class GrowthLineTrackingILP {
 			createSegmentationHypotheses( t );
 			enumerateAndAddAssignments( t - 1 );
 		}
-		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently we the duplicate frame in that MoMA adds is on purpose!
+		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps );
@@ -479,7 +479,6 @@ public class GrowthLineTrackingILP {
 		if ( hyps == null ) return;
 
 		float cost;
-		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			cost = costModulationForSubstitutedILP( hyp.getCosts() );
 
@@ -488,7 +487,6 @@ public class GrowthLineTrackingILP {
 			final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp );
 			nodes.addAssignment( t, ea );
 			edgeSets.addToRightNeighborhood( hyp, ea );
-			i++;
 		}
 	}
 

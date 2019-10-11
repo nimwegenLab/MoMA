@@ -97,6 +97,34 @@ public class ComponentTreeUtils {
     }
 
     /**
+     * Returns the pixel limits of the component along a given dimension.
+     * @param component the component to process
+     * @param dim the dimension in which component limits are determined
+     * @return ValuePair<int min, int max> minimum and maximum pixel limits.
+     */
+    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim){
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (Localizable localizable : component) {
+            final int pos = localizable.getIntPosition(dim);
+            min = Math.min(min, pos);
+            max = Math.max(max, pos);
+        }
+        return new ValuePair<>(min, max);
+    }
+
+    /**
+     * Returns the pixel size of the component along the given dimension.
+     * @param component the component to process
+     * @param dim the dimension along which the size will be determined
+     * @return integer value, which is the difference between the starting and end pixel-positions of the component.
+     */
+    public static int getComponentSize(final Component<?,?> component, int dim){
+        ValuePair<Integer, Integer> limits = getComponentPixelLimits(component, dim);
+        return limits.b - limits.a;
+    }
+
+    /**
      * Returns the minimal pixel intensity of the component.
      *
      * @param node the node in question.

@@ -43,6 +43,8 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 
+import static com.jug.util.ComponentTreeUtils.getComponentSize;
+
 /**
  * @author jug
  */
@@ -574,8 +576,8 @@ public class GrowthLineTrackingILP {
 	public Pair< Float, float[] > compatibilityCostOfMapping(
 			final Hypothesis< Component< FloatType, ? > > from,
 			final Hypothesis< Component< FloatType, ? > > to ) {
-		final long sizeFrom = from.getWrappedComponent().size();
-		final long sizeTo = to.getWrappedComponent().size();
+		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
+		final long sizeTo = getComponentSize(to.getWrappedComponent(), 1);
 
 //		final float valueFrom = from.getWrappedComponent().value().get();
 //		final float valueTo = to.getWrappedComponent().value().get();
@@ -776,9 +778,9 @@ public class GrowthLineTrackingILP {
 		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
 		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
 
-		final long sizeFrom = from.getWrappedComponent().size();
-		final long sizeToU = toUpper.getWrappedComponent().size();
-		final long sizeToL = toLower.getWrappedComponent().size();
+		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
+		final long sizeToU = getComponentSize(toUpper.getWrappedComponent(),1);
+		final long sizeToL = getComponentSize(toLower.getWrappedComponent(), 1);
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 
@@ -1826,7 +1828,7 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-			final long s = comp.size();
+			final long s = getComponentSize(comp, 1);
 			if ( isComponentContainingYpos( comp, gapSepYPos ) ) {
 				if ( s < min ) {
 					min = s;

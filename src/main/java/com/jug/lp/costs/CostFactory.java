@@ -13,6 +13,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
+import static com.jug.util.ComponentTreeUtils.getComponentSize;
+
 /**
  * @author jug
  */
@@ -120,13 +122,11 @@ public class CostFactory {
 
 		// if two children, eveluate likelihood of being pre-division
 		final List< Component< FloatType, ? > > children = ( List< Component< FloatType, ? >> ) from.getWrappedComponent().getChildren();
-//		final float valA = children.get( 0 ).value().get();
-//		final float valB = children.get( 1 ).value().get();
-		final long sizeA = children.get( 0 ).size();
-		final long sizeB = children.get( 1 ).size();
+		final long sizeA = getComponentSize(children.get( 0 ), 1);
+		final long sizeB = getComponentSize(children.get( 1 ), 1);
 
 //		final float valParent = from.getWrappedComponent().value().get();
-		final long sizeParent = from.getWrappedComponent().size();
+		final long sizeParent = getComponentSize(from.getWrappedComponent(), 1);
 
 		final long deltaSizeAtoB = Math.abs( sizeA - sizeB ) / Math.min( sizeA, sizeB ); // in multiples of smaller one
 		final long deltaSizeABtoP = Math.abs( sizeA + sizeB - sizeParent ) / ( sizeA + sizeB ); // in multiples of A+B

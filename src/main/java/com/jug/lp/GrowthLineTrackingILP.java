@@ -680,7 +680,7 @@ public class GrowthLineTrackingILP {
 	 * @return the modulated costs.
 	 */
 	public float costModulationForSubstitutedILP( final float fromCosts ) {
-		return Math.min( 0.0f, fromCosts / 4f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
+		return Math.min( 0.0f, fromCosts / 2f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
 	}
 
 

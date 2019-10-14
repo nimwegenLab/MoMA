@@ -104,7 +104,7 @@ public class CostFactory {
 //        System.out.println("segment length: " + (b - a));
         int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
 //		double mserScore = ((SimpleComponent) ctNode).getMserScore();
-        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
+//        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
 
 		return cost * 2f;
 //        return -1;//

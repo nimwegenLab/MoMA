@@ -12,6 +12,8 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.algorithm.labeling.Watershed;
+import net.imglib2.algorithm.binary.Thresholder;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -40,9 +42,12 @@ public class CostFactory {
 	}
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
-		float deltaL = ( newSize - oldSize ) / normalizer;
+//		return getGrowthCostNew(oldSize, newSize);
+		
+		float deltaL = ( newSize - oldSize ) / normalizer; // ergo: deltaL < 1 for anything that is smaller than the GL; should we not look at relative size change?!
+//		System.out.println(String.format("costDeltaL: %f", deltaL));
+//		System.out.println(String.format("length: %f", normalizer));
 		float power;
-		float costDeltaL = 0.0f;
 		if ( deltaL > 0 ) { // growth
 			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
 			power = 4.0f;
@@ -51,8 +56,39 @@ public class CostFactory {
 //			costDeltaL += ( newSize - oldSize ) * 0.00;
 		}
 		deltaL = Math.abs( deltaL );
-		costDeltaL += deltaL * ( float ) Math.pow( 1 + deltaL, power );
+//		System.out.println(String.format("costDeltaL: %f", deltaL));
+
+		float costDeltaL = deltaL * (float) Math.pow(1 + deltaL, power); // since deltaL is <1 we add 1 before taking its power
+//		System.out.println(String.format("costDeltaL: %f", costDeltaL));
+
+		float relativeGrowth = ( newSize - oldSize ) / oldSize;
+//		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
+
+//		float costDeltaL =  0.0f;
+//		if(relativeGrowth > 0.3f){
+//			costDeltaL = 100.0f;
+//		}
+//		else if(relativeGrowth < -0.2f){
+//			costDeltaL = 100.0f;
+//		}
+
+//		System.out.println(String.format("Final cost: %f", costDeltaL));
 //		latestCostEvaluation = String.format( "c_l = %.4f * %.4f^%.1f = %.4f", deltaL, 1 + deltaL, power, costDeltaL );
+		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
+	}
+
+	public static Pair< Float, float[] > getGrowthCostNew( final float oldSize, final float newSize ) {
+		float relativeGrowth = ( newSize - oldSize ) / oldSize;
+//		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
+
+		float costDeltaL =  0.0f;
+		if(relativeGrowth > 0.2){
+			costDeltaL = 1.0f;
+		}
+		else if(relativeGrowth < 0.05){
+			costDeltaL = 1.0f;
+		}
+
 		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
 	}
 
@@ -79,7 +115,8 @@ public class CostFactory {
 //		float maxPixelProbability = pixelProbabilities.b;
 //		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
 		double mserScore = ((SimpleComponent) ctNode).getMserScore();
-		float cost = (float)(- minPixelProbability - (1 - mserScore * 10)); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
+//		float cost = (float)(- minPixelProbability - (1 - mserScore * 10)); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
+		float cost = (float)(- minPixelProbability); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
 
 //		float cost;
 //        if(minPixelProbability>0.2){
@@ -107,6 +144,7 @@ public class CostFactory {
 //        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
 
 		return cost * 2f;
+//		return -1f;
 //        return -1;//
 		// cost;
 //		return -0.2f;

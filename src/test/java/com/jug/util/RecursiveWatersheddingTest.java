@@ -11,6 +11,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
+import net.imglib2.algorithm.labeling.Watershed;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import net.imglib2.converter.Converter;
@@ -20,12 +21,14 @@ import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.labeling.NativeImgLabeling;
 import net.imglib2.roi.IterableRegion;
 import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelingType;
 import net.imglib2.type.BooleanType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.IntegerType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -247,6 +250,18 @@ public class RecursiveWatersheddingTest {
         // create mask which is 1 everywhere
 
         testWithMask(input, labeledSeeds, mask);
+    }
+
+    private void testWithImglib2(final RandomAccessibleInterval<FloatType> in, final ImgLabeling<Integer, IntType> seeds, RandomAccessibleInterval<BitType> mask) {
+        seedLabeling = seeds;
+//        NativeImgLabeling< Integer, IntType > seedLabeling = seeds;
+        RandomAccessibleInterval<net.imglib2.labeling.LabelingType<Integer>> seedLabeling = seeds;
+        final Watershed< IntType, Integer > watershed = new Watershed< IntType, Integer >();
+        watershed.setSeeds( seedLabeling );
+        watershed.setIntensityImage( imageImage );
+        watershed.setStructuringElement( structuringElement );
+        watershed.setOutputLabeling( outputLabeling );
+        assertTrue( watershed.process() );
     }
 
     private void testWithMask(final RandomAccessibleInterval<FloatType> in, final ImgLabeling<Integer, IntType> seeds, RandomAccessibleInterval<BitType> mask) {

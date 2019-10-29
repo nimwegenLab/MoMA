@@ -168,83 +168,14 @@ public class RecursiveWatersheddingTest {
         RandomAccessibleInterval<BitType> mask = ij.op().convert().bit(Views.iterable(imageParent));
         ImageJFunctions.show(imageParentTmp);
 
-//        RandomAccessibleInterval<BitType> maskNew = Converters.convert(imageParent,
-//                new Converter<UnsignedByteType, BitType>() {
-//                    @Override
-//                    public void convert(UnsignedByteType arg0, BitType arg1) {
-//                        arg1.set(arg0.get() > 0);
-//                    }
-//                }, new BitType());
-
-//        Img<BitType> mask = ops.create().img(maskNew);
-//        Cursor<BitType> maskNewCursor = Views.iterable(maskNew).localizingCursor();
-//        Cursor<BitType> maskCursor = mask.localizingCursor();
-//        while(maskNewCursor.hasNext()) {
-//            BitType maskVal = maskCursor.next();
-//            BitType maskNewVal = maskNewCursor.next();
-//            maskVal.set(maskNewVal);
-//        }
-
-//        RandomAccessibleInterval<BitType> mask = (RandomAccessibleInterval<BitType>) maskIter;
-//        long[] dims = new long[imageParent.numDimensions()];
-//        imageParent.dimensions(dims);
-//        Img<BitType> mask = ArrayImgs.bits(dims);
-
-
-//        ImageJFunctions.show(mask);
         imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/mserTreeLevel5.tif";
         Img imageChildTmp = (Img) io.open(imageFile);
         RandomAccessibleInterval<UnsignedByteType>  imageChild = Views.hyperSlice(imageChildTmp, 2, 0);
         imageChild = (RandomAccessibleInterval) ops.morphology().erode(imageChild, new RectangleShape(2,false));
         ImgLabeling<Integer, IntType> labeledSeeds = ij.op().labeling().cca(imageChild, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
-//        ij.ui().show(labeledSeeds.getIndexImg());
-//        ImgLabeling labelsOut = ops.image().watershed(null, sourceImage, labeledSeeds, false, false, imageParent2);
-//        ImageJFunctions.show(labelsOut.getIndexImg());
 
         Img<FloatType> input = sourceImage.factory().create(sourceImage);
         ops.image().invert(input, sourceImage);
-
-
-//        long[] dims = new long[input.numDimensions()];
-//        input.dimensions(dims);
-//        Img<BitType> mask = ArrayImgs.bits(dims);
-//        RandomAccess<BitType> raMask = mask.randomAccess();
-//        for (BitType b : mask) {
-//            b.setZero();
-//        }
-//        for (int x = 0; x < 106; x++) {
-//            for (int y = 0; y < 300; y++) {
-//                raMask.setPosition(new int[] { x, y });
-//                raMask.get().setOne();
-//            }
-//        }
-//
-//
-//        final long SEED = 0x12345678;
-//
-//        long[] dims = { 15, 30 };
-//        // create input image
-//        Img<FloatType> input = ArrayImgs.floats(dims);
-//        MersenneTwisterFast random = new MersenneTwisterFast(SEED);
-//        for (FloatType b : input) {
-//            b.setReal(random.nextDouble());
-//        }
-//
-//        // create 3 seeds
-//        Img<BitType> bits = ArrayImgs.bits(dims);
-//        RandomAccess<BitType> ra = bits.randomAccess();
-//        ra.setPosition(new int[] { 0, 0 });
-//        ra.get().set(true);
-//        ra.setPosition(new int[] { 4, 6 });
-//        ra.get().set(true);
-//        ra.setPosition(new int[] { 10, 20 });
-//        ra.get().set(true);
-//
-//        // compute labeled seeds
-//        final ImgLabeling<Integer, IntType> labeledSeeds = ops.labeling().cca(bits, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
-//
-//        testWithoutMask(input, labeledSeeds);
-        // create mask which is 1 everywhere
 
         testWithMask(input, labeledSeeds, mask);
     }
@@ -259,68 +190,22 @@ public class RecursiveWatersheddingTest {
 
         ImageJFunctions.show(in);
         ImageJFunctions.show(seeds.getIndexImg());
-//        ImageJFunctions.show(mask);
+        ImageJFunctions.show(mask);
         ImageJFunctions.show(out.getIndexImg());
 
-        assertResults(in, out, seeds, mask, false, true);
-
-        // compute result with watersheds
-        ImgLabeling<Integer, IntType> out2 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-                seeds, true, true, mask);
-
-
-//        ImageJFunctions.show(in);
-//        ImageJFunctions.show(seeds.getIndexImg());
-//        ImageJFunctions.show(mask);
-//        ImageJFunctions.show(out2.getIndexImg());
-
-        assertResults(in, out2, seeds, mask, true, true);
-
-        /*
-         * use 4-connected neighborhood
-         */
-        // compute result without watersheds
-        ImgLabeling<Integer, IntType> out3 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-                seeds, false, false, mask);
-
-        assertResults(in, out3, seeds, mask, false, true);
-
-        // compute result with watersheds
-        ImgLabeling<Integer, IntType> out4 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-                seeds, false, true, mask);
-
-        assertResults(in, out4, seeds, mask, true, true);
+//        // compute result with watersheds
+//        ImgLabeling<Integer, IntType> out2 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
+//                seeds, true, true, mask);
+//
+//        /*
+//         * use 4-connected neighborhood
+//         */
+//        // compute result without watersheds
+//        ImgLabeling<Integer, IntType> out3 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
+//                seeds, false, false, mask);
+//
+//        // compute result with watersheds
+//        ImgLabeling<Integer, IntType> out4 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
+//                seeds, false, true, mask);
     }
-
-    private void assertResults(final RandomAccessibleInterval<FloatType> in, final ImgLabeling<Integer, IntType> out,
-                               final ImgLabeling<Integer, IntType> seeds, final RandomAccessibleInterval<BitType> mask,
-                               final boolean withWatersheds, final boolean smallMask) {
-
-        final Cursor<LabelingType<Integer>> curOut = out.cursor();
-        final RandomAccess<BitType> raMask = mask.randomAccess();
-        while (curOut.hasNext()) {
-            curOut.fwd();
-            raMask.setPosition(curOut);
-            if (raMask.get().get()) {
-                assertEquals(1, curOut.get().size());
-            } else {
-                assertEquals(true, curOut.get().isEmpty());
-            }
-        }
-        // Sample the output image based on the mask
-        IterableRegion<BitType> regions = Regions.iterable(mask);
-
-        // count labels
-        Set<Integer> labelSet = new HashSet<>();
-        for (LabelingType<Integer> pixel : Regions.sample(regions, out)) {
-            labelSet.addAll(pixel);
-        }
-
-        // assert equals
-        assertEquals(in.numDimensions(), out.numDimensions());
-        assertEquals(in.dimension(0), out.dimension(0));
-        assertEquals(in.dimension(1), out.dimension(1));
-        assertEquals(3 + (withWatersheds ? 1 : 0), labelSet.size() + (smallMask ? 1 : 0));
-    }
-
 }

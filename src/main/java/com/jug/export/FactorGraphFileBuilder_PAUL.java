@@ -115,7 +115,7 @@ public class FactorGraphFileBuilder_PAUL {
 	 */
 	public int addHyp( final GrowthLineTrackingILP ilp, final Hypothesis< Component< FloatType, ? > > hyp ) {
 		mapHypId.put( hyp, next_hyp_id );
-		final double exitCost = ilp.costModulationForSubstitutedILP( hyp.getCosts() );
+		final double exitCost = ilp.costModulationForSubstitutedILP( hyp.getCost() );
 		lines.add( String.format( "H %d %d %.16f (%d,%d)", next_hyp_id, hyp.getId(), 0f, hyp.getLocation().a, hyp.getLocation().b ) );
 																			// the hypcosts are all 0 because we fold them into
 																			// the assignments according to the way we substitute
@@ -135,7 +135,7 @@ public class FactorGraphFileBuilder_PAUL {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesis = assmnt.getDestinationHypothesis();
 		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis, destinationHypothesis ).getA();
-		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCosts(), destinationHypothesis.getCosts(), mappingCost );
+		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost );
 		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
 			lines.add(
 					String.format(
@@ -159,9 +159,9 @@ public class FactorGraphFileBuilder_PAUL {
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
 		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower ).getA();
 		final double cost = ilp.costModulationForSubstitutedILP(
-				sourceHypothesis.getCosts(),
-				destinationHypothesisUpper.getCosts(),
-				destinationHypothesisLower.getCosts(),
+				sourceHypothesis.getCost(),
+				destinationHypothesisUpper.getCost(),
+				destinationHypothesisLower.getCost(),
 				divisionCost );
 		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
 			lines.add(

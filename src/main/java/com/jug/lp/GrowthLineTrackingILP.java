@@ -37,7 +37,6 @@ import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -68,7 +67,7 @@ public class GrowthLineTrackingILP {
 	public static final int ASSIGNMENT_MAPPING = 1;
 	public static final int ASSIGNMENT_DIVISION = 2;
 
-	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored
+	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored; THIS SEEMS WAY TOO LOW
 
 	private static GRBEnv env;
 	private static CostManager costManager;
@@ -82,14 +81,14 @@ public class GrowthLineTrackingILP {
 	private int status = OPTIMIZATION_NEVER_PERFORMED;
 
 	public final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes =
-			new AssignmentsAndHypotheses<>();
+			new AssignmentsAndHypotheses<>();  // all variables of FG
 	private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets =
-			new HypothesisNeighborhoods<>();
+			new HypothesisNeighborhoods<>();  // incoming and outgoing assignments per hypothesis
 
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr > ignoreSegmentConstraints =
-			new HashMap<>();
+			new HashMap<>(); // for user interaction: avoid node
 	private final HashMap< Hypothesis< Component< FloatType, ? > >, GRBConstr > freezeSegmentConstraints =
-			new HashMap<>();
+			new HashMap<>(); // for user interaction: force node
 
 	private int pbcId = 0;
 
@@ -120,6 +119,7 @@ public class GrowthLineTrackingILP {
 			costManager = new CostManager( 6, 13 );
 			costManager.setWeights( new double[] { 0.1, 0.9, 0.5, 0.5, 0, 1, 								// mapping
 			                                       0.1, 0.9, 0.5, 0.5, 0, 1, 1, 0, 1, 1, 0, 0.1, 0.03 } );  // division
+
 		}
 
 		try {
@@ -163,22 +163,11 @@ public class GrowthLineTrackingILP {
 			// Iterate over all assignments and ask them to add their
 			// constraints to the model
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			int numHyp = 0;
-			for ( final List< Hypothesis< Component< FloatType, ? >>> innerList : nodes.getAllHypotheses() ) {
-				for ( @SuppressWarnings( "unused" )
-				final Hypothesis< Component< FloatType, ? >> hypothesis : innerList ) {
-					numHyp++;
-				}
-			}
-			int numAss = 0;
 			for ( final List< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > innerList : nodes.getAllAssignments() ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assignment : innerList ) {
 					assignment.addConstraintsToLP();
-					numAss++;
 				}
 			}
-			System.out.println( "    Hypothesis count: " + numHyp );
-			System.out.println( "    Assignment count: " + numAss );
 
 			// Add the remaining ILP constraints
 			// (those would be (i) and (ii) of 'Default Solution')
@@ -208,10 +197,10 @@ public class GrowthLineTrackingILP {
 			createSegmentationHypotheses( t );
 			enumerateAndAddAssignments( t - 1 );
 		}
-		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
+		// add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
-		addExitAssignments( gl.size() - 1, curHyps );
+		addExitAssignments( gl.size() - 1, curHyps ); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
 	}
 
 	/**
@@ -301,19 +290,19 @@ public class GrowthLineTrackingILP {
 					fgFile.addVarComment( "- - MAPPING (var: " + var_id + ") - - - - - " );
 					fgFile.addFktComment( "- - MAPPING (var: " + var_id + ") - - - - - " );
 					final MappingAssignment ma = ( MappingAssignment ) assmt;
-					cost = ma.getSourceHypothesis().getCosts() + ma.getDestinationHypothesis().getCosts();
+					cost = ma.getSourceHypothesis().getCost() + ma.getDestinationHypothesis().getCost();
 				} else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
 					fgFile.addVarComment( "- - DIVISION (var: " + var_id + ") - - - - - " );
 					fgFile.addFktComment( "- - DIVISION (var: " + var_id + ") - - - - - " );
 					final DivisionAssignment da = ( DivisionAssignment ) assmt;
-					cost = da.getSourceHypothesis().getCosts() + da.getUpperDesinationHypothesis().getCosts() + da
+					cost = da.getSourceHypothesis().getCost() + da.getUpperDesinationHypothesis().getCost() + da
 							.getLowerDesinationHypothesis()
-							.getCosts();
+							.getCost();
 				} else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
 					fgFile.addVarComment( "- - EXIT (var: " + var_id + ") - - - - - " );
 					fgFile.addFktComment( "- - EXIT (var: " + var_id + ") - - - - - " );
 					final ExitAssignment ea = ( ExitAssignment ) assmt;
-					cost = ea.getAssociatedHypothesis().getCosts();
+					cost = ea.getAssociatedHypothesis().getCost();
 				}
 
 				final int fkt_id = fgFile.addFkt( String.format( "table 1 2 0 %f", cost ) );
@@ -478,17 +467,17 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 */
 	private void addExitAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> hyps ) throws GRBException {
-		if ( hyps == null ) return;
+		if ( hyps == null ) return; // edge case?!
 
 		float cost;
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			cost = costModulationForSubstitutedILP( hyp.getCosts() );
+			cost = costModulationForSubstitutedILP( hyp.getCost() );
 
 			final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, String.format( "a_%d^EXIT--%d", t, hyp.getId() ) );
-			final List< Hypothesis< Component< FloatType, ? >>> Hup = LpUtils.getHup( hyp, hyps );
+			final List< Hypothesis< Component< FloatType, ? >>> Hup = LpUtils.getHup( hyp, hyps ); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
 			final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp );
 			nodes.addAssignment( t, ea );
-			edgeSets.addToRightNeighborhood( hyp, ea );
+			edgeSets.addToRightNeighborhood( hyp, ea ); // relevant for continuity constraint (and probably other things(?))
 		}
 	}
 
@@ -508,20 +497,16 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost;
-
-		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			int j = 0;
-			final float fromCost = from.getCosts();
+			final float fromCost = from.getCost();
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
-				final float toCost = to.getCosts();
+				final float toCost = to.getCost();
 
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
 
 					final Pair< Float, float[] > compatibilityCostOfMapping = compatibilityCostOfMapping( from, to );
-					cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping.getA() );
+					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping.getA() );
 
 					final int numFeatures = 2 + compatibilityCostOfMapping.getB().length;
 					final float[] featureValues = new float[ numFeatures ];
@@ -552,11 +537,9 @@ public class GrowthLineTrackingILP {
 						if (!edgeSets.addToLeftNeighborhood(to, ma)) {
 							System.err.println( "ERROR: Mapping-assignment could not be added to left neighborhood!" );
 						}
-						j++;
 					}
 				}
 			}
-			i++;
 		}
 	}
 
@@ -651,7 +634,7 @@ public class GrowthLineTrackingILP {
 			final float fromCost,
 			final float toCost,
 			final float mappingCosts ) {
-		return 0.1f * fromCost + 0.9f * toCost + mappingCosts;
+		return 0.1f * fromCost + 0.9f * toCost + mappingCosts; // here again we fold the costs from the nodes into the corresponding assignment; we should probably do 50%/50%, but we did different and it's ok
 	}
 
 	/**
@@ -681,6 +664,8 @@ public class GrowthLineTrackingILP {
 	 */
 	public float costModulationForSubstitutedILP( final float fromCosts ) {
 		return Math.min( 0.0f, fromCosts / 2f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
+		// fromCosts/2: hat mit dem falten der node-costs into the assignments zu tun (1/2 to left und 1/2 to right)
+		// Math.min: because exit assignment should never cost something
 	}
 
 
@@ -702,10 +687,8 @@ public class GrowthLineTrackingILP {
 	private void addDivisionAssignments( final int timeStep, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
 		if ( curHyps == null || nxtHyps == null ) return;
 
-		float cost;
-
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			final float fromCost = from.getCosts();
+			final float fromCost = from.getCost();
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
@@ -719,11 +702,11 @@ public class GrowthLineTrackingILP {
 							final Pair< Float, float[] > compatibilityCostOfDivision = compatibilityCostOfDivision( from, to, lowerNeighbor );
 
 							//TODO toCosts should be split and structSVM routines should acknowledge two separated features!!!
-							final float toCost = to.getCosts() + lowerNeighbor.getCosts();
-							cost = costModulationForSubstitutedILP(
+							final float toCost = to.getCost() + lowerNeighbor.getCost();
+							float cost = costModulationForSubstitutedILP(
 									fromCost,
-									to.getCosts(),
-									lowerNeighbor.getCosts(),
+									to.getCost(),
+									lowerNeighbor.getCost(),
 									compatibilityCostOfDivision.getA() );
 
 							final int numFeatures = 2 + compatibilityCostOfDivision.getB().length;
@@ -984,7 +967,7 @@ public class GrowthLineTrackingILP {
 
 				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a : edgeSets.getRightNeighborhood( hypothesis ) ) {
-						exprR.addTerm( 1.0, a.getGRBVar() );
+						exprR.addTerm( 1.0, a.getGRBVar() );  // again we build the constraints for the assignments, because we do not optimize for nodes; we therefore need to add *all* right-assignments to the constraint of a given node
 					}
 				}
 				runnerNode = runnerNode.getParent();

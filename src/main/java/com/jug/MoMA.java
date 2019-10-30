@@ -233,7 +233,7 @@ public class MoMA {
 	 */
 	public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
-	public static final int MAX_CELL_DROP = 50;
+	public static final int MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
 
 	// - - - - - - - - - - - - - -
 	// Info about loaded data

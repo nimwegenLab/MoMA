@@ -126,10 +126,8 @@ public class RecursiveWatersheddingTest {
     @Test
     public void watersheddingTest() throws IOException {
         ImageJ ij = new ImageJ();
-//        ij.launch();
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/sourceImage.tif";
         Img sourceImage = (Img) ij.io().open(imageFile);
-//        RandomAccessibleInterval<FloatType>  sourceImage = Views.hyperSlice(sourceImageTmp, 2, 0);
         imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/mserTreeLevel4.tif";
         Img imageParentTmp = (Img) ij.io().open(imageFile);
         RandomAccessibleInterval<UnsignedByteType>  imageParent = Views.hyperSlice(imageParentTmp, 2, 0);
@@ -138,43 +136,36 @@ public class RecursiveWatersheddingTest {
         imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/mserTreeLevel5.tif";
         Img imageChildTmp = (Img) ij.io().open(imageFile);
         RandomAccessibleInterval<UnsignedByteType>  imageChild = Views.hyperSlice(imageChildTmp, 2, 0);
-//        ImgLabeling labels = new ImgLabeling(imageChild);
         imageChild = (RandomAccessibleInterval) ops.morphology().erode(imageChild, new RectangleShape(2,false));
         ImgLabeling<Integer, IntType> labels = ij.op().labeling().cca(imageChild, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
         ij.ui().show(labels.getIndexImg());
-//        ArrayImg<IntType, IntArray> backing = ArrayImgs.ints(sourceImage.dimension(0), sourceImage.dimension(1));
-//        ImgLabeling<Integer, IntType> labelsOut = new ImgLabeling<>(backing);
-//        ImgLabeling labelsOut = new ImgLabeling(imageChild);
-//        ImageJFunctions.show(imageParent);
-//        ImageJFunctions.show(imageChild);
-//        ImageJFunctions.show(sourceImage);
-//        ij.ops
         ImgLabeling labelsOut = ops.image().watershed(null, sourceImage, labels, false, false, imageParent2);
         ImageJFunctions.show(labelsOut.getIndexImg());
     }
 
 
     public static void main(String ... args) throws IOException, InterruptedException {
-        new RecursiveWatersheddingTest().watersheddingTest();
-//        new RecursiveWatersheddingTest().test();
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+//        new RecursiveWatersheddingTest().watersheddingTest();
+        new RecursiveWatersheddingTest().test();
     }
 
     @Test
     public void test() throws IOException {
-        ImageJ ij = new ImageJ();
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/sourceImage.tif";
         Img sourceImage = (Img) io.open(imageFile);
         imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/mserTreeLevel4.tif";
         Img imageParentTmp = (Img) io.open(imageFile);
         RandomAccessibleInterval<UnsignedByteType> imageParent = Views.hyperSlice(imageParentTmp, 2, 0);
-        RandomAccessibleInterval<BitType> mask = ij.op().convert().bit(Views.iterable(imageParent));
+        RandomAccessibleInterval<BitType> mask = ops.convert().bit(Views.iterable(imageParent));
         ImageJFunctions.show(imageParentTmp);
 
         imageFile = new File("").getAbsolutePath() + "/src/test/resources/parent_watershedding/mserTreeLevel5.tif";
         Img imageChildTmp = (Img) io.open(imageFile);
         RandomAccessibleInterval<UnsignedByteType>  imageChild = Views.hyperSlice(imageChildTmp, 2, 0);
         imageChild = (RandomAccessibleInterval) ops.morphology().erode(imageChild, new RectangleShape(2,false));
-        ImgLabeling<Integer, IntType> labeledSeeds = ij.op().labeling().cca(imageChild, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
+        ImgLabeling<Integer, IntType> labeledSeeds = ops.labeling().cca(imageChild, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
 
         Img<FloatType> input = sourceImage.factory().create(sourceImage);
         ops.image().invert(input, sourceImage);

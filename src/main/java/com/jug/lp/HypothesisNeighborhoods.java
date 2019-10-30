@@ -152,7 +152,7 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 	}
 
 	/**
-	 * Adds an assignment go the right-neighborhood of a segmentation
+	 * Adds an assignment to the right-neighborhood of a segmentation
 	 * hypothesis.
 	 *
 	 * @param h

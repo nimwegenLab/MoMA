@@ -1,17 +1,14 @@
 package com.jug.util;
 
 import com.jug.lp.*;
-import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.algorithm.componenttree.ComponentTree;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.javatuples.Pair;
-import org.javatuples.Quartet;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -97,6 +94,34 @@ public class ComponentTreeUtils {
     }
 
     /**
+     * Returns the pixel limits of the component along a given dimension.
+     * @param component the component to process
+     * @param dim the dimension in which component limits are determined
+     * @return ValuePair<int min, int max> minimum and maximum pixel limits.
+     */
+    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim){
+        int min = Integer.MAX_VALUE;
+        int max = Integer.MIN_VALUE;
+        for (Localizable localizable : component) {
+            final int pos = localizable.getIntPosition(dim);
+            min = Math.min(min, pos);
+            max = Math.max(max, pos);
+        }
+        return new ValuePair<>(min, max);
+    }
+
+    /**
+     * Returns the pixel size of the component along the given dimension.
+     * @param component the component to process
+     * @param dim the dimension along which the size will be determined
+     * @return integer value, which is the difference between the starting and end pixel-positions of the component.
+     */
+    public static int getComponentSize(final Component<?,?> component, int dim){
+        ValuePair<Integer, Integer> limits = getComponentPixelLimits(component, dim);
+        return limits.b - limits.a;
+    }
+
+    /**
      * Returns the minimal pixel intensity of the component.
      *
      * @param node the node in question.
@@ -121,47 +146,6 @@ public class ComponentTreeUtils {
 //		ImageJFunctions.show(img, "Segment Image");
         return new ValuePair<>(minimumPixelIntensity, maximumPixelIntensity);
     }
-
-    /**
-     * Returns the smallest and largest value on the x-axis that is spanned by
-     * this component-tree-node.
-     * Note that this function really only makes sense if the comp.-tree was
-     * built on a one-dimensional image (as it is the case for my current
-     * MotherMachine stuff...)
-     *
-     * @param node the node in question.
-     * @return a <code>Pair</code> or two <code>Integers</code> giving the
-     * leftmost and rightmost point on the x-axis that is covered by
-     * this component-tree-node respectively.
-     */
-    public static ValuePair<Integer, Integer> getExtendedTreeNodeInterval(
-            final FilteredComponent<?> node) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        final Iterator<Localizable> componentIterator = node.iteratorExtended();
-        while (componentIterator.hasNext()) {
-            final int pos = componentIterator.next().getIntPosition(1);
-            min = Math.min(min, pos);
-            max = Math.max(max, pos);
-        }
-        return new ValuePair<>(min, max);
-    }
-
-    // public static float[] getFunctionValues( final Component<
-    // FloatType, ? > node ) {
-    // ValuePair< Integer, Integer > interval = getTreeNodeInterval( node );
-    //
-    // float[] ret = new float[ interval.b.intValue() - interval.a.intValue()
-    // ];
-    //
-    // final Iterator< Localizable > componentIterator = node.iterator();
-    // while ( componentIterator.hasNext() ) {
-    // final int pos = componentIterator.next().getIntPosition( 0 ) -
-    // interval.a.intValue();
-    // ret[pos] = componentIterator.
-    // }
-    // return
-    // }
 
     /**
      * @return

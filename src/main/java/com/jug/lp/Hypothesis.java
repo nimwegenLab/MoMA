@@ -10,7 +10,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 /**
  * This class is used to wrap away whatever object that represents one of the
@@ -30,12 +29,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 		HypLoc(final int t, final T segment) {
 			this.t = t;
-			if ( segment instanceof FilteredComponent ) {
-				this.limits =
-						ComponentTreeUtils.getExtendedTreeNodeInterval( ( FilteredComponent< ? > ) segment );
-			} else {
-				this.limits = ComponentTreeUtils.getTreeNodeInterval( segment );
-			}
+			this.limits = ComponentTreeUtils.getTreeNodeInterval( segment );
 		}
 	}
 

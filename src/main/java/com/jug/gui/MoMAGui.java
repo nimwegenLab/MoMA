@@ -37,7 +37,6 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 import gurobi.GRBException;
 import ij.ImageJ;
@@ -791,9 +790,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		Iterator< Localizable > componentIterator = ctn.iterator();
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-		}
 		while ( componentIterator.hasNext() ) { // MM-2019-07-01: Here we determine the y-boundaries of the component for drawing
 			final int pos = componentIterator.next().getIntPosition( 1 ); 
 			min = Math.min( min, pos );
@@ -1279,15 +1275,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * Show a stack of the components of the current time step in a separate window.
      */
     private void ShowComponentsOfCurrentTimeStep() {
-        GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
         List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
-        if(ilp != null){
-            AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes = model.getCurrentGL().getIlp().nodes;
-            GrowthLineFrame glf = model.getCurrentGLF();
-            final int t = glf.getParent().getFrames().indexOf( glf );
-            optimalSegs = glf.getParent().getIlp().getOptimalComponents(t);
+		GrowthLineFrame glf = model.getCurrentGLF();
+		int timeStep = glf.getParent().getFrames().indexOf( glf );
+		GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+		if(ilp != null){
+            optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
-        Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs);
+        Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs, timeStep);
     }
 
     private void setFocusToTimeSlider() {
@@ -1481,76 +1476,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		System.out.println();
 	}
 
-	/*
-	  Goes over all glfs of the current gl and activates the awesome,
-	  RF-classified + paramaxflow hypotheses.
-	 */
-//	private void activateAwesomeHypothesesForCurrentGL() {
-//		activateAwesomeHypothesesForGL( model.getCurrentGL() );
-//	}
-
-	/*
-	  Goes over all glfs of the given gl and activates the awesome,
-	  RF-classified + paramaxflow hypotheses.
-	 */
-//	private void activateAwesomeHypothesesForGL( final GrowthLine gl ) {
-//		// Since I am gonna mix CT and PMFRF, I have to also ensure to have the CT ones available
-//		if ( MoMA.SEGMENTATION_MIX_CT_INTO_PMFRF > 0.0001 ) {
-//			activateSimpleHypothesesForGL( gl );
-//		}
-//
-//		final int numProcessors = Prefs.getThreads();
-//		final int numThreads = Math.min( model.getCurrentGL().getFrames().size(), numProcessors );
-//		final Thread[] threads = new Thread[ numThreads ];
-//
-//		class ImageProcessingThread extends Thread {
-//
-//			final int numThread;
-//			final int numThreads;
-//
-//			public ImageProcessingThread( final int numThread, final int numThreads ) {
-//				this.numThread = numThread;
-//				this.numThreads = numThreads;
-//			}
-//
-//			@Override
-//			public void run() {
-//
-//				for ( int i = numThread; i < model.getCurrentGL().getFrames().size(); i += numThreads ) {
-//					gl.getFrames().get( i ).generateAwesomeSegmentationHypotheses( model.mm.getImgTemp() );
-//				}
-//			}
-//		}
-//
-//		// start threads
-//		for ( int i = 0; i < numThreads; i++ ) {
-//			threads[ i ] = new ImageProcessingThread( i, numThreads );
-//			threads[ i ].start();
-//		}
-//
-//		// wait for all threads to terminate
-//		for ( final Thread thread : threads ) {
-//			try {
-//				thread.join();
-//			} catch ( final InterruptedException e ) {}
-//		}
-//
-//		// OLD SINGLETHREADED VERSION
-////		for ( final GrowthLineFrame glf : model.getCurrentGL().getFrames() ) {
-////			System.out.println( ">>>>> Generating PMFRF hypotheses for GLF #" + glf.getTime() );
-////			glf.generateAwesomeSegmentationHypotheses( model.mm.getImgTemp() );
-////		}
-////		System.out.print( "" );
-//
-//		// NEW SINGLETHREADED VERSION
-////		for ( int i = this.sliderTime.getMinimum(); i <= this.sliderTime.getMaximum(); i++ ) {
-////			sliderTime.setValue( i );
-////			if ( model.getCurrentGLF().getAwesomeGapSeparationValues( null ) == null ) {
-////				btnExchangeSegHyps.doClick();
-////			}
-////			dataToDisplayChanged();
-////		}
-//	}
 
 	/**
 	 * Exports current tracking solution as individual PNG images in the given

@@ -1,16 +1,12 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.algorithm.componenttree.pixellist.PixelList;
-import net.imglib2.img.Img;
+import net.imglib2.algorithm.componenttree.mser.Mser;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.integer.LongType;
-import net.imglib2.view.IntervalView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,10 +17,10 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Pixels in the component.
      */
-    private final PixelList pixelList;
-    private final IntervalView<T> sourceImage;
+    private final Mser wrappedComponent;
+    private final RandomAccessibleInterval<T> sourceImage;
 
-    public IntervalView<T> getSourceImage() {
+    public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
     }
 
@@ -41,32 +37,26 @@ public final class SimpleComponent<T extends Type<T>>
      */
     private final T value;
     /**
-     * child nodes in the {@link FilteredComponentTree}.
+     * List of child nodes.
      */
     private ArrayList<SimpleComponent<T>> children = new ArrayList<>();
     /**
-     * parent node in the {@link FilteredComponentTree}.
+     * Parent node. Is null if this is a root component.
      */
     private SimpleComponent<T> parent;
-    /**
-     * We need to reverse the list of children, so that the division assignment has the children in the correct order
-     * (meaning top and bottom children are assign correctly). This is a hackish work around to solve an issue that I
-     * do not fully understand yet and should probably be fixed here: ComponentTreeUtils.getRightNeighbor(...)
-     */
-    private Boolean childrenWereReversed = false;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public SimpleComponent(PixelList pixelList, T value, IntervalView<T> sourceImage) {
-        this.pixelList = pixelList;
+    public <C extends Component<T,C>> SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
+        this.wrappedComponent = (Mser)wrappedComponent;
         this.value = value;
         this.sourceImage = sourceImage;
     }
 
     @Override
     public long size() {
-        return pixelList.size();
+        return wrappedComponent.size();
     }
 
     @Override
@@ -85,10 +75,6 @@ public final class SimpleComponent<T extends Type<T>>
 
     @Override
     public List<SimpleComponent<T>> getChildren() {
-        if (!childrenWereReversed) {
-            Collections.reverse(children);
-            childrenWereReversed = true;
-        }
         return children;
     }
 
@@ -98,6 +84,24 @@ public final class SimpleComponent<T extends Type<T>>
 
     @Override
     public Iterator<Localizable> iterator() {
-        return pixelList.iterator();
+        return wrappedComponent.iterator();
+    }
+
+    public double[] firstMomentPixelCoordinates(){
+        return wrappedComponent.mean();
+    }
+
+    public int getNodeLevel() {
+        int nodeLevel = 0;
+        SimpleComponent<T> parent = this.getParent();
+        while (parent != null) {
+            nodeLevel++;
+            parent = parent.getParent();
+        }
+        return nodeLevel;
+    }
+
+    public double getMserScore() {
+        return wrappedComponent.score();
     }
 }

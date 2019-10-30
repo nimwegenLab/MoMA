@@ -43,6 +43,8 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 
+import static com.jug.util.ComponentTreeUtils.getComponentSize;
+
 /**
  * @author jug
  */
@@ -206,7 +208,7 @@ public class GrowthLineTrackingILP {
 			createSegmentationHypotheses( t );
 			enumerateAndAddAssignments( t - 1 );
 		}
-		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently we the duplicate frame in that MoMA adds is on purpose!
+		// add exit essignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps );
@@ -479,7 +481,6 @@ public class GrowthLineTrackingILP {
 		if ( hyps == null ) return;
 
 		float cost;
-		int i = 0;
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			cost = costModulationForSubstitutedILP( hyp.getCosts() );
 
@@ -488,7 +489,6 @@ public class GrowthLineTrackingILP {
 			final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp );
 			nodes.addAssignment( t, ea );
 			edgeSets.addToRightNeighborhood( hyp, ea );
-			i++;
 		}
 	}
 
@@ -576,8 +576,8 @@ public class GrowthLineTrackingILP {
 	public Pair< Float, float[] > compatibilityCostOfMapping(
 			final Hypothesis< Component< FloatType, ? > > from,
 			final Hypothesis< Component< FloatType, ? > > to ) {
-		final long sizeFrom = from.getWrappedComponent().size();
-		final long sizeTo = to.getWrappedComponent().size();
+		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
+		final long sizeTo = getComponentSize(to.getWrappedComponent(), 1);
 
 //		final float valueFrom = from.getWrappedComponent().value().get();
 //		final float valueTo = to.getWrappedComponent().value().get();
@@ -680,7 +680,7 @@ public class GrowthLineTrackingILP {
 	 * @return the modulated costs.
 	 */
 	public float costModulationForSubstitutedILP( final float fromCosts ) {
-		return Math.min( 0.0f, fromCosts / 4f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
+		return Math.min( 0.0f, fromCosts / 2f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
 	}
 
 
@@ -778,9 +778,9 @@ public class GrowthLineTrackingILP {
 		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
 		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
 
-		final long sizeFrom = from.getWrappedComponent().size();
-		final long sizeToU = toUpper.getWrappedComponent().size();
-		final long sizeToL = toLower.getWrappedComponent().size();
+		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
+		final long sizeToU = getComponentSize(toUpper.getWrappedComponent(),1);
+		final long sizeToL = getComponentSize(toLower.getWrappedComponent(), 1);
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 
@@ -1828,7 +1828,7 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-			final long s = comp.size();
+			final long s = getComponentSize(comp, 1);
 			if ( isComponentContainingYpos( comp, gapSepYPos ) ) {
 				if ( s < min ) {
 					min = s;

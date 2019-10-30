@@ -114,26 +114,6 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	}
 
 	/**
-	 * Exports the part of the original image that is seen in this canvas.
-	 *
-	 * @param path
-	 *            note that the extension you give determines the file format!
-	 */
-	public void exportSegmentationImage( final String path ) {
-		final RandomAccessibleInterval< ShortType > segmImg = MoMA.instance.getCellSegmentedChannelImgs();
-		final long[] min = new long[ 2 ];
-		final long[] max = new long[ 2 ];
-		screenImage.min( min );
-		screenImage.max( max );
-		final long shift = ( segmImg.dimension( 0 ) - screenImage.dimension( 0 ) ) / 2;
-		min[ 0 ] += shift;
-		max[ 0 ] += shift;
-		final IntervalView< ShortType > imgToExport = Views.interval( Views.hyperSlice( segmImg, 2, MoMA.getGui().sliderTime.getValue() ), min, max );
-		final ImagePlus segImage = ImageJFunctions.wrapFloat( imgToExport, "export" );
-		IJ.save( segImage, path );
-	}
-
-	/**
 	 * Prepares to display an empty image.
 	 */
 	public void setEmptyScreenImage() {

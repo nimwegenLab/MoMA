@@ -8,7 +8,7 @@ import net.imglib2.type.Type;
  * @param <T>
  * @param <C>
  */
-public class HasSiblingTester<T extends Type<T>, C extends Component<T, C>>
+public class HasSiblingsComponentTester<T extends Type<T>, C extends Component<T, C>>
         implements IComponentTester<T, C> {
     /**
      * Tests if component has sibling.

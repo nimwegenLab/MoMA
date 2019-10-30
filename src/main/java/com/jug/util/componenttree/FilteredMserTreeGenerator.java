@@ -46,7 +46,7 @@ public class FilteredMserTreeGenerator {
 
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
 
-        HasSiblingTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingTester<>();
+        HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         return new SimpleComponentTree(tree, raiFkt, siblingTester);
 //		return new SimpleComponentTree(componentTree, raiFkt);
 

@@ -10,7 +10,6 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import com.jug.MoMA;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 /**
  * @author jug
@@ -122,56 +121,6 @@ public class ArgbDrawingUtils {
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
 			}
 		}
-
-		int minYpos = Integer.MAX_VALUE;
-		int maxYpos = Integer.MIN_VALUE;
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				minYpos = Math.min( minYpos, ypos );
-				maxYpos = Math.max( maxYpos, ypos );
-
-				if ( ypos == minCoreYpos || ypos == maxCoreYpos ) {
-					final Point p = new Point( offsetX, offsetY + ypos );
-					for ( int i = -delta; i <= delta; i++ ) {
-						final long[] imgPos = Util.pointLocation( p );
-						imgPos[ 0 ] += i;
-						raArgbImg.setPosition( imgPos );
-						final int curCol = raArgbImg.get().get();
-						final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-						final int greenToUse = Math.min(200, (255 - ARGBType.green(curCol)));
-						final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-						raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-					}
-				}
-			}
-
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
-					continue;
-				}
-
-				final Point p = new Point( offsetX, offsetY + ypos );
-				int stepwidth = 2 * delta;
-				if ( ypos == minYpos || ypos == maxYpos ) {
-					stepwidth = 2;
-				}
-				for ( int i = -delta; i <= delta; i += stepwidth ) {
-					final long[] imgPos = Util.pointLocation( p );
-					imgPos[ 0 ] += i;
-					raArgbImg.setPosition( imgPos );
-					final int curCol = raArgbImg.get().get();
-					final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-					final int greenToUse = Math.min(200, (255 - ARGBType.green(curCol)));
-					final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-//					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + redToUse, ARGBType.green( curCol ) + greenToUse, ARGBType.blue( curCol ) + blueToUse, ARGBType.alpha( curCol ) ) ) );
-					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-				}
-			}
-		}
 	}
 
 	/**
@@ -183,9 +132,6 @@ public class ArgbDrawingUtils {
 	private static void taint1dComponentTreeNodeRed( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 
 		Iterator< Localizable > componentIterator = ctn.iterator();
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-		}
 		while ( componentIterator.hasNext() ) {
 			final int ypos = componentIterator.next().getIntPosition( 1 );
 			final Point p = new Point( offsetX, offsetY + ypos );
@@ -232,56 +178,6 @@ public class ArgbDrawingUtils {
 				final int greenToUse = ( int ) ( Math.min( 75, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
 				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
 				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-
-		int minYpos = Integer.MAX_VALUE;
-		int maxYpos = Integer.MIN_VALUE;
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				minYpos = Math.min( minYpos, ypos );
-				maxYpos = Math.max( maxYpos, ypos );
-
-				if ( ypos == minCoreYpos || ypos == maxCoreYpos ) {
-					final Point p = new Point( offsetX, offsetY + ypos );
-					for ( int i = -delta; i <= delta; i++ ) {
-						final long[] imgPos = Util.pointLocation( p );
-						imgPos[ 0 ] += i;
-						raArgbImg.setPosition( imgPos );
-						final int curCol = raArgbImg.get().get();
-						final int redToUse = Math.min(150, (255 - ARGBType.red(curCol)));
-						final int greenToUse = ( int ) ( Math.min( 150, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
-						final int blueToUse = Math.min( 50, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
-						raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-					}
-				}
-			}
-
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
-					continue;
-				}
-
-				final Point p = new Point( offsetX, offsetY + ypos );
-				int stepwidth = 2 * delta;
-				if ( ypos == minYpos || ypos == maxYpos ) {
-					stepwidth = 2;
-				}
-				for ( int i = -delta; i <= delta; i += stepwidth ) {
-					final long[] imgPos = Util.pointLocation( p );
-					imgPos[ 0 ] += i;
-					raArgbImg.setPosition( imgPos );
-					final int curCol = raArgbImg.get().get();
-					final int redToUse = Math.min(150, (255 - ARGBType.red(curCol)));
-					final int greenToUse = ( int ) ( Math.min( 150, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
-					final int blueToUse = Math.min( 50, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
-//					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + redToUse, ARGBType.green( curCol ) + greenToUse, ARGBType.blue( curCol ) + blueToUse, ARGBType.alpha( curCol ) ) ) );
-					raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-				}
 			}
 		}
 	}
@@ -336,75 +232,5 @@ public class ArgbDrawingUtils {
 								ARGBType.alpha( curCol ) ) ) );
 			}
 		}
-
-		int minYpos = Integer.MAX_VALUE;
-		int maxYpos = Integer.MIN_VALUE;
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				minYpos = Math.min( minYpos, ypos );
-				maxYpos = Math.max( maxYpos, ypos );
-
-				if ( ypos == minCoreYpos || ypos == maxCoreYpos ) {
-					final Point p = new Point( offsetX, offsetY + ypos );
-					for ( int i = -delta; i <= delta; i++ ) {
-						final long[] imgPos = Util.pointLocation( p );
-						imgPos[ 0 ] += i;
-						raArgbImg.setPosition( imgPos );
-						final int curCol = raArgbImg.get().get();
-						int redHelper = 75;
-						if ( isPruneRoot ) redHelper = 255;
-						final int redToUse =
-								( int ) ( Math.min( redHelper, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-						final int greenToUse =
-								( int ) ( Math.min( 175, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
-						final int blueToUse =
-								( int ) ( Math.min( 175, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-						raArgbImg.get().set(
-								new ARGBType( ARGBType.rgba(
-										ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ),
-										ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ),
-										ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 2 ) / delta ) ),
-										ARGBType.alpha( curCol ) ) ) );
-					}
-				}
-			}
-
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-			while ( componentIterator.hasNext() ) {
-				final int ypos = componentIterator.next().getIntPosition( 1 );
-				if ( ypos != minYpos && ypos != maxYpos && ypos % 2 == 0 ) {
-					continue;
-				}
-
-				final Point p = new Point( offsetX, offsetY + ypos );
-				int stepwidth = 2 * delta;
-				if ( ypos == minYpos || ypos == maxYpos ) {
-					stepwidth = 2;
-				}
-				for ( int i = -delta; i <= delta; i += stepwidth ) {
-					final long[] imgPos = Util.pointLocation( p );
-					imgPos[ 0 ] += i;
-					raArgbImg.setPosition( imgPos );
-					final int curCol = raArgbImg.get().get();
-					int redHelper = 75;
-					if ( isPruneRoot ) redHelper = 255;
-					final int redToUse =
-							( int ) ( Math.min( redHelper, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-					final int greenToUse =
-							( int ) ( Math.min( 175, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
-					final int blueToUse =
-							( int ) ( Math.min( 175, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-					raArgbImg.get().set(
-							new ARGBType( ARGBType.rgba(
-									ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ),
-									ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ),
-									ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) / 4 ) / delta ) ),
-									ARGBType.alpha( curCol ) ) ) );
-				}
-			}
-		}
 	}
-
 }

@@ -37,7 +37,6 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 import gurobi.GRBException;
 import ij.ImageJ;
@@ -791,9 +790,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		Iterator< Localizable > componentIterator = ctn.iterator();
-		if ( ctn instanceof FilteredComponent ) {
-			componentIterator = ( ( FilteredComponent< FloatType > ) ctn ).iteratorExtended();
-		}
 		while ( componentIterator.hasNext() ) { // MM-2019-07-01: Here we determine the y-boundaries of the component for drawing
 			final int pos = componentIterator.next().getIntPosition( 1 ); 
 			min = Math.min( min, pos );

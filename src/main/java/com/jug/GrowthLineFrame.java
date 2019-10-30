@@ -35,16 +35,6 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< SimpleComponent< F
 	 */
 	@Override
 	protected ComponentForest< SimpleComponent< FloatType >> buildIntensityTree( final RandomAccessibleInterval< FloatType > raiFkt ) {
-//		FilteredComponentTree<FloatType> componentTree = FilteredComponentTree.buildComponentTree(
-//				raiFkt,
-//				new FloatType(),
-//				200, // MoMA.MIN_CELL_LENGTH,
-//				Long.MAX_VALUE, //2000, // Long.MAX_VALUE,
-//				2,
-//				12,
-//				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
-//				false); // DarkToBright=true
-
 		float threshold = 0.1f;
 		IterableInterval< FloatType > iterableSource = Views.iterable(raiFkt);
 		Cursor<FloatType> cursor = iterableSource.cursor();
@@ -83,19 +73,4 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< SimpleComponent< F
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
 	}
-
-	/*
-	  @see com.jug.AbstractGrowthLineFrame#buildParaMaxFlowSumTree(net.imglib2.RandomAccessibleInterval)
-	 */
-//	@Override
-//	protected ComponentForest< FilteredComponent< FloatType >> buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt ) {
-//		return FilteredComponentTree.buildComponentTree(
-//				raiFkt,
-//				new FloatType(),
-//				3,
-//				Long.MAX_VALUE,
-//				noFilterFilter, //maxGrowthPerStepRatioWithMinimalAbsoluteIncrease,
-//				true );
-//	}
-
 }

@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -38,11 +37,11 @@ public final class SimpleComponent<T extends Type<T>>
      */
     private final T value;
     /**
-     * child nodes in the {@link FilteredComponentTree}.
+     * List of child nodes.
      */
     private ArrayList<SimpleComponent<T>> children = new ArrayList<>();
     /**
-     * parent node in the {@link FilteredComponentTree}.
+     * Parent node. Is null if this is a root component.
      */
     private SimpleComponent<T> parent;
 

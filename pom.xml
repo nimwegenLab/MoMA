@@ -93,7 +93,11 @@
 	</repositories>
 
 	<dependencies>
-
+		<dependency>
+			<groupId>com.indago</groupId>
+			<artifactId>labeleditor</artifactId>
+			<version>0.1.1-SNAPSHOT</version>
+		</dependency>
 		<!-- ImageJ dependencies -->
 		<dependency>
 			<groupId>net.imagej</groupId>

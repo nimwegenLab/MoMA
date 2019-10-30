@@ -1880,7 +1880,7 @@ public class MoMA {
 //			FloatType val = new FloatType();
 //			val.set(1);
 //			addValue(tmpNew, val);
-			uiService.show("Processed Image", outputImg);
+//			uiService.show("Processed Image", outputImg);
 //			ImageJFunctions.show(outputImg, "Processed Image");
 			return outputImg;
 

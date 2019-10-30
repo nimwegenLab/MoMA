@@ -134,6 +134,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	private MenuItem menuSave;
 
 	private MenuItem menuSaveFG;
+	private LabelEditorBdvPanelExtended labelEditor;
 
 	// -------------------------------------------------------------------------------------
 	// construction & gui creation
@@ -510,9 +511,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 		final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 
+		//-------
+		panelView.add( new JPanel() );
+
+		panelVerticalHelper = new JPanel( new BorderLayout() );
+
+		this.labelEditor = new LabelEditorBdvPanelExtended();
+		panelVerticalHelper.add( this.labelEditor, BorderLayout.CENTER );
+		panelVerticalHelper.setBorder( BorderFactory.createMatteBorder( 2, 2, 2, 2, Color.GRAY ) );
+		panelVerticalHelper.setBackground( Color.BLACK );
+		panelView.add( panelVerticalHelper );
+
+
 		// --- Left data viewer (t-1) -------------
 
-		panelView.add( new JPanel() );
 
 		panelVerticalHelper = new JPanel( new BorderLayout() );
 		panelHorizontalHelper = new JPanel( new FlowLayout( FlowLayout.CENTER, 5, 0 ) );
@@ -844,6 +856,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				 */
 				IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
 				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive);
+				labelEditor.setScreenImage(glf, viewImgLeftActive);
 			} else {
 				// show something empty
 				imgCanvasActiveLeft.setEmptyScreenImage();

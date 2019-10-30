@@ -44,7 +44,10 @@ public class FilteredMserTreeGenerator {
 
 //		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 
-        return new SimpleComponentTree(componentTree, raiFkt, tester);
+        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
+
+        HasSiblingTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingTester<>();
+        return new SimpleComponentTree(tree, raiFkt, siblingTester);
 //		return new SimpleComponentTree(componentTree, raiFkt);
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );

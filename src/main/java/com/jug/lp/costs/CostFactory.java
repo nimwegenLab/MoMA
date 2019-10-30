@@ -114,7 +114,6 @@ public class CostFactory {
 		float minPixelProbability = pixelProbabilities.a;
 //		float maxPixelProbability = pixelProbabilities.b;
 //		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
-//		double mserScore = ((SimpleComponent) ctNode).getMserScore();
 //		float cost = (float)(- minPixelProbability - (1 - mserScore * 10)); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
 		float cost = (float)(- minPixelProbability); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
 

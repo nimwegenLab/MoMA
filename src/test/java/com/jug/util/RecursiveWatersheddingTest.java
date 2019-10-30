@@ -23,6 +23,8 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.IterableRegion;
 import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.ImgLabeling;
+import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.roi.labeling.LabelingType;
 import net.imglib2.type.BooleanType;
 import net.imglib2.type.logic.BitType;
@@ -138,6 +140,7 @@ public class RecursiveWatersheddingTest {
         Img imageChildTmp = (Img) ij.io().open(imageFile);
         RandomAccessibleInterval<UnsignedByteType>  imageChild = Views.hyperSlice(imageChildTmp, 2, 0);
 //        ImgLabeling labels = new ImgLabeling(imageChild);
+        imageChild = (RandomAccessibleInterval) ops.morphology().erode(imageChild, new RectangleShape(2,false));
         ImgLabeling<Integer, IntType> labels = ij.op().labeling().cca(imageChild, ConnectedComponents.StructuringElement.FOUR_CONNECTED);
         ij.ui().show(labels.getIndexImg());
 //        ArrayImg<IntType, IntArray> backing = ArrayImgs.ints(sourceImage.dimension(0), sourceImage.dimension(1));
@@ -153,8 +156,8 @@ public class RecursiveWatersheddingTest {
 
 
     public static void main(String ... args) throws IOException, InterruptedException {
-//        new RecursiveWatersheddingTest().watersheddingTest();
-        new RecursiveWatersheddingTest().test();
+        new RecursiveWatersheddingTest().watersheddingTest();
+//        new RecursiveWatersheddingTest().test();
     }
 
     @Test
@@ -180,32 +183,18 @@ public class RecursiveWatersheddingTest {
         testWithMask(input, labeledSeeds, mask);
     }
 
-    private void testWithMask(final RandomAccessibleInterval<FloatType> in, final ImgLabeling<Integer, IntType> seeds, RandomAccessibleInterval<BitType> mask) {
-        /*
-         * use 8-connected neighborhood
-         */
-        // compute result without watersheds
+    private void testWithMask(final RandomAccessibleInterval<FloatType> in, final ImgLabeling<Integer, IntType> seedLabels, RandomAccessibleInterval<BitType> mask) {
+//        LabelRegions regions = new LabelRegions<>(seedLabels);
+//        for (LabelRegion region : regions){
+//
+//        }
+
         ImgLabeling<Integer, IntType> out = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-                seeds, true, false, mask);
+                seedLabels, true, false, mask);
 
         ImageJFunctions.show(in);
-        ImageJFunctions.show(seeds.getIndexImg());
+        ImageJFunctions.show(seedLabels.getIndexImg());
         ImageJFunctions.show(mask);
         ImageJFunctions.show(out.getIndexImg());
-
-//        // compute result with watersheds
-//        ImgLabeling<Integer, IntType> out2 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-//                seeds, true, true, mask);
-//
-//        /*
-//         * use 4-connected neighborhood
-//         */
-//        // compute result without watersheds
-//        ImgLabeling<Integer, IntType> out3 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-//                seeds, false, false, mask);
-//
-//        // compute result with watersheds
-//        ImgLabeling<Integer, IntType> out4 = (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
-//                seeds, false, true, mask);
     }
 }

@@ -42,12 +42,12 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
         this.sourceImage = sourceImage;
         this.tester = tester;
-        CreateTree(componentForest);
-        SortChildrenByPosition();
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         img = ArrayImgs.ints(dims);
         labeling = new ImgLabeling<>(img);
+        CreateTree(componentForest);
+        SortChildrenByPosition();
     }
 
     private void SortChildrenByPosition() {

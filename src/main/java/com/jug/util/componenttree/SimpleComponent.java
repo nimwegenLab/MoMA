@@ -4,11 +4,10 @@ import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.algorithm.componenttree.mser.Mser;
-import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.type.Type;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,21 +18,12 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Pixels in the component.
      */
-    private final List<Localizable> pixelList = new ArrayList<Localizable>();
-    private final Mser wrappedComponent;
+    private final List<Localizable> pixelList = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
 
     public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
     }
-
-    //    public Img<LongType> getLinkedList()
-//    {
-//        return linkedList;
-//    }
-//    public Img< LongType > getLinkedList() {
-//        return pixelList.locationsAccess;
-//    }
 
     /**
      * Maximum threshold value of the connected component.
@@ -56,14 +46,13 @@ public final class SimpleComponent<T extends Type<T>>
         {
             pixelList.add(new Point(val));
         }
-        this.wrappedComponent = (Mser)wrappedComponent;
         this.value = value;
         this.sourceImage = sourceImage;
     }
 
     @Override
     public long size() {
-        return wrappedComponent.size();
+        return pixelList.size();
     }
 
     @Override
@@ -94,8 +83,22 @@ public final class SimpleComponent<T extends Type<T>>
         return pixelList.iterator();
     }
 
+
+    private double [] mean;
+    private double[] sumPos;
+
     public double[] firstMomentPixelCoordinates(){
-        return wrappedComponent.mean();
+        int n = pixelList.get(0).numDimensions();
+        sumPos  = new double[ n ];
+        for(Localizable val : this){
+            for ( int i = 0; i < n; ++i )
+                sumPos[ i ] +=  val.getIntPosition(i);
+        }
+
+        mean = new double[ n ];
+        for ( int i = 0; i < n; ++i )
+            mean[ i ] = sumPos[ i ] / size();
+        return mean;
     }
 
     public int getNodeLevel() {

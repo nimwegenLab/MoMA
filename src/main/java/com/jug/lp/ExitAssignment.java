@@ -43,7 +43,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @throws GRBException
 	 */
 	@Override
-	public void addConstraintsToLP() throws GRBException {
+	public void addConstraintsToLP() throws GRBException { // builds equation 8, jug paper
 		final GRBLinExpr expr = new GRBLinExpr();
 
 		expr.addTerm( Hup.size(), this.getGRBVar() );
@@ -52,20 +52,18 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
-					add = true;
-					if ( a_j.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
-						continue;
+					if ( a_j.getType() != GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+						add = true;
+						expr.addTerm( 1.0, a_j.getGRBVar() );
 					}
-					// add term if assignment is NOT another exit-assignment
-					expr.addTerm( 1.0, a_j.getGRBVar() );
 				}
 			}
 		}
 
-		if ( add && !MoMA.DISABLE_EXIT_CONSTRAINTS ) {
+		if ( add && !MoMA.DISABLE_EXIT_CONSTRAINTS ) { // MoMA.DISABLE_EXIT_CONSTRAINTS was added to test behavior without exit-constraints (see jug paper)
 			ilp.model.addConstr( expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId );
+			dcId++;
 		}
-		dcId++;
 	}
 
 	/**

@@ -10,7 +10,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 /**
  * This class is used to wrap away whatever object that represents one of the
@@ -30,17 +29,12 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 		HypLoc(final int t, final T segment) {
 			this.t = t;
-			if ( segment instanceof FilteredComponent ) {
-				this.limits =
-						ComponentTreeUtils.getExtendedTreeNodeInterval( ( FilteredComponent< ? > ) segment );
-			} else {
-				this.limits = ComponentTreeUtils.getTreeNodeInterval( segment );
-			}
+			this.limits = ComponentTreeUtils.getTreeNodeInterval( segment );
 		}
 	}
 
 	private final T wrappedHypothesis;
-	private final float costs;
+	private final float cost;
 	private final HypLoc location;
 
 	/**
@@ -57,10 +51,10 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	private boolean isPruneRoot = false;
 	private boolean isPruned = false;
 
-	public Hypothesis( final int t, final T elementToWrap, final float costs ) {
+	public Hypothesis( final int t, final T elementToWrap, final float cost ) {
 		// setSegmentHypothesis( elementToWrap );
 		this.wrappedHypothesis = elementToWrap;
-		this.costs = costs;
+		this.cost = cost;
 		location = new HypLoc( t, elementToWrap );
 	}
 
@@ -87,8 +81,8 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	/**
 	 * @return the costs
 	 */
-	public float getCosts() {
-		return costs;
+	public float getCost() {
+		return cost;
 	}
 
 	/**

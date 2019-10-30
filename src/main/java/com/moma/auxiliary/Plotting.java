@@ -1,6 +1,5 @@
 package com.moma.auxiliary;
 
-import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;
 import ij.IJ;
@@ -17,7 +16,6 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.javatuples.Pair;
 
@@ -87,7 +85,7 @@ public class Plotting {
 
 
     public static <C extends Component<FloatType, C>> void drawComponentTree2(ComponentForest<C> ct,
-                                                                              List<Component<FloatType, ?>> componentsInOptimalSolution) {
+                                                                              List<C> componentsInOptimalSolution) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }

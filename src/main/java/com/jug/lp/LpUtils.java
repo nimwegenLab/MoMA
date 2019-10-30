@@ -17,6 +17,7 @@ class LpUtils {
 	 * Builds and returns the set Hup (given as a List). Hup is defines as the
 	 * set up all Hypothesis in hyps that strictly above the Hypothesis hyp (in
 	 * image space).
+	 * Hup: corresponds to Aup in Jug-paper, eq. 8!!!
 	 *
 	 * @param hyp
 	 *            the reference hypothesis.

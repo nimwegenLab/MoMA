@@ -28,7 +28,6 @@ import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
-import com.jug.util.filteredcomponents.FilteredComponent;
 
 import gurobi.GRBException;
 import net.imglib2.IterableInterval;
@@ -489,9 +488,6 @@ public class CellStatsExporter {
 			do {
 				ValuePair<Integer, Integer> limits =
 						ComponentTreeUtils.getTreeNodeInterval(segmentRecord.hyp.getWrappedComponent());
-				if (segmentRecord.hyp.getWrappedComponent() instanceof FilteredComponent) {
-					limits = ComponentTreeUtils.getExtendedTreeNodeInterval((FilteredComponent<?>) segmentRecord.hyp.getWrappedComponent());
-				}
 
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
 

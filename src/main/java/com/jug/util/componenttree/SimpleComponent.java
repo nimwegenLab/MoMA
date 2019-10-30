@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -11,14 +10,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
+public final class SimpleComponent<T extends Type<T>>
         implements
-        Component<T, SimpleComponent<T,C>> {
+        Component<T, SimpleComponent<T>> {
 
     /**
      * Pixels in the component.
      */
-    private final C wrappedComponent;
+    private final Mser wrappedComponent;
     private final RandomAccessibleInterval<T> sourceImage;
 
     public RandomAccessibleInterval<T> getSourceImage() {
@@ -38,19 +37,19 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
      */
     private final T value;
     /**
-     * child nodes in the {@link FilteredComponentTree}.
+     * List of child nodes.
      */
-    private ArrayList<SimpleComponent<T, C>> children = new ArrayList<>();
+    private ArrayList<SimpleComponent<T>> children = new ArrayList<>();
     /**
-     * parent node in the {@link FilteredComponentTree}.
+     * Parent node. Is null if this is a root component.
      */
-    private SimpleComponent<T, C> parent;
+    private SimpleComponent<T> parent;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
-        this.wrappedComponent = wrappedComponent;
+    public <C extends Component<T,C>> SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
+        this.wrappedComponent = (Mser)wrappedComponent;
         this.value = value;
         this.sourceImage = sourceImage;
     }
@@ -66,20 +65,20 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
     }
 
     @Override
-    public SimpleComponent<T, C> getParent() {
+    public SimpleComponent<T> getParent() {
         return parent;
     }
 
-    void setParent(SimpleComponent<T, C> parent) {
+    void setParent(SimpleComponent<T> parent) {
         this.parent = parent;
     }
 
     @Override
-    public List<SimpleComponent<T, C>> getChildren() {
+    public List<SimpleComponent<T>> getChildren() {
         return children;
     }
 
-    void addChild(SimpleComponent<T, C> child) {
+    void addChild(SimpleComponent<T> child) {
         this.children.add(child);
     }
 
@@ -89,12 +88,12 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
     }
 
     public double[] firstMomentPixelCoordinates(){
-        return ((Mser)wrappedComponent).mean();
+        return wrappedComponent.mean();
     }
 
     public int getNodeLevel() {
         int nodeLevel = 0;
-        SimpleComponent<T, C> parent = this.getParent();
+        SimpleComponent<T> parent = this.getParent();
         while (parent != null) {
             nodeLevel++;
             parent = parent.getParent();
@@ -103,6 +102,6 @@ public final class SimpleComponent<T extends Type<T>, C extends Component<T,C>>
     }
 
     public double getMserScore() {
-        return ((Mser) wrappedComponent).score();
+        return wrappedComponent.score();
     }
 }

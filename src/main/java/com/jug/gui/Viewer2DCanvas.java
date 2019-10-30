@@ -164,7 +164,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			Hypothesis< Component< FloatType, ? > > hyp =
 					glf.getParent().getIlp().getOptimalSegmentationAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
 			if ( hyp != null ) {
-				float cost = hyp.getCosts();
+				float cost = hyp.getCost();
 				strToShow = String.format( "c=%.4f", cost );
 				str2ToShow = "-";
 			}

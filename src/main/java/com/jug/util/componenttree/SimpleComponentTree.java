@@ -3,7 +3,11 @@ package com.jug.util.componenttree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.integer.IntType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -23,9 +27,12 @@ import java.util.List;
 public final class SimpleComponentTree<T extends Type<T>, C extends Component<T, C>>
         implements
         ComponentForest<SimpleComponent<T>> {
+    final ImgLabeling<Integer, IntType> labeling;
     private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
     private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
     private final RandomAccessibleInterval<T> sourceImage;
+    private final Img<IntType> img;
+    Integer label = 1;
     private IComponentTester<T, C> tester;
 
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
@@ -37,6 +44,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         this.tester = tester;
         CreateTree(componentForest);
         SortChildrenByPosition();
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        img = ArrayImgs.ints(dims);
+        labeling = new ImgLabeling<>(img);
     }
 
     private void SortChildrenByPosition() {
@@ -67,7 +78,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent, sourceComponent.value(), sourceImage);
+            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -90,7 +101,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, C sourceChild) {
-        SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild, sourceChild.value(), sourceImage);
+        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

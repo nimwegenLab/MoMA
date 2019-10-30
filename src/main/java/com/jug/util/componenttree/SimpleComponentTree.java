@@ -6,7 +6,10 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.Type;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * This class is a new version of {@link Component}. The goal is for all other code to depend on this class and remove
@@ -36,7 +39,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         SortChildrenByPosition();
     }
 
-    private void SortChildrenByPosition(){
+    private void SortChildrenByPosition() {
         for (final SimpleComponent root : roots()) {
             SortChildrenRecursively(root);
         }
@@ -46,25 +49,8 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         List<SimpleComponent<T>> children = parent.getChildren();
         PositionComparator positionComparator = new PositionComparator(1);
         children.sort(positionComparator);
-        for(SimpleComponent<T> component : children){
+        for (SimpleComponent<T> component : children) {
             SortChildrenRecursively(component);
-        }
-    }
-
-    private class PositionComparator implements Comparator<SimpleComponent> {
-        /**
-         * Dimension of the components that will be compared.
-         */
-        private int dim;
-
-        public PositionComparator(int dim) {
-            this.dim = dim;
-        }
-
-        public int compare(SimpleComponent c1, SimpleComponent c2) {
-            if (c1.firstMomentPixelCoordinates()[dim] < c2.firstMomentPixelCoordinates()[dim]) return -1;
-            if (c1.firstMomentPixelCoordinates()[dim] > c2.firstMomentPixelCoordinates()[dim]) return 1;
-            return 0;
         }
     }
 
@@ -72,21 +58,19 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         for (final C root : componentForest.roots()) {
             RecursivelyFindValidComponent(root);
         }
-        for(SimpleComponent<T> node:nodes){
-            if(node.getParent() == null)
-            {
+        for (SimpleComponent<T> node : nodes) {
+            if (node.getParent() == null) {
                 roots.add(node);
             }
         }
     }
 
-    private void RecursivelyFindValidComponent(C sourceComponent){
+    private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
             SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent, sourceComponent.value(), sourceImage);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
-        }
-        else{
+        } else {
             for (final C sourceChildren : sourceComponent.getChildren()) {
                 RecursivelyFindValidComponent(sourceChildren);
             }
@@ -116,6 +100,23 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     @Override
     public HashSet<SimpleComponent<T>> roots() {
         return roots;
+    }
+
+    private class PositionComparator implements Comparator<SimpleComponent> {
+        /**
+         * Dimension of the components that will be compared.
+         */
+        private int dim;
+
+        public PositionComparator(int dim) {
+            this.dim = dim;
+        }
+
+        public int compare(SimpleComponent c1, SimpleComponent c2) {
+            if (c1.firstMomentPixelCoordinates()[dim] < c2.firstMomentPixelCoordinates()[dim]) return -1;
+            if (c1.firstMomentPixelCoordinates()[dim] > c2.firstMomentPixelCoordinates()[dim]) return 1;
+            return 0;
+        }
     }
 }
 

@@ -7,7 +7,6 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.Type;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -20,11 +19,6 @@ public final class SimpleComponent<T extends Type<T>>
      */
     private final List<Localizable> pixelList = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
-
-    public RandomAccessibleInterval<T> getSourceImage() {
-        return sourceImage;
-    }
-
     /**
      * Maximum threshold value of the connected component.
      */
@@ -37,17 +31,22 @@ public final class SimpleComponent<T extends Type<T>>
      * Parent node. Is null if this is a root component.
      */
     private SimpleComponent<T> parent;
+    private double[] mean;
+    private double[] sumPos;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T,C>> SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
-        for(Localizable val : wrappedComponent)
-        {
+    public <C extends Component<T, C>> SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
+        for (Localizable val : wrappedComponent) {
             pixelList.add(new Point(val));
         }
         this.value = value;
         this.sourceImage = sourceImage;
+    }
+
+    public RandomAccessibleInterval<T> getSourceImage() {
+        return sourceImage;
     }
 
     @Override
@@ -83,21 +82,17 @@ public final class SimpleComponent<T extends Type<T>>
         return pixelList.iterator();
     }
 
-
-    private double [] mean;
-    private double[] sumPos;
-
-    public double[] firstMomentPixelCoordinates(){
+    public double[] firstMomentPixelCoordinates() {
         int n = pixelList.get(0).numDimensions();
-        sumPos  = new double[ n ];
-        for(Localizable val : this){
-            for ( int i = 0; i < n; ++i )
-                sumPos[ i ] +=  val.getIntPosition(i);
+        sumPos = new double[n];
+        for (Localizable val : this) {
+            for (int i = 0; i < n; ++i)
+                sumPos[i] += val.getIntPosition(i);
         }
 
-        mean = new double[ n ];
-        for ( int i = 0; i < n; ++i )
-            mean[ i ] = sumPos[ i ] / size();
+        mean = new double[n];
+        for (int i = 0; i < n; ++i)
+            mean[i] = sumPos[i] / size();
         return mean;
     }
 

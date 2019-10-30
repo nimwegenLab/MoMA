@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.filteredcomponents.FilteredComponent;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -10,18 +9,19 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- * This class is a reduced version of {@link com.jug.util.filteredcomponents.FilteredComponentTree}.
- * It can be created from another instance of {@link ComponentForest<FilteredComponent< T >>}, while filtering
- * the {@link FilteredComponent}s that are to be included.
+ * This class is a new version of {@link Component}. The goal is for all other code to depend on this class and remove
+ * all dependencies for library implemenations of {@link Component} (such as e.g. MSER, FilteredComponent, etc.).
+ * It can be created from another instance of {@link ComponentForest<C>}, while filtering test criteria with
+ * {@link IComponentTester<T, C>}.
  *
  * @param <T> value type of the input image.
  * @author Michael Mell
  */
 public final class SimpleComponentTree<T extends Type<T>, C extends Component<T, C>>
         implements
-        ComponentForest<SimpleComponent<T, C>> {
-    private final ArrayList<SimpleComponent<T, C>> nodes = new ArrayList<>();
-    private final HashSet<SimpleComponent<T, C>> roots = new HashSet<>();
+        ComponentForest<SimpleComponent<T>> {
+    private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
+    private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
     private final RandomAccessibleInterval<T> sourceImage;
     private IComponentTester<T, C> tester;
 
@@ -43,10 +43,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     private void SortChildrenRecursively(SimpleComponent parent) {
-        List<SimpleComponent<T, C>> children = parent.getChildren();
+        List<SimpleComponent<T>> children = parent.getChildren();
         PositionComparator positionComparator = new PositionComparator(1);
         children.sort(positionComparator);
-        for(SimpleComponent<T, C> component : children){
+        for(SimpleComponent<T> component : children){
             SortChildrenRecursively(component);
         }
     }
@@ -72,7 +72,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         for (final C root : componentForest.roots()) {
             RecursivelyFindValidComponent(root);
         }
-        for(SimpleComponent<T, C> node:nodes){
+        for(SimpleComponent<T> node:nodes){
             if(node.getParent() == null)
             {
                 roots.add(node);
@@ -82,7 +82,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent){
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T, C> newRoot = new SimpleComponent<>(sourceComponent, sourceComponent.value(), sourceImage);
+            SimpleComponent<T> newRoot = new SimpleComponent<>(sourceComponent, sourceComponent.value(), sourceImage);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         }
@@ -93,10 +93,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         }
     }
 
-    private void RecursivelyAddToTree(C sourceParent, SimpleComponent<T, C> targetParent) {
+    private void RecursivelyAddToTree(C sourceParent, SimpleComponent<T> targetParent) {
         for (final C sourceChild : sourceParent.getChildren()) {
             if (tester.IsValid(sourceChild)) {  // if child meets condition, add it and with its children
-                SimpleComponent<T, C> targetChild = CreateTargetChild(targetParent, sourceChild);
+                SimpleComponent<T> targetChild = CreateTargetChild(targetParent, sourceChild);
                 RecursivelyAddToTree(sourceChild, targetChild);
             } else {  // continue search for deeper component-nodes
                 RecursivelyAddToTree(sourceChild, targetParent);
@@ -105,8 +105,8 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     @NotNull
-    private SimpleComponent<T, C> CreateTargetChild(SimpleComponent<T, C> targetComponent, C sourceChild) {
-        SimpleComponent<T, C> targetChild = new SimpleComponent<>(sourceChild, sourceChild.value(), sourceImage);
+    private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, C sourceChild) {
+        SimpleComponent<T> targetChild = new SimpleComponent<>(sourceChild, sourceChild.value(), sourceImage);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);
@@ -114,7 +114,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     @Override
-    public HashSet<SimpleComponent<T, C>> roots() {
+    public HashSet<SimpleComponent<T>> roots() {
         return roots;
     }
 }

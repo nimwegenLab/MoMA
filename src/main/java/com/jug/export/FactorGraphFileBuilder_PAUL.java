@@ -134,7 +134,7 @@ public class FactorGraphFileBuilder_PAUL {
 	public void addMapping( final GrowthLineTrackingILP ilp, final int t, final MappingAssignment assmnt ) {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesis = assmnt.getDestinationHypothesis();
-		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis, destinationHypothesis ).getA();
+		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis, destinationHypothesis );
 		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost );
 		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
 			lines.add(
@@ -157,7 +157,7 @@ public class FactorGraphFileBuilder_PAUL {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
-		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower ).getA();
+		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower );
 		final double cost = ilp.costModulationForSubstitutedILP(
 				sourceHypothesis.getCost(),
 				destinationHypothesisUpper.getCost(),

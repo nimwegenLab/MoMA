@@ -23,7 +23,6 @@ import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.costs.CostFactory;
-import com.jug.lp.costs.CostManager;
 import com.jug.util.ComponentTreeUtils;
 
 import gurobi.GRB;
@@ -70,7 +69,6 @@ public class GrowthLineTrackingILP {
 	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored; THIS SEEMS WAY TOO LOW
 
 	private static GRBEnv env;
-	private static CostManager costManager;
 
 	// -------------------------------------------------------------------------------------
 	// fields
@@ -113,13 +111,6 @@ public class GrowthLineTrackingILP {
 				System.out.println( "GrowthLineTrackingILP::env could not be initialized!" );
 				e.printStackTrace();
 			}
-		}
-
-		if ( costManager == null ) {
-			costManager = new CostManager( 6, 13 );
-			costManager.setWeights( new double[] { 0.1, 0.9, 0.5, 0.5, 0, 1, 								// mapping
-			                                       0.1, 0.9, 0.5, 0.5, 0, 1, 1, 0, 1, 1, 0, 0.1, 0.03 } );  // division
-
 		}
 
 		try {
@@ -505,29 +496,12 @@ public class GrowthLineTrackingILP {
 
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
 
-					final Pair< Float, float[] > compatibilityCostOfMapping = compatibilityCostOfMapping( from, to );
-					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping.getA() );
+					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( from, to );
+					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
 
-					final int numFeatures = 2 + compatibilityCostOfMapping.getB().length;
-					final float[] featureValues = new float[ numFeatures ];
-					int k = 0;
-					featureValues[ k++ ] = fromCost;
-					featureValues[ k++ ] = toCost;
-					for ( final float f : compatibilityCostOfMapping.getB() ) {
-						featureValues[ k++ ] = f;
-					}
-
-					// features = [ fromCost, toCost, HU, HL, L, onlyH ? 0 : L ]
-					// weights = [ 0.1, 0.9, 0.5, 0.5, 0.0, 1.0 ]
-					//             2.7, 2.7, 0.7, 0.6, 0.6, 0.2
 					if ( cost <= CUTOFF_COST ) {
 						final String name = String.format( "a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId() );
 						final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
-
-						costManager.addMappingVariable( newLPVar, featureValues );
-						if ( Math.abs( cost - costManager.getCurrentCost( newLPVar ) ) > 0.00001 ) {
-							System.err.println( "Mapping cost mismatch!" );
-						}
 
 						final MappingAssignment ma = new MappingAssignment( t, newLPVar, this, nodes, edgeSets, from, to );
 						nodes.addAssignment( t, ma );
@@ -553,10 +527,9 @@ public class GrowthLineTrackingILP {
 	 *            the segmentation hypothesis towards which the
 	 *            mapping-assignment leads.
 	 * @return the cost we want to set for the given combination of segmentation
-	 *         hypothesis (plus the vector of cost contributions/feature
-	 *         values).
+	 *         hypothesis.
 	 */
-	public Pair< Float, float[] > compatibilityCostOfMapping(
+	public Float compatibilityCostOfMapping(
 			final Hypothesis< Component< FloatType, ? > > from,
 			final Hypothesis< Component< FloatType, ? > > to ) {
 		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
@@ -591,33 +564,10 @@ public class GrowthLineTrackingILP {
 		// (It is not super obvious why this should be true for bottom ones... some data has shitty
 		// contrast at bottom, hence we trick this condition in here not to loose the mother -- which would
 		// mean to loose all future tracks!!!)
-		boolean onlyH = false;
 		if (intervalTo.getA() == 0 || intervalTo.getB() + 1 >= glLength ) {
-			onlyH = true;
 			cost = costDeltaH; // + costDeltaV;
 		}
-
-		final int numFeatures = costDeltaHU.getB().length + costDeltaHL.getB().length + 2 * costDeltaL.getB().length;
-		final float[] featureValues = new float[ numFeatures ];
-		int i = 0;
-		for ( final float f : costDeltaHU.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaHL.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaL.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaL.getB() ) {
-			featureValues[ i++ ] = onlyH ? 0 : f;
-		}
-
-		// features = [ HU, HL, L, onlyH ? 0 : L ]
-		// weights = [ 0.5, 0.5, 0, 1 ]
-
-//		System.out.println( String.format( ">>> %f + %f + %f = %f", costDeltaL, costDeltaV, costDeltaH, cost ) );
-		return new ValuePair<>(cost, featureValues);
+		return cost;
 	}
 
 	/**
@@ -697,38 +647,19 @@ public class GrowthLineTrackingILP {
 						@SuppressWarnings( "unchecked" )
 						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
 						if ( lowerNeighbor == null ) {
-							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeris::adDivisionAssignment(...)" );
+							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeries::adDivisionAssignment(...)" );
 						} else {
-							final Pair< Float, float[] > compatibilityCostOfDivision = compatibilityCostOfDivision( from, to, lowerNeighbor );
+							final Float compatibilityCostOfDivision = compatibilityCostOfDivision( from, to, lowerNeighbor );
 
-							//TODO toCosts should be split and structSVM routines should acknowledge two separated features!!!
-							final float toCost = to.getCost() + lowerNeighbor.getCost();
 							float cost = costModulationForSubstitutedILP(
 									fromCost,
 									to.getCost(),
 									lowerNeighbor.getCost(),
-									compatibilityCostOfDivision.getA() );
+									compatibilityCostOfDivision);
 
-							final int numFeatures = 2 + compatibilityCostOfDivision.getB().length;
-							final float[] featureValues = new float[ numFeatures ];
-							int k = 0;
-							featureValues[ k++ ] = fromCost;
-							featureValues[ k++ ] = toCost;
-							for ( final float f : compatibilityCostOfDivision.getB() ) {
-								featureValues[ k++ ] = f;
-							}
-
-							// features = [ fromCost, toCost, HU, HL, L, c(L,0,0), c(0,LT,LT), S, c(S,0,S), cdl, c(1,0,0), c(0,1,0), c(0,0,1) ]
-							// weights =  [ 0.1, 0.9, 0.5, 0.5, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.1, 0.03 ]
-							//             -0.6, 1.1, 0.9, 0.6, 1.6, 1.1, 0.3, 0.4, 0.3, 0.8, 1.6, 1.3, 0.02
 							if ( cost <= CUTOFF_COST ) {
 								final String name = String.format( "a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId() );
 								final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
-
-								costManager.addDivisionVariable( newLPVar, featureValues );
-								if ( Math.abs( cost - costManager.getCurrentCost( newLPVar ) ) > 0.00001 ) {
-									System.err.println( "Division cost mismatch!" );
-								}
 
 								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
 								nodes.addAssignment( timeStep, da );
@@ -750,10 +681,9 @@ public class GrowthLineTrackingILP {
 	 * @param from
 	 *            the segmentation hypothesis from which the mapping originates.
 	 * @return the cost we want to set for the given combination of segmentation
-	 *         hypothesis (plus the vector of cost contributions/feature
-	 *         values).
+	 *         hypothesis.
 	 */
-	public Pair< Float, float[] > compatibilityCostOfDivision(
+	public Float compatibilityCostOfDivision(
 			final Hypothesis< Component< FloatType, ? > > from,
 			final Hypothesis< Component< FloatType, ? > > toUpper,
 			final Hypothesis< Component< FloatType, ? > > toLower ) {
@@ -802,82 +732,7 @@ public class GrowthLineTrackingILP {
 						costDeltaL_ifAtTop.getA() + costDeltaH + costDeltaS + 0.03f + costDivisionLikelihood; // + costDeltaV
 			}
 		}
-
-		final int numFeatures =
-				costDeltaHU.getB().length +
-				costDeltaHL.getB().length +
-				2 * costDeltaL.getB().length +
-				costDeltaL_ifAtTop.getB().length +
-				2 +     // two times getUnevenDivisionCost
-				1 + 	// costDivisionLikelihood
-				3; 		// constants in if
-		final float[] featureValues = new float[ numFeatures ];
-		int i = 0;
-		for ( final float f : costDeltaHU.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaHL.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaL.getB() ) {
-			featureValues[ i++ ] = f;
-		}
-		for ( final float f : costDeltaL.getB() ) {
-			switch ( c ) {
-			case 0:
-				featureValues[ i++ ] = f;
-				break;
-			case 1:
-				case 2:
-					featureValues[ i++ ] = 0;
-				break;
-			}
-		}
-		for ( final float f : costDeltaL_ifAtTop.getB() ) {
-			switch ( c ) {
-			case 0:
-				featureValues[ i++ ] = 0;
-				break;
-			case 1:
-				case 2:
-					featureValues[ i++ ] = f;
-				break;
-			}
-		}
-		featureValues[ i++ ] = costDeltaS;
-		switch ( c ) {
-		case 0:
-			case 2:
-				featureValues[ i++ ] = costDeltaS;
-			break;
-		case 1:
-			featureValues[ i++ ] = 0;
-			break;
-		}
-		featureValues[ i++ ] = costDivisionLikelihood;
-		switch ( c ) {
-		case 0:
-			featureValues[ i++ ] = 1;
-			featureValues[ i++ ] = 0;
-			featureValues[ i++ ] = 0;
-			break;
-		case 1:
-			featureValues[ i++ ] = 0;
-			featureValues[ i++ ] = 1;
-			featureValues[ i++ ] = 0;
-			break;
-		case 2:
-			featureValues[ i++ ] = 0;
-			featureValues[ i++ ] = 0;
-			featureValues[ i++ ] = 1;
-			break;
-		}
-
-		// features = [ HU, HL, L, c(L,0,0), c(0,LT,LT), S, c(S,0,S), cdl, c(1,0,0), c(0,1,0), c(0,0,1) ]
-		// weights = [ 0.5, 0.5, 0, 1, 1, 0, 1, 1, 0, 0.1, 0.03 ]
-
-//		System.out.println( String.format( ">>> %f + %f + %f + %f = %f", costDeltaL, costDeltaV, costDeltaH, costDeltaS, cost ) );
-		return new ValuePair<>(cost, featureValues);
+		return cost;
 	}
 
 	/**
@@ -2381,13 +2236,6 @@ public class GrowthLineTrackingILP {
 				}
 			}
 		}
-	}
-
-	/**
-	 * Returns the CostManager set here.
-	 */
-	public CostManager getCostManager() {
-		return costManager;
 	}
 
 	/**

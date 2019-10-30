@@ -20,15 +20,7 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
 public class FilteredMserTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
         float threshold = 0.1f;
-        IterableInterval<FloatType> iterableSource = Views.iterable(raiFkt);
-        Cursor<FloatType> cursor = iterableSource.cursor();
-        while (cursor.hasNext()) {
-            cursor.next();
-            float val = cursor.get().getRealFloat();
-            if (val > 0.0f && val < threshold) {
-                cursor.get().set(0);
-            }
-        }
+        setZero(raiFkt, threshold);
 
 //		final double delta = 0.0001;
         final double delta = 0.02;
@@ -56,6 +48,19 @@ public class FilteredMserTreeGenerator {
 //		return new SimpleComponentTree(componentTree, raiFkt);
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
+    }
+
+    private static final RandomAccessibleInterval<FloatType> setZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
+        IterableInterval<FloatType> iterableSource = Views.iterable(image);
+        Cursor<FloatType> cursor = iterableSource.cursor();
+        while (cursor.hasNext()) {
+            cursor.next();
+            float val = cursor.get().getRealFloat();
+            if (val > 0.0f && val < threshold) {
+                cursor.get().set(0);
+            }
+        }
+        return image;
     }
 
 }

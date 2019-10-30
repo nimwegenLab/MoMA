@@ -1,15 +1,13 @@
 package com.jug.util;
 
-import com.jug.util.componenttree.*;
+import com.jug.util.componenttree.FilteredMserTreeGenerator;
+import com.jug.util.componenttree.SimpleComponent;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imagej.ops.image.watershed.WatershedSeeded;
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
@@ -30,7 +28,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.function.Predicate;
 
 import static org.junit.Assert.*;
 
@@ -38,19 +35,6 @@ public class RecursiveWatersheddingTest {
 
     private OpService ops = (new Context()).service(OpService.class);
     private IOService io = (new Context()).service(IOService.class);
-
-    private static final RandomAccessibleInterval<FloatType> setZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
-        IterableInterval<FloatType> iterableSource = Views.iterable(image);
-        Cursor<FloatType> cursor = iterableSource.cursor();
-        while (cursor.hasNext()) {
-            cursor.next();
-            float val = cursor.get().getRealFloat();
-            if (val > 0.0f && val < threshold) {
-                cursor.get().set(0);
-            }
-        }
-        return image;
-    }
 
     public static void main(String... args) throws IOException, InterruptedException {
         ImageJ ij = new ImageJ();
@@ -71,47 +55,9 @@ public class RecursiveWatersheddingTest {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, 45);
         assertEquals(2, currentImage.numDimensions());
 
-        float threshold = 0.1f;
-        currentImage = setZero(currentImage, threshold);
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = buildIntensityTree(currentImage);
+        ComponentForest<SimpleComponent<FloatType>> tree = new FilteredMserTreeGenerator().buildIntensityTree(currentImage);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
-    }
-
-    protected ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
-        float threshold = 0.1f;
-        IterableInterval<FloatType> iterableSource = Views.iterable(raiFkt);
-        Cursor<FloatType> cursor = iterableSource.cursor();
-        while (cursor.hasNext()) {
-            cursor.next();
-            float val = cursor.get().getRealFloat();
-            if (val > 0.0f && val < threshold) {
-                cursor.get().set(0);
-            }
-        }
-
-        final double delta = 0.0001;
-//        final double delta = 0.02;
-        final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
-        final long maxSize = Long.MAX_VALUE;
-        final double maxVar = 1.0;
-        final double minDiversity = 0.5;
-        final boolean darkToBright = false;
-        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
-
-        Predicate<Integer> widthCondition = (width) -> (width <= 20);
-        ILocationTester ctester = new ComponentExtentTester(0, widthCondition);
-//        Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= raiFkt.dimension(1) - GL_OFFSET_BOTTOM);
-//        ILocationTester boundaryTester = new PixelPositionTester(1, condition);
-        ArrayList<ILocationTester> testers = new ArrayList<>();
-        testers.add(ctester);
-//        testers.add(boundaryTester);
-        ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
-
-        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
-//        HasSiblingTester<?,?> tester2 = new HasSiblingTester<>();
-//        SimpleComponentTree tree2 = new SimpleComponentTree(tree, raiFkt, tester2);
-        return tree;
     }
 
     @Test

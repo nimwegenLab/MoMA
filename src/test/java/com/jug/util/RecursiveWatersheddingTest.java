@@ -1,6 +1,5 @@
 package com.jug.util;
 import com.jug.util.componenttree.*;
-import com.jug.util.filteredcomponents.FilteredComponent;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imagej.ops.image.watershed.WatershedSeeded;
@@ -67,7 +66,7 @@ public class RecursiveWatersheddingTest {
         float threshold = 0.1f;
         currentImage = setZero(currentImage, threshold);
         ImageJFunctions.show(currentImage);
-        ComponentForest<FilteredComponent<FloatType>> tree = buildIntensityTree(currentImage);
+        ComponentForest<SimpleComponent<FloatType>> tree = buildIntensityTree(currentImage);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -84,7 +83,7 @@ public class RecursiveWatersheddingTest {
         return image;
     }
 
-    protected ComponentForest< FilteredComponent< FloatType >> buildIntensityTree(final RandomAccessibleInterval< FloatType > raiFkt ) {
+    protected ComponentForest< SimpleComponent< FloatType >> buildIntensityTree(final RandomAccessibleInterval< FloatType > raiFkt ) {
         float threshold = 0.1f;
         IterableInterval< FloatType > iterableSource = Views.iterable(raiFkt);
         Cursor<FloatType> cursor = iterableSource.cursor();
@@ -112,7 +111,7 @@ public class RecursiveWatersheddingTest {
         ArrayList<ILocationTester> testers = new ArrayList<>();
         testers.add(ctester);
 //        testers.add(boundaryTester);
-        ComponentTester<FloatType, FilteredComponent<FloatType>> tester = new ComponentTester<>(testers);
+        ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
 //        HasSiblingTester<?,?> tester2 = new HasSiblingTester<>();

@@ -10,10 +10,6 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.type.numeric.real.FloatType;
 
-import com.jug.util.filteredcomponents.FilteredComponent;
-import com.jug.util.filteredcomponents.FilteredComponentTree;
-import com.jug.util.filteredcomponents.FilteredComponentTree.Filter;
-import com.jug.util.filteredcomponents.FilteredComponentTree.MaxGrowthPerStep;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
@@ -32,15 +28,13 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
  *         series (2d+t) representation of an growth line is
  *         <code>GrowthLine</code>.
  */
-public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent< FloatType > > {
-
-	private final Filter noFilterFilter = new MaxGrowthPerStep( 1000 );
+public class GrowthLineFrame extends AbstractGrowthLineFrame< SimpleComponent< FloatType > > {
 
     /**
 	 * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
 	 */
 	@Override
-	protected ComponentForest< FilteredComponent< FloatType >> buildIntensityTree( final RandomAccessibleInterval< FloatType > raiFkt ) {
+	protected ComponentForest< SimpleComponent< FloatType >> buildIntensityTree( final RandomAccessibleInterval< FloatType > raiFkt ) {
 //		FilteredComponentTree<FloatType> componentTree = FilteredComponentTree.buildComponentTree(
 //				raiFkt,
 //				new FloatType(),
@@ -80,7 +74,7 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame< FilteredComponent<
 		ArrayList<ILocationTester> testers = new ArrayList<>();
 		testers.add(ctester);
 		testers.add(boundaryTester);
-		ComponentTester<FloatType, FilteredComponent<FloatType>> tester = new ComponentTester<>(testers);
+		ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
 
 //		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
 

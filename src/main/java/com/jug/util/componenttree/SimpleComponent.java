@@ -1,9 +1,11 @@
 package com.jug.util.componenttree;
 
 import net.imglib2.Localizable;
+import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.mser.Mser;
+import net.imglib2.algorithm.componenttree.pixellist.PixelList;
 import net.imglib2.type.Type;
 
 import java.util.ArrayList;
@@ -17,6 +19,7 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Pixels in the component.
      */
+    private final List<Localizable> pixelList = new ArrayList<Localizable>();
     private final Mser wrappedComponent;
     private final RandomAccessibleInterval<T> sourceImage;
 
@@ -49,6 +52,10 @@ public final class SimpleComponent<T extends Type<T>>
      * Constructor for fully connected component-node (with parent or children).
      */
     public <C extends Component<T,C>> SimpleComponent(C wrappedComponent, T value, RandomAccessibleInterval<T> sourceImage) {
+        for(Localizable val : wrappedComponent)
+        {
+            pixelList.add(new Point(val));
+        }
         this.wrappedComponent = (Mser)wrappedComponent;
         this.value = value;
         this.sourceImage = sourceImage;
@@ -84,7 +91,7 @@ public final class SimpleComponent<T extends Type<T>>
 
     @Override
     public Iterator<Localizable> iterator() {
-        return wrappedComponent.iterator();
+        return pixelList.iterator();
     }
 
     public double[] firstMomentPixelCoordinates(){
@@ -99,9 +106,5 @@ public final class SimpleComponent<T extends Type<T>>
             parent = parent.getParent();
         }
         return nodeLevel;
-    }
-
-    public double getMserScore() {
-        return wrappedComponent.score();
     }
 }

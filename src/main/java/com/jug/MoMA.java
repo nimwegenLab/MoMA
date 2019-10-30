@@ -51,9 +51,6 @@ import com.jug.gui.MoMAModel;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.loops.Loops;
 import com.jug.ops.cursor.FindLocalMaxima;
-import com.jug.ops.numerictype.SumOfRai;
-import com.jug.segmentation.GrowthLineSegmentationMagic;
-import com.jug.segmentation.SilentWekaSegmenter;
 import com.jug.util.DataMover;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.converter.RealFloatProbMapToSegmentation;
@@ -870,92 +867,6 @@ public class MoMA {
 	 */
 	public void setImgRendered( final Img< ARGBType > imgRendered ) {
 		this.imgAnnotated = imgRendered;
-	}
-
-	/**
-	 * @return imgSegmented
-	 */
-	public RandomAccessibleInterval< FloatType > getCellClassificationImgs() {
-		if ( this.imgSegmented == null ) {
-			getCellSegmentedChannelImgs();
-		}
-		return this.imgClassified;
-	}
-
-	/**
-	 * @return imgSegmented
-	 */
-	public RandomAccessibleInterval< ShortType > getCellSegmentedChannelImgs() {
-		if ( this.imgSegmented == null ) {
-			final DialogProgress dialogProgress = new DialogProgress( MoMA.getGui(), "Estimating cell-area using RF classifier...", MoMA.getGui().model.getCurrentGL().size() );
-			if ( !HEADLESS ) {
-				dialogProgress.setVisible( true );
-			}
-
-			final SilentWekaSegmenter< FloatType > oldClassifier = GrowthLineSegmentationMagic.getClassifier();
-			GrowthLineSegmentationMagic.setClassifier( MoMA.CELLSIZE_CLASSIFIER_MODEL_FILE, "" );
-
-			imgClassified = new ArrayImgFactory< FloatType >().create( imgTemp, new FloatType() );
-			imgSegmented = new ArrayImgFactory< ShortType >().create( imgTemp, new ShortType() );
-			final RealFloatProbMapToSegmentation< FloatType > converter = new RealFloatProbMapToSegmentation<>(0.5f);
-
-			final int numProcessors = Prefs.getThreads();
-			final int numThreads = Math.min( ( int ) getImgTemp().dimension( 2 ), numProcessors );
-			final Thread[] threads = new Thread[ numThreads ];
-
-			class ImageProcessingThread extends Thread {
-
-				final int numThread;
-				final int numThreads;
-
-				ImageProcessingThread(final int numThread, final int numThreads) {
-					this.numThread = numThread;
-					this.numThreads = numThreads;
-				}
-
-				@Override
-				public void run() {
-					RandomAccessibleInterval< FloatType > classified;
-					for ( int frameIdx = numThread; frameIdx < getImgTemp().dimension( 2 ); frameIdx += numThreads ) {
-//						final IntervalView< FloatType > channel0Frame = Views.hyperSlice( getImgTemp(), 2, frameIdx );  // normalized and modified
-						final IntervalView< FloatType > channel0Frame = Views.hyperSlice( getImgRaw(), 2, frameIdx );  // RAWest data at hand   ;)
-						classified = Views.hyperSlice( GrowthLineSegmentationMagic.returnClassification( channel0Frame ), 2, 0 );
-
-						final RandomAccessibleInterval< FloatType > newClassificationSlize = Views.hyperSlice( imgClassified, 2, frameIdx );
-						final RandomAccessibleInterval< ShortType > newSegmentationSlize = Views.hyperSlice( imgSegmented, 2, frameIdx );
-
-						DataMover.copy( classified, Views.iterable( newClassificationSlize ) );
-						DataMover.copy( classified, Views.iterable( newSegmentationSlize ), converter );
-
-						if ( !HEADLESS ) {
-							dialogProgress.hasProgressed();
-						}
-					}
-				}
-			}
-
-			// start threads
-			for ( int i = 0; i < numThreads; i++ ) {
-				threads[ i ] = new ImageProcessingThread( i, numThreads );
-				threads[ i ].start();
-			}
-
-			// wait for all threads to terminate
-			for ( final Thread thread : threads ) {
-				try {
-					thread.join();
-				} catch ( final InterruptedException ignored) {}
-			}
-
-			// clean up
-			GrowthLineSegmentationMagic.setClassifier( oldClassifier );
-			if ( !HEADLESS ) {
-				dialogProgress.setVisible( false );
-				dialogProgress.dispose();
-			}
-		}
-
-		return imgSegmented;
 	}
 
 	/**

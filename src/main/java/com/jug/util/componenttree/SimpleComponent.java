@@ -58,6 +58,36 @@ public final class SimpleComponent<T extends Type<T>>
         region = regions.getLabelRegion(this.label);
     }
 
+    /**
+     * Labels the corresponding pixels in image labeling with label.
+     * @param labeling image that is labeled
+     * @param label label that will be set for this component
+     */
+    public void writeLabels(ImgLabeling<Integer, IntType> labeling, Integer label){
+        // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside of labeling!
+        RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
+        for (Localizable val : pixelList) {
+            accessor.setPosition(val);
+            accessor.get().add(label);
+        }
+    }
+
+    /**
+     * Labels the center of mass of this component in image labeling with label.
+     * @param labeling image that is labeled
+     * @param label label that will be set for this component
+     */
+    public void writeCenterLabel(ImgLabeling<Integer, IntType> labeling, Integer label){
+        // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside of labeling!
+        RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
+        double[] centerDouble = this.firstMomentPixelCoordinates();
+        final int[] centerInt = new int[centerDouble.length];
+        for (int i=0; i<centerInt.length; ++i)
+            centerInt[i] = (int) centerDouble[i];
+        accessor.setPosition(new Point(centerInt));
+        accessor.get().add(label);
+    }
+
     public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
     }

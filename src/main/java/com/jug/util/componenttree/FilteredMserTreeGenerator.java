@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.moma.auxiliary.Plotting;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -47,7 +48,11 @@ public class FilteredMserTreeGenerator {
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
 
         HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        return new SimpleComponentTree(tree, raiFkt, siblingTester);
+        SimpleComponentTree finalTree = new SimpleComponentTree(tree, raiFkt, siblingTester);
+
+        Plotting.drawComponentTree2(finalTree, new ArrayList());
+
+        return new RecursiveComponentWatershedder().recursivelyWatershedComponents(finalTree);
 //		return new SimpleComponentTree(componentTree, raiFkt);
 
 //		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );

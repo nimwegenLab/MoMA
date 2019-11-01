@@ -5,6 +5,8 @@ import net.imagej.ops.image.watershed.WatershedSeeded;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.labeling.ImgLabeling;
@@ -36,7 +38,7 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         List<SimpleComponent<T>> children = parent.getChildren();
         if (children.size() == 0) return; // no children to watershed
 
-        Img<T> sourceImage = (Img) parent.getSourceImage();
+        Img<T> sourceImage = ImgView.wrap(parent.getSourceImage(), new ArrayImgFactory(new FloatType()));
         ImgLabeling<Integer, IntType> parentLabeling = createLabelingImage(sourceImage);
         ImgLabeling<Integer, IntType> childLabeling = createLabelingImage(sourceImage);
 

@@ -17,6 +17,10 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 public class RecursiveComponentWatershedderTests {
+    public static void main(String... args) throws IOException, InterruptedException {
+        new RecursiveComponentWatershedderTests().testWatershedding();
+    }
+
     @Test
     public void testWatershedding() throws IOException, InterruptedException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/probabilities_watershedding_000.tif";

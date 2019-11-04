@@ -155,6 +155,10 @@ public final class SimpleComponent<T extends Type<T>>
         return nodeLevel;
     }
 
+    public void setRegion(LabelRegion<Integer> region) {
+        LabelRegion<Integer> newRegion = region;
+    }
+
     private class RegionLocalizableIterator implements Iterator<Localizable> {
         Cursor<Void> c;
         private LabelRegion<?> region;

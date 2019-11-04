@@ -45,14 +45,24 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         Integer label = 1;
         parent.writeLabels(parentLabeling, label);
         for(SimpleComponent<T> child: children){
-            ++label;
             child.writeCenterLabel(childLabeling, label);
+            ++label;
         }
         RandomAccessibleInterval<BitType> mask = ops.convert().bit(Views.iterable(parentLabeling.getIndexImg()));
+        ImgLabeling<Integer, IntType> out = doWatershed(sourceImage, childLabeling, mask);
+        LabelRegions<Integer> regions = new LabelRegions<>(out);
+
+        // TODO: THIS NEEDS TO BE FIXED, TO MAKE SURE THE LABELLING FROM THE WATERSHEDDING CORRESPONDS TO THE LABELING FROM THE MARKER-IMAGE AND CORRESPONDING COMPONENTS
+        label = 1;
+        for(SimpleComponent<T> child: children){
+            LabelRegion<Integer> region = regions.getLabelRegion(label);
+            child.setRegion(region);
+            ++label;
+        }
+
         ImageJFunctions.show((Img) sourceImage);
         ImageJFunctions.show(childLabeling.getIndexImg());
         ImageJFunctions.show(mask);
-        ImgLabeling<Integer, IntType> out = doWatershed(sourceImage, childLabeling, mask);
         ImageJFunctions.show(out.getIndexImg());
 
         printRegionSizes(childLabeling);

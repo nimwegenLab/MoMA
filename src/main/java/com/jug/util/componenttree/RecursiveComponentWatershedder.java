@@ -2,8 +2,11 @@ package com.jug.util.componenttree;
 
 import net.imagej.ops.OpService;
 import net.imagej.ops.image.watershed.WatershedSeeded;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -12,6 +15,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
+import net.imglib2.roi.labeling.LabelingType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -35,6 +39,36 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
 //        throw new NotImplementedException();
     }
 
+    private ImgLabeling<Integer, IntType> getLabeling(SimpleComponent<T> component, Integer label){
+        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(component.getSourceImage());
+        ImgLabeling<Integer, IntType> labeling = createLabelingImage(component.getSourceImage());
+        component.writeLabels(labeling, label);
+//        component.writeCenterLabel(labeling, label);
+        RandomAccessibleInterval<IntType> backingImage = labeling.getIndexImg();
+//        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
+        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
+
+//        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(component.getSourceImage());
+//        RandomAccess<IntType> rndAcc2 = erodedLabels.randomAccess();
+        Cursor<LabelingType<Integer>> labelCursor = labelingEroded.cursor();
+        RandomAccess<IntType> rndAcc = backingImage.randomAccess();
+
+        while(labelCursor.hasNext()){
+            labelCursor.fwd();
+            rndAcc.setPosition(labelCursor);
+//            labelCursor.get().clear();
+//            labelCursor.get().add(rndAcc.get().get());
+            if(rndAcc.get().get() != 0) {
+                labelCursor.get().add(label);
+            }
+        }
+
+//        ImageJFunctions.show(labeling.getIndexImg(), "eroded");
+//        ImageJFunctions.show(labelingOrig.getIndexImg(), "non-eroded");
+
+        return labelingEroded;
+    }
+
     private void RecursivelyWatershed(SimpleComponent<T> parent) {
         List<SimpleComponent<T>> children = parent.getChildren();
         if (children.size() == 0) return; // no children to watershed
@@ -46,12 +80,19 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         Integer label = 1;
         parent.writeLabels(parentLabeling, label);
         for(SimpleComponent<T> child: children){
-            child.writeCenterLabel(childLabeling, label);
+            ImgLabeling<Integer, IntType> newLabeling = getLabeling(child, label);
+            childLabeling = ops.labeling().merge(childLabeling, newLabeling);
             ++label;
         }
         RandomAccessibleInterval<BitType> mask = ops.convert().bit(Views.iterable(parentLabeling.getIndexImg()));
+
+//        ImageJFunctions.show(mask, "mask");
+//        ImageJFunctions.show(childLabeling.getIndexImg(), "merged child image");
+
         ImgLabeling<Integer, IntType> out = doWatershed(sourceImage, childLabeling, mask);
         LabelRegions<Integer> regions = new LabelRegions<>(out);
+
+
 
         // TODO: THIS NEEDS TO BE FIXED, TO MAKE SURE THE LABELLING FROM THE WATERSHEDDING CORRESPONDS TO THE LABELING FROM THE MARKER-IMAGE AND CORRESPONDING COMPONENTS
         label = 1;

@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 
 public class RecursiveComponentWatershedderTests {
     public static void main(String... args) throws IOException, InterruptedException {
+        ImageJ ij = new ImageJ();
         new RecursiveComponentWatershedderTests().testWatershedding();
     }
 

@@ -1,10 +1,18 @@
 package com.jug.util.componenttree;
 
+import net.imagej.ops.OpService;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.neighborhood.RectangleShape;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
+import org.scijava.Context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -67,6 +75,24 @@ public final class SimpleComponent<T extends Type<T>>
             accessor.setPosition(val);
             accessor.get().add(label);
         }
+    }
+
+    private OpService ops = (new Context()).service(OpService.class);
+
+    /**
+     * Labels the center of mass of this component in image labeling with label.
+     * @param label label that will be set for this component
+     */
+    public ImgLabeling<Integer, IntType> getLabeling(Integer label) {
+        Img<T> sourceImage = ImgView.wrap(this.getSourceImage(), new ArrayImgFactory(new FloatType()));
+        return createLabelingImage(sourceImage);
+    }
+
+    private ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval<T> sourceImage){
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<IntType> img = ArrayImgs.ints(dims);
+        return new ImgLabeling<>(img);
     }
 
     /**

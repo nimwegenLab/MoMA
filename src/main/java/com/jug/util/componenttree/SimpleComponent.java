@@ -2,10 +2,7 @@ package com.jug.util.componenttree;
 
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.roi.labeling.ImgLabeling;
-import net.imglib2.roi.labeling.LabelRegion;
-import net.imglib2.roi.labeling.LabelRegions;
-import net.imglib2.roi.labeling.LabelingType;
+import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 
@@ -120,16 +117,30 @@ public final class SimpleComponent<T extends Type<T>>
         this.children.add(child);
     }
 
-//    @Override
-//    public Iterator<Localizable> iterator() {
-//        return pixelList.iterator();
-//    }
-
     @Override
     public Iterator<Localizable> iterator() {
-//        return region.iterator();
-        return new RegionLocalizableIterator(region);
+        return pixelList.iterator();
     }
+
+//    @Override
+//    public Iterator<Localizable> iterator() {
+//        return new RegionLocalizableIterator(region);
+//    }
+
+
+    public void setRegion(LabelRegion<Integer> region) {
+        this.region = region;
+        LabelRegionCursor c = region.cursor();
+        while (c.hasNext()) {
+            c.fwd();
+            pixelList.add(new Point(c));
+        }
+    }
+
+//    public void setRegion(LabelRegion<Integer> region) {
+//        LabelRegion<Integer> newRegion = region;
+//    }
+
 
     public double[] firstMomentPixelCoordinates() {
         int n = pixelList.get(0).numDimensions();
@@ -153,10 +164,6 @@ public final class SimpleComponent<T extends Type<T>>
             parent = parent.getParent();
         }
         return nodeLevel;
-    }
-
-    public void setRegion(LabelRegion<Integer> region) {
-        LabelRegion<Integer> newRegion = region;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

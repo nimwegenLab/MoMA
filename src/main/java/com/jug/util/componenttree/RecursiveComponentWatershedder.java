@@ -31,7 +31,8 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         for (final SimpleComponent root : tree.roots()) {
             RecursivelyWatershed(root);
         }
-        throw new NotImplementedException();
+        return tree;
+//        throw new NotImplementedException();
     }
 
     private void RecursivelyWatershed(SimpleComponent<T> parent) {
@@ -60,14 +61,18 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
             ++label;
         }
 
-        ImageJFunctions.show((Img) sourceImage);
-        ImageJFunctions.show(childLabeling.getIndexImg());
-        ImageJFunctions.show(mask);
-        ImageJFunctions.show(out.getIndexImg());
+        for(SimpleComponent<T> child: children){
+            RecursivelyWatershed(child);
+        }
 
-        printRegionSizes(childLabeling);
-        System.out.println("------");
-        printRegionSizes(out);
+//        ImageJFunctions.show((Img) sourceImage);
+//        ImageJFunctions.show(childLabeling.getIndexImg());
+//        ImageJFunctions.show(mask);
+//        ImageJFunctions.show(out.getIndexImg());
+
+//        printRegionSizes(childLabeling);
+//        System.out.println("------");
+//        printRegionSizes(out);
 
     }
 
@@ -81,9 +86,25 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
     private ImgLabeling<Integer, IntType> doWatershed(final Img in, final ImgLabeling<Integer, IntType> markers, RandomAccessibleInterval<BitType> mask) {
 //        return (ImgLabeling<Integer, IntType>) ops.run(WatershedSeeded.class, null, in,
 //                markers, true, false, mask);
+        long[] dims = new long[in.numDimensions()];
+        in.dimensions(dims);
+        Img<IntType> img = ArrayImgs.ints(dims);
+        ImgLabeling<Integer, IntType> res = new ImgLabeling<Integer, IntType>(img);
         Img<FloatType> input = in.factory().create(in); //  QUESTION: if I use generic Img<t> here, the compiler issues a warning. Why?!
         ops.image().invert(input, in);
         return ops.image().watershed(null, input, markers, false, false, mask);
+//        try
+//        {
+//        res = ops.image().watershed(null, input, markers, false, false, mask);
+//            return res;
+//        }
+//        catch(java.util.NoSuchElementException err)
+//        {
+//            ImageJFunctions.show(in);
+//            ImageJFunctions.show(markers.getSource());
+//            ImageJFunctions.show(mask);
+//            return res;
+//        }
     }
 
     private void printRegionSizes(ImgLabeling<Integer, IntType> seedLabels) {

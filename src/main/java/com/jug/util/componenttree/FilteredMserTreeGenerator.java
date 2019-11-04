@@ -50,7 +50,7 @@ public class FilteredMserTreeGenerator {
         HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         SimpleComponentTree finalTree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
-        Plotting.drawComponentTree2(finalTree, new ArrayList());
+//        Plotting.drawComponentTree2(finalTree, new ArrayList());
 
         return new RecursiveComponentWatershedder().recursivelyWatershedComponents(finalTree);
 //		return new SimpleComponentTree(componentTree, raiFkt);

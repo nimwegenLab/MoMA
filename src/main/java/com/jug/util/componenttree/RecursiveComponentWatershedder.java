@@ -43,21 +43,14 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(component.getSourceImage());
         ImgLabeling<Integer, IntType> labeling = createLabelingImage(component.getSourceImage());
         component.writeLabels(labeling, label);
-//        component.writeCenterLabel(labeling, label);
         RandomAccessibleInterval<IntType> backingImage = labeling.getIndexImg();
-//        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
         backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
-
-//        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(component.getSourceImage());
-//        RandomAccess<IntType> rndAcc2 = erodedLabels.randomAccess();
         Cursor<LabelingType<Integer>> labelCursor = labelingEroded.cursor();
         RandomAccess<IntType> rndAcc = backingImage.randomAccess();
 
         while(labelCursor.hasNext()){
             labelCursor.fwd();
             rndAcc.setPosition(labelCursor);
-//            labelCursor.get().clear();
-//            labelCursor.get().add(rndAcc.get().get());
             if(rndAcc.get().get() != 0) {
                 labelCursor.get().add(label);
             }

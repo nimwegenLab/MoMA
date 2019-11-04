@@ -39,10 +39,8 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
 //        throw new NotImplementedException();
     }
 
-    private ImgLabeling<Integer, IntType> getLabeling(SimpleComponent<T> component, Integer label){
-        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(component.getSourceImage());
-        ImgLabeling<Integer, IntType> labeling = createLabelingImage(component.getSourceImage());
-        component.writeLabels(labeling, label);
+    private ImgLabeling<Integer, IntType> erodeLabels(ImgLabeling<Integer, IntType> labeling, RandomAccessibleInterval<T> sourceImage){
+        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(sourceImage);
         RandomAccessibleInterval<IntType> backingImage = labeling.getIndexImg();
         backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
         Cursor<LabelingType<Integer>> labelingErodedCursor = labelingEroded.cursor();
@@ -75,10 +73,10 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         Integer label = 1;
         parent.writeLabels(parentLabeling, label);
         for(SimpleComponent<T> child: children){
-            ImgLabeling<Integer, IntType> newLabeling = getLabeling(child, label);
-            childLabeling = ops.labeling().merge(childLabeling, newLabeling);
+            child.writeLabels(childLabeling, label);
             ++label;
         }
+        childLabeling = erodeLabels(childLabeling, sourceImage);
         RandomAccessibleInterval<BitType> mask = ops.convert().bit(Views.iterable(parentLabeling.getIndexImg()));
 
 //        ImageJFunctions.show(mask, "mask");

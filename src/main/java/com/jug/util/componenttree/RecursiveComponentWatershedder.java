@@ -42,7 +42,7 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
     private ImgLabeling<Integer, IntType> erodeLabels(ImgLabeling<Integer, IntType> labeling, RandomAccessibleInterval<T> sourceImage){
         ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(sourceImage);
         RandomAccessibleInterval<IntType> backingImage = labeling.getIndexImg();
-        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(2, false));
+        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(1, false));
         Cursor<LabelingType<Integer>> labelingErodedCursor = labelingEroded.cursor();
         Cursor<LabelingType<Integer>> labelingCursor = labeling.cursor();
         RandomAccess<IntType> rndAcc = backingImage.randomAccess();

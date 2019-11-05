@@ -31,7 +31,7 @@ public class RecursiveComponentWatershedderTests {
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
 
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, 45);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, 12);
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);

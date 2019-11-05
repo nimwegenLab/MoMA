@@ -77,7 +77,6 @@ public final class SimpleComponent<T extends Type<T>>
         }
     }
 
-    private OpService ops = (new Context()).service(OpService.class);
 
     /**
      * Labels the center of mass of this component in image labeling with label.

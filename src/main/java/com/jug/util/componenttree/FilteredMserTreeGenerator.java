@@ -30,32 +30,35 @@ public class FilteredMserTreeGenerator {
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
         final boolean darkToBright = false;
+
+        // generate MSER tree
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
-//        Plotting.drawComponentTree2(componentTree, new ArrayList<>());
-
+        // filter components by width
         Predicate<Integer> widthCondition = (width) -> (width <= 20);
-        ILocationTester ctester = new ComponentExtentTester(0, widthCondition);
-        Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= raiFkt.dimension(1) - GL_OFFSET_BOTTOM);
-        ILocationTester boundaryTester = new PixelPositionTester(1, condition);
+        ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
         ArrayList<ILocationTester> testers = new ArrayList<>();
-        testers.add(ctester);
-        testers.add(boundaryTester);
+        testers.add(widthLimit);
         ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-//		IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
-
+        // filter components that do not have siblings
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
-
         HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        SimpleComponentTree finalTree = new SimpleComponentTree(tree, raiFkt, siblingTester);
+        tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
-//        Plotting.drawComponentTree2(finalTree, new ArrayList());
+        // watershed components into their parent-components
+        tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);
 
-        return new RecursiveComponentWatershedder().recursivelyWatershedComponents(finalTree);
-//		return new SimpleComponentTree(componentTree, raiFkt);
+        // filter components that are (partially) outside of our ROI
+        Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= raiFkt.dimension(1) - GL_OFFSET_BOTTOM);
+        ILocationTester verticalBoundsLimit = new PixelPositionTester(1, condition);
+        testers = new ArrayList<>();
+        testers.add(verticalBoundsLimit);
+        tester = new ComponentTester<>(testers);
+        tree = new SimpleComponentTree(tree, raiFkt, tester);
 
-//		return MserTree.buildMserTree( raiFkt, MotherMachine.MIN_GAP_CONTRAST / 2.0, MotherMachine.MIN_CELL_LENGTH, Long.MAX_VALUE, 0.5, 0.33, true );
+//        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        return tree;
     }
 
     private static final RandomAccessibleInterval<FloatType> setZero(final RandomAccessibleInterval<FloatType> image, float threshold) {

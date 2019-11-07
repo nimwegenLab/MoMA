@@ -178,6 +178,6 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         sourceImage.dimensions(dims);
         Img<FloatType> invertedSourceImage = sourceImage.factory().create(sourceImage);
         ops.image().invert(invertedSourceImage, sourceImage); // invert the intensities of the probability maps, so that cell-areas are watershed basins
-        return ops.image().watershed(null, invertedSourceImage, markers, false, false, mask);
+        return ops.image().watershed(null, invertedSourceImage, markers, false, true, mask);
     }
 }

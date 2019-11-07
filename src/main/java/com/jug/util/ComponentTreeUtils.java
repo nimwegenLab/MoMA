@@ -6,6 +6,7 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.javatuples.Pair;
@@ -265,8 +266,8 @@ public class ComponentTreeUtils {
      * @param componentlevelListConsumer consumer of the list of components in the level and corresponding level number.
      * @param <C> type of component being processed.
      */
-    public static <C extends Component<FloatType, C>> void doForEachComponentInTreeLevel(final ComponentForest<C> componentForest,
-                                                                                         Consumer<Pair<List<C>, Integer>> componentlevelListConsumer ){
+    public static <C extends Component<T, C>, T extends Type<T>> void doForEachComponentInTreeLevel(final ComponentForest<C> componentForest,
+                                                                                                 Consumer<Pair<List<C>, Integer>> componentlevelListConsumer ){
         int level = 0;
         ArrayList<C> ctnLevel = new ArrayList<>();
         for ( final C root : componentForest.roots() ) { // populate the root-level component list

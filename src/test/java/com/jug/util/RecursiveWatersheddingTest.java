@@ -1,6 +1,6 @@
 package com.jug.util;
 
-import com.jug.util.componenttree.FilteredMserTreeGenerator;
+import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.SimpleComponent;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
@@ -56,7 +56,7 @@ public class RecursiveWatersheddingTest {
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = new FilteredMserTreeGenerator().buildIntensityTree(currentImage);
+        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(currentImage);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 

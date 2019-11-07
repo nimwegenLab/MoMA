@@ -18,7 +18,7 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
-public class FilteredMserTreeGenerator {
+public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
         float threshold = 0.1f;
         setZero(raiFkt, threshold);

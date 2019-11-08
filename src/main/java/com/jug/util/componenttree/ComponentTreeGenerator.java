@@ -19,7 +19,7 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
  */
 public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
-        float threshold = 0.5f;
+        float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
         setPixelBelowThresholdsToZero(raiFkt, threshold);
 
 		final double delta = 0.0001;

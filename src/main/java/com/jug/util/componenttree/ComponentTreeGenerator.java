@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.moma.auxiliary.Plotting;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -20,7 +19,7 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
  */
 public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
-        float threshold = 0.1f;
+        float threshold = 0.5f;
         setPixelBelowThresholdsToZero(raiFkt, threshold);
 
 		final double delta = 0.0001;

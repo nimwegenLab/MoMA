@@ -66,7 +66,7 @@ public class GrowthLineTrackingILP {
 	public static final int ASSIGNMENT_MAPPING = 1;
 	public static final int ASSIGNMENT_DIVISION = 2;
 
-	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored; THIS SEEMS WAY TOO LOW
+	public static final float CUTOFF_COST = 100.0f; // TODO-PARAMETRIZE: This value is critical(!): Assignments with costs higher than this value will be ignored. This should become a parameter at some point!
 
 	private static GRBEnv env;
 

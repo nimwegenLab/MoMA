@@ -21,7 +21,7 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
 public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
         float threshold = 0.1f;
-        setZero(raiFkt, threshold);
+        setPixelBelowThresholdsToZero(raiFkt, threshold);
 
 		final double delta = 0.0001;
 //        final double delta = 0.02;
@@ -61,7 +61,13 @@ public class ComponentTreeGenerator {
         return tree;
     }
 
-    private static final RandomAccessibleInterval<FloatType> setZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
+    /**
+     * Set all pixels to 0 that are below {@param threshold} value in {@param image}.
+     *
+     * @param image
+     * @param threshold
+     */
+    private static void setPixelBelowThresholdsToZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
         IterableInterval<FloatType> iterableSource = Views.iterable(image);
         Cursor<FloatType> cursor = iterableSource.cursor();
         while (cursor.hasNext()) {
@@ -71,7 +77,6 @@ public class ComponentTreeGenerator {
                 cursor.get().set(0);
             }
         }
-        return image;
     }
 
 }

@@ -42,8 +42,8 @@ public class CostFactory {
 	}
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
-//		return getGrowthCostNew(oldSize, newSize);
-		
+//		if(true) return getGrowthCostNew(oldSize, newSize);
+
 		float deltaL = ( newSize - oldSize ) / normalizer; // ergo: deltaL < 1 for anything that is smaller than the GL; should we not look at relative size change?!
 //		System.out.println(String.format("costDeltaL: %f", deltaL));
 //		System.out.println(String.format("length: %f", normalizer));
@@ -65,27 +65,27 @@ public class CostFactory {
 //		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
 
 //		float costDeltaL =  0.0f;
-//		if(relativeGrowth > 0.3f){
-//			costDeltaL = 100.0f;
-//		}
-//		else if(relativeGrowth < -0.2f){
-//			costDeltaL = 100.0f;
-//		}
+		if(relativeGrowth > 0.4f){
+			costDeltaL = costDeltaL * 20;
+		}
+		else if(relativeGrowth < -0.4f){
+			costDeltaL = costDeltaL * 20;
+		}
 
-//		System.out.println(String.format("Final cost: %f", costDeltaL));
+//		System.out.println(String.format("Final cost: %e", costDeltaL));
 //		latestCostEvaluation = String.format( "c_l = %.4f * %.4f^%.1f = %.4f", deltaL, 1 + deltaL, power, costDeltaL );
 		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
 	}
 
 	public static Pair< Float, float[] > getGrowthCostNew( final float oldSize, final float newSize ) {
 		float relativeGrowth = ( newSize - oldSize ) / oldSize;
-//		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
+//		System.out.println(String.format("relativeGrowth: %e", relativeGrowth));
 
 		float costDeltaL =  0.0f;
 		if(relativeGrowth > 0.2){
 			costDeltaL = 1.0f;
 		}
-		else if(relativeGrowth < 0.05){
+		else if(relativeGrowth < -0.05){
 			costDeltaL = 1.0f;
 		}
 

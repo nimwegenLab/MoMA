@@ -9,8 +9,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.junit.Test;
-import org.scijava.Context;
-import org.scijava.io.IOService;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +16,10 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
-public class FilteredMserTreeGeneratorTests {
+public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
         ImageJ ij = new ImageJ();
-        new FilteredMserTreeGeneratorTests().testWatershedding();
+        new ComponentTreeGeneratorTests().testWatershedding();
     }
 
     /**
@@ -42,7 +40,7 @@ public class FilteredMserTreeGeneratorTests {
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = new FilteredMserTreeGenerator().buildIntensityTree(currentImage);
+        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(currentImage);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 }

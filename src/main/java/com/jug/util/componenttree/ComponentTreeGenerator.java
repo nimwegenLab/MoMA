@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.moma.auxiliary.Plotting;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -18,10 +17,10 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
-public class FilteredMserTreeGenerator {
+public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
-        float threshold = 0.1f;
-        setZero(raiFkt, threshold);
+        float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
+        setPixelBelowThresholdsToZero(raiFkt, threshold);
 
 		final double delta = 0.0001;
 //        final double delta = 0.02;
@@ -61,7 +60,13 @@ public class FilteredMserTreeGenerator {
         return tree;
     }
 
-    private static final RandomAccessibleInterval<FloatType> setZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
+    /**
+     * Set all pixels to 0 that are below {@param threshold} value in {@param image}.
+     *
+     * @param image
+     * @param threshold
+     */
+    private static void setPixelBelowThresholdsToZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
         IterableInterval<FloatType> iterableSource = Views.iterable(image);
         Cursor<FloatType> cursor = iterableSource.cursor();
         while (cursor.hasNext()) {
@@ -71,7 +76,6 @@ public class FilteredMserTreeGenerator {
                 cursor.get().set(0);
             }
         }
-        return image;
     }
 
 }

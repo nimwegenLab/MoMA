@@ -1,6 +1,6 @@
 package com.jug;
 
-import com.jug.util.componenttree.FilteredMserTreeGenerator;
+import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -22,6 +22,6 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame<SimpleComponent<Flo
      */
     @Override
     protected ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
-        return new FilteredMserTreeGenerator().buildIntensityTree(raiFkt);
+        return new ComponentTreeGenerator().buildIntensityTree(raiFkt);
     }
 }

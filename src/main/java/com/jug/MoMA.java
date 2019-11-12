@@ -1624,8 +1624,8 @@ public class MoMA {
             GrowthLineFrame currentFrame = new GrowthLineFrame();
             getGrowthLines().get(0).add(currentFrame);
 
-            long vertSize = imgTemp.dimension(0);
-            long horzSize = imgTemp.dimension(1);
+            long horzSize = imgTemp.dimension(0);
+			long vertSize = imgTemp.dimension(1);
 
             long channelCenterX = horzSize / 2;
             for ( int y = 0; y < vertSize; y++ ) {

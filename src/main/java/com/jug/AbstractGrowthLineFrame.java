@@ -52,11 +52,12 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * Points at all the detected GrowthLine centers associated with this
 	 * GrowthLine.
 	 */
-	private final List< Point > imgLocations;
+//	private final List< Point > imgLocations;
 	private float[] simpleSepValues; // lazy evaluation -- gets computed when
 	// getAwesomeGapSeparationValues is called...
 	private GrowthLine parent;
 	private ComponentForest< C > componentTree;
+	private Img<FloatType> image;
 
 	// -------------------------------------------------------------------------------------
 	// setters and getters
@@ -65,9 +66,17 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * @return the location
 	 */
-	private List< Point > getMirroredImgLocations() {
-		return flipAtCenter( imgLocations );
-	}
+//	private List< Point > getMirroredImgLocations() {
+//		return flipAtCenter( imgLocations );
+//	}
+
+    public void setImage(final Img<FloatType> image){
+        this.image = image;
+    }
+
+    public Img<FloatType> getImage(){
+        return image.copy();
+    }
 
 	/**
 	 * @return the growth line time series this one growth line is part of.
@@ -95,9 +104,12 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * @return the x-offset of the GrowthLineFrame given the original micrograph
 	 */
 	public long getOffsetX() {
-		return getAvgXpos();
-//		return getPoint( 0 ).getLongPosition( 0 );
-	}
+	    return image.dimension(0)/2;
+    }
+//	public long getOffsetX() {
+//		return getAvgXpos();
+////		return getPoint( 0 ).getLongPosition( 0 );
+//	}
 
 	/**
 	 * @return the y-offset of the GrowthLineFrame given the original micrograph
@@ -117,9 +129,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	AbstractGrowthLineFrame() {
-		imgLocations = new ArrayList<>();
-	}
+	AbstractGrowthLineFrame() {}
 
 	// -------------------------------------------------------------------------------------
 	// methods
@@ -127,34 +137,34 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * @return the number of points (the length) of this GrowthLine
 	 */
-	public int size() {
-		return imgLocations.size();
-	}
+//	public int size() {
+//		return imgLocations.size();
+//	}
 
 	/**
 	 * Adds a detected center point to a GrowthsLineFrame.
 	 */
-	public void addPoint( final Point point ) {
-		imgLocations.add( point );
-	}
+//	public void addPoint( final Point point ) {
+//		imgLocations.add( point );
+//	}
 
-	public void sortPoints() {
-		imgLocations.sort(Comparator.comparingInt(o -> o.getIntPosition(1)));
-	}
+//	public void sortPoints() {
+//		imgLocations.sort(Comparator.comparingInt(o -> o.getIntPosition(1)));
+//	}
 
 	/**
 	 * Gets the first detected center point of a GrowthsLine.
 	 */
-	public Point getFirstPoint() {
-		return ( imgLocations.get( 0 ) );
-	}
+//	public Point getFirstPoint() {
+//		return ( imgLocations.get( 0 ) );
+//	}
 
 	/**
 	 * Gets the last detected center point of a GrowthsLine.
 	 */
-	public Point getLastPoint() {
-		return ( imgLocations.get( imgLocations.size() - 1 ) );
-	}
+//	public Point getLastPoint() {
+//		return ( imgLocations.get( imgLocations.size() - 1 ) );
+//	}
 
 	/**
 	 * Using the imglib2 component tree to find the most stable components
@@ -235,29 +245,29 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 
 //	protected abstract ComponentForest< C > buildParaMaxFlowSumTree( final RandomAccessibleInterval< FloatType > raiFkt );
 
-	public float[] getMirroredCenterLineValues( final Img< FloatType > img ) {
-		final RandomAccess< FloatType > raImg = img.randomAccess();
-		final List< Point > mirroredImgLocations = getMirroredImgLocations();
-		final float[] dIntensity = new float[ mirroredImgLocations.size() ];
-		for ( int i = 0; i < mirroredImgLocations.size(); i++ ) {
-			raImg.setPosition( mirroredImgLocations.get( i ) );
-			dIntensity[ i ] = raImg.get().get();
-		}
-		return dIntensity;
-	}
+//	public float[] getMirroredCenterLineValues( final Img< FloatType > img ) {
+//		final RandomAccess< FloatType > raImg = img.randomAccess();
+//		final List< Point > mirroredImgLocations = getMirroredImgLocations();
+//		final float[] dIntensity = new float[ mirroredImgLocations.size() ];
+//		for ( int i = 0; i < mirroredImgLocations.size(); i++ ) {
+//			raImg.setPosition( mirroredImgLocations.get( i ) );
+//			dIntensity[ i ] = raImg.get().get();
+//		}
+//		return dIntensity;
+//	}
 
 	/**
 	 * GapSep guesses based on the intensity image alone
 	 */
-	public float[] getSimpleGapSeparationValues( final Img< FloatType > img ) {
-		if ( simpleSepValues == null ) {
-			if ( img == null ) return null;
-			simpleSepValues = getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img );
-			simpleSepValues = avoidMotherCellSegmentationFlickering( simpleSepValues );
-//			sepValues = getInvertedIntensities( img );
-		}
-		return simpleSepValues;
-	}
+//	public float[] getSimpleGapSeparationValues( final Img< FloatType > img ) {
+//		if ( simpleSepValues == null ) {
+//			if ( img == null ) return null;
+//			simpleSepValues = getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img );
+//			simpleSepValues = avoidMotherCellSegmentationFlickering( simpleSepValues );
+////			sepValues = getInvertedIntensities( img );
+//		}
+//		return simpleSepValues;
+//	}
 
 	/**
 	 * Bottom cell segments where often pretty bad. Why?
@@ -265,99 +275,99 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * This is a way out. (How well this does in cases where the bottom cell
 	 * moves up considerably has to be seen...)
 	 */
-	private float[] avoidMotherCellSegmentationFlickering( final float[] fkt ) {
-		final int[] maximaLocations = SimpleFunctionAnalysis.getMaxima( fkt, 1, 1 );
-		if ( maximaLocations.length > 0 ) {
-			final int lastMaximaLoc = maximaLocations[ maximaLocations.length - 1 ];
-
-			if ( fkt.length - lastMaximaLoc < MoMA.MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) {
-				for ( int i = lastMaximaLoc; i < fkt.length; i++ ) {
-					fkt[ i ] = Math.max( fkt[ i - 1 ] + 0.005f, fkt[ i ] );
-				}
-			}
-		}
-		return fkt;
-	}
+//	private float[] avoidMotherCellSegmentationFlickering( final float[] fkt ) {
+//		final int[] maximaLocations = SimpleFunctionAnalysis.getMaxima( fkt, 1, 1 );
+//		if ( maximaLocations.length > 0 ) {
+//			final int lastMaximaLoc = maximaLocations[ maximaLocations.length - 1 ];
+//
+//			if ( fkt.length - lastMaximaLoc < MoMA.MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) {
+//				for ( int i = lastMaximaLoc; i < fkt.length; i++ ) {
+//					fkt[ i ] = Math.max( fkt[ i - 1 ] + 0.005f, fkt[ i ] );
+//				}
+//			}
+//		}
+//		return fkt;
+//	}
 
 	/**
 	 * Trying to look there a bit smarter... ;)
 	 */
-	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
-		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, true );
-	}
+//	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final Img< FloatType > img ) {
+//		return getMaxTiltedLineAveragesInRectangleAlongAvgCenter( img, true );
+//	}
 
 	/**
 	 * This calculates the max intensities inside growthlane along the diagonals of a moving square subsection of the image.
 	 * It does this along a single frame of {@link RandomAccessibleInterval img}, where the frame index and center-pixel of the current rectangle ROI
 	 * is defined by the {@link Point} array {@link List<Point> imgLocations}.
 	 */
-	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
-		// special case: growth line does not exist in this frame
-		if ( imgLocations.size() == 0 ) return new float[ 0 ];
-
-		final int maxOffsetX = 9; // half of the horizontal range of the rectangle 
-		final int maxOffsetY = 9; // half of the vertical range of the rectangle
-
-		int centerX = getAvgXpos();
-		int centerZ = imgLocations.get( 0 ).getIntPosition( 2 );
-
-		if ( imgIsPreCropped ) {
-			centerX = MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2;
-//			centerZ = 0;
-		}
-
-		//here now a trick to make <3d images also comply to the code below
-		IntervalView< FloatType > ivImg = Views.interval( img, img );
-		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
-			ivImg = Views.addDimension( ivImg, 0, 0 );
-		}
-
-		final RealRandomAccessible< FloatType > rrImg =
-				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory<>() );
-		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
-
-//		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
-//		ImageJFunctions.show( Views.interval(Views.raster(rrImg),interval));
-		
-		final float[] dIntensity = new float[ imgLocations.size() ]; //  + 1
-		for ( int i = 0; i < imgLocations.size(); i++ ) {
-			final int centerY = imgLocations.get( i ).getIntPosition( 1 );
-
-			int nextAverageIdx = 0;
-			final float[] diagonalAverages = new float[ maxOffsetY * 2 + 1 ];
-			for ( int currentOffsetY = -maxOffsetY; currentOffsetY <= maxOffsetY; currentOffsetY++ ) {
-				float summedIntensities = 0;
-				int summands = 0;
-				for ( int currentOffsetX = -maxOffsetX; currentOffsetX <= maxOffsetX; currentOffsetX++ ) {
-					final float x = centerX + currentOffsetX;
-					final float y = centerY + ( ( float ) currentOffsetY / maxOffsetX ) * currentOffsetX; // NOTE-MM-2019-05-27: ( float ) currentOffsetY * (( float )  currentOffsetX / maxOffsetX) is normalizing currentOffsetX to interval [-1,1]
-					rraImg.setPosition( new float[] { x, y } );
-					summedIntensities += rraImg.get().get();
-					summands++;
-				}
-				diagonalAverages[ nextAverageIdx ] = summedIntensities / summands;
-				nextAverageIdx++;
-			}
-			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax(diagonalAverages).b;
-
-			// dIntensity[i] = maxDiagonalAvg - totalAverageIntensity;
-			// dIntensity[i] = maxDiagonalAvg - minIntensity;
-			dIntensity[ i ] = maxDiagonalAvg;
-		}
-
-//		System.out.println(Arrays.toString(dIntensity));
-//		dIntensity = SimpleFunctionAnalysis.normalizeDoubleArray( dIntensity, 0.0, 1.0 );
-		return dIntensity;
-	}
+//	private float[] getMaxTiltedLineAveragesInRectangleAlongAvgCenter( final RandomAccessibleInterval< FloatType > img, final boolean imgIsPreCropped ) {
+//		// special case: growth line does not exist in this frame
+//		if ( imgLocations.size() == 0 ) return new float[ 0 ];
+//
+//		final int maxOffsetX = 9; // half of the horizontal range of the rectangle
+//		final int maxOffsetY = 9; // half of the vertical range of the rectangle
+//
+//		int centerX = getAvgXpos();
+//		int centerZ = imgLocations.get( 0 ).getIntPosition( 2 );
+//
+//		if ( imgIsPreCropped ) {
+//			centerX = MoMA.GL_PIXEL_PADDING_IN_VIEWS + MoMA.GL_WIDTH_IN_PIXELS / 2;
+////			centerZ = 0;
+//		}
+//
+//		//here now a trick to make <3d images also comply to the code below
+//		IntervalView< FloatType > ivImg = Views.interval( img, img );
+//		for ( int i = 0; i < 3 - img.numDimensions(); i++ ) {
+//			ivImg = Views.addDimension( ivImg, 0, 0 );
+//		}
+//
+//		final RealRandomAccessible< FloatType > rrImg =
+//				Views.interpolate( Views.extendZero( Views.hyperSlice( ivImg, 2, centerZ ) ), new NLinearInterpolatorFactory<>() );
+//		final RealRandomAccess< FloatType > rraImg = rrImg.realRandomAccess();
+//
+////		FinalInterval interval = new FinalInterval(new long[] {0,0}, new long[] {31, 511});
+////		ImageJFunctions.show( Views.interval(Views.raster(rrImg),interval));
+//
+//		final float[] dIntensity = new float[ imgLocations.size() ]; //  + 1
+//		for ( int i = 0; i < imgLocations.size(); i++ ) {
+//			final int centerY = imgLocations.get( i ).getIntPosition( 1 );
+//
+//			int nextAverageIdx = 0;
+//			final float[] diagonalAverages = new float[ maxOffsetY * 2 + 1 ];
+//			for ( int currentOffsetY = -maxOffsetY; currentOffsetY <= maxOffsetY; currentOffsetY++ ) {
+//				float summedIntensities = 0;
+//				int summands = 0;
+//				for ( int currentOffsetX = -maxOffsetX; currentOffsetX <= maxOffsetX; currentOffsetX++ ) {
+//					final float x = centerX + currentOffsetX;
+//					final float y = centerY + ( ( float ) currentOffsetY / maxOffsetX ) * currentOffsetX; // NOTE-MM-2019-05-27: ( float ) currentOffsetY * (( float )  currentOffsetX / maxOffsetX) is normalizing currentOffsetX to interval [-1,1]
+//					rraImg.setPosition( new float[] { x, y } );
+//					summedIntensities += rraImg.get().get();
+//					summands++;
+//				}
+//				diagonalAverages[ nextAverageIdx ] = summedIntensities / summands;
+//				nextAverageIdx++;
+//			}
+//			final float maxDiagonalAvg = SimpleFunctionAnalysis.getMax(diagonalAverages).b;
+//
+//			// dIntensity[i] = maxDiagonalAvg - totalAverageIntensity;
+//			// dIntensity[i] = maxDiagonalAvg - minIntensity;
+//			dIntensity[ i ] = maxDiagonalAvg;
+//		}
+//
+////		System.out.println(Arrays.toString(dIntensity));
+////		dIntensity = SimpleFunctionAnalysis.normalizeDoubleArray( dIntensity, 0.0, 1.0 );
+//		return dIntensity;
+//	}
 
 	/**
 	 * Draws the GrowthLine center line into the given annotation
 	 * <code>Img</code>.
 	 *
 	 */
-	public void drawCenterLine( final Img< ARGBType > imgAnnotated ) {
-		drawCenterLine( imgAnnotated, null );
-	}
+//	public void drawCenterLine( final Img< ARGBType > imgAnnotated ) {
+//		drawCenterLine( imgAnnotated, null );
+//	}
 
 	/**
 	 * Draws the GrowthLine center line into the given annotation
@@ -369,32 +379,32 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *            the active view on that Img (in order to know the pixel
 	 *            offsets)
 	 */
-	public void drawCenterLine( final Img< ARGBType > img, final IntervalView< FloatType > view ) {
-		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
-
-		long offsetX = 0;
-		long offsetY = 0;
-		if ( view != null ) {
-			// Lord, forgive me!
-			if ( view.min( 0 ) == 0 ) {
-				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
-				// I promise this is only done because I need to finish the f****** paper!
-				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
-				offsetY = view.min( 1 );
-			} else {
-				offsetX = view.min( 0 );
-				offsetY = view.min( 1 );
-			}
-		}
-
-		for ( final Point p : imgLocations ) { // getMirroredImgLocations()
-			final long[] pos = Util.pointLocation( p );
-			pos[ 0 ] += offsetX;
-			pos[ 1 ] += offsetY;
-			raAnnotationImg.setPosition( pos );
-			raAnnotationImg.get().set( new ARGBType( ARGBType.rgba( 0, 255, 0, 255 ) ) );
-		}
-	}
+//	public void drawCenterLine( final Img< ARGBType > img, final IntervalView< FloatType > view ) {
+//		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
+//
+//		long offsetX = 0;
+//		long offsetY = 0;
+//		if ( view != null ) {
+//			// Lord, forgive me!
+//			if ( view.min( 0 ) == 0 ) {
+//				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
+//				// I promise this is only done because I need to finish the f****** paper!
+//				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
+//				offsetY = view.min( 1 );
+//			} else {
+//				offsetX = view.min( 0 );
+//				offsetY = view.min( 1 );
+//			}
+//		}
+//
+//		for ( final Point p : imgLocations ) { // getMirroredImgLocations()
+//			final long[] pos = Util.pointLocation( p );
+//			pos[ 0 ] += offsetX;
+//			pos[ 1 ] += offsetY;
+//			raAnnotationImg.setPosition( pos );
+//			raAnnotationImg.get().set( new ARGBType( ARGBType.rgba( 0, 255, 0, 255 ) ) );
+//		}
+//	}
 
 	/**
 	 * Draws the optimal segmentation (determined by the solved ILP) into the
@@ -410,101 +420,101 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *            component-tree-nodes that represent the optimal segmentation
 	 *            (the one returned by the solution to the ILP).
 	 */
-	public void drawOptimalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final List< Hypothesis< Component< FloatType, ? >>> optimalSegmentation ) {
-		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
+//	public void drawOptimalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final List< Hypothesis< Component< FloatType, ? >>> optimalSegmentation ) {
+//		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
+//
+//		long offsetX = 0;
+//		long offsetY = 0;
+//
+//		if ( view != null ) {
+//			// Lord, forgive me!
+//			if ( view.min( 0 ) == 0 ) {
+//				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
+//				// I promise this is only done because I need to finish the f****** paper!
+//				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
+//				offsetY = view.min( 1 );
+//			} else {
+//				offsetX = view.min( 0 );
+//				offsetY = view.min( 1 );
+//			}
+//		}
+//
+//		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
+//			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
+//			if ( hyp.isPruned() ) {
+//				ArgbDrawingUtils.taintPrunedComponentTreeNode(
+//						hyp.isPruneRoot(),
+//						ctn,
+//						raAnnotationImg,
+//						offsetX + getAvgXpos(),
+//						offsetY );
+//			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
+//				ArgbDrawingUtils.taintForcedComponentTreeNode(
+//						ctn,
+//						raAnnotationImg,
+//						offsetX + getAvgXpos(),
+//						offsetY );
+//			} else {
+//				ArgbDrawingUtils.taintComponentTreeNode(
+//						ctn,
+//						raAnnotationImg,
+//						offsetX + getAvgXpos(),
+//						offsetY );
+//			}
+//		}
+//	}
 
-		long offsetX = 0;
-		long offsetY = 0;
-
-		if ( view != null ) {
-			// Lord, forgive me!
-			if ( view.min( 0 ) == 0 ) {
-				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
-				// I promise this is only done because I need to finish the f****** paper!
-				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
-				offsetY = view.min( 1 );
-			} else {
-				offsetX = view.min( 0 );
-				offsetY = view.min( 1 );
-			}
-		}
-
-		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
-			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
-			if ( hyp.isPruned() ) {
-				ArgbDrawingUtils.taintPrunedComponentTreeNode(
-						hyp.isPruneRoot(),
-						ctn,
-						raAnnotationImg,
-						offsetX + getAvgXpos(),
-						offsetY );
-			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
-				ArgbDrawingUtils.taintForcedComponentTreeNode(
-						ctn,
-						raAnnotationImg,
-						offsetX + getAvgXpos(),
-						offsetY );
-			} else {
-				ArgbDrawingUtils.taintComponentTreeNode(
-						ctn,
-						raAnnotationImg,
-						offsetX + getAvgXpos(),
-						offsetY );
-			}
-		}
-	}
-
-	public void drawOptionalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final Component< FloatType, ? > optionalSegmentation ) {
-		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
-
-		long offsetX = 0;
-		long offsetY = 0;
-
-		if ( view != null ) {
-			// Lord, forgive me!
-			if ( view.min( 0 ) == 0 ) {
-				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
-				// I promise this is only done because I need to finish the f****** paper!
-				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
-				offsetY = view.min( 1 );
-			} else {
-				offsetX = view.min( 0 );
-				offsetY = view.min( 1 );
-			}
-		}
-
-		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
-	}
+//	public void drawOptionalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final Component< FloatType, ? > optionalSegmentation ) {
+//		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
+//
+//		long offsetX = 0;
+//		long offsetY = 0;
+//
+//		if ( view != null ) {
+//			// Lord, forgive me!
+//			if ( view.min( 0 ) == 0 ) {
+//				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
+//				// I promise this is only done because I need to finish the f****** paper!
+//				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
+//				offsetY = view.min( 1 );
+//			} else {
+//				offsetX = view.min( 0 );
+//				offsetY = view.min( 1 );
+//			}
+//		}
+//
+//		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
+//	}
 
 	/**
 	 * @return the average X coordinate of the center line of this
 	 *         <code>GrowthLine</code>
 	 */
-	public int getAvgXpos() {
-		int avg = 0;
-		for ( final Point p : imgLocations ) {
-			avg += p.getIntPosition( 0 );
-		}
-		if ( imgLocations.size() == 0 ) { return -1; }
-		return avg / imgLocations.size();
-	}
+//	public int getAvgXpos() {
+//		int avg = 0;
+//		for ( final Point p : imgLocations ) {
+//			avg += p.getIntPosition( 0 );
+//		}
+//		if ( imgLocations.size() == 0 ) { return -1; }
+//		return avg / imgLocations.size();
+//	}
 
 	/**
      * flip point locations at center of this growthline
 	 */
-	private List< Point > flipAtCenter( final List< Point > locations ) {
-		final ArrayList< Point > ret = new ArrayList<>(locations.size());
-
-		final int centerInX = getAvgXpos();
-		for ( final Point p : locations ) {
-			final int newX = ( -1 * ( p.getIntPosition( 0 ) - centerInX ) ) + centerInX; // flip
-																							// at
-																							// center
-			ret.add( new Point( newX, p.getIntPosition( 1 ), p.getIntPosition( 2 ) ) );
-		}
-
-		return ret;
-	}
+//	private List< Point > flipAtCenter( final List< Point > locations ) {
+//		final ArrayList< Point > ret = new ArrayList<>(locations.size());
+//
+//		final int centerInX = getAvgXpos();
+//		for ( final Point p : locations ) {
+//			final int newX = ( -1 * ( p.getIntPosition( 0 ) - centerInX ) ) + centerInX; // flip
+//																							// at
+//																							// center
+//			ret.add( new Point( newX, p.getIntPosition( 1 ), p.getIntPosition( 2 ) ) );
+//		}
+//
+//		return ret;
+//	}
 
 	/**
 	 * @return the time-step this GLF corresponds to in the GL it is part of.

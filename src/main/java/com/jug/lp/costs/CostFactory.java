@@ -23,8 +23,9 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 public class CostFactory {
 
 //	public static String latestCostEvaluation = "";
+	private static float normalizer = 400;
 
-	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition, final float normalizer ) {
+	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition ) {
 		float deltaH = ( oldPosition - newPosition ) / normalizer;
 		float power;
 		float costDeltaH;
@@ -41,7 +42,7 @@ public class CostFactory {
 		return new ValuePair<>(costDeltaH, new float[]{costDeltaH});
 	}
 
-	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
+	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
 //		return getGrowthCostNew(oldSize, newSize);
 		
 		float deltaL = ( newSize - oldSize ) / normalizer; // ergo: deltaL < 1 for anything that is smaller than the GL; should we not look at relative size change?!

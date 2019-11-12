@@ -1615,17 +1615,7 @@ public class MoMA {
 
 	}
 
-	/**
-	 * Draws the detected well centers, <code>detectedWellCenters</code>, into
-	 * the annotation layer, <code>imgAnnotated</code>.
-	 */
-	private void annotateDetectedWellCenters() {
-		for ( final GrowthLine gl : this.getGrowthLines() ) {
-			for ( final GrowthLineFrame glf : gl.getFrames() ) {
-				glf.drawCenterLine( imgAnnotated );
-			}
-		}
-	}
+
 
 	/**
 	 * Iterates over all found GrowthLines and evokes

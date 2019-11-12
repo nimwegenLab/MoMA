@@ -12,8 +12,6 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import net.imglib2.algorithm.labeling.Watershed;
-import net.imglib2.algorithm.binary.Thresholder;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -21,10 +19,13 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
  * @author jug
  */
 public class CostFactory {
+	private static float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
+	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
+	It should be removed in favor of having costs based relative growth and/or movement.
+	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
+	we are keeping for the moment.*/
 
-//	public static String latestCostEvaluation = "";
-
-	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition, final float normalizer ) {
+	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition ) {
 		float deltaH = ( oldPosition - newPosition ) / normalizer;
 		float power;
 		float costDeltaH;
@@ -41,7 +42,7 @@ public class CostFactory {
 		return new ValuePair<>(costDeltaH, new float[]{costDeltaH});
 	}
 
-	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize, final float normalizer ) {
+	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
 //		return getGrowthCostNew(oldSize, newSize);
 		
 		float deltaL = ( newSize - oldSize ) / normalizer; // ergo: deltaL < 1 for anything that is smaller than the GL; should we not look at relative size change?!

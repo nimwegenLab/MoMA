@@ -668,20 +668,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		// --------------
 		plot.removeAllPlots();
 
-//		final float[] yMidline = model.getCurrentGLF().getMirroredCenterLineValues( model.mm.getImgTemp() );
-		float[] ySegmentationData;
-//		if ( cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
-//			ySegmentationData = model.getCurrentGLF().getAwesomeGapSeparationValues( model.mm.getImgTemp() );
-//		} else {
-//			ySegmentationData = model.getCurrentGLF().getSimpleGapSeparationValues( model.mm.getImgTemp() );
-//		}
-//		final float[] yAvg = new float[ yMidline.length ];
-//		final float constY = SimpleFunctionAnalysis.getSum( ySegmentationData ) / ySegmentationData.length;
-//		Arrays.fill(yAvg, constY);
-//		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) ); // Note-MM-2019-06-10: blue plot line
-//		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) ); // Note-MM-2019-06-10: green plot line
-//		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) ); // Note-MM-2019-06-10: red plot line
-
 		plot.setFixedBounds( 1, 0.0, 1.0 );
 
 		// ComponentTreeNodes

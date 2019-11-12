@@ -555,17 +555,7 @@ public class GrowthLineTrackingILP {
 		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
 //		final float costDeltaV = CostFactory.getIntensityMismatchCost( valueFrom, valueTo );
 
-		float cost = costDeltaL.getA() + costDeltaH; // + costDeltaV
-
-		// Border case bullshit
-		// if the target cell touches the upper or lower border (then don't count uneven and shrinking)
-		// (It is not super obvious why this should be true for bottom ones... some data has shitty
-		// contrast at bottom, hence we trick this condition in here not to loose the mother -- which would
-		// mean to loose all future tracks!!!)
-//		if (intervalTo.getA() == 0 || intervalTo.getB() + 1 >= glLength ) {
-//			cost = costDeltaH; // + costDeltaV;
-//		}
-		return cost;
+		return costDeltaL.getA() + costDeltaH;
 	}
 
 	/**
@@ -700,37 +690,14 @@ public class GrowthLineTrackingILP {
 		final float oldPosL = intervalFrom.getB();
 		final float newPosL = intervalToL.getB();
 
-//		final float glLength = gl.get( 0 ).size();
-
-		// Finally the costs are computed...
 		final Pair< Float, float[] > costDeltaHU = CostFactory.getMigrationCost( oldPosU, newPosU );
 		final Pair< Float, float[] > costDeltaHL = CostFactory.getMigrationCost( oldPosL, newPosL );
 		final float costDeltaH = .5f * costDeltaHL.getA() + .5f * costDeltaHU.getA();
 		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
-		final Pair< Float, float[] > costDeltaL_ifAtTop = CostFactory.getGrowthCost( sizeFrom, sizeToL * 2 );
-//		final float costDeltaV = CostFactory.getIntensityMismatchCost( valueFrom, valueTo );
 		final float costDeltaS = CostFactory.getUnevenDivisionCost( sizeToU, sizeToL );
 		final float costDivisionLikelihood = CostFactory.getDivisionLikelihoodCost( from ); //TODO: parameterize me!
 
-		float cost = costDeltaL.getA() + costDeltaH + costDeltaS + costDivisionLikelihood; // + costDeltaV
-
-		// Border case bullshit
-		// if the upper cell touches the upper border (then don't count shrinking and be nicer to uneven)
-//		int c = 0;
-//		if (intervalToU.getA() == 0 || intervalToL.getB() + 1 >= glLength ) {
-//			// In case the upper cell is still at least like 1/2 in
-//			if ( ( 1.0 * sizeToU ) / ( 1.0 * sizeToL ) > 0.5 ) {
-//				c = 1;
-//				// don't count uneven div cost (but pay a bit to avoid exit+division instead of two mappings)
-//				cost = costDeltaL_ifAtTop.getA() + costDeltaH + 0.1f + costDivisionLikelihood; // + costDeltaV
-//			} else {
-//				c = 2;
-//				// otherwise do just leave out shrinking cost alone - yeah!
-//				cost =
-//						costDeltaL_ifAtTop.getA() + costDeltaH + costDeltaS + 0.03f + costDivisionLikelihood; // + costDeltaV
-//			}
-//		}
-		return cost;
+		return costDeltaL.getA() + costDeltaH + costDeltaS + costDivisionLikelihood;
 	}
 
 	/**

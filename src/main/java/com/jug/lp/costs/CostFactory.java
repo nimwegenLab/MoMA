@@ -23,7 +23,7 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 public class CostFactory {
 
 //	public static String latestCostEvaluation = "";
-	private static float normalizer = 400;
+	private static float normalizer = 400; // TODO-MM-20191111: This fixed parameter was added to remove dependence on the length of the growthlane, which was previously passed as normalizer to the functions, that use this. It should be removed in favor of having costs based relative growth and/or movement.
 
 	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition ) {
 		float deltaH = ( oldPosition - newPosition ) / normalizer;

@@ -1288,66 +1288,6 @@ public class MoMA {
 		imgAnnotated = DataMover.createEmptyArrayImgLike( img, new ARGBType() );
 	}
 
-//	private void normalizePerFrame( final Img< FloatType > img, final int topOffset, final int bottomOffset ) {
-//		for ( int f = 0; f < img.dimension( 2 ); f++ ) {
-//			final IntervalView< FloatType > slice = Views.hyperSlice( img, 2, f );
-//			final IntervalView< FloatType > roi = Views.interval( slice, new long[] { img.min( 0 ), img.min( 1 ) + topOffset }, new long[] { img.max( 0 ), img.max( 1 ) - bottomOffset } );
-//			Normalize.normalize( Views.iterable( roi ), new FloatType( 0.0f ), new FloatType( 1.0f ) );
-//		}
-//	}
-
-//	/**
-//	 * Simple but effective method to subtract uneven illumination from the
-//	 * growth-line data.
-//	 *
-//	 */
-//	private void subtractBackgroundInTemp() {
-//
-//		for ( int i = 0; i < getGrowthLines().size(); i++ ) {
-//			for ( int f = 0; f < getGrowthLines().get( i ).size(); f++ ) {
-//				final GrowthLineFrame glf = getGrowthLines().get( i ).get( f );
-//
-//				final int glfX = glf.getAvgXpos();
-//				if ( glfX == -1 ) continue; // do not do anything with empty GLFs
-//
-//				int glfY1 = glf.getFirstPoint().getIntPosition( 1 ) - 1;
-//				if ( glfY1 < 0 ) glfY1 = 0;
-//
-//				final int glfY2 = glf.getLastPoint().getIntPosition( 1 );
-//
-//				final IntervalView< FloatType > frame = Views.hyperSlice( imgTemp, 2, f );
-//
-//				float[] rowAvgs = new float[ glfY2 - glfY1 + 1 ];
-//				int colCount = 0;
-//				// Look to the left if you are not the first GLF
-//				if ( glfX > MoMA.BGREM_TEMPLATE_XMAX ) {
-//					final IntervalView< FloatType > leftBackgroundWindow = Views.interval( frame, new long[] { glfX - MoMA.BGREM_TEMPLATE_XMAX, glfY1 }, new long[] { glfX - MoMA.BGREM_TEMPLATE_XMIN, glfY2 } );
-//					rowAvgs = addRowSumsFromInterval( leftBackgroundWindow, rowAvgs );
-//					colCount += ( MoMA.BGREM_TEMPLATE_XMAX - MoMA.BGREM_TEMPLATE_XMIN );
-//				}
-//				// Look to the right if you are not the last GLF
-//				if ( glfX < imgTemp.dimension( 0 ) - MoMA.BGREM_TEMPLATE_XMAX ) {
-//					final IntervalView< FloatType > rightBackgroundWindow = Views.interval( frame, new long[] { glfX + MoMA.BGREM_TEMPLATE_XMIN, glfY1 }, new long[] { glfX + MoMA.BGREM_TEMPLATE_XMAX, glfY2 } );
-//					rowAvgs = addRowSumsFromInterval( rightBackgroundWindow, rowAvgs );
-//					colCount += ( MoMA.BGREM_TEMPLATE_XMAX - MoMA.BGREM_TEMPLATE_XMIN );
-//				}
-//				// compute averages
-//				for ( int j = 0; j < rowAvgs.length; j++ ) {
-//					rowAvgs[ j ] /= colCount;
-//				}
-//
-//				// Subtract averages you've seen to your left and/or to your
-//				// right
-//				final long x1 = Math.max( 0, glfX - MoMA.BGREM_X_OFFSET );
-//				final long x2 = Math.min( frame.dimension( 0 ) - 1, glfX + MoMA.BGREM_X_OFFSET );
-//				final IntervalView< FloatType > growthLineArea = Views.interval( frame, new long[] { x1, glfY1 }, new long[] { x2, glfY2 } );
-//				removeValuesFromRows( growthLineArea, rowAvgs );
-//				// Normalize the zone we removed the background from...
-//				Normalize.normalize( Views.iterable( growthLineArea ), new FloatType( 0f ), new FloatType( 1f ) );
-//			}
-//		}
-//	}
-
 	/**
 	 * Adds all intensity values of row i in view to rowSums[i].
 	 *
@@ -1397,14 +1337,6 @@ public class MoMA {
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthLines().get(0).add(currentFrame);
-
-//            long horzSize = imgTemp.dimension(0);
-//			long vertSize = imgTemp.dimension(1);
-//
-//            long channelCenterX = horzSize / 2;
-//            for ( int y = 0; y < vertSize; y++ ) {
-//                currentFrame.addPoint(new Point(y, channelCenterX, frameIdx));
-//            }
         }
     }
 

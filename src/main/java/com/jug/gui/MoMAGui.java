@@ -686,7 +686,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 		// ComponentTreeNodes
 		// ------------------
-		dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
+		dumpCosts( model.getCurrentGLF().getComponentTree(), ilp );
 		if(ilp != null){
 			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "Segment" );
 			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment" );
@@ -735,7 +735,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		System.out.println();
 	}
 
-	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {
+	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final GrowthLineTrackingILP ilp ) {
 		final int numCTNs = ComponentTreeUtils.countNodes( ct );
 		final float[][] xydxdyCTNBorders = new float[ numCTNs ][ 4 ];
 		final int t = sliderTime.getValue();
@@ -748,7 +748,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			ctnLevel.add( root );
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
-					addBoxAtIndex( i, ctn, xydxdyCTNBorders, ySegmentationData, level );
+					addBoxAtIndex( i, ctn, xydxdyCTNBorders, level );
 					if ( ilp != null ) {
 						System.out.print( String.format(
 								"%8.4f;\t",
@@ -770,7 +770,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				i = 0;
 				for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
 					final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
-					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
+					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ComponentTreeUtils.getLevelInTree( ctn ) );
 					i++;
 				}
 				plot.addBoxPlot( "Active Seg. Hypothesis", new Color( 255, 0, 0, 255 ), Util.makeDoubleArray2d( xydxdyCTNBordersActive ) );
@@ -782,11 +782,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * @param index
 	 * @param ctn
 	 * @param boxDataArray
-	 * @param ydata
 	 * @param level
 	 */
 	@SuppressWarnings( "unchecked" )
-	private void addBoxAtIndex( final int index, final Component< ?, ? > ctn, final float[][] boxDataArray, final float[] ydata, final int level ) {
+	private void addBoxAtIndex( final int index, final Component< ?, ? > ctn, final float[][] boxDataArray, final int level ) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		Iterator< Localizable > componentIterator = ctn.iterator();

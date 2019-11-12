@@ -1616,6 +1616,24 @@ public class MoMA {
 	}
 
 
+    private void findGrowthLinesNew() {
+        this.setGrowthLines(new ArrayList<>() );
+        getGrowthLines().add( new GrowthLine() );
+
+        for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
+            GrowthLineFrame currentFrame = new GrowthLineFrame();
+            getGrowthLines().get(0).add(currentFrame);
+
+            long vertSize = imgTemp.dimension(0);
+            long horzSize = imgTemp.dimension(1);
+
+            long channelCenterX = horzSize / 2;
+            for ( int y = 0; y < vertSize; y++ ) {
+                currentFrame.addPoint(new Point(y, channelCenterX, frameIdx));
+            }
+        }
+    }
+
 
 	/**
 	 * Iterates over all found GrowthLines and evokes
@@ -1905,7 +1923,8 @@ public class MoMA {
 
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
-		findGrowthLines();
+//		findGrowthLines();
+        findGrowthLinesNew();
 //		annotateDetectedWellCenters();
 		System.out.println( " done!" );
 

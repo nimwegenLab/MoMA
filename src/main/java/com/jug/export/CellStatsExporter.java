@@ -504,58 +504,58 @@ public class CellStatsExporter {
 						numCells,
 						limits.getA(),
 						limits.getB(),
-//						Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()),
+						Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()),
 						genealogy));
 
 				// export info per image channel
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
 					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-//					final IterableInterval<FloatType> segmentBoxInChannel = Util.getSegmentBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+					final IterableInterval<FloatType> segmentBoxInChannel = Util.getSegmentBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
 
 					final FloatType min = new FloatType();
 					final FloatType max = new FloatType();
-//					Util.computeMinMax(segmentBoxInChannel, min, max);
+					Util.computeMinMax(segmentBoxInChannel, min, max);
 
 					if (MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
-//						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
+						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
 						StringBuilder histStr = new StringBuilder(String.format("\t\tch=%d; output=HISTOGRAM", c));
 						histStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
-//						for (final long value : hist) {
-//							histStr.append(String.format("; %5d", value));
-//						}
+						for (final long value : hist) {
+							histStr.append(String.format("; %5d", value));
+						}
 						linesToExport.add(histStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_QUANTILES) {
-//						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
+						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
 						StringBuilder percentileStr = new StringBuilder(String.format("\t\tch=%d; output=PERCENTILES", c));
 						percentileStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
-//						for (final float value : percentile) {
-//							percentileStr.append(String.format("; %8.3f", value));
-//						}
+						for (final float value : percentile) {
+							percentileStr.append(String.format("; %8.3f", value));
+						}
 						linesToExport.add(percentileStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
-//						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-//						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
+						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
 						StringBuilder colIntensityStr = new StringBuilder(String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c));
-//						for (final float value : column_intensities) {
-//							colIntensityStr.append(String.format("; %.3f", value));
-//						}
+						for (final float value : column_intensities) {
+							colIntensityStr.append(String.format("; %.3f", value));
+						}
 						linesToExport.add(colIntensityStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
-//						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-//						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
+						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
 						StringBuilder intensityStr = new StringBuilder(String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c));
-//						for (int y = 0; y < intensities[0].length; y++) {
-//							for (float[] intensity : intensities) {
-//								intensityStr.append(String.format(";%.3f", intensity[y]));
-//							}
-//							intensityStr.append(" ");
-//						}
+						for (int y = 0; y < intensities[0].length; y++) {
+							for (float[] intensity : intensities) {
+								intensityStr.append(String.format(";%.3f", intensity[y]));
+							}
+							intensityStr.append(" ");
+						}
 						linesToExport.add(intensityStr.toString());
 					}
 				}

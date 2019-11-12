@@ -490,6 +490,9 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 * @return the average X coordinate of the center line of this
 	 *         <code>GrowthLine</code>
 	 */
+	public int getAvgXpos() {
+		return (int) getOffsetX();
+	}
 //	public int getAvgXpos() {
 //		int avg = 0;
 //		for ( final Point p : imgLocations ) {

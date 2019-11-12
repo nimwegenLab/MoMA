@@ -420,71 +420,71 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *            component-tree-nodes that represent the optimal segmentation
 	 *            (the one returned by the solution to the ILP).
 	 */
-//	public void drawOptimalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final List< Hypothesis< Component< FloatType, ? >>> optimalSegmentation ) {
-//		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
-//
-//		long offsetX = 0;
-//		long offsetY = 0;
-//
-//		if ( view != null ) {
-//			// Lord, forgive me!
-//			if ( view.min( 0 ) == 0 ) {
-//				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
-//				// I promise this is only done because I need to finish the f****** paper!
-//				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
-//				offsetY = view.min( 1 );
-//			} else {
-//				offsetX = view.min( 0 );
-//				offsetY = view.min( 1 );
-//			}
-//		}
-//
-//		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
-//			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
-//			if ( hyp.isPruned() ) {
-//				ArgbDrawingUtils.taintPrunedComponentTreeNode(
-//						hyp.isPruneRoot(),
-//						ctn,
-//						raAnnotationImg,
-//						offsetX + getAvgXpos(),
-//						offsetY );
-//			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
-//				ArgbDrawingUtils.taintForcedComponentTreeNode(
-//						ctn,
-//						raAnnotationImg,
-//						offsetX + getAvgXpos(),
-//						offsetY );
-//			} else {
-//				ArgbDrawingUtils.taintComponentTreeNode(
-//						ctn,
-//						raAnnotationImg,
-//						offsetX + getAvgXpos(),
-//						offsetY );
-//			}
-//		}
-//	}
+	public void drawOptimalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final List< Hypothesis< Component< FloatType, ? >>> optimalSegmentation ) {
+		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
 
-//	public void drawOptionalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final Component< FloatType, ? > optionalSegmentation ) {
-//		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
-//
-//		long offsetX = 0;
-//		long offsetY = 0;
-//
-//		if ( view != null ) {
-//			// Lord, forgive me!
-//			if ( view.min( 0 ) == 0 ) {
-//				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
-//				// I promise this is only done because I need to finish the f****** paper!
-//				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
-//				offsetY = view.min( 1 );
-//			} else {
-//				offsetX = view.min( 0 );
-//				offsetY = view.min( 1 );
-//			}
-//		}
-//
-//		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
-//	}
+		long offsetX = 0;
+		long offsetY = 0;
+
+		if ( view != null ) {
+			// Lord, forgive me!
+			if ( view.min( 0 ) == 0 ) {
+				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
+				// I promise this is only done because I need to finish the f****** paper!
+				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
+				offsetY = view.min( 1 );
+			} else {
+				offsetX = view.min( 0 );
+				offsetY = view.min( 1 );
+			}
+		}
+
+		for ( final Hypothesis< Component< FloatType, ? >> hyp : optimalSegmentation ) {
+			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
+			if ( hyp.isPruned() ) {
+				ArgbDrawingUtils.taintPrunedComponentTreeNode(
+						hyp.isPruneRoot(),
+						ctn,
+						raAnnotationImg,
+						offsetX + getAvgXpos(),
+						offsetY );
+			} else if ( hyp.getSegmentSpecificConstraint() != null ) {
+				ArgbDrawingUtils.taintForcedComponentTreeNode(
+						ctn,
+						raAnnotationImg,
+						offsetX + getAvgXpos(),
+						offsetY );
+			} else {
+				ArgbDrawingUtils.taintComponentTreeNode(
+						ctn,
+						raAnnotationImg,
+						offsetX + getAvgXpos(),
+						offsetY );
+			}
+		}
+	}
+
+	public void drawOptionalSegmentation( final Img< ARGBType > img, final IntervalView< FloatType > view, final Component< FloatType, ? > optionalSegmentation ) {
+		final RandomAccess< ARGBType > raAnnotationImg = img.randomAccess();
+
+		long offsetX = 0;
+		long offsetY = 0;
+
+		if ( view != null ) {
+			// Lord, forgive me!
+			if ( view.min( 0 ) == 0 ) {
+				// In case I give the cropped paramaxflow-baby I lost the offset and must do ugly shit...
+				// I promise this is only done because I need to finish the f****** paper!
+				offsetX = -( this.getAvgXpos() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS );
+				offsetY = view.min( 1 );
+			} else {
+				offsetX = view.min( 0 );
+				offsetY = view.min( 1 );
+			}
+		}
+
+		ArgbDrawingUtils.taintInactiveComponentTreeNode( optionalSegmentation, raAnnotationImg, offsetX + getAvgXpos(), offsetY );
+	}
 
 	/**
 	 * @return the average X coordinate of the center line of this

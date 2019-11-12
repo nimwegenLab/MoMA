@@ -837,7 +837,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
 				 * (left one in active assignments view).
 				 */
-				IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+				IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
 				imgCanvasActiveLeft.setScreenImage( glf, viewImgLeftActive);
 			} else {
 				// show something empty

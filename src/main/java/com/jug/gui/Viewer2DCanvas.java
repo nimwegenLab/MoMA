@@ -130,16 +130,16 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 				projector.map();
 			}
 
-//			if ( showSegmentationAnnotations ) {
+			if ( showSegmentationAnnotations ) {
 //				glf.drawCenterLine( screenImage, view );
-//				final int t = glf.getParent().getFrames().indexOf( glf );
-//
-//				// DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING
-//				glf.drawOptimalSegmentation(
-//						screenImage,
-//						view,
-//						glf.getParent().getIlp().getOptimalSegmentation( t ) );
-//			}
+				final int t = glf.getParent().getFrames().indexOf( glf );
+
+				// DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING
+				glf.drawOptimalSegmentation(
+						screenImage,
+						view,
+						glf.getParent().getIlp().getOptimalSegmentation( t ) );
+			}
 
 		} catch ( final ArrayIndexOutOfBoundsException e ) {
 			// this can happen if a growth line, due to shift, exists in one
@@ -172,7 +172,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
 			if ( hyp != null ) {
 				final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-//				glf.drawOptionalSegmentation( screenImage, view, comp );
+				glf.drawOptionalSegmentation( screenImage, view, comp );
 				if ( str2ToShow.endsWith( "-" ) ) {
 					str2ToShow += "/+";
 				} else {

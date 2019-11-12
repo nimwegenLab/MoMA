@@ -48,12 +48,8 @@ import org.apache.commons.lang3.SystemUtils;
 
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
-import com.jug.gui.progress.DialogProgress;
-import com.jug.loops.Loops;
-import com.jug.ops.cursor.FindLocalMaxima;
 import com.jug.util.DataMover;
 import com.jug.util.FloatTypeImgLoader;
-import com.jug.util.converter.RealFloatProbMapToSegmentation;
 
 /*
   Main class for the MotherMachine project.
@@ -64,16 +60,12 @@ import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import ij.Prefs;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.gauss3.Gauss3;
 import net.imglib2.algorithm.stats.Normalize;
-import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.Img;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.integer.ShortType;
@@ -1387,236 +1379,14 @@ public class MoMA {
 	}
 
 	/**
-	 * Estimates the centers of the growth lines given in 'imgTemp'. The found
-	 * center lines are computed by a linear regression of growth line center
-	 * estimates. Those estimates are obtained by convolving the image with a
-	 * Gaussian (parameterized by SIGMA_GL_DETECTION_*) and looking for local
-	 * maxima in that image.
-	 *
-	 * This function operates on 'imgTemp' and sets 'glCenterPoints' as well as
-	 * 'growthLines'.
+     * NOTE: This method is kept to be compatible with down-stream code.
+	 * Write the centers of the growth line given in 'imgTemp'. Since it is centered
+     * in the image, we set the coordinates to the center of the image. Note, that
+     * this method is a legacy artifact. Legacy-Moma was able to treat full-frames with
+     * multiple GL inside an image by detecting them. This now no longer necessary after
+     * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-	private void findGrowthLines() {
-
-		this.setGrowthLines(new ArrayList<>() );
-		/*
-		  Contains all detected growth line center points. The structure goes in
-		  line with image data: Outermost list: one element per frame (image in
-		  stack). 2nd list: one element per detected growth-line. 3rd list: one
-		  element (Point) per location downwards along the growth line.
-		 */
-		List<List<List<Point>>> glCenterPoints = new ArrayList<>();
-
-		List< List< Point > > frameWellCenters;
-
-		// ------ GAUSS -----------------------------
-
-		final int n = imgTemp.numDimensions();
-		final double[] sigmas = new double[ n ];
-		sigmas[ 0 ] = SIGMA_GL_DETECTION_X;
-		sigmas[ 1 ] = SIGMA_GL_DETECTION_Y;
-		try {
-			Gauss3.gauss( sigmas, Views.extendZero( imgTemp ), imgTemp );
-		} catch ( final IncompatibleTypeException e ) {
-			e.printStackTrace();
-		}
-
-		// ------ FIND AND FILTER MAXIMA -------------
-
-		final List< List< GrowthLineFrame >> collectionOfFrames = new ArrayList<>();
-
-		for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-			final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
-
-			// Find maxima per image row (per frame)
-			frameWellCenters = new Loops< FloatType, List< Point >>().forEachHyperslice( ivFrame, 1, FindLocalMaxima.class, opService);
-
-			// Delete detected points that are too lateral
-			for ( int y = 0; y < frameWellCenters.size(); y++ ) {
-				final List< Point > lstPoints = frameWellCenters.get( y );
-				for ( int x = lstPoints.size() - 1; x >= 0; x-- ) {
-					if ( lstPoints.get( x ).getIntPosition( 0 ) < GL_OFFSET_LATERAL || lstPoints.get( x ).getIntPosition( 0 ) > imgTemp.dimension( 0 ) - GL_OFFSET_LATERAL ) {
-						lstPoints.remove( x );
-					}
-				}
-				frameWellCenters.set( y, lstPoints );
-			}
-
-			// Delete detected points that are too high or too low
-			// (and use this sweep to compute 'maxWellCenterIdx' and
-			// 'maxWellCenters')
-			int maxWellCenters = 0;
-			int maxWellCentersIdx = 0;
-			for ( int y = 0; y < frameWellCenters.size(); y++ ) {
-				if ( y < GL_OFFSET_TOP || y >= imgTemp.dimension( 1 ) - GL_OFFSET_BOTTOM ) { // this crops the length of the vertical green light to the region between GL_OFFSET_BOTTOM and GL_OFFSET_TOP
-					frameWellCenters.get( y ).clear();
-				} else {
-					if ( maxWellCenters < frameWellCenters.get( y ).size() ) {
-						maxWellCenters = frameWellCenters.get( y ).size();
-						maxWellCentersIdx = y;
-					}
-				}
-			}
-
-//			if ( maxWellCenters > 1 ) {
-//				final String msg =
-//						"ERROR: Two maxima in a single pixel row found while looking for GL centerline at  frame " + frameIdx + ".\nPlease check input images or adjust (increase?) SIGMA_GL_DETECTION_X in properties.";
-//				System.out.println( msg );
-//				if ( !HEADLESS ) {
-//					JOptionPane.showMessageDialog(
-//							getGui(),
-//							msg,
-//							"Error while looking for GL centerline...",
-//							JOptionPane.ERROR_MESSAGE );
-//				}
-//			}
-
-			// add filtered points to 'glCenterPoints'
-			glCenterPoints.add( frameWellCenters );
-
-			// ------ DISTRIBUTE POINTS TO CORRESPONDING GROWTH LINES -------
-
-			final List< GrowthLineFrame > glFrames = new ArrayList<>();
-
-			final Point pOrig = new Point( 3 );
-			pOrig.setPosition( frameIdx, 2 ); // location in original Img (will
-												// be recovered step by step)
-
-			// start at the row containing the maximum number of well centers
-			// (see above for the code that found maxWellCenter*)
-			pOrig.setPosition( maxWellCentersIdx, 1 );
-			for ( int x = 0; x < maxWellCenters; x++ ) {
-				glFrames.add( new GrowthLineFrame() ); // add one GLF for each
-														// found column
-				final Point p = frameWellCenters.get( maxWellCentersIdx ).get( x );
-				pOrig.setPosition( p.getLongPosition( 0 ), 0 );
-				glFrames.get( x ).addPoint( new Point( pOrig ) );
-			}
-			// now go backwards from 'maxWellCenterIdx' and find the right
-			// assignment in case
-			// a different number of wells was found (going forwards comes
-			// below!)
-			for ( int y = maxWellCentersIdx - 1; y >= 0; y-- ) {
-				pOrig.setPosition( y, 1 ); // location in orig. Img (2nd of 3
-											// steps)
-
-				final List< Point > maximaPerImgRow = frameWellCenters.get( y );
-				if ( maximaPerImgRow.size() == 0 ) {
-					continue;
-				}
-				// find best matching well for first point
-				final int posX = frameWellCenters.get( y ).get( 0 ).getIntPosition( 0 );
-				int mindist = ( int ) imgTemp.dimension( 0 );
-				int offset = 0;
-				for ( int x = 0; x < maxWellCenters; x++ ) {
-					final int wellPosX = glFrames.get( x ).getFirstPoint().getIntPosition( 0 );
-					if ( mindist > Math.abs( wellPosX - posX ) ) {
-						mindist = Math.abs( wellPosX - posX );
-						offset = x;
-					}
-				}
-				// move points into detected wells
-				for ( int x = offset; x < maximaPerImgRow.size(); x++ ) {
-					final Point p = maximaPerImgRow.get( x );
-					pOrig.setPosition( p.getLongPosition( 0 ), 0 );
-					glFrames.get( x ).addPoint( new Point( pOrig ) );
-				}
-			}
-			// now go forward from 'maxWellCenterIdx' and find the right
-			// assignment in case
-			// a different number of wells was found
-			for ( int y = maxWellCentersIdx + 1; y < frameWellCenters.size(); y++ ) {
-				pOrig.setPosition( y, 1 ); // location in original Img (2nd of 3
-				// steps)
-
-				final List< Point > maximaPerImgRow = frameWellCenters.get( y );
-				if ( maximaPerImgRow.size() == 0 ) {
-					continue;
-				}
-				// find best matching well for first point
-				final int posX = frameWellCenters.get( y ).get( 0 ).getIntPosition( 0 );
-				int mindist = ( int ) imgTemp.dimension( 0 );
-				int offset = 0;
-				for ( int x = 0; x < maxWellCenters; x++ ) {
-					final int wellPosX = glFrames.get( x ).getLastPoint().getIntPosition( 0 );
-					if ( mindist > Math.abs( wellPosX - posX ) ) {
-						mindist = Math.abs( wellPosX - posX );
-						offset = x;
-					}
-				}
-				// move points into GLFs
-				for ( int x = offset; x < maximaPerImgRow.size(); x++ ) {
-					final Point p = maximaPerImgRow.get( x );
-					pOrig.setPosition( p.getLongPosition( 0 ), 0 );
-					glFrames.get( x ).addPoint( new Point( pOrig ) );
-				}
-			}
-
-			// sort points
-			for ( final GrowthLineFrame glf : glFrames ) {
-				glf.sortPoints();
-			}
-
-			// add this list of GrowhtLIneFrames to the collection
-			collectionOfFrames.add( glFrames );
-		}
-
-		// ------ SORT GrowthLineFrames FROM collectionOfFrames INTO this.growthLines -------------
-		int maxGLsPerFrame = 0;
-		int maxGLsPerFrameIdx = 0;
-		for ( int i = 0; i < collectionOfFrames.size(); i++ ) {
-			if ( maxGLsPerFrame < collectionOfFrames.get( i ).size() ) {
-				maxGLsPerFrame = collectionOfFrames.get( i ).size();
-				maxGLsPerFrameIdx = i;
-			}
-		}
-		// copy the max-GLs frame into this.growthLines
-		this.setGrowthLines(new ArrayList<>(maxGLsPerFrame) );
-		for ( int i = 0; i < maxGLsPerFrame; i++ ) {
-			getGrowthLines().add( new GrowthLine() );
-			getGrowthLines().get( i ).add( collectionOfFrames.get( maxGLsPerFrameIdx ).get( i ) );
-		}
-		// go backwards from there and prepand into GL
-		for ( int j = maxGLsPerFrameIdx - 1; j >= 0; j-- ) {
-			final int deltaL = maxGLsPerFrame - collectionOfFrames.get( j ).size();
-			int offset = 0; // here we would like to have the shift to consider
-							// when copying GLFrames into GLs
-			double minDist = Double.MAX_VALUE;
-			for ( int i = 0; i <= deltaL; i++ ) {
-				double dist = collectionOfFrames.get( maxGLsPerFrameIdx ).get( i ).getAvgXpos();
-				dist -= collectionOfFrames.get( j ).get( 0 ).getAvgXpos();
-				if ( dist < minDist ) {
-					minDist = dist;
-					offset = i;
-				}
-			}
-			for ( int i = 0; i < collectionOfFrames.get( j ).size(); i++ ) {
-				getGrowthLines().get( offset + i ).prepand( collectionOfFrames.get( j ).get( i ) );
-			}
-		}
-		// go forwards and append into GL
-		for ( int j = maxGLsPerFrameIdx + 1; j < collectionOfFrames.size(); j++ ) {
-			final int deltaL = maxGLsPerFrame - collectionOfFrames.get( j ).size();
-			int offset = 0; // here we would like to have the shift to consider
-							// when copying GLFrames into GLs
-			double minDist = Double.MAX_VALUE;
-			for ( int i = 0; i <= deltaL; i++ ) {
-				double dist = collectionOfFrames.get( maxGLsPerFrameIdx ).get( i ).getAvgXpos();
-				dist -= collectionOfFrames.get( j ).get( 0 ).getAvgXpos();
-				if ( dist < minDist ) {
-					minDist = dist;
-					offset = i;
-				}
-			}
-			for ( int i = 0; i < collectionOfFrames.get( j ).size(); i++ ) {
-				getGrowthLines().get( offset + i ).add( collectionOfFrames.get( j ).get( i ) );
-			}
-		}
-
-	}
-
-
-    private void findGrowthLinesNew() {
+    private void findGrowthLines() {
         this.setGrowthLines(new ArrayList<>() );
         getGrowthLines().add( new GrowthLine() );
 
@@ -1923,8 +1693,7 @@ public class MoMA {
 
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
-//		findGrowthLines();
-        findGrowthLinesNew();
+        findGrowthLines();
 //		annotateDetectedWellCenters();
 		System.out.println( " done!" );
 

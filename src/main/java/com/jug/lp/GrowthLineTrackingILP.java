@@ -1,19 +1,5 @@
 package com.jug.lp;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.JOptionPane;
-
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
@@ -24,14 +10,8 @@ import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
-
-import gurobi.GRB;
-import gurobi.GRBConstr;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBModel;
-import gurobi.GRBVar;
+import com.jug.util.componenttree.SimpleComponent;
+import gurobi.*;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -40,6 +20,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
+
+import javax.swing.*;
+import java.io.*;
+import java.util.*;
+import java.util.function.Consumer;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -66,7 +51,7 @@ public class GrowthLineTrackingILP {
 	public static final int ASSIGNMENT_MAPPING = 1;
 	public static final int ASSIGNMENT_DIVISION = 2;
 
-	public static final float CUTOFF_COST = 3.0f; // MM: Assignments with costs higher than this value will be ignored; THIS SEEMS WAY TOO LOW
+	public static final float CUTOFF_COST = Float.MAX_VALUE; // MM: Assignments with costs higher than this value will be ignored; THIS SEEMS WAY TOO LOW
 
 	private static GRBEnv env;
 
@@ -192,6 +177,34 @@ public class GrowthLineTrackingILP {
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps ); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
+
+		checkIfAllComponentsHaveCorrespondingHypothesis();
+	}
+
+	private void checkIfAllComponentsHaveCorrespondingHypothesis() {
+		for (int t = 1; t < gl.size(); t++) {
+			allHypothesisForComponentsExistAtTime(t);
+		}
+	}
+
+	private void allHypothesisForComponentsExistAtTime(int t) {
+		final GrowthLineFrame glf = gl.getFrames().get(t);
+		Consumer<org.javatuples.Pair<List<SimpleComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
+			List<SimpleComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
+			{
+				for (SimpleComponent<FloatType> component : componentsOfLevel) {
+					Hypothesis<?> res = nodes.findHypothesisContaining(component);
+					if (res == null) {
+						try {
+							throw new Exception("Found component without corresponding hypothesis!");
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		};
+		ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentTree(), levelComponentsConsumer);
 	}
 
 	/**

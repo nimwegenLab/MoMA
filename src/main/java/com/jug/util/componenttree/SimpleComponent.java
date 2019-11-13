@@ -110,8 +110,12 @@ public final class SimpleComponent<T extends Type<T>>
         accessor.get().add(label);
     }
 
+    /**
+     * Return copy the image from which this component was created.
+     * @return copy of the image
+     */
     public RandomAccessibleInterval<T> getSourceImage() {
-        return sourceImage;
+        return ImgView.wrap(sourceImage, new ArrayImgFactory(new FloatType())).copy();
     }
 
     @Override

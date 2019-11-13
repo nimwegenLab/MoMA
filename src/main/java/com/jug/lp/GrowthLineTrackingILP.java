@@ -1288,7 +1288,7 @@ public class GrowthLineTrackingILP {
 	 */
 	public HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > getOptimalRightAssignments( final int t ) {
 		assert ( t >= 0 );
-		assert ( t < nodes.getNumberOfTimeSteps() - 1 );
+		assert ( t < nodes.getNumberOfTimeSteps() - 1 ): String.format("Assert failed: t<nodes.getNumberOfTimeSteps()-1, because t=%d and nodes.getNumberOfTimeSteps()-1=%d", t, nodes.getNumberOfTimeSteps()-1);
 
 		final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > ret = new HashMap<>();
 

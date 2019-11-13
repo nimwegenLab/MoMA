@@ -179,7 +179,9 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps ); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
 
-		new HypothesesAndAssignmentsSanityChecker(gl, nodes).checkIfAllComponentsHaveCorrespondingHypothesis();
+		HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+		sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
+		sanityChecker.checkIfAllComponentsMappingAssignmentsBetweenThem();
 	}
 
 	/**

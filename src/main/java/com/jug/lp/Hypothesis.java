@@ -33,7 +33,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 		}
 	}
 
-	private final T wrappedHypothesis;
+	private final T wrappedComponent;
 	private final float cost;
 	private final HypLoc location;
 
@@ -53,7 +53,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 	public Hypothesis( final int t, final T elementToWrap, final float cost ) {
 		// setSegmentHypothesis( elementToWrap );
-		this.wrappedHypothesis = elementToWrap;
+		this.wrappedComponent = elementToWrap;
 		this.cost = cost;
 		location = new HypLoc( t, elementToWrap );
 	}
@@ -66,7 +66,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	 * @return the wrapped segmentHypothesis
 	 */
 	public T getWrappedComponent() {
-		return wrappedHypothesis;
+		return wrappedComponent;
 	}
 
 	// /**

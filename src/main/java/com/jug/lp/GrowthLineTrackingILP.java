@@ -11,6 +11,7 @@ import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;
+import com.moma.auxiliary.Plotting;
 import gurobi.*;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
@@ -178,33 +179,7 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps ); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
 
-		checkIfAllComponentsHaveCorrespondingHypothesis();
-	}
-
-	private void checkIfAllComponentsHaveCorrespondingHypothesis() {
-		for (int t = 1; t < gl.size(); t++) {
-			allHypothesisForComponentsExistAtTime(t);
-		}
-	}
-
-	private void allHypothesisForComponentsExistAtTime(int t) {
-		final GrowthLineFrame glf = gl.getFrames().get(t);
-		Consumer<org.javatuples.Pair<List<SimpleComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
-			List<SimpleComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
-			{
-				for (SimpleComponent<FloatType> component : componentsOfLevel) {
-					Hypothesis<?> res = nodes.findHypothesisContaining(component);
-					if (res == null) {
-						try {
-							throw new Exception("Found component without corresponding hypothesis!");
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		};
-		ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentTree(), levelComponentsConsumer);
+		new HypothesesAndAssignmentsSanityChecker(gl, nodes).checkIfAllComponentsHaveCorrespondingHypothesis();
 	}
 
 	/**

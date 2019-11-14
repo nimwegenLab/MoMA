@@ -61,13 +61,20 @@ public class HypothesesAndAssignmentsSanityChecker {
     }
 
     private void allMappingAssignmentsForComponentsExistAtTime(int t){
+        if(t+1 >= gl.getFrames().size())
+            return;
         ComponentForest<SimpleComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentTree();
-        ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(t).getComponentTree();
+        ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(t+1).getComponentTree();
         List<SimpleComponent<FloatType>> allSourceComponents = ComponentTreeUtils.getListOfNodes(sourceComponentTree);
         List<SimpleComponent<FloatType>> allTargetComponents = ComponentTreeUtils.getListOfNodes(targetComponentTree);
 
-        for(SimpleComponent<FloatType> targetComponent : allSourceComponents){
-            Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(targetComponent);
+        if(t == 32){
+            Plotting.drawComponentTree2(sourceComponentTree, new ArrayList<>());
+        }
+
+
+        for(SimpleComponent<FloatType> sourceComponent : allSourceComponents){
+            Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(sourceComponent);
             assert (wrappingHypothesis != null): "ERROR: Found component without corresponding hypothesis!";
             Set<MappingAssignment> assignments = edgeSets.getRightAssignmentsOfType((Hypothesis<Component<FloatType, ?>>) wrappingHypothesis, MappingAssignment.class);
             Set<Component<FloatType, ?>> assignmentTargetComponents = new HashSet<>();
@@ -75,7 +82,7 @@ public class HypothesesAndAssignmentsSanityChecker {
                 assignmentTargetComponents.add(assignment.getDestinationHypothesis().getWrappedComponent());
             }
             for(SimpleComponent<FloatType> component : allTargetComponents){
-                assert(assignmentTargetComponents.contains(component)): "ERROR: Found component, which misses an incoming mapping-assignment.";
+                assert(assignmentTargetComponents.contains(component)): String.format("ERROR at t=%d: Found component, which misses an incoming mapping-assignment.", t);
             }
         }
     }

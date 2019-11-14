@@ -153,11 +153,13 @@ public class ComponentTreeUtils {
     }
 
     /**
-     * @return
+     * Returns list of all neighboring nodes below the current node.
+     *
+     * @return list of neighboring nodes
      */
-    public static List<Component<FloatType, ?>> getRightNeighbors(final Component<FloatType, ?> node) {
+    public static List<Component<FloatType, ?>> getLowerNeighbors(final Component<FloatType, ?> node) {
         final ArrayList<Component<FloatType, ?>> ret = new ArrayList<>();
-        Component<FloatType, ?> rightNeighbor = getRightNeighbor(node);
+        Component<FloatType, ?> rightNeighbor = getLowerNeighbor(node);
         if (rightNeighbor != null) {
             ret.add(rightNeighbor);
             while (rightNeighbor.getChildren().size() > 0) {
@@ -169,10 +171,12 @@ public class ComponentTreeUtils {
     }
 
     /**
-     * @param node
-     * @return
+     * Returns the lower neighbors of {@param node}.
+     *
+     * @param node node for which the neighbor is returned.
+     * @return the lower neighbor node
      */
-    private static Component<FloatType, ?> getRightNeighbor(final Component<FloatType, ?> node) {
+    private static Component<FloatType, ?> getLowerNeighbor(final Component<FloatType, ?> node) {
         // TODO Note that we do not find the right neighbor in case the
         // component tree has several roots and the
         // right neighbor is somewhere down another root.
@@ -183,7 +187,7 @@ public class ComponentTreeUtils {
             if (idx + 1 < father.getChildren().size()) {
                 return father.getChildren().get(idx + 1);
             } else {
-                return getRightNeighbor(father);
+                return getLowerNeighbor(father);
             }
         }
         return null;

@@ -433,7 +433,7 @@ public class GrowthLineTrackingILP {
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getRightNeighbors(to.getWrappedComponent());
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(to.getWrappedComponent());
 					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
 						@SuppressWarnings( "unchecked" )
 						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );

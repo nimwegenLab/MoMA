@@ -131,15 +131,15 @@ public class CostFactory {
 		final int a = segInterval.getA();
 		final int b = segInterval.getB();
 
-        // cell is too small
-		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
-			cost = 100;
-		}
+//        // cell is too small
+//		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
+//			cost = 100;
+//		}
 
 //        System.out.println("minPixelProbability: " + minPixelProbability);
 //        System.out.println("cost: " + cost);
 //        System.out.println("segment length: " + (b - a));
-        int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
+//        int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
 //		double mserScore = ((SimpleComponent) ctNode).getMserScore();
 //        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
 

@@ -14,7 +14,6 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +33,6 @@ import com.jug.export.HtmlOverviewExporter;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 
@@ -543,7 +541,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			}
 		});
 		if ( ilp != null )
-			leftAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( model.getCurrentTime() - 1 ) );
+			leftAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( model.getCurrentTime() - 1 ) );
 		// - - - - - -
 		panelVerticalHelper.add( leftAssignmentViewer, BorderLayout.CENTER );
 		panelView.add( panelVerticalHelper );
@@ -568,7 +566,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		rightAssignmentViewer = new AssignmentViewer( ( int ) model.mm.getImgRaw().dimension( 1 ), this );
 		rightAssignmentViewer.addChangeListener(this);
 		if ( ilp != null )
-			rightAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( model.getCurrentTime() ) );
+			rightAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( model.getCurrentTime() ) );
 		panelVerticalHelper.add( rightAssignmentViewer, BorderLayout.CENTER );
 		panelView.add( panelVerticalHelper );
 
@@ -695,7 +693,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
 					}
 					else{
-						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
+						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
 						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
 							if(costType.equals("ExitAssignment")){
 								if(ass instanceof ExitAssignment)
@@ -927,12 +925,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				if ( t == 0 ) {
 					leftAssignmentViewer.display( null );
 				} else {
-					leftAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( t - 1 ) );
+					leftAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t - 1 ) );
 				}
 				if ( t == sliderTime.getMaximum() ) {
 					rightAssignmentViewer.display( null );
 				} else {
-					rightAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( t ) );
+					rightAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t ) );
 				}
 			} else {
 				leftAssignmentViewer.display( null );
@@ -1093,7 +1091,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "Using existing ILP (possibly containing user-defined ground-truth bits)..." );
 				}
 				System.out.println( "Saving ILP as FactorGraph..." );
-				model.getCurrentGL().getIlp().exportFG_PAUL( file );
+				new FactorGraphExporter(model.getCurrentGL()).exportFG_PAUL(file);
 				System.out.println( "...done!" );
 			}
 		}

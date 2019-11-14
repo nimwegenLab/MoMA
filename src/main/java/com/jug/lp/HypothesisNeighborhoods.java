@@ -93,6 +93,23 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 		return rightNeighborhoods.get( h );
 	}
 
+    /**
+     * Gets right-assignments of {@param h}, which are of type {@param assignmentType}.
+     *
+     * @param h hypothesis for which to get the assignments/
+     * @param assignmentType type of assignments that will be returned.
+     * @param <T>
+     * @return
+     */
+	public <T extends AbstractAssignment> Set<T> getRightAssignmentsOfType(final H h, Class<T> assignmentType ){
+
+        Set<T> mappingAssignments = new HashSet<>();
+        for(A assignment:getRightNeighborhood(h)){
+            if(assignmentType.isAssignableFrom(assignment.getClass())) mappingAssignments.add((T) assignment);
+        }
+        return mappingAssignments;
+    }
+
 	// -------------------------------------------------------------------------------------
 	// methods
 	// -------------------------------------------------------------------------------------

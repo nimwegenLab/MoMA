@@ -236,12 +236,6 @@ public class GrowthLineTrackingILP {
 		return CostFactory.getIntensitySegmentationCost( ctNode, img );
 	}
 
-	//	public float localParamaxflowBasedCost( final int t, final Component< ?, ? > ctNode ) {
-//		//TODO kotz
-//		final float[] gapSepFkt = gl.getFrames().get( t ).getAwesomeGapSeparationValues( MoMA.instance.getImgTemp() );
-//		return CostFactory.getParamaxflowSegmentationCost( ctNode, gapSepFkt );
-//	}
-
 	/**
 	 * For time-points t and t+1, enumerates all potentially
 	 * interesting assignments using the <code>addXXXAsignment(...)</code>

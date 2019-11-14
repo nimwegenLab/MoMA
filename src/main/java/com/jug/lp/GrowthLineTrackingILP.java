@@ -211,18 +211,10 @@ public class GrowthLineTrackingILP {
 	 *            the time-index the ctNode comes from.
 	 */
 	private void recursivelyAddCTNsAsHypotheses( final int t, final Component< FloatType, ? > ctNode ) { //, final boolean isForParaMaxFlowSumImg
-
-		float cost;
-//		if ( isForParaMaxFlowSumImg ) {
-//			cost = localParamaxflowBasedCost( t, ctNode );
-//		} else {
-			cost = localIntensityBasedCost( t, ctNode );
-//		}
-		nodes.addHypothesis( t, new Hypothesis<>(t, ctNode, cost) );
-
-		// do the same for all children
+		float componentCost = localIntensityBasedCost( t, ctNode );
+		nodes.addHypothesis( t, new Hypothesis<>(t, ctNode, componentCost) );
 		for ( final Component< FloatType, ? > ctChild : ctNode.getChildren() ) {
-			recursivelyAddCTNsAsHypotheses( t, ctChild ); //, isForParaMaxFlowSumImg
+			recursivelyAddCTNsAsHypotheses( t, ctChild );
 		}
 	}
 
@@ -456,7 +448,7 @@ public class GrowthLineTrackingILP {
 									lowerNeighbor.getCost(),
 									compatibilityCostOfDivision);
 
-							if ( cost <= CUTOFF_COST ) {
+//							if ( cost <= CUTOFF_COST ) {
 								final String name = String.format( "a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId() );
 								final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
 
@@ -465,7 +457,7 @@ public class GrowthLineTrackingILP {
 								edgeSets.addToRightNeighborhood( from, da );
 								edgeSets.addToLeftNeighborhood( to, da );
 								edgeSets.addToLeftNeighborhood( lowerNeighbor, da );
-							}
+//							}
 						}
 					}
 				}

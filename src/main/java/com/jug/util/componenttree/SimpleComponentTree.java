@@ -11,7 +11,6 @@ import net.imglib2.type.numeric.integer.IntType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -58,7 +57,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void SortChildrenRecursively(SimpleComponent parent) {
         List<SimpleComponent<T>> children = parent.getChildren();
-        PositionComparator positionComparator = new PositionComparator(1);
+        ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
         children.sort(positionComparator);
         for (SimpleComponent<T> component : children) {
             SortChildrenRecursively(component);
@@ -113,21 +112,5 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         return roots;
     }
 
-    private class PositionComparator implements Comparator<SimpleComponent> {
-        /**
-         * Dimension of the components that will be compared.
-         */
-        private int dim;
-
-        public PositionComparator(int dim) {
-            this.dim = dim;
-        }
-
-        public int compare(SimpleComponent c1, SimpleComponent c2) {
-            if (c1.firstMomentPixelCoordinates()[dim] < c2.firstMomentPixelCoordinates()[dim]) return -1;
-            if (c1.firstMomentPixelCoordinates()[dim] > c2.firstMomentPixelCoordinates()[dim]) return 1;
-            return 0;
-        }
-    }
 }
 

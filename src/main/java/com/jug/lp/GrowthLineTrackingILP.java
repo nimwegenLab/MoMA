@@ -1235,7 +1235,7 @@ public class GrowthLineTrackingILP {
 	 * @return a hash-map that maps from segmentation hypothesis to a set of
 	 *         assignments that come in from the right (from t+1).
 	 */
-	public HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > getAllCompatibleRightAssignments( final int t ) {
+	public HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > getAllRightAssignmentsThatStartFromOptimalHypothesesAt(final int t ) {
 		assert ( t >= 0 );
 		assert ( t < nodes.getNumberOfTimeSteps() - 1 );
 

@@ -391,7 +391,7 @@ public class FactorGraphExporter {
             final List< Hypothesis< Component< FloatType, ? > > > hyps_t = nodes.getAllHypotheses().get( t );
             for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps_t ) {
                 final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> mapRightNeighbors =
-                        ilp.getAllCompatibleRightAssignments( t );
+                        ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t );
                 final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmnts = mapRightNeighbors.get( hyp );
                 if ( assmnts != null ) {
                     for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmnt : assmnts ) {
@@ -408,7 +408,7 @@ public class FactorGraphExporter {
             final List< Hypothesis< Component< FloatType, ? > > > hyps_t = nodes.getAllHypotheses().get( t );
             for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps_t ) {
                 final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > mapRightNeighbors =
-                        ilp.getAllCompatibleRightAssignments( t );
+                        ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t );
                 final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmnts = mapRightNeighbors.get( hyp );
                 if ( assmnts != null ) {
                     for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmnt : assmnts ) {

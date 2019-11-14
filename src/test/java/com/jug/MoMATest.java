@@ -3,6 +3,10 @@ package com.jug;
 import org.junit.Test;
 
 public class MoMATest {
+    public static void main(String[] args){
+        MoMATest test1 = new MoMATest();
+        test1.main();
+    }
 
     @Test
     public void main() {

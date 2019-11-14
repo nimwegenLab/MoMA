@@ -135,6 +135,10 @@ public class GrowthLineTrackingILP {
 			// add Hypothesis and Assignments
 			createHypsAndAssignments();
 
+			HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+			sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
+			sanityChecker.checkIfAllComponentsMappingAssignmentsBetweenThem();
+
 			// UPDATE GUROBI-MODEL
 			// - - - - - - - - - -
 			model.update();
@@ -180,10 +184,6 @@ public class GrowthLineTrackingILP {
 		// in order have some right assignment for LP hypotheses variable substitution.
 		final List< Hypothesis< Component< FloatType, ? > > > curHyps = nodes.getHypothesesAt( gl.size() - 1 );
 		addExitAssignments( gl.size() - 1, curHyps ); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
-
-		HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
-		sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
-		sanityChecker.checkIfAllComponentsMappingAssignmentsBetweenThem();
 	}
 
 	/**
@@ -574,9 +574,7 @@ public class GrowthLineTrackingILP {
 			while ( runnerNode != null ) {
 				@SuppressWarnings( "unchecked" )
 				final Hypothesis< Component< FloatType, ? > > hypothesis = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( runnerNode );
-				if ( hypothesis == null ) {
-					System.err.println( "WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!" );
-				}
+				assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!";
 
 				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a : edgeSets.getRightNeighborhood( hypothesis ) ) {

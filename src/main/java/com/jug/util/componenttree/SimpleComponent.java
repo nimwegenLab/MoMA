@@ -110,8 +110,12 @@ public final class SimpleComponent<T extends Type<T>>
         accessor.get().add(label);
     }
 
+    /**
+     * Return copy the image from which this component was created.
+     * @return copy of the image
+     */
     public RandomAccessibleInterval<T> getSourceImage() {
-        return sourceImage;
+        return ImgView.wrap(sourceImage, new ArrayImgFactory(new FloatType())).copy();
     }
 
     @Override
@@ -167,7 +171,10 @@ public final class SimpleComponent<T extends Type<T>>
 //    }
 
 
+    private double[] firstMomentPixelCoordinates = null;
     public double[] firstMomentPixelCoordinates() {
+        if(firstMomentPixelCoordinates != null) return firstMomentPixelCoordinates;
+
         int n = pixelList.get(0).numDimensions();
         sumPos = new double[n];
         for (Localizable val : this) {
@@ -178,6 +185,7 @@ public final class SimpleComponent<T extends Type<T>>
         mean = new double[n];
         for (int i = 0; i < n; ++i)
             mean[i] = sumPos[i] / size();
+        firstMomentPixelCoordinates = mean;
         return mean;
     }
 

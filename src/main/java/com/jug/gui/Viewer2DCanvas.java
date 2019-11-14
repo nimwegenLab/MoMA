@@ -131,7 +131,6 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			}
 
 			if ( showSegmentationAnnotations ) {
-				glf.drawCenterLine( screenImage, view );
 				final int t = glf.getParent().getFrames().indexOf( glf );
 
 				// DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING

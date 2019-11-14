@@ -14,7 +14,6 @@ import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -34,7 +33,6 @@ import com.jug.export.HtmlOverviewExporter;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.SimpleFunctionAnalysis;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 
@@ -543,7 +541,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			}
 		});
 		if ( ilp != null )
-			leftAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( model.getCurrentTime() - 1 ) );
+			leftAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( model.getCurrentTime() - 1 ) );
 		// - - - - - -
 		panelVerticalHelper.add( leftAssignmentViewer, BorderLayout.CENTER );
 		panelView.add( panelVerticalHelper );
@@ -568,7 +566,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		rightAssignmentViewer = new AssignmentViewer( ( int ) model.mm.getImgRaw().dimension( 1 ), this );
 		rightAssignmentViewer.addChangeListener(this);
 		if ( ilp != null )
-			rightAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( model.getCurrentTime() ) );
+			rightAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( model.getCurrentTime() ) );
 		panelVerticalHelper.add( rightAssignmentViewer, BorderLayout.CENTER );
 		panelView.add( panelVerticalHelper );
 
@@ -668,25 +666,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		// --------------
 		plot.removeAllPlots();
 
-		final float[] yMidline = model.getCurrentGLF().getMirroredCenterLineValues( model.mm.getImgTemp() );
-		float[] ySegmentationData;
-//		if ( cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
-//			ySegmentationData = model.getCurrentGLF().getAwesomeGapSeparationValues( model.mm.getImgTemp() );
-//		} else {
-			ySegmentationData = model.getCurrentGLF().getSimpleGapSeparationValues( model.mm.getImgTemp() );
-//		}
-		final float[] yAvg = new float[ yMidline.length ];
-		final float constY = SimpleFunctionAnalysis.getSum( ySegmentationData ) / ySegmentationData.length;
-		Arrays.fill(yAvg, constY);
-		plot.addLinePlot( "Midline Intensities", new Color( 127, 127, 255 ), Util.makeDoubleArray( yMidline ) ); // Note-MM-2019-06-10: blue plot line
-		plot.addLinePlot( "Segmentation data", new Color( 80, 255, 80 ), Util.makeDoubleArray( ySegmentationData ) ); // Note-MM-2019-06-10: green plot line
-		plot.addLinePlot( "avg. fkt-value", new Color( 200, 64, 64 ), Util.makeDoubleArray( yAvg ) ); // Note-MM-2019-06-10: red plot line
-
 		plot.setFixedBounds( 1, 0.0, 1.0 );
 
 		// ComponentTreeNodes
 		// ------------------
-		dumpCosts( model.getCurrentGLF().getComponentTree(), ySegmentationData, ilp );
+		dumpCosts( model.getCurrentGLF().getComponentTree(), ilp );
 		if(ilp != null){
 			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "Segment" );
 			printCosts( model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment" );
@@ -709,7 +693,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
 					}
 					else{
-						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
+						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
 						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
 							if(costType.equals("ExitAssignment")){
 								if(ass instanceof ExitAssignment)
@@ -735,7 +719,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		System.out.println();
 	}
 
-	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final float[] ySegmentationData, final GrowthLineTrackingILP ilp ) {
+	private < C extends Component< FloatType, C > > void dumpCosts( final ComponentForest< C > ct, final GrowthLineTrackingILP ilp ) {
 		final int numCTNs = ComponentTreeUtils.countNodes( ct );
 		final float[][] xydxdyCTNBorders = new float[ numCTNs ][ 4 ];
 		final int t = sliderTime.getValue();
@@ -748,7 +732,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			ctnLevel.add( root );
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
-					addBoxAtIndex( i, ctn, xydxdyCTNBorders, ySegmentationData, level );
+					addBoxAtIndex( i, ctn, xydxdyCTNBorders, level );
 					if ( ilp != null ) {
 						System.out.print( String.format(
 								"%8.4f;\t",
@@ -770,7 +754,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				i = 0;
 				for ( final Hypothesis< Component< FloatType, ? >> hyp : ilp.getOptimalSegmentation( t ) ) {
 					final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
-					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ySegmentationData, ComponentTreeUtils.getLevelInTree( ctn ) );
+					addBoxAtIndex( i, ctn, xydxdyCTNBordersActive, ComponentTreeUtils.getLevelInTree( ctn ) );
 					i++;
 				}
 				plot.addBoxPlot( "Active Seg. Hypothesis", new Color( 255, 0, 0, 255 ), Util.makeDoubleArray2d( xydxdyCTNBordersActive ) );
@@ -782,11 +766,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	 * @param index
 	 * @param ctn
 	 * @param boxDataArray
-	 * @param ydata
 	 * @param level
 	 */
 	@SuppressWarnings( "unchecked" )
-	private void addBoxAtIndex( final int index, final Component< ?, ? > ctn, final float[][] boxDataArray, final float[] ydata, final int level ) {
+	private void addBoxAtIndex( final int index, final Component< ?, ? > ctn, final float[][] boxDataArray, final int level ) {
 		int min = Integer.MAX_VALUE;
 		int max = Integer.MIN_VALUE;
 		Iterator< Localizable > componentIterator = ctn.iterator();
@@ -942,12 +925,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				if ( t == 0 ) {
 					leftAssignmentViewer.display( null );
 				} else {
-					leftAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( t - 1 ) );
+					leftAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t - 1 ) );
 				}
 				if ( t == sliderTime.getMaximum() ) {
 					rightAssignmentViewer.display( null );
 				} else {
-					rightAssignmentViewer.display( ilp.getAllCompatibleRightAssignments( t ) );
+					rightAssignmentViewer.display( ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t ) );
 				}
 			} else {
 				leftAssignmentViewer.display( null );
@@ -1108,7 +1091,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "Using existing ILP (possibly containing user-defined ground-truth bits)..." );
 				}
 				System.out.println( "Saving ILP as FactorGraph..." );
-				model.getCurrentGL().getIlp().exportFG_PAUL( file );
+				new FactorGraphExporter(model.getCurrentGL()).exportFG_PAUL(file);
 				System.out.println( "...done!" );
 			}
 		}

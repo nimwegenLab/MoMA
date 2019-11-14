@@ -52,18 +52,20 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
-					if ( a_j.getType() != GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
-						add = true;
-						expr.addTerm( 1.0, a_j.getGRBVar() );
+					add = true;
+					if ( a_j.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+						continue;
 					}
+					// add term if assignment is NOT another exit-assignment
+					expr.addTerm( 1.0, a_j.getGRBVar() );
 				}
 			}
 		}
 
-		if ( add && !MoMA.DISABLE_EXIT_CONSTRAINTS ) { // MoMA.DISABLE_EXIT_CONSTRAINTS was added to test behavior without exit-constraints (see jug paper)
+		if ( add && !MoMA.DISABLE_EXIT_CONSTRAINTS ) {
 			ilp.model.addConstr( expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId );
-			dcId++;
 		}
+		dcId++;
 	}
 
 	/**

@@ -695,7 +695,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
 					}
 					else{
-						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.nodes.getAssignmentsAt(t);
+						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
 						for(AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments){
 							if(costType.equals("ExitAssignment")){
 								if(ass instanceof ExitAssignment)
@@ -1093,7 +1093,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					System.out.println( "Using existing ILP (possibly containing user-defined ground-truth bits)..." );
 				}
 				System.out.println( "Saving ILP as FactorGraph..." );
-				model.getCurrentGL().getIlp().exportFG_PAUL( file );
+				new FactorGraphExporter(model.getCurrentGL()).exportFG_PAUL(file);
 				System.out.println( "...done!" );
 			}
 		}

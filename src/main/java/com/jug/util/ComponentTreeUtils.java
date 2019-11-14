@@ -1,6 +1,8 @@
 package com.jug.util;
 
 import com.jug.lp.*;
+import com.jug.util.componenttree.ComponentPositionComparator;
+import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -48,6 +50,8 @@ public class ComponentTreeUtils {
         }
     }
 
+    private static ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+
     /**
      * @param candidate
      * @param hyp
@@ -56,9 +60,9 @@ public class ComponentTreeUtils {
     public static boolean isAbove(
             final Hypothesis<Component<FloatType, ?>> candidate,
             final Hypothesis<Component<FloatType, ?>> hyp) {
-        final ValuePair<Integer, Integer> candMinMax = candidate.getLocation();
-        final ValuePair<Integer, Integer> refMinMax = hyp.getLocation();
-        return candMinMax.getB() < refMinMax.getA();
+        SimpleComponent<FloatType> candidateComponent = (SimpleComponent<FloatType>)candidate.getWrappedComponent();
+        SimpleComponent<FloatType> referenceComponent = (SimpleComponent<FloatType>)hyp.getWrappedComponent();
+        return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1;
     }
 
     /**

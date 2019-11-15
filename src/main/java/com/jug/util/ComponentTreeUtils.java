@@ -13,6 +13,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.javatuples.Pair;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -157,9 +158,10 @@ public class ComponentTreeUtils {
      *
      * @return list of neighboring nodes
      */
-    public static List<Component<FloatType, ?>> getLowerNeighbors(final Component<FloatType, ?> node) {
+    public static List<Component<FloatType, ?>> getLowerNeighbors(final Component<FloatType, ?> node,
+                                                                  final ComponentForest<SimpleComponent<FloatType>> componentTree) {
         final ArrayList<Component<FloatType, ?>> ret = new ArrayList<>();
-        Component<FloatType, ?> rightNeighbor = getLowerNeighbor(node);
+        Component<FloatType, ?> rightNeighbor = getLowerNeighbor(node, componentTree);
         if (rightNeighbor != null) {
             ret.add(rightNeighbor);
             while (rightNeighbor.getChildren().size() > 0) {
@@ -171,23 +173,28 @@ public class ComponentTreeUtils {
     }
 
     /**
-     * Returns the lower neighbors of {@param node}.
+     * Returns the lower neighbor of {@param node}.
      *
      * @param node node for which the neighbor is returned.
      * @return the lower neighbor node
      */
-    private static Component<FloatType, ?> getLowerNeighbor(final Component<FloatType, ?> node) {
-        // TODO Note that we do not find the right neighbor in case the
-        // component tree has several roots and the
-        // right neighbor is somewhere down another root.
-        final Component<FloatType, ?> father = node.getParent();
-
-        if (father != null) {
-            final int idx = father.getChildren().indexOf(node);
-            if (idx + 1 < father.getChildren().size()) {
-                return father.getChildren().get(idx + 1);
+    private static Component<FloatType, ?> getLowerNeighbor(final Component<FloatType, ?> node,
+                                                            final ComponentForest<SimpleComponent<FloatType>> componentTree) {
+        final Component<FloatType, ?> parentNode = node.getParent();
+        if(parentNode == null) { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
+            List<SimpleComponent<FloatType>> roots = new ArrayList<>(componentTree.roots());
+            roots.sort(verticalComponentPositionComparator);
+            final int idx = roots.indexOf(node);
+            if (idx + 1 < roots.size()) {
+                return roots.get(idx + 1);
+            }
+        }
+        else { /* (@param node) is child node, so we can get the sibling node below it, which is its neighbor */
+            final int idx = parentNode.getChildren().indexOf(node);
+            if (idx + 1 < parentNode.getChildren().size()) {
+                return parentNode.getChildren().get(idx + 1);
             } else {
-                return getLowerNeighbor(father);
+                return getLowerNeighbor(parentNode, componentTree);
             }
         }
         return null;

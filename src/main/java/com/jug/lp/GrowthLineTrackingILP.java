@@ -7,6 +7,8 @@ import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.componenttree.SimpleComponent;
+import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.*;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
@@ -239,9 +241,13 @@ public class GrowthLineTrackingILP {
 		final List< Hypothesis< Component< FloatType, ? >>> currentHyps = nodes.getHypothesesAt( timeStep );
 		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
 
-		addExitAssignments( timeStep, currentHyps );
+        ComponentForest<SimpleComponent<FloatType>> sourceComponentTree = gl.getFrames().get(timeStep).getComponentTree();
+        ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(timeStep + 1).getComponentTree();
+
+
+        addExitAssignments( timeStep, currentHyps );
 		addMappingAssignments( timeStep, currentHyps, nextHyps );
-		addDivisionAssignments( timeStep, currentHyps, nextHyps );
+		addDivisionAssignments( timeStep, currentHyps, nextHyps, sourceComponentTree, targetComponentTree );
 		this.reportProgress();
 	}
 
@@ -425,15 +431,20 @@ public class GrowthLineTrackingILP {
 	 *            added <code>DivisionAssignments</code> should end at.
 	 * @throws GRBException
 	 */
-	private void addDivisionAssignments( final int timeStep, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
+	private void addDivisionAssignments( final int timeStep,
+                                         final List< Hypothesis< Component< FloatType, ? >>> curHyps,
+                                         final List< Hypothesis< Component< FloatType, ? >>> nxtHyps,
+                                         ComponentForest<SimpleComponent<FloatType>> sourceComponentTree,
+                                         ComponentForest<SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
+
 		if ( curHyps == null || nxtHyps == null ) return;
 
 		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
 			final float fromCost = from.getCost();
 
 			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
-				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getRightNeighbors(to.getWrappedComponent());
+//				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(to.getWrappedComponent(), (SimpleComponentTree<FloatType,?>) targetComponentTree);
 					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
 						@SuppressWarnings( "unchecked" )
 						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
@@ -460,7 +471,7 @@ public class GrowthLineTrackingILP {
 //							}
 						}
 					}
-				}
+//				}
 			}
 		}
 	}

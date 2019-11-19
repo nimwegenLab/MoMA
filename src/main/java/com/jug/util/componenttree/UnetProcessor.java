@@ -23,6 +23,26 @@ import java.util.concurrent.ExecutionException;
  * image.
  */
 public class UnetProcessor {
+    private final String modelFile;
+
+    public UnetProcessor(){
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-132335_c44e6f01/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-135715_5547a42c/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-154947/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-113655_d57e9849/tensorflow_model_csbdeep_512x64.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190814-113528_5f72bf24/tensorflow_model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191022-114023_c20dd212/tensorflow_model.zip";
+        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip";
+    }
+    
     private OpService ops;
 
     /**
@@ -89,21 +109,7 @@ public class UnetProcessor {
             final CommandModule module = commandService.run(
                     GenericNetwork.class, false,
                     "input", dataset,
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-132335_c44e6f01/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-135715_5547a42c/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-154947/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-113655_d57e9849/tensorflow_model_csbdeep_512x64.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip",
-//                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190814-113528_5f72bf24/tensorflow_model.zip",
-//                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191022-114023_c20dd212/tensorflow_model.zip",
-                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip",
+                    "modelFile", modelFile,
 
                     //				"batchSize", 10,
                     //				"batchAxis", Axes.TIME.getLabel(),

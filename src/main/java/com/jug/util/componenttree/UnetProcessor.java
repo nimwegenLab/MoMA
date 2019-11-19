@@ -34,8 +34,10 @@ public class UnetProcessor {
     private final Context context;
     private final CommandService commandService;
     private final DatasetService datasetService;
+    private long gl_offset_top;
 
-    public UnetProcessor(){
+    public UnetProcessor(long gl_offset_top){
+        this.gl_offset_top = gl_offset_top;
         model_input_width = 32;
         model_input_height = 512;
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip";
@@ -135,7 +137,7 @@ public class UnetProcessor {
     }
 
     /**
-     * Normalize intensity range of the image within the provided percentiles.
+     * Normalize intensity range of each image based on the provided percentile values of the *whole image stack*.
      *
      * @param image input image
      * @param lowerPercentile lower percentile determining the lower value of the intensity range
@@ -145,12 +147,16 @@ public class UnetProcessor {
     private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lowerPercentile, double upperPercentile) {
         int dim = 2;
         long limit = image.dimension(dim);
-        for(int i=0; i<limit; i++){
 
+        IntervalView<FloatType> percentileRoi = Views.interval(image,
+                                                               new long[]{0, gl_offset_top, 0},
+                                                               new long[]{image.max(0), image.max(1), image.max(2)});
+        float min_percentile = ops.stats().percentile(percentileRoi, lowerPercentile).getRealFloat();
+        float max_percentile = ops.stats().percentile(percentileRoi, upperPercentile).getRealFloat();
+
+        for(int i=0; i<limit; i++){
             RandomAccessibleInterval<FloatType> view = Views.hyperSlice( image, dim, i );
 
-            float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lowerPercentile).getRealFloat();
-            float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upperPercentile).getRealFloat();
             float intensityDifference = max_percentile - min_percentile;
             ((Iterable<FloatType>) view).forEach(t -> {
                 final float val = t.getRealFloat();

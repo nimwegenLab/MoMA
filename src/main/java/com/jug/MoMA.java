@@ -1324,7 +1324,7 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = new UnetProcessor(GL_OFFSET_TOP).process(imgTemp);
+		imgProbs = new UnetProcessor(GL_OFFSET_TOP, GL_OFFSET_BOTTOM).process(imgTemp);
 
 		System.out.println();
 		int i = 0;

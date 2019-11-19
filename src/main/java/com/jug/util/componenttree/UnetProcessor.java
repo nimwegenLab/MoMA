@@ -11,6 +11,7 @@ import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
@@ -24,8 +25,12 @@ import java.util.concurrent.ExecutionException;
  */
 public class UnetProcessor {
     private final String modelFile;
+    private long model_input_width;
+    private long model_input_height;
 
     public UnetProcessor(){
+        model_input_width = 32;
+        model_input_height = 512;
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
@@ -54,12 +59,8 @@ public class UnetProcessor {
             Context context = new Context();
             CommandService commandService = context.service(CommandService.class);
             DatasetService datasetService = context.service(DatasetService.class);
-//			PluginService plugs = context.service(PluginService.class);
-//			System.out.println(plugs.getPlugins());
             ops = context.service(OpService.class);
             UIService uiService = context.service(UIService.class);
-//			IOService io = context.service(IOService.class);
-
 //			uiService.show("Original Image", img);
 
             img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
@@ -76,15 +77,8 @@ public class UnetProcessor {
 //			ExtendedRandomAccessibleInterval newImg2 = Views.extendValue(img, new FloatType(5));
 //			IntervalView<FloatType> newImg22 = Views.interval(newImg2, roiForNetworkProcessing);
 //			uiService.show("extended image", newImg22);
-            long model_input_width = 32;
-            long model_input_height = 512;
-            long start_index_horz = img.dimension(0)/2 - model_input_width/2;
-            long end_index_horz = start_index_horz + model_input_width - 1;
-            FinalInterval roiForNetworkProcessing = new FinalInterval(
-                    new long[]{start_index_horz, img.dimension(1) - model_input_height, 0},
-                    new long[]{end_index_horz, img.dimension(1) - 1, img.dimension(2) - 1}
-            );
-            IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
+            FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(img);
+            IntervalView<FloatType> newImg = getReshapedImageForProcessing(img, roiForNetworkProcessing);
 //			ImageJFunctions.show(newImg, "Unet ROI");
 //			uiService.show("Image", newImg);
 //
@@ -121,9 +115,7 @@ public class UnetProcessor {
 //			ImageJFunctions.show(tmp, "Unet ROI processed");
 
             // copy back the probabilities to image of same size as original image
-            final Img<FloatType> outputImg = img.factory().create(img);
-            IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
-            LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );
+            final Img<FloatType> outputImg = reshapeProcessedRoiToOriginalSize(img, roiForNetworkProcessing, tmp);
 
 //			uiService.show("img", img);
 //			uiService.show("outputImg", outputImg);
@@ -142,6 +134,33 @@ public class UnetProcessor {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private Img<FloatType> reshapeProcessedRoiToOriginalSize(Img<FloatType> img, FinalInterval roiForNetworkProcessing, Img<FloatType> tmp) {
+        final Img<FloatType> outputImg = img.factory().create(img);
+        IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
+        LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );
+        return outputImg;
+    }
+
+    @NotNull
+    private IntervalView<FloatType> getReshapedImageForProcessing(Img<FloatType> img, FinalInterval roiForNetworkProcessing) {
+        return Views.interval(img, roiForNetworkProcessing);
+    }
+
+    /**
+     * Returns the ROI of the image that will be used for image processing.
+     * @param img
+     * @return
+     */
+    @NotNull
+    private FinalInterval getRoiForUnetProcessing(Img<FloatType> img) {
+        long start_index_horz = img.dimension(0)/2 - model_input_width/2;
+        long end_index_horz = start_index_horz + model_input_width - 1;
+        return new FinalInterval(
+                new long[]{start_index_horz, img.dimension(1) - model_input_height, 0},
+                new long[]{end_index_horz, img.dimension(1) - 1, img.dimension(2) - 1}
+        );
     }
 
     private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lower_percentile, double upper_percentile) {

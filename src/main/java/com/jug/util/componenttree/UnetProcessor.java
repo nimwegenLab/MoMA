@@ -16,7 +16,6 @@ import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
-import org.scijava.ui.UIService;
 
 import java.util.concurrent.ExecutionException;
 
@@ -76,18 +75,18 @@ public class UnetProcessor {
                     "blockMultiple", 8,
                     "nTiles", 1,
                     "showProgressDialog", true).get();
-            Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
-            final Img<FloatType> outputImg = reshapeProcessedRoiToOriginalSize(img, roiForNetworkProcessing, tmp);
+            Img<FloatType> processedImage = (Img<FloatType>) module.getOutput("output");
+            final Img<FloatType> outputImg = reshapeProcessedImageToOriginalSize(img, roiForNetworkProcessing, processedImage);
             ImageJFunctions.show(outputImg, "Processed Image");
             return outputImg;
 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    private Img<FloatType> reshapeProcessedRoiToOriginalSize(Img<FloatType> img, FinalInterval roiForNetworkProcessing, Img<FloatType> tmp) {
+    private Img<FloatType> reshapeProcessedImageToOriginalSize(Img<FloatType> img, FinalInterval roiForNetworkProcessing, Img<FloatType> tmp) {
         final Img<FloatType> outputImg = img.factory().create(img);
         IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
         LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );

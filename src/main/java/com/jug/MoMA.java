@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -30,16 +29,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import com.jug.util.componenttree.UnetProcessor;
-import de.csbdresden.csbdeep.commands.GenericNetwork;
-import net.imagej.Dataset;
-import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
-import net.imglib2.FinalInterval;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.loops.LoopBuilder;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -65,20 +56,12 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
-import net.imglib2.Point;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.scijava.Context;
-import org.scijava.command.CommandModule;
-import org.scijava.command.CommandService;
-import org.scijava.ui.UIService;
 
 /**
  * @author jug
@@ -1341,7 +1324,7 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = new UnetProcessor().runNetwork(imgTemp);
+		imgProbs = new UnetProcessor().process(imgTemp);
 
 		System.out.println();
 		int i = 0;

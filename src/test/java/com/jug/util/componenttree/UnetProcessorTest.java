@@ -34,7 +34,7 @@ public class UnetProcessorTest {
         ArrayList<Img<FloatType>> rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, maxChannelIdx);
 
         Img<FloatType> imgTemp = rawChannelImgs.get( 0 );
-        Img<FloatType> imgProbs = new UnetProcessor().runNetwork(imgTemp);
+        Img<FloatType> imgProbs = new UnetProcessor().process(imgTemp);
         System.out.println("bla");
     }
 }

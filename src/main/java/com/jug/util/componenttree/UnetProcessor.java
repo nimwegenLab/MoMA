@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * Responsible for processing the input image using U-Net to produce probability maps of where cells are located in the
  * image. It reads a trained model from disk and uses CSBDeep to run the model on an image stack with the method
- * {@link #runNetwork(Img<FloatType>)}.
+ * {@link #process(Img<FloatType>)}.
  */
 public class UnetProcessor {
     private final String modelFile;
@@ -67,7 +67,7 @@ public class UnetProcessor {
      * @param inputImage input image
      * @return processed image (probability map)
      */
-    public Img<FloatType> runNetwork(Img<FloatType> inputImage) {
+    public Img<FloatType> process(Img<FloatType> inputImage) {
         try {
             inputImage = (Img)normalizeToPercentiles(inputImage, 0.4, 99.4);
             FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(inputImage);

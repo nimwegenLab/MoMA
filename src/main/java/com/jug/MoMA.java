@@ -1350,8 +1350,6 @@ public class MoMA {
 	private void generateAllSimpleSegmentationHypotheses() {
 		imgProbs = new UnetProcessor().runNetwork(imgTemp);
 
-		// ------ DETECTION --------------------------
-
 		System.out.println();
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
@@ -1365,19 +1363,6 @@ public class MoMA {
 			}
 			System.out.println( " ...done!" );
 		}
-	}
-
-
-	public static <T extends NativeType<T> & RealType<T>> RandomAccessibleInterval<T> addValue(
-			final Img<T> tmpNew , T d)
-	{
-		Img<T> out = tmpNew.copy();
-//		ArrayImg<T, ?> out = factory.create(tmpNew);
-		LoopBuilder.setImages( tmpNew, out ).forEachPixel((x, y) -> {
-			x.add(d);
-			y.set(x);
-		});
-		return out;
 	}
 
 

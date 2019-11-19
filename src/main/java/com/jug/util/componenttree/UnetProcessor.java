@@ -64,73 +64,21 @@ public class UnetProcessor {
      */
     public Img<FloatType> runNetwork(Img<FloatType> img) {
         try {
-//			uiService.show("Original Image", img);
-
             img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
-
-//			ImageJFunctions.show(img, "Normalized Image");
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-
-//			ExtendedRandomAccessibleInterval newImg2 = Views.extendValue(img, new FloatType(5));
-//			IntervalView<FloatType> newImg22 = Views.interval(newImg2, roiForNetworkProcessing);
-//			uiService.show("extended image", newImg22);
             FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(img);
             IntervalView<FloatType> newImg = getReshapedImageForProcessing(img, roiForNetworkProcessing);
-//			ImageJFunctions.show(newImg, "Unet ROI");
-//			uiService.show("Image", newImg);
-//
-//			uiService.show("Image", newImgView);
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-//			uiService.show("Image", newImg);
-
-//			uiService.show("Image", img);
-//			newImg = Views.rotate(newImg, 0, 1);
-//
-//			uiService.show("Image", newImg);
-
-//			System.out.println(commandService);
             Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!
-//			Dataset dataset = datasetService.create(newImg); // WHY DO WE NEED ZEROMIN HERE?!
-
-//			uiService.show("dataset", dataset);
-
-//	        DefaultDataset dataset = new DefaultDataset(context, img);
-//	        setImgPlus
             final CommandModule module = commandService.run(
                     GenericNetwork.class, false,
                     "input", dataset,
                     "modelFile", modelFile,
-
-                    //				"batchSize", 10,
-                    //				"batchAxis", Axes.TIME.getLabel(),
                     "normalizeInput", false,
                     "blockMultiple", 8,
                     "nTiles", 1,
                     "showProgressDialog", true).get();
             Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
-//			ImageJFunctions.show(tmp, "Unet ROI processed");
-
-            // copy back the probabilities to image of same size as original image
             final Img<FloatType> outputImg = reshapeProcessedRoiToOriginalSize(img, roiForNetworkProcessing, tmp);
-
-//			uiService.show("img", img);
-//			uiService.show("outputImg", outputImg);
-
-//			Img<FloatType> tmpNew = outputImg.factory().create(outputImg);
-
-//			ops.image().invert(tmpNew, outputImg);
-//			FloatType val = new FloatType();
-//			val.set(1);
-//			addValue(tmpNew, val);
             ImageJFunctions.show(outputImg, "Processed Image");
-//			ImageJFunctions.show(outputImg, "Processed Image");
             return outputImg;
 
         } catch (InterruptedException | ExecutionException e) {

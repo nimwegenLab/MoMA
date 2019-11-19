@@ -82,9 +82,7 @@ public class UnetProcessor {
                     "nTiles", 1,
                     "showProgressDialog", true).get();
             Img<FloatType> processedImage = (Img<FloatType>) module.getOutput("output");
-            final Img<FloatType> outputImg = reshapeProcessedImageToOriginalSize(inputImage, roiForNetworkProcessing, processedImage);
-            ImageJFunctions.show(outputImg, "Processed Image");
-            return outputImg;
+            return reshapeProcessedImageToOriginalSize(inputImage, roiForNetworkProcessing, processedImage);
 
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();

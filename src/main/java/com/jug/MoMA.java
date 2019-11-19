@@ -328,9 +328,6 @@ public class MoMA {
 		boolean showIJ = false;
 		if (showIJ) new ImageJ();
 
-		opService = new Context(OpService.class).service(OpService.class);
-		OpService opService1 = new Context(OpService.class).service(OpService.class);
-
 //		// ===== set look and feel ========================================================================
 //		try {
 //			// Set cross-platform Java L&F (also called "Metal")
@@ -772,15 +769,11 @@ public class MoMA {
 	 */
 	public ImageJ ij;
 
-	private static OpService opService;
-
 	private List< Img< FloatType >> rawChannelImgs;
 	private Img< FloatType > imgRaw;
 	private Img< FloatType > imgTemp;
 	private Img< FloatType > imgProbs;
 	private Img< ARGBType > imgAnnotated;
-	private Img< FloatType > imgClassified;
-	private Img< ShortType > imgSegmented;
 
 	/**
 	 * Contains all GrowthLines found in the given data.

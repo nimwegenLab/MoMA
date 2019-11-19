@@ -43,55 +43,28 @@ public class CostFactory {
 	}
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
-//		return getGrowthCostNew(oldSize, newSize);
-		
-		float deltaL = ( newSize - oldSize ) / normalizer; // ergo: deltaL < 1 for anything that is smaller than the GL; should we not look at relative size change?!
-//		System.out.println(String.format("costDeltaL: %f", deltaL));
-//		System.out.println(String.format("length: %f", normalizer));
+		float deltaL = ( newSize - oldSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL; however, it makes more sense to look at the relative size change?! I will do so in the future. */
 		float power;
 		if ( deltaL > 0 ) { // growth
 			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
 			power = 4.0f;
 		} else { // shrinkage
 			power = 40.0f;
-//			costDeltaL += ( newSize - oldSize ) * 0.00;
 		}
 		deltaL = Math.abs( deltaL );
-//		System.out.println(String.format("costDeltaL: %f", deltaL));
 
 		float costDeltaL = deltaL * (float) Math.pow(1 + deltaL, power); // since deltaL is <1 we add 1 before taking its power
-//		System.out.println(String.format("costDeltaL: %f", costDeltaL));
 
 		float relativeGrowth = ( newSize - oldSize ) / oldSize;
-//		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
-
-//		float costDeltaL =  0.0f;
-//		if(relativeGrowth > 0.3f){
-//			costDeltaL = 100.0f;
-//		}
-//		else if(relativeGrowth < -0.2f){
-//			costDeltaL = 100.0f;
-//		}
-
-//		System.out.println(String.format("Final cost: %f", costDeltaL));
-//		latestCostEvaluation = String.format( "c_l = %.4f * %.4f^%.1f = %.4f", deltaL, 1 + deltaL, power, costDeltaL );
+		if(relativeGrowth > 0.4f){
+			costDeltaL = costDeltaL * 20;
+		}
+		else if(relativeGrowth < -0.4f){
+			costDeltaL = costDeltaL * 20;
+		}
 		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
 	}
 
-	public static Pair< Float, float[] > getGrowthCostNew( final float oldSize, final float newSize ) {
-		float relativeGrowth = ( newSize - oldSize ) / oldSize;
-//		System.out.println(String.format("relativeGrowth: %f", relativeGrowth));
-
-		float costDeltaL =  0.0f;
-		if(relativeGrowth > 0.2){
-			costDeltaL = 1.0f;
-		}
-		else if(relativeGrowth < 0.05){
-			costDeltaL = 1.0f;
-		}
-
-		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
-	}
 
     public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
 		final float deltaS = Math.abs( sizeFirstChild - sizeSecondChild ) / Math.min( sizeFirstChild, sizeSecondChild );

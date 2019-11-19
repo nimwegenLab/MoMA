@@ -9,7 +9,9 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
+import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
@@ -88,14 +90,16 @@ public class UnetProcessor {
 
     private Img<FloatType> reshapeProcessedImageToOriginalSize(Img<FloatType> img, FinalInterval roiForNetworkProcessing, Img<FloatType> tmp) {
         final Img<FloatType> outputImg = img.factory().create(img);
-        IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
+        ExtendedRandomAccessibleInterval extendedImage = Views.extend(outputImg, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
+        IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(extendedImage, roiForNetworkProcessing));
         LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );
         return outputImg;
     }
 
     @NotNull
     private IntervalView<FloatType> getReshapedImageForProcessing(Img<FloatType> img, FinalInterval roiForNetworkProcessing) {
-        return Views.interval(img, roiForNetworkProcessing);
+        ExtendedRandomAccessibleInterval extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
+        return Views.interval(extendedImage, roiForNetworkProcessing);
     }
 
     /**

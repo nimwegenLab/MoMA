@@ -23,7 +23,8 @@ import java.util.concurrent.ExecutionException;
 
 /**
  * Responsible for processing the input image using U-Net to produce probability maps of where cells are located in the
- * image.
+ * image. It reads a trained model from disk and uses CSBDeep to run the model on an image stack with the method
+ * {@link #runNetwork(Img<FloatType>)}.
  */
 public class UnetProcessor {
     private final String modelFile;
@@ -58,16 +59,19 @@ public class UnetProcessor {
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
     }
-    
+
     /**
      * Load and run the Tensor-Flow network on the images to create probability maps
      * of the cell-location.
+
+     * @param inputImage input image
+     * @return processed image (probability map)
      */
-    public Img<FloatType> runNetwork(Img<FloatType> img) {
+    public Img<FloatType> runNetwork(Img<FloatType> inputImage) {
         try {
-            img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
-            FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(img);
-            IntervalView<FloatType> newImg = getReshapedImageForProcessing(img, roiForNetworkProcessing);
+            inputImage = (Img)normalizeToPercentiles(inputImage, 0.4, 99.4);
+            FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(inputImage);
+            IntervalView<FloatType> newImg = getReshapedImageForProcessing(inputImage, roiForNetworkProcessing);
             Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!
             final CommandModule module = commandService.run(
                     GenericNetwork.class, false,
@@ -78,7 +82,7 @@ public class UnetProcessor {
                     "nTiles", 1,
                     "showProgressDialog", true).get();
             Img<FloatType> processedImage = (Img<FloatType>) module.getOutput("output");
-            final Img<FloatType> outputImg = reshapeProcessedImageToOriginalSize(img, roiForNetworkProcessing, processedImage);
+            final Img<FloatType> outputImg = reshapeProcessedImageToOriginalSize(inputImage, roiForNetworkProcessing, processedImage);
             ImageJFunctions.show(outputImg, "Processed Image");
             return outputImg;
 
@@ -88,14 +92,29 @@ public class UnetProcessor {
         }
     }
 
-    private Img<FloatType> reshapeProcessedImageToOriginalSize(Img<FloatType> img, FinalInterval roiForNetworkProcessing, Img<FloatType> tmp) {
-        final Img<FloatType> outputImg = img.factory().create(img);
+    /**
+     * Reshape the input image to fit the shape of the input layer of the U-Net.
+     *
+     * @param originalImage image with the original shape
+     * @param roiForNetworkProcessing ROI with the original shape.
+     * @param processedImage
+     * @return
+     */
+    private Img<FloatType> reshapeProcessedImageToOriginalSize(Img<FloatType> originalImage, FinalInterval roiForNetworkProcessing, Img<FloatType> processedImage) {
+        final Img<FloatType> outputImg = originalImage.factory().create(originalImage);
         ExtendedRandomAccessibleInterval extendedImage = Views.extend(outputImg, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
         IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(extendedImage, roiForNetworkProcessing));
-        LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );
+        LoopBuilder.setImages( processedImage, roiImgInterval ).forEachPixel( (in, out ) -> out.set( in ) );
         return outputImg;
     }
 
+    /**
+     * Reshape the output image that is obtained from U-Net to the original image size.
+     *
+     * @param img image to reshape.
+     * @param roiForNetworkProcessing ROI with the original shape.
+     * @return reshaped image.
+     */
     @NotNull
     private IntervalView<FloatType> getReshapedImageForProcessing(Img<FloatType> img, FinalInterval roiForNetworkProcessing) {
         ExtendedRandomAccessibleInterval extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
@@ -117,15 +136,23 @@ public class UnetProcessor {
         );
     }
 
-    private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lower_percentile, double upper_percentile) {
+    /**
+     * Normalize intensity range of the image within the provided percentiles.
+     *
+     * @param image input image
+     * @param lowerPercentile lower percentile determining the lower value of the intensity range
+     * @param upperPercentile upper percentile determining the lower value of the intensity range
+     * @return normalized image
+     */
+    private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lowerPercentile, double upperPercentile) {
         int dim = 2;
         long limit = image.dimension(dim);
         for(int i=0; i<limit; i++){
 
             RandomAccessibleInterval<FloatType> view = Views.hyperSlice( image, dim, i );
 
-            float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lower_percentile).getRealFloat();
-            float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upper_percentile).getRealFloat();
+            float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lowerPercentile).getRealFloat();
+            float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upperPercentile).getRealFloat();
             float intensityDifference = max_percentile - min_percentile;
             ((Iterable<FloatType>) view).forEach(t -> {
                 final float val = t.getRealFloat();

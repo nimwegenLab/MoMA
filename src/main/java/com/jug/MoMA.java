@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
@@ -29,16 +28,9 @@ import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
-import de.csbdresden.csbdeep.commands.GenericNetwork;
-import net.imagej.Dataset;
-import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
-import net.imglib2.FinalInterval;
+import com.jug.util.componenttree.UnetProcessor;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.loops.LoopBuilder;
-import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.RealType;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -64,20 +56,12 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
-import net.imglib2.Point;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.stats.Normalize;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.scijava.Context;
-import org.scijava.command.CommandModule;
-import org.scijava.command.CommandService;
-import org.scijava.ui.UIService;
 
 /**
  * @author jug
@@ -326,9 +310,6 @@ public class MoMA {
 		 */
 		boolean showIJ = false;
 		if (showIJ) new ImageJ();
-
-		opService = new Context(OpService.class).service(OpService.class);
-		OpService opService1 = new Context(OpService.class).service(OpService.class);
 
 //		// ===== set look and feel ========================================================================
 //		try {
@@ -771,15 +752,11 @@ public class MoMA {
 	 */
 	public ImageJ ij;
 
-	private static OpService opService;
-
 	private List< Img< FloatType >> rawChannelImgs;
 	private Img< FloatType > imgRaw;
 	private Img< FloatType > imgTemp;
 	private Img< FloatType > imgProbs;
 	private Img< ARGBType > imgAnnotated;
-	private Img< FloatType > imgClassified;
-	private Img< ShortType > imgSegmented;
 
 	/**
 	 * Contains all GrowthLines found in the given data.
@@ -1347,24 +1324,7 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		// ------ GAUSS -----------------------------
-
-//		if ( SIGMA_PRE_SEGMENTATION_X + SIGMA_PRE_SEGMENTATION_Y > 0.000001 ) {
-//			System.out.print( " ...Note: smoothing performed before building GapHypotheses... " );
-//			final int n = imgTemp.numDimensions();
-//			final double[] sigmas = new double[ n ];
-//			sigmas[ 0 ] = SIGMA_PRE_SEGMENTATION_X;
-//			sigmas[ 1 ] = SIGMA_PRE_SEGMENTATION_Y;
-//			try {
-//				Gauss3.gauss( sigmas, Views.extendMirrorDouble( imgTemp ), imgTemp );
-//			} catch ( final IncompatibleTypeException e ) {
-//				e.printStackTrace();
-//			}
-//		}
-
-		imgProbs = runNetwork(imgTemp);
-
-		// ------ DETECTION --------------------------
+		imgProbs = new UnetProcessor().process(imgTemp);
 
 		System.out.println();
 		int i = 0;
@@ -1379,153 +1339,6 @@ public class MoMA {
 			}
 			System.out.println( " ...done!" );
 		}
-	}
-
-	private Iterable<FloatType> normalizeToPercentiles(Img<FloatType> image, double lower_percentile, double upper_percentile) {
-		int dim = 2;
-		long limit = image.dimension(dim);
-		for(int i=0; i<limit; i++){
-
-			RandomAccessibleInterval<FloatType> view = Views.hyperSlice( image, dim, i );
-
-			float min_percentile = ops.stats().percentile((Iterable<FloatType>) view, lower_percentile).getRealFloat();
-			float max_percentile = ops.stats().percentile((Iterable<FloatType>) view, upper_percentile).getRealFloat();
-			float intensityDifference = max_percentile - min_percentile;
-			((Iterable<FloatType>) view).forEach(t -> {
-				final float val = t.getRealFloat();
-				if (val < min_percentile) t.set(0);
-				else if (val > max_percentile) t.set(1.0f);
-				else t.set((val - min_percentile) / intensityDifference);
-			});
-		}
-		return image;
-	}
-
-	private OpService ops;
-	/**
-	 * Load and run the Tensor-Flow network on the images to create probability maps
-	 * of the cell-location.
-	 */
-	private Img<FloatType> runNetwork(Img<FloatType> img) {
-		try {
-			Context context = new Context();
-			CommandService commandService = context.service(CommandService.class);
-			DatasetService datasetService = context.service(DatasetService.class);
-//			PluginService plugs = context.service(PluginService.class);
-//			System.out.println(plugs.getPlugins());
-			ops = context.service(OpService.class);
-			UIService uiService = context.service(UIService.class);
-//			IOService io = context.service(IOService.class);
-
-//			uiService.show("Original Image", img);
-
-			img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
-
-//			ImageJFunctions.show(img, "Normalized Image");
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)} ));
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {0,0,0}, new long[] {31, 511,img.dimension(2)-1} )); // THIS WORKS!!!
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-
-//			ExtendedRandomAccessibleInterval newImg2 = Views.extendValue(img, new FloatType(5));
-//			IntervalView<FloatType> newImg22 = Views.interval(newImg2, roiForNetworkProcessing);
-//			uiService.show("extended image", newImg22);
-            long model_input_width = 32;
-            long model_input_height = 512;
-            long start_index_horz = img.dimension(0)/2 - model_input_width/2;
-            long end_index_horz = start_index_horz + model_input_width - 1;
-            FinalInterval roiForNetworkProcessing = new FinalInterval(
-                    new long[]{start_index_horz, img.dimension(1) - model_input_height, 0},
-                    new long[]{end_index_horz, img.dimension(1) - 1, img.dimension(2) - 1}
-                    );
-			IntervalView<FloatType> newImg = Views.interval(img, roiForNetworkProcessing);
-//			ImageJFunctions.show(newImg, "Unet ROI");
-//			uiService.show("Image", newImg);
-//
-//			uiService.show("Image", newImgView);
-
-//			IntervalView<FloatType> newImg = Views.interval(img, new FinalInterval(new long[] {37,0,0}, new long[] {68, 511,img.dimension(2)-1} ));
-//			uiService.show("Image", newImg);
-
-//			uiService.show("Image", img);
-//			newImg = Views.rotate(newImg, 0, 1);
-//
-//			uiService.show("Image", newImg);
-
-//			System.out.println(commandService);
-			Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!
-//			Dataset dataset = datasetService.create(newImg); // WHY DO WE NEED ZEROMIN HERE?!
-
-//			uiService.show("dataset", dataset);
-
-//	        DefaultDataset dataset = new DefaultDataset(context, img);
-//	        setImgPlus
-			final CommandModule module = commandService.run(
-					GenericNetwork.class, false,
-					"input", dataset,
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-132335_c44e6f01/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-135715_5547a42c/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-154947/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-113655_d57e9849/tensorflow_model_csbdeep_512x64.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip",
-//                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190814-113528_5f72bf24/tensorflow_model.zip",
-//                    "modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191022-114023_c20dd212/tensorflow_model.zip",
-					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip",
-//					"modelFile", "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip",
-
-					//				"batchSize", 10,
-					//				"batchAxis", Axes.TIME.getLabel(),
-					"normalizeInput", false,
-					"blockMultiple", 8,
-					"nTiles", 1,
-					"showProgressDialog", true).get();
-			Img<FloatType> tmp = (Img<FloatType>) module.getOutput("output");
-//			ImageJFunctions.show(tmp, "Unet ROI processed");
-
-			// copy back the probabilities to image of same size as original image
-			final Img<FloatType> outputImg = img.factory().create(img);
-			IntervalView<FloatType> roiImgInterval = Views.zeroMin(Views.interval(outputImg, roiForNetworkProcessing));
-			LoopBuilder.setImages( tmp, roiImgInterval ).forEachPixel( ( in, out ) -> out.set( in ) );
-
-//			uiService.show("img", img);
-//			uiService.show("outputImg", outputImg);
-
-//			Img<FloatType> tmpNew = outputImg.factory().create(outputImg);
-
-//			ops.image().invert(tmpNew, outputImg);
-//			FloatType val = new FloatType();
-//			val.set(1);
-//			addValue(tmpNew, val);
-			uiService.show("Processed Image", outputImg);
-//			ImageJFunctions.show(outputImg, "Processed Image");
-			return outputImg;
-
-		} catch (InterruptedException | ExecutionException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-
-	public static <T extends NativeType<T> & RealType<T>> RandomAccessibleInterval<T> addValue(
-			final Img<T> tmpNew , T d)
-	{
-		Img<T> out = tmpNew.copy();
-//		ArrayImg<T, ?> out = factory.create(tmpNew);
-		LoopBuilder.setImages( tmpNew, out ).forEachPixel((x, y) -> {
-			x.add(d);
-			y.set(x);
-		});
-		return out;
 	}
 
 
@@ -1653,13 +1466,6 @@ public class MoMA {
 		}
 	}
 
-
-	/**
-	 * @return the datasetName
-	 */
-	public String getDatasetName() {
-		return datasetName;
-	}
 
 	/**
 	 * @param datasetName the datasetName to set

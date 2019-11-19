@@ -7,6 +7,7 @@ import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -27,6 +28,10 @@ public class UnetProcessor {
     private final String modelFile;
     private long model_input_width;
     private long model_input_height;
+    private OpService ops;
+    private final Context context;
+    private final CommandService commandService;
+    private final DatasetService datasetService;
 
     public UnetProcessor(){
         model_input_width = 32;
@@ -46,21 +51,19 @@ public class UnetProcessor {
         modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip";
+
+        context = new Context();
+        ops = context.service(OpService.class);
+        commandService = context.service(CommandService.class);
+        datasetService = context.service(DatasetService.class);
     }
     
-    private OpService ops;
-
     /**
      * Load and run the Tensor-Flow network on the images to create probability maps
      * of the cell-location.
      */
     public Img<FloatType> runNetwork(Img<FloatType> img) {
         try {
-            Context context = new Context();
-            CommandService commandService = context.service(CommandService.class);
-            DatasetService datasetService = context.service(DatasetService.class);
-            ops = context.service(OpService.class);
-            UIService uiService = context.service(UIService.class);
 //			uiService.show("Original Image", img);
 
             img = (Img)normalizeToPercentiles(img, 0.4, 99.4);
@@ -126,7 +129,7 @@ public class UnetProcessor {
 //			FloatType val = new FloatType();
 //			val.set(1);
 //			addValue(tmpNew, val);
-            uiService.show("Processed Image", outputImg);
+            ImageJFunctions.show(outputImg, "Processed Image");
 //			ImageJFunctions.show(outputImg, "Processed Image");
             return outputImg;
 

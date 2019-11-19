@@ -15,8 +15,8 @@ import java.util.ArrayList;
 public class UnetProcessorTest {
 
     public static void main(String[] args) throws FileNotFoundException {
-//        new UnetProcessorTest().process_runs_on_datasets_shapes_below_unet_input_layer();
-        new UnetProcessorTest().process_test_data_with_short_growthlane();
+        new UnetProcessorTest().process_runs_on_datasets_shapes_below_unet_input_layer();
+//        new UnetProcessorTest().process_test_data_with_short_growthlane();
     }
 
     @Test
@@ -28,8 +28,10 @@ public class UnetProcessorTest {
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x444.tif"; // too thin and too low; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x531.tif"; // too thin, but high enough; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x444.tif"; // wide enough, but too low; UNet input-layer shape is: 32x512
+        int gl_offset_top = 100;
+        int gl_offset_bottom = 0;
         Img<FloatType> inputImage = readImageData(path);
-        Img<FloatType> processedImage = new UnetProcessor().process(inputImage);
+        Img<FloatType> processedImage = new UnetProcessor(gl_offset_top, gl_offset_bottom).process(inputImage);
         ImageJFunctions.show(inputImage, "Input image");
         ImageJFunctions.show(processedImage, "Processed image");
     }
@@ -39,10 +41,14 @@ public class UnetProcessorTest {
     public void process_test_data_with_short_growthlane() throws FileNotFoundException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-//        String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
-        String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
+        String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
+        int gl_offset_bottom = 0;
+        long gl_offset_top = 100;
+//        String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
+//        int gl_offset_bottom = 0;
+//        long gl_offset_top = 100;
         Img<FloatType> inputImage = readImageData(path);
-        Img<FloatType> processedImage = new UnetProcessor().process(inputImage);
+        Img<FloatType> processedImage = new UnetProcessor(gl_offset_top, gl_offset_bottom).process(inputImage);
         ImageJFunctions.show(inputImage, "Input image");
         ImageJFunctions.show(processedImage, "Processed image");
     }

@@ -26,16 +26,25 @@ public class UnetProcessorTest {
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x444.tif"; // too thin and too low; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x531.tif"; // too thin, but high enough; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x444.tif"; // wide enough, but too low; UNet input-layer shape is: 32x512
+        Img<FloatType> imgTemp = readImageData(path);
+        Img<FloatType> imgProbs = new UnetProcessor().process(imgTemp);
+        ImageJFunctions.show(imgProbs, "Processed Image");
+    }
+
+    /**
+     * Read image data used in the tests.
+     *
+     * @param path
+     * @return First channel of the image stack that was read.
+     * @throws FileNotFoundException
+     */
+    private Img<FloatType> readImageData(String path) throws FileNotFoundException {
         ImagePlus imp = IJ.openImage(path);
         int minTime = 1;
         int maxTime = imp.getNFrames();
         int minChannelIdx = 1;
         int maxChannelIdx = imp.getNChannels();
-
         ArrayList<Img<FloatType>> rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, maxChannelIdx);
-
-        Img<FloatType> imgTemp = rawChannelImgs.get( 0 );
-        Img<FloatType> imgProbs = new UnetProcessor().process(imgTemp);
-        ImageJFunctions.show(imgProbs, "Processed Image");
+        return rawChannelImgs.get( 0 );
     }
 }

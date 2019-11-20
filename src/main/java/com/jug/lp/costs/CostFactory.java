@@ -80,47 +80,18 @@ public class CostFactory {
 	}
 
 	/**
-	 * @param ctNode
+	 * @param component
 	 * @return
 	 */
-	public static float getComponentCost(final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
-		ValuePair<Float, Float> pixelProbabilities = ComponentTreeUtils.getTreeNodeMinMaxIntensity(ctNode, imageProbabilities);
-		float minPixelProbability = pixelProbabilities.a;
-//		float maxPixelProbability = pixelProbabilities.b;
-//		float cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
-//		float cost = (float)(- minPixelProbability - (1 - mserScore * 10)); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
-		float cost = (float)(- minPixelProbability); // MM-2019-10-02: HACK: THIS WAS JUST TO TEST OUT THE RATIONAL BEHIND USING THE MSER SCORE FOR WEIGHTING
-
-//		float cost;
-//        if(minPixelProbability>0.2){
-//        	cost = 100;
-//		}
-//        else{
-//			cost = - 2.0f * (float) Math.pow( minPixelProbability, 2.0f ); // take minimum probability to the power of 2
-//		}
-
-        final ValuePair< Integer, Integer > segInterval =
-				ComponentTreeUtils.getTreeNodeInterval( ctNode );
-		final int a = segInterval.getA();
-		final int b = segInterval.getB();
-
-//        // cell is too small
-//		if ( b - a < MoMA.MIN_CELL_LENGTH ) { // if a==0 or b==gapSepFkt.len, only a part of the cell is seen!
-//			cost = 100;
-//		}
-
-//        System.out.println("minPixelProbability: " + minPixelProbability);
-//        System.out.println("cost: " + cost);
-//        System.out.println("segment length: " + (b - a));
-//        int nodeLevel = ((SimpleComponent) ctNode).getNodeLevel();
-//		double mserScore = ((SimpleComponent) ctNode).getMserScore();
-//        System.out.println(String.format("%d\t%E", nodeLevel, mserScore));
-
-		return cost * 2f;
-//		return -1f;
-//        return -1;//
-		// cost;
-//		return -0.2f;
+	public static float getComponentCost(final Component< ?, ? > component, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
+        float top_roi_boundary = (float) MoMA.GL_OFFSET_TOP;
+        double verticalPosition = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
+        double distanceFromBoundary = top_roi_boundary - verticalPosition;
+        double sigma = 2; // defines the range, over which the cost increases.
+        double maximumCost = 2; // maximum cost possible for a component above the boundary
+        double minimumCost = -1; // minimum cost of a component below the boundary
+        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/sigma)));
+		return cost;
     }
 
     /**

@@ -207,15 +207,15 @@ public class GrowthLineTrackingILP {
 	 * Adds all hypothesis given by the nodes in the component tree to
 	 * <code>nodes</code>.
 	 *
-	 * @param ctNode
+	 * @param component
 	 *            a node in a <code>ComponentTree</code>.
 	 * @param t
 	 *            the time-index the ctNode comes from.
 	 */
-	private void recursivelyAddCTNsAsHypotheses( final int t, final Component< FloatType, ? > ctNode ) { //, final boolean isForParaMaxFlowSumImg
-		float componentCost = localIntensityBasedCost( t, ctNode );
-		nodes.addHypothesis( t, new Hypothesis<>(t, ctNode, componentCost) );
-		for ( final Component< FloatType, ? > ctChild : ctNode.getChildren() ) {
+	private void recursivelyAddCTNsAsHypotheses( final int t, final Component< FloatType, ? > component ) { //, final boolean isForParaMaxFlowSumImg
+		float componentCost = getComponentCost( t, component );
+		nodes.addHypothesis( t, new Hypothesis<>(t, component, componentCost) );
+		for ( final Component< FloatType, ? > ctChild : component.getChildren() ) {
 			recursivelyAddCTNsAsHypotheses( t, ctChild );
 		}
 	}
@@ -225,9 +225,9 @@ public class GrowthLineTrackingILP {
 	 * @param ctNode
 	 * @return
 	 */
-	public float localIntensityBasedCost( final int t, final Component< ?, ? > ctNode ) {
+	public float getComponentCost(final int t, final Component< ?, ? > ctNode ) {
 		RandomAccessibleInterval<FloatType> img = Views.hyperSlice( MoMA.instance.getImgProbs(), 2, t);
-		return CostFactory.getIntensitySegmentationCost( ctNode, img );
+		return CostFactory.getComponentCost( ctNode, img );
 	}
 
 	/**

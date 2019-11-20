@@ -83,7 +83,7 @@ public class CostFactory {
 	 * @param ctNode
 	 * @return
 	 */
-	public static float getIntensitySegmentationCost( final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
+	public static float getComponentCost(final Component< ?, ? > ctNode, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
 		ValuePair<Float, Float> pixelProbabilities = ComponentTreeUtils.getTreeNodeMinMaxIntensity(ctNode, imageProbabilities);
 		float minPixelProbability = pixelProbabilities.a;
 //		float maxPixelProbability = pixelProbabilities.b;

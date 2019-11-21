@@ -650,6 +650,7 @@ public class GrowthLineTrackingILP {
 			for ( final Hypothesis< Component< FloatType, ? >> hyp : nodes.getHypothesesAt( t ) ) {
 				final GRBLinExpr expr = new GRBLinExpr();
 
+				// TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
 				if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
 						expr.addTerm( 1.0, a_j.getGRBVar() );

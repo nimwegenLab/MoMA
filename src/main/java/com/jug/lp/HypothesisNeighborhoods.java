@@ -93,22 +93,33 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 		return rightNeighborhoods.get( h );
 	}
 
-    /**
-     * Gets right-assignments of {@param h}, which are of type {@param assignmentType}.
-     *
-     * @param h hypothesis for which to get the assignments/
-     * @param assignmentType type of assignments that will be returned.
-     * @param <T>
-     * @return
-     */
-	public <T extends AbstractAssignment> Set<T> getRightAssignmentsOfType(final H h, Class<T> assignmentType ){
+	/**
+	 * Gets right-assignments of {@param h}, which are of type {@param assignmentType}.
+	 *
+	 * @param h              hypothesis for which to get the assignments/
+	 * @param assignmentType type of assignments that will be returned.
+	 * @param <T>
+	 * @return
+	 */
+	public <T extends AbstractAssignment> Set<T> getRightAssignmentsOfType(final H h, Class<T> assignmentType) {
+		return getAssignmentsOfType(getRightNeighborhood(h), assignmentType);
+	}
 
-        Set<T> mappingAssignments = new HashSet<>();
-        for(A assignment:getRightNeighborhood(h)){
-            if(assignmentType.isAssignableFrom(assignment.getClass())) mappingAssignments.add((T) assignment);
-        }
-        return mappingAssignments;
-    }
+	/**
+	 * Get all assignments of a given type from set of abstract assignments.
+	 *
+	 * @param allAssignments set of assignments from which we want to get the assignments of desired type.
+	 * @param assignmentType type of the assignment
+	 * @param <T>            the type of assignments we want to get
+	 * @return set of assignments of the desired type
+	 */
+	public <T extends AbstractAssignment> Set<T> getAssignmentsOfType(final Set<A> allAssignments, Class<T> assignmentType) {
+		Set<T> assignmentsOfType = new HashSet<>();
+		for (A assignment : allAssignments) {
+			if (assignmentType.isAssignableFrom(assignment.getClass())) assignmentsOfType.add((T) assignment);
+		}
+		return assignmentsOfType;
+	}
 
 	// -------------------------------------------------------------------------------------
 	// methods

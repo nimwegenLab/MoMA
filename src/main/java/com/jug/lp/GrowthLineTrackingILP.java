@@ -1001,6 +1001,34 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
+	 * Get optimal assignments from timestep t to t+1
+	 *
+	 * @param t time step
+	 * @return set of optimal assignments
+	 */
+	public Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> getOptimalAssignments(final int t) {
+		return getOptimalAssignments(nodes.getAssignmentsAt(t));
+	}
+
+	/**
+	 * Get all optimal assignments from an Iterable of {@link AbstractAssignment}
+	 *
+	 * @param assignments iterable of assignments
+	 * @return set of optimal assignments
+	 */
+	public Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> getOptimalAssignments(Iterable<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments) {
+		HashSet<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeAssignments = new HashSet<>();
+		try {
+			for (AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : assignments) {
+				if (assignment.isChoosen()) activeAssignments.add(assignment);
+			}
+		} catch (GRBException e) {
+			e.printStackTrace();
+		}
+		return activeAssignments;
+	}
+
+	/**
 	 * Finds and returns the optimal right (to t+1) assignments at time-point t.
 	 * For each segmentation hypothesis at t we collect all active assignments
 	 * going towards the right (to t+1).
@@ -1074,7 +1102,7 @@ public class GrowthLineTrackingILP {
 	 *         optimizer!)
 	 * @throws GRBException
 	 */
-	private AbstractAssignment< Hypothesis< Component< FloatType, ? > > > findActiveAssignment( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set ) throws GRBException {
+	private AbstractAssignment< Hypothesis< Component< FloatType, ? > > > findActiveAssignment( final Iterable< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set ) throws GRBException {
 		if ( set == null ) return null;
 
 		for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : set ) {

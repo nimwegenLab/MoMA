@@ -92,6 +92,12 @@ public class CostFactory {
         double minimumCost = -1; // minimum cost of a component below the boundary
         float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/sigma)));
 		return cost;
+//		return 1.0f;
+//        double rand = Math.random() - 0.5;
+//        if(rand > 0)
+//            return 1.1f;
+//        else
+//            return -1f;
     }
 
     /**

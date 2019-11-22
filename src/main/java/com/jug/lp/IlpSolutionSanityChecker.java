@@ -19,44 +19,39 @@ public class IlpSolutionSanityChecker {
     }
 
     void CheckSolutionContinuityConstraintForAllTimesteps() {
+        System.out.println("--------- Start: CheckSolutionContinuityConstraintForAllTimesteps ---------");
         for (int t = 1; t < gl.size(); t++) {
-            CheckSolutionContinuityConstraintForTimestep(t);
+            CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(t);
         }
+        System.out.println("--------- End: CheckSolutionContinuityConstraintForAllTimesteps ---------");
     }
 
     /**
-     * This method check whether: `#allPreviousOutgoingAssignments-#allPreviousExitAssignment == #currentIncomingAssignments`
+     * This method checks the continuity constraint: outgoingAssignmentCount == incomingAssignmentsCount for each
+     * time step {@param t}
      *
-     * @param t
+     * @param t time step at which the continuity constraint is checked
      */
-    void CheckSolutionContinuityConstraintForTimestep(int t) {
+    void CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t) {
         try{
             List<Hypothesis<Component<FloatType, ?>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> currentLeftSidedAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> leftSidedAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightSidedAssignments = new ArrayList<>();
             for (Hypothesis<Component<FloatType, ?>> hyp : currentOptimalHypotheses) {
-                currentLeftSidedAssignments.add(ilp.getOptimalLeftAssignment(hyp));
+                leftSidedAssignments.add(ilp.getOptimalLeftAssignment(hyp));
+                rightSidedAssignments.add(ilp.getOptimalRightAssignment(hyp));
             }
+            int incomingAssignmentsCount = leftSidedAssignments.size();
+            int outgoingAssignmentCount = rightSidedAssignments.size();
 
-            List<Hypothesis<Component<FloatType, ?>>> previousOptimalHypotheses = ilp.getOptimalSegmentation(t-1);
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> previousRightHandedAssignments = new ArrayList<>();
-            for (Hypothesis<Component<FloatType, ?>> hyp : previousOptimalHypotheses) {
-                previousRightHandedAssignments.add(ilp.getOptimalRightAssignment(hyp));
-            }
-
-            int previousOutgoingAssignmentCount = previousRightHandedAssignments.size();
-            int previousExitAssignmentCount = new HypothesisNeighborhoods().getAssignmentsOfType(previousRightHandedAssignments, ExitAssignment.class).size();
-            int currentIncomingAssignmentCount = currentLeftSidedAssignments.size();
-
-            assert (currentIncomingAssignmentCount == (previousOutgoingAssignmentCount - previousExitAssignmentCount));
+            System.out.println(String.format("timestep %d:", t));
+            System.out.println(String.format("incoming: %d", incomingAssignmentsCount));
+            System.out.println(String.format("outgoing: %d", outgoingAssignmentCount));
+            assert (outgoingAssignmentCount == incomingAssignmentsCount) :
+                    String.format("ERROR: Continuity constraint violation at t=%d", t);
         }
         catch (GRBException e) {
             e.printStackTrace();
         }
     }
-
-//    int AssignmentTypeCount(List<AbstractAssignment<?>> assignments, Class<T> assignmentType){
-//        for(AbstractAssignment<?> ass : assignments){
-//            if()
-//        }
-//    }
 }

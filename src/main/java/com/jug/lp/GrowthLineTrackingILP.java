@@ -139,7 +139,7 @@ public class GrowthLineTrackingILP {
 
 			HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 			sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
-			sanityChecker.checkIfAllComponentsMappingAssignmentsBetweenThem();
+			sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 
 			// UPDATE GUROBI-MODEL
 			// - - - - - - - - - -

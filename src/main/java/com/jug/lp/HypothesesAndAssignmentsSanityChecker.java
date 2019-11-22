@@ -54,7 +54,7 @@ public class HypothesesAndAssignmentsSanityChecker {
         ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentTree(), levelComponentsConsumer);
     }
 
-    public void checkIfAllComponentsMappingAssignmentsBetweenThem() {
+    public void checkIfAllComponentsHaveMappingAssignmentsBetweenThem() {
         for (int t = 1; t < gl.size(); t++) {
             allMappingAssignmentsForComponentsExistAtTime(t);
         }

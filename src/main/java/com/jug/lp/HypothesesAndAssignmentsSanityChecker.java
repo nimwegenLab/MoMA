@@ -32,11 +32,6 @@ public class HypothesesAndAssignmentsSanityChecker {
     public void checkIfAllComponentsHaveCorrespondingHypothesis() {
         for (int t = 1; t < gl.size(); t++) {
             allHypothesisForComponentsExistAtTime(t);
-
-            if(t == 32){
-                final GrowthLineFrame glf = gl.getFrames().get(t);
-                Plotting.drawComponentTree2(glf.getComponentTree(), new ArrayList<>());
-            }
         }
     }
 
@@ -67,11 +62,6 @@ public class HypothesesAndAssignmentsSanityChecker {
         ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(t+1).getComponentTree();
         List<SimpleComponent<FloatType>> allSourceComponents = ComponentTreeUtils.getListOfNodes(sourceComponentTree);
         List<SimpleComponent<FloatType>> allTargetComponents = ComponentTreeUtils.getListOfNodes(targetComponentTree);
-
-        if(t == 32){
-            Plotting.drawComponentTree2(sourceComponentTree, new ArrayList<>());
-        }
-
 
         for(SimpleComponent<FloatType> sourceComponent : allSourceComponents){
             Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(sourceComponent);

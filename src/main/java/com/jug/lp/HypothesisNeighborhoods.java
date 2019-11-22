@@ -113,7 +113,7 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 	 * @param <T>            the type of assignments we want to get
 	 * @return set of assignments of the desired type
 	 */
-	public <T extends AbstractAssignment> Set<T> getAssignmentsOfType(final Set<A> allAssignments, Class<T> assignmentType) {
+	public <T extends AbstractAssignment> Set<T> getAssignmentsOfType(final Iterable<A> allAssignments, Class<T> assignmentType) {
 		Set<T> assignmentsOfType = new HashSet<>();
 		for (A assignment : allAssignments) {
 			if (assignmentType.isAssignableFrom(assignment.getClass())) assignmentsOfType.add((T) assignment);

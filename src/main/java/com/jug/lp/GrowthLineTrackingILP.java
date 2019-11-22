@@ -761,6 +761,8 @@ public class GrowthLineTrackingILP {
 					dialog.pushStatus( String.format( "Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0 ) );
 				}
 			}
+
+			new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();
 		} catch ( final GRBException e ) {
 			System.out.println( "Could not run the generated ILP!" );
 			e.printStackTrace();
@@ -994,7 +996,7 @@ public class GrowthLineTrackingILP {
 	 *         previous time-point.
 	 * @throws GRBException
 	 */
-	private AbstractAssignment< Hypothesis< Component< FloatType, ? > > > getOptimalLeftAssignment( final Hypothesis< Component< FloatType, ? > > hypothesis ) throws GRBException {
+	public AbstractAssignment< Hypothesis< Component< FloatType, ? > > > getOptimalLeftAssignment( final Hypothesis< Component< FloatType, ? > > hypothesis ) throws GRBException {
 		return findActiveAssignment( edgeSets.getLeftNeighborhood( hypothesis ) );
 	}
 

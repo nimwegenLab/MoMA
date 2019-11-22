@@ -158,7 +158,7 @@ public class GrowthLineTrackingILP {
 			// (those would be (i) and (ii) of 'Default Solution')
 			// - - - - - - - - - - - - - - - - - - - - - - - - - -
 			addPathBlockingConstraints();
-			addExplainationContinuityConstraints();
+			addContinuityConstraints();
 
 			// UPDATE GUROBI-MODEL
 			// - - - - - - - - - -
@@ -641,7 +641,7 @@ public class GrowthLineTrackingILP {
 	 * assignment coming from t-1 we need to continue its interpretation by
 	 * finding an active assignment towards t+1.
 	 */
-	private void addExplainationContinuityConstraints() throws GRBException {
+	private void addContinuityConstraints() throws GRBException {
 		int eccId = 0;
 
 		// For each time-point
@@ -650,7 +650,9 @@ public class GrowthLineTrackingILP {
 			for ( final Hypothesis< Component< FloatType, ? >> hyp : nodes.getHypothesesAt( t ) ) {
 				final GRBLinExpr expr = new GRBLinExpr();
 
-				// TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
+				/* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
+				 * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
+				 */
 				if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
 						expr.addTerm( 1.0, a_j.getGRBVar() );

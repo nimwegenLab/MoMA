@@ -591,46 +591,6 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	private < C extends Component< ?, C > > void recursivelyAddPathBlockingConstraints(
-			final List< String > constraints,
-			final C ctNode,
-			final int t ) {
-
-		// if ctNode is a leave node -> add constraint (by going up the list of
-		// parents and building up the constraint)
-		if ( ctNode.getChildren().size() == 0 ) {
-			C runnerNode = ctNode;
-
-			StringBuilder constraint = new StringBuilder();
-			while ( runnerNode != null ) {
-				@SuppressWarnings( "unchecked" )
-				final Hypothesis< Component< FloatType, ? > > hypothesis =
-						( Hypothesis< Component< FloatType, ? > > ) nodes.findHypothesisContaining( runnerNode );
-				if ( hypothesis == null ) {
-					System.err.println(
-							"WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!" );
-				}
-
-				if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
-					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : edgeSets.getRightNeighborhood( hypothesis ) ) {
-						constraint.append(String.format("(%d,1)+", a.getVarIdx()));
-					}
-				}
-				runnerNode = runnerNode.getParent();
-			}
-			if ( constraint.length() > 0 ) {
-				constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1));
-				constraint.append(" <= 1");
-				constraints.add(constraint.toString());
-			}
-		} else {
-			// if ctNode is a inner node -> recursion
-			for ( final C ctChild : ctNode.getChildren() ) {
-				recursivelyAddPathBlockingConstraints( constraints, ctChild, t );
-			}
-		}
-	}
-
 	/**
 	 * This function generated and adds the explanation-continuity-constraints
 	 * to the ILP model.

@@ -43,13 +43,12 @@ public class IlpSolutionSanityChecker {
         int incomingTotalCount = incomingAssignments.size();
         int outgoingTotalCount = outgoingAssignments.size();
         if (outgoingTotalCount - incomingDivisionCount != (incomingTotalCount - incomingExitCount)){
-            String.format("ERROR: Continuity constraint violation at t=%d", t);
+            System.out.println(String.format("ERROR: Continuity constraint violation at t=%d", t));
             System.out.println(String.format("outgoing total: %d", outgoingTotalCount));
             System.out.println(String.format("incoming total: %d", incomingTotalCount));
             System.out.println(String.format("incoming exit: %d", incomingExitCount));
             System.out.println(String.format("incoming division: %d", incomingDivisionCount));
         }
-        assert(false): String.format("ERROR: Continuity constraint violation at t=%d", t);
     }
 
 

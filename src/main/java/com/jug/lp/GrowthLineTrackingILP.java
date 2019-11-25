@@ -658,10 +658,16 @@ public class GrowthLineTrackingILP {
 						expr.addTerm( 1.0, a_j.getGRBVar() );
 					}
 				}
+				else{
+					System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
+				}
 				if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edgeSets.getRightNeighborhood( hyp ) ) {
 						expr.addTerm( -1.0, a_j.getGRBVar() );
 					}
+				}
+				else{
+					System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
 				}
 
 				// add the constraint for this hypothesis

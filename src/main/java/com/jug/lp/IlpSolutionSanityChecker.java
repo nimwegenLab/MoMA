@@ -44,8 +44,8 @@ public class IlpSolutionSanityChecker {
         int outgoingTotalCount = outgoingAssignments.size();
         if (outgoingTotalCount - incomingDivisionCount != (incomingTotalCount - incomingExitCount)){
             System.out.println(String.format("ERROR: Continuity constraint violation at t=%d", t));
-            System.out.println(String.format("outgoing total: %d", outgoingTotalCount));
             System.out.println(String.format("incoming total: %d", incomingTotalCount));
+            System.out.println(String.format("outgoing total: %d", outgoingTotalCount));
             System.out.println(String.format("incoming exit: %d", incomingExitCount));
             System.out.println(String.format("incoming division: %d", incomingDivisionCount));
         }
@@ -62,19 +62,19 @@ public class IlpSolutionSanityChecker {
     void CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t) {
         try{
             List<Hypothesis<Component<FloatType, ?>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> leftSidedAssignments = new ArrayList<>();
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightSidedAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> incomingAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> outgoingAssignments = new ArrayList<>();
             for (Hypothesis<Component<FloatType, ?>> hyp : currentOptimalHypotheses) {
-                leftSidedAssignments.add(ilp.getOptimalLeftAssignment(hyp));
-                rightSidedAssignments.add(ilp.getOptimalRightAssignment(hyp));
+                incomingAssignments.add(ilp.getOptimalLeftAssignment(hyp));
+                outgoingAssignments.add(ilp.getOptimalRightAssignment(hyp));
             }
-            int incomingAssignmentsCount = leftSidedAssignments.size();
-            int outgoingAssignmentCount = rightSidedAssignments.size();
+            int incomingAssignmentCount = incomingAssignments.size();
+            int outgoingAssignmentCount = outgoingAssignments.size();
 
             System.out.println(String.format("timestep %d:", t));
-            System.out.println(String.format("incoming: %d", incomingAssignmentsCount));
+            System.out.println(String.format("incoming: %d", incomingAssignmentCount));
             System.out.println(String.format("outgoing: %d", outgoingAssignmentCount));
-            assert (outgoingAssignmentCount == incomingAssignmentsCount) :
+            assert (outgoingAssignmentCount == incomingAssignmentCount) :
                     String.format("ERROR: Continuity constraint violation at t=%d", t);
         }
         catch (GRBException e) {

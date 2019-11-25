@@ -906,11 +906,12 @@ public class GrowthLineTrackingILP {
 		if ( hyps == null ) return ret;
 
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > nh;
+			Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > nh = new HashSet<>();
 			if ( t > 0 ) {
-				nh = edgeSets.getLeftNeighborhood( hyp );
+				nh.addAll(edgeSets.getLeftNeighborhood( hyp ));
+				nh.addAll(edgeSets.getRightNeighborhood( hyp ));
 			} else {
-				nh = edgeSets.getRightNeighborhood( hyp );
+				nh.addAll(edgeSets.getRightNeighborhood( hyp ));
 			}
 
 			try {
@@ -919,7 +920,7 @@ public class GrowthLineTrackingILP {
 					ret.add( hyp );
 				}
 			} catch ( final GRBException e ) {
-				System.err.println( "ERROR: It could not be determined of a certain assignment was choosen during the convex optimization!" );
+				System.err.println( "ERROR: It could not be determined of a certain assignment was chosen during the convex optimization!" );
 				e.printStackTrace();
 			}
 		}

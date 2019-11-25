@@ -38,38 +38,6 @@ class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssi
 	// getters and setters
 	// -------------------------------------------------------------------------------------
 	/**
-	 * @return the rightNeighborhoods
-	 */
-	public HashMap< H, Set< A > > getRightNeighborhoods() {
-		return rightNeighborhoods;
-	}
-
-	// /**
-	// * @param rightNeighborhoods
-	// * the rightNeighborhoods to set
-	// */
-	// public void setRightNeighborhoods( final HashMap< H, Set< A > >
-	// rightNeighborhoods ) {
-	// this.rightNeighborhoods = rightNeighborhoods;
-	// }
-
-	/**
-	 * @return the leftNeighborhoods
-	 */
-	public HashMap< H, Set< A > > getLeftNeighborhoods() {
-		return leftNeighborhoods;
-	}
-
-	// /**
-	// * @param leftNeighborhoods
-	// * the leftNeighborhoods to set
-	// */
-	// public void setLeftNeighborhoods( final HashMap< H, Set< A > >
-	// leftNeighborhoods ) {
-	// this.leftNeighborhoods = leftNeighborhoods;
-	// }
-
-	/**
 	 * Gets the leftNeighborhood of a hypothesis <code>h</code>.
 	 *
 	 * @param h

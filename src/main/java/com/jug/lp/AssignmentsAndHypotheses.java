@@ -119,6 +119,9 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 		if ( h_t.get( t ).add( h ) ) { // TODO-MM-20191021: WARNING: this seems dangerous as it can cause silent mis-behavior by having hypotheses that are not in hmap, if h_t.get(t) returns false.
 			hmap.put( h.getWrappedComponent(), h );
         }
+		else{
+			System.out.print(String.format("ERROR: Failed to add hypothesis at time-step: t=%d", t));
+		}
     }
 
 	/**

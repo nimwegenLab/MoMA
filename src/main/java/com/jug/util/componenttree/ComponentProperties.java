@@ -27,9 +27,8 @@ public class ComponentProperties {
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
     }
 
-    public double getArea(SimpleComponent<?> component){
-        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        return ((DoubleType) ops.run(DefaultSizePolygon.class, poly)).get();
+    public int getArea(SimpleComponent<?> component){
+        return (int) component.getRegion().size();
     }
 
     public RealPoint getCentroid(SimpleComponent<?> component){

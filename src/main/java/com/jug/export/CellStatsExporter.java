@@ -506,7 +506,7 @@ public class CellStatsExporter {
 				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
 				linesToExport.add(String.format(
-						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; cell_width=%f; cell_length=%f; cell_area=%f; num_pixels_in_box=%d; genealogy=%s",
+						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; cell_width=%f; cell_length=%f; cell_area=%d; num_pixels_in_box=%d; genealogy=%s",
 						segmentRecord.frame,
 						cellRank,
 						numCells,

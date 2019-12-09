@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -43,12 +44,17 @@ public class ComponentPropertiesTest {
         ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(currentImage);
 
         ComponentProperties props = new ComponentProperties();
-        for(SimpleComponent component : tree.roots()){
+
+        ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+        List<SimpleComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        roots.sort(verticalComponentPositionComparator);
+
+        for(SimpleComponent component : roots){
             double verticalPosition = props.getCentroid(component).getDoublePosition(1);
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
-            double area = props.getArea(component);
-            System.out.println(String.format("properties: %f, %f, %f, %f", verticalPosition, minorAxis, majorAxis, area));
+            int area = props.getArea(component);
+            System.out.println(String.format("properties: %f, %f, %f, %d", verticalPosition, minorAxis, majorAxis, area));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());

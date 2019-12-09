@@ -3,7 +3,6 @@ package com.jug.util.componenttree;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.RealPoint;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -46,9 +45,10 @@ public class ComponentPropertiesTest {
         ComponentProperties props = new ComponentProperties();
         for(SimpleComponent component : tree.roots()){
             double verticalPosition = props.getCentroid(component).getDoublePosition(1);
-            double majorAxis = props.getMajorAxis(component);
+            double minorAxis = props.getMinorMajorAxis(component).getA().get();
+            double majorAxis = props.getMinorMajorAxis(component).getB().get();
             double area = props.getArea(component);
-            System.out.println(String.format("properties: %f, %f, %f", verticalPosition, majorAxis, area));
+            System.out.println(String.format("properties: %f, %f, %f, %f", verticalPosition, minorAxis, majorAxis, area));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());

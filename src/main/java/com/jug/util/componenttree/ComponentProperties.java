@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.DefaultMajorAxis;
+import net.imagej.ops.geom.geom2d.DefaultSizePolygon;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.Type;
@@ -17,8 +18,13 @@ public class ComponentProperties {
         regionToPolygonConverter.setContext(ops.context());
     }
 
-    public <T extends Type<T>> double getMajorAxis(SimpleComponent<T> component){
+    public double getMajorAxis(SimpleComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         return ((DoubleType) ops.run(DefaultMajorAxis.class, poly)).get();
+    }
+
+    public double getArea(SimpleComponent<?> component){
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        return ((DoubleType) ops.run(DefaultSizePolygon.class, poly)).get();
     }
 }

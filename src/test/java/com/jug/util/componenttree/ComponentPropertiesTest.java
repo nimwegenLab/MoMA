@@ -46,7 +46,8 @@ public class ComponentPropertiesTest {
         ComponentProperties props = new ComponentProperties();
         for(SimpleComponent component : tree.roots()){
             double majorAxis = props.getMajorAxis(component);
-            System.out.println(String.format("majorAxis: %f", majorAxis));
+            double area = props.getArea(component);
+            System.out.println(String.format("properties: %f, %f", majorAxis, area));
         }
     }
 }

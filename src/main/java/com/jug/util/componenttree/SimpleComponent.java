@@ -17,6 +17,7 @@ import org.scijava.Context;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
@@ -156,7 +157,6 @@ public final class SimpleComponent<T extends Type<T>>
 //        return new RegionLocalizableIterator(region);
 //    }
 
-
     public void setRegion(LabelRegion<Integer> region) {
         this.region = region;
         LabelRegionCursor c = region.cursor();
@@ -164,6 +164,10 @@ public final class SimpleComponent<T extends Type<T>>
             c.fwd();
             pixelList.add(new Point(c));
         }
+    }
+
+    public LabelRegion<Integer> getRegion(){
+        return region;
     }
 
 //    public void setRegion(LabelRegion<Integer> region) {

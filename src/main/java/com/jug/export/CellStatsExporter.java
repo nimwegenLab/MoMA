@@ -492,7 +492,7 @@ public class CellStatsExporter {
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
 
 				final int numCells = glf.getSolutionStats_numCells();
-				final int cellPos = glf.getSolutionStats_cellPos(segmentRecord.hyp);
+				final int cellRank = glf.getSolutionStats_cellPos(segmentRecord.hyp);
 
 				final String genealogy = segmentRecord.getGenealogyString();
 
@@ -500,7 +500,7 @@ public class CellStatsExporter {
 				linesToExport.add(String.format(
 						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; num_pixels_in_box=%d; genealogy=%s",
 						segmentRecord.frame,
-						cellPos,
+						cellRank,
 						numCells,
 						limits.getA(),
 						limits.getB(),

@@ -60,7 +60,7 @@ public final class SimpleComponent<T extends Type<T>>
         this.value = wrappedComponent.value();
         this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
-        region = regions.getLabelRegion(this.label);
+        this.region = regions.getLabelRegion(this.label);
     }
 
     /**

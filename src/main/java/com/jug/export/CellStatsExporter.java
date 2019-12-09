@@ -29,11 +29,14 @@ import com.jug.lp.MappingAssignment;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 
+import com.jug.util.componenttree.ComponentProperties;
+import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import net.imglib2.IterableInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
@@ -257,6 +260,8 @@ public class CellStatsExporter {
 	}
 
 	// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	private ComponentProperties componentProperties = new ComponentProperties();
 
 	private final MoMAGui gui;
 
@@ -486,8 +491,9 @@ public class CellStatsExporter {
 		for (SegmentRecord segmentRecord : startingPoints) {
 			linesToExport.add(segmentRecord.toString());
 			do {
+				SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
 				ValuePair<Integer, Integer> limits =
-						ComponentTreeUtils.getTreeNodeInterval(segmentRecord.hyp.getWrappedComponent());
+						ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
 
@@ -496,14 +502,19 @@ public class CellStatsExporter {
 
 				final String genealogy = segmentRecord.getGenealogyString();
 
+				ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
+				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
 				linesToExport.add(String.format(
-						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; num_pixels_in_box=%d; genealogy=%s",
+						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; cell_width=%f; cell_length=%f; cell_area=%f; num_pixels_in_box=%d; genealogy=%s",
 						segmentRecord.frame,
 						cellRank,
 						numCells,
 						limits.getA(),
 						limits.getB(),
+						minorAndMajorAxis.getA(),
+						minorAndMajorAxis.getB(),
+						componentProperties.getArea(currentComponent),
 						Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()),
 						genealogy));
 

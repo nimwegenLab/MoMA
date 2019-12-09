@@ -28,7 +28,7 @@ public class ComponentPropertiesTest {
      * @throws InterruptedException
      */
     @Test
-    public void testWatershedding() throws IOException, InterruptedException {
+    public void testGettingComponentProperties() throws IOException, InterruptedException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
@@ -45,8 +45,8 @@ public class ComponentPropertiesTest {
         ComponentProperties props = new ComponentProperties();
         for(SimpleComponent component : tree.roots()){
             double verticalPosition = props.getCentroid(component).getDoublePosition(1);
-            double minorAxis = props.getMinorMajorAxis(component).getA().get();
-            double majorAxis = props.getMinorMajorAxis(component).getB().get();
+            double minorAxis = props.getMinorMajorAxis(component).getA();
+            double majorAxis = props.getMinorMajorAxis(component).getB();
             double area = props.getArea(component);
             System.out.println(String.format("properties: %f, %f, %f, %f", verticalPosition, minorAxis, majorAxis, area));
         }

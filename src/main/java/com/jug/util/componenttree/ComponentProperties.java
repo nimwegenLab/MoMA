@@ -21,9 +21,10 @@ public class ComponentProperties {
         regionToPolygonConverter.setContext(ops.context());
     }
 
-    public ValuePair<DoubleType, DoubleType> getMinorMajorAxis(SimpleComponent<?> component){
+    public ValuePair<Double, Double> getMinorMajorAxis(SimpleComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        return (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
+        ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
+        return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
     }
 
     public double getArea(SimpleComponent<?> component){

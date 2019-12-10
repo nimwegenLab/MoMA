@@ -1,46 +1,27 @@
 package com.jug.export;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
-
-import javax.swing.JOptionPane;
-
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.gui.DialogCellStatsExportSetup;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.OsDependentFileChooser;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.AbstractAssignment;
-import com.jug.lp.DivisionAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
-import com.jug.lp.Hypothesis;
-import com.jug.lp.MappingAssignment;
+import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
-
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import net.imglib2.IterableInterval;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.histogram.Histogram1d;
-import net.imglib2.histogram.Real1dBinMapper;
-import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+
+import javax.swing.*;
+import java.io.*;
+import java.util.*;
 
 /**
  * @author jug
@@ -293,18 +274,16 @@ public class CellStatsExporter {
 				ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
-				linesToExport.add(String.format(
-						"\tframe=%d; pos_in_GL=[%d,%d]; pixel_limits=[%d,%d]; cell_width=%f; cell_length=%f; cell_area=%d; num_pixels_in_box=%d; genealogy=%s",
-						segmentRecord.frame,
-						cellRank,
-						numCells,
-						limits.getA(),
-						limits.getB(),
-						minorAndMajorAxis.getA(),
-						minorAndMajorAxis.getB(),
-						componentProperties.getArea(currentComponent),
-						Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()),
-						genealogy));
+				String outputString = "\t";
+				outputString += String.format("frame=%d;", segmentRecord.frame);
+				outputString += String.format("pos_in_GL=[%d,%d];", cellRank, numCells);
+				outputString += String.format("pixel_limits=[%d,%d]; ", limits.getA(), limits.getB());
+				outputString += String.format("cell_width=%f; ", minorAndMajorAxis.getA());
+				outputString += String.format("cell_length=%f; ", minorAndMajorAxis.getB());
+				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
+				outputString += String.format("num_pixels_in_box=%d; ", Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()));
+				outputString += String.format("genealogy=%s; ", genealogy);
+				linesToExport.add(outputString);
 
 				// export info per image channel
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {

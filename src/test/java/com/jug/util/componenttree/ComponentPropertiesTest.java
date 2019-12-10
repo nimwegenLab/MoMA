@@ -49,12 +49,15 @@ public class ComponentPropertiesTest {
         List<SimpleComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
+        System.out.println("verticalPosition, minorAxis, majorAxis, area, totalIntensity, totalBackgroundIntensity");
         for(SimpleComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
+            double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
+            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, component.getSourceImage());
             int area = props.getArea(component);
-            System.out.println(String.format("properties: %f, %f, %f, %d", verticalPosition, minorAxis, majorAxis, area));
+            System.out.println(String.format("%f, %f, %f, %d, %f, %f", verticalPosition, minorAxis, majorAxis, area, totalIntensity, totalBackgroundIntensity));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());

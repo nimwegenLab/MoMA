@@ -71,7 +71,7 @@ public class FloatTypeImgLoader {
 				System.out.println("size before dupl "  + img.max(2));
 
 				// dirty workaround, see FloatTypeImgLoader.loadMMTiffSequence
-				img = duplicateLastSlice(img);
+//				img = duplicateLastSlice(img);
 
 				System.out.println("size after dupl "  + img.max(2));
 				rawChannelImgs.add(img);
@@ -84,7 +84,7 @@ public class FloatTypeImgLoader {
 				Img<FloatType> img = ImageJFunctions.convertFloat(dupl);
 
 				// dirty workaround, see FloatTypeImgLoader.loadMMTiffSequence
-				img = duplicateLastSlice(img);
+//				img = duplicateLastSlice(img);
 				rawChannelImgs.add(img);
 			}
 		}

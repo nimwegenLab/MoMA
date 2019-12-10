@@ -50,7 +50,7 @@ public class ComponentPropertiesTest {
         roots.sort(verticalComponentPositionComparator);
 
         for(SimpleComponent component : roots){
-            double verticalPosition = props.getCentroid(component).getDoublePosition(1);
+            double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             int area = props.getArea(component);

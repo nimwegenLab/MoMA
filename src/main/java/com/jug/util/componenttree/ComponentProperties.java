@@ -2,13 +2,16 @@ package com.jug.util.componenttree;
 
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
-import net.imagej.ops.geom.geom2d.DefaultMajorAxis;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
-import net.imagej.ops.geom.geom2d.DefaultSizePolygon;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import net.imglib2.Cursor;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
+import net.imglib2.roi.Regions;
 import net.imglib2.roi.geom.real.Polygon2D;
+import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.scijava.Context;
 
@@ -31,8 +34,20 @@ public class ComponentProperties {
         return (int) component.getRegion().size();
     }
 
-    public RealPoint getCentroid(SimpleComponent<?> component){
+    public ValuePair<Double, Double> getCentroid(SimpleComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        return (RealPoint) ops.run(CentroidPolygon.class, poly);
+        RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
+        return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
+    }
+
+    public double getTotalIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+        LabelRegion<Integer> region = component.getRegion();
+        Cursor<FloatType> cursor = new Regions().sample(region, img).cursor();
+        double totalIntensity = 0;
+        while(cursor.hasNext()){
+            totalIntensity += cursor.get().get();
+            cursor.fwd();
+        }
+        return totalIntensity;
     }
 }

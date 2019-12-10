@@ -278,13 +278,19 @@ public class CellStatsExporter {
 				outputString += String.format("frame=%d;", segmentRecord.frame);
 				outputString += String.format("pos_in_GL=[%d,%d];", cellRank, numCells);
 				outputString += String.format("pixel_limits=[%d,%d]; ", limits.getA(), limits.getB());
-				outputString += String.format("cell_center=%f; ", componentProperties.getCentroid(currentComponent));
+				ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
+				outputString += String.format("cell_center=[%f,%f]; ", center.getA(), center.getB());
 				outputString += String.format("cell_width=%f; ", minorAndMajorAxis.getA());
 				outputString += String.format("cell_length=%f; ", minorAndMajorAxis.getB());
 				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
+				/* start outputting total channel intensities */
+				outputString += String.format("channel_intensity_sum=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
 					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+					outputString += String.format("%f, ", componentProperties.getTotalIntensity(currentComponent, channelFrame));
 				}
+				outputString += String.format("]; ");
+				/* stop outputting total channel intensities */
 				outputString += String.format("num_pixels_in_box=%d; ", Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()));
 				outputString += String.format("genealogy=%s; ", genealogy);
 				linesToExport.add(outputString);

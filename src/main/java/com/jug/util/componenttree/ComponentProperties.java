@@ -4,22 +4,16 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
+import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
-import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
-import net.imglib2.img.Img;
-import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
-import net.imglib2.roi.Regions;
 import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import net.imglib2.view.ExtendedRandomAccessibleInterval;
-import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 
@@ -36,6 +30,22 @@ public class ComponentProperties {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+    }
+
+    /***
+     * Return tilt angle against the vertical axis in radians. We use mathematical rotation direction, where positive
+     * values indicate tilt to the left and negative values indicate tilt to the right.
+     *
+     * @param component
+     * @return tilte angle in radians.
+     */
+    public double getTiltAngle(SimpleComponent<?> component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        double angle = -((DoubleType) ops.run(DefaultMinimumFeretAngle.class, poly)).get();
+        if (angle < -90) angle += 180;
+        else if (angle > 90) angle -= 180;
+        double angleInRadians = angle;
+        return 2 * Math.PI * angleInRadians / 360.0f;
     }
 
     public int getArea(SimpleComponent<?> component){

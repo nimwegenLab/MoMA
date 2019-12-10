@@ -282,6 +282,7 @@ public class CellStatsExporter {
 				outputString += String.format("cell_center=[%f,%f]; ", center.getA(), center.getB());
 				outputString += String.format("cell_width=%f; ", minorAndMajorAxis.getA());
 				outputString += String.format("cell_length=%f; ", minorAndMajorAxis.getB());
+				outputString += String.format("cell_tilt_angle=%f; ", componentProperties.getTiltAngle(currentComponent));
 				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
 				/* start outputting total cell intensities */
 				outputString += String.format("cell_intensity_total=[");

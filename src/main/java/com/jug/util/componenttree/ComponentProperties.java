@@ -54,23 +54,28 @@ public class ComponentProperties {
 
     public double getTotalBackgroundIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        System.out.println(String.format("limits: [%d; %d]", limits.getA(), limits.getB()));
         FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
-//        ExtendedRandomAccessibleInterval extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
-//        double intensity1 = Imglib2Utils.getTotalIntensity(roi1, extendedImage);
         double intensity1 = Imglib2Utils.getTotalIntensity(roi1, img);
         FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
         double intensity2 = Imglib2Utils.getTotalIntensity(roi2, img);
         return intensity1 + intensity2;
     }
 
-    long background_roi_width = 5;
+    public long getBackgroundArea(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
+        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
+        return roi1.dimension(0) * roi1.dimension(1) + roi2.dimension(0) * roi2.dimension(1);
+    }
+
+
+    long background_roi_width = 5; /* ROI width in pixels*/
 
     @NotNull
     private FinalInterval getBackgroundRoi1(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
                 new long[]{0, vert_start},
-                new long[]{background_roi_width, vert_stop}
+                new long[]{background_roi_width - 1, vert_stop}
         );
         return tmp;
     }
@@ -78,7 +83,7 @@ public class ComponentProperties {
     @NotNull
     private FinalInterval getBackgroundRoi2(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
-                new long[]{img.max(0) - background_roi_width, vert_start},
+                new long[]{img.max(0) - (background_roi_width - 1), vert_start},
                 new long[]{img.max(0), vert_stop}
         );
         return tmp;

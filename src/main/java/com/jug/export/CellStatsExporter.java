@@ -294,6 +294,7 @@ public class CellStatsExporter {
 				}
 				outputString += String.format("]; ");
 				/* stop outputting total cell intensities */
+				outputString += String.format("background_roi_area=%d; ", componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 				/* start outputting total background intensities */
 				outputString += String.format("background_intensity_total=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {

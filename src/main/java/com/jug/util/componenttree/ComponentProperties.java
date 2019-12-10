@@ -1,18 +1,26 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.ComponentTreeUtils;
+import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.Cursor;
+import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
+import net.imglib2.img.Img;
+import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.roi.Regions;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.ExtendedRandomAccessibleInterval;
+import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 
 public class ComponentProperties {
@@ -49,5 +57,38 @@ public class ComponentProperties {
             cursor.fwd();
         }
         return totalIntensity;
+    }
+
+    public double getTotalBackgroundIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
+        ExtendedRandomAccessibleInterval extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
+        Cursor<FloatType> cursor = new Regions().sample(Views.interval(extendedImage, roi1), img).cursor();
+        double intensity1 = Imglib2Utils.sumIntensities(cursor);
+
+        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
+        extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
+        cursor = new Regions().sample(Views.interval(extendedImage, roi2), img).cursor();
+        double intensity2 = Imglib2Utils.sumIntensities(cursor);
+
+        return intensity1 + intensity2;
+    }
+
+    long background_roi_width = 5;
+
+    @NotNull
+    private FinalInterval getBackgroundRoi1(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
+        return new FinalInterval(
+                new long[]{0, vert_start, 0},
+                new long[]{background_roi_width, vert_stop, 0}
+        );
+    }
+
+    @NotNull
+    private FinalInterval getBackgroundRoi2(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
+        return new FinalInterval(
+                new long[]{img.max(0) - background_roi_width, vert_start, 0},
+                new long[]{img.max(0), vert_stop, 0}
+        );
     }
 }

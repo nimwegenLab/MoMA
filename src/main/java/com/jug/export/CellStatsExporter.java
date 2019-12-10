@@ -295,10 +295,10 @@ public class CellStatsExporter {
 				outputString += String.format("]; ");
 				/* stop outputting total cell intensities */
 				/* start outputting total background intensities */
-				outputString += String.format("background_intensity_total=[");
+				outputString += String.format("background_intensity_average=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
 					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-					outputString += String.format("%f", componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
+					outputString += String.format("%f", componentProperties.getAveragedBackgroundIntensity(currentComponent, channelFrame));
 					if(c < MoMA.instance.getRawChannelImgs().size()-1){
 						outputString += ", ";
 					}

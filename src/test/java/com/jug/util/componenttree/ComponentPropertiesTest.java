@@ -7,7 +7,6 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.junit.Test;
 
@@ -50,15 +49,15 @@ public class ComponentPropertiesTest {
         List<SimpleComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        System.out.println("verticalPosition, minorAxis, majorAxis, area, totalIntensity, totalBackgroundIntensity");
+        System.out.println("verticalPosition, minorAxis, majorAxis, area, totalIntensity, averageBackgroundIntensity");
         for(SimpleComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
-            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
+            double averageBackgroundIntensity = props.getAveragedBackgroundIntensity(component, currentImage);
             int area = props.getArea(component);
-            System.out.println(String.format("%f, %f, %f, %d, %f, %f", verticalPosition, minorAxis, majorAxis, area, totalIntensity, totalBackgroundIntensity));
+            System.out.println(String.format("%f, %f, %f, %d, %f, %f", verticalPosition, minorAxis, majorAxis, area, totalIntensity, averageBackgroundIntensity));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());

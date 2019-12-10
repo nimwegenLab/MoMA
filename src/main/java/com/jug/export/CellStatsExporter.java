@@ -283,14 +283,28 @@ public class CellStatsExporter {
 				outputString += String.format("cell_width=%f; ", minorAndMajorAxis.getA());
 				outputString += String.format("cell_length=%f; ", minorAndMajorAxis.getB());
 				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
-				/* start outputting total channel intensities */
-				outputString += String.format("channel_intensity_sum=[");
+				/* start outputting total cell intensities */
+				outputString += String.format("cell_intensity_total=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
 					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-					outputString += String.format("%f, ", componentProperties.getTotalIntensity(currentComponent, channelFrame));
+					outputString += String.format("%f", componentProperties.getTotalIntensity(currentComponent, channelFrame));
+					if(c < MoMA.instance.getRawChannelImgs().size() - 1){
+						outputString += ", ";
+					}
 				}
 				outputString += String.format("]; ");
-				/* stop outputting total channel intensities */
+				/* stop outputting total cell intensities */
+				/* start outputting total background intensities */
+				outputString += String.format("background_intensity_total=[");
+				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+					outputString += String.format("%f", componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
+					if(c < MoMA.instance.getRawChannelImgs().size()-1){
+						outputString += ", ";
+					}
+				}
+				outputString += String.format("]; ");
+				/* stop outputting total background intensities */
 				outputString += String.format("num_pixels_in_box=%d; ", Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()));
 				outputString += String.format("genealogy=%s; ", genealogy);
 				linesToExport.add(outputString);

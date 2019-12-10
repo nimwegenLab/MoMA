@@ -1,10 +1,8 @@
 package com.jug.util.imglib2;
 
 import com.jug.util.componenttree.SimpleComponent;
-import net.imglib2.Cursor;
-import net.imglib2.Interval;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
+import net.imagej.ops.Ops;
+import net.imglib2.*;
 import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.Type;
@@ -20,12 +18,13 @@ public class Imglib2Utils {
         }
     }
 
-    public static double getTotalIntensity(final Interval interval, final RandomAccessibleInterval<FloatType> img){
+    public static double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img){
         IterableInterval< FloatType > region = Views.interval( img, interval );
         Cursor<FloatType> cursor = region.cursor();
         double totalIntensity = 0;
         while(cursor.hasNext()){
-            totalIntensity += cursor.get().get();
+            float value = cursor.get().get();
+            totalIntensity += value;
             cursor.fwd();
         }
         return totalIntensity;

@@ -54,36 +54,33 @@ public class ComponentProperties {
 
     public double getTotalBackgroundIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        System.out.println(String.format("limits: [%d; %d]", limits.getA(), limits.getB()));
         FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
-        return Imglib2Utils.getTotalIntensity(roi1, img);
-//        return Imglib2Utils.getTotalIntensity(roi1, img);
 //        ExtendedRandomAccessibleInterval extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
-//        Cursor<FloatType> cursor = new Regions().sample(Views.interval(extendedImage, roi1), img).cursor();
-//        double intensity1 = Imglib2Utils.sumIntensities(cursor);
-//
-//        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
-//        extendedImage = Views.extend(img, new OutOfBoundsConstantValueFactory(new FloatType(0.0f)));
-//        cursor = new Regions().sample(Views.interval(extendedImage, roi2), img).cursor();
-//        double intensity2 = Imglib2Utils.sumIntensities(cursor);
-//
-//        return intensity1 + intensity2;
+//        double intensity1 = Imglib2Utils.getTotalIntensity(roi1, extendedImage);
+        double intensity1 = Imglib2Utils.getTotalIntensity(roi1, img);
+        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
+        double intensity2 = Imglib2Utils.getTotalIntensity(roi2, img);
+        return intensity1 + intensity2;
     }
 
     long background_roi_width = 5;
 
     @NotNull
     private FinalInterval getBackgroundRoi1(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
-        return new FinalInterval(
+        FinalInterval tmp = new FinalInterval(
                 new long[]{0, vert_start},
                 new long[]{background_roi_width, vert_stop}
         );
+        return tmp;
     }
 
     @NotNull
     private FinalInterval getBackgroundRoi2(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
-        return new FinalInterval(
+        FinalInterval tmp = new FinalInterval(
                 new long[]{img.max(0) - background_roi_width, vert_start},
                 new long[]{img.max(0), vert_stop}
         );
+        return tmp;
     }
 }

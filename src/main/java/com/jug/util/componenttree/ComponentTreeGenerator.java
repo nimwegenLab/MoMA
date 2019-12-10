@@ -1,10 +1,15 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.DataMover;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImg;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
@@ -20,6 +25,10 @@ import static com.jug.MoMA.GL_OFFSET_TOP;
 public class ComponentTreeGenerator {
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
         float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
+////        Img<FloatType> raiFkt = ((Img<FloatType>) raiFktOrig).copy();
+//        Img<FloatType> raiFkt = new ArrayImgFactory(new FloatType()).create(raiFktOrig.numDimensions());
+//        DataMover.copy(raiFktOrig, (RandomAccessibleInterval<FloatType>) raiFkt);
+////        Img<FloatType> raiFkt = ImgView.wrap(raiFktOrig, new ArrayImgFactory(new FloatType())).copy();
         setPixelBelowThresholdsToZero(raiFkt, threshold);
 
 		final double delta = 0.0001;

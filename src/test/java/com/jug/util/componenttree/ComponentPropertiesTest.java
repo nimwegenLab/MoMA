@@ -7,6 +7,7 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.junit.Test;
 
@@ -29,7 +30,7 @@ public class ComponentPropertiesTest {
      * @throws InterruptedException
      */
     @Test
-    public void testGettingComponentProperties() throws IOException, InterruptedException {
+    public void testGettingComponentProperties() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
@@ -55,7 +56,7 @@ public class ComponentPropertiesTest {
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
-            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, component.getSourceImage());
+            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             int area = props.getArea(component);
             System.out.println(String.format("%f, %f, %f, %d, %f, %f", verticalPosition, minorAxis, majorAxis, area, totalIntensity, totalBackgroundIntensity));
         }

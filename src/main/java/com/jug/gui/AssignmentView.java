@@ -1,33 +1,21 @@
 package com.jug.gui;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import com.jug.MoMA;
+import com.jug.lp.*;
+import com.jug.util.OSValidator;
+import gurobi.GRBException;
+import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputListener;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.swing.JComponent;
-import javax.swing.SwingUtilities;
-import javax.swing.event.MouseInputListener;
-
-import com.jug.MoMA;
-import com.jug.lp.AbstractAssignment;
-import com.jug.lp.DivisionAssignment;
-import com.jug.lp.ExitAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
-import com.jug.lp.Hypothesis;
-import com.jug.lp.MappingAssignment;
-import com.jug.util.OSValidator;
-
-import gurobi.GRBException;
-import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 
 /**
  * @author jug
@@ -92,6 +80,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	private MoMAGui gui;
 
 	private boolean doFilterGroundTruth = false;
+	private Color strokeColor;
 
 	// -------------------------------------------------------------------------------------
 	// construction
@@ -237,6 +226,8 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	public void paint( final Graphics g ) {
 		if ( data == null ) return;
 
+		drawGlOffsetTop((Graphics2D) g);
+
 		this.currentCostLine = 0;
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > setOfAssignments : data.values() ) {
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assignment : setOfAssignments ) {
@@ -288,6 +279,40 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		} else if ( type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
 			drawDivisionAssignment(g2, ( DivisionAssignment ) assignment);
 		}
+	}
+
+	/**
+	 * Draw the top offset and cross-over range to the assignment view.
+	 *
+	 * @param g
+	 */
+	private void drawGlOffsetTop(final Graphics2D g) {
+		final GeneralPath polygon = new GeneralPath();
+
+		final int x1 = 0;
+		strokeColor = Color.RED.darker();
+		BasicStroke dashedStroke = new BasicStroke(1, 1, 1, 1, new float[]{1.0f, 2.0f}, 1.0f);
+		BasicStroke solidStroke = new BasicStroke(1);
+		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP);
+		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP);
+		polygon.closePath();
+		g.setPaint(strokeColor);
+		g.setStroke(solidStroke);
+		g.draw(polygon);
+
+		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP - 25);
+		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP - 25);
+		polygon.closePath();
+		g.setPaint(strokeColor);
+		g.setStroke(dashedStroke);
+		g.draw(polygon);
+
+		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP + 25);
+		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP + 25);
+		polygon.closePath();
+		g.setPaint(strokeColor);
+		g.setStroke(dashedStroke);
+		g.draw(polygon);
 	}
 
 	/**

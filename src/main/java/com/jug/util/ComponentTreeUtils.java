@@ -88,14 +88,7 @@ public class ComponentTreeUtils {
      * this component-tree-node respectively.
      */
     public static ValuePair<Integer, Integer> getTreeNodeInterval(final Component<?, ?> node) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
-        for (Localizable localizable : node) {
-            final int pos = localizable.getIntPosition(1);
-            min = Math.min(min, pos);
-            max = Math.max(max, pos);
-        }
-        return new ValuePair<>(min, max);
+        return getComponentPixelLimits(node, 1);
     }
 
     /**

@@ -287,12 +287,14 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 * @param g
 	 */
 	private void drawGlOffsetTop(final Graphics2D g) {
-		final GeneralPath polygon = new GeneralPath();
+		double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 
 		final int x1 = 0;
 		strokeColor = Color.RED.darker();
 		BasicStroke dashedStroke = new BasicStroke(1, 1, 1, 1, new float[]{1.0f, 2.0f}, 1.0f);
 		BasicStroke solidStroke = new BasicStroke(1);
+
+		GeneralPath polygon = new GeneralPath();
 		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP);
 		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP);
 		polygon.closePath();
@@ -300,15 +302,17 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		g.setStroke(solidStroke);
 		g.draw(polygon);
 
-		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP - 25);
-		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP - 25);
+		polygon = new GeneralPath();
+		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP - componentExitRange);
+		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP - componentExitRange);
 		polygon.closePath();
 		g.setPaint(strokeColor);
 		g.setStroke(dashedStroke);
 		g.draw(polygon);
 
-		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP + 25);
-		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP + 25);
+		polygon = new GeneralPath();
+		polygon.moveTo(x1, MoMA.GL_OFFSET_TOP + componentExitRange);
+		polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP + componentExitRange);
 		polygon.closePath();
 		g.setPaint(strokeColor);
 		g.setStroke(dashedStroke);

@@ -87,10 +87,10 @@ public class CostFactory {
         float top_roi_boundary = (float) MoMA.GL_OFFSET_TOP;
         double verticalPosition = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
         double distanceFromBoundary = top_roi_boundary - verticalPosition;
-        double sigma = 25; // defines the range, over which the cost increases.
+        double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
         double maximumCost = 1; // maximum cost possible for a component above the boundary
         double minimumCost = -1; // minimum cost of a component below the boundary
-        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/sigma)));
+        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/componentExitRange)));
 		return cost;
 //		return 1.0f;
 //        double rand = Math.random() - 0.5;

@@ -125,12 +125,12 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
     }
 
 	/**
-	 * This method checks, if the provided hypothesis was already provided. If so, it will return that hypothesis and do
-	 * nothing else. If the hypothesis does not yet exist, it will add the provided hypothesis to {@link hmap} and return
-	 * it.
+	 * This method checks, if the hypothesis {@param h} with the contained component was previously already added.
+	 * If so, it will return that hypothesis and do nothing else. If the hypothesis does not yet exist, it will add the
+	 * provided hypothesis to {@link hmap} and return it.
 	 *
-	 * @param t
-	 * @param h
+	 * @param t time-step that the hypothesis belongs to.
+	 * @param h hypothesis that should be added or returned.
 	 * @return
 	 */
 	public H getOrAddHypothesis(final int t, final H h ) {

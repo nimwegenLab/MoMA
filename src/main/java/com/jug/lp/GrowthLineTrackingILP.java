@@ -238,18 +238,14 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 */
 	private void enumerateAndAddAssignments( final int timeStep ) throws GRBException {
-//		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
-
 		SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree =
 				(SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep).getComponentTree();
 		SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree =
 				(SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep + 1).getComponentTree();
 
-
 		addMappingAssignments( timeStep, sourceComponentTree, targetComponentTree  );
 		addDivisionAssignments( timeStep, sourceComponentTree, targetComponentTree );
-		final List< Hypothesis< Component< FloatType, ? >>> currentHyps = nodes.getHypothesesAt( timeStep );
-		addExitAssignments( timeStep, currentHyps );
+		addExitAssignments( timeStep, nodes.getHypothesesAt( timeStep ) );
 		this.reportProgress();
 	}
 
@@ -284,31 +280,24 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * Add a mapping-assignment to a bunch of segmentation hypotheses.
+	 * Add mapping-assignments between source components in {@param sourceComponentTree} and target components in
+	 * {@param targetComponentTree}.
 	 *
 	 * @param t
 	 *            the time-point from which the <code>curHyps</code> originate.
-	 * @param curHyps
-	 *            a list of hypothesis for which a
-	 *            <code>MappingAssignment</code> should be added.
-	 * @param nxtHyps
-	 *            a list of hypothesis at the next time-point at which the newly
-	 *            added <code>MappingAssignments</code> should end at.
+	 * @param sourceComponentTree
+	 *            the component tree containing source components of the mapping-assignments.
+	 * @param targetComponentTree
+	 *            the component tree containing target components of the mapping-assignments.
 	 * @throws GRBException
 	 */
 	private void addMappingAssignments(final int t,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
-//		if ( curHyps == null || nxtHyps == null ) return;
-
-//		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
 		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
-//			final float fromCost = from.getCost();
 			float fromCost = getComponentCost( t, fromComponent );
 
-//			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-//				final float toCost = to.getCost();
 				float toCost = getComponentCost( t, toComponent );
 
 //				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
@@ -356,10 +345,6 @@ public class GrowthLineTrackingILP {
 			final Component< FloatType, ? > to ) {
 		final long sizeFrom = getComponentSize(from, 1);
 		final long sizeTo = getComponentSize(to, 1);
-
-//		final float valueFrom = from.getWrappedComponent().value().get();
-//		final float valueTo = to.getWrappedComponent().value().get();
-
 
 		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
 		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);;
@@ -431,18 +416,17 @@ public class GrowthLineTrackingILP {
 
 
 	/**
-	 * Add a division-assignment to a bunch of segmentation hypotheses. Note
-	 * that this function also looks for suitable pairs of hypothesis in
-	 * nxtHyps, since division-assignments naturally need two right-neighbors.
+	 * Add a division-assignment for given timestep between component in {@param sourceComponentTree} and
+	 * {@param targetComponentTree}. This function also looks for suitable pairs of components in
+	 * {@param targetComponentTree}, since division-assignments need two target component. The hypotheses of the
+	 * components, which are needed for the assignments, are created on the fly as needed.
 	 *
 	 * @param timeStep
 	 *            the time-point from which the <code>curHyps</code> originate.
-	 * @param curHyps
-	 *            a list of hypothesis for which a
-	 *            <code>DivisionAssignment</code> should be added.
-	 * @param nxtHyps
-	 *            a list of hypothesis at the next time-point at which the newly
-	 *            added <code>DivisionAssignments</code> should end at.
+	 * @param sourceComponentTree
+	 *            the component tree containing source components of the division assignments.
+	 * @param targetComponentTree
+	 * 			  the component tree containing target components at the next time-point of the division assignments.
 	 * @throws GRBException
 	 */
 	private void addDivisionAssignments( final int timeStep,
@@ -450,50 +434,43 @@ public class GrowthLineTrackingILP {
 										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
 			throws GRBException {
 
-//		if ( curHyps == null || nxtHyps == null ) return;
-
-//		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
 		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
-//			final float fromCost = from.getCost();
 			float fromCost = getComponentCost( timeStep, fromComponent );
 
-//			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
 			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-//				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-//					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(to.getWrappedComponent(), (SimpleComponentTree<FloatType,?>) targetComponentTree);
-				final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, (SimpleComponentTree<FloatType,?>) targetComponentTree);					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
-						@SuppressWarnings( "unchecked" )
-						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
-						if ( lowerNeighbor == null ) {
-							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeries::adDivisionAssignment(...)" );
-						} else {
-							float toCost = getComponentCost( timeStep, toComponent );
-							final Hypothesis< Component< FloatType, ? >> to =
-									nodes.getOrAddHypothesis( timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost) );
-							final Hypothesis< Component< FloatType, ? >> from =
-									nodes.getOrAddHypothesis( timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost) );
+				float toCost = getComponentCost( timeStep + 1, toComponent );
+				final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
 
-							final Float compatibilityCostOfDivision = compatibilityCostOfDivision( from, to, lowerNeighbor );
+				for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
+					@SuppressWarnings("unchecked")
+					float neighborCost = getComponentCost(timeStep + 1, lowerNeighborComponent);
+					final Float compatibilityCostOfDivision = compatibilityCostOfDivision(fromComponent,
+							toComponent, lowerNeighborComponent);
 
-							float cost = costModulationForSubstitutedILP(
-									fromCost,
-									to.getCost(),
-									lowerNeighbor.getCost(),
-									compatibilityCostOfDivision);
+					float cost = costModulationForSubstitutedILP(
+							fromCost,
+							toCost,
+							neighborCost,
+							compatibilityCostOfDivision);
 
 //							if ( cost <= CUTOFF_COST ) {
-								final String name = String.format( "a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId() );
-								final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
+					final Hypothesis<Component<FloatType, ?>> to =
+							nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
+					final Hypothesis<Component<FloatType, ?>> from =
+							nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
+					final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
+							nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
 
-								final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor );
-								nodes.addAssignment( timeStep, da );
-								edgeSets.addToRightNeighborhood( from, da );
-								edgeSets.addToLeftNeighborhood( to, da );
-								edgeSets.addToLeftNeighborhood( lowerNeighbor, da );
+					final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
+					final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+
+					final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
+					nodes.addAssignment(timeStep, da);
+					edgeSets.addToRightNeighborhood(from, da);
+					edgeSets.addToLeftNeighborhood(to, da);
+					edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
 //							}
-						}
-					}
-//				}
+				}
 			}
 		}
 	}
@@ -508,16 +485,22 @@ public class GrowthLineTrackingILP {
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfDivision(
-			final Hypothesis< Component< FloatType, ? > > from,
-			final Hypothesis< Component< FloatType, ? > > toUpper,
-			final Hypothesis< Component< FloatType, ? > > toLower ) {
-		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
-		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
-		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
+			final Component< FloatType, ? > from,
+			final Component< FloatType, ? > toUpper,
+			final Component< FloatType, ? > toLower ) {
 
-		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
-		final long sizeToU = getComponentSize(toUpper.getWrappedComponent(),1);
-		final long sizeToL = getComponentSize(toLower.getWrappedComponent(), 1);
+
+		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
+		final ValuePair< Integer, Integer > intervalToU = ComponentTreeUtils.getComponentPixelLimits(toUpper, 1);;
+		final ValuePair< Integer, Integer > intervalToL = ComponentTreeUtils.getComponentPixelLimits(toLower, 1);;
+
+//		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
+//		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
+//		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
+
+		final long sizeFrom = getComponentSize(from, 1);
+		final long sizeToU = getComponentSize(toUpper,1);
+		final long sizeToL = getComponentSize(toLower, 1);
 		final long sizeTo = sizeToU + sizeToL;
 //		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 

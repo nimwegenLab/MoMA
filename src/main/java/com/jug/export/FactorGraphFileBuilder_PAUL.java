@@ -157,7 +157,8 @@ public class FactorGraphFileBuilder_PAUL {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
-		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis, destinationHypothesisUpper, destinationHypothesisLower );
+		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis.getWrappedComponent(),
+				destinationHypothesisUpper.getWrappedComponent(), destinationHypothesisLower.getWrappedComponent() );
 		final double cost = ilp.costModulationForSubstitutedILP(
 				sourceHypothesis.getCost(),
 				destinationHypothesisUpper.getCost(),

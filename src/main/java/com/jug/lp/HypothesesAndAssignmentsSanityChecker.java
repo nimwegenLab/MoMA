@@ -4,13 +4,11 @@ import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;
-import com.moma.auxiliary.Plotting;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import org.javatuples.Pair;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,11 +49,12 @@ public class HypothesesAndAssignmentsSanityChecker {
 
     public void checkIfAllComponentsHaveMappingAssignmentsBetweenThem() {
         for (int t = 1; t < gl.size(); t++) {
-            allMappingAssignmentsForComponentsExistAtTime(t);
+            System.out.println(String.format("t: %d", t));
+            allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(t);
         }
     }
 
-    private void allMappingAssignmentsForComponentsExistAtTime(int t){
+    private void allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(int t){
         if(t+1 >= gl.getFrames().size())
             return;
         ComponentForest<SimpleComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentTree();
@@ -66,13 +65,15 @@ public class HypothesesAndAssignmentsSanityChecker {
         for(SimpleComponent<FloatType> sourceComponent : allSourceComponents){
             Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(sourceComponent);
             assert (wrappingHypothesis != null): "ERROR: Found component without corresponding hypothesis!";
-            Set<MappingAssignment> assignments = edgeSets.getRightAssignmentsOfType((Hypothesis<Component<FloatType, ?>>) wrappingHypothesis, MappingAssignment.class);
-            Set<Component<FloatType, ?>> assignmentTargetComponents = new HashSet<>();
-            for(MappingAssignment assignment : assignments){
-                assignmentTargetComponents.add(assignment.getDestinationHypothesis().getWrappedComponent());
-            }
-            for(SimpleComponent<FloatType> component : allTargetComponents){
-                assert(assignmentTargetComponents.contains(component)): String.format("ERROR at t=%d: Found component, which misses an incoming mapping-assignment.", t);
+            if(wrappingHypothesis != null) {
+                Set<MappingAssignment> assignments = edgeSets.getRightAssignmentsOfType((Hypothesis<Component<FloatType, ?>>) wrappingHypothesis, MappingAssignment.class);
+                Set<Component<FloatType, ?>> assignmentTargetComponents = new HashSet<>();
+                for (MappingAssignment assignment : assignments) {
+                    assignmentTargetComponents.add(assignment.getDestinationHypothesis().getWrappedComponent());
+                }
+                for (SimpleComponent<FloatType> component : allTargetComponents) {
+                    assert (assignmentTargetComponents.contains(component)) : String.format("ERROR at t=%d: Found component, which misses an incoming mapping-assignment.", t);
+                }
             }
         }
     }

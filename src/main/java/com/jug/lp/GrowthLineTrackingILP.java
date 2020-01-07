@@ -48,7 +48,7 @@ public class GrowthLineTrackingILP {
 	public static final int ASSIGNMENT_MAPPING = 1;
 	public static final int ASSIGNMENT_DIVISION = 2;
 
-	public static final float CUTOFF_COST = Float.MAX_VALUE; // TODO-PARAMETRIZE: This value is critical(!): Assignments with costs higher than this value will be ignored. This should become a parameter at some point!
+	public static final float CUTOFF_COST = 3.0f; // TODO-PARAMETRIZE: This value is critical(!): Assignments with costs higher than this value will be ignored. This should become a parameter at some point!
 
 	private static GRBEnv env;
 
@@ -298,14 +298,14 @@ public class GrowthLineTrackingILP {
 			float fromCost = getComponentCost( t, fromComponent );
 
 			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-				float toCost = getComponentCost( t, toComponent );
+				float toCost = getComponentCost( t + 1, toComponent );
 
 //				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
 
 					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( fromComponent, toComponent );
 					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
 
-//					if ( cost <= CUTOFF_COST ) {
+					if ( cost <= CUTOFF_COST ) {
 						final Hypothesis< Component< FloatType, ? >> to =
 								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, toComponent, toCost) );
 						final Hypothesis< Component< FloatType, ? >> from =
@@ -322,7 +322,7 @@ public class GrowthLineTrackingILP {
 						if (!edgeSets.addToLeftNeighborhood(to, ma)) {
 							System.err.println( "ERROR: Mapping-assignment could not be added to left neighborhood!" );
 						}
-//					}
+					}
 //				}
 			}
 		}
@@ -434,11 +434,11 @@ public class GrowthLineTrackingILP {
 										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
 			throws GRBException {
 
-		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
-			float fromCost = getComponentCost( timeStep, fromComponent );
+		for (final Component<FloatType, ?> fromComponent : sourceComponentTree.getAllComponents()) {
+			float fromCost = getComponentCost(timeStep, fromComponent);
 
-			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-				float toCost = getComponentCost( timeStep + 1, toComponent );
+			for (final Component<FloatType, ?> toComponent : targetComponentTree.getAllComponents()) {
+				float toCost = getComponentCost(timeStep + 1, toComponent);
 				final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
 
 				for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
@@ -453,23 +453,23 @@ public class GrowthLineTrackingILP {
 							neighborCost,
 							compatibilityCostOfDivision);
 
-//							if ( cost <= CUTOFF_COST ) {
-					final Hypothesis<Component<FloatType, ?>> to =
-							nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
-					final Hypothesis<Component<FloatType, ?>> from =
-							nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
-					final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
-							nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
+					if (cost <= CUTOFF_COST) {
+						final Hypothesis<Component<FloatType, ?>> to =
+								nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
+						final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
+								nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
+						final Hypothesis<Component<FloatType, ?>> from =
+								nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
 
-					final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
-					final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+						final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
+						final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
-					final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
-					nodes.addAssignment(timeStep, da);
-					edgeSets.addToRightNeighborhood(from, da);
-					edgeSets.addToLeftNeighborhood(to, da);
-					edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
-//							}
+						final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
+						nodes.addAssignment(timeStep, da);
+						edgeSets.addToRightNeighborhood(from, da);
+						edgeSets.addToLeftNeighborhood(to, da);
+						edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+					}
 				}
 			}
 		}
@@ -871,12 +871,11 @@ public class GrowthLineTrackingILP {
 		if ( hyps == null ) return ret;
 
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > nh = new HashSet<>();
+			Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > nh;
 			if ( t > 0 ) {
-				nh.addAll(edgeSets.getLeftNeighborhood( hyp ));
-				nh.addAll(edgeSets.getRightNeighborhood( hyp ));
+				nh = edgeSets.getLeftNeighborhood( hyp );
 			} else {
-				nh.addAll(edgeSets.getRightNeighborhood( hyp ));
+				nh = edgeSets.getRightNeighborhood( hyp );
 			}
 
 			try {

@@ -125,6 +125,33 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
     }
 
 	/**
+	 * This method checks, if the provided hypothesis was already provided. If so, it will return that hypothesis and do
+	 * nothing else. If the hypothesis does not yet exist, it will add the provided hypothesis to {@link hmap} and return
+	 * it.
+	 *
+	 * @param t
+	 * @param h
+	 * @return
+	 */
+	public H getOrAddHypothesis(final int t, final H h ) {
+		H returnedHyp = hmap.get(h.getWrappedComponent());
+		if (returnedHyp != null){ /* hypothesis with this component already exists; return it */
+			return hmap.get(h.getWrappedComponent());
+		}
+		while ( t >= h_t.size() ) {
+			addTimeStep();
+		}
+		if ( h_t.get( t ).add( h ) ) { // TODO-MM-20191021: WARNING: this seems dangerous as it can cause silent mis-behavior by having hypotheses that are not in hmap, if h_t.get(t) returns false.
+			hmap.put(h.getWrappedComponent(), h); /* hypothesis does not exist; add and return it */
+			return h;
+		}
+		else{
+			System.out.print(String.format("ERROR: Failed to add hypothesis at time-step: t=%d", t));
+			return h;
+		}
+	}
+
+	/**
 	 * Returns all time-points in a <code>List</code>, containing all stored
 	 * segmentation hypothesis in an inner <code>List</code>.
 	 * 

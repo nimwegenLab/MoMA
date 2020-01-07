@@ -134,7 +134,7 @@ public class FactorGraphFileBuilder_PAUL {
 	public void addMapping( final GrowthLineTrackingILP ilp, final int t, final MappingAssignment assmnt ) {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesis = assmnt.getDestinationHypothesis();
-		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis, destinationHypothesis );
+		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis.getWrappedComponent(), destinationHypothesis.getWrappedComponent() );
 		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost );
 		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
 			lines.add(

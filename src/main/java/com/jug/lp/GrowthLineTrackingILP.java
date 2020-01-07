@@ -177,9 +177,9 @@ public class GrowthLineTrackingILP {
 	 *
 	 */
 	private void createHypsAndAssignments() throws GRBException {
-		createSegmentationHypotheses( 0 );
+//		createSegmentationHypotheses( 0 );
 		for ( int t = 1; t < gl.size(); t++ ) {
-			createSegmentationHypotheses( t );
+//			createSegmentationHypotheses( t );
 			enumerateAndAddAssignments( t - 1 );
 		}
 		// add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
@@ -238,16 +238,18 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 */
 	private void enumerateAndAddAssignments( final int timeStep ) throws GRBException {
+//		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
+
+		SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree =
+				(SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep).getComponentTree();
+		SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree =
+				(SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep + 1).getComponentTree();
+
+
+		addMappingAssignments( timeStep, sourceComponentTree, targetComponentTree  );
+		addDivisionAssignments( timeStep, sourceComponentTree, targetComponentTree );
 		final List< Hypothesis< Component< FloatType, ? >>> currentHyps = nodes.getHypothesesAt( timeStep );
-		final List< Hypothesis< Component< FloatType, ? >>> nextHyps = nodes.getHypothesesAt( timeStep + 1 );
-
-        ComponentForest<SimpleComponent<FloatType>> sourceComponentTree = gl.getFrames().get(timeStep).getComponentTree();
-        ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(timeStep + 1).getComponentTree();
-
-
-        addExitAssignments( timeStep, currentHyps );
-		addMappingAssignments( timeStep, currentHyps, nextHyps );
-		addDivisionAssignments( timeStep, currentHyps, nextHyps, sourceComponentTree, targetComponentTree );
+		addExitAssignments( timeStep, currentHyps );
 		this.reportProgress();
 	}
 
@@ -294,21 +296,32 @@ public class GrowthLineTrackingILP {
 	 *            added <code>MappingAssignments</code> should end at.
 	 * @throws GRBException
 	 */
-	private void addMappingAssignments( final int t, final List< Hypothesis< Component< FloatType, ? >>> curHyps, final List< Hypothesis< Component< FloatType, ? >>> nxtHyps ) throws GRBException {
-		if ( curHyps == null || nxtHyps == null ) return;
+	private void addMappingAssignments(final int t,
+									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
+									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
+//		if ( curHyps == null || nxtHyps == null ) return;
 
-		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			final float fromCost = from.getCost();
+//		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
+		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
+//			final float fromCost = from.getCost();
+			float fromCost = getComponentCost( t, fromComponent );
 
-			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
-				final float toCost = to.getCost();
+//			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
+			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
+//				final float toCost = to.getCost();
+				float toCost = getComponentCost( t, toComponent );
 
 //				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
 
-					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( from, to );
+					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( fromComponent, toComponent );
 					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
 
 //					if ( cost <= CUTOFF_COST ) {
+						final Hypothesis< Component< FloatType, ? >> to =
+								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, toComponent, toCost) );
+						final Hypothesis< Component< FloatType, ? >> from =
+								nodes.getOrAddHypothesis( t, new Hypothesis<>(t, fromComponent, fromCost) );
+
 						final String name = String.format( "a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId() );
 						final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
 
@@ -339,16 +352,17 @@ public class GrowthLineTrackingILP {
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfMapping(
-			final Hypothesis< Component< FloatType, ? > > from,
-			final Hypothesis< Component< FloatType, ? > > to ) {
-		final long sizeFrom = getComponentSize(from.getWrappedComponent(), 1);
-		final long sizeTo = getComponentSize(to.getWrappedComponent(), 1);
+			final Component< FloatType, ? > from,
+			final Component< FloatType, ? > to ) {
+		final long sizeFrom = getComponentSize(from, 1);
+		final long sizeTo = getComponentSize(to, 1);
 
 //		final float valueFrom = from.getWrappedComponent().value().get();
 //		final float valueTo = to.getWrappedComponent().value().get();
 
-		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
-		final ValuePair< Integer, Integer > intervalTo = to.getLocation();
+
+		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
+		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);;
 
 		final float oldPosU = intervalFrom.getA();
 		final float newPosU = intervalTo.getA();
@@ -432,25 +446,33 @@ public class GrowthLineTrackingILP {
 	 * @throws GRBException
 	 */
 	private void addDivisionAssignments( final int timeStep,
-                                         final List< Hypothesis< Component< FloatType, ? >>> curHyps,
-                                         final List< Hypothesis< Component< FloatType, ? >>> nxtHyps,
-                                         ComponentForest<SimpleComponent<FloatType>> sourceComponentTree,
-                                         ComponentForest<SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
+										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
+										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
+			throws GRBException {
 
-		if ( curHyps == null || nxtHyps == null ) return;
+//		if ( curHyps == null || nxtHyps == null ) return;
 
-		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
-			final float fromCost = from.getCost();
+//		for ( final Hypothesis< Component< FloatType, ? >> from : curHyps ) {
+		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
+//			final float fromCost = from.getCost();
+			float fromCost = getComponentCost( timeStep, fromComponent );
 
-			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
+//			for ( final Hypothesis< Component< FloatType, ? >> to : nxtHyps ) {
+			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
 //				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
-					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(to.getWrappedComponent(), (SimpleComponentTree<FloatType,?>) targetComponentTree);
-					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
+//					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(to.getWrappedComponent(), (SimpleComponentTree<FloatType,?>) targetComponentTree);
+				final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, (SimpleComponentTree<FloatType,?>) targetComponentTree);					for ( final Component< FloatType, ? > lowerNeighborComponent : lowerNeighborComponents) {
 						@SuppressWarnings( "unchecked" )
 						final Hypothesis< Component< FloatType, ? > > lowerNeighbor = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( lowerNeighborComponent );
 						if ( lowerNeighbor == null ) {
 							System.out.println( "CRITICAL BUG!!!! Check GrowthLineTimeSeries::adDivisionAssignment(...)" );
 						} else {
+							float toCost = getComponentCost( timeStep, toComponent );
+							final Hypothesis< Component< FloatType, ? >> to =
+									nodes.getOrAddHypothesis( timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost) );
+							final Hypothesis< Component< FloatType, ? >> from =
+									nodes.getOrAddHypothesis( timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost) );
+
 							final Float compatibilityCostOfDivision = compatibilityCostOfDivision( from, to, lowerNeighbor );
 
 							float cost = costModulationForSubstitutedILP(

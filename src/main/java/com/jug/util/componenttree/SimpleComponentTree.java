@@ -112,5 +112,6 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         return roots;
     }
 
+    public Iterable<SimpleComponent<T>> getAllComponents(){ return nodes; }
 }
 

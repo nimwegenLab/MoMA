@@ -71,11 +71,14 @@ public class IlpSolutionSanityChecker {
             int incomingAssignmentCount = incomingAssignments.size();
             int outgoingAssignmentCount = outgoingAssignments.size();
 
-            System.out.println(String.format("timestep %d:", t));
-            System.out.println(String.format("incoming: %d", incomingAssignmentCount));
-            System.out.println(String.format("outgoing: %d", outgoingAssignmentCount));
-            assert (outgoingAssignmentCount == incomingAssignmentCount) :
+            assert (outgoingAssignmentCount != incomingAssignmentCount) :
                     String.format("ERROR: Continuity constraint violation at t=%d", t);
+            if (outgoingAssignmentCount != incomingAssignmentCount) {
+                System.out.println(String.format("ERROR: Continuity constraint violation at t=%d", t));
+                System.out.println(String.format("timestep %d:", t));
+                System.out.println(String.format("incoming: %d", incomingAssignmentCount));
+                System.out.println(String.format("outgoing: %d", outgoingAssignmentCount));
+            }
         }
         catch (GRBException e) {
             e.printStackTrace();

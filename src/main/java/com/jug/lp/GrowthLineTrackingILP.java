@@ -295,12 +295,18 @@ public class GrowthLineTrackingILP {
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
 		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
+
+			if (t > 0) {
+				if (nodes.findHypothesisContaining(fromComponent) == null)
+					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
+			}
+
 			float fromCost = getComponentCost( t, fromComponent );
 
 			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
 				float toCost = getComponentCost( t + 1, toComponent );
 
-//				if ( !( ComponentTreeUtils.isBelowByMoreThen( to, from, MoMA.MAX_CELL_DROP ) ) ) {
+				if ( !( ComponentTreeUtils.isBelowByMoreThen( toComponent, fromComponent, MoMA.MAX_CELL_DROP ) ) ) {
 
 					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( fromComponent, toComponent );
 					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
@@ -323,7 +329,7 @@ public class GrowthLineTrackingILP {
 							System.err.println( "ERROR: Mapping-assignment could not be added to left neighborhood!" );
 						}
 					}
-//				}
+				}
 			}
 		}
 	}
@@ -435,6 +441,12 @@ public class GrowthLineTrackingILP {
 			throws GRBException {
 
 		for (final Component<FloatType, ?> fromComponent : sourceComponentTree.getAllComponents()) {
+
+			if (timeStep > 0) {
+				if (nodes.findHypothesisContaining(fromComponent) == null)
+					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
+			}
+
 			float fromCost = getComponentCost(timeStep, fromComponent);
 
 			for (final Component<FloatType, ?> toComponent : targetComponentTree.getAllComponents()) {
@@ -597,7 +609,7 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * This function generated and adds the explanation-continuity-constraints
+	 * This function generates and adds the explanation-continuity-constraints
 	 * to the ILP model.
 	 * Those constraints ensure that for each segmentation hypotheses at all
 	 * time-points t we have the same number of active incoming and active
@@ -611,7 +623,6 @@ public class GrowthLineTrackingILP {
 
 		// For each time-point
 		for ( int t = 1; t < gl.size(); t++ ) {
-
 			for ( final Hypothesis< Component< FloatType, ? >> hyp : nodes.getHypothesesAt( t ) ) {
 				final GRBLinExpr expr = new GRBLinExpr();
 
@@ -624,6 +635,7 @@ public class GrowthLineTrackingILP {
 					}
 				}
 				else{
+					System.out.println(String.format("addContinuityConstraints(): t=%d", t));
 					System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
 				}
 				if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
@@ -632,6 +644,7 @@ public class GrowthLineTrackingILP {
 					}
 				}
 				else{
+					System.out.println(String.format("addContinuityConstraints(): t=%d", t));
 					System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
 				}
 

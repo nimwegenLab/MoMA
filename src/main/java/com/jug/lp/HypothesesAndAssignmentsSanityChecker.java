@@ -49,7 +49,6 @@ public class HypothesesAndAssignmentsSanityChecker {
 
     public void checkIfAllComponentsHaveMappingAssignmentsBetweenThem() {
         for (int t = 1; t < gl.size(); t++) {
-            System.out.println(String.format("t: %d", t));
             allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(t);
         }
     }

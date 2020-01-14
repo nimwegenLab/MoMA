@@ -70,11 +70,14 @@ public class ComponentTreeUtils {
      * @return
      */
     public static boolean isBelowByMoreThen(
-            final Hypothesis<Component<FloatType, ?>> to,
-            final Hypothesis<Component<FloatType, ?>> from,
+            final Component< FloatType, ? > to,
+            final Component< FloatType, ? > from,
             final int numPixels) {
-        final ValuePair<Integer, Integer> toMinMax = to.getLocation();
-        final ValuePair<Integer, Integer> fromMinMax = from.getLocation();
+
+//        final ValuePair<Integer, Integer> toMinMax = to.getLocation();
+//        final ValuePair<Integer, Integer> fromMinMax = from.getLocation();
+        final ValuePair< Integer, Integer > toMinMax = ComponentTreeUtils.getComponentPixelLimits(to, 1);;
+        final ValuePair< Integer, Integer > fromMinMax = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
         return (toMinMax.getA() - fromMinMax.getB()) > numPixels;
     }
 

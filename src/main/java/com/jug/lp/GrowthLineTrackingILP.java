@@ -165,6 +165,48 @@ public class GrowthLineTrackingILP {
 			model.update();
 //			System.out.println( "Constraints added: " + model.getConstrs().length );
 
+			String modelPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2020-01-06_d6845a45/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL06_deepmoma/";
+			model.write(modelPath + "/gurobi_model.rew");
+
+			/* Set Gurobi model parameters */
+			int aggregateVal = model.get(GRB.IntParam.Aggregate);
+			System.out.println(String.format("Aggregate old value: %d", aggregateVal));
+			model.set(GRB.IntParam.Aggregate, 1);
+			aggregateVal = model.get(GRB.IntParam.Aggregate);
+			System.out.println(String.format("Aggregate new value: %d", aggregateVal));
+
+			int scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
+			System.out.println(String.format("scaleFlag old value: %d", scaleFlagVal));
+			model.set(GRB.IntParam.ScaleFlag, 2);
+			scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
+			System.out.println(String.format("scaleFlag new value: %d", scaleFlagVal));
+
+//			int numericFocusVal = model.get(GRB.IntParam.NumericFocus);
+//			System.out.println(String.format("numericFocus old value: %d", numericFocusVal));
+//			model.set(GRB.IntParam.NumericFocus, 3);
+//			numericFocusVal = model.get(GRB.IntParam.NumericFocus);
+//			System.out.println(String.format("numericFocus new value: %d", numericFocusVal));
+
+			int quadVal = model.get(GRB.IntParam.Quad);
+			System.out.println(String.format("Quad old value: %d", quadVal));
+			model.set(GRB.IntParam.Quad, 1);
+			quadVal = model.get(GRB.IntParam.Quad);
+			System.out.println(String.format("Quad new value: %d", quadVal));
+
+			double markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
+			System.out.println(String.format("MarkowitzTol old value: %f", markowitzTolVal));
+			model.set(GRB.DoubleParam.MarkowitzTol, 0.5);
+			markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
+			System.out.println(String.format("MarkowitzTol new value: %f", markowitzTolVal));
+
+//			double objScaleVal = model.get(GRB.DoubleParam.ObjScale);
+//			System.out.println(String.format("objScale old value: %f", objScaleVal));
+//			model.set(GRB.DoubleParam.ObjScale, 0.5);
+//			objScaleVal = model.get(GRB.DoubleParam.ObjScale);
+//			System.out.println(String.format("objScale new value: %f", objScaleVal));
+
+			model.update();
+
 		} catch ( final GRBException e ) {
 			System.out.println( "Could not fill data into GrowthLineTrackingILP!" );
 			e.printStackTrace();

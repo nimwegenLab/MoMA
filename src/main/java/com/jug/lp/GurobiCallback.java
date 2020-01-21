@@ -78,6 +78,8 @@ class GurobiCallback extends GRBCallback {
 						abort();
 					}
 				}
+				//					Math.abs( objbst - objbnd )/objbnd < (1 - MoMA.GUROBI_MAX_OPTIMALITY_GAP) ## ADDED BY MICHAEL
+
 //				if ( nodecnt >= 10000 && solcnt > 0 ) {
 //					System.out.println( "Stop early - 10000 nodes explored" );
 //					abort();

@@ -57,15 +57,6 @@ public class ComponentTreeGenerator {
         // watershed components into their parent-components
         tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);
 
-        // filter components that are (partially) outside of our ROI
-        Predicate<Integer> condition = (pos) -> (pos >= GL_OFFSET_TOP && pos <= raiFkt.dimension(1) - GL_OFFSET_BOTTOM);
-        ILocationTester verticalBoundsLimit = new PixelPositionTester(1, condition);
-        testers = new ArrayList<>();
-        testers.add(verticalBoundsLimit);
-        tester = new ComponentTester<>(testers);
-        tree = new SimpleComponentTree(tree, raiFkt, tester);
-
-//        Plotting.drawComponentTree2(tree, new ArrayList<>());
         return tree;
     }
 

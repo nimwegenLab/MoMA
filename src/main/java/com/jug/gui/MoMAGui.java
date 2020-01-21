@@ -690,7 +690,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			while ( ctnLevel.size() > 0 ) {
 				for ( final Component< ?, ? > ctn : ctnLevel ) {
 					if(costType.equals("Segment")) {
-						System.out.print(String.format("%8.4f;\t", ilp.localIntensityBasedCost(t, ctn)));
+						System.out.print(String.format("%8.4f;\t", ilp.getComponentCost(t, ctn)));
 					}
 					else{
 						List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
@@ -736,7 +736,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					if ( ilp != null ) {
 						System.out.print( String.format(
 								"%8.4f;\t",
-								ilp.localIntensityBasedCost( t, ctn ) ) );
+								ilp.getComponentCost( t, ctn ) ) );
 					}
 					i++;
 				}

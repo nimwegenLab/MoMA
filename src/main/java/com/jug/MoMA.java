@@ -116,10 +116,15 @@ public class MoMA {
 	private static int GL_OFFSET_LATERAL = 20;
 
 	/**
-	 * Prior knowledge: hard offset in detected well center lines - will be cut
-	 * of from top.
+	 * Vertical center position on which the exit range defined with {@link COMPONENT_EXIT_RANGE} is centered.
 	 */
 	public static int GL_OFFSET_TOP = 65;
+
+	/**
+	 * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
+	 * at the vertical position defined by {@link GL_OFFSET_TOP}.
+	 */
+	public static float COMPONENT_EXIT_RANGE = 50;
 
 	/**
 	 * Prior knowledge: hard offset in detected well center lines - will be cut
@@ -1331,7 +1336,7 @@ public class MoMA {
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;
 			int frameCounter = 0;
-			System.out.print( "   Working on GL#" + i + " of " + getGrowthLines().size() + "... " );
+//			System.out.print( "   Working on GL#" + i + " of " + getGrowthLines().size() + "... " );
 			for ( final GrowthLineFrame glf : gl.getFrames() ) {
 				System.out.print( "." );
 				glf.generateSimpleSegmentationHypotheses( imgProbs, frameCounter );

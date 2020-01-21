@@ -187,17 +187,17 @@ public class GrowthLineTrackingILP {
 //			numericFocusVal = model.get(GRB.IntParam.NumericFocus);
 //			System.out.println(String.format("numericFocus new value: %d", numericFocusVal));
 
-			int quadVal = model.get(GRB.IntParam.Quad);
-			System.out.println(String.format("Quad old value: %d", quadVal));
-			model.set(GRB.IntParam.Quad, 1);
-			quadVal = model.get(GRB.IntParam.Quad);
-			System.out.println(String.format("Quad new value: %d", quadVal));
-
-			double markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
-			System.out.println(String.format("MarkowitzTol old value: %f", markowitzTolVal));
-			model.set(GRB.DoubleParam.MarkowitzTol, 0.5);
-			markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
-			System.out.println(String.format("MarkowitzTol new value: %f", markowitzTolVal));
+//			int quadVal = model.get(GRB.IntParam.Quad);
+//			System.out.println(String.format("Quad old value: %d", quadVal));
+//			model.set(GRB.IntParam.Quad, 1);
+//			quadVal = model.get(GRB.IntParam.Quad);
+//			System.out.println(String.format("Quad new value: %d", quadVal));
+//
+//			double markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
+//			System.out.println(String.format("MarkowitzTol old value: %f", markowitzTolVal));
+//			model.set(GRB.DoubleParam.MarkowitzTol, 0.5);
+//			markowitzTolVal = model.get(GRB.DoubleParam.MarkowitzTol);
+//			System.out.println(String.format("MarkowitzTol new value: %f", markowitzTolVal));
 
 //			double objScaleVal = model.get(GRB.DoubleParam.ObjScale);
 //			System.out.println(String.format("objScale old value: %f", objScaleVal));
@@ -445,7 +445,7 @@ public class GrowthLineTrackingILP {
 			final float toUpperCost,
 			final float toLowerCost,
 			final float divisionCosts ) {
-		return 0.1f * fromCost + 0.9f * ( toUpperCost + toLowerCost ) + divisionCosts;
+		return 0.1f * fromCost + 0.9f * ( toUpperCost + toLowerCost ) / 2 + divisionCosts;
 	}
 
 	/**

@@ -477,9 +477,9 @@ public class GrowthLineTrackingILP {
 	 * 			  the component tree containing target components at the next time-point of the division assignments.
 	 * @throws GRBException
 	 */
-	private void addDivisionAssignments( final int timeStep,
-										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
-										 SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
+	private void addDivisionAssignments(final int timeStep,
+										SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
+										SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
 			throws GRBException {
 
 		for (final Component<FloatType, ?> fromComponent : sourceComponentTree.getAllComponents()) {
@@ -492,37 +492,40 @@ public class GrowthLineTrackingILP {
 			float fromCost = getComponentCost(timeStep, fromComponent);
 
 			for (final Component<FloatType, ?> toComponent : targetComponentTree.getAllComponents()) {
-				float toCost = getComponentCost(timeStep + 1, toComponent);
-				final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
+				if (!(ComponentTreeUtils.isBelowByMoreThen(toComponent, fromComponent, MoMA.MAX_CELL_DROP))) {
 
-				for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
-					@SuppressWarnings("unchecked")
-					float neighborCost = getComponentCost(timeStep + 1, lowerNeighborComponent);
-					final Float compatibilityCostOfDivision = compatibilityCostOfDivision(fromComponent,
-							toComponent, lowerNeighborComponent);
+					float toCost = getComponentCost(timeStep + 1, toComponent);
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
 
-					float cost = costModulationForSubstitutedILP(
-							fromCost,
-							toCost,
-							neighborCost,
-							compatibilityCostOfDivision);
+					for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
+						@SuppressWarnings("unchecked")
+						float neighborCost = getComponentCost(timeStep + 1, lowerNeighborComponent);
+						final Float compatibilityCostOfDivision = compatibilityCostOfDivision(fromComponent,
+								toComponent, lowerNeighborComponent);
 
-					if (cost <= CUTOFF_COST) {
-						final Hypothesis<Component<FloatType, ?>> to =
-								nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
-						final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
-								nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
-						final Hypothesis<Component<FloatType, ?>> from =
-								nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
+						float cost = costModulationForSubstitutedILP(
+								fromCost,
+								toCost,
+								neighborCost,
+								compatibilityCostOfDivision);
 
-						final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
-						final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+						if (cost <= CUTOFF_COST) {
+							final Hypothesis<Component<FloatType, ?>> to =
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
+							final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
+							final Hypothesis<Component<FloatType, ?>> from =
+									nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
 
-						final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
-						nodes.addAssignment(timeStep, da);
-						edgeSets.addToRightNeighborhood(from, da);
-						edgeSets.addToLeftNeighborhood(to, da);
-						edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+							final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
+							final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+
+							final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
+							nodes.addAssignment(timeStep, da);
+							edgeSets.addToRightNeighborhood(from, da);
+							edgeSets.addToLeftNeighborhood(to, da);
+							edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+						}
 					}
 				}
 			}

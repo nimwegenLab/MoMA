@@ -55,13 +55,6 @@ public class CostFactory {
 
 		float costDeltaL = deltaL * (float) Math.pow(1 + deltaL, power); // since deltaL is <1 we add 1 before taking its power
 
-		float relativeGrowth = ( newSize - oldSize ) / oldSize;
-		if(relativeGrowth > 0.4f){
-			costDeltaL = costDeltaL * 20;
-		}
-		else if(relativeGrowth < -0.4f){
-			costDeltaL = costDeltaL * 20;
-		}
 		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
 	}
 

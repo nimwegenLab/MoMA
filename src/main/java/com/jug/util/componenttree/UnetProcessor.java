@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
@@ -19,6 +20,8 @@ import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 
+import java.io.File;
+import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -27,7 +30,7 @@ import java.util.concurrent.ExecutionException;
  * {@link #process(Img<FloatType>)}.
  */
 public class UnetProcessor {
-    private final String modelFile;
+    private String modelFile = "";
     private long model_input_width;
     private long model_input_height;
     private OpService ops;
@@ -42,6 +45,18 @@ public class UnetProcessor {
         this.gl_offset_bottom = gl_offset_bottom;
         model_input_width = 32;
         model_input_height = 512;
+
+
+        try {
+            String mainClassParentPath = new File(MoMA.class.getProtectionDomain().getCodeSource().getLocation()
+                    .toURI()).getParent();
+            modelFile = mainClassParentPath + "/unet_models/current_tensorflow_model.zip";
+            System.out.println("Model file: " + modelFile);
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
@@ -55,7 +70,7 @@ public class UnetProcessor {
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191022-114023_c20dd212/tensorflow_model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip";
-        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191201-101608_17bcf5ae/tensorflow_model.zip";
+//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191201-101608_17bcf5ae/tensorflow_model.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
 //        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip";
 

@@ -8,7 +8,6 @@ import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import net.imglib2.type.numeric.real.FloatType;
@@ -46,38 +45,25 @@ public class UnetProcessor {
         model_input_width = 32;
         model_input_height = 512;
 
-
-        try {
-            String mainClassParentPath = new File(MoMA.class.getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getParent();
-            modelFile = mainClassParentPath + "/unet_models/current_tensorflow_model.zip";
-            System.out.println("Model file: " + modelFile);
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
-
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/reformated_model_20180706_GW296_glycerol37_1_MMStack/model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/Moma_Deep_Learning/DeepLearningMoM/model_export/2019-07-11_first_test/test_2/tensorflow_model_reformatted/tensorflow_model/model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-132335_c44e6f01/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-135715_5547a42c/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190805-154947/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-113655_d57e9849/tensorflow_model_csbdeep_512x64.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190807-120902_52411e55/tensorflow_model_csbdeep_512x64.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190814-113528_5f72bf24/tensorflow_model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20190903-221815_12e36b0f/tensorflow_model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191022-114023_c20dd212/tensorflow_model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191023-105641_56b34e1d_0fa4003b/tensorflow_model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/models/20191201-101608_17bcf5ae/tensorflow_model.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/00_phase_contrast_unet_segmentation/model/tensorflow_model_csbdeep.zip";
-//        modelFile = "/home/micha/Documents/01_work/DeepLearning/00_deep_moma/02_model_training/01_fluorescence_unet_segmentation/model/tensorflow_model.zip";
+        modelFile = getModelFilePath();
+        System.out.println("Model file: " + modelFile);
 
         context = new Context();
         ops = context.service(OpService.class);
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
+    }
+
+    private String getModelFilePath() {
+        try {
+            String mainClassParentPath = new File(MoMA.class.getProtectionDomain().getCodeSource().getLocation()
+                    .toURI()).getParent();
+            return mainClassParentPath + "/unet_models/current_tensorflow_model.zip";
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**

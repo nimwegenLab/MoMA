@@ -165,8 +165,8 @@ public class GrowthLineTrackingILP {
 			model.update();
 //			System.out.println( "Constraints added: " + model.getConstrs().length );
 
-			String modelPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2020-01-06_d6845a45/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL06_deepmoma/";
-			model.write(modelPath + "/gurobi_model.rew");
+//			String modelPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2020-01-06_d6845a45/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL06_deepmoma/";
+//			model.write(modelPath + "/gurobi_model.rew");
 
 			/* Set Gurobi model parameters */
 			int aggregateVal = model.get(GRB.IntParam.Aggregate);

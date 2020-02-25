@@ -33,6 +33,8 @@ public class Plotting {
             throw new ValueException("ct.roots() is empty");
         }
 
+        System.out.println("DEBUG POINT 4");
+
         // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
         RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
@@ -58,10 +60,20 @@ public class Plotting {
         // run for components in each level
         ComponentTreeUtils.doForEachComponentInTreeLevel(ct, levelComponentsConsumer);
 
+        System.out.println("DEBUG POINT 5");
+
         // show
         ImagePlus imp = ImageJFunctions.show(Views.stack(componentLevelImageStack));
+
+        System.out.println("DEBUG POINT 6");
+
         TextRoi text = new TextRoi(0, 0, String.format("t=%d", timeStep));
+
+        System.out.println("DEBUG POINT 7");
+
         imp.setOverlay(text, Color.white, 0, Color.black);
+
+        System.out.println("DEBUG POINT 8");
     }
 
     private static void drawComponentToImage(final Component<?, ?> ctn,

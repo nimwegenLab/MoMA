@@ -1258,13 +1258,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * Show a stack of the components of the current time step in a separate window.
      */
     private void ShowComponentsOfCurrentTimeStep() {
+		System.out.println("DEBUG POINT 1");
         List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
 		GrowthLineFrame glf = model.getCurrentGLF();
 		int timeStep = glf.getParent().getFrames().indexOf( glf );
 		GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
 		if(ilp != null){
+			System.out.println("DEBUG POINT 2");
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
+		System.out.println("DEBUG POINT 3");
         Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs, timeStep);
     }
 

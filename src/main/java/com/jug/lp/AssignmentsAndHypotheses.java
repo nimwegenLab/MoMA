@@ -96,9 +96,11 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	 * @return <code>a_t.get(t);</code>
 	 */
 	public List< A > getAssignmentsAt( final int t ) {
-		assert ( t >= 0 );
-		assert ( t < a_t.size() );
-		return a_t.get( t );
+		if (t >= 0 && t < a_t.size()) {
+			return a_t.get( t );
+		} else {
+			return new ArrayList<A>(); // if hypotheses for time t do not exist return empty array
+		}
 	}
 
 	/**
@@ -164,20 +166,22 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	/**
 	 * Returns a <code>List</code> containing all hypothesis stored at
 	 * time-point t.
+	 * If index {@param t} is out of bounds, we return an empty ArrayList.
+	 * We do this, because with the U-Net segment generation empty channels
+	 * there will not be any segments for empty channels - even thought the
+	 * {@param t} may still be valid given the range of movie frames.
 	 * 
 	 * @param t
 	 *            a number denoting the time at which the given assignment
 	 *            should be returned.
 	 * @return <code>h_t.get(t);</code>
 	 */
-	public List< H > getHypothesesAt( final int t ) {
-
-		if ( t >= 0 && t < h_t.size() ) {
-			return h_t.get( t );
+	public List<H> getHypothesesAt(final int t) {
+		if (t >= 0 && t < h_t.size()) {
+			return h_t.get(t);
 		} else {
-			return null;
+			return new ArrayList<H>(); // if hypotheses for time t do not exist return empty array
 		}
-
 	}
 
 	/**

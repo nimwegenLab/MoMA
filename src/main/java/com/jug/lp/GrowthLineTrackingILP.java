@@ -926,8 +926,6 @@ public class GrowthLineTrackingILP {
 
 		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
 
-		if ( hyps == null ) return ret;
-
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
 			Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > nh;
 			if ( t > 0 ) {

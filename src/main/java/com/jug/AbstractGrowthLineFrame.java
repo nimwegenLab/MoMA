@@ -2,6 +2,7 @@ package com.jug;
 
 import com.jug.lp.*;
 import com.jug.util.ArgbDrawingUtils;
+import com.jug.util.ComponentTreeUtils;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -224,7 +225,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 		int cells = 0;
 		final GrowthLineTrackingILP ilp = getParent().getIlp();
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set : ilp.getOptimalRightAssignments( this.getTime() ).values() ) {
-
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ora : set ) {
 				cells++;
 			}
@@ -233,7 +233,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * Returns the position of the given hypothesis in the GL.
+	 * Returns the rank of the given hypothesis in the GL.
 	 *
 	 * @return the uppermost segmented cell would return a 1. For each active
 	 *         segmentation that is strictly above the given hypothesis the
@@ -258,7 +258,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 					srcHyp = ( ( ExitAssignment ) ora ).getAssociatedHypothesis();
 				}
 				if ( srcHyp != null ) {
-					if ( srcHyp.getLocation().b < hyp.getLocation().a ) {
+					if (ComponentTreeUtils.isAbove(srcHyp, hyp)) {
 						pos++;
 					}
 				}

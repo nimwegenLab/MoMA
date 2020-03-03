@@ -53,16 +53,18 @@ public class ComponentTreeUtils {
     private static ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
 
     /**
-     * @param candidate
-     * @param hyp
-     * @return
+     * Checks if {@param candidate} is above {@param hyp} inside the image.
+     *
+     * @param candidate candidate that we are interested in
+     * @param hyp reference that we are testing against
+     * @return boolean indicating if it is above or not
      */
     public static boolean isAbove(
             final Hypothesis<Component<FloatType, ?>> candidate,
             final Hypothesis<Component<FloatType, ?>> hyp) {
         SimpleComponent<FloatType> candidateComponent = (SimpleComponent<FloatType>)candidate.getWrappedComponent();
         SimpleComponent<FloatType> referenceComponent = (SimpleComponent<FloatType>)hyp.getWrappedComponent();
-        return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1;
+        return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1; /* NOTE: since we are using image/matrix coordinates (e.g. origin at the top), the coordinate value for {@param candidate} will be lower than {@param hyp}, when it is above {@param hyp} */
     }
 
     /**

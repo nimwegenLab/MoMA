@@ -266,8 +266,8 @@ public class CellStatsExporter {
 
 				final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
 
-				final int numCells = glf.getSolutionStats_numCells();
-				final int cellRank = glf.getSolutionStats_cellPos(segmentRecord.hyp);
+				final int numCells = glf.getSolutionStats_numberOfTrackedCells();
+				final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
 
 				final String genealogy = segmentRecord.getGenealogyString();
 
@@ -454,7 +454,7 @@ public class CellStatsExporter {
 			final Vector< String > newRow = new Vector<>();
 			newRow.add( "" + i );
 
-			final int numCells = glf.getSolutionStats_numCells();
+			final int numCells = glf.getSolutionStats_numberOfTrackedCells();
 			final Vector< ValuePair< ValuePair< Integer, Integer >, ValuePair< Integer, Integer > >> data = glf.getSolutionStats_limitsAndRightAssType();
 
 			newRow.add( "" + numCells );

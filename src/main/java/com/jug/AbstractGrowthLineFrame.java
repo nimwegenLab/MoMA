@@ -221,7 +221,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Returns the number of cells in this GLF.
 	 */
-	public int getSolutionStats_numCells() {
+	public int getSolutionStats_numberOfTrackedCells() {
 		int cells = 0;
 		final GrowthLineTrackingILP ilp = getParent().getIlp();
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set : ilp.getOptimalRightAssignments( this.getTime() ).values() ) {
@@ -239,7 +239,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	 *         segmentation that is strictly above the given hypothesis the
 	 *         return value is increased by 1.
 	 */
-	public int getSolutionStats_cellPos( final Hypothesis< Component< FloatType, ? >> hyp ) {
+	public int getSolutionStats_cellRank(final Hypothesis< Component< FloatType, ? >> hyp ) {
 		int pos = 1;
 
 		final GrowthLineTrackingILP ilp = getParent().getIlp();

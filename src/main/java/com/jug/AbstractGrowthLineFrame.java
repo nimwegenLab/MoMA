@@ -233,14 +233,15 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * Returns the rank of the given hypothesis in the GL.
+	 * Returns the rank of the given hypothesis {@param hyp} in the GL.
 	 *
-	 * @return the uppermost segmented cell would return a 1. For each active
-	 *         segmentation that is strictly above the given hypothesis the
-	 *         return value is increased by 1.
+	 * @param hyp Hypothesis for which the rank will be determined
+	 * @return The lower-most segmented cell returns 0. For each active
+	 *         segment with center above {@param hyp} the return value is
+	 *         increased by 1.
 	 */
 	public int getSolutionStats_cellRank(final Hypothesis< Component< FloatType, ? >> hyp ) {
-		int pos = 1;
+		int pos = 0;
 
 		final GrowthLineTrackingILP ilp = getParent().getIlp();
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > optRightAssmnt : ilp.getOptimalRightAssignments(
@@ -258,7 +259,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 					srcHyp = ( ( ExitAssignment ) ora ).getAssociatedHypothesis();
 				}
 				if ( srcHyp != null ) {
-					if (ComponentTreeUtils.isAbove(srcHyp, hyp)) {
+					if (ComponentTreeUtils.isAbove(hyp, srcHyp)) {
 						pos++;
 					}
 				}

@@ -2,6 +2,7 @@ package com.jug;
 
 import com.jug.lp.*;
 import com.jug.util.ArgbDrawingUtils;
+import com.jug.util.ComponentTreeUtils;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -220,11 +221,10 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	/**
 	 * Returns the number of cells in this GLF.
 	 */
-	public int getSolutionStats_numCells() {
+	public int getSolutionStats_numberOfTrackedCells() {
 		int cells = 0;
 		final GrowthLineTrackingILP ilp = getParent().getIlp();
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set : ilp.getOptimalRightAssignments( this.getTime() ).values() ) {
-
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ora : set ) {
 				cells++;
 			}
@@ -233,14 +233,15 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 	}
 
 	/**
-	 * Returns the position of the given hypothesis in the GL.
+	 * Returns the rank of the given hypothesis {@param hyp} in the GL.
 	 *
-	 * @return the uppermost segmented cell would return a 1. For each active
-	 *         segmentation that is strictly above the given hypothesis the
-	 *         return value is increased by 1.
+	 * @param hyp Hypothesis for which the rank will be determined
+	 * @return The lower-most segmented cell returns 0. For each active
+	 *         segment with center above {@param hyp} the return value is
+	 *         increased by 1.
 	 */
-	public int getSolutionStats_cellPos( final Hypothesis< Component< FloatType, ? >> hyp ) {
-		int pos = 1;
+	public int getSolutionStats_cellRank(final Hypothesis< Component< FloatType, ? >> hyp ) {
+		int pos = 0;
 
 		final GrowthLineTrackingILP ilp = getParent().getIlp();
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > optRightAssmnt : ilp.getOptimalRightAssignments(
@@ -258,7 +259,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 					srcHyp = ( ( ExitAssignment ) ora ).getAssociatedHypothesis();
 				}
 				if ( srcHyp != null ) {
-					if ( srcHyp.getLocation().b < hyp.getLocation().a ) {
+					if (ComponentTreeUtils.isAbove(hyp, srcHyp)) {
 						pos++;
 					}
 				}

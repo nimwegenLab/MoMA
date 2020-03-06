@@ -200,6 +200,7 @@ public class MoMA {
 	public static boolean EXPORT_INCLUDE_HISTOGRAMS = false;
 	public static boolean EXPORT_INCLUDE_QUANTILES = false;
 	public static boolean EXPORT_INCLUDE_COL_INTENSITY_SUMS = true;
+	public static boolean EXPORT_INCLUDE_MIXTURE_MODEL = true;
 	public static boolean EXPORT_INCLUDE_PIXEL_INTENSITIES = false;
 
 	/**

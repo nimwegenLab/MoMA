@@ -145,6 +145,8 @@ public class CellStatsExporter {
 		System.out.println( "...done!" );
 	}
 
+	private MixtureModelFit mixtureModelFit = new MixtureModelFit();
+
 	private Vector< String > getCellStatsExportData() throws GRBException {
 		// use US-style number formats! (e.g. '.' as decimal point)
 		Locale.setDefault( new Locale( "en", "US" ) );
@@ -348,6 +350,16 @@ public class CellStatsExporter {
 							colIntensityStr.append(String.format("; %.3f", value));
 						}
 						linesToExport.add(colIntensityStr.toString());
+					}
+
+					if (MoMA.EXPORT_INCLUDE_MIXTURE_MODEL) {
+						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+						double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel);
+						StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=MixtureModelParameters=", c));
+						for (final double value : estimates) {
+							mixtureModelOutputStr.append(String.format("%.3f; ", value));
+						}
+						linesToExport.add(mixtureModelOutputStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {

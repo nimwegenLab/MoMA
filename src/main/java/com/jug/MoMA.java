@@ -79,7 +79,7 @@ public class MoMA {
 	 * GrowthLine?
 	 */
 	public static int GL_WIDTH_IN_PIXELS = 20;
-	public static int GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = 100;
+	public static int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
 	public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
 	public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
 
@@ -576,7 +576,7 @@ public class MoMA {
 		BGREM_X_OFFSET = Integer.parseInt( props.getProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) ) );
 		GL_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) ) );
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
-		GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) ) );
+		INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt( props.getProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) ) );
 		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
@@ -1136,7 +1136,7 @@ public class MoMA {
 			props.setProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) );
 			props.setProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) );
 			props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
-			props.setProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) );
+			props.setProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) );
 			int offset = GL_OFFSET_BOTTOM;
 			props.setProperty( "GL_OFFSET_BOTTOM", Integer.toString( offset ) );
 			props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );

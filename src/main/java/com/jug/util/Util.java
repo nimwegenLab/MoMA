@@ -168,9 +168,9 @@ public class Util {
 	 */
 	public static IntervalView< FloatType > getColumnBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
-		lt[ 0 ] = glMiddleInImg - MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS / 2;
+		lt[ 0 ] = glMiddleInImg - MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2;
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
-		rb[ 0 ] = glMiddleInImg + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS / 2 + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS % 2 - 1;
+		rb[ 0 ] = glMiddleInImg + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2 + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
 		return Views.interval( Views.zeroMin( channelFrame ), lt, rb );
 	}
 

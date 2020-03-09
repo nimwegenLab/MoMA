@@ -106,6 +106,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         t.start();
                         break;
                     }
+                    case "INTENSITY_FIT_RANGE_IN_PIXELS": {
+                        MoMA.INTENSITY_FIT_RANGE_IN_PIXELS =
+                                Integer.parseInt(evt.getNewValue().toString());
+                        MoMA.props.setProperty(
+                                "INTENSITY_FIT_RANGE_IN_PIXELS",
+                                "" + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS);
+                        break;
+                    }
                     default:
                         JOptionPane.showMessageDialog(
                                 MoMA.getGui(),
@@ -155,7 +163,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "GL_OFFSET_LATERAL":
                 case "GL_OFFSET_TOP":
                 case "GL_OFFSET_BOTTOM":
-                case "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS":
                     property.setCategory(GL);
                     property.setShortDescription(key);
                     break;
@@ -186,14 +193,9 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setShortDescription(key);
                     break;
                 case "INTENSITY_FIT_ITERATIONS":
-                    property.setCategory(EXPORT);
-                    property.setShortDescription(key);
-                    break;
                 case "INTENSITY_FIT_PRECISION":
-                    property.setCategory(EXPORT);
-                    property.setShortDescription(key);
-                    break;
                 case "INTENSITY_FIT_INITIAL_WIDTH":
+                case "INTENSITY_FIT_RANGE_IN_PIXELS":
                     property.setCategory(EXPORT);
                     property.setShortDescription(key);
                     break;

@@ -29,11 +29,9 @@ import java.util.function.DoubleBinaryOperator;
 import java.util.function.DoubleUnaryOperator;
 import java.util.function.Function;
 import java.util.function.IntToDoubleFunction;
-import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-import static com.jug.MoMA.INTENSITY_FIT_ITERATIONS;
-import static com.jug.MoMA.INTENSITY_FIT_PRECISION;
+import static com.jug.MoMA.*;
 
 /**
  *
@@ -60,7 +58,7 @@ public class MixtureModelFit {
 
         // initial parameter values & bounds, as in Kaiser 2018. Might be included as parameters in order to better adapt to other systems (e.g with wider bacteria) ?
         double muStart = observedFluo.length / 2; // middle of peak starts at middle of bacteria object. -xMin because in the fitting function the index is 0-based
-        double wStart = 5.5; // in a more general case, should it be a value depending on bacteria width ?
+        double wStart = INTENSITY_FIT_INITIAL_WIDTH; // in a more general case, should it be a value depending on bacteria width ?
         double[] muBounds = new double[]{muStart - 10, muStart + 10};
         double[] wBounds = new double[] {3, 12};
         double precision = INTENSITY_FIT_PRECISION;

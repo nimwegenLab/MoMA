@@ -188,6 +188,7 @@ public class MoMA {
 	 */
 	public static int INTENSITY_FIT_ITERATIONS = 1000; /* Number of iterations performed during fit. */
 	public static double INTENSITY_FIT_PRECISION = 1e-3; /* Precision for which fitting will be finished. */
+	public static double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
 
 	/**
 	 * One of the test for paper:
@@ -617,6 +618,8 @@ public class MoMA {
 
 		INTENSITY_FIT_ITERATIONS = Integer.parseInt(props.getProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS)));
 		INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
+		INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_WIDTH_START", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
+
 
 		if ( !HEADLESS ) {
 			// Iterate over all currently attached monitors and check if sceen
@@ -1178,6 +1181,7 @@ public class MoMA {
 
 			props.setProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS));
 			props.setProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION));
+			props.setProperty("INTENSITY_FIT_WIDTH_START", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
 			props.store( out, "MotherMachine properties" );
 		} catch ( final Exception e ) {

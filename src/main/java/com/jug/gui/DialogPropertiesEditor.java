@@ -85,6 +85,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "" + MoMA.INTENSITY_FIT_PRECISION);
                         break;
                     }
+                    case "INTENSITY_FIT_WIDTH_START": {
+                        MoMA.INTENSITY_FIT_INITIAL_WIDTH =
+                                Double.parseDouble(evt.getNewValue().toString());
+                        MoMA.props.setProperty(
+                                "INTENSITY_FIT_WIDTH_START",
+                                "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
+                        break;
+                    }
                     case "GL_OFFSET_BOTTOM": {
                         MoMA.GL_OFFSET_BOTTOM =
                                 Integer.parseInt(evt.getNewValue().toString());
@@ -182,6 +190,10 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setShortDescription(key);
                     break;
                 case "INTENSITY_FIT_PRECISION":
+                    property.setCategory(EXPORT);
+                    property.setShortDescription(key);
+                    break;
+                case "INTENSITY_FIT_WIDTH_START":
                     property.setCategory(EXPORT);
                     property.setShortDescription(key);
                     break;

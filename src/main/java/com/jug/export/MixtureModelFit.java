@@ -32,6 +32,9 @@ import java.util.function.IntToDoubleFunction;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
+import static com.jug.MoMA.INTENSITY_FIT_ITERATIONS;
+import static com.jug.MoMA.INTENSITY_FIT_PRECISION;
+
 /**
  *
  * @author Jean Ollion
@@ -60,8 +63,8 @@ public class MixtureModelFit {
         double wStart = 5.5; // in a more general case, should it be a value depending on bacteria width ?
         double[] muBounds = new double[]{muStart - 10, muStart + 10};
         double[] wBounds = new double[] {3, 12};
-        double precision = 1e-3;
-        int maxIterations = 500;
+        double precision = INTENSITY_FIT_PRECISION;
+        int maxIterations = INTENSITY_FIT_ITERATIONS;
 
         // actual call to the fitting method
         double[] fittedParams = fitFluo(observedFluo, muStart, muBounds, wStart, wBounds, maxIterations, precision);

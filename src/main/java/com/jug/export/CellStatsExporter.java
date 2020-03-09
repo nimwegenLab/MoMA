@@ -352,14 +352,16 @@ public class CellStatsExporter {
 						linesToExport.add(colIntensityStr.toString());
 					}
 
-					if (MoMA.EXPORT_INCLUDE_MIXTURE_MODEL) {
-						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-						double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel);
-						StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=MixtureModelParameters=", c));
-						for (final double value : estimates) {
-							mixtureModelOutputStr.append(String.format("%.3f; ", value));
+					if (MoMA.EXPORT_INCLUDE_INTENSITY_FIT) {
+						if (c > 0) { /* Do not fit the phase contrast channel, which is channel 0. */
+							final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+							double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel);
+							StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=INTENSITY_FIT=", c));
+							for (final double value : estimates) {
+								mixtureModelOutputStr.append(String.format("%.3f; ", value));
+							}
+							linesToExport.add(mixtureModelOutputStr.toString());
 						}
-						linesToExport.add(mixtureModelOutputStr.toString());
 					}
 
 					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {

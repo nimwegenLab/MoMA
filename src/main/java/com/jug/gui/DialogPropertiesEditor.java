@@ -69,6 +69,22 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         t.start();
                         break;
                     }
+                    case "INTENSITY_FIT_ITERATIONS": {
+                        MoMA.INTENSITY_FIT_ITERATIONS =
+                                Integer.parseInt(evt.getNewValue().toString());
+                        MoMA.props.setProperty(
+                                "INTENSITY_FIT_ITERATIONS",
+                                "" + MoMA.INTENSITY_FIT_ITERATIONS);
+                        break;
+                    }
+                    case "INTENSITY_FIT_PRECISION": {
+                        MoMA.INTENSITY_FIT_PRECISION =
+                                Double.parseDouble(evt.getNewValue().toString());
+                        MoMA.props.setProperty(
+                                "INTENSITY_FIT_PRECISION",
+                                "" + MoMA.INTENSITY_FIT_PRECISION);
+                        break;
+                    }
                     case "GL_OFFSET_BOTTOM": {
                         MoMA.GL_OFFSET_BOTTOM =
                                 Integer.parseInt(evt.getNewValue().toString());
@@ -111,11 +127,13 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 			property.setType( String.class );
 			property.addPropertyChangeListener( propEditListener );
 
-            String GRB = "GUROBI props";
-            String SEG = "Segmentation props";
-            String TRA = "Tracking props";
-            String GL = "GrowthLine props";
-            String BGREM = "Background removal";
+            String GRB = "GUROBI Properties";
+            String SEG = "Segmentation Properties";
+            String TRA = "Tracking Properties";
+            String GL = "GrowthLine Properties";
+            String BGREM = "Background Properties";
+            String EXPORT = "Export Properties";
+
             switch (key) {
                 case "BGREM_TEMPLATE_XMIN":
                 case "BGREM_X_OFFSET":
@@ -159,6 +177,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setCategory(GRB);
                     property.setShortDescription(key);
                     break;
+                case "INTENSITY_FIT_ITERATIONS":
+                    property.setCategory(EXPORT);
+                    property.setShortDescription(key);
+                    break;
+                case "INTENSITY_FIT_PRECISION":
+                    property.setCategory(EXPORT);
+                    property.setShortDescription(key);
+                    break;
                 default:
                     // ALL OTHERS ARE ADDED HERE
                     property.setShortDescription(key);
@@ -174,7 +200,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private final Properties props;
 
 	public DialogPropertiesEditor( final Component parent, final Properties props ) {
-		super( SwingUtilities.windowForComponent( parent ), "TIMM Properties Editor" );
+		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
 		this.dialogInit();
 		this.setModal( true );
 

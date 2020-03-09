@@ -85,11 +85,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "" + MoMA.INTENSITY_FIT_PRECISION);
                         break;
                     }
-                    case "INTENSITY_FIT_WIDTH_START": {
+                    case "INTENSITY_FIT_INITIAL_WIDTH": {
                         MoMA.INTENSITY_FIT_INITIAL_WIDTH =
                                 Double.parseDouble(evt.getNewValue().toString());
                         MoMA.props.setProperty(
-                                "INTENSITY_FIT_WIDTH_START",
+                                "INTENSITY_FIT_INITIAL_WIDTH",
                                 "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
                     }
@@ -193,7 +193,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setCategory(EXPORT);
                     property.setShortDescription(key);
                     break;
-                case "INTENSITY_FIT_WIDTH_START":
+                case "INTENSITY_FIT_INITIAL_WIDTH":
                     property.setCategory(EXPORT);
                     property.setShortDescription(key);
                     break;

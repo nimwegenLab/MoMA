@@ -50,16 +50,16 @@ public class MixtureModelFit {
      * - the region which contains the spatial information (bounding box, voxels, mask)
      * This method does not return anything, but resulting values are stored in the measurements of the {@param bacteria}
      */
-    public double[] performMeasurement(SegmentRecord bacteria, IntervalView<FloatType> columnBoxInChannel) {
+    public double[] performMeasurement(SegmentRecord bacteria, IntervalView<FloatType> columnBoxInChannel, long imageWidth) {
         final float[] column_intensities_float = bacteria.computeChannelColumnIntensities(columnBoxInChannel);
         final double[] observedFluo = IntStream.range(0, column_intensities_float.length)
                 .mapToDouble(i -> column_intensities_float[i]).toArray();
 
         // initial parameter values & bounds, as in Kaiser 2018. Might be included as parameters in order to better adapt to other systems (e.g with wider bacteria) ?
         double muStart = observedFluo.length / 2; // middle of peak starts at middle of bacteria object. -xMin because in the fitting function the index is 0-based
-        double wStart = INTENSITY_FIT_INITIAL_WIDTH; // in a more general case, should it be a value depending on bacteria width ?
-        double[] muBounds = new double[]{muStart - 10, muStart + 10};
-        double[] wBounds = new double[] {3, 12};
+        double wStart = INTENSITY_FIT_INITIAL_WIDTH; // in a more general case, should it be a value depending on bacteria width ?; TODO: this parameter should better be in microns
+        double[] muBounds = new double[]{muStart - 0.1 * imageWidth, muStart + 0.1 * imageWidth}; /* Calculate fit bounds based on image width; to be independent of resolution; TODO: this would better be calculated based on effective pixel size (e.g. microns) */
+        double[] wBounds = new double[] {(double)imageWidth / 50., (double)imageWidth / 8.}; /* Calculate fit bounds based on image width; to be independent of resolution; TODO: this would better be calculated based on effective pixel size (e.g. microns) */
         double precision = INTENSITY_FIT_PRECISION;
         int maxIterations = INTENSITY_FIT_ITERATIONS;
 
@@ -89,7 +89,7 @@ public class MixtureModelFit {
         double cMax = Arrays.stream(c_i).max().getAsDouble();
         double cMin = Arrays.stream(c_i).min().getAsDouble();
         // step 2
-        double[] params = new double[] {cMax - cMin, cMin, muStart, wStart};
+        double[] params = new double[] {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w}
         double[] ro_i = new double[c_i.length];
         List<Double> diffList = new ArrayList<>(maxIterationNumber);
         int iteration = 0;
@@ -109,10 +109,10 @@ public class MixtureModelFit {
      * @param precision precision for mi and w search
      */
     private static double iterate(double[] c_i, double[] ro_i, double[] parameters, double[] muBounds, double[] wBounds, double precision) {
+        // step 3: compute ro
         // update ro_i array using previous parameters
         IntStream.range(0, c_i.length).forEach(i -> ro_i[i] = 1/(1+Math.pow((i-parameters[2])/parameters[3], 2)));
-
-        // step 3: compute ro
+        // calculate integral of ro_i
         Function<IntToDoubleFunction, Double> sum = fun -> IntStream.range(0, c_i.length).mapToDouble(fun).sum();
         double ro = Arrays.stream(ro_i).sum();
 

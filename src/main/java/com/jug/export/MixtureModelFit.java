@@ -36,6 +36,8 @@ import static com.jug.MoMA.*;
 /**
  *
  * @author Jean Ollion
+ * @author Michael Mell
+ *
  */
 public class MixtureModelFit {
     boolean verbose;

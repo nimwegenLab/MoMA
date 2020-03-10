@@ -96,6 +96,10 @@ public class MixtureModelFit {
         double diff = Double.POSITIVE_INFINITY;
         while (iteration++ < maxIterationNumber && diff > precision) diffList.add(diff = iterate(c_i, ro_i, params, muBounds, wBounds, precision));
 
+        if (iteration >= maxIterationNumber){
+            return new double[] { Double.NaN, Double.NaN, Double.NaN, Double.NaN }; /* Fit did not converge. Therefore return NaN. */
+        }
+
         //Utils.plotProfile("Convergence", ArrayUtil.toPrimitive(diffList), "iteration number", "sum of parameter relative error");
         return params;
     }

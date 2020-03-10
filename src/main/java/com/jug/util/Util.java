@@ -1,17 +1,9 @@
 package com.jug.util;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.imageio.ImageIO;
-
+import com.jug.MoMA;
+import com.jug.lp.Hypothesis;
+import net.imglib2.Cursor;
+import net.imglib2.Point;
 import net.imglib2.*;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
@@ -22,8 +14,14 @@ import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-import com.jug.MoMA;
-import com.jug.lp.Hypothesis;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author jug
@@ -168,9 +166,17 @@ public class Util {
 	 */
 	public static IntervalView< FloatType > getColumnBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
-		lt[ 0 ] = glMiddleInImg - MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS / 2;
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
-		rb[ 0 ] = glMiddleInImg + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS / 2 + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS % 2 - 1;
+
+		if (channelFrame.dimension(0) <= MoMA.INTENSITY_FIT_RANGE_IN_PIXELS) {
+			lt[0] = glMiddleInImg - channelFrame.dimension(0) / 2;
+			rb[0] = glMiddleInImg + channelFrame.dimension(0) / 2 + channelFrame.dimension(0) % 2 - 1;
+		}
+		else
+		{
+			lt[0] = glMiddleInImg - MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2;
+			rb[0] = glMiddleInImg + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2 + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
+		}
 		return Views.interval( Views.zeroMin( channelFrame ), lt, rb );
 	}
 

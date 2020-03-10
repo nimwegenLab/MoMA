@@ -23,6 +23,8 @@ import javax.swing.*;
 import java.io.*;
 import java.util.*;
 
+import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
+
 /**
  * @author jug
  */
@@ -55,9 +57,25 @@ public class CellStatsExporter {
 		}
 	}
 
+	private boolean showFitRangeWarningDialogIfNeeded(){
+		final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(0), 2, 0);
+
+		if (channelFrame.dimension(0) >= INTENSITY_FIT_RANGE_IN_PIXELS) return true; /* Image wider then fit range. No need to warn. */
+
+		int userSelection = JOptionPane.showConfirmDialog(null,
+				String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),
+				"Fit Range Warning",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+		if (userSelection == JOptionPane.YES_OPTION) return true;
+		else return false;
+	}
+
 	public void export() {
 		if ( !MoMA.HEADLESS ) {
 			if ( showConfigDialog() ) {
+				if (!showFitRangeWarningDialogIfNeeded()) return;
+
 				final File folderToUse = OsDependentFileChooser.showSaveFolderChooser( gui, MoMA.STATS_OUTPUT_PATH, "Choose export folder..." );
 				if ( folderToUse == null ) {
 					JOptionPane.showMessageDialog(
@@ -144,6 +162,8 @@ public class CellStatsExporter {
 		}
 		System.out.println( "...done!" );
 	}
+
+	private MixtureModelFit mixtureModelFit = new MixtureModelFit();
 
 	private Vector< String > getCellStatsExportData() throws GRBException {
 		// use US-style number formats! (e.g. '.' as decimal point)
@@ -348,6 +368,18 @@ public class CellStatsExporter {
 							colIntensityStr.append(String.format("; %.3f", value));
 						}
 						linesToExport.add(colIntensityStr.toString());
+					}
+
+					if (MoMA.EXPORT_INCLUDE_INTENSITY_FIT) {
+						if (c > 0) { /* Do not fit the phase contrast channel, which is channel 0. */
+							final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+							double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
+							StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=INTENSITY_FIT=", c));
+							for (final double value : estimates) {
+								mixtureModelOutputStr.append(String.format("%.3f; ", value));
+							}
+							linesToExport.add(mixtureModelOutputStr.toString());
+						}
 					}
 
 					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {

@@ -1,54 +1,10 @@
 package com.jug;
 
-import java.awt.FileDialog;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
-import javax.swing.BorderFactory;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
-
-import com.jug.util.componenttree.UnetProcessor;
-import net.imglib2.img.ImgView;
-import net.imglib2.img.array.ArrayImgFactory;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang3.SystemUtils;
-
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
 import com.jug.util.DataMover;
 import com.jug.util.FloatTypeImgLoader;
-
-/*
-  Main class for the MotherMachine project.
- */
-
+import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
@@ -57,11 +13,30 @@ import ij.ImagePlus;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.apache.commons.cli.*;
+import org.apache.commons.lang3.SystemUtils;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.*;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
+/*
+  Main class for the MotherMachine project.
+ */
 
 /**
  * @author jug
@@ -104,7 +79,7 @@ public class MoMA {
 	 * GrowthLine?
 	 */
 	public static int GL_WIDTH_IN_PIXELS = 20;
-	public static int GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = 100;
+	public static int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
 	public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
 	public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
 
@@ -200,12 +175,20 @@ public class MoMA {
 	public static boolean EXPORT_INCLUDE_HISTOGRAMS = false;
 	public static boolean EXPORT_INCLUDE_QUANTILES = false;
 	public static boolean EXPORT_INCLUDE_COL_INTENSITY_SUMS = true;
+	public static boolean EXPORT_INCLUDE_INTENSITY_FIT = true;
 	public static boolean EXPORT_INCLUDE_PIXEL_INTENSITIES = false;
 
 	/**
 	 *
 	 */
 	public static int OPTIMISATION_INTERVAL_LENGTH = -1;
+
+	/**
+	 * Properties for fitting the Cauchy/Mixture model to the intensity profile.
+	 */
+	public static int INTENSITY_FIT_ITERATIONS = 1000; /* Number of iterations performed during fit. */
+	public static double INTENSITY_FIT_PRECISION = 1e-3; /* Precision for which fitting will be finished. */
+	public static double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
 
 	/**
 	 * One of the test for paper:
@@ -593,7 +576,7 @@ public class MoMA {
 		BGREM_X_OFFSET = Integer.parseInt( props.getProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) ) );
 		GL_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) ) );
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
-		GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) ) );
+		INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt( props.getProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) ) );
 		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
@@ -633,6 +616,9 @@ public class MoMA {
 
 		OPTIMISATION_INTERVAL_LENGTH = Integer.parseInt( props.getProperty( "OPTIMISATION_INTERVAL_LENGTH", Integer.toString(OPTIMISATION_INTERVAL_LENGTH) ));
 
+		INTENSITY_FIT_ITERATIONS = Integer.parseInt(props.getProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS)));
+		INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
+		INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
 		if ( !HEADLESS ) {
 			// Iterate over all currently attached monitors and check if sceen
@@ -1132,7 +1118,7 @@ public class MoMA {
 	}
 
 	private void saveParams() {
-		final File f = new File( "mm.properties" );
+		final File f = new File( "mm.properties" ); // SHOULD THIS NOT BE THE USER-FOLDER?! (see also above)
 		saveParams (f);
 	}
 
@@ -1150,7 +1136,7 @@ public class MoMA {
 			props.setProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) );
 			props.setProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) );
 			props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
-			props.setProperty( "GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS", Integer.toString( GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS ) );
+			props.setProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) );
 			int offset = GL_OFFSET_BOTTOM;
 			props.setProperty( "GL_OFFSET_BOTTOM", Integer.toString( offset ) );
 			props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );
@@ -1191,6 +1177,10 @@ public class MoMA {
 			props.setProperty( "EXPORT_INCLUDE_PIXEL_INTENSITIES", Integer.toString(EXPORT_INCLUDE_PIXEL_INTENSITIES?1:0) );
 
 			props.setProperty("OPTIMISATION_INTERVAL_LENGTH", Integer.toString(OPTIMISATION_INTERVAL_LENGTH));
+
+			props.setProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS));
+			props.setProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION));
+			props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
 			props.store( out, "MotherMachine properties" );
 		} catch ( final Exception e ) {
@@ -1330,8 +1320,6 @@ public class MoMA {
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
 		imgProbs = new UnetProcessor(GL_OFFSET_TOP, GL_OFFSET_BOTTOM).process(imgTemp);
-
-		System.out.println();
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;

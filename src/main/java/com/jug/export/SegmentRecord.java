@@ -172,8 +172,8 @@ final class SegmentRecord {
      * @return
      */
     float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
-        if ( MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
-            System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.GL_FLUORESCENCE_COLLECTION_WIDTH_IN_PIXELS );
+        if ( MoMA.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
+            System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS );
         }
 
         final float[] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];

@@ -1023,9 +1023,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 					try {
 						if ( file != null ) {
-
-							// GL_OFFSET_BOTTOM adjustment if needed...
-
 							if ( ilp == null ) {
 								prepareOptimization();
 								ilp = model.getCurrentGL().getIlp();
@@ -1174,39 +1171,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			t.start();
 		}
 		if ( e.getSource().equals( btnRestart ) ) {
-			final int choise =
+			final int choice =
 					JOptionPane.showConfirmDialog(
 							this,
 							"Do you really want to restart the optimization?\nYou will loose all manual edits performed so far!",
 							"Are you sure?",
 							JOptionPane.YES_NO_OPTION );
-
-			if ( choise == JOptionPane.OK_OPTION ) {
-    			final Thread t = new Thread(() -> {
-					model.getCurrentGL().getIlp().autosave();
-
-					prepareOptimization();
-
-					if ( !( sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum() ) ) {
-						final int extent =
-								sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-						sliderTrackingRange.setUpperValue(extent);
-					}
-					sliderTrackingRange.setValue( 0 );
-
-					model.getCurrentGL().getIlp().freezeBefore( sliderTrackingRange.getValue() );
-					if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
-						// this is needed because of the duplication of the last time-point
-						model.getCurrentGL().getIlp().ignoreBeyond( sliderTrackingRange.getUpperValue() );
-					}
-
-					System.out.println( "Finding optimal result..." );
-					model.getCurrentGL().runILP();
-					System.out.println( "...done!" );
-
-					dataToDisplayChanged();
-				});
-    			t.start();
+			if ( choice == JOptionPane.OK_OPTION ) {
+				restartTrackingAsync();
 			}
 		}
 		if ( e.getSource().equals( btnOptimizeMore ) ) {
@@ -1254,7 +1226,39 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		setFocusToTimeSlider();
 	}
 
-    /**
+	/**
+	 * Queries the user, if he wants to restart the tracking, e.g. after
+	 * changing a parameter or hitting the restart button.
+	 */
+	public void restartTrackingAsync() {
+			final Thread t = new Thread(() -> {
+				model.getCurrentGL().getIlp().autosave();
+
+				prepareOptimization();
+
+				if ( !( sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum() ) ) {
+					final int extent =
+							sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
+					sliderTrackingRange.setUpperValue(extent);
+				}
+				sliderTrackingRange.setValue( 0 );
+
+				model.getCurrentGL().getIlp().freezeBefore( sliderTrackingRange.getValue() );
+				if ( sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum() ) {
+					// this is needed because of the duplication of the last time-point
+					model.getCurrentGL().getIlp().ignoreBeyond( sliderTrackingRange.getUpperValue() );
+				}
+
+				System.out.println( "Finding optimal result..." );
+				model.getCurrentGL().runILP();
+				System.out.println( "...done!" );
+
+				dataToDisplayChanged();
+			});
+			t.start();
+	}
+
+	/**
      * Show a stack of the components of the current time step in a separate window.
      */
     private void ShowComponentsOfCurrentTimeStep() {

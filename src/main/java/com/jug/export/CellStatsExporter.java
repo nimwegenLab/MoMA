@@ -269,10 +269,6 @@ public class CellStatsExporter {
 		final long h = MoMA.instance.getImgRaw().dimension( 1 );
 		linesToExport.add( "imageHeight = " + h + "\n" );
 
-		// Line 6: bottomOffset
-		linesToExport.add(
-				"glHeight = " + ( h - MoMA.GL_OFFSET_BOTTOM ) + "\n" );
-
 		// Line 7: track region (pixel row interval we perform tracking within -- this is all but top and bottom offset areas)
 		linesToExport.add( String.format("trackRegionInterval = [%d]", h - 1 ) );
 

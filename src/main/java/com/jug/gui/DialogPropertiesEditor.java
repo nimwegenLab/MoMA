@@ -33,12 +33,15 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -5529104109524798394L;
 	private static final PropEditedListener propEditListener = new PropEditedListener();
+    private static Component parent = null;
+    private PropertySheetPanel sheet;
 
-	static class PropEditedListener implements PropertyChangeListener {
+    static class PropEditedListener implements PropertyChangeListener {
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent evt ) {
-			final String sourceName = ( ( Property ) evt.getSource() ).getName();
+            Property sourceProperty = (Property) evt.getSource();
+			final String sourceName = sourceProperty.getName();
 
 			try {
                 switch (sourceName) {
@@ -57,16 +60,25 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "" + MoMA.GUROBI_MAX_OPTIMALITY_GAP);
                         break;
                     case "GL_OFFSET_TOP": {
-                        MoMA.GL_OFFSET_TOP =
-                                Integer.parseInt(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
-                                "GL_OFFSET_TOP",
-                                "" + MoMA.GL_OFFSET_TOP);
-                        final Thread t = new Thread(() -> {
-                            MoMA.instance.restartFromGLSegmentation();
-                            MoMA.getGui().dataToDisplayChanged();
-                        });
-                        t.start();
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        if(newValue!=MoMA.GL_OFFSET_TOP) {
+                            final int choice =
+                                    JOptionPane.showConfirmDialog(
+                                            parent,
+                                            "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                            "Continue?",
+                                            JOptionPane.YES_NO_OPTION);
+
+                            if (choice != JOptionPane.OK_OPTION) {
+                                sourceProperty.setValue(MoMA.GL_OFFSET_TOP);
+                            } else {
+                                MoMA.GL_OFFSET_TOP = newValue;
+                                MoMA.props.setProperty(
+                                        "GL_OFFSET_TOP",
+                                        "" + MoMA.GL_OFFSET_TOP);
+                                ((MoMAGui) parent).restartTrackingAsync();
+                            }
+                        }
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
@@ -91,19 +103,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_INITIAL_WIDTH",
                                 "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
-                        break;
-                    }
-                    case "GL_OFFSET_BOTTOM": {
-                        MoMA.GL_OFFSET_BOTTOM =
-                                Integer.parseInt(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
-                                "GL_OFFSET_BOTTOM",
-                                "" + MoMA.GL_OFFSET_BOTTOM);
-                        final Thread t = new Thread(() -> {
-                            MoMA.instance.restartFromGLSegmentation();
-                            MoMA.getGui().dataToDisplayChanged();
-                        });
-                        t.start();
                         break;
                     }
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
@@ -162,10 +161,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS":
                 case "GL_OFFSET_LATERAL":
                 case "GL_OFFSET_TOP":
-                case "GL_OFFSET_BOTTOM":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
                 case "MIN_CELL_LENGTH":
                     property.setCategory(TRA);
                     property.setShortDescription(key);
@@ -215,6 +210,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	public DialogPropertiesEditor( final Component parent, final Properties props ) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
+		this.parent = parent;
 		this.dialogInit();
 		this.setModal( true );
 
@@ -235,7 +231,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private void buildGui() {
 		this.rootPane.setLayout( new BorderLayout() );
 
-		final PropertySheetPanel sheet = new PropertySheetPanel();
+		sheet = new PropertySheetPanel();
 		sheet.setMode( PropertySheet.VIEW_AS_CATEGORIES );
 		sheet.setDescriptionVisible( false );
 		sheet.setSortingCategories( false );

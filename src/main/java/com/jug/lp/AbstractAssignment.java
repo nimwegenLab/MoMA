@@ -158,13 +158,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public void setGroundTruth( final boolean groundTruth ) {
 		this.isGroundTruth = groundTruth;
 		this.isGroundUntruth = false;
-		addOrRemoveGroundTroothConstraint( groundTruth );
+		addOrRemoveGroundTruthConstraint( groundTruth );
 	}
 
 	public void setGroundUntruth( final boolean groundUntruth ) {
 		this.isGroundTruth = false;
 		this.isGroundUntruth = groundUntruth;
-		addOrRemoveGroundTroothConstraint( groundUntruth );
+		addOrRemoveGroundTruthConstraint( groundUntruth );
 	}
 
 	public void reoptimize() {
@@ -181,7 +181,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 *
 	 */
-	private void addOrRemoveGroundTroothConstraint( final boolean add ) {
+	private void addOrRemoveGroundTruthConstraint(final boolean add ) {
 		try {
 			if ( add ) {
 				final float value = ( this.isGroundUntruth ) ? 0f : 1f;

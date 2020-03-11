@@ -1528,7 +1528,6 @@ public class GrowthLineTrackingILP {
 			out.write( String.format( "TIME, %d, %d, %d\n", numT,
 					MoMA.getMinTime(), MoMA.getMaxTime() ) );
 			out.write( String.format( "SIZE, %d, %d\n", numH, numA ) );
-			out.write( String.format( "BOTTOM_OFFSET, %d\n", MoMA.GL_OFFSET_BOTTOM ) );
 			out.newLine();
 
 			final int timeOffset = MoMA.getMinTime();

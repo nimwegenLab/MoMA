@@ -36,12 +36,8 @@ public class UnetProcessor {
     private final Context context;
     private final CommandService commandService;
     private final DatasetService datasetService;
-    private long gl_offset_top;
-    private long gl_offset_bottom;
 
-    public UnetProcessor(long gl_offset_top, long gl_offset_bottom){
-        this.gl_offset_top = gl_offset_top;
-        this.gl_offset_bottom = gl_offset_bottom;
+    public UnetProcessor(){
         model_input_width = 32;
         model_input_height = 512;
 
@@ -152,11 +148,8 @@ public class UnetProcessor {
         int dim = 2;
         long limit = image.dimension(dim);
 
-        IntervalView<FloatType> percentileRoi = Views.interval(image,
-                                                               new long[]{0, gl_offset_top, 0},
-                                                               new long[]{image.max(0), image.max(1) - gl_offset_bottom, image.max(2)});
-        float min_percentile = ops.stats().percentile(percentileRoi, lowerPercentile).getRealFloat();
-        float max_percentile = ops.stats().percentile(percentileRoi, upperPercentile).getRealFloat();
+        float min_percentile = ops.stats().percentile(image, lowerPercentile).getRealFloat();
+        float max_percentile = ops.stats().percentile(image, upperPercentile).getRealFloat();
 
         for(int i=0; i<limit; i++){
             RandomAccessibleInterval<FloatType> view = Views.hyperSlice( image, dim, i );

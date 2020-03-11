@@ -1319,7 +1319,7 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = new UnetProcessor(GL_OFFSET_TOP, GL_OFFSET_BOTTOM).process(imgTemp);
+		imgProbs = new UnetProcessor().process(imgTemp);
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			i++;

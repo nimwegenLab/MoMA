@@ -1023,9 +1023,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 					try {
 						if ( file != null ) {
-
-							// GL_OFFSET_BOTTOM adjustment if needed...
-
 							if ( ilp == null ) {
 								prepareOptimization();
 								ilp = model.getCurrentGL().getIlp();

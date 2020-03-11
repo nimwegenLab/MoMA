@@ -102,13 +102,6 @@ public class MoMA {
 	public static float COMPONENT_EXIT_RANGE = 50;
 
 	/**
-	 * Prior knowledge: hard offset in detected well center lines - will be cut
-	 * of from bottom. If set to -1, an automatic bottom offset detection will
-	 * be launched when data is read from disk.
-	 */
-	public static int GL_OFFSET_BOTTOM = 0;
-
-	/**
 	 * Maximum offset in x direction (with respect to growth line center) to
 	 * take the background intensities from that will be subtracted from the
 	 * growth line.
@@ -577,7 +570,6 @@ public class MoMA {
 		GL_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) ) );
 		MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
 		INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt( props.getProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) ) );
-		GL_OFFSET_BOTTOM = Integer.parseInt( props.getProperty( "GL_OFFSET_BOTTOM", Integer.toString( GL_OFFSET_BOTTOM ) ) );
 		GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
 		GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
 		MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
@@ -1137,8 +1129,6 @@ public class MoMA {
 			props.setProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) );
 			props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
 			props.setProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) );
-			int offset = GL_OFFSET_BOTTOM;
-			props.setProperty( "GL_OFFSET_BOTTOM", Integer.toString( offset ) );
 			props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );
 			props.setProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) );
 			props.setProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) );
@@ -1432,25 +1422,13 @@ public class MoMA {
 			hideConsoleLater = true;
 		}
 
-
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
         findGrowthLines();
-//		annotateDetectedWellCenters();
-		System.out.println( " done!" );
-
-		// subtracting BG in RAW image...
-		System.out.print( "Subtracting background..." );
-		// ...and make temp image be the same
-		resetImgTempToRaw();
-//		subtractBackgroundInTemp();
-		System.out.println( " done!" );
-
-		System.out.print( "Normalize loaded images..." );
-//		normalizePerFrame( imgTemp, MoMA.GL_OFFSET_TOP, MoMA.GL_OFFSET_BOTTOM );
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );
+		resetImgTempToRaw();
 		generateAllSimpleSegmentationHypotheses();
 		System.out.println( " done!" );
 

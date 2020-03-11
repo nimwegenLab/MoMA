@@ -105,19 +105,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
                     }
-                    case "GL_OFFSET_BOTTOM": {
-                        MoMA.GL_OFFSET_BOTTOM =
-                                Integer.parseInt(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
-                                "GL_OFFSET_BOTTOM",
-                                "" + MoMA.GL_OFFSET_BOTTOM);
-                        final Thread t = new Thread(() -> {
-                            MoMA.instance.restartFromGLSegmentation();
-                            MoMA.getGui().dataToDisplayChanged();
-                        });
-                        t.start();
-                        break;
-                    }
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
                         MoMA.INTENSITY_FIT_RANGE_IN_PIXELS =
                                 Integer.parseInt(evt.getNewValue().toString());
@@ -174,10 +161,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS":
                 case "GL_OFFSET_LATERAL":
                 case "GL_OFFSET_TOP":
-                case "GL_OFFSET_BOTTOM":
-                    property.setCategory(GL);
-                    property.setShortDescription(key);
-                    break;
                 case "MIN_CELL_LENGTH":
                     property.setCategory(TRA);
                     property.setShortDescription(key);

@@ -1,23 +1,15 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.DataMover;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgView;
-import net.imglib2.img.array.ArrayImg;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
-
-import static com.jug.MoMA.GL_OFFSET_BOTTOM;
-import static com.jug.MoMA.GL_OFFSET_TOP;
 
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.

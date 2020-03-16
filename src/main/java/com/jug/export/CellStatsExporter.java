@@ -18,10 +18,13 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import scala.Int;
 
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
 
@@ -165,6 +168,7 @@ public class CellStatsExporter {
 
 	private MixtureModelFit mixtureModelFit = new MixtureModelFit();
 
+
 	private Vector< String > getCellStatsExportData() throws GRBException {
 		// use US-style number formats! (e.g. '.' as decimal point)
 		Locale.setDefault( new Locale( "en", "US" ) );
@@ -189,8 +193,41 @@ public class CellStatsExporter {
 			dialogProgress.setVisible( true );
 		}
 
+		ResultTable resultTable = new ResultTable();
+		ResultTableColumn<String> laneIdCol = resultTable.addColumn(new ResultTableColumn<>("lane_ID"));
+		ResultTableColumn<Integer> cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
+		ResultTableColumn<Integer> parentIdCol = resultTable.addColumn(new ResultTableColumn<>("parent_ID"));
+		ResultTableColumn<String> genealogyCol = resultTable.addColumn(new ResultTableColumn<>("genealogy"));
+		ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
+		ResultTableColumn<Integer> frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
+//		ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_top [px]"));
+//		ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_bottom [px]"));
+//		ResultTableColumn<Integer> cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
+//		ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("total_cell_in_lane"));
+//		ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_x [px]"));
+//		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_y [px]"));
+//		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("cell_width [px]"));
+//		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
+//		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
+//		ResultTableColumn<Integer> backgroundRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area [px]"));
+//		ResultTableColumn<Integer> bboxRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("num_pixels_in_box [px]"));
+
+		Pattern positionPattern = Pattern.compile("Pos(\\d+)");
+		Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);
+		positionMatcher.find();
+		String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
+
+		Pattern growthlanePattern = Pattern.compile("GL(\\d+)");
+		Matcher growthlaneMatcher = growthlanePattern.matcher(loadedDataFolder);
+		growthlaneMatcher.find();
+		String growthlaneNumber = growthlaneMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
+
+		String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
+
 		// Line 1: import folder
 		linesToExport.add( loadedDataFolder );
+
+
 
 		// Line 2: GL-id
 		linesToExport.add( "GLidx = " + numCurrGL );
@@ -221,13 +258,17 @@ public class CellStatsExporter {
 				final int numCells = glf.getSolutionStats_numberOfTrackedCells();
 				final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
 
-				final String genealogy = segmentRecord.getGenealogyString();
+				laneIdCol.addValue(laneID);
+				cellIdCol.addValue(segmentRecord.getId());
+				parentIdCol.addValue(segmentRecord.getParentId());
+				genealogyCol.addValue(segmentRecord.getGenealogyString());
+				typeOfEndCol.addValue(segmentRecord.getTerminationIdentifier());
+				frameCol.addValue(segmentRecord.frame);
 
 				ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
 				String outputString = "\t";
-				outputString += String.format("frame=%d;", segmentRecord.frame);
 				outputString += String.format("pos_in_GL=[%d,%d];", cellRank, numCells);
 				outputString += String.format("pixel_limits=[%d,%d]; ", limits.getA(), limits.getB());
 				ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
@@ -260,7 +301,6 @@ public class CellStatsExporter {
 				outputString += String.format("]; ");
 				/* stop outputting total background intensities */
 				outputString += String.format("num_pixels_in_box=%d; ", Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()));
-				outputString += String.format("genealogy=%s; ", genealogy);
 				linesToExport.add(outputString);
 
 				// export info per image channel
@@ -330,25 +370,6 @@ public class CellStatsExporter {
 				segmentRecord = segmentRecord.nextSegmentInTime(ilp);
 			}
 			while (segmentRecord.exists());
-
-			if (segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
-				linesToExport.add("\tEXIT\n");
-			} else if (segmentRecord.terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
-				linesToExport.add("\tDIVISION\n");
-			} else if (segmentRecord.terminated_by == SegmentRecord.USER_PRUNING) {
-				linesToExport.add("\tUSER_PRUNING\n");
-			} else if (segmentRecord.terminated_by == SegmentRecord.ENDOFTRACKING) {
-//				// UGLY TRICK ALERT: remember the trick to fix the tracking towards the last frame?
-//				// Yes, we double the last frame. This also means that we should not export this fake frame, ergo we remove it here!
-				String deleted;
-				do {
-					deleted = linesToExport.remove(linesToExport.size() - 1);
-				}
-				while (!deleted.trim().startsWith("frame"));
-				linesToExport.add("\tENDOFDATA\n");
-			} else {
-				linesToExport.add("\tGUROBI_EXCEPTION\n");
-			}
 
 			// REPORT PROGRESS if needbe
 			if (!MoMA.HEADLESS) {

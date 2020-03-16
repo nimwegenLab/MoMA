@@ -14,8 +14,9 @@ public class ResultTable {
         writer.flush();
     }
 
-    public void addColumn(ResultTableColumn column) {
+    public <T> ResultTableColumn<T> addColumn(ResultTableColumn<T> column) {
         columnList.add(column);
+        return column;
     }
 
     private void printHeader(Writer writer) throws IOException {

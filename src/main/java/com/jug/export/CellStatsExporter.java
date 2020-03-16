@@ -175,77 +175,13 @@ public class CellStatsExporter {
 
 		final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get( 0 );
 		final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
-		final Vector< ValuePair< Integer, Hypothesis< Component< FloatType, ? > > > > segmentsInFirstFrameSorted =
-				firstGLF.getSortedActiveHypsAndPos();
-		final List< SegmentRecord > startingPoints = new ArrayList<>();
 
-		int nextCellId = 0;
-		final LinkedList< SegmentRecord > queue = new LinkedList<>();
+		CellTrackBuilder trackBuilder = new CellTrackBuilder();
+		trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+										firstGLF.getParent().getIlp(),
+										gui.sliderTime.getMaximum());
+		List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
 
-		int cellNum = 0;
-		for ( final ValuePair< Integer, Hypothesis< Component< FloatType, ? > > > valuePair : segmentsInFirstFrameSorted ) {
-
-			cellNum++;
-			final SegmentRecord point =
-					new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellNum);
-			startingPoints.add( point );
-
-			final SegmentRecord prepPoint = new SegmentRecord(point, 1);
-			prepPoint.hyp = point.hyp;
-
-			if ( !prepPoint.hyp.isPruned() ) {
-				queue.add( prepPoint );
-			}
-		}
-		while ( !queue.isEmpty() ) {
-			final SegmentRecord prepPoint = queue.poll();
-
-			final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> rightAssmt = ilp.getOptimalRightAssignment( prepPoint.hyp );
-
-			if ( rightAssmt == null ) {
-				continue;
-			}
-			// MAPPING -- JUST DROP SEGMENT STATS
-			if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
-				final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
-				final SegmentRecord next = new SegmentRecord(prepPoint, 1);
-				next.hyp = ma.getDestinationHypothesis();
-				if ( !prepPoint.hyp.isPruned() ) {
-					queue.add( next );
-				}
-			}
-			// DIVISON -- NEW CELLS ARE BORN CURRENT ONE ENDS
-			if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
-				final DivisionAssignment da = ( DivisionAssignment ) rightAssmt;
-
-				prepPoint.pid = prepPoint.id;
-				prepPoint.tbirth = prepPoint.frame;
-
-				prepPoint.id = nextCellId;
-				prepPoint.hyp = da.getLowerDesinationHypothesis();
-				prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
-				if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > gui.sliderTime.getMaximum() ) ) {
-					final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
-					newPoint.genealogy.add( SegmentRecord.LOWER );
-					startingPoints.add( newPoint.clone() );
-					newPoint.frame++;
-					queue.add( newPoint );
-					nextCellId++;
-				}
-
-				prepPoint.id = nextCellId;
-				prepPoint.hyp = da.getUpperDesinationHypothesis();
-				prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
-				if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > gui.sliderTime.getMaximum() ) ) {
-					final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
-					newPoint.genealogy.add( SegmentRecord.UPPER );
-					startingPoints.add( newPoint.clone() );
-					newPoint.frame++;
-					queue.add( newPoint );
-					nextCellId++;
-				}
-			}
-		}
 
 		// INITIALIZE PROGRESS-BAR if not run headless
 		final DialogProgress dialogProgress = new DialogProgress( gui, "Exporting selected cell-statistics...", startingPoints.size() );

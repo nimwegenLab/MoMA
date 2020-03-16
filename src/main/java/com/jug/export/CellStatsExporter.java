@@ -93,7 +93,7 @@ public class CellStatsExporter {
 					final int tmax = MoMA.getMaxTime();
 					final File file =
 							new File( folderToUse, String.format(
-									"--[%d-%d]_%s.timm",
+									"[%d-%d]_%s.moma",
 									tmin,
 									tmax,
 									MoMA.getDefaultFilenameDecoration() ) );

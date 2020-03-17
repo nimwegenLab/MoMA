@@ -6,23 +6,23 @@ import com.jug.gui.DialogCellStatsExportSetup;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.OsDependentFileChooser;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.*;
+import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
-import net.imglib2.IterableInterval;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import scala.Int;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -142,20 +142,18 @@ public class CellStatsExporter {
 	 */
     private void exportCellStats(final File file) throws GRBException {
 
-		// ------- THE MAGIC *** THE MAGIC *** THE MAGIC *** THE MAGIG -------
-		final Vector< String > linesToExport = getCellStatsExportData();
-		// -------------------------------------------------------------------
-
 		System.out.println( "Exporting collected cell-statistics..." );
 		Writer out;
 		try {
 			out = new OutputStreamWriter( new FileOutputStream( file ) );
 
-			for ( final String line : linesToExport ) {
-				out.write( line );
-				out.write( "\n" );
-			}
-			out.close();
+			final Vector< String > linesToExport = getCellStatsExportData(out);
+
+//			for ( final String line : linesToExport ) {
+//				out.write( line );
+//				out.write( "\n" );
+//			}
+//			out.close();
 		} catch ( final FileNotFoundException e1 ) {
 			JOptionPane.showMessageDialog( gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE );
 			e1.printStackTrace();
@@ -169,7 +167,7 @@ public class CellStatsExporter {
 	private MixtureModelFit mixtureModelFit = new MixtureModelFit();
 
 
-	private Vector< String > getCellStatsExportData() throws GRBException {
+	private Vector< String > getCellStatsExportData(Writer writer) throws GRBException, IOException {
 		// use US-style number formats! (e.g. '.' as decimal point)
 		Locale.setDefault( new Locale( "en", "US" ) );
 
@@ -237,30 +235,11 @@ public class CellStatsExporter {
 
 		String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
-		// Line 1: import folder
-		linesToExport.add( loadedDataFolder );
-
-
-
-		// Line 2: GL-id
-		linesToExport.add( "GLidx = " + numCurrGL );
-
-		// Line 3: #cells
-		linesToExport.add( "numCells = " + startingPoints.size() );
-
-		// Line 4: #channels
-		linesToExport.add( "numChannels = " + MoMA.instance.getRawChannelImgs().size() );
-
-		// Line 5: imageHeight
-		final long h = MoMA.instance.getImgRaw().dimension( 1 );
-		linesToExport.add( "imageHeight = " + h + "\n" );
-
-		// Line 7: track region (pixel row interval we perform tracking within -- this is all but top and bottom offset areas)
-		linesToExport.add( String.format("trackRegionInterval = [%d]", h - 1 ) );
+		writer.write(String.format("image_folder=%s\n", loadedDataFolder));
 
 		// Export all cells (we found all their starting segments above)
 		for (SegmentRecord segmentRecord : startingPoints) {
-			linesToExport.add(segmentRecord.toString());
+//			linesToExport.add(segmentRecord.toString());
 			do {
 				SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
 				ValuePair<Integer, Integer> limits =
@@ -281,7 +260,7 @@ public class CellStatsExporter {
 				ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
-				String outputString = "\t";
+//				String outputString = "\t";
 				cellRankCol.addValue(cellRank);
 				numberOfCellsInLaneCol.addValue(numCells);
 				boundingBoxTopCol.addValue(limits.getA());
@@ -393,6 +372,9 @@ public class CellStatsExporter {
 			dialogProgress.setVisible( false );
 			dialogProgress.dispose();
 		}
+
+		writer.write("\n");
+		resultTable.print(writer);
 
 		return linesToExport;
 	}

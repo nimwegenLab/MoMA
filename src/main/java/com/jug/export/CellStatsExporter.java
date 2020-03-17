@@ -198,16 +198,16 @@ public class CellStatsExporter {
 		ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
 		ResultTableColumn<Integer> frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
 		ResultTableColumn<Integer> cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
-		ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("total_cell_in_lane"));
-		ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_top [px]"));
-		ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_bottom [px]"));
-		ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_x [px]"));
-		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_y [px]"));
-		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("cell_width [px]"));
-		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
-		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
-		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area [px^2]"));
-		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area_total [px^2]"));
+		ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("cells_in_lane"));
+		ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top[px]"));
+		ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom[px]"));
+		ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x[px]"));
+		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y[px]"));
+		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width[px]"));
+		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length[px]"));
+		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt[rad]"));
+		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area[px^2]"));
+		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bkgr_area_total[px^2]"));
 
 		List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
 		List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();

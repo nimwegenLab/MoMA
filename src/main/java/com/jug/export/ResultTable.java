@@ -7,6 +7,7 @@ import java.util.List;
 
 public class ResultTable {
     List<ResultTableColumn> columnList = new ArrayList<>();
+    String separator = ";";
 
     public void print(Writer writer) throws IOException {
         printHeader(writer);
@@ -21,7 +22,7 @@ public class ResultTable {
 
     private void printHeader(Writer writer) throws IOException {
         for (ResultTableColumn column : columnList) {
-            writer.write(String.format("%s\t", column.getHeader()));
+            writer.write(String.format("%s%s\t\t", column.getHeader(), separator));
         }
         writer.write("\n");
     }
@@ -31,7 +32,7 @@ public class ResultTable {
 
         for (int ind = 0; ind < numberOfEntries; ind++) {
             for (ResultTableColumn column : columnList) {
-                writer.write(String.format("%s;\t", column.getValue(ind)));
+                writer.write(String.format("%s%s\t\t", column.getValue(ind), separator));
             }
             writer.write("\n");
         }

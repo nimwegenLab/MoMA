@@ -210,8 +210,7 @@ public class CellStatsExporter {
 		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
 		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
 		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area [px^2]"));
-//		ResultTableColumn<Integer> backgroundRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area [px]"));
-//		ResultTableColumn<Integer> bboxRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("num_pixels_in_box [px]"));
+		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area_total [px^2]"));
 
 		Pattern positionPattern = Pattern.compile("Pos(\\d+)");
 		Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);
@@ -281,6 +280,8 @@ public class CellStatsExporter {
 				cellLengthCol.addValue(minorAndMajorAxis.getB());
 				cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
 				cellAreaCol.addValue(componentProperties.getArea(currentComponent));
+				backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
+
 				/* start outputting total cell intensities */
 				outputString += String.format("cell_intensity_total=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
@@ -291,8 +292,6 @@ public class CellStatsExporter {
 					}
 				}
 				outputString += String.format("]; ");
-				/* stop outputting total cell intensities */
-				outputString += String.format("background_roi_area=%d; ", componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 				/* start outputting total background intensities */
 				outputString += String.format("background_intensity_total=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
@@ -303,9 +302,6 @@ public class CellStatsExporter {
 					}
 				}
 				outputString += String.format("]; ");
-				/* stop outputting total background intensities */
-				outputString += String.format("num_pixels_in_box=%d; ", Util.getSegmentBoxPixelCount(segmentRecord.hyp, firstGLF.getAvgXpos()));
-				linesToExport.add(outputString);
 
 				// export info per image channel
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {

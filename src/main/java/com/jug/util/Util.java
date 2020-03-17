@@ -225,10 +225,10 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static long getSegmentBoxPixelCount( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static int getSegmentBoxPixelCount( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
-		return ( rb[ 0 ] - lt[ 0 ] + 1 ) * ( rb[ 1 ] - lt[ 1 ] + 1 );
+		return (int) ( ( rb[ 0 ] - lt[ 0 ] + 1 ) * ( rb[ 1 ] - lt[ 1 ] + 1 ) );
 	}
 
 	/**

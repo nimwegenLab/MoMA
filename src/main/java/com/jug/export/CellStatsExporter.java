@@ -209,6 +209,7 @@ public class CellStatsExporter {
 		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("cell_width [px]"));
 		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
 		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
+		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area [px^2]"));
 //		ResultTableColumn<Integer> backgroundRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area [px]"));
 //		ResultTableColumn<Integer> bboxRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("num_pixels_in_box [px]"));
 
@@ -279,7 +280,7 @@ public class CellStatsExporter {
 				cellWidthCol.addValue(minorAndMajorAxis.getA());
 				cellLengthCol.addValue(minorAndMajorAxis.getB());
 				cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
-				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
+				cellAreaCol.addValue(componentProperties.getArea(currentComponent));
 				/* start outputting total cell intensities */
 				outputString += String.format("cell_intensity_total=[");
 				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {

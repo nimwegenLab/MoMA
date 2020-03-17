@@ -200,12 +200,12 @@ public class CellStatsExporter {
 		ResultTableColumn<String> genealogyCol = resultTable.addColumn(new ResultTableColumn<>("genealogy"));
 		ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
 		ResultTableColumn<Integer> frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
-//		ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_top [px]"));
-//		ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_bottom [px]"));
-//		ResultTableColumn<Integer> cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
-//		ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("total_cell_in_lane"));
-//		ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_x [px]"));
-//		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_y [px]"));
+		ResultTableColumn<Integer> cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
+		ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("total_cell_in_lane"));
+		ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_top [px]"));
+		ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bounding_box_bottom [px]"));
+		ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_x [px]"));
+		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_y [px]"));
 //		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("cell_width [px]"));
 //		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
 //		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
@@ -269,10 +269,13 @@ public class CellStatsExporter {
 				
 				// WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
 				String outputString = "\t";
-				outputString += String.format("pos_in_GL=[%d,%d];", cellRank, numCells);
-				outputString += String.format("pixel_limits=[%d,%d]; ", limits.getA(), limits.getB());
+				cellRankCol.addValue(cellRank);
+				numberOfCellsInLaneCol.addValue(numCells);
+				boundingBoxTopCol.addValue(limits.getA());
+				boundingBoxBottomCol.addValue(limits.getB());
 				ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
-				outputString += String.format("cell_center=[%f,%f]; ", center.getA(), center.getB());
+				cellCenterXCol.addValue(center.getA());
+				cellCenterYCol.addValue(center.getB());
 				outputString += String.format("cell_width=%f; ", minorAndMajorAxis.getA());
 				outputString += String.format("cell_length=%f; ", minorAndMajorAxis.getB());
 				outputString += String.format("cell_tilt_angle=%f; ", componentProperties.getTiltAngle(currentComponent));

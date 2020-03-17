@@ -212,7 +212,6 @@ public class CellStatsExporter {
 		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area [px^2]"));
 		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area_total [px^2]"));
 
-		// fluo_bg_ch_1		fluo_ampl_ch_1		fluo_bgmask_ch_1	fluo_cellmask_ch_1
 		List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
 		List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
 		List<ResultTableColumn> intensityFitCellIntensityCols = new ArrayList<>();
@@ -295,12 +294,6 @@ public class CellStatsExporter {
 				cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
 				cellAreaCol.addValue(componentProperties.getArea(currentComponent));
 				backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
-
-//				List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
-//				List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
-//				List<ResultTableColumn> intensityFitCellIntensityCols = new ArrayList<>();
-//				List<ResultTableColumn> intensityFitBackgroundIntensityCols = new ArrayList<>();
-
 
 				/* add total cell fluorescence intensity to respective columns */
 				int columnIndex = 0;

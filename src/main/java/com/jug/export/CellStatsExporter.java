@@ -212,6 +212,20 @@ public class CellStatsExporter {
 		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area [px^2]"));
 		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area_total [px^2]"));
 
+		// fluo_bg_ch_1		fluo_ampl_ch_1		fluo_bgmask_ch_1	fluo_cellmask_ch_1
+		List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
+		List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
+		List<ResultTableColumn> intensityFitCellIntensityCols = new ArrayList<>();
+		List<ResultTableColumn> intensityFitBackgroundIntensityCols = new ArrayList<>();
+
+		/* Add columns for per fluorescence-channel output. */
+		for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+			cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c))));
+			backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c))));
+			intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c))));
+			intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bg_ch_%d", c))));
+		}
+
 		Pattern positionPattern = Pattern.compile("Pos(\\d+)");
 		Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);
 		positionMatcher.find();
@@ -282,91 +296,95 @@ public class CellStatsExporter {
 				cellAreaCol.addValue(componentProperties.getArea(currentComponent));
 				backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 
-				/* start outputting total cell intensities */
-				outputString += String.format("cell_intensity_total=[");
-				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+//				List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
+//				List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
+//				List<ResultTableColumn> intensityFitCellIntensityCols = new ArrayList<>();
+//				List<ResultTableColumn> intensityFitBackgroundIntensityCols = new ArrayList<>();
+
+
+				/* add total cell fluorescence intensity to respective columns */
+				int columnIndex = 0;
+				for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
 					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-					outputString += String.format("%f", componentProperties.getTotalIntensity(currentComponent, channelFrame));
-					if(c < MoMA.instance.getRawChannelImgs().size() - 1){
-						outputString += ", ";
-					}
+					cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
+					backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
+
+					final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+					double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
+					// estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w}
+					intensityFitCellIntensityCols.get(columnIndex).addValue(estimates[0]);
+					intensityFitBackgroundIntensityCols.get(columnIndex).addValue(estimates[1]);
+
+					columnIndex++;
 				}
-				outputString += String.format("]; ");
-				/* start outputting total background intensities */
-				outputString += String.format("background_intensity_total=[");
-				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-					outputString += String.format("%f", componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
-					if(c < MoMA.instance.getRawChannelImgs().size()-1){
-						outputString += ", ";
-					}
-				}
-				outputString += String.format("]; ");
 
 				// export info per image channel
-				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
-					final IterableInterval<FloatType> segmentBoxInChannel = Util.getSegmentBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+//				for (int c = 0; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+//					final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+//
+//					StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=INTENSITY_FIT=", c));
 
-					final FloatType min = new FloatType();
-					final FloatType max = new FloatType();
-					Util.computeMinMax(segmentBoxInChannel, min, max);
-
-					if (MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
-						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
-						StringBuilder histStr = new StringBuilder(String.format("\t\tch=%d; output=HISTOGRAM", c));
-						histStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
-						for (final long value : hist) {
-							histStr.append(String.format("; %5d", value));
-						}
-						linesToExport.add(histStr.toString());
-					}
-
-					if (MoMA.EXPORT_INCLUDE_QUANTILES) {
-						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
-						StringBuilder percentileStr = new StringBuilder(String.format("\t\tch=%d; output=PERCENTILES", c));
-						percentileStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
-						for (final float value : percentile) {
-							percentileStr.append(String.format("; %8.3f", value));
-						}
-						linesToExport.add(percentileStr.toString());
-					}
-
-					if (MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
-						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
-						StringBuilder colIntensityStr = new StringBuilder(String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c));
-						for (final float value : column_intensities) {
-							colIntensityStr.append(String.format("; %.3f", value));
-						}
-						linesToExport.add(colIntensityStr.toString());
-					}
-
-					if (MoMA.EXPORT_INCLUDE_INTENSITY_FIT) {
-						if (c > 0) { /* Do not fit the phase contrast channel, which is channel 0. */
-							final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-							double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
-							StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=INTENSITY_FIT=", c));
-							for (final double value : estimates) {
-								mixtureModelOutputStr.append(String.format("%.3f; ", value));
-							}
-							linesToExport.add(mixtureModelOutputStr.toString());
-						}
-					}
-
-					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
-						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
-						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
-						StringBuilder intensityStr = new StringBuilder(String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c));
-						for (int y = 0; y < intensities[0].length; y++) {
-							for (float[] intensity : intensities) {
-								intensityStr.append(String.format(";%.3f", intensity[y]));
-							}
-							intensityStr.append(" ");
-						}
-						linesToExport.add(intensityStr.toString());
-					}
-				}
+//					final IterableInterval<FloatType> segmentBoxInChannel = Util.getSegmentBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+//
+//					final FloatType min = new FloatType();
+//					final FloatType max = new FloatType();
+//					Util.computeMinMax(segmentBoxInChannel, min, max);
+//
+//					if (MoMA.EXPORT_INCLUDE_HISTOGRAMS) {
+//						final long[] hist = segmentRecord.computeChannelHistogram(segmentBoxInChannel, min.get(), max.get());
+//						StringBuilder histStr = new StringBuilder(String.format("\t\tch=%d; output=HISTOGRAM", c));
+//						histStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
+//						for (final long value : hist) {
+//							histStr.append(String.format("; %5d", value));
+//						}
+//						linesToExport.add(histStr.toString());
+//					}
+//
+//					if (MoMA.EXPORT_INCLUDE_QUANTILES) {
+//						final float[] percentile = segmentRecord.computeChannelPercentile(segmentBoxInChannel);
+//						StringBuilder percentileStr = new StringBuilder(String.format("\t\tch=%d; output=PERCENTILES", c));
+//						percentileStr.append(String.format("; min=%8.3f; max=%8.3f", min.get(), max.get()));
+//						for (final float value : percentile) {
+//							percentileStr.append(String.format("; %8.3f", value));
+//						}
+//						linesToExport.add(percentileStr.toString());
+//					}
+//
+//					if (MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS) {
+//						final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+//						final float[] column_intensities = segmentRecord.computeChannelColumnIntensities(columnBoxInChannel);
+//						StringBuilder colIntensityStr = new StringBuilder(String.format("\t\tch=%d; output=COLUMN_INTENSITIES", c));
+//						for (final float value : column_intensities) {
+//							colIntensityStr.append(String.format("; %.3f", value));
+//						}
+//						linesToExport.add(colIntensityStr.toString());
+//					}
+//
+//					if (MoMA.EXPORT_INCLUDE_INTENSITY_FIT) {
+//						if (c > 0) { /* Do not fit the phase contrast channel, which is channel 0. */
+//							final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+//							double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
+//							StringBuilder mixtureModelOutputStr = new StringBuilder(String.format("\t\tch=%d; output=INTENSITY_FIT=", c));
+//							for (final double value : estimates) {
+//								mixtureModelOutputStr.append(String.format("%.3f; ", value));
+//							}
+//							linesToExport.add(mixtureModelOutputStr.toString());
+//						}
+//					}
+//
+//					if (MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES) {
+//						final IntervalView<FloatType> intensityBoxInChannel = Util.getIntensityBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+//						final float[][] intensities = segmentRecord.getIntensities(intensityBoxInChannel);
+//						StringBuilder intensityStr = new StringBuilder(String.format("\t\tch=%d; output=PIXEL_INTENSITIES", c));
+//						for (int y = 0; y < intensities[0].length; y++) {
+//							for (float[] intensity : intensities) {
+//								intensityStr.append(String.format(";%.3f", intensity[y]));
+//							}
+//							intensityStr.append(" ");
+//						}
+//						linesToExport.add(intensityStr.toString());
+//					}
+//				}
 				segmentRecord = segmentRecord.nextSegmentInTime(ilp);
 			}
 			while (segmentRecord.exists());

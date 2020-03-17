@@ -208,7 +208,7 @@ public class CellStatsExporter {
 		ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("cell_center_y [px]"));
 		ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("cell_width [px]"));
 		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("cell_length [px]"));
-//		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
+		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_angle [rad]"));
 //		ResultTableColumn<Integer> backgroundRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("background_roi_area [px]"));
 //		ResultTableColumn<Integer> bboxRoiAreaCol = resultTable.addColumn(new ResultTableColumn<>("num_pixels_in_box [px]"));
 
@@ -278,7 +278,7 @@ public class CellStatsExporter {
 				cellCenterYCol.addValue(center.getB());
 				cellWidthCol.addValue(minorAndMajorAxis.getA());
 				cellLengthCol.addValue(minorAndMajorAxis.getB());
-				outputString += String.format("cell_tilt_angle=%f; ", componentProperties.getTiltAngle(currentComponent));
+				cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
 				outputString += String.format("cell_area=%d; ", componentProperties.getArea(currentComponent));
 				/* start outputting total cell intensities */
 				outputString += String.format("cell_intensity_total=[");

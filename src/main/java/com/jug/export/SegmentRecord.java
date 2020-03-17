@@ -132,15 +132,15 @@ final class SegmentRecord {
 
     public String getTerminationIdentifier(){
         if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
-            return "EXIT";
+            return "exit";
         } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
-            return "DIVISION";
+            return "div";
         } else if (terminated_by == SegmentRecord.USER_PRUNING) {
-            return "USER_PRUNING";
+            return "pruned";
         } else if (terminated_by == SegmentRecord.ENDOFTRACKING) {
-            return "ENDOFDATA";
+            return "eod";
         } else {
-            return "GUROBI_EXCEPTION";
+            return "";
         }
     }
 

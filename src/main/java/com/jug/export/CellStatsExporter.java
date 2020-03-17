@@ -254,7 +254,6 @@ public class CellStatsExporter {
 				cellIdCol.addValue(segmentRecord.getId());
 				parentIdCol.addValue(segmentRecord.getParentId());
 				genealogyCol.addValue(segmentRecord.getGenealogyString());
-				typeOfEndCol.addValue(segmentRecord.getTerminationIdentifier());
 				frameCol.addValue(segmentRecord.frame);
 
 				ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
@@ -358,6 +357,8 @@ public class CellStatsExporter {
 //					}
 //				}
 				segmentRecord = segmentRecord.nextSegmentInTime(ilp);
+
+				typeOfEndCol.addValue(segmentRecord.getTerminationIdentifier());
 			}
 			while (segmentRecord.exists());
 

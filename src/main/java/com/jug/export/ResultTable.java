@@ -22,7 +22,7 @@ public class ResultTable {
 
     private void printHeader(Writer writer) throws IOException {
         for (ResultTableColumn column : columnList) {
-            writer.write(String.format("%s%s\t\t", column.getHeader(), separator));
+            writer.write(String.format("%s%s", column.getHeader(), separator));
         }
         writer.write("\n");
     }
@@ -32,7 +32,7 @@ public class ResultTable {
 
         for (int ind = 0; ind < numberOfEntries; ind++) {
             for (ResultTableColumn column : columnList) {
-                writer.write(String.format("%s%s\t\t", column.getValue(ind), separator));
+                writer.write(String.format("%s%s", column.getValue(ind), separator));
             }
             writer.write("\n");
         }

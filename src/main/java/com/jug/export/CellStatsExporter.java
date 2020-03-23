@@ -33,7 +33,6 @@ import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
 public class CellStatsExporter {
 
     private final MoMAGui gui;
-    File folderToUse;
     private ComponentProperties componentProperties = new ComponentProperties();
     private MixtureModelFit mixtureModelFit = new MixtureModelFit();
 
@@ -41,36 +40,7 @@ public class CellStatsExporter {
         this.gui = gui;
     }
 
-    private boolean showFitRangeWarningDialogIfNeeded() {
-        final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(0), 2, 0);
-
-        if (channelFrame.dimension(0) >= INTENSITY_FIT_RANGE_IN_PIXELS)
-            return true; /* Image wider then fit range. No need to warn. */
-
-        int userSelection = JOptionPane.showConfirmDialog(null,
-                String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),
-                "Fit Range Warning",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE);
-		return userSelection == JOptionPane.YES_OPTION;
-    }
-
-    public void export() {
-        if (!MoMA.HEADLESS) {
-            if (!showFitRangeWarningDialogIfNeeded()) return;
-
-            folderToUse = OsDependentFileChooser.showSaveFolderChooser(gui, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
-            if (folderToUse == null) {
-                JOptionPane.showMessageDialog(
-                        gui,
-                        "Illegal save location choosen!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } else { /* if running headless: use default output path */
-            folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
-        }
+    public void export(File folderToUse) {
         /* Export cell tracks */
         exportTracks(new File(folderToUse, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 

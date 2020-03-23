@@ -146,11 +146,11 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("cells_in_lane"));
         ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top px"));
         ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom px"));
-        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x px", "%.2f"));
-        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y px", "%.2f"));
-        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.2f"));
-        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.2f"));
-        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.3f"));
+        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x px", "%.5f"));
+        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y px", "%.5f"));
+        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.5f"));
+        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.5f"));
+        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.5f"));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
@@ -161,10 +161,10 @@ public class CellStatsExporter {
 
         /* Add columns for per fluorescence-channel output. */
         for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-            cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c), "%.2f")));
-            backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c), "%.2f")));
-            intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.2f")));
-            intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bg_ch_%d", c), "%.2f")));
+            cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c), "%.5f")));
+            backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c), "%.5f")));
+            intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.5f")));
+            intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bg_ch_%d", c), "%.5f")));
         }
 
         Pattern positionPattern = Pattern.compile("Pos(\\d+)");

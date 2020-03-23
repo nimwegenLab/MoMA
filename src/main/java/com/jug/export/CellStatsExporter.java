@@ -207,7 +207,7 @@ public class CellStatsExporter {
 		ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px"));
 		ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad"));
 		ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
-		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bkgr_area_total px^2"));
+		ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
 		List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
 		List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();

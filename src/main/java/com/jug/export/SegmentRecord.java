@@ -47,7 +47,6 @@ final class SegmentRecord {
      */
     int daughterTypeOrPosition;
     // Note: if daughterTypeOrPosition is set to a positive value $i$ -- the given cell is the i-th cell in the growth line (with the mother cell being i=1.
-    private static final int UNKNOWN = 0;
     static final int LOWER = -1;
     static final int UPPER = -2;
 
@@ -118,7 +117,7 @@ final class SegmentRecord {
         String dt = "UNKNOWN";
         if ( daughterTypeOrPosition == SegmentRecord.UPPER ) dt = "TOP";
         if ( daughterTypeOrPosition == SegmentRecord.LOWER ) dt = "BOTTOM";
-        if ( daughterTypeOrPosition > 0 ) dt = "CELL#" + daughterTypeOrPosition;
+        if ( daughterTypeOrPosition >= 0 ) dt = "CELL#" + daughterTypeOrPosition;
         return String.format( "id=%d; pid=%d; birth_frame=%d; daughter_type=%s", id, pid, tbirth, dt );
     }
 
@@ -262,9 +261,6 @@ final class SegmentRecord {
             } else
             if ( dt == SegmentRecord.LOWER ) {
                 ret.append("B");
-            } else
-            if ( dt == SegmentRecord.UNKNOWN ) {
-                ret.append("U");
             } else {
                 ret.append(dt);
             }

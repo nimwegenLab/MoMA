@@ -94,6 +94,7 @@ public class CellStatsExporter {
 
         CellTrackBuilder trackBuilder = new CellTrackBuilder();
         trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+                firstGLF,
                 firstGLF.getParent().getIlp(),
                 gui.sliderTime.getMaximum());
         List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();

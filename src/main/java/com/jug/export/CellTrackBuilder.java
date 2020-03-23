@@ -1,5 +1,6 @@
 package com.jug.export;
 
+import com.jug.GrowthLineFrame;
 import com.jug.lp.*;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
@@ -15,20 +16,21 @@ public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
 
     public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<Component<FloatType, ?>>>> segmentsInFirstFrameSorted,
+                                   GrowthLineFrame firstGlf,
                                    final GrowthLineTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
+
         final LinkedList< SegmentRecord > queue = new LinkedList<>();
 
         int nextCellId = 0;
 
         startingPoints = new ArrayList<>();
 
-        int cellNum = 0;
         for ( final ValuePair< Integer, Hypothesis<Component<FloatType, ? >>> valuePair : segmentsInFirstFrameSorted ) {
+            final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
 
-            cellNum++;
             final SegmentRecord point =
-                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellNum);
+                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank);
             startingPoints.add( point );
 
             final SegmentRecord prepPoint = new SegmentRecord(point, 1);

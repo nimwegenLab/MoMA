@@ -6,13 +6,14 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03();
+//        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02();
 //        tests._new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
+        tests.headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01();
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
     }
@@ -57,6 +58,15 @@ public class MoMATest {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+    }
+
+    @Test
+    public void headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
+        MoMA moma = new MoMA();
+        moma.HEADLESS = true;
+        MoMA.main(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
     @Test

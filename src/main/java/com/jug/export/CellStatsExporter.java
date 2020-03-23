@@ -74,24 +74,32 @@ public class CellStatsExporter {
 		else return false;
 	}
 
+	File folderToUse;
+
 	public void export() {
 		if ( !MoMA.HEADLESS ) {
-			if ( showConfigDialog() ) {
-				if (!showFitRangeWarningDialogIfNeeded()) return;
+//			if ( showConfigDialog() ) {
+			if (!showFitRangeWarningDialogIfNeeded()) return;
 
-				final File folderToUse = OsDependentFileChooser.showSaveFolderChooser( gui, MoMA.STATS_OUTPUT_PATH, "Choose export folder..." );
-				if ( folderToUse == null ) {
-					JOptionPane.showMessageDialog(
-							gui,
-							"Illegal save location choosen!",
-							"Error",
-							JOptionPane.ERROR_MESSAGE );
-					return;
-				}
-				if ( MoMA.EXPORT_DO_TRACK_EXPORT) {
+			folderToUse = OsDependentFileChooser.showSaveFolderChooser(gui, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
+			if (folderToUse == null) {
+				JOptionPane.showMessageDialog(
+						gui,
+						"Illegal save location choosen!",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		}
+		else { /* if running headless: use default output path */
+			folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
+		}
+//				if ( MoMA.EXPORT_DO_TRACK_EXPORT) {
+				/* Export cell tracks */
 					exportTracks( new File( folderToUse, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
-				}
-				if ( MoMA.EXPORT_USER_INPUTS) {
+//				}
+//				if ( MoMA.EXPORT_USER_INPUTS) {
+				/* Export user inputs to the tracking algorithm */
 					final int tmin = MoMA.getMinTime();
 					final int tmax = MoMA.getMaxTime();
 					final File file =
@@ -101,7 +109,8 @@ public class CellStatsExporter {
 									tmax,
 									MoMA.getDefaultFilenameDecoration() ) );
 					MoMA.getGui().model.getCurrentGL().getIlp().saveState( file );
-				}
+//				}
+
 				try {
 					exportCellStats( new File( folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
 				} catch ( final GRBException e ) {
@@ -109,31 +118,31 @@ public class CellStatsExporter {
 				}
 				// always export mmproperties
 				MoMA.instance.saveParams(new File( folderToUse, "mm.properties" ));
-			}
-		} else {
-			if ( MoMA.EXPORT_DO_TRACK_EXPORT) {
-				exportTracks( new File( MoMA.STATS_OUTPUT_PATH, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
-			}
-			if ( MoMA.EXPORT_USER_INPUTS) {
-				final int tmin = MoMA.getMinTime();
-				final int tmax = MoMA.getMaxTime();
-				final File file =
-						new File( MoMA.STATS_OUTPUT_PATH, String.format(
-								"--[%d-%d]_%s.timm",
-								tmin,
-								tmax,
-								MoMA.getDefaultFilenameDecoration() ) );
-				MoMA.getGui().model.getCurrentGL().getIlp().saveState( file );
-			}
+//			}
+//		} else {
+//			if ( MoMA.EXPORT_DO_TRACK_EXPORT) {
+//				exportTracks( new File( MoMA.STATS_OUTPUT_PATH, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
+//			}
+//			if ( MoMA.EXPORT_USER_INPUTS) {
+//				final int tmin = MoMA.getMinTime();
+//				final int tmax = MoMA.getMaxTime();
+//				final File file =
+//						new File( MoMA.STATS_OUTPUT_PATH, String.format(
+//								"--[%d-%d]_%s.timm",
+//								tmin,
+//								tmax,
+//								MoMA.getDefaultFilenameDecoration() ) );
+//				MoMA.getGui().model.getCurrentGL().getIlp().saveState( file );
+//			}
 
-			try {
-				exportCellStats( new File( MoMA.STATS_OUTPUT_PATH, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
-			} catch ( final GRBException e ) {
-				e.printStackTrace();
-			}
+//			try {
+//				exportCellStats( new File( MoMA.STATS_OUTPUT_PATH, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv" ) );
+//			} catch ( final GRBException e ) {
+//				e.printStackTrace();
+//			}
 			// always export mmproperties
-			MoMA.instance.saveParams(new File( MoMA.STATS_OUTPUT_PATH, "mm.properties" ));
-		}
+//			MoMA.instance.saveParams(new File( MoMA.STATS_OUTPUT_PATH, "mm.properties" ));
+//		}
 	}
 
 	/**

@@ -2,7 +2,6 @@ package com.jug.export;
 
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
-import com.jug.gui.DialogCellStatsExportSetup;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.OsDependentFileChooser;
 import com.jug.gui.progress.DialogProgress;
@@ -41,23 +40,6 @@ public class CellStatsExporter {
 
 	public CellStatsExporter( final MoMAGui gui ) {
 		this.gui = gui;
-	}
-
-	private boolean showConfigDialog() {
-		final DialogCellStatsExportSetup dialog =
-				new DialogCellStatsExportSetup( gui, MoMA.EXPORT_USER_INPUTS, MoMA.EXPORT_DO_TRACK_EXPORT, MoMA.EXPORT_INCLUDE_HISTOGRAMS, MoMA.EXPORT_INCLUDE_QUANTILES, MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS, MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES);
-		dialog.ask();
-		if ( !dialog.wasCanceled() ) {
-			MoMA.EXPORT_DO_TRACK_EXPORT = dialog.doExportTracks;
-			MoMA.EXPORT_USER_INPUTS = dialog.doExportUserInputs;
-			MoMA.EXPORT_INCLUDE_HISTOGRAMS = dialog.includeHistograms;
-			MoMA.EXPORT_INCLUDE_QUANTILES = dialog.includeQuantiles;
-			MoMA.EXPORT_INCLUDE_COL_INTENSITY_SUMS = dialog.includeColIntensitySums;
-			MoMA.EXPORT_INCLUDE_PIXEL_INTENSITIES = dialog.includePixelIntensities;
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	private boolean showFitRangeWarningDialogIfNeeded(){

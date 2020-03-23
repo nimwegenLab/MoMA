@@ -292,7 +292,6 @@ public class SimpleFunctionAnalysis {
 		float energy = initialEnergy;
 
 		int idx = 0;
-//	System.out.print("0>");
 		int rightBorder = 0;
 		while ( idx < fkt.length - 1 ) {
 			final float deltaH = getHeightDifference( fkt, idx, idx + 1 );
@@ -309,7 +308,6 @@ public class SimpleFunctionAnalysis {
 					continue;
 				} else {
 					state = CLIMB_RIGHT;
-//		    System.out.print(""+idx+">>");
 					continue;
 				}
 			}
@@ -324,7 +322,6 @@ public class SimpleFunctionAnalysis {
 					rightBorder = idx;
 					idx--;
 					state = RUN_LEFT;
-//		    System.out.print(""+idx+"<");
 					energy = 0;
 					continue;
 				}
@@ -346,11 +343,9 @@ public class SimpleFunctionAnalysis {
 						valleyId++;
 						idx = rightBorder;
 						state = RUN_RIGHT;
-//			System.out.print(" ; "+idx+">");
 						energy = initialEnergy;
 					} else {
 						state = CLIMB_LEFT;
-//			System.out.print(""+idx+"<<");
 					}
 					continue;
 				}
@@ -367,7 +362,6 @@ public class SimpleFunctionAnalysis {
 					valleyId++;
 					idx = rightBorder;
 					state = RUN_RIGHT;
-//		    System.out.print(" ; "+idx+">");
 					energy = initialEnergy;
 				}
 			}

@@ -29,6 +29,6 @@ public class ResultTableTest {
         table.addColumn(columnString);
 
         Writer writer = new PrintWriter(System.out);
-        table.print(writer);
+        table.writeTable(writer);
     }
 }

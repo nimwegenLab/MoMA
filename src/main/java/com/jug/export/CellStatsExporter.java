@@ -99,19 +99,11 @@ public class CellStatsExporter {
      * @throws GRBException
      */
     private void exportCellStats(final File file) throws GRBException {
-
         System.out.println("Exporting collected cell-statistics...");
         Writer out;
         try {
             out = new OutputStreamWriter(new FileOutputStream(file));
-
-            final Vector<String> linesToExport = getCellStatsExportData(out);
-
-//			for ( final String line : linesToExport ) {
-//				out.write( line );
-//				out.write( "\n" );
-//			}
-//			out.close();
+            writeCellStatsExportData(out);
         } catch (final FileNotFoundException e1) {
             JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             e1.printStackTrace();
@@ -122,12 +114,10 @@ public class CellStatsExporter {
         System.out.println("...done!");
     }
 
-    private Vector<String> getCellStatsExportData(Writer writer) throws GRBException, IOException {
+    private void writeCellStatsExportData(Writer writer) throws GRBException, IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
         final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
-        final int numCurrGL = gui.sliderGL.getValue();
-        final Vector<String> linesToExport = new Vector<>();
 
         final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
         final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
@@ -258,9 +248,7 @@ public class CellStatsExporter {
         }
 
         writer.write("\n");
-        resultTable.print(writer);
-
-        return linesToExport;
+        resultTable.writeTable(writer);
     }
 
     private void exportTracks(final File file) {

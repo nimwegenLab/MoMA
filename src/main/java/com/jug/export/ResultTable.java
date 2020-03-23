@@ -20,9 +20,9 @@ public class ResultTable {
      * @param writer output writer
      * @throws IOException thrown by {@param writer}
      */
-    public void print(Writer writer) throws IOException {
-        printHeader(writer);
-        printRows(writer);
+    public void writeTable(Writer writer) throws IOException {
+        writeHeader(writer);
+        writeRows(writer);
         writer.flush();
     }
 
@@ -44,7 +44,7 @@ public class ResultTable {
      * @param writer output writer
      * @throws IOException thrown by {@param writer}
      */
-    private void printHeader(Writer writer) throws IOException {
+    private void writeHeader(Writer writer) throws IOException {
         for (ResultTableColumn column : columnList) {
             column.writeHeader(writer);
             writeSeparator(writer);
@@ -58,7 +58,7 @@ public class ResultTable {
      * @param writer output writer
      * @throws IOException thrown by writer
      */
-    private void printRows(Writer writer) throws IOException {
+    private void writeRows(Writer writer) throws IOException {
         int numberOfEntries = columnList.get(0).getNumberOfEntries();
 
         for (int ind = 0; ind < numberOfEntries; ind++) {

@@ -50,6 +50,8 @@ import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
 import weka.gui.ExtensionFileFilter;
 
+import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
+
 /**
  * @author jug
  */
@@ -1374,9 +1376,41 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 			return;
 		}
 
+		File folderToUse;
+		if (!MoMA.HEADLESS) {
+			if (!showFitRangeWarningDialogIfNeeded()) return;
+
+			folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
+			if (folderToUse == null) {
+				JOptionPane.showMessageDialog(
+						this,
+						"Illegal save location chosen!",
+						"Error",
+						JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+		} else { /* if running headless: use default output path */
+			folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
+		}
+
 		final CellStatsExporter exporter = new CellStatsExporter( this );
-		exporter.export();
+		exporter.export(folderToUse);
 	}
+
+	private boolean showFitRangeWarningDialogIfNeeded() {
+		final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(0), 2, 0);
+
+		if (channelFrame.dimension(0) >= INTENSITY_FIT_RANGE_IN_PIXELS)
+			return true; /* Image wider then fit range. No need to warn. */
+
+		int userSelection = JOptionPane.showConfirmDialog(null,
+				String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),
+				"Fit Range Warning",
+				JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+		return userSelection == JOptionPane.YES_OPTION;
+	}
+
 
 	/**
 	 *

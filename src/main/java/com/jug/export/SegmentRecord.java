@@ -23,16 +23,36 @@ final class SegmentRecord {
     static final int ENDOFTRACKING = 1234;
     static final int USER_PRUNING = 4321;
 
+
+    boolean exists = true;
+
+    /**
+     * The ID of this cell.
+     */
+    int id;
+
+    /**
+     * The parent ID.
+     */
+    int pid;
+
+    /**
+     * Frame in which this cell was first observed (i.e. born).
+     */
+    int tbirth;
+
+    /**
+     * The type of daughter-cell this is. This index corresponds to either TOP, BOTTOM or UNKNOWN as defined below.
+     * UNKNOWN is returned for cells that already existed in the first frame.
+     */
+    int daughterTypeOrPosition;
     // Note: if daughterTypeOrPosition is set to a positive value $i$ -- the given cell is the i-th cell in the growth line (with the mother cell being i=1.
-    private static final int UNKNOWN = 0;
     static final int LOWER = -1;
     static final int UPPER = -2;
 
-    boolean exists = true;
-    int id;
-    int pid;
-    int tbirth;
-    int daughterTypeOrPosition;
+    /**
+     * The frame that this segments belongs to.
+     */
     int frame;
 
     final List< Integer > genealogy;
@@ -97,8 +117,30 @@ final class SegmentRecord {
         String dt = "UNKNOWN";
         if ( daughterTypeOrPosition == SegmentRecord.UPPER ) dt = "TOP";
         if ( daughterTypeOrPosition == SegmentRecord.LOWER ) dt = "BOTTOM";
-        if ( daughterTypeOrPosition > 0 ) dt = "CELL#" + daughterTypeOrPosition;
+        if ( daughterTypeOrPosition >= 0 ) dt = "CELL#" + daughterTypeOrPosition;
         return String.format( "id=%d; pid=%d; birth_frame=%d; daughter_type=%s", id, pid, tbirth, dt );
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getParentId(){
+        return pid;
+    }
+
+    public String getTerminationIdentifier(){
+        if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+            return "exit";
+        } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+            return "div";
+        } else if (terminated_by == SegmentRecord.USER_PRUNING) {
+            return "pruned";
+        } else if (terminated_by == SegmentRecord.ENDOFTRACKING) {
+            return "eod";
+        } else {
+            return "";
+        }
     }
 
     /**
@@ -219,9 +261,6 @@ final class SegmentRecord {
             } else
             if ( dt == SegmentRecord.LOWER ) {
                 ret.append("B");
-            } else
-            if ( dt == SegmentRecord.UNKNOWN ) {
-                ret.append("U");
             } else {
                 ret.append(dt);
             }

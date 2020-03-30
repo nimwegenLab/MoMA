@@ -154,9 +154,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		// Mouse-position related stuff...
 		strToShow = "";
 		str2ToShow = " ";
-		final int t = glf.getTime();
-		updateHypothesisInfoTooltip(t);
-		drawHoveredOptionalHypothesis(t);
+		updateHypothesisInfoTooltip();
+		drawHoveredOptionalHypothesis();
 		drawHypothesisInfoTooltip(g);
 	}
 
@@ -176,17 +175,15 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		}
 	}
 
-	private void updateHypothesisInfoTooltip(int t) {
+	private void updateHypothesisInfoTooltip() {
 		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-			Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = getHoveredOptimalHypothesis(t);
-			if (hoveredOptimalHypothesis != null) {
-				float cost = hoveredOptimalHypothesis.getCost();
+			if (getHoveredOptimalHypothesis() != null) {
+				float cost = getHoveredOptimalHypothesis().getCost();
 				strToShow = String.format("c=%.4f", cost);
 				str2ToShow = "-";
 			}
 			// figure out which hyps are at current location
-			Hypothesis<Component<FloatType, ?>> hoverOptionalHyp = getHoveredOptionalHypothesis(t);
-			if (hoverOptionalHyp != null) {
+			if (getHoveredOptionalHypothesis() != null) {
 				if (str2ToShow.endsWith("-")) {
 					str2ToShow += "/+";
 				} else {
@@ -198,24 +195,37 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		}
 	}
 
-	private void drawHoveredOptionalHypothesis(int t){
-		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis(t);
+	private void drawHoveredOptionalHypothesis(){
+		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis();
 		if ( hoverOptionalHyp != null ) {
 			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
 			glf.drawOptionalSegmentation(screenImage, view, comp);
 		}
 	}
 
-	private Hypothesis<Component<FloatType, ?>> getHoveredOptimalHypothesis(int t) {
-		return glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+	Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = null;
+	private void updateHoveredOptimalHypothesis() {
+		hoveredOptimalHypothesis = null;
+		final int t = glf.getTime();
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+		}
+	}
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptimalHypothesis() {
+		return hoveredOptimalHypothesis;
 	}
 
-	private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis(int t) {
+	private Hypothesis<Component<FloatType, ?>> hoverOptionalHyp = null;
+	private void updateHoveredOptionalHypothesis() {
+		hoverOptionalHyp = null;
+		final int t = glf.getTime();
 		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
 			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
-			return glf.getParent().getIlp().getLowestInTreeHypAt(t, mousePosition);
+			hoverOptionalHyp = glf.getParent().getIlp().getLowestInTreeHypAt(t, mousePosition);
 		}
-		return null;
+	}
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis() {
+		return hoverOptionalHyp;
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -311,6 +321,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	@Override
 	public void mouseExited( final MouseEvent e ) {
 		this.isMouseOver = false;
+		updateHoveredOptimalHypothesis();
+		updateHoveredOptionalHypothesis();
 		this.repaint();
 	}
 
@@ -344,6 +356,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	public void mouseMoved( final MouseEvent e ) {
 		this.mousePosX = e.getX();
 		this.mousePosY = e.getY();
+		updateHoveredOptimalHypothesis();
+		updateHoveredOptionalHypothesis();
 		this.repaint();
 	}
 

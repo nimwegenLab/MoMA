@@ -1,36 +1,26 @@
 package com.jug.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.event.MouseInputListener;
-
 import com.jug.GrowthLineFrame;
-import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
-import com.jug.util.ComponentTreeUtils;
-import com.jug.util.OSValidator;
-
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.Point;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.List;
 
 /**
  * @author jug
@@ -126,6 +116,10 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		this.glf = null;
 	}
 
+
+	private String strToShow = "";
+	private String str2ToShow = " ";
+
 	@Override
 	public void paintComponent( final Graphics g ) {
 		try {
@@ -158,34 +152,15 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		}
 
 		// Mouse-position related stuff...
-		String strToShow = "";
-		String str2ToShow = " ";
-		if ( !this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null ) {
-			//TODO NOT nice... do something against that, please!
-			final int t = glf.getTime();
-			Hypothesis< Component< FloatType, ? > > hyp =
-					glf.getParent().getIlp().getOptimalSegmentationAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-			if ( hyp != null ) {
-				float cost = hyp.getCost();
-				strToShow = String.format( "c=%.4f", cost );
-				str2ToShow = "-";
-			}
-			// figure out which hyps are at current location
-			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
-			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, mousePosition );
-			if ( hyp != null ) {
-				final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-				glf.drawOptionalSegmentation( screenImage, view, comp );
-				if ( str2ToShow.endsWith( "-" ) ) {
-					str2ToShow += "/+";
-				} else {
-					str2ToShow += "+";
-				}
-			} else {
-				str2ToShow = "  noseg";
-			}
-		}
+		strToShow = "";
+		str2ToShow = " ";
+		final int t = glf.getTime();
+		updateHypothesisInfoTooltip(t);
+		drawHoveredOptionalHypothesis(t);
+		drawHypothesisInfoTooltip(g);
+	}
 
+	private void drawHypothesisInfoTooltip(Graphics g) {
 		g.drawImage( screenImage.image(), 0, 0, w, h, null );
 		if ( !strToShow.equals( "" ) ) {
 			g.setColor( Color.DARK_GRAY );
@@ -199,6 +174,48 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			g.setColor( Color.ORANGE.brighter() );
 			g.drawString( str2ToShow, this.mousePosX + 5, this.mousePosY - OFFSET_DISPLAY_COSTS + 35 );
 		}
+	}
+
+	private void updateHypothesisInfoTooltip(int t) {
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = getHoveredOptimalHypothesis(t);
+			if (hoveredOptimalHypothesis != null) {
+				float cost = hoveredOptimalHypothesis.getCost();
+				strToShow = String.format("c=%.4f", cost);
+				str2ToShow = "-";
+			}
+			// figure out which hyps are at current location
+			Hypothesis<Component<FloatType, ?>> hoverOptionalHyp = getHoveredOptionalHypothesis(t);
+			if (hoverOptionalHyp != null) {
+				if (str2ToShow.endsWith("-")) {
+					str2ToShow += "/+";
+				} else {
+					str2ToShow += "+";
+				}
+			} else {
+				str2ToShow = "  noseg";
+			}
+		}
+	}
+
+	private void drawHoveredOptionalHypothesis(int t){
+		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis(t);
+		if ( hoverOptionalHyp != null ) {
+			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
+			glf.drawOptionalSegmentation(screenImage, view, comp);
+		}
+	}
+
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptimalHypothesis(int t) {
+		return glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+	}
+
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis(int t) {
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
+			return glf.getParent().getIlp().getLowestInTreeHypAt(t, mousePosition);
+		}
+		return null;
 	}
 
 	// -------------------------------------------------------------------------------------

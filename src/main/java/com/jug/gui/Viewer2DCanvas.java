@@ -247,13 +247,9 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			if ( e.isShiftDown() ) {
 				// ctrl + shift == PRUNING
 				// -----------------------
-				final List< Hypothesis< Component< FloatType, ? >>> hypsUnderMouse =
-						ilp.getSegmentsAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-				for ( final Hypothesis< Component< FloatType, ? >> hyp : hypsUnderMouse ) {
-					if ( ilp.isSelected( hyp ) ) {
-						hyp.setPruneRoot( !hyp.isPruneRoot(), ilp );
-					}
-				}
+				Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+				if(hyp == null) return;
+				hyp.setPruneRoot( !hyp.isPruneRoot(), ilp );
 				mmgui.dataToDisplayChanged();
 				return; // avoid re-optimization!
 			} else {

@@ -1389,26 +1389,30 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * Returns the hypothesis at a given position.
+	 * Returns the hypothesis at a given position {@param testPosition}.
 	 * If there are more then one hypothesis at given location only the lowest
 	 * in the hypotheses tree will be returned.
 	 * (This is also the "shortest" one!)
 	 *
 	 * @param t
-	 * @param gapSepYPos
+	 * @param testPosition
 	 * @return
 	 */
-	public Hypothesis< Component< FloatType, ? >> getLowestInTreeHypAt( final int t, final int gapSepYPos ) {
-		Hypothesis< Component< FloatType, ? >> ret = null;
+	public Hypothesis<Component<FloatType, ?>> getLowestInTreeHypAt(final int t, final int testPosition) {
+		Hypothesis<Component<FloatType, ?>> ret = null;
 		long min = Long.MAX_VALUE;
-
-		final List< Hypothesis< Component< FloatType, ? >>> hyps = nodes.getHypothesesAt( t );
-		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-			final long s = getComponentSize(comp, 1);
-			if ( isComponentContainingYpos( comp, gapSepYPos ) ) {
-				if ( s < min ) {
-					min = s;
+		final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
+		for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+			final Component<FloatType, ?> comp = hyp.getWrappedComponent();
+			ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(comp, 1);
+			int componentSize = yLimits.getB() - yLimits.getA();
+			boolean isInside = false;
+			if (testPosition >= yLimits.getA() && testPosition <= yLimits.getB()) {
+				isInside = true;
+			}
+			if (isInside) {
+				if (componentSize < min) {
+					min = componentSize;
 					ret = hyp;
 				}
 			}

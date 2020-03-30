@@ -13,6 +13,7 @@ import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.OSValidator;
 
 import gurobi.GRBException;
@@ -26,6 +27,7 @@ import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
@@ -61,15 +63,15 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	public Viewer2DCanvas( final MoMAGui mmgui, final int w, final int h ) {
 		super();
 
-		if ( OSValidator.isUnix() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = 5;
-		}
-		if ( OSValidator.isMac() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = -30;
-		}
-		if ( OSValidator.isWindows() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = -25;
-		}
+//		if ( OSValidator.isUnix() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = 5;
+//		}
+//		if ( OSValidator.isMac() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -30;
+//		}
+//		if ( OSValidator.isWindows() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -25;
+//		}
 
 		this.mmgui = mmgui;
 
@@ -321,7 +323,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	@Override
 	public void mouseMoved( final MouseEvent e ) {
 		this.mousePosX = e.getX();
-		this.mousePosY = e.getY() - 42;
+		this.mousePosY = e.getY();
 		this.repaint();
 	}
 

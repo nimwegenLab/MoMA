@@ -275,9 +275,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		} else {
 			// simple click == SELECTING
 			// -------------------------
-			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
-			final Hypothesis< Component< FloatType, ? > > hyp2add =
-					ilp.getLowestInTreeHypAt( t, mousePosition );
+			final Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptimalHypothesis();
 			final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
 
 			try {

@@ -289,8 +289,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 		} else {
 			// simple click == SELECTING
 			// -------------------------
-			Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptimalHypothesis();
-			if(hyp2add == null) hyp2add = getHoveredOptionalHypothesis(); /* if getHoveredOptimalHypothesis() returns null try getHoveredOptionalHypothesis(); this can happen, if the optimal segment was previously marked as to be avoided. */
+			Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptionalHypothesis();
 			if(hyp2add == null) return; /* failed to get a non-null hypothesis, so return gracefully */
 				final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
 

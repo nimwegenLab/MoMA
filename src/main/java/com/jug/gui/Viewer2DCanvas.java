@@ -255,8 +255,9 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			} else {
 				// ctrl alone == AVOIDING
 				// ----------------------
-				final List< Hypothesis< Component< FloatType, ? >>> hyps2avoid =
-						ilp.getSegmentsAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
+				final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition(t, ilp);
+				if(hyps2avoid == null) return;
+
 				try {
 					for ( final Hypothesis< Component< FloatType, ? >> hyp2avoid : hyps2avoid ) {
 						if ( hyp2avoid.getSegmentSpecificConstraint() != null ) {
@@ -271,8 +272,10 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		} else {
 			// simple click == SELECTING
 			// -------------------------
-			final Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptimalHypothesis();
-			final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
+			Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptimalHypothesis();
+			if(hyp2add == null) hyp2add = getHoveredOptionalHypothesis(); /* if getHoveredOptimalHypothesis() returns null try getHoveredOptionalHypothesis(); this can happen, if the optimal segment was previously marked as to be avoided. */
+			if(hyp2add == null) return; /* failed to get a non-null hypothesis, so return gracefully */
+				final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
 
 			try {
 				if ( hyp2add.getSegmentSpecificConstraint() != null ) {

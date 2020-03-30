@@ -6,7 +6,6 @@ import com.jug.lp.Hypothesis;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
-import net.imglib2.Point;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
@@ -235,20 +234,18 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 
 
 	/**
-	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
 	 */
 	@Override
-	public void mouseWheelMoved( final MouseWheelEvent e ) {
-		System.out.println("Mouse wheel moved: ");
-		System.out.println("e.getPreciseWheelRotation: " + e.getPreciseWheelRotation());
-		System.out.println("e.getScrollAmount: " + e.getScrollAmount());
-		System.out.println("e.getScrollType: " + e.getScrollType());
-		System.out.println("e.getWheelRotation: " + e.getWheelRotation());
-		if(!(indexOfCurrentHoveredHypothesis+1 >= getHypothesesAtHoverPosition().size())){
-			indexOfCurrentHoveredHypothesis++;
-		}
-		else{
+	public void mouseWheelMoved(final MouseWheelEvent e) {
+		int increment = e.getWheelRotation();
+
+		if (indexOfCurrentHoveredHypothesis + increment >= getHypothesesAtHoverPosition().size()) {
 			indexOfCurrentHoveredHypothesis = 0;
+		} else if (indexOfCurrentHoveredHypothesis + increment < 0) {
+			indexOfCurrentHoveredHypothesis = getHypothesesAtHoverPosition().size() - 1;
+		} else {
+			indexOfCurrentHoveredHypothesis += increment;
 		}
 		repaint();
 	}

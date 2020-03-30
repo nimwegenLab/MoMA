@@ -22,6 +22,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -219,17 +220,12 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 		return hoveredOptimalHypothesis;
 	}
 
-	private Hypothesis<Component<FloatType, ?>> hoverOptionalHyp = null;
-	private void updateHoveredOptionalHypothesis() {
-		hoverOptionalHyp = null;
-		final int t = glf.getTime();
-		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
-			hoverOptionalHyp = glf.getParent().getIlp().getLowestInTreeHypAt(t, mousePosition);
-		}
-	}
 	private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis() {
-		return hoverOptionalHyp;
+		List<Hypothesis<Component<FloatType, ?>>> currentHoveredHypotheses = getHypothesesAtHoverPosition();
+		if(currentHoveredHypotheses.isEmpty()){
+			return null;
+		}
+		return currentHoveredHypotheses.get(indexOfCurrentHoveredHypothesis);
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -318,7 +314,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	}
 
 
-	private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition;
+	private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
 
 	private int indexOfCurrentHoveredHypothesis = 0;
 
@@ -373,7 +369,6 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 
 	private void updateHoverHypotheses() {
 		updateHoveredOptimalHypothesis();
-		updateHoveredOptionalHypothesis();
 		updateHypothesesAtHoverPosition();
 	}
 

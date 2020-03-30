@@ -20,12 +20,14 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.List;
 
 /**
  * @author jug
  */
-public class Viewer2DCanvas extends JComponent implements MouseInputListener {
+public class Viewer2DCanvas extends JComponent implements MouseInputListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 8284204775277266994L;
 
@@ -66,8 +68,9 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 
 		this.mmgui = mmgui;
 
-		addMouseListener( this );
-		addMouseMotionListener( this );
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 
 		this.w = w;
 		this.h = h;
@@ -233,6 +236,21 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	// MouseInputListener related methods
 	// -------------------------------------------------------------------------------------
 
+
+
+	/**
+	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+	 */
+	@Override
+	public void mouseWheelMoved( final MouseWheelEvent e ) {
+		System.out.println("Mouse wheel moved: ");
+		System.out.println("e.getPreciseWheelRotation: " + e.getPreciseWheelRotation());
+		System.out.println("e.getScrollAmount: " + e.getScrollAmount());
+		System.out.println("e.getScrollType: " + e.getScrollType());
+		System.out.println("e.getWheelRotation: " + e.getWheelRotation());
+
+	}
+
 	/**
 	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 	 */
@@ -302,6 +320,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 
 	private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition;
 
+	private int indexOfCurrentHoveredHypothesis = 0;
+
 	private void updateHypothesesAtHoverPosition() {
 		final int t = glf.getTime();
 		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
@@ -310,7 +330,13 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 				hypothesesAtHoverPosition = newHypothesesAtHoverPosition; /* initialize on first call to updateHypothesesAtHoverPosition */
 			else if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
 				hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
+				GrowthLineTrackingILP ilp = glf.getParent().getIlp();
+				Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
+						.findFirst()
+						.orElse(null);
+				indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis);
 				System.out.println("hypothesesAtHoverPosition changed.");
+				System.out.println("New indexOfSelectedHypothesis: " + indexOfCurrentHoveredHypothesis);
 			} else {
 				System.out.println("hypothesesAtHoverPosition still the same.");
 			}
@@ -348,6 +374,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	private void updateHoverHypotheses() {
 		updateHoveredOptimalHypothesis();
 		updateHoveredOptionalHypothesis();
+		updateHypothesesAtHoverPosition();
 	}
 
 	/**

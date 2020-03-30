@@ -244,7 +244,13 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 		System.out.println("e.getScrollAmount: " + e.getScrollAmount());
 		System.out.println("e.getScrollType: " + e.getScrollType());
 		System.out.println("e.getWheelRotation: " + e.getWheelRotation());
-
+		if(!(indexOfCurrentHoveredHypothesis+1 >= getHypothesesAtHoverPosition().size())){
+			indexOfCurrentHoveredHypothesis++;
+		}
+		else{
+			indexOfCurrentHoveredHypothesis = 0;
+		}
+		repaint();
 	}
 
 	/**

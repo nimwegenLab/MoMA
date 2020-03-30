@@ -255,7 +255,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			} else {
 				// ctrl alone == AVOIDING
 				// ----------------------
-				final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition(t, ilp);
+				final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
 				if(hyps2avoid == null) return;
 
 				try {
@@ -297,6 +297,28 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		final IlpThread thread = new IlpThread();
 		thread.start();
 		mmgui.focusOnSliderTime();
+	}
+
+
+	private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition;
+
+	private void updateHypothesesAtHoverPosition() {
+		final int t = glf.getTime();
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+			if (hypothesesAtHoverPosition == null)
+				hypothesesAtHoverPosition = newHypothesesAtHoverPosition; /* initialize on first call to updateHypothesesAtHoverPosition */
+			else if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
+				hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
+				System.out.println("hypothesesAtHoverPosition changed.");
+			} else {
+				System.out.println("hypothesesAtHoverPosition still the same.");
+			}
+		}
+	}
+
+	private List<Hypothesis<Component<FloatType, ?>>> getHypothesesAtHoverPosition() {
+		return hypothesesAtHoverPosition;
 	}
 
 	/**

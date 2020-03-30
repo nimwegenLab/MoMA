@@ -4,6 +4,7 @@ import com.jug.lp.*;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.Localizable;
+import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -111,6 +112,24 @@ public class ComponentTreeUtils {
             max = Math.max(max, pos);
         }
         return new ValuePair<>(min, max);
+    }
+
+    /**
+     * Checks if the y-position of {@param position} is contained in the y-range of the
+     * bounding box of {@param component}.
+     *
+     * @param component component for which we test the bounding box
+     * @param position position to test
+     * @return true if y-position is in the bounding box
+     */
+    public static boolean componentContainsYPosition(final Component<?, ?> component, Point position) {
+        int pos[] = new int[2]; // this works only for 2D images
+        position.localize(pos);
+        ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        if (pos[1] < yLimits.getA() || pos[1] > yLimits.getB()) {
+            return false;
+        }
+        return true;
     }
 
     /**

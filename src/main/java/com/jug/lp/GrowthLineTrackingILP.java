@@ -11,6 +11,7 @@ import com.jug.util.componenttree.SimpleComponent;
 import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.*;
 import net.imglib2.Localizable;
+import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -1398,19 +1399,14 @@ public class GrowthLineTrackingILP {
 	 * @param testPosition
 	 * @return
 	 */
-	public Hypothesis<Component<FloatType, ?>> getLowestInTreeHypAt(final int t, final int testPosition) {
+	public Hypothesis<Component<FloatType, ?>> getLowestInTreeHypAt(final int t, final Point testPosition) {
 		Hypothesis<Component<FloatType, ?>> ret = null;
 		long min = Long.MAX_VALUE;
 		final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
 		for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
 			final Component<FloatType, ?> comp = hyp.getWrappedComponent();
-			ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(comp, 1);
-			int componentSize = yLimits.getB() - yLimits.getA();
-			boolean isInside = false;
-			if (testPosition >= yLimits.getA() && testPosition <= yLimits.getB()) {
-				isInside = true;
-			}
-			if (isInside) {
+			int componentSize = ComponentTreeUtils.getComponentSize(comp, 1);
+			if (ComponentTreeUtils.componentContainsYPosition(comp, testPosition)) {
 				if (componentSize < min) {
 					min = componentSize;
 					ret = hyp;

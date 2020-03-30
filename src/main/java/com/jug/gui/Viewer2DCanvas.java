@@ -19,6 +19,7 @@ import com.jug.util.OSValidator;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
+import net.imglib2.Point;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.converter.RealARGBConverter;
@@ -170,7 +171,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 				str2ToShow = "-";
 			}
 			// figure out which hyps are at current location
-			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
+			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
+			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, mousePosition );
 			if ( hyp != null ) {
 				final Component< FloatType, ? > comp = hyp.getWrappedComponent();
 				glf.drawOptionalSegmentation( screenImage, view, comp );
@@ -245,8 +247,9 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		} else {
 			// simple click == SELECTING
 			// -------------------------
+			Point mousePosition = new Point(this.mousePosX, this.mousePosY);
 			final Hypothesis< Component< FloatType, ? > > hyp2add =
-					ilp.getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
+					ilp.getLowestInTreeHypAt( t, mousePosition );
 			final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
 
 			try {

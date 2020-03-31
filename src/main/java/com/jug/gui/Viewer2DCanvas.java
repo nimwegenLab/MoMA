@@ -346,10 +346,6 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 				else{ /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */
 					indexOfCurrentHoveredHypothesis = 0;
 				}
-				System.out.println("hypothesesAtHoverPosition changed.");
-				System.out.println("New indexOfSelectedHypothesis: " + indexOfCurrentHoveredHypothesis);
-			} else {
-				System.out.println("hypothesesAtHoverPosition still the same.");
 			}
 		}
 	}

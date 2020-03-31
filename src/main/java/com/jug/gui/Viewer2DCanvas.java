@@ -332,7 +332,12 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 				Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
 						.findFirst()
 						.orElse(null);
-				indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
+				if(selectedHypothesis != null){ /* there is an optimal hypothesis at the hover position; get it */
+					indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
+				}
+				else{ /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */
+					indexOfCurrentHoveredHypothesis = 0;
+				}
 				System.out.println("hypothesesAtHoverPosition changed.");
 				System.out.println("New indexOfSelectedHypothesis: " + indexOfCurrentHoveredHypothesis);
 			} else {

@@ -1020,7 +1020,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 							self,
 							MoMA.STATS_OUTPUT_PATH,
 							"Choose tracking to load...",
-							new ExtensionFileFilter( "timm", "Curated TIMM tracking" ) );
+							new ExtensionFileFilter( "moma", "Curated MoMA tracking" ) );
 					System.out.println( "File to load tracking from: " + file.getAbsolutePath() );
 
 					try {

@@ -126,6 +126,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 
 	@Override
 	public void paintComponent( final Graphics g ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
 		try {
 			if ( projector != null ) {
 				projector.map();
@@ -238,6 +240,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseWheelMoved(final MouseWheelEvent e) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
 		int increment = e.getWheelRotation();
 
 		if (indexOfCurrentHoveredHypothesis + increment >= getHypothesesAtHoverPosition().size()) {
@@ -255,6 +259,8 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseClicked( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
 		final int t = glf.getTime();
 		final GrowthLineTrackingILP ilp = glf.getParent().getIlp();
 
@@ -356,13 +362,16 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
 	@Override
-	public void mousePressed( final MouseEvent e ) {}
+	public void mousePressed( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+	}
 
 	/**
 	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
 	 */
 	@Override
 	public void mouseEntered( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isMouseOver = true;
 	}
 
@@ -371,6 +380,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseExited( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isMouseOver = false;
 		updateHoveredHypotheses();
 		this.repaint();
@@ -386,6 +396,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseDragged( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		if ( e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3 ) {
 			this.isDragging = true;
             int dragX = e.getX();
@@ -399,6 +410,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseReleased( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isDragging = false;
 		repaint();
 		mmgui.focusOnSliderTime();
@@ -409,6 +421,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	 */
 	@Override
 	public void mouseMoved( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.mousePosX = e.getX();
 		this.mousePosY = e.getY();
 		updateHoveredHypotheses();

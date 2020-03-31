@@ -1,38 +1,33 @@
 package com.jug.gui;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.util.List;
-
-import javax.swing.JComponent;
-import javax.swing.event.MouseInputListener;
-
 import com.jug.GrowthLineFrame;
-import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
-import com.jug.util.OSValidator;
-
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import javax.swing.*;
+import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author jug
  */
-public class Viewer2DCanvas extends JComponent implements MouseInputListener {
+public class Viewer2DCanvas extends JComponent implements MouseInputListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 8284204775277266994L;
 
@@ -61,20 +56,21 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	public Viewer2DCanvas( final MoMAGui mmgui, final int w, final int h ) {
 		super();
 
-		if ( OSValidator.isUnix() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = 5;
-		}
-		if ( OSValidator.isMac() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = -30;
-		}
-		if ( OSValidator.isWindows() ) {
-			SYSTEM_SPECIFIC_POINTER_CORRECTION = -25;
-		}
+//		if ( OSValidator.isUnix() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = 5;
+//		}
+//		if ( OSValidator.isMac() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -30;
+//		}
+//		if ( OSValidator.isWindows() ) {
+//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -25;
+//		}
 
 		this.mmgui = mmgui;
 
-		addMouseListener( this );
-		addMouseMotionListener( this );
+		addMouseListener(this);
+		addMouseMotionListener(this);
+		addMouseWheelListener(this);
 
 		this.w = w;
 		this.h = h;
@@ -99,6 +95,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
 		this.view = viewImg;
 		this.glf = glf;
+		updateHoveredHypotheses();
 		this.repaint();
 	}
 
@@ -123,8 +120,14 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		this.glf = null;
 	}
 
+
+	private String strToShow = "";
+	private String str2ToShow = " ";
+
 	@Override
 	public void paintComponent( final Graphics g ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
 		try {
 			if ( projector != null ) {
 				projector.map();
@@ -155,33 +158,14 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		}
 
 		// Mouse-position related stuff...
-		String strToShow = "";
-		String str2ToShow = " ";
-		if ( !this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null ) {
-			//TODO NOT nice... do something against that, please!
-			final int t = glf.getTime();
-			Hypothesis< Component< FloatType, ? > > hyp =
-					glf.getParent().getIlp().getOptimalSegmentationAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-			if ( hyp != null ) {
-				float cost = hyp.getCost();
-				strToShow = String.format( "c=%.4f", cost );
-				str2ToShow = "-";
-			}
-			// figure out which hyps are at current location
-			hyp = glf.getParent().getIlp().getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-			if ( hyp != null ) {
-				final Component< FloatType, ? > comp = hyp.getWrappedComponent();
-				glf.drawOptionalSegmentation( screenImage, view, comp );
-				if ( str2ToShow.endsWith( "-" ) ) {
-					str2ToShow += "/+";
-				} else {
-					str2ToShow += "+";
-				}
-			} else {
-				str2ToShow = "  noseg";
-			}
-		}
+		strToShow = "";
+		str2ToShow = " ";
+		updateHypothesisInfoTooltip();
+		drawHoveredOptionalHypothesis();
+		drawHypothesisInfoTooltip(g);
+	}
 
+	private void drawHypothesisInfoTooltip(Graphics g) {
 		g.drawImage( screenImage.image(), 0, 0, w, h, null );
 		if ( !strToShow.equals( "" ) ) {
 			g.setColor( Color.DARK_GRAY );
@@ -197,15 +181,86 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		}
 	}
 
+	private void updateHypothesisInfoTooltip() {
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			if (getHoveredOptimalHypothesis() != null) {
+				float cost = getHoveredOptimalHypothesis().getCost();
+				strToShow = String.format("c=%.4f", cost);
+				str2ToShow = "-";
+			}
+			// figure out which hyps are at current location
+			if (getHoveredOptionalHypothesis() != null) {
+				if (str2ToShow.endsWith("-")) {
+					str2ToShow += "/+";
+				} else {
+					str2ToShow += "+";
+				}
+			} else {
+				str2ToShow = "  noseg";
+			}
+		}
+	}
+
+	private void drawHoveredOptionalHypothesis(){
+		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis();
+		if ( hoverOptionalHyp != null ) {
+			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
+			glf.drawOptionalSegmentation(screenImage, view, comp);
+		}
+	}
+
+	Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = null;
+	private void updateHoveredOptimalHypothesis() {
+		hoveredOptimalHypothesis = null;
+		final int t = glf.getTime();
+		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+		}
+	}
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptimalHypothesis() {
+		return hoveredOptimalHypothesis;
+	}
+
+	private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis() {
+		List<Hypothesis<Component<FloatType, ?>>> currentHoveredHypotheses = getHypothesesAtHoverPosition();
+		if(currentHoveredHypotheses.isEmpty()){
+			return null;
+		}
+		return currentHoveredHypotheses.get(indexOfCurrentHoveredHypothesis);
+	}
+
 	// -------------------------------------------------------------------------------------
 	// MouseInputListener related methods
 	// -------------------------------------------------------------------------------------
+
+
+
+	/**
+	 * @see java.awt.event.MouseWheelListener#mouseWheelMoved(java.awt.event.MouseWheelEvent)
+	 */
+	@Override
+	public void mouseWheelMoved(final MouseWheelEvent e) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
+		int increment = e.getWheelRotation();
+
+		if (indexOfCurrentHoveredHypothesis + increment >= getHypothesesAtHoverPosition().size()) {
+			indexOfCurrentHoveredHypothesis = 0;
+		} else if (indexOfCurrentHoveredHypothesis + increment < 0) {
+			indexOfCurrentHoveredHypothesis = getHypothesesAtHoverPosition().size() - 1;
+		} else {
+			indexOfCurrentHoveredHypothesis += increment;
+		}
+		repaint();
+	}
 
 	/**
 	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
 	 */
 	@Override
 	public void mouseClicked( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+
 		final int t = glf.getTime();
 		final GrowthLineTrackingILP ilp = glf.getParent().getIlp();
 
@@ -215,20 +270,17 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 			if ( e.isShiftDown() ) {
 				// ctrl + shift == PRUNING
 				// -----------------------
-				final List< Hypothesis< Component< FloatType, ? >>> hypsUnderMouse =
-						ilp.getSegmentsAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-				for ( final Hypothesis< Component< FloatType, ? >> hyp : hypsUnderMouse ) {
-					if ( ilp.isSelected( hyp ) ) {
-						hyp.setPruneRoot( !hyp.isPruneRoot(), ilp );
-					}
-				}
+				Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+				if(hyp == null) return;
+				hyp.setPruneRoot( !hyp.isPruneRoot(), ilp );
 				mmgui.dataToDisplayChanged();
 				return; // avoid re-optimization!
 			} else {
 				// ctrl alone == AVOIDING
 				// ----------------------
-				final List< Hypothesis< Component< FloatType, ? >>> hyps2avoid =
-						ilp.getSegmentsAtLocation( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
+				final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
+				if(hyps2avoid == null) return;
+
 				try {
 					for ( final Hypothesis< Component< FloatType, ? >> hyp2avoid : hyps2avoid ) {
 						if ( hyp2avoid.getSegmentSpecificConstraint() != null ) {
@@ -243,9 +295,9 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		} else {
 			// simple click == SELECTING
 			// -------------------------
-			final Hypothesis< Component< FloatType, ? > > hyp2add =
-					ilp.getLowestInTreeHypAt( t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION );
-			final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
+			Hypothesis< Component< FloatType, ? > > hyp2add = getHoveredOptionalHypothesis();
+			if(hyp2add == null) return; /* failed to get a non-null hypothesis, so return gracefully */
+				final List< Hypothesis< Component< FloatType, ? >>> hyps2remove = ilp.getOptimalSegmentationsInConflict( t, hyp2add );
 
 			try {
 				if ( hyp2add.getSegmentSpecificConstraint() != null ) {
@@ -269,17 +321,53 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 		mmgui.focusOnSliderTime();
 	}
 
+
+	private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
+
+	private int indexOfCurrentHoveredHypothesis = 0;
+
+	private void updateHypothesesAtHoverPosition() {
+		final int t = glf.getTime();
+		if(!this.isMouseOver){
+			hypothesesAtHoverPosition = new ArrayList<>();
+			indexOfCurrentHoveredHypothesis = -1;
+		}
+		else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+			List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+			if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
+				hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
+				GrowthLineTrackingILP ilp = glf.getParent().getIlp();
+				Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
+						.findFirst()
+						.orElse(null);
+				if(selectedHypothesis != null){ /* there is an optimal hypothesis at the hover position; get it */
+					indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
+				}
+				else{ /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */
+					indexOfCurrentHoveredHypothesis = 0;
+				}
+			}
+		}
+	}
+
+	private List<Hypothesis<Component<FloatType, ?>>> getHypothesesAtHoverPosition() {
+		return hypothesesAtHoverPosition;
+	}
+
 	/**
 	 * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
 	 */
 	@Override
-	public void mousePressed( final MouseEvent e ) {}
+	public void mousePressed( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+	}
 
 	/**
 	 * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
 	 */
 	@Override
 	public void mouseEntered( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isMouseOver = true;
 	}
 
@@ -288,8 +376,15 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	@Override
 	public void mouseExited( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isMouseOver = false;
+		updateHoveredHypotheses();
 		this.repaint();
+	}
+
+	private void updateHoveredHypotheses() {
+		updateHoveredOptimalHypothesis();
+		updateHypothesesAtHoverPosition();
 	}
 
 	/**
@@ -297,6 +392,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	@Override
 	public void mouseDragged( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		if ( e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3 ) {
 			this.isDragging = true;
             int dragX = e.getX();
@@ -310,6 +406,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	@Override
 	public void mouseReleased( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.isDragging = false;
 		repaint();
 		mmgui.focusOnSliderTime();
@@ -320,8 +417,10 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener {
 	 */
 	@Override
 	public void mouseMoved( final MouseEvent e ) {
+		if (glf == null) return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 		this.mousePosX = e.getX();
-		this.mousePosY = e.getY() - 42;
+		this.mousePosY = e.getY();
+		updateHoveredHypotheses();
 		this.repaint();
 	}
 

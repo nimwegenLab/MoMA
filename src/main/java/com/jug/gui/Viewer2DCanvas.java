@@ -322,7 +322,11 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 
 	private void updateHypothesesAtHoverPosition() {
 		final int t = glf.getTime();
-		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+		if(!this.isMouseOver){
+			hypothesesAtHoverPosition = new ArrayList<>();
+			indexOfCurrentHoveredHypothesis = -1;
+		}
+		else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
 			List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
 			if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
 				hypothesesAtHoverPosition = newHypothesesAtHoverPosition;

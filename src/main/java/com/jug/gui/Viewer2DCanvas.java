@@ -324,9 +324,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 		final int t = glf.getTime();
 		if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
 			List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
-			if (hypothesesAtHoverPosition == null)
-				hypothesesAtHoverPosition = newHypothesesAtHoverPosition; /* initialize on first call to updateHypothesesAtHoverPosition */
-			else if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
+			if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
 				hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
 				GrowthLineTrackingILP ilp = glf.getParent().getIlp();
 				Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))

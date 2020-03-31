@@ -95,7 +95,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 		this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
 		this.view = viewImg;
 		this.glf = glf;
-		updateHoverHypotheses();
+		updateHoveredHypotheses();
 		this.repaint();
 	}
 
@@ -368,11 +368,11 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	@Override
 	public void mouseExited( final MouseEvent e ) {
 		this.isMouseOver = false;
-		updateHoverHypotheses();
+		updateHoveredHypotheses();
 		this.repaint();
 	}
 
-	private void updateHoverHypotheses() {
+	private void updateHoveredHypotheses() {
 		updateHoveredOptimalHypothesis();
 		updateHypothesesAtHoverPosition();
 	}
@@ -407,7 +407,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	public void mouseMoved( final MouseEvent e ) {
 		this.mousePosX = e.getX();
 		this.mousePosY = e.getY();
-		updateHoverHypotheses();
+		updateHoveredHypotheses();
 		this.repaint();
 	}
 

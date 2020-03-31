@@ -1434,29 +1434,19 @@ public class GrowthLineTrackingILP {
 	 * Adds a constraint that forces a solution of this ILP to contain a certain
 	 * segment hypothesis.
 	 * To avoid requesting solutions that conflict with the tree constraints,
-	 * the second parameter can be the hypothesis at the same location for which
+	 * the second parameter can be the hypotheses at the same location for which
 	 * such a constraint exists so far.
 	 *
 	 * @param hyp2add
 	 *            the hypothesis for which the constraint should be installed.
 	 * @throws GRBException
 	 */
-	public void addSegmentInSolutionConstraint( final Hypothesis< Component< FloatType, ? >> hyp2add, final List< Hypothesis< Component< FloatType, ? >>> hyps2remove ) throws GRBException {
+	public void addSegmentInSolutionConstraint( final Hypothesis< Component< FloatType, ? >> hyp2add, final List< Hypothesis< Component< FloatType, ? >>> hypothesesToRemove ) throws GRBException {
 		final GRBLinExpr expr = new GRBLinExpr();
 
 		// Remove constraints form all given hypotheses
-		if ( hyps2remove != null ) {
-			for ( final Hypothesis< Component< FloatType, ? >> hyp2remove : hyps2remove ) {
-				final GRBConstr oldConstr = hyp2remove.getSegmentSpecificConstraint();
-				if ( oldConstr != null ) {
-					try {
-						model.remove( oldConstr );
-						hyp2remove.setSegmentSpecificConstraint( null );
-					} catch ( final GRBException e ) {
-						e.printStackTrace();
-					}
-				}
-			}
+		if ( hypothesesToRemove != null ) {
+			removeSegmentConstraints(hypothesesToRemove);
 		}
 
 		final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > rightNeighbors = edgeSets.getRightNeighborhood( hyp2add );
@@ -1466,6 +1456,34 @@ public class GrowthLineTrackingILP {
 
 		// Store the newly created constraint in hyp2add
 		hyp2add.setSegmentSpecificConstraint( model.addConstr( expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.hashCode() ) );
+	}
+
+	/**
+	 * Remove constraints for the hypotheses in the provided list.
+	 *
+	 * @param hypothesesToRemove
+	 */
+	private void removeSegmentConstraints(List<Hypothesis<Component<FloatType, ?>>> hypothesesToRemove) {
+		for (final Hypothesis<Component<FloatType, ?>> hyp2remove : hypothesesToRemove) {
+			removeSegmentConstraints(hyp2remove);
+		}
+	}
+
+	/**
+	 * Remove constraints for the provided hypothesis.
+	 *
+	 * @param hypothesisToRemove
+	 */
+	private void removeSegmentConstraints(Hypothesis<Component<FloatType, ?>> hypothesisToRemove) {
+		final GRBConstr oldConstr = hypothesisToRemove.getSegmentSpecificConstraint();
+		if (oldConstr != null) {
+			try {
+				model.remove(oldConstr);
+				hypothesisToRemove.setSegmentSpecificConstraint(null);
+			} catch (final GRBException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	/**
@@ -1816,18 +1834,7 @@ public class GrowthLineTrackingILP {
 	public void removeAllSegmentConstraints( final int t ) {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =
 				nodes.getHypothesesAt( t );
-		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
-			final GRBConstr oldConstr = hyp.getSegmentSpecificConstraint();
-			// remove all existing
-			if ( oldConstr != null ) {
-				try {
-					model.remove( oldConstr );
-					hyp.setSegmentSpecificConstraint( null );
-				} catch ( final GRBException e ) {
-					e.printStackTrace();
-				}
-			}
-		}
+		removeSegmentConstraints(hyps);
 	}
 
 	/**

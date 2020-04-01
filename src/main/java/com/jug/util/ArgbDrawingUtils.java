@@ -1,7 +1,6 @@
 package com.jug.util;
 
-import java.util.Iterator;
-
+import com.jug.MoMA;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -9,7 +8,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import com.jug.MoMA;
+import java.util.Iterator;
 
 /**
  * @author jug
@@ -98,28 +97,21 @@ public class ArgbDrawingUtils {
 	 */
 	@SuppressWarnings( "unchecked" )
 	private static void taint1dComponentTreeNodeFaintGreen( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-
-		final int delta = MoMA.GL_WIDTH_IN_PIXELS / 2;
 		Iterator< Localizable > componentIterator = ctn.iterator();
 
-		int minCoreYpos = Integer.MAX_VALUE;
-		int maxCoreYpos = Integer.MIN_VALUE;
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			minCoreYpos = Math.min( minCoreYpos, ypos );
-			maxCoreYpos = Math.max( maxCoreYpos, ypos );
+		while (componentIterator.hasNext()) {
+			Localizable position = componentIterator.next();
+			final int xpos = position.getIntPosition(0);
+			final int ypos = position.getIntPosition(1);
 
-			final Point p = new Point( offsetX, offsetY + ypos );
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-				final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
-				final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
+			final Point p = new Point(xpos - offsetX, offsetY + ypos);
+			final long[] imgPos = Util.pointLocation(p);
+			raArgbImg.setPosition(imgPos);
+			final int curCol = raArgbImg.get().get();
+			final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(curCol))) / 1.25);
+			final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
+			final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(curCol))) / 1.25);
+			raArgbImg.get().set(new ARGBType(ARGBType.rgba(ARGBType.red(curCol) + (redToUse), ARGBType.green(curCol) + (greenToUse), ARGBType.blue(curCol) + (blueToUse), ARGBType.alpha(curCol))));
 		}
 	}
 

@@ -21,7 +21,7 @@ public class ArgbDrawingUtils {
 	 * @param offsetX
 	 * @param offsetY
 	 */
-	public static void taintComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
+	public static void taintOptimalComponentTreeNode(final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
 
 //		switch ( ctn.iterator().next().numDimensions() ) {

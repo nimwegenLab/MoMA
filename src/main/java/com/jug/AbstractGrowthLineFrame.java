@@ -172,7 +172,7 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 						offsetX + getAvgXpos(),
 						offsetY );
 			} else {
-				ArgbDrawingUtils.taintComponentTreeNode(
+				ArgbDrawingUtils.taintOptimalComponentTreeNode(
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),

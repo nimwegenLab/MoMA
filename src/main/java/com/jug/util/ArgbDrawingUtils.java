@@ -74,14 +74,8 @@ public class ArgbDrawingUtils {
 	 */
 	public static void taintInactiveComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
-
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeRed( ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
+		Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue);
+		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, redPixelOverlayCalculator );
 	}
 
 	/**
@@ -105,38 +99,30 @@ public class ArgbDrawingUtils {
 		}
 	}
 
-	private static ARGBType calculateGreenPixelOverlayValue(int curCol){
-		final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(curCol))) / 1.25);
-		final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
-		final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(curCol))) / 1.25);
-		return new ARGBType(ARGBType.rgba(ARGBType.red(curCol) + (redToUse), ARGBType.green(curCol) + (greenToUse), ARGBType.blue(curCol) + (blueToUse), ARGBType.alpha(curCol)));
+	/**
+	 * Calculate green ARGB pixel value from current {@param grayscaleValue}.
+	 *
+	 * @param grayscaleValue current grayscale value.
+	 * @return ARBG pixel value.
+	 */
+	private static ARGBType calculateGreenPixelOverlayValue(int grayscaleValue){
+		final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(grayscaleValue))) / 1.25);
+		final int greenToUse = Math.min(35, (255 - ARGBType.green(grayscaleValue)));
+		final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(grayscaleValue))) / 1.25);
+		return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
 	}
 
 	/**
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
+	 * Calculate red ARGB pixel value from current {@param grayscaleValue}.
+	 *
+	 * @param grayscaleValue current grayscale value.
+	 * @return ARBG pixel value.
 	 */
-	private static void taint1dComponentTreeNodeRed( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-
-		Iterator< Localizable > componentIterator = ctn.iterator();
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			final Point p = new Point( offsetX, offsetY + ypos );
-			final int delta = 15;
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min(100, (255 - ARGBType.red(curCol)));
-                final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( curCol ) ) ) / 4;
-				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
-				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-
+	private static ARGBType calculateRedPixelOverlayValue(int grayscaleValue){
+		final int redToUse = Math.min(100, (255 - ARGBType.red(grayscaleValue)));
+		final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( grayscaleValue ) ) ) / 4;
+		final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( grayscaleValue ) ) ) / 4;
+		return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
 	}
 
 	/**

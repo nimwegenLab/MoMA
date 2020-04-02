@@ -1,19 +1,57 @@
 package com.jug.util;
 
+import com.jug.lp.Hypothesis;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Function;
 
 /**
  * @author jug
  */
 public class ArgbDrawingUtils {
+
+	/**
+	 * Draws the optimal segmentation (determined by the solved ILP) into the
+	 * given <code>Img</code>.
+	 *
+	 * @param img                 the Img to draw into.
+	 * @param view                the active view on that Img (in order to know the pixel
+	 *                            offsets)
+	 * @param optimalSegmentation a <code>List</code> of the hypotheses containing
+	 *                            component-tree-nodes that represent the optimal segmentation
+	 *                            (the one returned by the solution to the ILP).
+	 */
+	public static void drawOptimalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
+		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
+		long offsetX = view.min(0);
+		long offsetY = view.min(1);
+		for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegmentation) {
+			final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+			if (hyp.isPruned()) {
+				ArgbDrawingUtils.taintPrunedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+			} else if (hyp.getSegmentSpecificConstraint() != null) {
+				ArgbDrawingUtils.taintForcedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+			} else {
+				ArgbDrawingUtils.taintOptimalComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+			}
+		}
+	}
+
+	public static void drawOptionalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final Component<FloatType, ?> optionalSegmentation) {
+		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
+		long offsetX = view.min(0);
+		long offsetY = view.min(1);
+		ArgbDrawingUtils.taintInactiveComponentTreeNode(optionalSegmentation, raAnnotationImg, offsetX, offsetY);
+	}
 
 	/**
 	 * @param ctn

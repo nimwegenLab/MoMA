@@ -123,40 +123,6 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
     protected abstract ComponentForest<C> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt);
 
     /**
-     * Draws the optimal segmentation (determined by the solved ILP) into the
-     * given <code>Img</code>.
-     *
-     * @param img                 the Img to draw into.
-     * @param view                the active view on that Img (in order to know the pixel
-     *                            offsets)
-     * @param optimalSegmentation a <code>List</code> of the hypotheses containing
-     *                            component-tree-nodes that represent the optimal segmentation
-     *                            (the one returned by the solution to the ILP).
-     */
-    public void drawOptimalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
-        final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
-        long offsetX = view.min(0);
-        long offsetY = view.min(1);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegmentation) {
-            final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
-            if (hyp.isPruned()) {
-                ArgbDrawingUtils.taintPrunedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
-            } else if (hyp.getSegmentSpecificConstraint() != null) {
-                ArgbDrawingUtils.taintForcedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
-            } else {
-                ArgbDrawingUtils.taintOptimalComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
-            }
-        }
-    }
-
-    public void drawOptionalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final Component<FloatType, ?> optionalSegmentation) {
-        final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
-        long offsetX = view.min(0);
-        long offsetY = view.min(1);
-        ArgbDrawingUtils.taintInactiveComponentTreeNode(optionalSegmentation, raAnnotationImg, offsetX, offsetY);
-    }
-
-    /**
      * @return the average X coordinate of the center line of this
      * <code>GrowthLine</code>
      */

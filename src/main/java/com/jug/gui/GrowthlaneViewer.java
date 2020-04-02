@@ -24,6 +24,9 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jug.util.ArgbDrawingUtils.drawOptimalSegmentation;
+import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
+
 /**
  * @author jug
  */
@@ -137,7 +140,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 				final int t = glf.getParent().getFrames().indexOf( glf );
 
 				// DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING
-				glf.drawOptimalSegmentation(
+				drawOptimalSegmentation(
 						screenImage,
 						view,
 						glf.getParent().getIlp().getOptimalSegmentation( t ) );
@@ -205,7 +208,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis();
 		if ( hoverOptionalHyp != null ) {
 			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
-			glf.drawOptionalSegmentation(screenImage, view, comp);
+			drawOptionalSegmentation(screenImage, view, comp);
 		}
 	}
 

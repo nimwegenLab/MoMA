@@ -160,7 +160,6 @@ public abstract class AbstractGrowthLineFrame< C extends Component< FloatType, C
 			final Component< FloatType, ? > ctn = hyp.getWrappedComponent();
 			if ( hyp.isPruned() ) {
 				ArgbDrawingUtils.taintPrunedComponentTreeNode(
-						hyp.isPruneRoot(),
 						ctn,
 						raAnnotationImg,
 						offsetX + getAvgXpos(),

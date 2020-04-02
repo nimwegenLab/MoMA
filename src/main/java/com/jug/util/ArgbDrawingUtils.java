@@ -1,13 +1,11 @@
 package com.jug.util;
 
-import com.jug.MoMA;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
-import scala.Int;
 
 import java.util.Iterator;
 import java.util.function.Function;
@@ -40,26 +38,14 @@ public class ArgbDrawingUtils {
 	}
 
 	/**
-	 * @param isPruneRoot
 	 * @param ctn
 	 * @param offsetX
 	 * @param offsetY
 	 */
-	public static void taintPrunedComponentTreeNode(
-			final boolean isPruneRoot,
-			final Component< FloatType, ? > ctn,
-			final RandomAccess< ARGBType > raArgbImg,
-			final long offsetX,
-			final long offsetY ) {
+	public static void taintPrunedComponentTreeNode(final Component<FloatType, ?> ctn, final RandomAccess<ARGBType> raArgbImg, final long offsetX, final long offsetY) {
 		assert ( ctn.iterator().hasNext() );
-
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeGrey( isPruneRoot, ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
+		Function<Integer,ARGBType> grayPixelOverlayCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue);
+		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, grayPixelOverlayCalculator);
 	}
 
 	/**
@@ -142,54 +128,18 @@ public class ArgbDrawingUtils {
 	}
 
 	/**
-	 * @param isPruneRoot
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
+	 * Calculate gray ARGB pixel value from current {@param grayscaleValue}.
+	 *
+	 * @param grayscaleValue current grayscale value.
+	 * @return ARBG pixel value.
 	 */
-	private static void taint1dComponentTreeNodeGrey(
-			final boolean isPruneRoot,
-			final Component< FloatType, ? > ctn,
-			final RandomAccess< ARGBType > raArgbImg,
-			final long offsetX,
-			final long offsetY ) {
-
-		final int delta = MoMA.GL_WIDTH_IN_PIXELS / 2;
-		Iterator< Localizable > componentIterator = ctn.iterator();
-
-		int minCoreYpos = Integer.MAX_VALUE;
-		int maxCoreYpos = Integer.MIN_VALUE;
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			minCoreYpos = Math.min( minCoreYpos, ypos );
-			maxCoreYpos = Math.max( maxCoreYpos, ypos );
-
-			final Point p = new Point( offsetX, offsetY + ypos );
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				int minHelper = 0;
-				int bgHelper = 64;
-				if ( isPruneRoot ) {
-					minHelper = 100;
-					bgHelper = 175;
-				}
-				final int redToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.red( curCol ) ) ) );
-				final int greenToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.green( curCol ) ) ) );
-				final int blueToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.blue( curCol ) ) ) );
-				raArgbImg.get().set(
-						new ARGBType( ARGBType.rgba(
-								ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.alpha( curCol ) ) ) );
-			}
-		}
+	private static ARGBType calculateGrayPixelOverlayValue(int grayscaleValue){
+		int minHelper = 100;
+		int bgHelper = 175;
+		final int redToUse = ( Math.min( minHelper, ( bgHelper - ARGBType.red( grayscaleValue ) ) ) );
+		final int greenToUse = ( Math.min( minHelper, ( bgHelper - ARGBType.green( grayscaleValue ) ) ) );
+		final int blueToUse = ( Math.min( minHelper, ( bgHelper - ARGBType.blue( grayscaleValue ) ) ) );
+		return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
 	}
+
 }

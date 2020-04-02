@@ -31,18 +31,20 @@ public class ArgbDrawingUtils {
 	 *                            (the one returned by the solution to the ILP).
 	 */
 	public static void drawOptimalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
-		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
+		final RandomAccess<ARGBType> raArgbImg = img.randomAccess();
 		long offsetX = view.min(0);
 		long offsetY = view.min(1);
 		for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegmentation) {
 			final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+			Function<Integer, ARGBType> pixelOverlayColorCalculator;
 			if (hyp.isPruned()) {
-				ArgbDrawingUtils.taintPrunedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+				pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
 			} else if (hyp.getSegmentSpecificConstraint() != null) {
-				ArgbDrawingUtils.taintForcedComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+				pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
 			} else {
-				ArgbDrawingUtils.taintOptimalComponentTreeNode(ctn, raAnnotationImg, offsetX, offsetY);
+				pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
 			}
+			drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, pixelOverlayColorCalculator);
 		}
 	}
 
@@ -50,51 +52,8 @@ public class ArgbDrawingUtils {
 		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
 		long offsetX = view.min(0);
 		long offsetY = view.min(1);
-		ArgbDrawingUtils.taintInactiveComponentTreeNode(optionalSegmentation, raAnnotationImg, offsetX, offsetY);
-	}
-
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintOptimalComponentTreeNode(final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
-		Function<Integer, ARGBType> greenPixelOverlayCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue);
-		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, greenPixelOverlayCalculator);
-	}
-
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintForcedComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
-		Function<Integer, ARGBType> yellowPixelOverlayCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue);
-		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, yellowPixelOverlayCalculator);
-	}
-
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintPrunedComponentTreeNode(final Component<FloatType, ?> ctn, final RandomAccess<ARGBType> raArgbImg, final long offsetX, final long offsetY) {
-		assert ( ctn.iterator().hasNext() );
-		Function<Integer,ARGBType> grayPixelOverlayCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue);
-		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, grayPixelOverlayCalculator);
-	}
-
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintInactiveComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
-		Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue);
-		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, redPixelOverlayCalculator );
+		Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight optional component in red */
+		drawSegmentColorOverlay( optionalSegmentation, raAnnotationImg, offsetX, offsetY, redPixelOverlayCalculator );
 	}
 
 	/**

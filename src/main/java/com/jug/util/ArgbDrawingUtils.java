@@ -79,23 +79,31 @@ public class ArgbDrawingUtils {
 	}
 
 	/**
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
+	 * Draw {@param component} to gray-scale {@param ArgbImage} offsetting its
+	 * position by {@param offsetX} and {@param offsetX}. The color of the
+	 * component pixels in the image is calculated using
+	 * the {@param pixelColorCalculator}.
+	 *
+	 * @param component component to draw to image
+	 * @param ArgbImage image to draw to
+	 * @param offsetX x-offset
+	 * @param offsetY y-offset
+	 * @param pixelColorCalculator lambda function to calculate the ARGB value
+	 *                             of each component pixel based on the its previous
+	 *                             grayscale value
 	 */
 	@SuppressWarnings( "unchecked" )
-	private static void drawSegmentColorOverlay(final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator ) {
-		Iterator< Localizable > componentIterator = ctn.iterator();
+	private static void drawSegmentColorOverlay(final Component< FloatType, ? > component, final RandomAccess< ARGBType > ArgbImage, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator ) {
+		Iterator< Localizable > componentIterator = component.iterator();
 		while (componentIterator.hasNext()) {
 			Localizable position = componentIterator.next();
 			final int xpos = position.getIntPosition(0);
 			final int ypos = position.getIntPosition(1);
 			final Point p = new Point(xpos - offsetX, offsetY + ypos);
 			final long[] imgPos = Util.pointLocation(p);
-			raArgbImg.setPosition(imgPos);
-			final int curCol = raArgbImg.get().get();
-			raArgbImg.get().set(pixelColorCalculator.apply(curCol));
+			ArgbImage.setPosition(imgPos);
+			final int curCol = ArgbImage.get().get();
+			ArgbImage.get().set(pixelColorCalculator.apply(curCol));
 		}
 	}
 

@@ -80,7 +80,7 @@ public class ArgbDrawingUtils {
 			Localizable position = componentIterator.next();
 			final int xpos = position.getIntPosition(0);
 			final int ypos = position.getIntPosition(1);
-			final Point p = new Point(xpos - offsetX, offsetY + ypos);
+			final Point p = new Point(xpos + offsetX, offsetY + ypos);
 			final long[] imgPos = Util.pointLocation(p);
 			ArgbImage.setPosition(imgPos);
 			final int curCol = ArgbImage.get().get();

@@ -705,7 +705,7 @@ public class GrowthLineTrackingILP {
 	 * Performs autosave of current tracking interactions (if the checkbox in
 	 * the MotherMachineGui is checked).
 	 */
-	public void autosave() {
+	public synchronized void autosave() {
 		if ( !MoMA.HEADLESS && MoMA.getGui().isAutosaveRequested() ) {
 			final File autosaveFile =
 					new File( MoMA.props.getProperty( "import_path" ) + "/--autosave.timm" );
@@ -720,7 +720,7 @@ public class GrowthLineTrackingILP {
 	 * that will find the MAP in the given model and hence the solution to our
 	 * segmentation and tracking problem.
 	 */
-	public void run() {
+	public synchronized void run() {
 		try {
 			// Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
@@ -1775,7 +1775,7 @@ public class GrowthLineTrackingILP {
 	/**
 	 * @param t
 	 */
-	public void fixSegmentationAsIs( final int t ) {
+	public synchronized void fixSegmentationAsIs( final int t ) {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =
 				nodes.getHypothesesAt( t );
 		for ( final Hypothesis< Component< FloatType, ? >> hyp : hyps ) {
@@ -1804,7 +1804,7 @@ public class GrowthLineTrackingILP {
 	/**
 	 * @param t
 	 */
-	public void fixAssignmentsAsAre( final int t ) {
+	public synchronized void fixAssignmentsAsAre( final int t ) {
 		// TODO: don't forget that assignment constraints removal kills also fixed segmentation
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =
 				nodes.getHypothesesAt( t );
@@ -1831,7 +1831,7 @@ public class GrowthLineTrackingILP {
 	/**
 	 * @param t
 	 */
-	public void removeAllSegmentConstraints( final int t ) {
+	public synchronized void removeAllSegmentConstraints( final int t ) {
 		final List< Hypothesis< Component< FloatType, ? >>> hyps =
 				nodes.getHypothesesAt( t );
 		removeSegmentConstraints(hyps);

@@ -9,6 +9,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.Iterator;
+import java.util.function.Function;
 
 /**
  * @author jug
@@ -22,14 +23,8 @@ public class ArgbDrawingUtils {
 	 */
 	public static void taintOptimalComponentTreeNode(final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
 		assert ( ctn.iterator().hasNext() );
-
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeFaintGreen( ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
+		Function<Integer, ARGBType> greenPixelOverlayCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue);
+		drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, greenPixelOverlayCalculator);
 	}
 
 	/**
@@ -96,23 +91,25 @@ public class ArgbDrawingUtils {
 	 * @param offsetY
 	 */
 	@SuppressWarnings( "unchecked" )
-	private static void taint1dComponentTreeNodeFaintGreen( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
+	private static void drawSegmentColorOverlay(final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator ) {
 		Iterator< Localizable > componentIterator = ctn.iterator();
-
 		while (componentIterator.hasNext()) {
 			Localizable position = componentIterator.next();
 			final int xpos = position.getIntPosition(0);
 			final int ypos = position.getIntPosition(1);
-
 			final Point p = new Point(xpos - offsetX, offsetY + ypos);
 			final long[] imgPos = Util.pointLocation(p);
 			raArgbImg.setPosition(imgPos);
 			final int curCol = raArgbImg.get().get();
-			final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(curCol))) / 1.25);
-			final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
-			final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(curCol))) / 1.25);
-			raArgbImg.get().set(new ARGBType(ARGBType.rgba(ARGBType.red(curCol) + (redToUse), ARGBType.green(curCol) + (greenToUse), ARGBType.blue(curCol) + (blueToUse), ARGBType.alpha(curCol))));
+			raArgbImg.get().set(pixelColorCalculator.apply(curCol));
 		}
+	}
+
+	private static ARGBType calculateGreenPixelOverlayValue(int curCol){
+		final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(curCol))) / 1.25);
+		final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
+		final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(curCol))) / 1.25);
+		return new ARGBType(ARGBType.rgba(ARGBType.red(curCol) + (redToUse), ARGBType.green(curCol) + (greenToUse), ARGBType.blue(curCol) + (blueToUse), ARGBType.alpha(curCol)));
 	}
 
 	/**

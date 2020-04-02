@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * @author jug
  */
-public class Viewer2DCanvas extends JComponent implements MouseInputListener, MouseWheelListener {
+public class GrowthlaneViewer extends JComponent implements MouseInputListener, MouseWheelListener {
 
 	private static final long serialVersionUID = 8284204775277266994L;
 
@@ -53,7 +53,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 	private static final int OFFSET_DISPLAY_COSTS = -25;
 	private static int SYSTEM_SPECIFIC_POINTER_CORRECTION;
 
-	public Viewer2DCanvas( final MoMAGui mmgui, final int w, final int h ) {
+	public GrowthlaneViewer(final MoMAGui mmgui, final int w, final int h ) {
 		super();
 
 //		if ( OSValidator.isUnix() ) {
@@ -150,7 +150,7 @@ public class Viewer2DCanvas extends JComponent implements MouseInputListener, Mo
 			// GrowthLine is empty, the projector
 			// throws a ArrayIndexOutOfBoundsException that I catch
 			// hereby... ;)
-			System.err.println( "ArrayIndexOutOfBoundsException in paintComponent of Viewer2DCanvas!" );
+			System.err.println( "ArrayIndexOutOfBoundsException in paintComponent of GrowthlaneViewer!" );
 			// e.printStackTrace();
 		} catch ( final NullPointerException e ) {
 			// System.err.println( "View or glf not yet set in MotherMachineGui!" );

@@ -35,7 +35,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private static final long serialVersionUID = 8284204775277266994L;
     private static final int OFFSET_DISPLAY_COSTS = -25;
-    private static int SYSTEM_SPECIFIC_POINTER_CORRECTION;
     private final int w;
     private final int h;
     private final MoMAGui mmgui;
@@ -58,16 +57,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     public GrowthlaneViewer(final MoMAGui mmgui, final int w, final int h) {
         super();
-
-//		if ( OSValidator.isUnix() ) {
-//			SYSTEM_SPECIFIC_POINTER_CORRECTION = 5;
-//		}
-//		if ( OSValidator.isMac() ) {
-//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -30;
-//		}
-//		if ( OSValidator.isWindows() ) {
-//			SYSTEM_SPECIFIC_POINTER_CORRECTION = -25;
-//		}
 
         this.mmgui = mmgui;
 
@@ -207,7 +196,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         hoveredOptimalHypothesis = null;
         final int t = glf.getTime();
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-            hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+            hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY);
         }
     }
 
@@ -321,7 +310,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             hypothesesAtHoverPosition = new ArrayList<>();
             indexOfCurrentHoveredHypothesis = -1;
         } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-            List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY + SYSTEM_SPECIFIC_POINTER_CORRECTION);
+            List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthLineTrackingILP ilp = glf.getParent().getIlp();

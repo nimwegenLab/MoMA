@@ -1,4 +1,4 @@
-package com.jug.gui;
+package com.jug.gui.assignmentview;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
@@ -22,7 +22,7 @@ import com.jug.util.OSValidator;
 /**
  * @author jug
  */
-class DialogAssignmentViewSetup extends JDialog implements ActionListener {
+public class DialogAssignmentViewSetup extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -3564705333556776780L;
 

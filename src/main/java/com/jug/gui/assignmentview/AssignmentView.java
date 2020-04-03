@@ -1,6 +1,8 @@
-package com.jug.gui;
+package com.jug.gui.assignmentview;
 
 import com.jug.MoMA;
+import com.jug.gui.MoMAGui;
+import com.jug.gui.assignmentview.DialogAssignmentViewSetup;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
 import gurobi.GRBException;

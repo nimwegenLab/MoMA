@@ -1,4 +1,4 @@
-package com.jug.gui;
+package com.jug.gui.assignmentview;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -10,6 +10,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;

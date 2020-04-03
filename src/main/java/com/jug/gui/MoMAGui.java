@@ -5,6 +5,7 @@ import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.export.CellStatsExporter;
 import com.jug.export.HtmlOverviewExporter;
+import com.jug.gui.assignmentview.AssignmentViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.*;

@@ -20,19 +20,19 @@ import java.util.function.Function;
 public class ArgbDrawingUtils {
 
 	/**
-	 * Draws the optimal segmentation (determined by the solved ILP) into the
-	 * given <code>Img</code>.
+	 * Draws the optimal segmentation (determined by the solved ILP) into {@param imgSource}
+	 * using the pixel values in {@param imgDestination} as source.
 	 *
-	 * @param img                 the Img to draw into.
-	 * @param view                the active view on that Img (in order to know the pixel
-	 *                            offsets)
-	 * @param optimalSegmentation a <code>List</code> of the hypotheses containing
+	 * @param imgDestination image to draw calculated overlay pixel values to
+	 * @param imgSource pixel value source
+	 * @param optimalSegments a <code>List</code> of the hypotheses containing
 	 *                            component-tree-nodes that represent the optimal segmentation
-	 *                            (the one returned by the solution to the ILP).
+	 *                            (the one returned by the solution to the ILP)
 	 */
-	public static void drawOptimalSegmentation(final Img<ARGBType> img, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
-		final RandomAccess<ARGBType> raArgbImg = img.randomAccess();
-		for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegmentation) {
+	public static void drawOptimalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegments) {
+		final RandomAccess<ARGBType> raArgbImg = imgDestination.randomAccess();
+		final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
+		for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegments) {
 			final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
 			Function<Integer, ARGBType> pixelOverlayColorCalculator;
 			if (hyp.isPruned()) {
@@ -42,24 +42,36 @@ public class ArgbDrawingUtils {
 			} else {
 				pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
 			}
-			drawSegmentColorOverlay( ctn, raArgbImg, offsetX, offsetY, pixelOverlayColorCalculator);
+			drawSegmentColorOverlay( ctn, raArgbImg, raUnaltered, offsetX, offsetY, pixelOverlayColorCalculator);
 		}
 	}
 
-	public static void drawOptionalSegmentation(final Img<ARGBType> img, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegmentation) {
-		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
+	/**
+	 * Draws {@param pixelColorCalculator} {@param pixelColorCalculator} (determined by the solved ILP) into {@param imgSource}
+	 * using the pixel values in {@param imgDestination} as source.
+	 *
+	 * @param imgDestination image to draw calculated overlay pixel values to
+	 * @param imgSource pixel value source
+	 * @param optionalSegment a <code>List</code> of the hypotheses containing
+	 *                            component-tree-nodes that represent the optimal segmentation
+	 *                            (the one returned by the solution to the ILP)
+	 */
+	public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegment) {
+		final RandomAccess<ARGBType> raAnnotationImg = imgDestination.randomAccess();
+		final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
 		Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight optional component in red */
-		drawSegmentColorOverlay( optionalSegmentation, raAnnotationImg, offsetX, offsetY, redPixelOverlayCalculator );
+		drawSegmentColorOverlay( optionalSegment, raAnnotationImg, raUnaltered, offsetX, offsetY, redPixelOverlayCalculator );
 	}
 
 	/**
-	 * Draw {@param component} to gray-scale {@param ArgbImage} offsetting its
+	 * Draw {@param component} to {@param ArgbImageTarget} offsetting the component
 	 * position by {@param offsetX} and {@param offsetX}. The color of the
-	 * component pixels in the image is calculated using
-	 * the {@param pixelColorCalculator}.
+	 * component pixels in {@param ArgbImageTarget} is calculated by applying
+	 * {@param pixelColorCalculator} to the pixel values in {@param ArgbImageTarget}.
 	 *
 	 * @param component component to draw to image
-	 * @param ArgbImage image to draw to
+	 * @param ArgbImageSource image from which to get the pixel values from
+	 * @param ArgbImageTarget image to draw the overlay pixel values to
 	 * @param offsetX x-offset
 	 * @param offsetY y-offset
 	 * @param pixelColorCalculator lambda function to calculate the ARGB value
@@ -67,7 +79,7 @@ public class ArgbDrawingUtils {
 	 *                             grayscale value
 	 */
 	@SuppressWarnings( "unchecked" )
-	private static void drawSegmentColorOverlay(final Component< FloatType, ? > component, final RandomAccess< ARGBType > ArgbImage, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator ) {
+	private static void drawSegmentColorOverlay(final Component< FloatType, ? > component, final RandomAccess< ARGBType > ArgbImageTarget, final RandomAccess< ARGBType > ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator ) {
 		Iterator< Localizable > componentIterator = component.iterator();
 		while (componentIterator.hasNext()) {
 			Localizable position = componentIterator.next();
@@ -75,9 +87,10 @@ public class ArgbDrawingUtils {
 			final int ypos = position.getIntPosition(1);
 			final Point p = new Point(xpos + offsetX, offsetY + ypos);
 			final long[] imgPos = Util.pointLocation(p);
-			ArgbImage.setPosition(imgPos);
-			final int curCol = ArgbImage.get().get();
-			ArgbImage.get().set(pixelColorCalculator.apply(curCol));
+			ArgbImageSource.setPosition(imgPos);
+			ArgbImageTarget.setPosition(imgPos);
+			final int currentPixelValue = ArgbImageSource.get().get();
+			ArgbImageTarget.get().set(pixelColorCalculator.apply(currentPixelValue));
 		}
 	}
 

@@ -11,6 +11,7 @@ import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -38,6 +39,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 	private final int h;
 	private IterableIntervalProjector2D< ?, ? > projector;
 	private ARGBScreenImage screenImage;
+	private ARGBScreenImage screenImageUnaltered;
 	private IntervalView< FloatType > view;
 	private GrowthLineFrame glf;
 
@@ -118,6 +120,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 	 */
 	public void setEmptyScreenImage() {
 		screenImage = new ARGBScreenImage( w, h );
+		screenImageUnaltered = new ARGBScreenImage( w, h );
 		this.projector = null;
 		this.view = null;
 		this.glf = null;
@@ -134,11 +137,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 		try {
 			if ( projector != null ) {
 				projector.map();
+				LoopBuilder.setImages(screenImage, screenImageUnaltered).forEachPixel((src, dest) -> dest.set(src)); /* copy original image data, which will act as source for calculating overlay pixel values */
 			}
 
 			if ( showSegmentationAnnotations ) {
 				final int t = glf.getParent().getFrames().indexOf( glf );
-				drawOptimalSegmentation(screenImage, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
+				drawOptimalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
 			}
 
 		} catch ( final ArrayIndexOutOfBoundsException e ) {
@@ -203,7 +207,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis();
 		if ( hoverOptionalHyp != null ) {
 			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
-			drawOptionalSegmentation(screenImage, view.min(0), view.min(1), comp);
+			drawOptionalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), comp);
 		}
 	}
 

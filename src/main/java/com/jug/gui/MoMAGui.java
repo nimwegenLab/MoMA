@@ -1094,41 +1094,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 				System.out.println( "...done!" );
 			}
 		}
-//		if ( e.getSource().equals( btnRedoAllHypotheses ) ) {
-//
-////			final int choiceAwesome = JOptionPane.showOptionDialog( this, "Do you want to reset to PMFRF segmentations?\n(Otherwise fast CT segments will be built.)", "PMFRF or CT?", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null );
-//			final DialogResegmentSetup dSetup = new DialogResegmentSetup( this, true, true );
-//			dSetup.ask();
-//			if ( !dSetup.wasCanceled() ) {
-//				final JSlider sliderGL = this.sliderGL;
-//
-//				final Thread t = new Thread( new Runnable() {
-//
-//					@Override
-//					public void run() {
-//						if ( dSetup.allFrames() ) {
-//							for ( int i = sliderGL.getMinimum(); i <= sliderGL.getMaximum(); i++ ) {
-//								sliderGL.setValue( i );
-//								dataToDisplayChanged();
-//								if ( dSetup.doPMFRF() ) {
-//									activateAwesomeHypothesesForCurrentGL();
-//								} else {
-//									activateSimpleHypotheses();
-//								}
-//							}
-//						} else {
-//							if ( dSetup.doPMFRF() ) {
-//								activateAwesomeHypothesesForCurrentGL();
-//							} else {
-//								activateSimpleHypotheses();
-//							}
-//						}
-//						dataToDisplayChanged();
-//					}
-//				} );
-//				t.start();
-//			}
-//		}
 		if ( e.getSource().equals( bCheckBoxLineSet ) ) {
 			final Thread t = new Thread(() -> {
 				model.getCurrentGL().getIlp().autosave();

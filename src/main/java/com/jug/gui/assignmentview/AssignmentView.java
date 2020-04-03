@@ -65,7 +65,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 	private HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data;
 
-	private boolean isMouseOver = false;
+	private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentView instance */
 	private int mousePosX;
 	private int mousePosY;
 	private int currentCostLine;

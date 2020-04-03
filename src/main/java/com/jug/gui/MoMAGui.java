@@ -71,9 +71,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 	// -------------------------------------------------------------------------------------
 	// gui-fields
 	// -------------------------------------------------------------------------------------
-	private Viewer2DCanvas imgCanvasActiveLeft;
-	public Viewer2DCanvas imgCanvasActiveCenter;
-	private Viewer2DCanvas imgCanvasActiveRight;
+	private GrowthlaneViewer imgCanvasActiveLeft;
+	public GrowthlaneViewer imgCanvasActiveCenter;
+	private GrowthlaneViewer imgCanvasActiveRight;
 
 	public JSlider sliderGL;
 	public JSlider sliderTime;
@@ -519,7 +519,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		panelHorizontalHelper.add( labelHelper );
 		panelVerticalHelper.add( panelHorizontalHelper, BorderLayout.NORTH );
 		// - - - - - -
-		imgCanvasActiveLeft = new Viewer2DCanvas( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
+		imgCanvasActiveLeft = new GrowthlaneViewer( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
 		panelVerticalHelper.add( imgCanvasActiveLeft, BorderLayout.CENTER );
 		panelVerticalHelper.setBorder( BorderFactory.createMatteBorder( 2, 2, 2, 2, Color.GRAY ) );
 		panelVerticalHelper.setBackground( Color.BLACK );
@@ -556,7 +556,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		panelHorizontalHelper.add( labelHelper );
 		panelVerticalHelper.add( panelHorizontalHelper, BorderLayout.NORTH );
 		// - - - - - -
-		imgCanvasActiveCenter = new Viewer2DCanvas( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
+		imgCanvasActiveCenter = new GrowthlaneViewer( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
 		panelVerticalHelper.add( imgCanvasActiveCenter, BorderLayout.CENTER );
 		panelVerticalHelper.setBorder( BorderFactory.createMatteBorder( 3, 3, 3, 3, Color.RED ) );
 		panelVerticalHelper.setBackground( Color.BLACK );
@@ -580,7 +580,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 		panelHorizontalHelper.add( labelHelper );
 		panelVerticalHelper.add( panelHorizontalHelper, BorderLayout.NORTH );
 		// - - - - - -
-		imgCanvasActiveRight = new Viewer2DCanvas( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
+		imgCanvasActiveRight = new GrowthlaneViewer( this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, ( int ) model.mm.getImgRaw().dimension( 1 ) );
 		panelVerticalHelper.add( imgCanvasActiveRight, BorderLayout.CENTER );
 		panelVerticalHelper.setBorder( BorderFactory.createMatteBorder( 2, 2, 2, 2, Color.GRAY ) );
 		panelVerticalHelper.setBackground( Color.BLACK );

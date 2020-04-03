@@ -1,236 +1,150 @@
 package com.jug.util;
 
-import java.util.Iterator;
-
+import com.jug.lp.Hypothesis;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import com.jug.MoMA;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * @author jug
  */
 public class ArgbDrawingUtils {
 
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
+    /**
+     * Draws the optimal segmentation (determined by the solved ILP) into {@param imgSource}
+     * using the pixel values in {@param imgDestination} as source.
+     *
+     * @param imgDestination  image to draw calculated overlay pixel values to
+     * @param imgSource       pixel value source
+     * @param optimalSegments a <code>List</code> of the hypotheses containing
+     *                        component-tree-nodes that represent the optimal segmentation
+     *                        (the one returned by the solution to the ILP)
+     */
+    public static void drawOptimalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegments) {
+        final RandomAccess<ARGBType> raArgbImg = imgDestination.randomAccess();
+        final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
+        for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegments) {
+            final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+            Function<Integer, ARGBType> pixelOverlayColorCalculator;
+            if (hyp.isPruned()) {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
+            } else if (hyp.getSegmentSpecificConstraint() != null) {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
+            } else {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
+            }
+            drawSegmentColorOverlay(ctn, raArgbImg, raUnaltered, offsetX, offsetY, pixelOverlayColorCalculator);
+        }
+    }
 
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeFaintGreen( ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
-	}
+    /**
+     * Draws {@param pixelColorCalculator} {@param pixelColorCalculator} (determined by the solved ILP) into {@param imgSource}
+     * using the pixel values in {@param imgDestination} as source.
+     *
+     * @param imgDestination  image to draw calculated overlay pixel values to
+     * @param imgSource       pixel value source
+     * @param optionalSegment a <code>List</code> of the hypotheses containing
+     *                        component-tree-nodes that represent the optimal segmentation
+     *                        (the one returned by the solution to the ILP)
+     */
+    public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegment) {
+        final RandomAccess<ARGBType> raAnnotationImg = imgDestination.randomAccess();
+        final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
+        Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight optional component in red */
+        drawSegmentColorOverlay(optionalSegment, raAnnotationImg, raUnaltered, offsetX, offsetY, redPixelOverlayCalculator);
+    }
 
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintForcedComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
+    /**
+     * Draw {@param component} to {@param ArgbImageTarget} offsetting the component
+     * position by {@param offsetX} and {@param offsetX}. The color of the
+     * component pixels in {@param ArgbImageTarget} is calculated by applying
+     * {@param pixelColorCalculator} to the pixel values in {@param ArgbImageTarget}.
+     *
+     * @param component            component to draw to image
+     * @param ArgbImageSource      image from which to get the pixel values from
+     * @param ArgbImageTarget      image to draw the overlay pixel values to
+     * @param offsetX              x-offset
+     * @param offsetY              y-offset
+     * @param pixelColorCalculator lambda function to calculate the ARGB value
+     *                             of each component pixel based on the its previous
+     *                             grayscale value
+     */
+    @SuppressWarnings("unchecked")
+    private static void drawSegmentColorOverlay(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final RandomAccess<ARGBType> ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator) {
+        Iterator<Localizable> componentIterator = component.iterator();
+        while (componentIterator.hasNext()) {
+            Localizable position = componentIterator.next();
+            final int xpos = position.getIntPosition(0);
+            final int ypos = position.getIntPosition(1);
+            final Point p = new Point(xpos + offsetX, offsetY + ypos);
+            final long[] imgPos = Util.pointLocation(p);
+            ArgbImageSource.setPosition(imgPos);
+            ArgbImageTarget.setPosition(imgPos);
+            final int currentPixelValue = ArgbImageSource.get().get();
+            ArgbImageTarget.get().set(pixelColorCalculator.apply(currentPixelValue));
+        }
+    }
 
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeYellow( ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
-	}
+    /**
+     * Calculate green ARGB pixel value from current {@param grayscaleValue}.
+     *
+     * @param grayscaleValue current grayscale value.
+     * @return ARBG pixel value.
+     */
+    private static ARGBType calculateGreenPixelOverlayValue(int grayscaleValue) {
+        final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(grayscaleValue))) / 1.25);
+        final int greenToUse = Math.min(35, (255 - ARGBType.green(grayscaleValue)));
+        final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(grayscaleValue))) / 1.25);
+        return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
+    }
 
-	/**
-	 * @param isPruneRoot
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintPrunedComponentTreeNode(
-			final boolean isPruneRoot,
-			final Component< FloatType, ? > ctn,
-			final RandomAccess< ARGBType > raArgbImg,
-			final long offsetX,
-			final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
+    /**
+     * Calculate red ARGB pixel value from current {@param grayscaleValue}.
+     *
+     * @param grayscaleValue current grayscale value.
+     * @return ARBG pixel value.
+     */
+    private static ARGBType calculateRedPixelOverlayValue(int grayscaleValue) {
+        final int redToUse = Math.min(100, (255 - ARGBType.red(grayscaleValue)));
+        final int greenToUse = Math.min(10, (255 - ARGBType.green(grayscaleValue))) / 4;
+        final int blueToUse = Math.min(10, (255 - ARGBType.blue(grayscaleValue))) / 4;
+        return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
+    }
 
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeGrey( isPruneRoot, ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
-	}
+    /**
+     * Calculate yellow ARGB pixel value from current {@param grayscaleValue}.
+     *
+     * @param grayscaleValue current grayscale value.
+     * @return ARBG pixel value.
+     */
+    private static ARGBType calculateYellowPixelOverlayValue(int grayscaleValue) {
+        final int redToUse = Math.min(100, (255 - ARGBType.red(grayscaleValue)));
+        final int greenToUse = (int) (Math.min(75, (255 - ARGBType.green(grayscaleValue))) / 1.25);
+        final int blueToUse = Math.min(10, (255 - ARGBType.blue(grayscaleValue))) / 4;
+        return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
+    }
 
-	/**
-	 * @param ctn
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	public static void taintInactiveComponentTreeNode( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-		assert ( ctn.iterator().hasNext() );
+    /**
+     * Calculate gray ARGB pixel value from current {@param grayscaleValue}.
+     *
+     * @param grayscaleValue current grayscale value.
+     * @return ARBG pixel value.
+     */
+    private static ARGBType calculateGrayPixelOverlayValue(int grayscaleValue) {
+        int minHelper = 100;
+        int bgHelper = 175;
+        final int redToUse = (Math.min(minHelper, (bgHelper - ARGBType.red(grayscaleValue))));
+        final int greenToUse = (Math.min(minHelper, (bgHelper - ARGBType.green(grayscaleValue))));
+        final int blueToUse = (Math.min(minHelper, (bgHelper - ARGBType.blue(grayscaleValue))));
+        return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
+    }
 
-//		switch ( ctn.iterator().next().numDimensions() ) {
-//		case 1:
-			taint1dComponentTreeNodeRed( ctn, raArgbImg, offsetX, offsetY );
-//			break;
-//		default:
-//			new Exception( "Given dimensionality is not supported by this function!" ).printStackTrace();
-//		}
-	}
-
-	/**
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	@SuppressWarnings( "unchecked" )
-	private static void taint1dComponentTreeNodeFaintGreen( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-
-		final int delta = MoMA.GL_WIDTH_IN_PIXELS / 2;
-		Iterator< Localizable > componentIterator = ctn.iterator();
-
-		int minCoreYpos = Integer.MAX_VALUE;
-		int maxCoreYpos = Integer.MIN_VALUE;
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			minCoreYpos = Math.min( minCoreYpos, ypos );
-			maxCoreYpos = Math.max( maxCoreYpos, ypos );
-
-			final Point p = new Point( offsetX, offsetY + ypos );
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				final int redToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.red( curCol ) ) ) / 1.25 );
-				final int greenToUse = Math.min(35, (255 - ARGBType.green(curCol)));
-				final int blueToUse = ( int ) ( Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 1.25 );
-				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-	}
-
-	/**
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	private static void taint1dComponentTreeNodeRed( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-
-		Iterator< Localizable > componentIterator = ctn.iterator();
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			final Point p = new Point( offsetX, offsetY + ypos );
-			final int delta = 15;
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min(100, (255 - ARGBType.red(curCol)));
-                final int greenToUse = Math.min( 10, ( 255 - ARGBType.green( curCol ) ) ) / 4;
-				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
-				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-
-	}
-
-	/**
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	private static void taint1dComponentTreeNodeYellow( final Component< FloatType, ? > ctn, final RandomAccess< ARGBType > raArgbImg, final long offsetX, final long offsetY ) {
-
-		final int delta = MoMA.GL_WIDTH_IN_PIXELS / 2;
-		Iterator< Localizable > componentIterator = ctn.iterator();
-
-		int minCoreYpos = Integer.MAX_VALUE;
-		int maxCoreYpos = Integer.MIN_VALUE;
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			minCoreYpos = Math.min( minCoreYpos, ypos );
-			maxCoreYpos = Math.max( maxCoreYpos, ypos );
-
-			final Point p = new Point( offsetX, offsetY + ypos );
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				final int redToUse = Math.min(100, (255 - ARGBType.red(curCol)));
-				final int greenToUse = ( int ) ( Math.min( 75, ( 255 - ARGBType.green( curCol ) ) ) / 1.25 );
-				final int blueToUse = Math.min( 10, ( 255 - ARGBType.blue( curCol ) ) ) / 4;
-				raArgbImg.get().set( new ARGBType( ARGBType.rgba( ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ), ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-	}
-
-	/**
-	 * @param isPruneRoot
-	 * @param ctn
-	 * @param raArgbImg
-	 * @param offsetX
-	 * @param offsetY
-	 */
-	private static void taint1dComponentTreeNodeGrey(
-			final boolean isPruneRoot,
-			final Component< FloatType, ? > ctn,
-			final RandomAccess< ARGBType > raArgbImg,
-			final long offsetX,
-			final long offsetY ) {
-
-		final int delta = MoMA.GL_WIDTH_IN_PIXELS / 2;
-		Iterator< Localizable > componentIterator = ctn.iterator();
-
-		int minCoreYpos = Integer.MAX_VALUE;
-		int maxCoreYpos = Integer.MIN_VALUE;
-		while ( componentIterator.hasNext() ) {
-			final int ypos = componentIterator.next().getIntPosition( 1 );
-			minCoreYpos = Math.min( minCoreYpos, ypos );
-			maxCoreYpos = Math.max( maxCoreYpos, ypos );
-
-			final Point p = new Point( offsetX, offsetY + ypos );
-			for ( int i = -delta; i <= delta; i++ ) {
-				final long[] imgPos = Util.pointLocation( p );
-				imgPos[ 0 ] += i;
-				raArgbImg.setPosition( imgPos );
-				final int curCol = raArgbImg.get().get();
-				int minHelper = 0;
-				int bgHelper = 64;
-				if ( isPruneRoot ) {
-					minHelper = 100;
-					bgHelper = 175;
-				}
-				final int redToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.red( curCol ) ) ) );
-				final int greenToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.green( curCol ) ) ) );
-				final int blueToUse =
-						( Math.min( minHelper, ( bgHelper - ARGBType.blue( curCol ) ) ) );
-				raArgbImg.get().set(
-						new ARGBType( ARGBType.rgba(
-								ARGBType.red( curCol ) + ( redToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.green( curCol ) + ( greenToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.blue( curCol ) + ( blueToUse * ( ( float ) ( delta - Math.abs( i ) ) / delta ) ),
-								ARGBType.alpha( curCol ) ) ) );
-			}
-		}
-	}
 }

@@ -138,12 +138,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
 			if ( showSegmentationAnnotations ) {
 				final int t = glf.getParent().getFrames().indexOf( glf );
-
-				// DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING
-				drawOptimalSegmentation(
-						screenImage,
-						view,
-						glf.getParent().getIlp().getOptimalSegmentation( t ) );
+				drawOptimalSegmentation(screenImage, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
 			}
 
 		} catch ( final ArrayIndexOutOfBoundsException e ) {
@@ -208,7 +203,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 		Hypothesis< Component< FloatType, ? > > hoverOptionalHyp = getHoveredOptionalHypothesis();
 		if ( hoverOptionalHyp != null ) {
 			final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
-			drawOptionalSegmentation(screenImage, view, comp);
+			drawOptionalSegmentation(screenImage, view.min(0), view.min(1), comp);
 		}
 	}
 

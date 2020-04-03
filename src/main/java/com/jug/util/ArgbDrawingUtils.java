@@ -30,10 +30,8 @@ public class ArgbDrawingUtils {
 	 *                            component-tree-nodes that represent the optimal segmentation
 	 *                            (the one returned by the solution to the ILP).
 	 */
-	public static void drawOptimalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
+	public static void drawOptimalSegmentation(final Img<ARGBType> img, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegmentation) {
 		final RandomAccess<ARGBType> raArgbImg = img.randomAccess();
-		long offsetX = view.min(0);
-		long offsetY = view.min(1);
 		for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegmentation) {
 			final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
 			Function<Integer, ARGBType> pixelOverlayColorCalculator;
@@ -48,10 +46,8 @@ public class ArgbDrawingUtils {
 		}
 	}
 
-	public static void drawOptionalSegmentation(final Img<ARGBType> img, final IntervalView<FloatType> view, final Component<FloatType, ?> optionalSegmentation) {
+	public static void drawOptionalSegmentation(final Img<ARGBType> img, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegmentation) {
 		final RandomAccess<ARGBType> raAnnotationImg = img.randomAccess();
-		long offsetX = view.min(0);
-		long offsetY = view.min(1);
 		Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight optional component in red */
 		drawSegmentColorOverlay( optionalSegmentation, raAnnotationImg, offsetX, offsetY, redPixelOverlayCalculator );
 	}

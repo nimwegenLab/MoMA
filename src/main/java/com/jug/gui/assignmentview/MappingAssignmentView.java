@@ -6,24 +6,20 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
-import java.awt.*;
 import java.awt.geom.GeneralPath;
 
 public class MappingAssignmentView extends AssignmentView {
-    private MappingAssignment ma;
-    private int width;
     private int ASSIGNMENT_DISPLAY_OFFSET;
-    private GeneralPath polygon;
-    private boolean isHidden;
 
     public MappingAssignmentView(final MappingAssignment ma, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
-        this.ma = ma;
+        this.abstractAssignment = ma;
         this.width = width;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
     }
 
     void setupPolygon() {
+        MappingAssignment ma = (MappingAssignment) abstractAssignment;
         final Hypothesis<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> leftHyp = ma.getSourceHypothesis();
         final Hypothesis<Component<FloatType, ?>> rightHyp = ma.getDestinationHypothesis();
 
@@ -43,83 +39,5 @@ public class MappingAssignmentView extends AssignmentView {
         polygon.lineTo(this.width, y3);
         polygon.lineTo(this.width, y4);
         polygon.closePath();
-    }
-
-    public void hide() {
-        isHidden = true;
-    }
-
-    public void show() {
-        isHidden = false;
-    }
-
-    public boolean isGroundTruth() {
-        return ma.isGroundTruth();
-    }
-
-    public boolean IsGroundUntruth() {
-        return ma.isGroundUntruth();
-    }
-
-    @Override
-    public void addAsGroundTruth() {
-        ma.setGroundTruth(!ma.isGroundTruth());
-        ma.reoptimize();
-    }
-
-    @Override
-    public void addAsGroundUntruth() {
-        ma.setGroundUntruth(!ma.isGroundUntruth());
-        ma.reoptimize();
-    }
-
-    public String getCostTooltipString() {
-        return String.format("c=%.4f", ma.getCost());
-    }
-
-    @Override
-    public void draw(final Graphics2D g2) {
-        if (isHidden) return; /* do not draw this assignment */
-//        // Interaction with mouse:
-//        if ( !isDragging && isHovered(mousePosX, mousePosY) ) {
-//                final float cost = ma.getCost();
-//                if ( ma.isGroundTruth() ) {
-//                    g2.setPaint( Color.GREEN.darker() );
-//                } else if ( ma.isGroundUntruth() ) {
-//                    g2.setPaint( Color.RED.darker() );
-//                } else {
-//                    g2.setPaint( new Color( 25 / 256f, 65 / 256f, 165 / 256f, 1.0f ).darker().darker() );
-//                }
-//                g2.drawString(
-//                        String.format( "c=%.4f", cost ),
-//                        DISPLAY_COSTS_ABSOLUTE_X,
-//                        mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS );
-//                this.currentCostLine++;
-//        }
-
-        // draw it!
-        g2.setStroke(new BasicStroke(1));
-        if (!ma.isPruned()) {
-            g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f));
-            if (ma.isGroundTruth() || ma.isGroundUntruth()) {
-                g2.setPaint(g2.getColor().brighter().brighter());
-            }
-            g2.fill(polygon);
-        }
-        if (ma.isGroundTruth()) {
-            g2.setPaint(Color.GREEN.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else if (ma.isGroundUntruth()) {
-            g2.setPaint(Color.RED.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else {
-            g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f));
-        }
-        g2.draw(polygon);
-    }
-
-    @Override
-    public boolean isHovered(int mousePosX, int mousePosY) {
-        return polygon.contains(mousePosX, mousePosY);
     }
 }

@@ -307,12 +307,10 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 				this.doAddAsGroundTruth = false;
 				ma.setGroundTruth( !ma.isGroundTruth() );
 				ma.reoptimize();
-				SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
 			} else if ( this.doAddAsGroundUntruth ) {
 				this.doAddAsGroundUntruth = false;
 				ma.setGroundUntruth( !ma.isGroundUntruth() );
 				ma.reoptimize();
-				SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
 			} else {
 				final float cost = ma.getCost();
 				if ( ma.isGroundTruth() ) {

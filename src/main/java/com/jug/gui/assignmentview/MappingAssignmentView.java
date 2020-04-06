@@ -1,35 +1,25 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.gui.MoMAGui;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 
 public class MappingAssignmentView extends AssignmentView {
     private MappingAssignment ma;
-    private MoMAGui gui;
     private int width;
     private int ASSIGNMENT_DISPLAY_OFFSET;
-    private int DISPLAY_COSTS_ABSOLUTE_X;
-    private int OFFSET_DISPLAY_COSTS;
-    private int LINEHEIGHT_DISPLAY_COSTS;
     private GeneralPath polygon;
     private boolean isHidden;
 
-    public MappingAssignmentView(final MappingAssignment ma, MoMAGui gui, int width, int ASSIGNMENT_DISPLAY_OFFSET, int DISPLAY_COSTS_ABSOLUTE_X, int OFFSET_DISPLAY_COSTS, int LINEHEIGHT_DISPLAY_COSTS) {
+    public MappingAssignmentView(final MappingAssignment ma, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.ma = ma;
-        this.gui = gui;
         this.width = width;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
-        this.DISPLAY_COSTS_ABSOLUTE_X = DISPLAY_COSTS_ABSOLUTE_X;
-        this.OFFSET_DISPLAY_COSTS = OFFSET_DISPLAY_COSTS;
-        this.LINEHEIGHT_DISPLAY_COSTS = LINEHEIGHT_DISPLAY_COSTS;
         setupPolygon();
     }
 

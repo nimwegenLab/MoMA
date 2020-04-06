@@ -517,7 +517,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> setOfAssignments : data.values()) {
             for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
                 if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
-                    assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, gui, width, ASSIGNMENT_DISPLAY_OFFSET, DISPLAY_COSTS_ABSOLUTE_X, OFFSET_DISPLAY_COSTS, LINEHEIGHT_DISPLAY_COSTS));
+                    assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }
         }

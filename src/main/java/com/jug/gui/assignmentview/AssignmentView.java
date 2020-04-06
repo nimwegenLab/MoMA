@@ -52,9 +52,6 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	// -------------------------------------------------------------------------------------
 	private final int width;
 
-	private boolean doFilterDataByType = false;
-	private int filterAssignmentType;
-
 	private boolean doFilterDataByCost;
 	private float filterMinCost = -100f;
 	private float filterMaxCost = 100f;
@@ -169,50 +166,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 *            hypothesis at some time-point t and assignments towards t+1.
 	 */
 	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data ) {
-		doFilterDataByType = false;
 		doFilterDataByCost = false;
-		setData( data );
-
-		this.repaint();
-	}
-
-    /**
-	 * Turns on filtering by type and shows only the filtered data.
-	 *
-	 * @param data
-	 *            a <code>HashMap</code> containing pairs of segmentation
-	 *            hypothesis at some time-point t and assignments towards t+1.
-	 * @param typeToFilter
-	 *            must be one of the values
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_MAPPING</code>,
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_DIVISION</code>, or
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_EXIT</code>.
-	 */
-	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final int typeToFilter ) {
-		assert ( typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_EXIT || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_MAPPING || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
-		this.display( data, typeToFilter, this.getCostFilterMin(), this.getCostFilterMax() );
-	}
-
-	/**
-	 * Turns on filtering by type and by cost and shows only the filtered data.
-	 *
-	 * @param data
-	 *            a <code>HashMap</code> containing pairs of segmentation
-	 *            hypothesis at some time-point t and assignments towards t+1.
-	 * @param typeToFilter
-	 *            must be one of the values
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_MAPPING</code>,
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_DIVISION</code>, or
-	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_EXIT</code>.
-	 */
-    private void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, final int typeToFilter, final float minCostToShow, final float maxCostToShow) {
-		assert ( typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_EXIT || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_MAPPING || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
-		doFilterDataByType = true;
-		this.filterAssignmentType = typeToFilter;
-
-		doFilterDataByCost = true;
-		this.setCostFilterMin( minCostToShow );
-		this.setCostFilterMax( maxCostToShow );
 		setData( data );
 
 		this.repaint();
@@ -233,9 +187,6 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		this.currentCostLine = 0;
 		for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > setOfAssignments : data.values() ) {
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assignment : setOfAssignments ) {
-				if ( doFilterDataByType && assignment.getType() != filterAssignmentType ) {
-					continue;
-				}
 				if ( doFilterDataByCost && ( assignment.getCost() < this.getCostFilterMin() || assignment.getCost() > this.getCostFilterMax() ) ) {
 					continue;
 				}

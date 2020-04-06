@@ -90,9 +90,9 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
         };
 
 		activeAssignments.display( GrowthLineTrackingILP.getActiveAssignments(data) );
-		inactiveMappingAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING );
-		inactiveDivisionAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
-		inactiveExitAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT );
+		inactiveMappingAssignments.display( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING) );
+		inactiveDivisionAssignments.display( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION) );
+		inactiveExitAssignments.display( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT) );
 		fixedAssignments.display( data );
 		fixedAssignments.setFilterGroundTruth( true );
 
@@ -118,9 +118,9 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> hashMap ) {
 		this.data = hashMap;
 		activeAssignments.setData( GrowthLineTrackingILP.getActiveAssignments(data) );
-		inactiveMappingAssignments.setData( data );
-		inactiveDivisionAssignments.setData( data );
-		inactiveExitAssignments.setData( data );
+		inactiveMappingAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING) );
+		inactiveDivisionAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION) );
+		inactiveExitAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT) );
 		fixedAssignments.setData( data );
 	}
 
@@ -132,11 +132,11 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 		if ( this.getSelectedComponent().equals( activeAssignments ) ) {
 			activeAssignments.setData( GrowthLineTrackingILP.getActiveAssignments(data) );
 		} else if ( this.getSelectedComponent().equals( inactiveMappingAssignments ) ) {
-			inactiveMappingAssignments.setData( data );
+			inactiveMappingAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING) );
 		} else if ( this.getSelectedComponent().equals( inactiveDivisionAssignments ) ) {
-			inactiveDivisionAssignments.setData( data );
+			inactiveDivisionAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION) );
 		} else if ( this.getSelectedComponent().equals( inactiveExitAssignments ) ) {
-			inactiveExitAssignments.setData( data );
+			inactiveExitAssignments.setData( GrowthLineTrackingILP.getAssignmentsOfType( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT ) );
 		} else {
 			fixedAssignments.setData( data );
 		}

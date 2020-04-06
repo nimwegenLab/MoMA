@@ -1354,6 +1354,29 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
+	 * Returns the assignments in data, which are of the type {@param assignmentType}.
+	 *
+	 * @param data data from which to get the assignments of correct type
+	 * @param assignmentType type of assignments to get
+	 * @return correct assignment types or null
+	 */
+	public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getAssignmentsOfType(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, int assignmentType) {
+		HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
+		if (data != null) {
+			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
+				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
+				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
+					if (ass.getType() == assignmentType) {
+						activeSet.add(ass);
+					}
+					activeData.put(hypo, activeSet);
+				}
+			}
+		}
+		return activeData;
+	}
+
+	/**
 	 * One of the powerful user interaction constraints.
 	 * This method constraints a frame to contain a given number of segments
 	 * (cells).

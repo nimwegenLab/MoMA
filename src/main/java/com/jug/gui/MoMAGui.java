@@ -908,18 +908,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp != null) {
                 final int t = sliderTime.getValue();
                 if (t == 0) {
-                    leftAssignmentViewer.display(null);
+                    leftAssignmentViewer.display();
                 } else {
                     leftAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
                 }
                 if (t == sliderTime.getMaximum()) {
-                    rightAssignmentViewer.display(null);
+                    rightAssignmentViewer.display();
                 } else {
                     rightAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
                 }
             } else {
-                leftAssignmentViewer.display(null);
-                rightAssignmentViewer.display(null);
+                leftAssignmentViewer.display();
+                rightAssignmentViewer.display();
             }
 
             // - -  i see ? cells  - - - - - -

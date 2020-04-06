@@ -38,7 +38,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	private int curTabIdx = 0;
 	private JPanel nextHackTab;
 
-	private HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data;
+	private HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data = new HashMap<>();
 
 	private final MoMAGui gui;
 
@@ -106,6 +106,14 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 				this.add( namesToRoll[ i ], tabsToRoll[ i ] );
 			}
 		}
+	}
+
+	/**
+	 * Draw this instance of assignmentViewer without having a fitting HashMap.
+	 */
+	public void display() {
+		HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> emptyHashMap = new HashMap<>();
+		display(emptyHashMap);
 	}
 
 	/**

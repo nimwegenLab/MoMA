@@ -546,10 +546,9 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	}
 
 	/**
-	 * Sets new data without modifying the filter setting.
+	 * Set the assignment data that will be displayed in this instance of {@link AssignmentView}.
 	 *
-	 * @param data
-	 * @param doFilterActive
+	 * @param data: assignment data to display
 	 */
 	public void setData( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data ) {
 		this.data = data;

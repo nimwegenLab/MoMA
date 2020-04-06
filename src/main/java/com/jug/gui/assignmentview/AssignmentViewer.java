@@ -124,6 +124,12 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 		fixedAssignments.setData( data );
 	}
 
+	/**
+	 * Returns only the active assignments in this the data.
+	 *
+	 * @param data data to filter and keep only the active assignments
+	 * @return
+	 */
 	public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
 		if (data != null) {
 			HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();

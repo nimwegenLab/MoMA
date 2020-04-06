@@ -17,7 +17,7 @@ import java.util.Set;
 /**
  * @author jug
  */
-public class AssignmentViewer extends JTabbedPane implements ChangeListener {
+public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListener {
 
     // -------------------------------------------------------------------------------------
     // statics
@@ -43,7 +43,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
     /**
      *
      */
-    public AssignmentViewer(final int height, final MoMAGui callbackGui) {
+    public AssignmentsEditorViewer(final int height, final MoMAGui callbackGui) {
         this.gui = callbackGui;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
@@ -73,7 +73,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
                 {activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, fixedAssignments};
         final String[] namesToRoll =
                 {"OPT", "M", "D", "E", "GT"};
-        final AssignmentViewer me = this;
+        final AssignmentsEditorViewer me = this;
         final ChangeListener changeListener = changeEvent -> {
             final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
             if (sourceTabbedPane.getSelectedComponent().equals(nextHackTab)) {

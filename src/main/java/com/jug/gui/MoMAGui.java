@@ -5,7 +5,7 @@ import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.export.CellStatsExporter;
 import com.jug.export.HtmlOverviewExporter;
-import com.jug.gui.assignmentview.AssignmentViewer;
+import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.*;
@@ -61,7 +61,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public GrowthlaneViewer imgCanvasActiveCenter;
     public JSlider sliderGL;
     public JSlider sliderTime;
-    public AssignmentViewer rightAssignmentViewer;
+    public AssignmentsEditorViewer rightAssignmentsEditorViewer;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
     // -------------------------------------------------------------------------------------
@@ -76,7 +76,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JScrollPane panelSegmentationAndAssignmentView;
     private JPanel panelDetailedDataView;
     private Plot2DPanel plot;
-    private AssignmentViewer leftAssignmentViewer;
+    private AssignmentsEditorViewer leftAssignmentsEditorViewer;
     private JCheckBox cbAutosave;
     //	private JButton btnRedoAllHypotheses;
 //	private JButton btnExchangeSegHyps;
@@ -513,10 +513,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- Left assignment viewer (t-1 -> t) -------------
         panelVerticalHelper = new JPanel(new BorderLayout());
         // - - - - - -
-        leftAssignmentViewer = new AssignmentViewer((int) model.mm.getImgRaw().dimension(1), this);
-        leftAssignmentViewer.addChangeListener(this);
+        leftAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
+        leftAssignmentsEditorViewer.addChangeListener(this);
         // the following block is a workaround. The left assignment viewer gets focus when MoMA starts. But it shouldn't
-        leftAssignmentViewer.addFocusListener(new FocusListener() {
+        leftAssignmentsEditorViewer.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
                 focusOnSliderTime();
@@ -528,9 +528,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         });
         if (ilp != null)
-            leftAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() - 1));
+            leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() - 1));
         // - - - - - -
-        panelVerticalHelper.add(leftAssignmentViewer, BorderLayout.CENTER);
+        panelVerticalHelper.add(leftAssignmentsEditorViewer, BorderLayout.CENTER);
         panelView.add(panelVerticalHelper);
 
         // --- Center data viewer (t) -------------
@@ -550,11 +550,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- Right assignment viewer (t -> t+1) -------------
         panelVerticalHelper = new JPanel(new BorderLayout());
         // - - - - - -
-        rightAssignmentViewer = new AssignmentViewer((int) model.mm.getImgRaw().dimension(1), this);
-        rightAssignmentViewer.addChangeListener(this);
+        rightAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
+        rightAssignmentsEditorViewer.addChangeListener(this);
         if (ilp != null)
-            rightAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime()));
-        panelVerticalHelper.add(rightAssignmentViewer, BorderLayout.CENTER);
+            rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime()));
+        panelVerticalHelper.add(rightAssignmentsEditorViewer, BorderLayout.CENTER);
         panelView.add(panelVerticalHelper);
 
         // ---  Right data viewer (t+1) -------------
@@ -908,18 +908,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp != null) {
                 final int t = sliderTime.getValue();
                 if (t == 0) {
-                    leftAssignmentViewer.display();
+                    leftAssignmentsEditorViewer.display();
                 } else {
-                    leftAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
+                    leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
                 }
                 if (t == sliderTime.getMaximum()) {
-                    rightAssignmentViewer.display();
+                    rightAssignmentsEditorViewer.display();
                 } else {
-                    rightAssignmentViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
+                    rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
                 }
             } else {
-                leftAssignmentViewer.display();
-                rightAssignmentViewer.display();
+                leftAssignmentsEditorViewer.display();
+                rightAssignmentsEditorViewer.display();
             }
 
             // - -  i see ? cells  - - - - - -

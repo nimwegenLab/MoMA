@@ -583,12 +583,16 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             System.out.println("Filter!");
             this.doFilterDataByIdentity = true;
             this.doAddToFilter = true; // when repainting component next time...
+            selectedAssignment.hide();
         }
 
         // right_click or shift-right_click  --  clear list of hidden assignments
         if (!e.isAltDown() && !e.isControlDown() && e.getButton() == MouseEvent.BUTTON3) {
             this.doFilterDataByIdentity = false;
             this.filteredAssignments.clear();
+            for(AssignmentView assignmentView : assignmentViews){
+                assignmentView.unhide();
+            }
         }
 
         // I repaint before detecting dragging (since this can interfere with filtering)

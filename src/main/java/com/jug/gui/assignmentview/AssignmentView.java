@@ -15,7 +15,7 @@ public abstract class AssignmentView {
         isHidden = true;
     }
 
-    public void show() {
+    public void unhide() {
         isHidden = false;
     }
 

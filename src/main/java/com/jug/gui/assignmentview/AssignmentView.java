@@ -168,10 +168,10 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 *            a <code>HashMap</code> containing pairs of segmentation
 	 *            hypothesis at some time-point t and assignments towards t+1.
 	 */
-	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final boolean doFilterActive ) {
+	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data ) {
 		doFilterDataByType = false;
 		doFilterDataByCost = false;
-		setData( data, doFilterActive );
+		setData( data );
 
 		this.repaint();
 	}
@@ -188,9 +188,9 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_DIVISION</code>, or
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_EXIT</code>.
 	 */
-	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final boolean doFilterActive, final int typeToFilter ) {
+	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final int typeToFilter ) {
 		assert ( typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_EXIT || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_MAPPING || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
-		this.display( data, doFilterActive, typeToFilter, this.getCostFilterMin(), this.getCostFilterMax() );
+		this.display( data, typeToFilter, this.getCostFilterMin(), this.getCostFilterMax() );
 	}
 
 	/**
@@ -205,7 +205,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_DIVISION</code>, or
 	 *            <code>GrowthLineTrackingILP.ASSIGNMENT_EXIT</code>.
 	 */
-    private void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, final boolean doFilterActive, final int typeToFilter, final float minCostToShow, final float maxCostToShow) {
+    private void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, final int typeToFilter, final float minCostToShow, final float maxCostToShow) {
 		assert ( typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_EXIT || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_MAPPING || typeToFilter == GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
 		doFilterDataByType = true;
 		this.filterAssignmentType = typeToFilter;
@@ -213,7 +213,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 		doFilterDataByCost = true;
 		this.setCostFilterMin( minCostToShow );
 		this.setCostFilterMax( maxCostToShow );
-		setData( data, doFilterActive );
+		setData( data );
 
 		this.repaint();
 	}
@@ -551,25 +551,8 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 * @param data
 	 * @param doFilterActive
 	 */
-	public void setData( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data, final boolean doFilterActive ) {
-		if ( data != null && doFilterActive ) {
-			this.data = new HashMap<>();
-			for ( final Hypothesis< Component< FloatType, ? >> hypo : data.keySet() ) {
-				final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > activeSet = new HashSet<>();
-				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ass : data.get( hypo ) ) {
-					try {
-						if ( ass.isChoosen() || ass.isGroundTruth() ) {
-							activeSet.add( ass );
-						}
-					} catch ( final GRBException e ) {
-						e.printStackTrace();
-					}
-					this.data.put( hypo, activeSet );
-				}
-			}
-		} else {
-			this.data = data;
-		}
+	public void setData( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data ) {
+		this.data = data;
 		this.repaint();
 	}
 

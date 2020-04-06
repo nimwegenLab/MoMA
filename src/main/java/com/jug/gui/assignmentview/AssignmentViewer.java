@@ -1,23 +1,20 @@
 package com.jug.gui.assignmentview;
 
-import java.util.HashMap;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.OSValidator;
-
+import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author jug
@@ -92,11 +89,11 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
             }
         };
 
-		activeAssignments.display( data, true );
-		inactiveMappingAssignments.display( data, false, GrowthLineTrackingILP.ASSIGNMENT_MAPPING );
-		inactiveDivisionAssignments.display( data, false, GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
-		inactiveExitAssignments.display( data, false, GrowthLineTrackingILP.ASSIGNMENT_EXIT );
-		fixedAssignments.display( data, false );
+		activeAssignments.display( getActiveAssignments(data) );
+		inactiveMappingAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING );
+		inactiveDivisionAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
+		inactiveExitAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT );
+		fixedAssignments.display( data );
 		fixedAssignments.setFilterGroundTruth( true );
 
 		if ( !OSValidator.isMac() ) {
@@ -120,11 +117,33 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	 */
 	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> hashMap ) {
 		this.data = hashMap;
-		activeAssignments.setData( data, true );
-		inactiveMappingAssignments.setData( data, false );
-		inactiveDivisionAssignments.setData( data, false );
-		inactiveExitAssignments.setData( data, false );
-		fixedAssignments.setData( data, false );
+		activeAssignments.setData( getActiveAssignments(data) );
+		inactiveMappingAssignments.setData( data );
+		inactiveDivisionAssignments.setData( data );
+		inactiveExitAssignments.setData( data );
+		fixedAssignments.setData( data );
+	}
+
+	public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
+		if (data != null) {
+			HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
+			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
+				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
+				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
+					try {
+						if (ass.isChoosen() || ass.isGroundTruth()) {
+							activeSet.add(ass);
+						}
+					} catch (final GRBException e) {
+						e.printStackTrace();
+					}
+					activeData.put(hypo, activeSet);
+				}
+			}
+			return activeData;
+		} else {
+			return data;
+		}
 	}
 
 	/**
@@ -133,15 +152,15 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	@Override
 	public void stateChanged( final ChangeEvent e ) {
 		if ( this.getSelectedComponent().equals( activeAssignments ) ) {
-			activeAssignments.setData( data, true );
+			activeAssignments.setData( getActiveAssignments(data) );
 		} else if ( this.getSelectedComponent().equals( inactiveMappingAssignments ) ) {
-			inactiveMappingAssignments.setData( data, false );
+			inactiveMappingAssignments.setData( data );
 		} else if ( this.getSelectedComponent().equals( inactiveDivisionAssignments ) ) {
-			inactiveDivisionAssignments.setData( data, false );
+			inactiveDivisionAssignments.setData( data );
 		} else if ( this.getSelectedComponent().equals( inactiveExitAssignments ) ) {
-			inactiveExitAssignments.setData( data, false );
+			inactiveExitAssignments.setData( data );
 		} else {
-			fixedAssignments.setData( data, false );
+			fixedAssignments.setData( data );
 		}
 	}
 

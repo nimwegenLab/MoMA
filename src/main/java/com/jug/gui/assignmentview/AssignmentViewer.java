@@ -151,7 +151,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	 *
 	 * @return
 	 */
-	public AssignmentView getActiveAssignments() {
+	public AssignmentView getActiveAssignmentsForHtmlExport() {
 		return this.activeAssignments;
 	}
 

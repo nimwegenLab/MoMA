@@ -1328,6 +1328,34 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
+	 * Returns only the active assignments in this the data.
+	 *
+	 * @param data data to filter and keep only the active assignments
+	 * @return
+	 */
+	public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
+		if (data != null) {
+			HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
+			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
+				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
+				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
+					try {
+						if (ass.isChoosen() || ass.isGroundTruth()) {
+							activeSet.add(ass);
+						}
+					} catch (final GRBException e) {
+						e.printStackTrace();
+					}
+					activeData.put(hypo, activeSet);
+				}
+			}
+			return activeData;
+		} else {
+			return data;
+		}
+	}
+
+	/**
 	 * One of the powerful user interaction constraints.
 	 * This method constraints a frame to contain a given number of segments
 	 * (cells).

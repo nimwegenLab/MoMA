@@ -89,7 +89,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
             }
         };
 
-		activeAssignments.display( getActiveAssignments(data) );
+		activeAssignments.display( GrowthLineTrackingILP.getActiveAssignments(data) );
 		inactiveMappingAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING );
 		inactiveDivisionAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION );
 		inactiveExitAssignments.display( data, GrowthLineTrackingILP.ASSIGNMENT_EXIT );
@@ -117,39 +117,11 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	 */
 	public void display( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> hashMap ) {
 		this.data = hashMap;
-		activeAssignments.setData( getActiveAssignments(data) );
+		activeAssignments.setData( GrowthLineTrackingILP.getActiveAssignments(data) );
 		inactiveMappingAssignments.setData( data );
 		inactiveDivisionAssignments.setData( data );
 		inactiveExitAssignments.setData( data );
 		fixedAssignments.setData( data );
-	}
-
-	/**
-	 * Returns only the active assignments in this the data.
-	 *
-	 * @param data data to filter and keep only the active assignments
-	 * @return
-	 */
-	public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
-		if (data != null) {
-			HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
-			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
-				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
-				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
-					try {
-						if (ass.isChoosen() || ass.isGroundTruth()) {
-							activeSet.add(ass);
-						}
-					} catch (final GRBException e) {
-						e.printStackTrace();
-					}
-					activeData.put(hypo, activeSet);
-				}
-			}
-			return activeData;
-		} else {
-			return data;
-		}
 	}
 
 	/**
@@ -158,7 +130,7 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
 	@Override
 	public void stateChanged( final ChangeEvent e ) {
 		if ( this.getSelectedComponent().equals( activeAssignments ) ) {
-			activeAssignments.setData( getActiveAssignments(data) );
+			activeAssignments.setData( GrowthLineTrackingILP.getActiveAssignments(data) );
 		} else if ( this.getSelectedComponent().equals( inactiveMappingAssignments ) ) {
 			inactiveMappingAssignments.setData( data );
 		} else if ( this.getSelectedComponent().equals( inactiveDivisionAssignments ) ) {

@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * @author jug
  */
-public class AssignmentView extends JComponent implements MouseInputListener {
+public class AssignmentsEditorCanvasView extends JComponent implements MouseInputListener {
 
     /**
      *
@@ -55,7 +55,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
     private boolean doAddToFilter = false; // if 'true' all assignments at the mouse location will be added to the filter next time repaint is called...
     private HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data;
 
-    private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentView instance */
+    private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentsEditorCanvasView instance */
     private int mousePosX;
     private int mousePosY;
     private int currentCostLine;
@@ -79,7 +79,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public AssignmentView(final int height, final MoMAGui callbackGui) {
+    public AssignmentsEditorCanvasView(final int height, final MoMAGui callbackGui) {
         this(height, -GrowthLineTrackingILP.CUTOFF_COST, GrowthLineTrackingILP.CUTOFF_COST);
         this.doFilterDataByCost = false;
         this.gui = callbackGui;
@@ -90,7 +90,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
      * @param filterMinCost
      * @param filterMaxCost
      */
-    private AssignmentView(final int height, final float filterMinCost, final float filterMaxCost) {
+    private AssignmentsEditorCanvasView(final int height, final float filterMinCost, final float filterMaxCost) {
         if (OSValidator.isUnix()) {
             HEIGHT_OFFSET = -10;
             ASSIGNMENT_DISPLAY_OFFSET = -7;
@@ -502,7 +502,7 @@ public class AssignmentView extends JComponent implements MouseInputListener {
     }
 
     /**
-     * Set the assignment data that will be displayed in this instance of {@link AssignmentView}.
+     * Set the assignment data that will be displayed in this instance of {@link AssignmentsEditorCanvasView}.
      *
      * @param data: assignment data to display
      */

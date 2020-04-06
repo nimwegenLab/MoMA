@@ -27,11 +27,11 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
-    private AssignmentView activeAssignments;
-    private AssignmentView inactiveMappingAssignments;
-    private AssignmentView inactiveDivisionAssignments;
-    private AssignmentView inactiveExitAssignments;
-    private AssignmentView fixedAssignments;
+    private AssignmentsEditorCanvasView activeAssignments;
+    private AssignmentsEditorCanvasView inactiveMappingAssignments;
+    private AssignmentsEditorCanvasView inactiveDivisionAssignments;
+    private AssignmentsEditorCanvasView inactiveExitAssignments;
+    private AssignmentsEditorCanvasView fixedAssignments;
     private int curTabIdx = 0;
     private JPanel nextHackTab;
     private HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data = new HashMap<>();
@@ -61,11 +61,11 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
      * Builds the user interface.
      */
     private void buildGui(final int height) {
-        activeAssignments = new AssignmentView(height, gui);
-        inactiveMappingAssignments = new AssignmentView(height, gui);
-        inactiveDivisionAssignments = new AssignmentView(height, gui);
-        inactiveExitAssignments = new AssignmentView(height, gui);
-        fixedAssignments = new AssignmentView(height, gui);
+        activeAssignments = new AssignmentsEditorCanvasView(height, gui);
+        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height, gui);
+        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, gui);
+        inactiveExitAssignments = new AssignmentsEditorCanvasView(height, gui);
+        fixedAssignments = new AssignmentsEditorCanvasView(height, gui);
 
         // Hack to enable non-Mac MoMA to only use one row of tabs
         nextHackTab = new JPanel();
@@ -147,12 +147,12 @@ public class AssignmentViewer extends JTabbedPane implements ChangeListener {
     }
 
     /**
-     * Returns the <code>AssignmentView</code> that holds all active
+     * Returns the <code>AssignmentsEditorCanvasView</code> that holds all active
      * assignments.
      *
      * @return
      */
-    public AssignmentView getActiveAssignmentsForHtmlExport() {
+    public AssignmentsEditorCanvasView getActiveAssignmentsForHtmlExport() {
         return this.activeAssignments;
     }
 

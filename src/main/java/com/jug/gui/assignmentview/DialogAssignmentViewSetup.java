@@ -26,7 +26,7 @@ public class DialogAssignmentViewSetup extends JDialog implements ActionListener
 
 	private static final long serialVersionUID = -3564705333556776780L;
 
-	private final AssignmentView model;
+	private final AssignmentsEditorCanvasView model;
 
 	private JTextField tfMin;
 	private JTextField tfMax;
@@ -34,7 +34,7 @@ public class DialogAssignmentViewSetup extends JDialog implements ActionListener
 	private JButton bCancel;
 	private JButton bReset;
 
-	public DialogAssignmentViewSetup( final AssignmentView av, final int x, final int y ) {
+	public DialogAssignmentViewSetup(final AssignmentsEditorCanvasView av, final int x, final int y ) {
 		super( SwingUtilities.windowForComponent( av ), "Cost-Filter Setup" );
 		this.dialogInit();
 		this.setModal( true );

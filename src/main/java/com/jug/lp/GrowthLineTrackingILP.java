@@ -1334,8 +1334,8 @@ public class GrowthLineTrackingILP {
 	 * @return
 	 */
 	public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
+		HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
 		if (data != null) {
-			HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
 			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
 				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
 				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
@@ -1349,10 +1349,8 @@ public class GrowthLineTrackingILP {
 					activeData.put(hypo, activeSet);
 				}
 			}
-			return activeData;
-		} else {
-			return data;
 		}
+		return activeData;
 	}
 
 	/**

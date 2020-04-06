@@ -2,10 +2,8 @@ package com.jug.gui.assignmentview;
 
 import com.jug.MoMA;
 import com.jug.gui.MoMAGui;
-import com.jug.gui.assignmentview.DialogAssignmentViewSetup;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
-import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -15,6 +13,7 @@ import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -80,6 +79,8 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 	private boolean doFilterGroundTruth = false;
 	private Color strokeColor;
+
+	private ArrayList<AssignmentView2> assignmentViews = new ArrayList<>();
 
 	// -------------------------------------------------------------------------------------
 	// construction
@@ -194,6 +195,10 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 			}
 		}
 
+		for(AssignmentView2 assView : assignmentViews){
+			assView.draw((Graphics2D) g);
+		}
+
 		if ( this.isDragging ) {
 			g.setColor( Color.GREEN.darker() );
 			g.drawString( String.format( "min: %.4f", this.getCostFilterMin() ), 0, 10 );
@@ -227,9 +232,11 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 
 		if ( type == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
 			drawExitAssignment(g2, ( ExitAssignment ) assignment);
-		} else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
-			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
-		} else if ( type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
+		}
+//		else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
+//			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
+//		}
+		else if ( type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
 			drawDivisionAssignment(g2, ( DivisionAssignment ) assignment);
 		}
 	}
@@ -501,8 +508,26 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	 */
 	public void setData( final HashMap< Hypothesis< Component< FloatType, ? >>, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> >> data ) {
 		this.data = data;
+		initializeAssignmentViews();
 		this.repaint();
 	}
+
+	private void initializeAssignmentViews() {
+		assignmentViews.clear();
+		for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> setOfAssignments : data.values()) {
+			for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
+				if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
+					assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, gui, width, ASSIGNMENT_DISPLAY_OFFSET, DISPLAY_COSTS_ABSOLUTE_X, OFFSET_DISPLAY_COSTS, LINEHEIGHT_DISPLAY_COSTS));
+				}
+			}
+		}
+	}
+
+//	private void filterShownAssignmentsByCost(){
+//		if ( doFilterDataByCost && ( assignment.getCost() < this.getCostFilterMin() || assignment.getCost() > this.getCostFilterMax() ) ) {
+//			continue;
+//		}
+//	}
 
 	/**
 	 * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
@@ -511,11 +536,21 @@ public class AssignmentView extends JComponent implements MouseInputListener {
 	public void mouseClicked( final MouseEvent e ) {
 		// unmodified click -- include assignment
 		// ctrl click       -- avoid assignment
-		if ( e.getClickCount() == 1 && !e.isAltDown() && !e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1 ) {
-			if ( e.isControlDown() ) {
-				this.doAddAsGroundUntruth = true;
-			} else {
-				this.doAddAsGroundTruth = true;
+		if ( !isDragging ) {
+			if (e.getClickCount() == 1 && !e.isAltDown() && !e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {
+				if (e.isControlDown()) {
+					this.doAddAsGroundUntruth = true;
+					/*
+//						for(assignmentView assView : assViews) {
+//							if(assView.isHovered(mousePosX, mousePosY)) {
+//								assView.addAsGroundTruth(); // this
+//							}
+//						}
+						hoveredAssignmentViews[currentlyHighlightedIndex].addAsGroundTruth();
+					*/
+				} else {
+					this.doAddAsGroundTruth = true;
+				}
 			}
 		}
 

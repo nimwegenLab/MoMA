@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 
-public class MappingAssignmentView {
+public class MappingAssignmentView extends AssignmentView2 {
     private MappingAssignment ma;
     private MoMAGui gui;
     private int width;
@@ -30,6 +30,7 @@ public class MappingAssignmentView {
         this.DISPLAY_COSTS_ABSOLUTE_X = DISPLAY_COSTS_ABSOLUTE_X;
         this.OFFSET_DISPLAY_COSTS = OFFSET_DISPLAY_COSTS;
         this.LINEHEIGHT_DISPLAY_COSTS = LINEHEIGHT_DISPLAY_COSTS;
+        setupPolygon();
     }
 
     void setupPolygon(){
@@ -62,44 +63,49 @@ public class MappingAssignmentView {
         isHidden = false;
     }
 
+    public boolean isGroundTruth(){
+        return ma.isGroundTruth();
+    }
+
+    public boolean IsGroundUntruth(){
+        return ma.isGroundUntruth();
+    }
+
     public void addAsGroundTruth(){
         ma.setGroundTruth( !ma.isGroundTruth() );
         ma.reoptimize();
+        SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
     }
 
     public void addAsGroundUntruth(){
         ma.setGroundUntruth( !ma.isGroundUntruth() );
         ma.reoptimize();
+        SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
     }
 
-    void draw(final Graphics2D g2, int mousePosX, int mousePosY, boolean isDragging){
+    public String getCostTooltipString(){
+         return String.format( "c=%.4f", ma.getCost() );
+    }
+
+    @Override
+    public void draw(final Graphics2D g2){
         if (isHidden) return; /* do not draw this assignment */
-        // Interaction with mouse:
-        if ( !isDragging && isHovered(mousePosX, mousePosY) ) {
-            if ( this.doAddAsGroundTruth ) {
-                this.doAddAsGroundTruth = false;
-                addAsGroundTruth();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else if ( this.doAddAsGroundUntruth ) {
-                this.doAddAsGroundUntruth = false;
-                addAsGroundUntruth();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else {
-                final float cost = ma.getCost();
-                if ( ma.isGroundTruth() ) {
-                    g2.setPaint( Color.GREEN.darker() );
-                } else if ( ma.isGroundUntruth() ) {
-                    g2.setPaint( Color.RED.darker() );
-                } else {
-                    g2.setPaint( new Color( 25 / 256f, 65 / 256f, 165 / 256f, 1.0f ).darker().darker() );
-                }
-                g2.drawString(
-                        String.format( "c=%.4f", cost ),
-                        DISPLAY_COSTS_ABSOLUTE_X,
-                        mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS );
-                this.currentCostLine++;
-            }
-        }
+//        // Interaction with mouse:
+//        if ( !isDragging && isHovered(mousePosX, mousePosY) ) {
+//                final float cost = ma.getCost();
+//                if ( ma.isGroundTruth() ) {
+//                    g2.setPaint( Color.GREEN.darker() );
+//                } else if ( ma.isGroundUntruth() ) {
+//                    g2.setPaint( Color.RED.darker() );
+//                } else {
+//                    g2.setPaint( new Color( 25 / 256f, 65 / 256f, 165 / 256f, 1.0f ).darker().darker() );
+//                }
+//                g2.drawString(
+//                        String.format( "c=%.4f", cost ),
+//                        DISPLAY_COSTS_ABSOLUTE_X,
+//                        mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS );
+//                this.currentCostLine++;
+//        }
 
         // draw it!
         g2.setStroke( new BasicStroke( 1 ) );

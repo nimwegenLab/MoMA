@@ -534,12 +534,16 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
+        if (selectedAssignment == null) { /* currently there is no assignment hovered */
+            return;
+        }
         // unmodified click -- include assignment
         // ctrl click       -- avoid assignment
         if (!isDragging) {
             if (e.getClickCount() == 1 && !e.isAltDown() && !e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {
                 if (e.isControlDown()) {
                     this.doAddAsGroundUntruth = true;
+                    selectedAssignment.addAsGroundUntruth();
 					/*
 //						for(assignmentView assView : assViews) {
 //							if(assView.isHovered(mousePosX, mousePosY)) {
@@ -549,6 +553,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 						hoveredAssignmentViews[currentlyHighlightedIndex].addAsGroundTruth();
 					*/
                 } else {
+                    selectedAssignment.addAsGroundTruth();
                     this.doAddAsGroundTruth = true;
                 }
             }
@@ -658,6 +663,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         repaint();
     }
 
+    ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
+    int selectedAssignmentIndex = 0;
+    AssignmentView selectedAssignment;
+
     /**
      * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
      */
@@ -665,9 +674,35 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     public void mouseMoved(final MouseEvent e) {
         this.mousePosX = e.getX();
         this.mousePosY = e.getY();
+        ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(e.getX(), e.getY());
+        if(updatedHoveredAssignments.isEmpty()){
+            selectedAssignment = null;
+        }
+        else if(updatedHoveredAssignments != hoveredAssignments){
+            hoveredAssignments = updatedHoveredAssignments;
+            /* TODO:
+                Upon updated we need to:
+                 1) sort hoveredAssignments by cost, so that when the user switches through it with the mouse wheel, he
+                 will see assignments in order of increasing cost.
+                 2) we need to figure out here, which of the hovered assignments is the optimal assignment/forced (if any) and set the index to it.
+                Else set the index to the assignment with the lowest cost (0 if we sort it).
+                */
+            selectedAssignmentIndex = 0;
+            selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
+        }
         this.doAddAsGroundTruth = false;
         this.doAddAsGroundUntruth = false;
         this.repaint();
+    }
+
+    private ArrayList<AssignmentView> getHoveredAssignmentViews(int mousePosX, int mousePosY){
+        ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
+        for(AssignmentView assView : assignmentViews){
+            if(assView.isHovered(mousePosX, mousePosY)){
+                hoveredAssignments.add(assView);
+            }
+        }
+        return hoveredAssignments;
     }
 
     /**

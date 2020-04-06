@@ -71,16 +71,16 @@ public class MappingAssignmentView extends AssignmentView {
         return ma.isGroundUntruth();
     }
 
+    @Override
     public void addAsGroundTruth() {
         ma.setGroundTruth(!ma.isGroundTruth());
         ma.reoptimize();
-        SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
     }
 
+    @Override
     public void addAsGroundUntruth() {
         ma.setGroundUntruth(!ma.isGroundUntruth());
         ma.reoptimize();
-        SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
     }
 
     public String getCostTooltipString() {
@@ -128,7 +128,8 @@ public class MappingAssignmentView extends AssignmentView {
         g2.draw(polygon);
     }
 
-    private boolean isHovered(int mousePosX, int mousePosY) {
+    @Override
+    public boolean isHovered(int mousePosX, int mousePosY) {
         return polygon.contains(mousePosX, mousePosY);
     }
 }

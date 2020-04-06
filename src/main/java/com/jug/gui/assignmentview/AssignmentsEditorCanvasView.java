@@ -74,7 +74,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private boolean doFilterGroundTruth = false;
     private Color strokeColor;
 
-    private ArrayList<AssignmentView2> assignmentViews = new ArrayList<>();
+    private ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -188,7 +188,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             }
         }
 
-        for (AssignmentView2 assView : assignmentViews) {
+        for (AssignmentView assView : assignmentViews) {
             assView.draw((Graphics2D) g);
         }
 

@@ -11,7 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.GeneralPath;
 
-public class MappingAssignmentView extends AssignmentView2 {
+public class MappingAssignmentView extends AssignmentView {
     private MappingAssignment ma;
     private MoMAGui gui;
     private int width;

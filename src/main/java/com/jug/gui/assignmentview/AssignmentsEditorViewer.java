@@ -120,12 +120,14 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      *                hypothesis at some time-point t and assignments towards t+1.
      */
     public void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> hashMap) {
+        if (!hashMap.equals(this.data)) {
+            inactiveMappingAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveExitAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_EXIT));
+        }
+        activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(hashMap));
+        fixedAssignments.setData(hashMap);
         this.data = hashMap;
-        activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(data));
-        inactiveMappingAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
-        inactiveDivisionAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
-        inactiveExitAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_EXIT));
-        fixedAssignments.setData(data);
     }
 
     /**

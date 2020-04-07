@@ -90,7 +90,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveMappingAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
         inactiveDivisionAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
         inactiveExitAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
-        fixedAssignments.display(data);
+        fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
         fixedAssignments.setFilterGroundTruth(true);
 
         if (!OSValidator.isMac()) {
@@ -125,8 +125,8 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
             inactiveDivisionAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
             inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         }
+        fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
         activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(hashMap));
-        fixedAssignments.setData(hashMap);
         this.data = hashMap;
     }
 
@@ -144,7 +144,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
             inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         } else {
-            fixedAssignments.setData(data);
+            fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
         }
     }
 

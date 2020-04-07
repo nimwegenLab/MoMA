@@ -87,9 +87,9 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         };
 
         activeAssignments.display(GrowthLineTrackingILP.getActiveAssignments(data));
-        inactiveMappingAssignments.display(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
-        inactiveDivisionAssignments.display(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
-        inactiveExitAssignments.display(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_EXIT));
+        inactiveMappingAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
+        inactiveDivisionAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
+        inactiveExitAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         fixedAssignments.display(data);
         fixedAssignments.setFilterGroundTruth(true);
 
@@ -121,9 +121,9 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      */
     public void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> hashMap) {
         if (!hashMap.equals(this.data)) {
-            inactiveMappingAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
-            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
-            inactiveExitAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(hashMap, GrowthLineTrackingILP.ASSIGNMENT_EXIT));
+            inactiveMappingAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         }
         activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(hashMap));
         fixedAssignments.setData(hashMap);
@@ -138,11 +138,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         if (this.getSelectedComponent().equals(activeAssignments)) {
             activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(data));
         } else if (this.getSelectedComponent().equals(inactiveMappingAssignments)) {
-            inactiveMappingAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveMappingAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
         } else if (this.getSelectedComponent().equals(inactiveDivisionAssignments)) {
-            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
         } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
-            inactiveExitAssignments.setData(GrowthLineTrackingILP.getAssignmentsOfType(data, GrowthLineTrackingILP.ASSIGNMENT_EXIT));
+            inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         } else {
             fixedAssignments.setData(data);
         }

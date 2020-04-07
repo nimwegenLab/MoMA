@@ -23,6 +23,7 @@ import net.imglib2.view.Views;
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
+import java.util.function.Function;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -1354,19 +1355,19 @@ public class GrowthLineTrackingILP {
 	}
 
 	/**
-	 * Returns the assignments in data, which are of the type {@param assignmentType}.
+	 * Returns the assignments in {@param data}, which fulfill the condition defined in {@param predicate}.
 	 *
 	 * @param data data from which to get the assignments of correct type
-	 * @param assignmentType type of assignments to get
+	 * @param predicate predicate that the assignment must fulfill in order to be returned
 	 * @return correct assignment types or null
 	 */
-	public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getAssignmentsOfType(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, int assignmentType) {
+	public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> filterAssignmentsWithPredicate(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, Function<AbstractAssignment, Boolean> predicate) {
 		HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
 		if (data != null) {
 			for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
 				final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
 				for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
-					if (ass.getType() == assignmentType) {
+					if (predicate.apply(ass)) {
 						activeSet.add(ass);
 					}
 					activeData.put(hypo, activeSet);

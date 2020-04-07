@@ -583,7 +583,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             System.out.println("Filter!");
             this.doFilterDataByIdentity = true;
             this.doAddToFilter = true; // when repainting component next time...
-            selectedAssignment.hide();
+            for(AssignmentView assignmentView : hoveredAssignments){
+                assignmentView.hide();
+            }
         }
 
         // right_click or shift-right_click  --  clear list of hidden assignments

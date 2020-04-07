@@ -82,6 +82,7 @@ public abstract class AssignmentView {
     }
 
     public boolean isHovered(int mousePosX, int mousePosY) {
+        if(isHidden) return false; /* deactivate interaction, when hidden */
         return polygon.contains(mousePosX, mousePosY);
     }
 }

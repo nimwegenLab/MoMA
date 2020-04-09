@@ -544,6 +544,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                 }
             }
         }
+        sortAssignmentViews(assignmentViews);
     }
 
     /**

@@ -566,14 +566,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                 if (e.isControlDown()) {
                     this.doAddAsGroundUntruth = true;
                     selectedAssignment.addAsGroundUntruth();
-					/*
-//						for(assignmentView assView : assViews) {
-//							if(assView.isHovered(mousePosX, mousePosY)) {
-//								assView.addAsGroundTruth(); // this
-//							}
-//						}
-						hoveredAssignmentViews[currentlyHighlightedIndex].addAsGroundTruth();
-					*/
                 } else {
                     selectedAssignment.addAsGroundTruth();
                     this.doAddAsGroundTruth = true;
@@ -748,11 +740,24 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                  2) we need to figure out here, which of the hovered assignments is the optimal assignment/forced (if any) and set the index to it.
                 Else set the index to the assignment with the lowest cost (0 if we sort it).
                 */
-            selectedAssignmentIndex = 0;
+
+            selectedAssignmentIndex = getIndexOfOptimalAssignmentIfAvailable(hoveredAssignments);
             selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
             selectedAssignment.setIsSelected(true);
         }
     }
+
+    private int getIndexOfOptimalAssignmentIfAvailable(ArrayList<AssignmentView> assignmentViews){
+        AssignmentView selectedHypothesis = assignmentViews.stream().filter((assView) -> assView.isGroundTruth() || assView.isChosen())
+                .findFirst()
+                .orElse(null);
+        if (selectedHypothesis != null) { /* there is an optimal assignment at the hover position; get it */
+            return assignmentViews.indexOf(selectedHypothesis); /* set index to optimal assignment at that position */
+        } else { /* there is no optimal assignment at the hover position; use the first assignment in the list */
+            return 0;
+        }
+    }
+
 
     private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews){
         assignmentViews.sort(Comparator.comparingDouble(AssignmentView::getCost));

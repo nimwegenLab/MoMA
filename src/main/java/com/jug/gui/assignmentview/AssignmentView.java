@@ -1,6 +1,7 @@
 package com.jug.gui.assignmentview;
 
 import com.jug.lp.AbstractAssignment;
+import gurobi.GRBException;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
@@ -29,6 +30,14 @@ public abstract class AssignmentView {
 
     public boolean IsGroundUntruth() {
         return abstractAssignment.isGroundUntruth();
+    }
+
+    public boolean isChosen(){
+        try {
+            return abstractAssignment.isChoosen();
+        } catch (GRBException err) {
+            return false;
+        }
     }
 
     public void setIsSelected(boolean isSelected){
@@ -76,7 +85,7 @@ public abstract class AssignmentView {
             g2.setPaint(Color.RED.darker());
             g2.setStroke(new BasicStroke(3));
         } else if (this.isSelected) {
-            g2.setPaint(Color.YELLOW.darker());
+            g2.setPaint(Color.BLACK.darker());
             g2.setStroke(new BasicStroke(3));
         } else {
             g2.setPaint(GetDefaultColor());

@@ -44,6 +44,10 @@ public abstract class AssignmentView {
         return String.format("c=%.4f", abstractAssignment.getCost());
     }
 
+    public double getCost(){
+        return abstractAssignment.getCost();
+    }
+
     public boolean isHovered(int mousePosX, int mousePosY) {
         if(isHidden) return false; /* deactivate interaction, when hidden */
         return polygon.contains(mousePosX, mousePosY);

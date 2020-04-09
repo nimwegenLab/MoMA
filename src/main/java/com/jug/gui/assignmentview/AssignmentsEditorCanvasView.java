@@ -7,17 +7,13 @@ import com.jug.util.OSValidator;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import org.tensorflow.Graph;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author jug
@@ -700,6 +696,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         this.mousePosX = e.getX();
         this.mousePosY = e.getY();
         ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(e.getX(), e.getY());
+
+        sortAssignmentViews(updatedHoveredAssignments);
+
         if(updatedHoveredAssignments.isEmpty()){
             selectedAssignment = null;
             hoveredAssignments = updatedHoveredAssignments;
@@ -719,6 +718,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         this.doAddAsGroundTruth = false;
         this.doAddAsGroundUntruth = false;
         this.repaint();
+    }
+
+    private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews){
+        assignmentViews.sort(Comparator.comparingDouble(AssignmentView::getCost));
+        Collections.reverse(assignmentViews);
     }
 
     private ArrayList<AssignmentView> getHoveredAssignmentViews(int mousePosX, int mousePosY){

@@ -10,6 +10,7 @@ public abstract class AssignmentView {
     int width;
     GeneralPath polygon;
     boolean isHidden;
+    private boolean isSelected;
 
     abstract Color GetPrunedColor();
     abstract Color GetDefaultColor();
@@ -28,6 +29,10 @@ public abstract class AssignmentView {
 
     public boolean IsGroundUntruth() {
         return abstractAssignment.isGroundUntruth();
+    }
+
+    public void setIsSelected(boolean isSelected){
+        this.isSelected = isSelected;
     }
 
     public void addAsGroundTruth() {
@@ -69,6 +74,9 @@ public abstract class AssignmentView {
             g2.setStroke(new BasicStroke(3));
         } else if (abstractAssignment.isGroundUntruth()) {
             g2.setPaint(Color.RED.darker());
+            g2.setStroke(new BasicStroke(3));
+        } else if (this.isSelected) {
+            g2.setPaint(Color.YELLOW.darker());
             g2.setStroke(new BasicStroke(3));
         } else {
             g2.setPaint(GetDefaultColor());

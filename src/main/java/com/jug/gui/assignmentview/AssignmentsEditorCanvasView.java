@@ -12,13 +12,15 @@ import javax.swing.*;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
 /**
  * @author jug
  */
-public class AssignmentsEditorCanvasView extends JComponent implements MouseInputListener {
+public class AssignmentsEditorCanvasView extends JComponent implements MouseInputListener, MouseWheelListener {
 
     /**
      *
@@ -107,6 +109,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+        this.addMouseWheelListener(this);
 
         this.defaultFilterMinCost = filterMinCost;
         this.defaultFilterMaxCost = filterMaxCost;
@@ -728,6 +731,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     private void updateHoveredAssignments() {
+        resetSelectedAssignments();
         ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(this.mousePosX, this.mousePosY);
 
         sortAssignmentViews(updatedHoveredAssignments);
@@ -746,6 +750,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                 */
             selectedAssignmentIndex = 0;
             selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
+            selectedAssignment.setIsSelected(true);
         }
     }
 
@@ -762,5 +767,28 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             }
         }
         return hoveredAssignments;
+    }
+
+    @Override
+    public void mouseWheelMoved(MouseWheelEvent e) {
+        resetSelectedAssignments();
+        int increment = e.getWheelRotation();
+
+        if (selectedAssignmentIndex + increment >= hoveredAssignments.size()) {
+            selectedAssignmentIndex = 0;
+        } else if (selectedAssignmentIndex + increment < 0) {
+            selectedAssignmentIndex = hoveredAssignments.size() - 1;
+        } else {
+            selectedAssignmentIndex += increment;
+        }
+        selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
+        selectedAssignment.setIsSelected(true);
+        repaint();
+    }
+
+    void resetSelectedAssignments(){
+        for(AssignmentView assView : assignmentViews){
+            assView.setIsSelected(false);
+        }
     }
 }

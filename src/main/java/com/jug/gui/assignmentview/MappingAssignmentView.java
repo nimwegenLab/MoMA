@@ -6,6 +6,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
+import java.awt.*;
 import java.awt.geom.GeneralPath;
 
 public class MappingAssignmentView extends AssignmentView {
@@ -39,5 +40,11 @@ public class MappingAssignmentView extends AssignmentView {
         polygon.lineTo(this.width, y3);
         polygon.lineTo(this.width, y4);
         polygon.closePath();
+    }
+
+    public void draw(final Graphics2D g2) {
+        Color isPrunedColor = new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f);
+        Color defaultColor = new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f);
+        super.draw(g2, defaultColor, isPrunedColor);
     }
 }

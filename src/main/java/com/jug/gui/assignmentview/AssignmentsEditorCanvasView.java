@@ -229,9 +229,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 //		else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
 //			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
 //		}
-        else if (type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
-            drawDivisionAssignment(g2, (DivisionAssignment) assignment);
-        }
+//        else if (type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+//            drawDivisionAssignment(g2, (DivisionAssignment) assignment);
+//        }
     }
 
     /**
@@ -514,6 +514,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
                 if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
+                }
+                else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+                    assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }
         }

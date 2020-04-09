@@ -71,7 +71,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     private MoMAGui gui;
 
-    private boolean doFilterGroundTruth = false;
     private Color strokeColor;
 
     private ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
@@ -217,9 +216,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         // Just return in case the given component is in the
         // set of filtered assignments.
         if (this.doFilterDataByIdentity && this.filteredAssignments.contains(assignment)) {
-            return;
-        }
-        if (this.doFilterGroundTruth && !(assignment.isGroundTruth() || assignment.isGroundUntruth())) {
             return;
         }
 
@@ -710,15 +706,4 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         }
         return hoveredAssignments;
     }
-
-    /**
-     * If set, this filter shows only assignments that are flagged as being
-     * ground-truth or ground-untruth.
-     *
-     * @param doIt indicate whether of not to set this filter active.
-     */
-    public void setFilterGroundTruth(final boolean doIt) {
-        this.doFilterGroundTruth = doIt;
-    }
-
 }

@@ -21,7 +21,7 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 public class CostFactory {
 	private static float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
 	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
-	It should be removed in favor of having costs based relative growth and/or movement.
+	It should be removed in favor of having costs based on relative growth and/or movement at some point.
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
@@ -43,7 +43,9 @@ public class CostFactory {
 	}
 
 	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
-		float deltaL = ( newSize - oldSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL; however, it makes more sense to look at the relative size change?! I will do so in the future. */
+		float deltaL = ( newSize - oldSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
+																				however, it makes more sense to look at the
+																				relative size change?! I will do so in the future. */
 		float power;
 		if ( deltaL > 0 ) { // growth
 			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
@@ -85,12 +87,6 @@ public class CostFactory {
         double minimumCost = -0.2; // minimum cost of a component below the boundary
         float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/componentExitRange)));
 		return cost;
-//		return 1.0f;
-//        double rand = Math.random() - 0.5;
-//        if(rand > 0)
-//            return 1.1f;
-//        else
-//            return -1f;
     }
 
     /**

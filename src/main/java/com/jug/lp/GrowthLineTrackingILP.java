@@ -396,8 +396,8 @@ public class GrowthLineTrackingILP {
 		final long sizeFrom = getComponentSize(from, 1);
 		final long sizeTo = getComponentSize(to, 1);
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
-		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);;
+		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
+		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);
 
 		final float oldPosU = intervalFrom.getA();
 		final float newPosU = intervalTo.getA();
@@ -430,7 +430,8 @@ public class GrowthLineTrackingILP {
 			final float fromCost,
 			final float toCost,
 			final float mappingCosts ) {
-		return 0.1f * fromCost + 0.9f * toCost + mappingCosts; // here again we fold the costs from the nodes into the corresponding assignment; we should probably do 50%/50%, but we did different and it's ok
+		return 0.1f * fromCost + 0.9f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
+																  we should probably do 50%/50%, but we did different and it's ok */
 	}
 
 	/**
@@ -460,7 +461,7 @@ public class GrowthLineTrackingILP {
 	 */
 	public float costModulationForSubstitutedILP( final float fromCosts ) {
 		return Math.min( 0.0f, fromCosts / 2f ); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
-		// fromCosts/2: hat mit dem falten der node-costs into the assignments zu tun (1/2 to left und 1/2 to right)
+		// fromCosts/2: 1/2 has to do with the folding of the node-cost into the assignments (e.g. mapping: 1/2 to left und 1/2 to right)
 		// Math.min: because exit assignment should never cost something
 	}
 
@@ -549,19 +550,14 @@ public class GrowthLineTrackingILP {
 			final Component< FloatType, ? > toLower ) {
 
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
-		final ValuePair< Integer, Integer > intervalToU = ComponentTreeUtils.getComponentPixelLimits(toUpper, 1);;
-		final ValuePair< Integer, Integer > intervalToL = ComponentTreeUtils.getComponentPixelLimits(toLower, 1);;
-
-//		final ValuePair< Integer, Integer > intervalFrom = from.getLocation();
-//		final ValuePair< Integer, Integer > intervalToU = toUpper.getLocation();
-//		final ValuePair< Integer, Integer > intervalToL = toLower.getLocation();
+		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
+		final ValuePair< Integer, Integer > intervalToU = ComponentTreeUtils.getComponentPixelLimits(toUpper, 1);
+		final ValuePair< Integer, Integer > intervalToL = ComponentTreeUtils.getComponentPixelLimits(toLower, 1);
 
 		final long sizeFrom = getComponentSize(from, 1);
 		final long sizeToU = getComponentSize(toUpper,1);
 		final long sizeToL = getComponentSize(toLower, 1);
 		final long sizeTo = sizeToU + sizeToL;
-//		final long sizeToPlusGap = intervalToU.a - intervalToL.b;
 
 		final float oldPosU = intervalFrom.getA();
 		final float newPosU = intervalToU.getA();

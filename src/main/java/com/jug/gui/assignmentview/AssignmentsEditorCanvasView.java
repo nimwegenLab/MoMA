@@ -362,9 +362,15 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private void drawCostTooltip(Graphics2D g2){
         g2.setPaint(new Color(0f, 0f,0f, 1.0f));
         currentCostLine = 0;
+//        Font currentFont = g2.getFont();
         for(AssignmentView assView : hoveredAssignments){
+            String valueString = assView.getCostTooltipString();
+            if (assView.equals(selectedAssignment)) valueString = "* " + assView.getCostTooltipString();
+//            if (assView.equals(selectedAssignment)) g2.setFont(new Font("default", Font.BOLD, currentFont.getSize()));
+//            else g2.setFont(currentFont);
+
             g2.drawString(
-                    assView.getCostTooltipString(),
+                    valueString,
                     DISPLAY_COSTS_ABSOLUTE_X,
                     this.mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS);
             currentCostLine++;

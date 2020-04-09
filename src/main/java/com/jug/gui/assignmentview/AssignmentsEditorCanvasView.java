@@ -702,6 +702,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(e.getX(), e.getY());
         if(updatedHoveredAssignments.isEmpty()){
             selectedAssignment = null;
+            hoveredAssignments = updatedHoveredAssignments;
         }
         else if(updatedHoveredAssignments != hoveredAssignments){
             hoveredAssignments = updatedHoveredAssignments;

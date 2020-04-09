@@ -223,9 +223,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         final Graphics2D g2 = (Graphics2D) g;
 
-        if (type == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
-            drawExitAssignment(g2, (ExitAssignment) assignment);
-        }
+//        if (type == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+//            drawExitAssignment(g2, (ExitAssignment) assignment);
+//        }
 //		else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
 //			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
 //		}
@@ -517,6 +517,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                 }
                 else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
+                }
+                else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+                    assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }
         }

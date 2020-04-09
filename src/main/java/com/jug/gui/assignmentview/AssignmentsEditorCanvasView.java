@@ -464,24 +464,17 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     private void updateHoveredAssignments() {
-        resetSelectedAssignments();
         ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(this.mousePosX, this.mousePosY);
 
         sortAssignmentViews(updatedHoveredAssignments);
 
         if(updatedHoveredAssignments.isEmpty()){
+            resetSelectedAssignments();
             clearHoveredAssignments();
         }
-        else if(updatedHoveredAssignments != hoveredAssignments){
+        else if(!updatedHoveredAssignments.equals(hoveredAssignments)){
+            resetSelectedAssignments();
             hoveredAssignments = updatedHoveredAssignments;
-            /* TODO:
-                Upon updated we need to:
-                 1) sort hoveredAssignments by cost, so that when the user switches through it with the mouse wheel, he
-                 will see assignments in order of increasing cost.
-                 2) we need to figure out here, which of the hovered assignments is the optimal assignment/forced (if any) and set the index to it.
-                Else set the index to the assignment with the lowest cost (0 if we sort it).
-                */
-
             selectedAssignmentIndex = getIndexOfOptimalAssignmentIfAvailable(hoveredAssignments);
             selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
             selectedAssignment.setIsSelected(true);

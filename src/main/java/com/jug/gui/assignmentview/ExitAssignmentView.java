@@ -19,6 +19,16 @@ public class ExitAssignmentView extends AssignmentView {
         setupPolygon();
     }
 
+    @Override
+    Color GetDefaultColor() {
+        return Color.RED;
+    }
+
+    @Override
+    Color GetPrunedColor() {
+        return new Color(1f, 0f, 0f, 0.2f);
+    }
+
     private void setupPolygon() {
         final Hypothesis<Component<FloatType, ?>> leftHyp = ((ExitAssignment) abstractAssignment).getAssociatedHypothesis();
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
@@ -36,11 +46,5 @@ public class ExitAssignmentView extends AssignmentView {
         polygon.lineTo(this.width / 5, y3);
         polygon.lineTo(this.width / 5, y4);
         polygon.closePath();
-    }
-
-    public void draw(final Graphics2D g2) {
-        Color isPrunedColor = new Color(1f, 0f, 0f, 0.2f);
-        Color defaultColor = Color.RED;
-        super.draw(g2, defaultColor, isPrunedColor);
     }
 }

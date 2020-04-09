@@ -11,6 +11,9 @@ public abstract class AssignmentView {
     GeneralPath polygon;
     boolean isHidden;
 
+    abstract Color GetPrunedColor();
+    abstract Color GetDefaultColor();
+
     public void hide() {
         isHidden = true;
     }
@@ -46,14 +49,12 @@ public abstract class AssignmentView {
         return polygon.contains(mousePosX, mousePosY);
     }
 
-    public abstract void draw(final Graphics2D g2);
-
-    protected void draw(final Graphics2D g2, Color defaultColor, Color isPrunedColor) {
+    public void draw(final Graphics2D g2) {
         if (isHidden) return; /* do not draw this assignment */
 
         g2.setStroke(new BasicStroke(1));
         if (!abstractAssignment.isPruned()) {
-            g2.setPaint(isPrunedColor);
+            g2.setPaint(GetPrunedColor());
             if (abstractAssignment.isGroundTruth() || abstractAssignment.isGroundUntruth()) {
                 g2.setPaint(g2.getColor().brighter().brighter());
             }
@@ -66,7 +67,7 @@ public abstract class AssignmentView {
             g2.setPaint(Color.RED.darker());
             g2.setStroke(new BasicStroke(3));
         } else {
-            g2.setPaint(defaultColor);
+            g2.setPaint(GetDefaultColor());
         }
         g2.draw(polygon);
     }

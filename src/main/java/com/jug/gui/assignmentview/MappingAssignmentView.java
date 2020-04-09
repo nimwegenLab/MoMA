@@ -19,6 +19,16 @@ public class MappingAssignmentView extends AssignmentView {
         setupPolygon();
     }
 
+    @Override
+    Color GetDefaultColor() {
+        return new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f);
+    }
+
+    @Override
+    Color GetPrunedColor() {
+        return new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f);
+    }
+
     void setupPolygon() {
         MappingAssignment ma = (MappingAssignment) abstractAssignment;
         final Hypothesis<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> leftHyp = ma.getSourceHypothesis();
@@ -40,11 +50,5 @@ public class MappingAssignmentView extends AssignmentView {
         polygon.lineTo(this.width, y3);
         polygon.lineTo(this.width, y4);
         polygon.closePath();
-    }
-
-    public void draw(final Graphics2D g2) {
-        Color isPrunedColor = new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f);
-        Color defaultColor = new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f);
-        super.draw(g2, defaultColor, isPrunedColor);
     }
 }

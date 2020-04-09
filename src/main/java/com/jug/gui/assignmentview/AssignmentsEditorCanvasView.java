@@ -7,6 +7,7 @@ import com.jug.util.OSValidator;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.tensorflow.Graph;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
@@ -191,6 +192,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             assView.draw((Graphics2D) g);
         }
 
+        if (!this.isDragging) {
+            drawCostTooltip((Graphics2D) g); /* update cost tool-tip only, if we are not dragging; or else we cannot see cost-range numbers at top of canvas */
+        }
+
         if (this.isDragging) {
             g.setColor(Color.GREEN.darker());
             g.drawString(String.format("min: %.4f", this.getCostFilterMin()), 0, 10);
@@ -348,6 +353,18 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f));
         }
         g2.draw(polygon);
+    }
+
+    private void drawCostTooltip(Graphics2D g2){
+        g2.setPaint(new Color(0f, 0f,0f, 1.0f));
+        currentCostLine = 0;
+        for(AssignmentView assView : hoveredAssignments){
+            g2.drawString(
+                    assView.getCostTooltipString(),
+                    DISPLAY_COSTS_ABSOLUTE_X,
+                    this.mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS);
+            currentCostLine++;
+        }
     }
 
     /**

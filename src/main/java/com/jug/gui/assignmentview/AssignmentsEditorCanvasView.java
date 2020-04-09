@@ -45,6 +45,8 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // -------------------------------------------------------------------------------------
     private final int width;
     private final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> filteredAssignments;
+    private final float defaultFilterMinCost;
+    private final float defaultFilterMaxCost;
     private boolean doFilterDataByCost;
     private float filterMinCost = -100f;
     private float filterMaxCost = 100f;
@@ -105,6 +107,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
+
+        this.defaultFilterMinCost = filterMinCost;
+        this.defaultFilterMaxCost = filterMaxCost;
 
         this.doFilterDataByCost = true;
         this.setCostFilterMin(filterMinCost);
@@ -538,12 +543,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         }
     }
 
-//	private void filterShownAssignmentsByCost(){
-//		if ( doFilterDataByCost && ( assignment.getCost() < this.getCostFilterMin() || assignment.getCost() > this.getCostFilterMax() ) ) {
-//			continue;
-//		}
-//	}
-
     /**
      * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
      */
@@ -610,6 +609,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             for(AssignmentView assignmentView : assignmentViews){
                 assignmentView.unhide();
             }
+            resetCostFilterValues();
         }
 
         // I repaint before detecting dragging (since this can interfere with filtering)
@@ -624,6 +624,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             this.dragY = e.getY();
             this.dragInitiatingMouseButton = e.getButton();
         }
+    }
+
+    private void resetCostFilterValues() {
+        this.setCostFilterMin(defaultFilterMinCost);
+        this.setCostFilterMax(defaultFilterMaxCost);
     }
 
     /**
@@ -681,8 +686,23 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             this.setCostFilterMin(this.getCostFilterMin() + dY * this.dragStepWeight);
         }
 
+        fiterShownAssignmentsByCost();
+
         this.dragY = e.getY();
         repaint();
+    }
+
+    void fiterShownAssignmentsByCost(){
+        float currentMinCost = this.getCostFilterMin();
+        float currentMaxCost = this.getCostFilterMax();
+        for(AssignmentView assView : assignmentViews){
+            if(assView.getCost() < currentMinCost || assView.getCost() > currentMaxCost){
+                assView.hide();
+            }
+            else{
+                assView.unhide();
+            }
+        }
     }
 
     ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();

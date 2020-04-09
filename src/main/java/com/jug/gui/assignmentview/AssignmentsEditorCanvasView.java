@@ -482,16 +482,16 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     private int getIndexOfOptimalAssignmentIfAvailable(ArrayList<AssignmentView> assignmentViews){
-        AssignmentView selectedHypothesis = assignmentViews.stream().filter((assView) -> assView.isGroundTruth() || assView.isChosen())
+        AssignmentView selectedHypothesis = assignmentViews.stream().filter(assView -> assView.isGroundTruth() || assView.isChosen())
                 .findFirst()
                 .orElse(null);
         if (selectedHypothesis != null) { /* there is an optimal assignment at the hover position; get it */
             return assignmentViews.indexOf(selectedHypothesis); /* set index to optimal assignment at that position */
-        } else { /* there is no optimal assignment at the hover position; use the first assignment in the list */
-            return 0;
+        } else {
+            AssignmentView assignmentViewWithMinimalCost = assignmentViews.stream().min(Comparator.comparingDouble(AssignmentView::getCost)).get();
+            return assignmentViews.indexOf(assignmentViewWithMinimalCost);  /* there is no optimal assignment at the hover position; return index of assignmentView with minimal cost */
         }
     }
-
 
     private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews){
         assignmentViews.sort(Comparator.comparingDouble(AssignmentView::getCost));

@@ -548,6 +548,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
+        // unmod. float_click  --  show filter window thing
+        if (e.getClickCount() == 2 && !e.isShiftDown()) {
+            new DialogAssignmentViewSetup(this, e.getXOnScreen(), e.getYOnScreen()).setVisible(true);
+        }
+
         if (selectedAssignment == null) { /* currently there is no assignment hovered */
             return;
         }
@@ -571,11 +576,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                     this.doAddAsGroundTruth = true;
                 }
             }
-        }
-
-        // unmod. float_click  --  show filter window thing
-        if (e.getClickCount() == 2 && !e.isShiftDown()) {
-            new DialogAssignmentViewSetup(this, e.getXOnScreen(), e.getYOnScreen()).setVisible(true);
         }
 
         repaint();

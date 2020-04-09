@@ -649,7 +649,8 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     @Override
     public void mouseExited(final MouseEvent e) {
         this.isMouseOver = false;
-        this.repaint();
+        clearHoveredAssignments();
+        repaint();
     }
 
     /**
@@ -695,13 +696,24 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     public void mouseMoved(final MouseEvent e) {
         this.mousePosX = e.getX();
         this.mousePosY = e.getY();
-        ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(e.getX(), e.getY());
+        updateHoveredAssignments();
+        this.doAddAsGroundTruth = false;
+        this.doAddAsGroundUntruth = false;
+        this.repaint();
+    }
+
+    private void clearHoveredAssignments() {
+        selectedAssignment = null;
+        hoveredAssignments = new ArrayList<>();
+    }
+
+    private void updateHoveredAssignments() {
+        ArrayList<AssignmentView> updatedHoveredAssignments = getHoveredAssignmentViews(this.mousePosX, this.mousePosY);
 
         sortAssignmentViews(updatedHoveredAssignments);
 
         if(updatedHoveredAssignments.isEmpty()){
-            selectedAssignment = null;
-            hoveredAssignments = updatedHoveredAssignments;
+            clearHoveredAssignments();
         }
         else if(updatedHoveredAssignments != hoveredAssignments){
             hoveredAssignments = updatedHoveredAssignments;
@@ -715,9 +727,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             selectedAssignmentIndex = 0;
             selectedAssignment = hoveredAssignments.get(selectedAssignmentIndex);
         }
-        this.doAddAsGroundTruth = false;
-        this.doAddAsGroundUntruth = false;
-        this.repaint();
     }
 
     private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews){

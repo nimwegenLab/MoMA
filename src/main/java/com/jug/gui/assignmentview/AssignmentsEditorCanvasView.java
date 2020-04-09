@@ -6,7 +6,6 @@ import com.jug.lp.*;
 import com.jug.util.OSValidator;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 
 import javax.swing.*;
 import javax.swing.event.MouseInputListener;
@@ -182,16 +181,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         drawGlOffsetTop((Graphics2D) g);
 
-        this.currentCostLine = 0;
-        for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> setOfAssignments : data.values()) {
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
-                if (doFilterDataByCost && (assignment.getCost() < this.getCostFilterMin() || assignment.getCost() > this.getCostFilterMax())) {
-                    continue;
-                }
-                drawAssignment(g, assignment);
-            }
-        }
-
         for (AssignmentView assView : assignmentViews) {
             assView.draw((Graphics2D) g);
         }
@@ -211,36 +200,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         // in case we where adding assignments - stop now!
         this.doAddToFilter = false;
-    }
-
-    /**
-     * Checks the type of assignment we have and call the corresponding drawing
-     * method.
-     *
-     * @param g
-     * @param assignment
-     */
-    private void drawAssignment(final Graphics g, final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment) {
-
-        // Just return in case the given component is in the
-        // set of filtered assignments.
-        if (this.doFilterDataByIdentity && this.filteredAssignments.contains(assignment)) {
-            return;
-        }
-
-        final int type = assignment.getType();
-
-        final Graphics2D g2 = (Graphics2D) g;
-
-//        if (type == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
-//            drawExitAssignment(g2, (ExitAssignment) assignment);
-//        }
-//		else if ( type == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
-//			drawMappingAssignment(g2, ( MappingAssignment ) assignment);
-//		}
-//        else if (type == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
-//            drawDivisionAssignment(g2, (DivisionAssignment) assignment);
-//        }
     }
 
     /**
@@ -281,84 +240,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         g.draw(polygon);
     }
 
-    /**
-     * This methods draws the given mapping-assignment into the component.
-     *
-     * @param g2
-     * @param ma
-     */
-    private void drawMappingAssignment(final Graphics2D g2, final MappingAssignment ma) {
-        final Hypothesis<Component<FloatType, ?>> leftHyp = ma.getSourceHypothesis();
-        final Hypothesis<Component<FloatType, ?>> rightHyp = ma.getDestinationHypothesis();
-
-        final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
-        final ValuePair<Integer, Integer> limitsRight = rightHyp.getLocation();
-
-        final int x1 = 0;
-        final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x2 = 0;
-        final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y3 = limitsRight.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y4 = limitsRight.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-
-        final GeneralPath polygon = new GeneralPath();
-        polygon.moveTo(x1, y1);
-        polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width, y3);
-        polygon.lineTo(this.width, y4);
-        polygon.closePath();
-
-        // Interaction with mouse:
-        if (!this.isDragging && this.isMouseOver && polygon.contains(this.mousePosX, this.mousePosY)) {
-            if (doAddToFilter) {
-                // this case happens after shift-click
-                this.filteredAssignments.add(ma);
-            } else if (this.doAddAsGroundTruth) {
-                this.doAddAsGroundTruth = false;
-                ma.setGroundTruth(!ma.isGroundTruth());
-                ma.reoptimize();
-            } else if (this.doAddAsGroundUntruth) {
-                this.doAddAsGroundUntruth = false;
-                ma.setGroundUntruth(!ma.isGroundUntruth());
-                ma.reoptimize();
-            } else {
-                final float cost = ma.getCost();
-                if (ma.isGroundTruth()) {
-                    g2.setPaint(Color.GREEN.darker());
-                } else if (ma.isGroundUntruth()) {
-                    g2.setPaint(Color.RED.darker());
-                } else {
-                    g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f).darker().darker());
-                }
-                g2.drawString(
-                        String.format("c=%.4f", cost),
-                        DISPLAY_COSTS_ABSOLUTE_X,
-                        this.mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS);
-                this.currentCostLine++;
-            }
-        }
-
-        // draw it!
-        g2.setStroke(new BasicStroke(1));
-        if (!ma.isPruned()) {
-            g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f));
-            if (ma.isGroundTruth() || ma.isGroundUntruth()) {
-                g2.setPaint(g2.getColor().brighter().brighter());
-            }
-            g2.fill(polygon);
-        }
-        if (ma.isGroundTruth()) {
-            g2.setPaint(Color.GREEN.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else if (ma.isGroundUntruth()) {
-            g2.setPaint(Color.RED.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else {
-            g2.setPaint(new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f));
-        }
-        g2.draw(polygon);
-    }
-
     private void drawCostTooltip(Graphics2D g2){
         g2.setPaint(new Color(0f, 0f,0f, 1.0f));
         currentCostLine = 0;
@@ -375,153 +256,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
                     this.mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS);
             currentCostLine++;
         }
-    }
-
-    /**
-     * This methods draws the given division-assignment into the component.
-     *
-     * @param g2
-     * @param da
-     */
-    private void drawDivisionAssignment(final Graphics2D g2, final DivisionAssignment da) {
-        final Hypothesis<Component<FloatType, ?>> leftHyp = da.getSourceHypothesis();
-        final Hypothesis<Component<FloatType, ?>> rightHypUpper = da.getUpperDesinationHypothesis();
-        final Hypothesis<Component<FloatType, ?>> rightHypLower = da.getLowerDesinationHypothesis();
-
-        final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
-        final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();
-        final ValuePair<Integer, Integer> limitsRightLower = rightHypLower.getLocation();
-
-        final int x1 = 0;
-        final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x2 = 0;
-        final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x5 = this.width / 3;
-        final int y5 =
-                ASSIGNMENT_DISPLAY_OFFSET + (2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2) / 3;
-        final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-
-        final GeneralPath polygon = new GeneralPath();
-        polygon.moveTo(x1, y1);
-        polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width, y3);
-        polygon.lineTo(this.width, y4);
-        polygon.lineTo(x5, y5);
-        polygon.lineTo(this.width, y6);
-        polygon.lineTo(this.width, y7);
-        polygon.closePath();
-
-        // Interaction with mouse:
-        if (!this.isDragging && this.isMouseOver && polygon.contains(this.mousePosX, this.mousePosY)) {
-            if (doAddToFilter) {
-                // this case happens after shift-click
-                this.filteredAssignments.add(da);
-            } else if (this.doAddAsGroundTruth) {
-                this.doAddAsGroundTruth = false;
-                da.setGroundTruth(!da.isGroundTruth());
-                da.reoptimize();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else if (this.doAddAsGroundUntruth) {
-                this.doAddAsGroundUntruth = false;
-                da.setGroundUntruth(!da.isGroundUntruth());
-                da.reoptimize();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else {
-                final float cost = da.getCost();
-                if (da.isGroundTruth()) {
-                    g2.setPaint(Color.GREEN.darker());
-                } else if (da.isGroundUntruth()) {
-                    g2.setPaint(Color.RED.darker());
-                } else {
-                    g2.setPaint(new Color(250 / 256f, 150 / 256f, 40 / 256f, 1.0f).darker().darker());
-                }
-                g2.drawString(
-                        String.format("c=%.4f", cost),
-                        DISPLAY_COSTS_ABSOLUTE_X,
-                        this.mousePosY + OFFSET_DISPLAY_COSTS - this.currentCostLine * LINEHEIGHT_DISPLAY_COSTS);
-                this.currentCostLine++;
-            }
-        }
-
-        // draw it!
-        g2.setStroke(new BasicStroke(1));
-        if (!da.isPruned()) {
-            g2.setPaint(new Color(250 / 256f, 150 / 256f, 40 / 256f, 0.2f));
-            if (da.isGroundTruth() || da.isGroundUntruth()) {
-                g2.setPaint(g2.getColor().brighter().brighter());
-            }
-            g2.fill(polygon);
-        }
-        if (da.isGroundTruth()) {
-            g2.setPaint(Color.GREEN.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else if (da.isGroundUntruth()) {
-            g2.setPaint(Color.RED.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else {
-            g2.setPaint(new Color(250 / 256f, 150 / 256f, 40 / 256f, 1.0f));
-        }
-        g2.draw(polygon);
-    }
-
-    /**
-     * This methods draws the given exit-assignment into the component.
-     *
-     * @param g2
-     * @param ea
-     */
-    private void drawExitAssignment(final Graphics2D g2, final ExitAssignment ea) {
-        final Hypothesis<Component<FloatType, ?>> hyp = ea.getAssociatedHypothesis();
-        final ValuePair<Integer, Integer> limits = hyp.getLocation();
-
-        final int x1 = 0;
-        final int x2 = this.getWidth() / 5;
-        final int y1 = limits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y2 = y1 + limits.getB() - limits.getA();
-
-        if (!this.isDragging && this.isMouseOver && this.mousePosX > x1 && this.mousePosX < x2 && this.mousePosY > y1 && this.mousePosY < y2) {
-            if (doAddToFilter) {
-                // this case happens after shift-click
-                this.filteredAssignments.add(ea);
-            } else if (this.doAddAsGroundTruth) {
-                this.doAddAsGroundTruth = false;
-                ea.setGroundTruth(!ea.isGroundTruth());
-                ea.reoptimize();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else if (this.doAddAsGroundUntruth) {
-                this.doAddAsGroundUntruth = false;
-                ea.setGroundUntruth(!ea.isGroundUntruth());
-                ea.reoptimize();
-                SwingUtilities.invokeLater(() -> gui.dataToDisplayChanged());
-            } else {
-                final float cost = ea.getCost();
-                g2.drawString(String.format("c=%.4f", cost), 10, this.mousePosY - 10 - this.currentCostLine * 20);
-                this.currentCostLine++;
-            }
-        }
-
-        // draw it!
-        g2.setStroke(new BasicStroke(1));
-        if (!ea.isPruned()) {
-            g2.setPaint(new Color(1f, 0f, 0f, 0.2f));
-            if (ea.isGroundTruth() || ea.isGroundUntruth()) {
-                g2.setPaint(g2.getColor().brighter().brighter());
-            }
-            g2.fillRect(x1, y1, x2 - x1, y2 - y1);
-        }
-        if (ea.isGroundTruth()) {
-            g2.setPaint(Color.GREEN.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else if (ea.isGroundUntruth()) {
-            g2.setPaint(Color.RED.darker());
-            g2.setStroke(new BasicStroke(3));
-        } else {
-            g2.setPaint(Color.RED);
-        }
-        g2.drawRect(x1, y1, x2 - x1, y2 - y1);
     }
 
     /**
@@ -784,7 +518,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
         resetSelectedAssignments();
-        int increment = e.getWheelRotation();
+        int increment = -e.getWheelRotation();
 
         if (selectedAssignmentIndex + increment >= hoveredAssignments.size()) {
             selectedAssignmentIndex = 0;

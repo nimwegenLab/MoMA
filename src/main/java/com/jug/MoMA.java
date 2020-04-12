@@ -10,6 +10,7 @@ import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import io.scif.img.ImgOpener;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -17,6 +18,7 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -277,6 +279,12 @@ public class MoMA {
 	 * Stores a string used to decorate filenames e.g. before export.
 	 */
 	private static String defaultFilenameDecoration;
+
+	/**
+	 * Path to the dataset that we are working on.
+	 */
+	private static String path;
+
 
 	// ====================================================================================================================
 
@@ -639,7 +647,7 @@ public class MoMA {
 			}
 		}
 
-		String path = props.getProperty( "import_path", System.getProperty( "user.home" ) );
+		path = props.getProperty( "import_path", System.getProperty( "user.home" ) );
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
 			inputFolder = main.showStartupDialog( guiFrame, path );
 		}
@@ -1309,7 +1317,7 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = new UnetProcessor().process(imgTemp);
+		imgProbs = processImageOrLoadFromDisk();
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
@@ -1319,6 +1327,38 @@ public class MoMA {
 		}
 	}
 
+	private void openFile(){
+		final Img<UnsignedByteType> img = new ImgOpener().openImg( "graffiti.tif", new ArrayImgFactory< UnsignedByteType >(), new UnsignedByteType() );
+	}
+
+	private Img<FloatType> processImageOrLoadFromDisk() {
+		UnetProcessor unetProcessor = new UnetProcessor();
+
+		String checksum = unetProcessor.getModelChecksum();
+
+		File file = new File(path);
+		String outputPath;
+		if(!file.isDirectory()){
+			outputPath = file.getParent();
+		}
+		else{
+			outputPath = path;
+		}
+		String processedImageFileName = outputPath + "/probability_map_" + checksum + ".tif";
+		net.imagej.ImageJ ij = new net.imagej.ImageJ();
+		Img<FloatType> probabilityMap = null;
+		try {
+			if (!new File(processedImageFileName).exists()) {
+				probabilityMap = unetProcessor.process(imgTemp);
+				ij.io().save(probabilityMap, processedImageFileName);
+			} else {
+				probabilityMap = (Img) ij.io().open(processedImageFileName);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return probabilityMap;
+	}
 
 	/**
 	 * Creates and triggers filling of mmILP, containing all

@@ -20,8 +20,7 @@ import org.scijava.Context;
 import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 
-import javax.xml.bind.DatatypeConverter;
-import java.io.*;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
@@ -31,7 +30,6 @@ import java.util.concurrent.ExecutionException;
  * {@link #process(Img<FloatType>)}.
  */
 public class UnetProcessor {
-    private final String modelHash;
     private String modelFile = "";
     private long model_input_width;
     private long model_input_height;
@@ -45,13 +43,16 @@ public class UnetProcessor {
         model_input_height = 512;
 
         modelFile = getModelFilePath();
-        modelHash = calculateModelChecksum(modelFile);
         System.out.println("Model file: " + modelFile);
 
         context = new Context();
         ops = context.service(OpService.class);
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
+    }
+
+    public String getModelChecksum() {
+        return calculateModelChecksum(modelFile);
     }
 
     private String getModelFilePath() {

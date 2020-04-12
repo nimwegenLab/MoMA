@@ -1295,7 +1295,7 @@ public class MoMA {
         getGrowthLines().add( new GrowthLine() );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-            GrowthLineFrame currentFrame = new GrowthLineFrame();
+            GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthLines().get(0).add(currentFrame);
@@ -1310,15 +1310,11 @@ public class MoMA {
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
 		imgProbs = new UnetProcessor().process(imgTemp);
-		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
-			i++;
-			int frameCounter = 0;
-			for ( final GrowthLineFrame glf : gl.getFrames() ) {
+			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imgProbs, frameCounter );
-				frameCounter++;
-			}
+				glf.generateSimpleSegmentationHypotheses( imgProbs, glf.getFrameIndex() );
+			});
 			System.out.println( " ...done!" );
 		}
 	}

@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.apache.commons.io.FilenameUtils.removeExtension;
+
 /*
   Main class for the MotherMachine project.
  */
@@ -1329,28 +1331,27 @@ public class MoMA {
 		}
 	}
 
-	private void openFile(){
-		final Img<UnsignedByteType> img = new ImgOpener().openImg( "graffiti.tif", new ArrayImgFactory< UnsignedByteType >(), new UnsignedByteType() );
-	}
-
-//	private OpService ops = (new Context()).service(OpService.class); /* making this static should improve performance; test this! */
-//	private net.imagej.ImageJ ij = new net.imagej.ImageJ();
-
 	private Img<FloatType> processImageOrLoadFromDisk() {
 		UnetProcessor unetProcessor = new UnetProcessor();
 
 		String checksum = unetProcessor.getModelChecksum();
 
+		/**
+		 *  generate probability filename
+		 */
 		File file = new File(path);
-		String outputPath;
-		if(!file.isDirectory()){
-			outputPath = file.getParent();
+		if(file.isDirectory()){
+			File[] list = file.listFiles();
+			file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
 		}
-		else{
-			outputPath = path;
-		}
-		String processedImageFileName = outputPath + "/probability_map_" + checksum + ".tif";
-		Img<FloatType> probabilityMap = null;
+		String outputFolderPath = file.getParent();
+		String filename = removeExtension(file.getName());
+		String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
+
+		/**
+		 *  create or load probability maps
+		 */
+		Img<FloatType> probabilityMap;
 		if (!new File(processedImageFileName).exists()) {
 			probabilityMap = unetProcessor.process(imgTemp);
 			ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");

@@ -1,10 +1,12 @@
 package com.jug.util.componenttree;
 
+import com.indago.data.segmentation.filteredcomponents.FilteredComponentTree;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
@@ -25,14 +27,17 @@ public class ComponentTreeGenerator {
 
 		final double delta = 0.0001;
 //        final double delta = 0.02;
-        final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+        final int minSize = 5; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
         final boolean darkToBright = false;
 
+//        public static <T extends RealType<T>> FilteredComponentTree<T> buildComponentTree(RandomAccessibleInterval<T> input, T type, long minComponentSize, long maxComponentSize, FilteredComponentTree.Filter filter, boolean darkToBright) {
+        FilteredComponentTree<FloatType> componentTree = FilteredComponentTree.buildComponentTree(raiFkt, new FloatType(), minSize, maxSize, new FilteredComponentTree.MaxGrowthPerStep(Long.MAX_VALUE), darkToBright);
+
         // generate MSER tree
-        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
+//        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
         // filter components by width
         Predicate<Integer> widthCondition = (width) -> (width <= 20);
@@ -43,11 +48,11 @@ public class ComponentTreeGenerator {
 
         // filter components that do not have siblings
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
-        HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
+//        HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
+//        tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
         // watershed components into their parent-components
-        tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);
+//        tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);
 
         return tree;
     }

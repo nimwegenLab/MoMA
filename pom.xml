@@ -93,6 +93,11 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.indago</groupId>
+			<artifactId>Indago</artifactId>
+			<version>0.1.11</version>
+		</dependency>
 
 		<!-- ImageJ dependencies -->
 		<dependency>

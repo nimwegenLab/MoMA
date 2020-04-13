@@ -11,8 +11,10 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import io.scif.img.ImgOpener;
+import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
+import net.imglib2.img.ImagePlusAdapter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -24,6 +26,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.SystemUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -741,7 +744,6 @@ public class MoMA {
 	/**
 	 * The singleton instance of ImageJ.
 	 */
-	public ImageJ ij;
 
 	private List< Img< FloatType >> rawChannelImgs;
 	private Img< FloatType > imgRaw;
@@ -1331,6 +1333,9 @@ public class MoMA {
 		final Img<UnsignedByteType> img = new ImgOpener().openImg( "graffiti.tif", new ArrayImgFactory< UnsignedByteType >(), new UnsignedByteType() );
 	}
 
+//	private OpService ops = (new Context()).service(OpService.class); /* making this static should improve performance; test this! */
+//	private net.imagej.ImageJ ij = new net.imagej.ImageJ();
+
 	private Img<FloatType> processImageOrLoadFromDisk() {
 		UnetProcessor unetProcessor = new UnetProcessor();
 
@@ -1345,17 +1350,14 @@ public class MoMA {
 			outputPath = path;
 		}
 		String processedImageFileName = outputPath + "/probability_map_" + checksum + ".tif";
-		net.imagej.ImageJ ij = new net.imagej.ImageJ();
 		Img<FloatType> probabilityMap = null;
-		try {
-			if (!new File(processedImageFileName).exists()) {
-				probabilityMap = unetProcessor.process(imgTemp);
-				ij.io().save(probabilityMap, processedImageFileName);
-			} else {
-				probabilityMap = (Img) ij.io().open(processedImageFileName);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (!new File(processedImageFileName).exists()) {
+			probabilityMap = unetProcessor.process(imgTemp);
+			ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
+			IJ.saveAsTiff(tmp_image, processedImageFileName);
+		} else {
+			ImagePlus imp = IJ.openImage(processedImageFileName);
+			probabilityMap = ImageJFunctions.convertFloat(imp);
 		}
 		return probabilityMap;
 	}

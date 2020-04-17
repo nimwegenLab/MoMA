@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 
 public class RecursiveComponentWatershedder<T extends Type<T>, C extends Component<T, C>> {
-    private OpService ops = (new Context()).service(OpService.class); /* making this static should improve performance; test this! */
+    private static OpService ops = (new Context()).service(OpService.class); /* making this static should improve performance; test this! */
 
     /**
      * Recursively grow child components into their corresponding parent components. After running this the child

@@ -79,35 +79,34 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getComponentCost(final Component< ?, ? > component, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
-        float top_roi_boundary = (float) MoMA.GL_OFFSET_TOP;
-        double verticalPosition = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
-        double distanceFromBoundary = top_roi_boundary - verticalPosition;
+        float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
+        double verticalPositionOfComponent = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
+        double distanceFromBoundary = roiBoundaryPosition - verticalPositionOfComponent;
         double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
-        double maximumCost = 0.2; // maximum cost possible for a component above the boundary
-        double minimumCost = -0.2; // minimum cost of a component below the boundary
+        double maximumCost = 0.2; // maximum component cost outside the ROI
+        double minimumCost = -0.2; // minimum component cost inside the ROI
         float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/componentExitRange)));
 		return cost;
     }
 
     /**
-	 * @param from
+	 * @param sourceComponent
 	 * @return
 	 */
-	public static float getDivisionLikelihoodCost( final Component< FloatType, ? > from ) {
-		if ( from.getChildren().size() > 2 ) { return 1.5f; }
-		if ( from.getChildren().size() <= 1 ) { return 1.5f; }
+	public static float getDivisionLikelihoodCost( final Component< FloatType, ? > sourceComponent ) {
+if ( sourceComponent.getChildren().size() > 2 ) { return 1.5f; }
+if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; }
 
-		// if two children, eveluate likelihood of being pre-division
-		final List< Component< FloatType, ? > > children = ( List< Component< FloatType, ? >> ) from.getChildren();
-		final long sizeA = getComponentSize(children.get( 0 ), 1);
-		final long sizeB = getComponentSize(children.get( 1 ), 1);
+// if two children, eveluate likelihood of being pre-division
+final List< Component< FloatType, ? > > listOfChildren = ( List< Component< FloatType, ? >> ) sourceComponent.getChildren();
+final long sizeChild1 = getComponentSize(listOfChildren.get( 0 ), 1);
+final long sizeChild2 = getComponentSize(listOfChildren.get( 1 ), 1);
 
-//		final float valParent = from.getWrappedComponent().value().get();
-		final long sizeParent = getComponentSize(from, 1);
+final long sizeSourceComponent = getComponentSize(sourceComponent, 1);
 
-		final long deltaSizeAtoB = Math.abs( sizeA - sizeB ) / Math.min( sizeA, sizeB ); // in multiples of smaller one
-		final long deltaSizeABtoP = Math.abs( sizeA + sizeB - sizeParent ) / ( sizeA + sizeB ); // in multiples of A+B
+final long deltaSizeBetweenChildren = Math.abs( sizeChild1 - sizeChild2 ) / Math.min( sizeChild1, sizeChild2 ); // in multiples of smaller one
+final long deltaSizeChildrenToSourceComponent = Math.abs( sizeChild1 + sizeChild2 - sizeSourceComponent ) / ( sizeChild1 + sizeChild2 ); // in multiples of A+B
 
-		return 0.1f * deltaSizeAtoB + 0.1f * deltaSizeABtoP;
+return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceComponent;
 	}
 }

@@ -338,28 +338,28 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments(final int t,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
-		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
+		for ( final Component< FloatType, ? > sourceComponent : sourceComponentTree.getAllComponents() ) {
 
 			if (t > 0) {
-				if (nodes.findHypothesisContaining(fromComponent) == null)
+				if (nodes.findHypothesisContaining(sourceComponent) == null)
 					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
 			}
 
-			float fromCost = getComponentCost( t, fromComponent );
+			float sourceComponentCost = getComponentCost( t, sourceComponent );
 
-			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-				float toCost = getComponentCost( t + 1, toComponent );
+			for ( final Component< FloatType, ? > targetComponent : targetComponentTree.getAllComponents() ) {
+				float targetComponentCost = getComponentCost( t + 1, targetComponent );
 
-				if ( !( ComponentTreeUtils.isBelowByMoreThen( toComponent, fromComponent, MoMA.MAX_CELL_DROP ) ) ) {
+				if ( !( ComponentTreeUtils.isBelowByMoreThen( targetComponent, sourceComponent, MoMA.MAX_CELL_DROP ) ) ) {
 
-					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( fromComponent, toComponent );
-					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
+					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( sourceComponent, targetComponent );
+					float cost = costModulationForSubstitutedILP( sourceComponentCost, targetComponentCost, compatibilityCostOfMapping );
 
 					if ( cost <= CUTOFF_COST ) {
 						final Hypothesis< Component< FloatType, ? >> to =
-								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, toComponent, toCost) );
+								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost) );
 						final Hypothesis< Component< FloatType, ? >> from =
-								nodes.getOrAddHypothesis( t, new Hypothesis<>(t, fromComponent, fromCost) );
+								nodes.getOrAddHypothesis( t, new Hypothesis<>(t, sourceComponent, sourceComponentCost) );
 
 						final String name = String.format( "a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId() );
 						final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );

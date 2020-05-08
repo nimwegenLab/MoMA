@@ -60,17 +60,15 @@ public class CostFactory {
 	}
 
 
-    public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
-		final float deltaS = Math.abs( sizeFirstChild - sizeSecondChild ) / Math.min( sizeFirstChild, sizeSecondChild );
-		float power = 2.0f;
-		float costDeltaL;
-		if ( deltaS > 1.15 ) {
-			power = 7.0f;
+    public static float getUnevenDivisionCost( final float upperTargetSize, final float lowerTargetSize ) {
+		final float scaledSizeDifference = Math.abs( upperTargetSize - lowerTargetSize ) / Math.min( upperTargetSize, lowerTargetSize );
+		float exponent = 2.0f;
+		if ( scaledSizeDifference > 1.15 ) {
+			exponent = 7.0f;
 		}
-		costDeltaL = ( float ) Math.pow( deltaS, power );
+		float unevenDivisionCost = ( float ) Math.pow( scaledSizeDifference, exponent );
 
-//		latestCostEvaluation = String.format( "c_d = %.4f^%.1f = %.4f", deltaS, power, costDeltaL );
-		return costDeltaL;
+		return unevenDivisionCost;
 	}
 
 	/**

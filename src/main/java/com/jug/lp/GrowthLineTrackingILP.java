@@ -404,9 +404,9 @@ public class GrowthLineTrackingILP {
 		final float targetUpperBoundary = targetComponentBoundaries.getA();
 		final float targetLowerBoundary = targetComponentBoundaries.getB();
 
-		final Pair< Float, float[] > migrationCostOfUpperLimit = CostFactory.getMigrationCost( sourceUpperBoundary, targetUpperBoundary );
-		final Pair< Float, float[] > migrationCostOfLowerLimit = CostFactory.getMigrationCost( sourceLowerBoundary, targetLowerBoundary );
-		final float averageMigrationCost = 0.5f * migrationCostOfLowerLimit.getA() + 0.5f * migrationCostOfUpperLimit.getA();
+		final Pair< Float, float[] > migrationCostOfUpperBoundary = CostFactory.getMigrationCost( sourceUpperBoundary, targetUpperBoundary );
+		final Pair< Float, float[] > migrationCostOfLowerBoundary = CostFactory.getMigrationCost( sourceLowerBoundary, targetLowerBoundary );
+		final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
 		final Pair< Float, float[] > growthCost = CostFactory.getGrowthCost( sourceComponentSize, targetComponentSize );
 
@@ -536,39 +536,40 @@ public class GrowthLineTrackingILP {
 	 * Computes the compatibility-mapping-costs between the two given
 	 * hypothesis.
 	 *
-	 * @param from
+	 * @param sourceComponent
 	 *            the segmentation hypothesis from which the mapping originates.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfDivision(
-			final Component< FloatType, ? > from,
-			final Component< FloatType, ? > toUpper,
-			final Component< FloatType, ? > toLower ) {
+			final Component< FloatType, ? > sourceComponent,
+			final Component< FloatType, ? > upperTargetComponent,
+			final Component< FloatType, ? > lowerTargetComponent ) {
 
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
-		final ValuePair< Integer, Integer > intervalToU = ComponentTreeUtils.getComponentPixelLimits(toUpper, 1);
-		final ValuePair< Integer, Integer > intervalToL = ComponentTreeUtils.getComponentPixelLimits(toLower, 1);
+		final ValuePair< Integer, Integer > sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+		final ValuePair< Integer, Integer > upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
+		final ValuePair< Integer, Integer > lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
 
-		final long sizeFrom = getComponentSize(from, 1);
-		final long sizeToU = getComponentSize(toUpper,1);
-		final long sizeToL = getComponentSize(toLower, 1);
-		final long sizeTo = sizeToU + sizeToL;
+		final long sourceSize = getComponentSize(sourceComponent, 1);
+		final long upperTargetSize = getComponentSize(upperTargetComponent,1);
+		final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
+		final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-		final float oldPosU = intervalFrom.getA();
-		final float newPosU = intervalToU.getA();
-		final float oldPosL = intervalFrom.getB();
-		final float newPosL = intervalToL.getB();
+		final float sourceUpperBoundary = sourceBoundaries.getA();
+		final float sourceLowerBoundary = sourceBoundaries.getB();
+		final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
+		final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
 
-		final Pair< Float, float[] > costDeltaHU = CostFactory.getMigrationCost( oldPosU, newPosU );
-		final Pair< Float, float[] > costDeltaHL = CostFactory.getMigrationCost( oldPosL, newPosL );
-		final float costDeltaH = .5f * costDeltaHL.getA() + .5f * costDeltaHU.getA();
-		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
-		final float costDeltaS = CostFactory.getUnevenDivisionCost( sizeToU, sizeToL );
-		final float costDivisionLikelihood = CostFactory.getDivisionLikelihoodCost( from ); //TODO: parameterize me!
+		final Pair< Float, float[] > migrationCostOfUpperBoundary = CostFactory.getMigrationCost( sourceUpperBoundary, upperTargetUpperBoundary );
+		final Pair< Float, float[] > migrationCostOfLowerBoundary = CostFactory.getMigrationCost( sourceLowerBoundary, lowerTargetLowerBoundary );
+		final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-		return costDeltaL.getA() + costDeltaH + costDeltaS + costDivisionLikelihood;
+		final Pair< Float, float[] > growthCost = CostFactory.getGrowthCost( sourceSize, summedTargetSize );
+		final float unevenDivisionCost = CostFactory.getUnevenDivisionCost( upperTargetSize, lowerTargetSize );
+		final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost( sourceComponent );
+
+		return growthCost.getA() + averageMigrationCost + unevenDivisionCost + divisionLikelihoodCost;
 	}
 
 	/**

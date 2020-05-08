@@ -25,39 +25,38 @@ public class CostFactory {
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
-	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition ) {
-		float deltaH = ( oldPosition - newPosition ) / normalizer;
-		float power;
-		float costDeltaH;
-		if ( deltaH > 0 ) { // upward migration
-			deltaH = Math.max( 0, deltaH - 0.05f ); // going upwards for up to 5% is for free...
-			power = 3.0f;
+	public static Pair< Float, float[] > getMigrationCost( final float sourcePosition, final float targetPosition ) {
+		float scaledPositionDifference = ( sourcePosition - targetPosition ) / normalizer;
+		float exponent;
+		float migrationCost;
+		if ( scaledPositionDifference > 0 ) { // upward migration
+			scaledPositionDifference = Math.max( 0, scaledPositionDifference - 0.05f ); // going upwards for up to 5% is for free...
+			exponent = 3.0f;
 		} else { // downward migration
-			Math.max( 0, deltaH - 0.01f );  // going downwards for up to 1% is for free...
-			power = 6.0f;
+			Math.max( 0, scaledPositionDifference - 0.01f );  // going downwards for up to 1% is for free...
+			exponent = 6.0f;
 		}
-		deltaH = Math.abs( deltaH );
-		costDeltaH = deltaH * ( float ) Math.pow( 1 + deltaH, power );
-//		latestCostEvaluation = String.format( "c_h = %.4f * %.4f^%.1f = %.4f", deltaH, 1 + deltaH, power, costDeltaH );
-		return new ValuePair<>(costDeltaH, new float[]{costDeltaH});
+		scaledPositionDifference = Math.abs( scaledPositionDifference );
+		migrationCost = scaledPositionDifference * ( float ) Math.pow( 1 + scaledPositionDifference, exponent );
+		return new ValuePair<>(migrationCost, new float[]{migrationCost});
 	}
 
-	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
-		float deltaL = ( newSize - oldSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
+	public static Pair< Float, float[] > getGrowthCost( final float sourceSize, final float targetSize ) {
+		float scaledSizeDifference = ( targetSize - sourceSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
 																				however, it makes more sense to look at the
 																				relative size change?! I will do so in the future. */
-		float power;
-		if ( deltaL > 0 ) { // growth
-			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
-			power = 4.0f;
+		float exponent;
+		if ( scaledSizeDifference > 0 ) { // growth
+			scaledSizeDifference = Math.max( 0, scaledSizeDifference - 0.05f ); // growing up 5% is free
+			exponent = 4.0f;
 		} else { // shrinkage
-			power = 40.0f;
+			exponent = 40.0f;
 		}
-		deltaL = Math.abs( deltaL );
+		scaledSizeDifference = Math.abs( scaledSizeDifference );
 
-		float costDeltaL = deltaL * (float) Math.pow(1 + deltaL, power); // since deltaL is <1 we add 1 before taking its power
+		float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
 
-		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
+		return new ValuePair<>(growthCost, new float[]{growthCost});
 	}
 
 

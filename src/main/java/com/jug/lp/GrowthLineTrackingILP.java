@@ -436,16 +436,16 @@ public class GrowthLineTrackingILP {
 	 * of division assignments during the ILP hypotheses substitution takes
 	 * place.
 	 *
-	 * @param fromCost
-	 * @param divisionCosts
+	 * @param sourceComponentCost
+	 * @param compatibilityCostOfDivision
 	 * @return
 	 */
 	public float costModulationForSubstitutedILP(
-			final float fromCost,
-			final float toUpperCost,
-			final float toLowerCost,
-			final float divisionCosts ) {
-		return 0.1f * fromCost + 0.9f * ( toUpperCost + toLowerCost ) / 2 + divisionCosts;
+			final float sourceComponentCost,
+			final float upperTargetComponentCost,
+			final float lowerTargetComponentCost,
+			final float compatibilityCostOfDivision ) {
+		return 0.1f * sourceComponentCost + 0.9f * ( upperTargetComponentCost + lowerTargetComponentCost ) / 2 + compatibilityCostOfDivision;
 	}
 
 	/**
@@ -482,40 +482,40 @@ public class GrowthLineTrackingILP {
 										SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
 			throws GRBException {
 
-		for (final Component<FloatType, ?> fromComponent : sourceComponentTree.getAllComponents()) {
+		for (final Component<FloatType, ?> sourceComponent : sourceComponentTree.getAllComponents()) {
 
 			if (timeStep > 0) {
-				if (nodes.findHypothesisContaining(fromComponent) == null)
+				if (nodes.findHypothesisContaining(sourceComponent) == null)
 					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
 			}
 
-			float fromCost = getComponentCost(timeStep, fromComponent);
+			float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
-			for (final Component<FloatType, ?> toComponent : targetComponentTree.getAllComponents()) {
-				if (!(ComponentTreeUtils.isBelowByMoreThen(toComponent, fromComponent, MoMA.MAX_CELL_DROP))) {
+			for (final Component<FloatType, ?> upperTargetComponent : targetComponentTree.getAllComponents()) {
+				if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
 
-					float toCost = getComponentCost(timeStep + 1, toComponent);
-					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
+					float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(upperTargetComponent, targetComponentTree);
 
-					for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
+					for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
 						@SuppressWarnings("unchecked")
-						float neighborCost = getComponentCost(timeStep + 1, lowerNeighborComponent);
-						final Float compatibilityCostOfDivision = compatibilityCostOfDivision(fromComponent,
-								toComponent, lowerNeighborComponent);
+						float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
+						final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
+								upperTargetComponent, lowerTargetComponent);
 
 						float cost = costModulationForSubstitutedILP(
-								fromCost,
-								toCost,
-								neighborCost,
+								sourceComponentCost,
+								upperTargetComponentCost,
+								lowerTargetComponentCost,
 								compatibilityCostOfDivision);
 
 						if (cost <= CUTOFF_COST) {
 							final Hypothesis<Component<FloatType, ?>> to =
-									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
 							final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
-									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
 							final Hypothesis<Component<FloatType, ?>> from =
-									nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
+									nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
 
 							final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
 							final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);

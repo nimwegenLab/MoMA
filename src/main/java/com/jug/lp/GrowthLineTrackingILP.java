@@ -382,38 +382,35 @@ public class GrowthLineTrackingILP {
 	 * Computes the compatibility-mapping-costs between the two given
 	 * hypothesis.
 	 *
-	 * @param from
+	 * @param sourceComponent
 	 *            the segmentation hypothesis from which the mapping originates.
-	 * @param to
+	 * @param targetComponent
 	 *            the segmentation hypothesis towards which the
 	 *            mapping-assignment leads.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfMapping(
-			final Component< FloatType, ? > from,
-			final Component< FloatType, ? > to ) {
-		final long sizeFrom = getComponentSize(from, 1);
-		final long sizeTo = getComponentSize(to, 1);
+			final Component< FloatType, ? > sourceComponent,
+			final Component< FloatType, ? > targetComponent ) {
+		final long sourceComponentSize = getComponentSize(sourceComponent, 1);
+		final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
-		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);
+		final ValuePair< Integer, Integer > sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+		final ValuePair< Integer, Integer > targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
 
-		final float oldPosU = intervalFrom.getA();
-		final float newPosU = intervalTo.getA();
-		final float oldPosL = intervalFrom.getB();
-		final float newPosL = intervalTo.getB();
+		final float sourceUpperBoundary = sourceComponentBoundaries.getA();
+		final float sourceLowerBoundary = sourceComponentBoundaries.getB();
+		final float targetUpperBoundary = targetComponentBoundaries.getA();
+		final float targetLowerBoundary = targetComponentBoundaries.getB();
 
-		// Finally the costs are computed...
-		final Pair< Float, float[] > costDeltaHU = CostFactory.getMigrationCost( oldPosU, newPosU );
-		final Pair< Float, float[] > costDeltaHL = CostFactory.getMigrationCost( oldPosL, newPosL );
-//		final float costDeltaH = Math.max( costDeltaHL, costDeltaHU );
-		final float costDeltaH = 0.5f * costDeltaHL.getA() + 0.5f * costDeltaHU.getA();
+		final Pair< Float, float[] > migrationCostOfUpperLimit = CostFactory.getMigrationCost( sourceUpperBoundary, targetUpperBoundary );
+		final Pair< Float, float[] > migrationCostOfLowerLimit = CostFactory.getMigrationCost( sourceLowerBoundary, targetLowerBoundary );
+		final float averageMigrationCost = 0.5f * migrationCostOfLowerLimit.getA() + 0.5f * migrationCostOfUpperLimit.getA();
 
-		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
-//		final float costDeltaV = CostFactory.getIntensityMismatchCost( valueFrom, valueTo );
+		final Pair< Float, float[] > growthCost = CostFactory.getGrowthCost( sourceComponentSize, targetComponentSize );
 
-		return costDeltaL.getA() + costDeltaH;
+		return growthCost.getA() + averageMigrationCost;
 	}
 
 	/**

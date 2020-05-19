@@ -81,7 +81,7 @@ public class UnetProcessor {
      */
     public Img<FloatType> process(Img<FloatType> inputImage) {
         try {
-            inputImage = (Img)normalizeToPercentiles(inputImage, 0.4, 99.4);
+            inputImage = (Img)normalizeToPercentiles(inputImage, 1.0, 99.4);
             FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(inputImage);
             IntervalView<FloatType> newImg = getReshapedImageForProcessing(inputImage, roiForNetworkProcessing);
             Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!

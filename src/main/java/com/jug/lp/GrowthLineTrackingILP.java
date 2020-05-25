@@ -338,28 +338,28 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments(final int t,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
-		for ( final Component< FloatType, ? > fromComponent : sourceComponentTree.getAllComponents() ) {
+		for ( final Component< FloatType, ? > sourceComponent : sourceComponentTree.getAllComponents() ) {
 
 			if (t > 0) {
-				if (nodes.findHypothesisContaining(fromComponent) == null)
+				if (nodes.findHypothesisContaining(sourceComponent) == null)
 					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
 			}
 
-			float fromCost = getComponentCost( t, fromComponent );
+			float sourceComponentCost = getComponentCost( t, sourceComponent );
 
-			for ( final Component< FloatType, ? > toComponent : targetComponentTree.getAllComponents() ) {
-				float toCost = getComponentCost( t + 1, toComponent );
+			for ( final Component< FloatType, ? > targetComponent : targetComponentTree.getAllComponents() ) {
+				float targetComponentCost = getComponentCost( t + 1, targetComponent );
 
-				if ( !( ComponentTreeUtils.isBelowByMoreThen( toComponent, fromComponent, MoMA.MAX_CELL_DROP ) ) ) {
+				if ( !( ComponentTreeUtils.isBelowByMoreThen( targetComponent, sourceComponent, MoMA.MAX_CELL_DROP ) ) ) {
 
-					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( fromComponent, toComponent );
-					float cost = costModulationForSubstitutedILP( fromCost, toCost, compatibilityCostOfMapping );
+					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( sourceComponent, targetComponent );
+					float cost = costModulationForSubstitutedILP( sourceComponentCost, targetComponentCost, compatibilityCostOfMapping );
 
 					if ( cost <= CUTOFF_COST ) {
 						final Hypothesis< Component< FloatType, ? >> to =
-								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, toComponent, toCost) );
+								nodes.getOrAddHypothesis( t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost) );
 						final Hypothesis< Component< FloatType, ? >> from =
-								nodes.getOrAddHypothesis( t, new Hypothesis<>(t, fromComponent, fromCost) );
+								nodes.getOrAddHypothesis( t, new Hypothesis<>(t, sourceComponent, sourceComponentCost) );
 
 						final String name = String.format( "a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId() );
 						final GRBVar newLPVar = model.addVar( 0.0, 1.0, cost, GRB.BINARY, name );
@@ -382,38 +382,35 @@ public class GrowthLineTrackingILP {
 	 * Computes the compatibility-mapping-costs between the two given
 	 * hypothesis.
 	 *
-	 * @param from
+	 * @param sourceComponent
 	 *            the segmentation hypothesis from which the mapping originates.
-	 * @param to
+	 * @param targetComponent
 	 *            the segmentation hypothesis towards which the
 	 *            mapping-assignment leads.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfMapping(
-			final Component< FloatType, ? > from,
-			final Component< FloatType, ? > to ) {
-		final long sizeFrom = getComponentSize(from, 1);
-		final long sizeTo = getComponentSize(to, 1);
+			final Component< FloatType, ? > sourceComponent,
+			final Component< FloatType, ? > targetComponent ) {
+		final long sourceComponentSize = getComponentSize(sourceComponent, 1);
+		final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
-		final ValuePair< Integer, Integer > intervalTo = ComponentTreeUtils.getComponentPixelLimits(to, 1);
+		final ValuePair< Integer, Integer > sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+		final ValuePair< Integer, Integer > targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
 
-		final float oldPosU = intervalFrom.getA();
-		final float newPosU = intervalTo.getA();
-		final float oldPosL = intervalFrom.getB();
-		final float newPosL = intervalTo.getB();
+		final float sourceUpperBoundary = sourceComponentBoundaries.getA();
+		final float sourceLowerBoundary = sourceComponentBoundaries.getB();
+		final float targetUpperBoundary = targetComponentBoundaries.getA();
+		final float targetLowerBoundary = targetComponentBoundaries.getB();
 
-		// Finally the costs are computed...
-		final Pair< Float, float[] > costDeltaHU = CostFactory.getMigrationCost( oldPosU, newPosU );
-		final Pair< Float, float[] > costDeltaHL = CostFactory.getMigrationCost( oldPosL, newPosL );
-//		final float costDeltaH = Math.max( costDeltaHL, costDeltaHU );
-		final float costDeltaH = 0.5f * costDeltaHL.getA() + 0.5f * costDeltaHU.getA();
+		final Pair< Float, float[] > migrationCostOfUpperBoundary = CostFactory.getMigrationCost( sourceUpperBoundary, targetUpperBoundary );
+		final Pair< Float, float[] > migrationCostOfLowerBoundary = CostFactory.getMigrationCost( sourceLowerBoundary, targetLowerBoundary );
+		final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
-//		final float costDeltaV = CostFactory.getIntensityMismatchCost( valueFrom, valueTo );
+		final Pair< Float, float[] > growthCost = CostFactory.getGrowthCost( sourceComponentSize, targetComponentSize );
 
-		return costDeltaL.getA() + costDeltaH;
+		return growthCost.getA() + averageMigrationCost;
 	}
 
 	/**
@@ -439,16 +436,16 @@ public class GrowthLineTrackingILP {
 	 * of division assignments during the ILP hypotheses substitution takes
 	 * place.
 	 *
-	 * @param fromCost
-	 * @param divisionCosts
+	 * @param sourceComponentCost
+	 * @param compatibilityCostOfDivision
 	 * @return
 	 */
 	public float costModulationForSubstitutedILP(
-			final float fromCost,
-			final float toUpperCost,
-			final float toLowerCost,
-			final float divisionCosts ) {
-		return 0.1f * fromCost + 0.9f * ( toUpperCost + toLowerCost ) / 2 + divisionCosts;
+			final float sourceComponentCost,
+			final float upperTargetComponentCost,
+			final float lowerTargetComponentCost,
+			final float compatibilityCostOfDivision ) {
+		return 0.1f * sourceComponentCost + 0.9f * ( upperTargetComponentCost + lowerTargetComponentCost ) / 2 + compatibilityCostOfDivision;
 	}
 
 	/**
@@ -485,40 +482,40 @@ public class GrowthLineTrackingILP {
 										SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
 			throws GRBException {
 
-		for (final Component<FloatType, ?> fromComponent : sourceComponentTree.getAllComponents()) {
+		for (final Component<FloatType, ?> sourceComponent : sourceComponentTree.getAllComponents()) {
 
 			if (timeStep > 0) {
-				if (nodes.findHypothesisContaining(fromComponent) == null)
+				if (nodes.findHypothesisContaining(sourceComponent) == null)
 					continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
 			}
 
-			float fromCost = getComponentCost(timeStep, fromComponent);
+			float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
-			for (final Component<FloatType, ?> toComponent : targetComponentTree.getAllComponents()) {
-				if (!(ComponentTreeUtils.isBelowByMoreThen(toComponent, fromComponent, MoMA.MAX_CELL_DROP))) {
+			for (final Component<FloatType, ?> upperTargetComponent : targetComponentTree.getAllComponents()) {
+				if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
 
-					float toCost = getComponentCost(timeStep + 1, toComponent);
-					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(toComponent, targetComponentTree);
+					float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
+					final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(upperTargetComponent, targetComponentTree);
 
-					for (final Component<FloatType, ?> lowerNeighborComponent : lowerNeighborComponents) {
+					for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
 						@SuppressWarnings("unchecked")
-						float neighborCost = getComponentCost(timeStep + 1, lowerNeighborComponent);
-						final Float compatibilityCostOfDivision = compatibilityCostOfDivision(fromComponent,
-								toComponent, lowerNeighborComponent);
+						float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
+						final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
+								upperTargetComponent, lowerTargetComponent);
 
 						float cost = costModulationForSubstitutedILP(
-								fromCost,
-								toCost,
-								neighborCost,
+								sourceComponentCost,
+								upperTargetComponentCost,
+								lowerTargetComponentCost,
 								compatibilityCostOfDivision);
 
 						if (cost <= CUTOFF_COST) {
 							final Hypothesis<Component<FloatType, ?>> to =
-									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, toComponent, toCost));
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
 							final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
-									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerNeighborComponent, neighborCost));
+									nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
 							final Hypothesis<Component<FloatType, ?>> from =
-									nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, fromComponent, fromCost));
+									nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
 
 							final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
 							final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
@@ -539,39 +536,40 @@ public class GrowthLineTrackingILP {
 	 * Computes the compatibility-mapping-costs between the two given
 	 * hypothesis.
 	 *
-	 * @param from
+	 * @param sourceComponent
 	 *            the segmentation hypothesis from which the mapping originates.
 	 * @return the cost we want to set for the given combination of segmentation
 	 *         hypothesis.
 	 */
 	public Float compatibilityCostOfDivision(
-			final Component< FloatType, ? > from,
-			final Component< FloatType, ? > toUpper,
-			final Component< FloatType, ? > toLower ) {
+			final Component< FloatType, ? > sourceComponent,
+			final Component< FloatType, ? > upperTargetComponent,
+			final Component< FloatType, ? > lowerTargetComponent ) {
 
 
-		final ValuePair< Integer, Integer > intervalFrom = ComponentTreeUtils.getComponentPixelLimits(from, 1);
-		final ValuePair< Integer, Integer > intervalToU = ComponentTreeUtils.getComponentPixelLimits(toUpper, 1);
-		final ValuePair< Integer, Integer > intervalToL = ComponentTreeUtils.getComponentPixelLimits(toLower, 1);
+		final ValuePair< Integer, Integer > sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+		final ValuePair< Integer, Integer > upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
+		final ValuePair< Integer, Integer > lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
 
-		final long sizeFrom = getComponentSize(from, 1);
-		final long sizeToU = getComponentSize(toUpper,1);
-		final long sizeToL = getComponentSize(toLower, 1);
-		final long sizeTo = sizeToU + sizeToL;
+		final long sourceSize = getComponentSize(sourceComponent, 1);
+		final long upperTargetSize = getComponentSize(upperTargetComponent,1);
+		final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
+		final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-		final float oldPosU = intervalFrom.getA();
-		final float newPosU = intervalToU.getA();
-		final float oldPosL = intervalFrom.getB();
-		final float newPosL = intervalToL.getB();
+		final float sourceUpperBoundary = sourceBoundaries.getA();
+		final float sourceLowerBoundary = sourceBoundaries.getB();
+		final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
+		final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
 
-		final Pair< Float, float[] > costDeltaHU = CostFactory.getMigrationCost( oldPosU, newPosU );
-		final Pair< Float, float[] > costDeltaHL = CostFactory.getMigrationCost( oldPosL, newPosL );
-		final float costDeltaH = .5f * costDeltaHL.getA() + .5f * costDeltaHU.getA();
-		final Pair< Float, float[] > costDeltaL = CostFactory.getGrowthCost( sizeFrom, sizeTo );
-		final float costDeltaS = CostFactory.getUnevenDivisionCost( sizeToU, sizeToL );
-		final float costDivisionLikelihood = CostFactory.getDivisionLikelihoodCost( from ); //TODO: parameterize me!
+		final Pair< Float, float[] > migrationCostOfUpperBoundary = CostFactory.getMigrationCost( sourceUpperBoundary, upperTargetUpperBoundary );
+		final Pair< Float, float[] > migrationCostOfLowerBoundary = CostFactory.getMigrationCost( sourceLowerBoundary, lowerTargetLowerBoundary );
+		final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-		return costDeltaL.getA() + costDeltaH + costDeltaS + costDivisionLikelihood;
+		final Pair< Float, float[] > growthCost = CostFactory.getGrowthCost( sourceSize, summedTargetSize );
+		final float unevenDivisionCost = CostFactory.getUnevenDivisionCost( upperTargetSize, lowerTargetSize );
+		final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost( sourceComponent );
+
+		return growthCost.getA() + averageMigrationCost + unevenDivisionCost + divisionLikelihoodCost;
 	}
 
 	/**

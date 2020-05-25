@@ -25,53 +25,50 @@ public class CostFactory {
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
-	public static Pair< Float, float[] > getMigrationCost( final float oldPosition, final float newPosition ) {
-		float deltaH = ( oldPosition - newPosition ) / normalizer;
-		float power;
-		float costDeltaH;
-		if ( deltaH > 0 ) { // upward migration
-			deltaH = Math.max( 0, deltaH - 0.05f ); // going upwards for up to 5% is for free...
-			power = 3.0f;
+	public static Pair< Float, float[] > getMigrationCost( final float sourcePosition, final float targetPosition ) {
+		float scaledPositionDifference = ( sourcePosition - targetPosition ) / normalizer;
+		float exponent;
+		float migrationCost;
+		if ( scaledPositionDifference > 0 ) { // upward migration
+			scaledPositionDifference = Math.max( 0, scaledPositionDifference - 0.05f ); // going upwards for up to 5% is for free...
+			exponent = 3.0f;
 		} else { // downward migration
-			Math.max( 0, deltaH - 0.01f );  // going downwards for up to 1% is for free...
-			power = 6.0f;
+			Math.max( 0, scaledPositionDifference - 0.01f );  // going downwards for up to 1% is for free...
+			exponent = 6.0f;
 		}
-		deltaH = Math.abs( deltaH );
-		costDeltaH = deltaH * ( float ) Math.pow( 1 + deltaH, power );
-//		latestCostEvaluation = String.format( "c_h = %.4f * %.4f^%.1f = %.4f", deltaH, 1 + deltaH, power, costDeltaH );
-		return new ValuePair<>(costDeltaH, new float[]{costDeltaH});
+		scaledPositionDifference = Math.abs( scaledPositionDifference );
+		migrationCost = scaledPositionDifference * ( float ) Math.pow( 1 + scaledPositionDifference, exponent );
+		return new ValuePair<>(migrationCost, new float[]{migrationCost});
 	}
 
-	public static Pair< Float, float[] > getGrowthCost( final float oldSize, final float newSize ) {
-		float deltaL = ( newSize - oldSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
+	public static Pair< Float, float[] > getGrowthCost( final float sourceSize, final float targetSize ) {
+		float scaledSizeDifference = ( targetSize - sourceSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
 																				however, it makes more sense to look at the
 																				relative size change?! I will do so in the future. */
-		float power;
-		if ( deltaL > 0 ) { // growth
-			deltaL = Math.max( 0, deltaL - 0.05f ); // growing up 5% is free
-			power = 4.0f;
+		float exponent;
+		if ( scaledSizeDifference > 0 ) { // growth
+			scaledSizeDifference = Math.max( 0, scaledSizeDifference - 0.05f ); // growing up 5% is free
+			exponent = 4.0f;
 		} else { // shrinkage
-			power = 40.0f;
+			exponent = 40.0f;
 		}
-		deltaL = Math.abs( deltaL );
+		scaledSizeDifference = Math.abs( scaledSizeDifference );
 
-		float costDeltaL = deltaL * (float) Math.pow(1 + deltaL, power); // since deltaL is <1 we add 1 before taking its power
+		float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
 
-		return new ValuePair<>(costDeltaL, new float[]{costDeltaL});
+		return new ValuePair<>(growthCost, new float[]{growthCost});
 	}
 
 
-    public static float getUnevenDivisionCost( final float sizeFirstChild, final float sizeSecondChild ) {
-		final float deltaS = Math.abs( sizeFirstChild - sizeSecondChild ) / Math.min( sizeFirstChild, sizeSecondChild );
-		float power = 2.0f;
-		float costDeltaL;
-		if ( deltaS > 1.15 ) {
-			power = 7.0f;
+    public static float getUnevenDivisionCost( final float upperTargetSize, final float lowerTargetSize ) {
+		final float scaledSizeDifference = Math.abs( upperTargetSize - lowerTargetSize ) / Math.min( upperTargetSize, lowerTargetSize );
+		float exponent = 2.0f;
+		if ( scaledSizeDifference > 1.15 ) {
+			exponent = 7.0f;
 		}
-		costDeltaL = ( float ) Math.pow( deltaS, power );
+		float unevenDivisionCost = ( float ) Math.pow( scaledSizeDifference, exponent );
 
-//		latestCostEvaluation = String.format( "c_d = %.4f^%.1f = %.4f", deltaS, power, costDeltaL );
-		return costDeltaL;
+		return unevenDivisionCost;
 	}
 
 	/**
@@ -79,35 +76,34 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getComponentCost(final Component< ?, ? > component, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
-        float top_roi_boundary = (float) MoMA.GL_OFFSET_TOP;
-        double verticalPosition = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
-        double distanceFromBoundary = top_roi_boundary - verticalPosition;
+        float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
+        double verticalPositionOfComponent = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
+        double distanceFromBoundary = roiBoundaryPosition - verticalPositionOfComponent;
         double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
-        double maximumCost = 0.2; // maximum cost possible for a component above the boundary
-        double minimumCost = -0.2; // minimum cost of a component below the boundary
+        double maximumCost = 0.2; // maximum component cost outside the ROI
+        double minimumCost = -0.2; // minimum component cost inside the ROI
         float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/componentExitRange)));
 		return cost;
     }
 
     /**
-	 * @param from
+	 * @param sourceComponent
 	 * @return
 	 */
-	public static float getDivisionLikelihoodCost( final Component< FloatType, ? > from ) {
-		if ( from.getChildren().size() > 2 ) { return 1.5f; }
-		if ( from.getChildren().size() <= 1 ) { return 1.5f; }
+	public static float getDivisionLikelihoodCost( final Component< FloatType, ? > sourceComponent ) {
+if ( sourceComponent.getChildren().size() > 2 ) { return 1.5f; }
+if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; }
 
-		// if two children, eveluate likelihood of being pre-division
-		final List< Component< FloatType, ? > > children = ( List< Component< FloatType, ? >> ) from.getChildren();
-		final long sizeA = getComponentSize(children.get( 0 ), 1);
-		final long sizeB = getComponentSize(children.get( 1 ), 1);
+// if two children, eveluate likelihood of being pre-division
+final List< Component< FloatType, ? > > listOfChildren = ( List< Component< FloatType, ? >> ) sourceComponent.getChildren();
+final long sizeChild1 = getComponentSize(listOfChildren.get( 0 ), 1);
+final long sizeChild2 = getComponentSize(listOfChildren.get( 1 ), 1);
 
-//		final float valParent = from.getWrappedComponent().value().get();
-		final long sizeParent = getComponentSize(from, 1);
+final long sizeSourceComponent = getComponentSize(sourceComponent, 1);
 
-		final long deltaSizeAtoB = Math.abs( sizeA - sizeB ) / Math.min( sizeA, sizeB ); // in multiples of smaller one
-		final long deltaSizeABtoP = Math.abs( sizeA + sizeB - sizeParent ) / ( sizeA + sizeB ); // in multiples of A+B
+final long deltaSizeBetweenChildren = Math.abs( sizeChild1 - sizeChild2 ) / Math.min( sizeChild1, sizeChild2 ); // in multiples of smaller one
+final long deltaSizeChildrenToSourceComponent = Math.abs( sizeChild1 + sizeChild2 - sizeSourceComponent ) / ( sizeChild1 + sizeChild2 ); // in multiples of A+B
 
-		return 0.1f * deltaSizeAtoB + 0.1f * deltaSizeABtoP;
+return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceComponent;
 	}
 }

@@ -69,19 +69,19 @@ public class ComponentTreeUtils {
     }
 
     /**
-     * @param to
+     * @param sourceComponent
      * @return
      */
     public static boolean isBelowByMoreThen(
-            final Component< FloatType, ? > to,
-            final Component< FloatType, ? > from,
-            final int numPixels) {
+            final Component< FloatType, ? > sourceComponent,
+            final Component< FloatType, ? > targetComponent,
+            final int maximumAllowedDownwardMovement) {
+        final ValuePair< Integer, Integer > sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair< Integer, Integer > targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final float targetUpperBoundary = targetComponentBoundaries.getA();
+        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
 
-//        final ValuePair<Integer, Integer> toMinMax = to.getLocation();
-//        final ValuePair<Integer, Integer> fromMinMax = from.getLocation();
-        final ValuePair< Integer, Integer > toMinMax = ComponentTreeUtils.getComponentPixelLimits(to, 1);;
-        final ValuePair< Integer, Integer > fromMinMax = ComponentTreeUtils.getComponentPixelLimits(from, 1);;
-        return (toMinMax.getA() - fromMinMax.getB()) > numPixels;
+        return (targetUpperBoundary - sourceLowerBoundary) > maximumAllowedDownwardMovement;
     }
 
     /**

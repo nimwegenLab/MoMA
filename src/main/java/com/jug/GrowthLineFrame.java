@@ -17,6 +17,16 @@ import net.imglib2.type.numeric.real.FloatType;
  */
 public class GrowthLineFrame extends AbstractGrowthLineFrame<SimpleComponent<FloatType>> {
 
+    private int frameIndex;
+
+    public int getFrameIndex() {
+        return frameIndex;
+    }
+
+    public GrowthLineFrame(int frameIndex) {
+        this.frameIndex = frameIndex;
+    }
+
     /**
      * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
      */

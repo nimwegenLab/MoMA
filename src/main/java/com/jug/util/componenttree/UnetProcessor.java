@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.MoMA;
+import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
@@ -50,6 +51,10 @@ public class UnetProcessor {
         datasetService = context.service(DatasetService.class);
     }
 
+    public String getModelChecksum() {
+        return calculateModelChecksum(modelFile);
+    }
+
     private String getModelFilePath() {
         try {
             String mainClassParentPath = new File(MoMA.class.getProtectionDomain().getCodeSource().getLocation()
@@ -60,6 +65,11 @@ public class UnetProcessor {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private String calculateModelChecksum(String modelFile) {
+        byte[] hash = Hash.SHA256.checksum(new File(modelFile));
+        return Hash.toHex(hash).toLowerCase();
     }
 
     /**

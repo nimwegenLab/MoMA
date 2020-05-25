@@ -459,8 +459,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     private void clearHoveredAssignments() {
+        if(selectedAssignment != null) selectedAssignment.setIsSelected(false);
         selectedAssignment = null;
         hoveredAssignments = new ArrayList<>();
+
     }
 
     private void updateHoveredAssignments() {

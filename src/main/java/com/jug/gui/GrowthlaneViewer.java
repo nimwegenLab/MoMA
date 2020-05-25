@@ -51,8 +51,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int mousePosY;
     // tracking the mouse (when dragging)
     private boolean isDragging;
-    private String strToShow = "";
-    private String str2ToShow = " ";
+    private String optimalSegmentInfoString = "";
+    private String optionalSegmentInfoString = " ";
     private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
     public GrowthlaneViewer(final MoMAGui mmgui, final int w, final int h) {
@@ -143,8 +143,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         // Mouse-position related stuff...
-        strToShow = "";
-        str2ToShow = " ";
+        optimalSegmentInfoString = "";
+        optionalSegmentInfoString = " ";
         updateHypothesisInfoTooltip();
         drawHoveredOptionalHypothesis();
         drawHypothesisInfoTooltip(g);
@@ -152,36 +152,25 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private void drawHypothesisInfoTooltip(Graphics g) {
         g.drawImage(screenImage.image(), 0, 0, w, h, null);
-        if (!strToShow.equals("")) {
-            g.setColor(Color.DARK_GRAY);
-            g.drawString(strToShow, 2, this.mousePosY - OFFSET_DISPLAY_COSTS + 1);
-            g.setColor(Color.GREEN.darker());
-            g.drawString(strToShow, 1, this.mousePosY - OFFSET_DISPLAY_COSTS);
-        }
-        if (!str2ToShow.equals("")) {
-            g.setColor(Color.DARK_GRAY);
-            g.drawString(str2ToShow, this.mousePosX + 6, this.mousePosY - OFFSET_DISPLAY_COSTS + 36);
-            g.setColor(Color.ORANGE.brighter());
-            g.drawString(str2ToShow, this.mousePosX + 5, this.mousePosY - OFFSET_DISPLAY_COSTS + 35);
-        }
+        g.setColor(Color.GREEN.darker());
+        g.drawString(optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+        g.setColor(Color.RED.brighter());
+        g.drawString(optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS + 14); /* draw info-string for optional segment */
     }
 
     private void updateHypothesisInfoTooltip() {
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
             if (getHoveredOptimalHypothesis() != null) {
                 float cost = getHoveredOptimalHypothesis().getCost();
-                strToShow = String.format("c=%.4f", cost);
-                str2ToShow = "-";
-            }
-            // figure out which hyps are at current location
-            if (getHoveredOptionalHypothesis() != null) {
-                if (str2ToShow.endsWith("-")) {
-                    str2ToShow += "/+";
-                } else {
-                    str2ToShow += "+";
-                }
+                optimalSegmentInfoString = String.format("c=%.4f", cost);
             } else {
-                str2ToShow = "  noseg";
+                optimalSegmentInfoString = "---";
+            }
+            if (getHoveredOptionalHypothesis() != null) {
+                float optionalCost = getHoveredOptionalHypothesis().getCost();
+                optionalSegmentInfoString = String.format("c=%.4f", optionalCost);
+            } else {
+                optionalSegmentInfoString = "---";
             }
         }
     }

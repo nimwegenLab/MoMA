@@ -10,18 +10,23 @@ import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import io.scif.img.ImgOpener;
+import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
+import net.imglib2.img.ImagePlusAdapter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.SystemUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -33,6 +38,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /*
   Main class for the MotherMachine project.
@@ -277,6 +284,12 @@ public class MoMA {
 	 * Stores a string used to decorate filenames e.g. before export.
 	 */
 	private static String defaultFilenameDecoration;
+
+	/**
+	 * Path to the dataset that we are working on.
+	 */
+	private static String path;
+
 
 	// ====================================================================================================================
 
@@ -639,7 +652,7 @@ public class MoMA {
 			}
 		}
 
-		String path = props.getProperty( "import_path", System.getProperty( "user.home" ) );
+		path = props.getProperty( "import_path", System.getProperty( "user.home" ) );
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
 			inputFolder = main.showStartupDialog( guiFrame, path );
 		}
@@ -733,7 +746,6 @@ public class MoMA {
 	/**
 	 * The singleton instance of ImageJ.
 	 */
-	public ImageJ ij;
 
 	private List< Img< FloatType >> rawChannelImgs;
 	private Img< FloatType > imgRaw;
@@ -1295,7 +1307,7 @@ public class MoMA {
         getGrowthLines().add( new GrowthLine() );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-            GrowthLineFrame currentFrame = new GrowthLineFrame();
+            GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthLines().get(0).add(currentFrame);
@@ -1309,20 +1321,47 @@ public class MoMA {
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = new UnetProcessor().process(imgTemp);
-		int i = 0;
+		imgProbs = processImageOrLoadFromDisk();
 		for ( final GrowthLine gl : getGrowthLines() ) {
-			i++;
-			int frameCounter = 0;
-			for ( final GrowthLineFrame glf : gl.getFrames() ) {
+			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imgProbs, frameCounter );
-				frameCounter++;
-			}
+				glf.generateSimpleSegmentationHypotheses( imgProbs, glf.getFrameIndex() );
+			});
 			System.out.println( " ...done!" );
 		}
 	}
 
+	private Img<FloatType> processImageOrLoadFromDisk() {
+		UnetProcessor unetProcessor = new UnetProcessor();
+
+		String checksum = unetProcessor.getModelChecksum();
+
+		/**
+		 *  generate probability filename
+		 */
+		File file = new File(path);
+		if(file.isDirectory()){
+			File[] list = file.listFiles();
+			file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
+		}
+		String outputFolderPath = file.getParent();
+		String filename = removeExtension(file.getName());
+		String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
+
+		/**
+		 *  create or load probability maps
+		 */
+		Img<FloatType> probabilityMap;
+		if (!new File(processedImageFileName).exists()) {
+			probabilityMap = unetProcessor.process(imgTemp);
+			ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
+			IJ.saveAsTiff(tmp_image, processedImageFileName);
+		} else {
+			ImagePlus imp = IJ.openImage(processedImageFileName);
+			probabilityMap = ImageJFunctions.convertFloat(imp);
+		}
+		return probabilityMap;
+	}
 
 	/**
 	 * Creates and triggers filling of mmILP, containing all

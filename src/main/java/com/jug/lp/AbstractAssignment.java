@@ -1,14 +1,9 @@
 package com.jug.lp;
 
-import java.util.List;
-
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
+import gurobi.*;
 
-import gurobi.GRB;
-import gurobi.GRBConstr;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBVar;
+import java.util.List;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -179,7 +174,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	/**
-	 *
+	 * This is used for constraints added by the user to enforce the selection
+	 * of a given assignment by the solver.
 	 */
 	private void addOrRemoveGroundTruthConstraint(final boolean add ) {
 		try {

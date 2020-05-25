@@ -1,20 +1,28 @@
 package com.jug.util.componenttree;
 
+import kotlin.jvm.Synchronized;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Predicate;
+
+import static com.jug.util.ComponentTreeUtils.countNodes;
+import static com.jug.util.ComponentTreeUtils.getListOfLeavesInOrder;
 
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
+    private List<Integer> numberOfLeaves = new ArrayList<>();
+
     public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
         float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
 ////        Img<FloatType> raiFkt = ((Img<FloatType>) raiFktOrig).copy();
@@ -49,8 +57,24 @@ public class ComponentTreeGenerator {
         // watershed components into their parent-components
         tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);
 
+//        List listOfLeaves = getListOfLeavesInOrder(tree);
+//        System.out.println("leaves: " + listOfLeaves.size());
+
+        int nodeNumber = countNodes(tree);
+        System.out.println("total: " + nodeNumber);
+
         return tree;
     }
+
+//    @Synchronized
+//    private float calculateAverage(List<Component> listOfLeaves){
+//        numberOfLeaves.add(listOfLeaves.size());
+//        float sum = 0;
+//        for(int number : numberOfLeaves){
+//            sum += (float)number;
+//        }
+//        return sum/(float)listOfLeaves.size();
+//    }
 
     /**
      * Set all pixels to 0 that are below {@param threshold} value in {@param image}.

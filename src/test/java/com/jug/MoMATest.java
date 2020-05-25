@@ -6,9 +6,9 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04();
+        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04(); // COMPARISON DATASET 1
 //        tests._20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14();
-//        tests._cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16();
+//        tests._cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16(); // COMPARISON DATASET 2
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02();
 //        tests._new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();

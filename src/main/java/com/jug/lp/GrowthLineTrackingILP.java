@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
+import static com.jug.util.ComponentTreeUtils.getLeafNodes;
 
 /**
  * @author jug
@@ -338,7 +339,7 @@ public class GrowthLineTrackingILP {
 	private void addMappingAssignments(final int t,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
 									   SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
-		for ( final Component< FloatType, ? > sourceComponent : sourceComponentTree.getAllComponents() ) {
+		for ( final SimpleComponent< FloatType > sourceComponent : sourceComponentTree.getAllComponents() ) {
 
 			if (t > 0) {
 				if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -347,13 +348,14 @@ public class GrowthLineTrackingILP {
 
 			float sourceComponentCost = getComponentCost( t, sourceComponent );
 
-			for ( final Component< FloatType, ? > targetComponent : targetComponentTree.getAllComponents() ) {
+			for ( final SimpleComponent< FloatType > targetComponent : targetComponentTree.getAllComponents() ) {
 				float targetComponentCost = getComponentCost( t + 1, targetComponent );
 
 				if ( !( ComponentTreeUtils.isBelowByMoreThen( targetComponent, sourceComponent, MoMA.MAX_CELL_DROP ) ) ) {
 
 					final Float compatibilityCostOfMapping = compatibilityCostOfMapping( sourceComponent, targetComponent );
 					float cost = costModulationForSubstitutedILP( sourceComponentCost, targetComponentCost, compatibilityCostOfMapping );
+					cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
 					if ( cost <= CUTOFF_COST ) {
 						final Hypothesis< Component< FloatType, ? >> to =
@@ -429,6 +431,30 @@ public class GrowthLineTrackingILP {
 			final float mappingCosts ) {
 		return 0.1f * fromCost + 0.9f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
 																  we should probably do 50%/50%, but we did different and it's ok */
+	}
+
+	/**
+	 * This function scales the cost of given assignment by the number of leaves
+	 * that are under the components participating in that assignment. The idea is
+	 * that we a given component must have lower cost than the average cost of the
+	 * leaves under it. This was suggested in Funke et. al., 2012, "Efficient Automatic
+	 * 3D-Reconstruction of Branching Neurons from EM Data".
+	 *
+	 * @param sourceComponent source component of the mapping assignment
+	 * @param targetComponent target component of the mapping assignment
+	 * @param cost current cost, that will be rescaled
+	 * @return rescaled cost
+	 */
+	public float scaleAssignmentCost(SimpleComponent sourceComponent,
+									 SimpleComponent targetComponent,
+									 float cost){
+		int numberOfLeavesUnderSource = getLeafNodes(sourceComponent).size();
+		int numberOfLeavesUnderTarget = getLeafNodes(targetComponent).size();
+		if(numberOfLeavesUnderSource == 0)
+			numberOfLeavesUnderSource = 1;
+		if(numberOfLeavesUnderTarget == 0)
+			numberOfLeavesUnderTarget = 1;
+		return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
 	}
 
 	/**

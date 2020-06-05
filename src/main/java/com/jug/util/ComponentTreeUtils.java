@@ -1,6 +1,6 @@
 package com.jug.util;
 
-import com.jug.lp.*;
+import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.Localizable;
@@ -25,16 +25,30 @@ import java.util.function.Consumer;
 public class ComponentTreeUtils {
 
     /**
-     * @param tree
+     * Get all leaf nodes under the specified component in component forest.
+     *
+     * @param forest
      * @return
      */
-    public static <C extends Component<?, C>> List<C> getListOfLeavesInOrder(final ComponentForest<C> tree) {
+    public static <C extends Component<?, C>> List<C> getLeafNodes(final ComponentForest<C> forest) {
         final List<C> leaves = new ArrayList<>();
-
-        for (final C root : tree.roots()) {
+        for (final C root : forest.roots()) {
             recursivelyAddLeavesToList(root, leaves);
         }
+        return leaves;
+    }
 
+    /**
+     * Get all leaf nodes under the specified component node.
+     *
+     * @param component_node
+     * @return
+     */
+    public static <T extends Type<T>> List<SimpleComponent<T>> getLeafNodes(final SimpleComponent<T> component_node) {
+        final List<SimpleComponent<T>> leaves = new ArrayList<>();
+        for (final SimpleComponent<T> node : component_node.getChildren()) {
+            recursivelyAddLeavesToList(node, leaves);
+        }
         return leaves;
     }
 
@@ -46,6 +60,19 @@ public class ComponentTreeUtils {
             leaves.add(node);
         } else {
             for (final C child : node.getChildren()) {
+                recursivelyAddLeavesToList(child, leaves);
+            }
+        }
+    }
+
+    /**
+     * @param leaves
+     */
+    private static <T extends Type<T>> void recursivelyAddLeavesToList(final SimpleComponent<T> node, final List<SimpleComponent<T>> leaves) {
+        if (node.getChildren().size() == 0) {
+            leaves.add(node);
+        } else {
+            for (final SimpleComponent child : node.getChildren()) {
                 recursivelyAddLeavesToList(child, leaves);
             }
         }

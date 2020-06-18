@@ -10,23 +10,19 @@ import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import io.scif.img.ImgOpener;
-import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
-import net.imglib2.img.ImagePlusAdapter;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.ARGBType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -219,7 +215,8 @@ public class MoMA {
 	/**
 	 * Properties to configure app (loaded and saved to properties file!).
 	 */
-	public static Properties props;
+	public static Properties props = null;
+
 
 	/**
 	 * X-position of the main GUI-window. This value will be loaded from and
@@ -274,11 +271,24 @@ public class MoMA {
 	private static MoMAGui gui;
 
 	/**
-	 * A properties file that will be used to 'overwrite' default properties in
-	 * mm.properties.
-	 * This file can be set using the CLI.
+	 * Path to Moma setting directory
 	 */
-	private static File fileUserProps;
+	private static File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
+
+	/**
+	 * Property file provided by user through as command-line option.
+	 */
+	private static File optionalPropertyFile = null;
+
+	/**
+	 * Property file in the moma directory the user.
+	 */
+	final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
+
+	/**
+	 * Property file that is being used by this instance of Moma.
+	 */
+	private static File currentPropertyFile = null;
 
 	/**
 	 * Stores a string used to decorate filenames e.g. before export.
@@ -457,9 +467,8 @@ public class MoMA {
 			STATS_OUTPUT_PATH = outputFolder.getAbsolutePath();
 		}
 
-		fileUserProps = null;
 		if ( cmd.hasOption( "p" ) ) {
-			fileUserProps = new File( cmd.getOptionValue( "p" ) );
+			optionalPropertyFile = new File( cmd.getOptionValue( "p" ) );
 		}
 
 
@@ -1057,73 +1066,66 @@ public class MoMA {
 	 *         found in that file.
 	 */
 	private Properties loadParams() {
-		InputStream is;
-		final Properties defaultProps = new Properties();
-
-		// First try loading from the current directory
-		try {
-			final File f = new File( "mm.properties" );
-			System.out.println( "Loading default properties from: " + f.getAbsolutePath() );
-			is = new FileInputStream( f );
-			defaultProps.load( is );
-		} catch ( final Exception e ) {
-			System.out.println( "Could not load props... try from classpath next..." );
-			is = null;
-		}
-
-		// if loading from current directory didn't work...
-		if (is == null) {
-			try {
-				URL propslURL = ClassLoader.getSystemResource("mm.properties");
-				if (propslURL == null) {
-					propslURL = getClass().getClassLoader().getResource("mm.properties");
-				}
-				if (propslURL != null) {
-					is = propslURL.openStream();
-					defaultProps.load(is);
-					System.out.println(" >> default properties loaded!");
-
-				}
-			} catch (final Exception e) {
-				System.out.println("No default properties file 'mm.properties' found in current path or classpath... I will create one at termination time!");
-			}
-		}
-
-		// ADD USER PROPS IF GIVEN VIA CLI
-		final Properties props = new Properties( defaultProps );
-		if ( fileUserProps != null ) {
-			System.out.println( "Loading user properties from: " + fileUserProps.getAbsolutePath() );
-			try {
-				is = new FileInputStream( fileUserProps );
-				props.load( is );
-				System.out.println( " >> user properties loaded!" );
-			} catch ( final FileNotFoundException e ) {
-				System.out.println( "ERROR: Could not find user props!" );
-			} catch ( final IOException e ) {
-				System.out.println( "ERROR: Could not read user props!" );
-			}
-		} else {
-			final File userHomeMMProperties = new File(System.getProperty("user.home") + "/.moma/mmuser.properties");
-			if (userHomeMMProperties.canRead()) {
-				System.out.println( "Loading user properties from: " + userHomeMMProperties.getAbsolutePath() );
+		if (optionalPropertyFile != null) {
+			if (optionalPropertyFile.exists() && optionalPropertyFile.isFile()) {
 				try {
-					is = new FileInputStream( userHomeMMProperties );
-					props.load( is );
-					System.out.println( " >> user properties loaded!" );
-				} catch ( final FileNotFoundException e ) {
-					System.out.println( "ERROR: Could not find user props!" );
-				} catch ( final IOException e ) {
-					System.out.println( "ERROR: Could not read user props!" );
+					props = loadParameters(optionalPropertyFile);
+					currentPropertyFile = optionalPropertyFile;
+					return props;
+				} catch (IOException e) {
 				}
+			} else {
+				System.out.println("ERROR: The optional config file path does not exist:" + optionalPropertyFile.getPath());
 			}
 		}
 
+		if(!userMomaHomePropertyFile.exists())
+		{
+			if(!momaUserDirectory.exists())
+			{
+				momaUserDirectory.mkdir();
+			}
+			// HERE WE NEED TO SETUP THE HOME-DIRECTORY SETTINGS, IF THEY DO NOT EXIST
+			final File f = new File( "mm.properties" );
+			if(f.isFile()){
+				try {
+					FileUtils.copyFile(f, userMomaHomePropertyFile);
+				} catch (IOException e) {
+					System.out.println( "Failed to copy user file to default property file to user moma directory: " +  momaUserDirectory.getPath());
+					e.printStackTrace();
+				}
+			}
+			System.out.println( "Performed setup of new default property file here: " + userMomaHomePropertyFile.getAbsolutePath() );
+		}
+
+		try {
+			currentPropertyFile = userMomaHomePropertyFile;
+			return loadParameters(userMomaHomePropertyFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println("ERROR: Failed to load property file.");
 		return props;
 	}
 
+	/**
+	 * Load parameters from the provided config-file.
+	 * @param configFile
+	 * @return
+	 * @throws IOException
+	 */
+	private Properties loadParameters(File configFile) throws IOException {
+		FileInputStream is = new FileInputStream(configFile);
+		final Properties props = new Properties();
+		props.load( is );
+		return props;
+	}
+
+	/**
+	 * Save parameters to the currently used config file.
+	 */
 	private void saveParams() {
-		final File f = new File( "mm.properties" ); // SHOULD THIS NOT BE THE USER-FOLDER?! (see also above)
-		saveParams (f);
+		saveParams(currentPropertyFile);
 	}
 
 	/**

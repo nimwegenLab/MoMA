@@ -8,7 +8,7 @@ public class MoMATest {
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
 //        tests._lugange_001();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04();
-        tests._20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14(); // dataset with inhomogeneous PhC (rich-media cells)
+//        tests._20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14(); // dataset with inhomogeneous PhC (rich-media cells)
 //        tests._cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02();  // dataset with jumping cell
@@ -16,7 +16,7 @@ public class MoMATest {
 //        tests._50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
-//        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
+        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests.headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01();
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
@@ -119,6 +119,7 @@ public class MoMATest {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+//        startMoma(new String[]{"-i", inputPath, "-o", outputPath, "-p", "/home/micha/Documents/01_work/git/MoMA/mm.properties"});
     }
 
     @Test

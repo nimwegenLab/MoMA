@@ -6,6 +6,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+//        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07();
+        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16();
 //        tests._lugange_001();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04();
 //        tests._20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14(); // dataset with inhomogeneous PhC (rich-media cells)
@@ -16,7 +18,7 @@ public class MoMATest {
 //        tests._50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
-        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
+//        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests.headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01();
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
@@ -27,6 +29,20 @@ public class MoMATest {
 //##########################################################
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
+
+    @Test
+    public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/";
+        startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+    }
+
+    @Test
+    public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/";
+        startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+    }
 
     @Test
     public void _lugange_001() {

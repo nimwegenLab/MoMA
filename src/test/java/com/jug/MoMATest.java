@@ -6,8 +6,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-//        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07();
-        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16();
+        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07();
+//        tests._20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16();
 //        tests._lugange_001();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04();
 //        tests._20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14(); // dataset with inhomogeneous PhC (rich-media cells)
@@ -17,11 +17,13 @@ public class MoMATest {
 //        tests._new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
-//        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
+//        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // BAD U-NET SEGMENTATION: dataset with reservoirs segments - U-Net performs poorly
+//        tests._cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests.headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01();
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
+//        tests._cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
     }
 
 //-i
@@ -32,22 +34,22 @@ public class MoMATest {
 
     @Test
     public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07() {
-        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07.tif";
-        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/";
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
     @Test
     public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16() {
-        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16.tif";
-        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/tmp/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/";
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
     @Test
     public void _lugange_001() {
-        String inputPath = "/home/micha/Documents/01_work/02_presentations/01_minigroups_meetings/20200422/test_lugange_dataset/series_01_crop_with_filamenting_cell.tif";
-        String outputPath = "/home/micha/Documents/01_work/02_presentations/01_minigroups_meetings/20200422/test_lugange_dataset/";
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200422_test_lugange_dataset/series_01_crop_with_filamenting_cell.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200422_test_lugange_dataset/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
@@ -122,6 +124,13 @@ public class MoMATest {
     }
 
     @Test
+    public void _cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
+        startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+    }
+
+    @Test
     public void headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
@@ -148,6 +157,13 @@ public class MoMATest {
     @Test
     public void _20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15() {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
+        startMoma(new String[]{"-i", inputPath, "-o", outputPath});
+    }
+
+    @Test
+    public void _cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
         startMoma(new String[]{"-i", inputPath, "-o", outputPath});
     }

@@ -70,7 +70,6 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
         RandomAccessibleInterval<BitType> parentsMask = getParentsMask(parentsWithChildren);
         HashMap<Integer, SimpleComponent<T>> childLabelToComponentMap = new HashMap<>();
         ImgLabeling<Integer, IntType> childLabeling = getChildLabeling(parentsWithChildren, childLabelToComponentMap);
-        childLabeling = erodeLabels(childLabeling);
         ImgLabeling<Integer, IntType> out = doWatershed(sourceImage, childLabeling, parentsMask);
         LabelRegions<Integer> regions = new LabelRegions<>(out);
 
@@ -121,33 +120,6 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
             }
         }
         return childLabeling;
-    }
-
-    /**
-     * This method erodes the child labeling. This is necessary, because there is a bug in ops.image().watershed, which
-     * fails, if markers partially overlap with the border of a masked area (here: the region inside the parent mask).
-     * When this bug is fixed, then this eroding of labels should not be needed anymore.
-     *
-     * @param labeling
-     * @return
-     */
-    private ImgLabeling<Integer, IntType> erodeLabels(ImgLabeling<Integer, IntType> labeling) {
-        ImgLabeling<Integer, IntType> labelingEroded = createLabelingImage(labeling.getIndexImg());
-        RandomAccessibleInterval<IntType> backingImage = labeling.getIndexImg();
-        backingImage = (RandomAccessibleInterval) ops.morphology().erode(backingImage, new RectangleShape(1, false));
-        Cursor<LabelingType<Integer>> labelingErodedCursor = labelingEroded.cursor();
-        Cursor<LabelingType<Integer>> labelingCursor = labeling.cursor();
-        RandomAccess<IntType> rndAcc = backingImage.randomAccess();
-
-        while (labelingErodedCursor.hasNext()) {
-            labelingErodedCursor.fwd();
-            labelingCursor.fwd();
-            rndAcc.setPosition(labelingErodedCursor);
-            if (rndAcc.get().get() != 0) {
-                labelingErodedCursor.get().set(labelingCursor.get().copy());
-            }
-        }
-        return labelingEroded;
     }
 
     /**

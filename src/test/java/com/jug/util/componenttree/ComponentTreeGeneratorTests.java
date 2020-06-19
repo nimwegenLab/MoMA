@@ -29,14 +29,17 @@ public class ComponentTreeGeneratorTests {
      */
     @Test
     public void testWatershedding() throws IOException, InterruptedException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/probabilities_watershedding_000.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        int frameIndex = 12;
+//        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16__model_6a24d4567cae96f9a0469d872dfd2ecb2abb4d0a9d0464e561d2dbc7dd0c0411.tif";
+//        int frameIndex = 30;
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
 
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, 12);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);

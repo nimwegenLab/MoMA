@@ -31,7 +31,7 @@ public class ComponentPropertiesTest {
      */
     @Test
     public void testGettingComponentProperties() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/probabilities_watershedding_000.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();

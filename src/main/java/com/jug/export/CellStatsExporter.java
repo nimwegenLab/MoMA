@@ -115,15 +115,15 @@ public class CellStatsExporter {
         ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
         ResultTableColumn<Integer> parentIdCol = resultTable.addColumn(new ResultTableColumn<>("parent_ID"));
         ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("cells_in_lane"));
-        ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top px"));
-        ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom px"));
-        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x px", "%.5f"));
-        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y px", "%.5f"));
-        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.5f"));
-        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.5f"));
-        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.5f"));
-        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
-        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
+        ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top_px"));
+        ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom_px"));
+        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x_px", "%.5f"));
+        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y_px", "%.5f"));
+        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
+        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
+        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
+        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area_px2"));
+        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px2"));
 
         List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
         List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
@@ -132,10 +132,10 @@ public class CellStatsExporter {
 
         /* Add columns for per fluorescence-channel output. */
         for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-            cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c), "%.5f")));
-            backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c), "%.5f")));
-            intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.5f")));
-            intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bg_ch_%d", c), "%.5f")));
+            cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_total_in_cellmask_%d", c), "%.5f")));
+            backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_total_in_bgmask_ch_%d", c), "%.5f")));
+            intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_fit_ampl_A_ch_%d", c), "%.5f")));
+            intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_fit_bg_B_ch_%d", c), "%.5f")));
         }
 
         Pattern positionPattern = Pattern.compile("Pos(\\d+)");

@@ -152,9 +152,17 @@ public class CellStatsExporter {
 
         writer.write(String.format("image_folder=%s\n", loadedDataFolder));
 
+
+        long horizontalSize = firstGLF.getImage().dimension(0);
+        long verticalSize = firstGLF.getImage().dimension(1);
+        LabelImageExporter labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
+
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
                 SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
+
+                labelImageExport.addComponentMaskToImage(currentComponent, segmentRecord.getId(), segmentRecord.frame);
+
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
@@ -220,6 +228,8 @@ public class CellStatsExporter {
 
         writer.write("\n");
         resultTable.writeTable(writer);
+
+        labelImageExport.saveLabelImage("/home/micha/Documents/01_work/git/MoMA/test_datasets/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/cell_masks.tif");
     }
 
     private void exportTracks(final File file) {

@@ -22,7 +22,7 @@ public class CellTrackBuilder {
 
         final LinkedList< SegmentRecord > queue = new LinkedList<>();
 
-        int nextCellId = 0;
+        int nextCellId = 1; // start cell index at 1, because we write this value also the label image, where 0 represents background and everything >0 if foreground mask
 
         startingPoints = new ArrayList<>();
 

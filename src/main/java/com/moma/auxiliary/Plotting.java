@@ -14,6 +14,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -48,8 +49,8 @@ public class Plotting {
                 final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
                 setImageToValue(Views.iterable(componentLevelImage), new ARGBType(ARGBType.rgba(100, 0, 0, 0)));
                 for(C ctn : componentOfLevel){
-                    boolean val = componentsInOptimalSolution.contains(ctn);
-                    drawComponentToImage(ctn, sourceImage, componentLevelImage, val);
+                    boolean ctnIsSelected = componentsInOptimalSolution.contains(ctn);
+                    copyComponentRegionFromSourceImage(ctn, sourceImage, componentLevelImage, ctnIsSelected);
                 }
                 componentLevelImageStack.add(componentLevelImage);
             }
@@ -64,10 +65,10 @@ public class Plotting {
         imp.setOverlay(text, Color.white, 0, Color.black);
     }
 
-    private static void drawComponentToImage(final Component<?, ?> ctn,
-                                             RandomAccessibleInterval<FloatType> sourceImage,
-                                             RandomAccessibleInterval<ARGBType> targetImage,
-                                             boolean ctnIsSelected) {
+    private static void copyComponentRegionFromSourceImage(final Component<?, ?> ctn,
+                                                           RandomAccessibleInterval<FloatType> sourceImage,
+                                                           RandomAccessibleInterval<ARGBType> targetImage,
+                                                           boolean ctnIsSelected) {
         RandomAccess<FloatType> source = sourceImage.randomAccess();
         RandomAccess<ARGBType> out = targetImage.randomAccess();
 
@@ -82,7 +83,6 @@ public class Plotting {
             out.get().set(value);
         }
     }
-
 
     public static <C extends Component<FloatType, C>> void drawComponentTree2(ComponentForest<C> ct,
                                                                               List<C> componentsInOptimalSolution) {
@@ -163,5 +163,13 @@ public class Plotting {
 
         Plot plot = new Plot(title, xLabel, yLabel, xvals_new, y);
         plot.show();
+    }
+
+    public static <T extends Type<T>> void drawComponentMask(final Component<?, ?> component, T pixelValue, RandomAccessibleInterval<T> image) {
+        RandomAccess<T> imageAccessor = image.randomAccess();
+        for (Localizable location : component) {
+            imageAccessor.setPosition(location);
+            imageAccessor.get().set(pixelValue);
+        }
     }
 }

@@ -10,6 +10,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.view.Views;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /***
@@ -59,13 +60,13 @@ public class LabelImageExporter {
     }
 
     /***
-     * Save label image stack to filePath.
+     * Save label image stack to file.
      *
-     * @param filePath
+     * @param file
      */
-    public void saveLabelImage(String filePath) {
+    public void saveLabelImage(File file) {
         RandomAccessibleInterval<IntType> imageStack = Views.stack(componentLevelImageStack);;
         final ImagePlus imagePlus = ImageJFunctions.wrap(imageStack, "export");
-        IJ.save(imagePlus, filePath);
+        IJ.save(imagePlus, file.getPath());
     }
 }

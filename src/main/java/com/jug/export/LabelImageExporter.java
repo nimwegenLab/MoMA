@@ -3,21 +3,19 @@ package com.jug.export;
 import com.moma.auxiliary.Plotting;
 import ij.IJ;
 import ij.ImagePlus;
-import io.scif.img.ImgSaver;
-import org.scijava.io.location.FileLocation;
-import net.imglib2.Localizable;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.view.Views;
 
-import java.io.File;
 import java.util.ArrayList;
+
+/***
+ * This class is used to export an image stack with component masks.
+ * The cellId is used to set the pixel value of the corresponding mask of that cell.
+ */
 
 public class LabelImageExporter {
     private final long horizontalSize;

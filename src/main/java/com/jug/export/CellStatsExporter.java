@@ -3,7 +3,6 @@ package com.jug.export;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.gui.MoMAGui;
-import com.jug.gui.OsDependentFileChooser;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.ComponentTreeUtils;
@@ -24,8 +23,7 @@ import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
+import static com.jug.MoMA.*;
 
 /**
  * @author jug
@@ -56,7 +54,12 @@ public class CellStatsExporter {
         MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
 
         try {
-            exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"));
+            final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+            List<SegmentRecord> startingPoints = getCellTracks(firstGLF);
+            exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
+            if(EXPORT_CELL_MASKS) {
+                exportCellLabelMasks(new File(folderToUse, "CellMaskImages_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+            }
         } catch (final GRBException e) {
             e.printStackTrace();
         }
@@ -64,16 +67,36 @@ public class CellStatsExporter {
         MoMA.instance.saveParams(new File(folderToUse, "mm.properties"));
     }
 
+
+    private void exportCellLabelMasks(File file, List<SegmentRecord> startingPoints) {
+        final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(startingPoints.get(0).frame);
+        long horizontalSize = firstGLF.getImage().dimension(0);
+        long verticalSize = firstGLF.getImage().dimension(1);
+        final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
+
+        LabelImageExporter labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
+
+        for (SegmentRecord segmentRecord : startingPoints) {
+            do {
+                SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
+                labelImageExport.addComponentMaskToImage(currentComponent, segmentRecord.getId(), segmentRecord.frame);
+                segmentRecord = segmentRecord.nextSegmentInTime(ilp);
+            }
+            while (segmentRecord.exists());
+        }
+        labelImageExport.saveLabelImage(file);
+    }
+
     /**
      * @param file
      * @throws GRBException
      */
-    private void exportCellStats(final File file) throws GRBException {
+    private void exportCellStats(final File file, List<SegmentRecord> startingPoints) throws GRBException {
         System.out.println("Exporting collected cell-statistics...");
         Writer out;
         try {
             out = new OutputStreamWriter(new FileOutputStream(file));
-            writeCellStatsExportData(out);
+            writeCellStatsExportData(out, startingPoints);
         } catch (final FileNotFoundException e1) {
             JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             e1.printStackTrace();
@@ -84,21 +107,14 @@ public class CellStatsExporter {
         System.out.println("...done!");
     }
 
-    private void writeCellStatsExportData(Writer writer) throws GRBException, IOException {
+    private void writeCellStatsExportData(Writer writer, List<SegmentRecord> startingPoints) throws GRBException, IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
         final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
 
         final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+        int imageCenterX = firstGLF.getAvgXpos();
         final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
-
-        CellTrackBuilder trackBuilder = new CellTrackBuilder();
-        trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
-                firstGLF,
-                firstGLF.getParent().getIlp(),
-                gui.sliderTime.getMaximum());
-        List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-
 
         // INITIALIZE PROGRESS-BAR if not run headless
         final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", startingPoints.size());
@@ -152,9 +168,11 @@ public class CellStatsExporter {
 
         writer.write(String.format("image_folder=%s\n", loadedDataFolder));
 
+
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
                 SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
+
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
@@ -192,7 +210,7 @@ public class CellStatsExporter {
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 
-                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, firstGLF.getAvgXpos());
+                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, imageCenterX);
                     double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
                     intensityFitCellIntensityCols.get(columnIndex).addValue(estimates[0]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */
                     intensityFitBackgroundIntensityCols.get(columnIndex).addValue(estimates[1]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */
@@ -220,6 +238,16 @@ public class CellStatsExporter {
 
         writer.write("\n");
         resultTable.writeTable(writer);
+    }
+
+    private List<SegmentRecord> getCellTracks(GrowthLineFrame firstGLF) throws GRBException {
+        CellTrackBuilder trackBuilder = new CellTrackBuilder();
+        trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+                firstGLF,
+                firstGLF.getParent().getIlp(),
+                gui.sliderTime.getMaximum());
+        List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
+        return startingPoints;
     }
 
     private void exportTracks(final File file) {

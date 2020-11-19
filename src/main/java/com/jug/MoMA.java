@@ -187,6 +187,11 @@ public class MoMA {
 	public static double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
 
 	/**
+	 * Set whether to export an image stack with cell masks.
+	 */
+	public static boolean EXPORT_CELL_MASKS = true;
+
+	/**
 	 * One of the test for paper:
 	 * What happens if exit constraints are NOT part of the model?
 	 */
@@ -633,6 +638,8 @@ public class MoMA {
 		INTENSITY_FIT_ITERATIONS = Integer.parseInt(props.getProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS)));
 		INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
 		INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
+
+		EXPORT_CELL_MASKS = props.getProperty( "EXPORT_CELL_MASKS", Integer.toString(EXPORT_CELL_MASKS?1:0) ).equals("1");
 
 		if ( !HEADLESS ) {
 			// Iterate over all currently attached monitors and check if sceen
@@ -1185,6 +1192,8 @@ public class MoMA {
 			props.setProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS));
 			props.setProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION));
 			props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
+
+			props.setProperty("EXPORT_CELL_MASKS", Integer.toString(EXPORT_CELL_MASKS?1:0));
 
 			props.store( out, "MotherMachine properties" );
 		} catch ( final Exception e ) {

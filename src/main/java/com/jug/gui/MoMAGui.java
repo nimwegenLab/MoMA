@@ -658,12 +658,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // ComponentTreeNodes
         // ------------------
         dumpCosts(model.getCurrentGLF().getComponentTree(), ilp);
-        if (ilp != null) {
-            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "Segment");
-            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment");
-            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "MappingAssignment");
-            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "DivisionAssignment");
-        }
+//        if (ilp != null) {
+//            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "Segment");
+//            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment");
+//            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "MappingAssignment");
+//            printCosts(model.getCurrentGLF().getComponentTree(), ilp, "DivisionAssignment");
+//        }
     }
 
     private <C extends Component<FloatType, C>> void printCosts(final ComponentForest<C> ct, final GrowthLineTrackingILP ilp, String costType) {

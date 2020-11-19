@@ -40,11 +40,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent evt ) {
-            Property sourceProperty = (Property) evt.getSource();
-			final String sourceName = sourceProperty.getName();
+            Property property = (Property) evt.getSource();
+			final String propertyName = property.getName();
 
 			try {
-                switch (sourceName) {
+                switch (propertyName) {
                     case "GUROBI_TIME_LIMIT":
                         MoMA.GUROBI_TIME_LIMIT =
                                 Double.parseDouble(evt.getNewValue().toString());
@@ -70,7 +70,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                             JOptionPane.YES_NO_OPTION);
 
                             if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.GL_OFFSET_TOP);
+                                property.setValue(MoMA.GL_OFFSET_TOP);
                             } else {
                                 MoMA.GL_OFFSET_TOP = newValue;
                                 MoMA.props.setProperty(
@@ -79,6 +79,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 ((MoMAGui) parent).restartTrackingAsync();
                             }
                         }
+                        break;
+                    }
+                    case "EXPORT_CELL_MASKS": {
+                        MoMA.EXPORT_CELL_MASKS =
+                                Boolean.parseBoolean(evt.getNewValue().toString());
+                        MoMA.props.setProperty(
+                                "EXPORT_CELL_MASKS",
+                                "" + MoMA.EXPORT_CELL_MASKS);
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
@@ -191,6 +199,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "INTENSITY_FIT_PRECISION":
                 case "INTENSITY_FIT_INITIAL_WIDTH":
                 case "INTENSITY_FIT_RANGE_IN_PIXELS":
+                case "EXPORT_CELL_MASKS":
                     property.setCategory(EXPORT);
                     property.setShortDescription(key);
                     break;

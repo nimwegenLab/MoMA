@@ -23,6 +23,7 @@ import java.util.Locale;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import static com.jug.MoMA.*;
 
 /**
  * @author jug
@@ -56,7 +57,9 @@ public class CellStatsExporter {
             final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
             List<SegmentRecord> startingPoints = getCellTracks(firstGLF);
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
-            exportCellLabelMasks(new File(folderToUse, "CellMaskImages_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+            if(EXPORT_CELL_MASKS) {
+                exportCellLabelMasks(new File(folderToUse, "CellMaskImages_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+            }
         } catch (final GRBException e) {
             e.printStackTrace();
         }

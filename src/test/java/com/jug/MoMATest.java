@@ -239,7 +239,7 @@ public class MoMATest {
         remove_probability_maps(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath};
         MoMA moma = new MoMA();
-        moma.HEADLESS = true;
+        moma.HEADLESS = false;
         MoMA.main(args);
     }
 

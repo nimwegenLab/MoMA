@@ -83,12 +83,13 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     }
                     case "EXPORT_CELL_MASKS": {
                         MoMA.EXPORT_CELL_MASKS =
-                                Boolean.parseBoolean(evt.getNewValue().toString());
+                                Integer.parseInt(evt.getNewValue().toString()) == 1;
                         MoMA.props.setProperty(
                                 "EXPORT_CELL_MASKS",
-                                "" + MoMA.EXPORT_CELL_MASKS);
+                                evt.getNewValue().toString());
                         break;
                     }
+
                     case "INTENSITY_FIT_ITERATIONS": {
                         MoMA.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());

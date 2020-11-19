@@ -639,7 +639,7 @@ public class MoMA {
 		INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
 		INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
-		EXPORT_CELL_MASKS = Boolean.parseBoolean(props.getProperty("EXPORT_CELL_MASKS", Boolean.toString(EXPORT_CELL_MASKS)));
+		EXPORT_CELL_MASKS = props.getProperty( "EXPORT_CELL_MASKS", Integer.toString(EXPORT_CELL_MASKS?1:0) ).equals("1");
 
 		if ( !HEADLESS ) {
 			// Iterate over all currently attached monitors and check if sceen
@@ -1193,7 +1193,7 @@ public class MoMA {
 			props.setProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION));
 			props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
-			props.setProperty("EXPORT_CELL_MASKS", Boolean.toString(EXPORT_CELL_MASKS));
+			props.setProperty("EXPORT_CELL_MASKS", Integer.toString(EXPORT_CELL_MASKS?1:0));
 
 			props.store( out, "MotherMachine properties" );
 		} catch ( final Exception e ) {

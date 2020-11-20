@@ -58,7 +58,7 @@ public class CellStatsExporter {
             List<SegmentRecord> startingPoints = getCellTracks(firstGLF);
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
             if(EXPORT_CELL_MASKS) {
-                exportCellLabelMasks(new File(folderToUse, "CellMaskImages_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+                exportCellLabelMasks(new File(folderToUse, "CellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
             }
         } catch (final GRBException e) {
             e.printStackTrace();

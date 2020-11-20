@@ -22,6 +22,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -673,7 +674,7 @@ public class MoMA {
 			inputFolder = main.showStartupDialog( guiFrame, path );
 		}
 		System.out.println( "Default filename decoration = " + inputFolder.getName() );
-		defaultFilenameDecoration = inputFolder.getName();
+		setDefaultFilenameDecoration(inputFolder.getName());
 		path = inputFolder.getAbsolutePath();
 		props.setProperty( "import_path", path );
 
@@ -1422,7 +1423,7 @@ public class MoMA {
 	 *            the defaultFilenameDecoration to set
 	 */
 	public static void setDefaultFilenameDecoration( final String defaultFilenameDecoration ) {
-		MoMA.defaultFilenameDecoration = defaultFilenameDecoration;
+		MoMA.defaultFilenameDecoration = FilenameUtils.removeExtension(defaultFilenameDecoration);
 	}
 
 	/**

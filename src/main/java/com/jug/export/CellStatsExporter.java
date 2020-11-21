@@ -33,6 +33,7 @@ public class CellStatsExporter {
     private final MoMAGui gui;
     private ComponentProperties componentProperties = new ComponentProperties();
     private MixtureModelFit mixtureModelFit = new MixtureModelFit();
+    private LabelImageExporter labelImageExport;
 
     public CellStatsExporter(final MoMAGui gui) {
         this.gui = gui;
@@ -59,6 +60,7 @@ public class CellStatsExporter {
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
             if(EXPORT_CELL_MASKS) {
                 exportCellLabelMasks(new File(folderToUse, "CellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+                labelImageExport.saveThinnedImages(new File(folderToUse, "CellMasksThinned_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
             }
         } catch (final GRBException e) {
             e.printStackTrace();
@@ -74,7 +76,7 @@ public class CellStatsExporter {
         long verticalSize = firstGLF.getImage().dimension(1);
         final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
 
-        LabelImageExporter labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
+        labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
@@ -188,6 +190,8 @@ public class CellStatsExporter {
                 frameCol.addValue(segmentRecord.frame);
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
+
+
 
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);

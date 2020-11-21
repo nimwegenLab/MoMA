@@ -1,9 +1,7 @@
 package com.jug.util.componenttree;
 
-import net.imagej.ops.OpService;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -12,12 +10,11 @@ import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
-import org.scijava.Context;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
@@ -26,7 +23,7 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * Pixels in the component.
      */
-    private final List<Localizable> pixelList = new ArrayList<>();
+    private final ArrayList<Localizable> pixelList = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
     /**
      * Maximum threshold value of the connected component.
@@ -150,6 +147,16 @@ public final class SimpleComponent<T extends Type<T>>
     @Override
     public Iterator<Localizable> iterator() {
         return pixelList.iterator();
+    }
+
+    /**
+     * Returns an iterator to localizables, which are sorted with to the passed
+     * comparator.
+     */
+    public Iterator<Localizable> sortedIterator(Comparator<Localizable> comparator){
+        ArrayList<Localizable> myPixelList = (ArrayList<Localizable>) pixelList.clone();
+        myPixelList.sort(comparator);
+        return myPixelList.iterator();
     }
 
 //    @Override

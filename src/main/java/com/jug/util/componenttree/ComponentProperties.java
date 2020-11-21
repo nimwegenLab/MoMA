@@ -8,14 +8,22 @@ import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.FinalInterval;
+import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealPoint;
 import net.imglib2.roi.geom.real.Polygon2D;
+import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.roi.labeling.LabelRegionRandomAccess;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ComponentProperties {
     private OpService ops = (new Context()).service(OpService.class);
@@ -24,6 +32,54 @@ public class ComponentProperties {
     public ComponentProperties() {
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
+    }
+
+    RowsFirstPixelPositionComparator rowsFirstPixelPositionComparator = new RowsFirstPixelPositionComparator();
+
+    public double getSkeletonLength(SimpleComponent<?> component) {
+        Iterator<Localizable> iterator = component.sortedIterator(rowsFirstPixelPositionComparator);
+
+        List<double[]> skeletonPositions = new ArrayList<>();
+
+        Localizable loc = iterator.next();
+        double xMin = loc.getDoublePosition(0);
+        double xMax = loc.getDoublePosition(0);
+        double yCurrent = loc.getDoublePosition(1);
+        double x = loc.getDoublePosition(0);
+        double y = loc.getDoublePosition(1);
+
+        while(iterator.hasNext()){
+//            System.out.println("x: " + x + "; y: " + y);
+            loc = iterator.next();
+            x = loc.getDoublePosition(0);
+            y = loc.getDoublePosition(1);
+
+            if (y > yCurrent) { /* we are starting work on a new row */
+                double xCenter = (xMin + xMax) / 2;
+                skeletonPositions.add(new double[]{xCenter, yCurrent}); /* add center point for the new-finished row */
+//                System.out.println("xMin: " + xMin + "; xMax: " + xMax);
+//                System.out.println("xCenter: " + xCenter + "; yCurrent: " + yCurrent);
+                yCurrent = y; /* set yCurrent for the new row */
+                xMin = loc.getDoublePosition(0); /* set xMin value for new row */
+            }
+            xMax = x;
+        }
+
+        double tmp = calculateSkeletonLength(skeletonPositions);
+//        System.out.println("tmp: " + tmp);
+        return tmp;
+    }
+
+    private double calculateSkeletonLength(List<double[]> centerPositions) {
+        double skeletonLength = 0;
+        for (int ind = 0; ind < centerPositions.size() - 1; ind++) {
+            double[] pos1 = centerPositions.get(ind);
+            double[] pos2 = centerPositions.get(ind + 1);
+            double deltaX = pos1[0] - pos2[0];
+            double deltaY = pos1[1] - pos2[1];
+            skeletonLength += Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        }
+        return skeletonLength;
     }
 
     public ValuePair<Double, Double> getMinorMajorAxis(SimpleComponent<?> component){

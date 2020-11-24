@@ -11,6 +11,7 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+        tests._gwendolin__20170512__recA_recN_lexA_highexp_8channelsMM_test4_MMStack_Pos0_preproc_GL07();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1();
 //        tests._20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02(); // problematic dataset
 //        tests._20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL06(); // problematic dataset
@@ -24,7 +25,7 @@ public class MoMATest {
 //        tests._cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03();
 //        tests._20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02();  // dataset with jumping cell
-        tests._new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // Bad segmentation with model_20200605-134801_36cfc364_cb8fe485.zip
+//        tests._new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // Bad segmentation with model_20200605-134801_36cfc364_cb8fe485.zip
 //        tests._50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // Bad segmentation with model_20200605-134801_36cfc364_cb8fe485.zip
 //        tests._450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // Bad segmentation with model_20200605-134801_36cfc364_cb8fe485.zip
 //        tests._20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3(); // Bad segmentation with model_20200605-134801_36cfc364_cb8fe485.zip
@@ -41,6 +42,15 @@ public class MoMATest {
 //##########################################################
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
+
+
+
+    @Test
+    public void _gwendolin__20170512__recA_recN_lexA_highexp_8channelsMM_test4_MMStack_Pos0_preproc_GL07() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20170512__recA_recN_lexA_highexp_8channelsMM_test4_MMStack_Pos0_preproc_GL07/cropped__20170512__recA_recN_lexA_highexp_8channelsMM_test4_MMStack_Pos0_preproc_GL07.tif";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20170512__recA_recN_lexA_highexp_8channelsMM_test4_MMStack_Pos0_preproc_GL07/output/";
+        startMoma(inputPath, outputPath);
+    }
 
 
     @Test

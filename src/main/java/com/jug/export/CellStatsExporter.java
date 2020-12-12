@@ -60,7 +60,7 @@ public class CellStatsExporter {
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
             if(EXPORT_CELL_MASKS) {
                 exportCellLabelMasks(new File(folderToUse, "CellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
-                labelImageExport.saveThinnedImages(new File(folderToUse, "CellMasksThinned_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
+//                labelImageExport.saveThinnedImages(new File(folderToUse, "CellMasksThinned_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
             }
         } catch (final GRBException e) {
             e.printStackTrace();

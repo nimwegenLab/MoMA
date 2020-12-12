@@ -172,4 +172,14 @@ public class Plotting {
             imageAccessor.get().set(pixelValue);
         }
     }
+
+    public static <T extends Type<T>> void drawPositions(List<double[]> positions, T pixelValue, RandomAccessibleInterval<T> image) {
+        RandomAccess<T> imageAccessor = image.randomAccess();
+        for (double[] location : positions) {
+            double x = location[0];
+            double y = location[1];
+            imageAccessor.setPosition(new int[]{(int)x, (int)y});
+            imageAccessor.get().set(pixelValue);
+        }
+    }
 }

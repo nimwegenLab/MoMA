@@ -37,6 +37,13 @@ public class ComponentProperties {
     RowsFirstPixelPositionComparator rowsFirstPixelPositionComparator = new RowsFirstPixelPositionComparator();
 
     public double getSkeletonLength(SimpleComponent<?> component) {
+        List<double[]> positions = getSkeletonPositions(component);
+        double tmp = calculateSkeletonLength(positions);
+//        System.out.println("tmp: " + tmp);
+        return tmp;
+    }
+
+    public List<double[]>  getSkeletonPositions(SimpleComponent<?> component) {
         Iterator<Localizable> iterator = component.sortedIterator(rowsFirstPixelPositionComparator);
 
         List<double[]> skeletonPositions = new ArrayList<>();
@@ -45,8 +52,8 @@ public class ComponentProperties {
         double xMin = loc.getDoublePosition(0);
         double xMax = loc.getDoublePosition(0);
         double yCurrent = loc.getDoublePosition(1);
-        double x = loc.getDoublePosition(0);
-        double y = loc.getDoublePosition(1);
+        double x;
+        double y;
 
         while(iterator.hasNext()){
 //            System.out.println("x: " + x + "; y: " + y);
@@ -64,10 +71,7 @@ public class ComponentProperties {
             }
             xMax = x;
         }
-
-        double tmp = calculateSkeletonLength(skeletonPositions);
-//        System.out.println("tmp: " + tmp);
-        return tmp;
+        return skeletonPositions;
     }
 
     private double calculateSkeletonLength(List<double[]> centerPositions) {

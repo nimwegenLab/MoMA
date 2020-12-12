@@ -139,6 +139,7 @@ public class CellStatsExporter {
         ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y_px", "%.5f"));
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
+        ResultTableColumn<Double> cellSkeletonLengthCol = resultTable.addColumn(new ResultTableColumn<>("skeleton_length_px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area_px2"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px2"));
@@ -203,6 +204,7 @@ public class CellStatsExporter {
                 cellCenterYCol.addValue(center.getB());
                 cellWidthCol.addValue(minorAndMajorAxis.getA());
                 cellLengthCol.addValue(minorAndMajorAxis.getB());
+                cellSkeletonLengthCol.addValue(componentProperties.getSkeletonLength(currentComponent));
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));

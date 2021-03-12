@@ -33,6 +33,7 @@ public class CellStatsExporter {
     private final MoMAGui gui;
     private ComponentProperties componentProperties = new ComponentProperties();
     private MixtureModelFit mixtureModelFit = new MixtureModelFit();
+    private LabelImageExporter labelImageExport;
 
     public CellStatsExporter(final MoMAGui gui) {
         this.gui = gui;
@@ -58,7 +59,8 @@ public class CellStatsExporter {
             List<SegmentRecord> startingPoints = getCellTracks(firstGLF);
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"), startingPoints);
             if(EXPORT_CELL_MASKS) {
-                exportCellLabelMasks(new File(folderToUse, "CellMaskImages_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+                exportCellLabelMasks(new File(folderToUse, "CellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"), startingPoints);
+//                labelImageExport.saveThinnedImages(new File(folderToUse, "CellMasksThinned_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
             }
         } catch (final GRBException e) {
             e.printStackTrace();
@@ -74,7 +76,7 @@ public class CellStatsExporter {
         long verticalSize = firstGLF.getImage().dimension(1);
         final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
 
-        LabelImageExporter labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
+        labelImageExport = new LabelImageExporter(horizontalSize, verticalSize);
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
@@ -137,6 +139,7 @@ public class CellStatsExporter {
         ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y_px", "%.5f"));
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
+        ResultTableColumn<Double> cellSkeletonLengthCol = resultTable.addColumn(new ResultTableColumn<>("skeleton_length_px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("cell_area_px2"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px2"));
@@ -189,6 +192,8 @@ public class CellStatsExporter {
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
+
+
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);
                 numberOfCellsInLaneCol.addValue(numCells);
@@ -199,6 +204,7 @@ public class CellStatsExporter {
                 cellCenterYCol.addValue(center.getB());
                 cellWidthCol.addValue(minorAndMajorAxis.getA());
                 cellLengthCol.addValue(minorAndMajorAxis.getB());
+                cellSkeletonLengthCol.addValue(componentProperties.getSkeletonLength(currentComponent));
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));

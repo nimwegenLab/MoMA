@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.moma.auxiliary.Plotting.drawPositions;
 import static org.junit.Assert.*;
 
 public class ComponentPropertiesTest {
@@ -50,8 +51,9 @@ public class ComponentPropertiesTest {
         List<SimpleComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
+        System.out.println("verticalPosition, minorAxis, majorAxis, skeletonLength, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
         for(SimpleComponent component : roots){
+            double skeletonLength = props.getSkeletonLength(component);
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
@@ -60,8 +62,12 @@ public class ComponentPropertiesTest {
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
-            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
+            System.out.println(String.format("%f, %f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, skeletonLength, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
+
+            List<double[]> positions = props.getSkeletonPositions(component);
+            drawPositions(positions, new FloatType(0), currentImage);
         }
+        ImageJFunctions.show(currentImage);
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }

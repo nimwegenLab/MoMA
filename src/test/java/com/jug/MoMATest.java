@@ -11,7 +11,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
+        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
+//        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1();
 //        tests._20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02(); // problematic dataset
 //        tests._20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL06(); // problematic dataset
@@ -43,6 +44,13 @@ public class MoMATest {
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
 
+
+    @Test
+    public void _theo__20210126_glc_spcm_1__Pos1_GL15() {
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL15/20210126_glc_spcm_1_MMStack_Pos1_GL15.tiff";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL15/output/";
+        startMoma(inputPath, outputPath);
+    }
 
     @Test
     public void _theo__20210126_glc_spcm_1__Pos1_GL14() {

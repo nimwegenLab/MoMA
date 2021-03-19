@@ -376,20 +376,6 @@ public class FloatTypeImgLoader {
 	}
 
 	/**
-	 * Loads all files containing "*.tif" from a given folder.
-	 * 
-	 * @param inFolder
-	 *            Folder containing images (ending with '*.tif')
-	 * @return 3d Img
-	 * @throws ImgIOException
-	 * @throws IncompatibleTypeException
-	 * @throws Exception
-	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadFolderAsChannelStack( final File inFolder ) throws ImgIOException, IncompatibleTypeException, Exception {
-		return loadPathAsChannelStack( inFolder.getAbsolutePath() );
-	}
-
-	/**
 	 * Loads all files containing ".tif" from a folder given by foldername.
 	 * 
 	 * @param strFolder

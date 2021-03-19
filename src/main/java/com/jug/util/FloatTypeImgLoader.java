@@ -6,17 +6,9 @@ import ij.Prefs;
 import ij.plugin.ChannelSplitter;
 import ij.plugin.Duplicator;
 import io.scif.img.ImgIOException;
-
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import net.imglib2.*;
-import net.imglib2.algorithm.stats.Normalize;
+import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessible;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.exception.IncompatibleTypeException;
 import net.imglib2.img.ImagePlusAdapter;
 import net.imglib2.img.Img;
@@ -28,6 +20,14 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author jug
@@ -92,10 +92,6 @@ public class FloatTypeImgLoader {
 		System.out.println("size before norm  "  + rawChannelImgs.get(0).max(2));
 		// Normalise first channel
 		ArrayList<IntervalView<FloatType>> firstChannelSlices = Util.slice(rawChannelImgs.get( 0 ));
-		for (IntervalView<FloatType> slice : firstChannelSlices)
-		{
-			Normalize.normalize(slice, new FloatType( 0.0f ), new FloatType( 1.0f ) );
-		}
 		rawChannelImgs.set(0, Util.stack(firstChannelSlices));
 
 		System.out.println("size after norm  "  + rawChannelImgs.get(0).max(2));
@@ -122,11 +118,7 @@ public class FloatTypeImgLoader {
 			final String filter = String.format( "_c%04d", cIdx );
 			System.out.println( String.format( "Loading tiff sequence for channel, identified by '%s', from '%s'...", filter, path ) );
 			try {
-				if ( cIdx == minChannel ) {
-					rawChannelImgs.add( FloatTypeImgLoader.loadMMPathAsStack( path, minTime, maxTime, true, filter ) );
-				} else {
-					rawChannelImgs.add( FloatTypeImgLoader.loadMMPathAsStack( path, minTime, maxTime, false, filter ) );
-				}
+				rawChannelImgs.add( FloatTypeImgLoader.loadMMPathAsStack( path, minTime, maxTime, filter ) );
 			} catch ( final Exception e ) {
 				e.printStackTrace();
 				System.exit( 10 );
@@ -181,14 +173,13 @@ public class FloatTypeImgLoader {
 	 * @param strFolder
 	 * @param minTime
 	 * @param maxTime
-	 * @param normalize
 	 * @param filterStrings
 	 * @return
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	private static List< Img< FloatType >> loadMMTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filterStrings) throws ImgIOException, IncompatibleTypeException, Exception {
+	private static List< Img< FloatType >> loadMMTiffsFromFolder(final String strFolder, final int minTime, final int maxTime, final String... filterStrings) throws ImgIOException, IncompatibleTypeException, Exception {
 
 		final File folder = new File( strFolder );
 		final FilenameFilter filter = (dir, name) -> {
@@ -208,7 +199,7 @@ public class FloatTypeImgLoader {
 		Arrays.sort( listOfFiles ); // LINUX does not do that by default!
 		if ( listOfFiles == null ) { throw new Exception( "Given argument is not a valid folder!" ); }
 
-		return loadMMTiffSequence( listOfFiles, normalize );
+		return loadMMTiffSequence( listOfFiles );
 	}
 
 	/**
@@ -281,14 +272,14 @@ public class FloatTypeImgLoader {
 	}
 
 	/**
-	 * Load and selectively normalize channels.
+	 * Load channels.
 	 * Assumptions: filename contains channel info in format "_c%04d".
 	 * 
 	 * @param listOfFiles
 	 * @return
 	 * @throws ImgIOException
 	 */
-	private static List< Img< FloatType >> loadMMTiffSequence(final File[] listOfFiles, final boolean normalize) throws ImgIOException {
+	private static List< Img< FloatType >> loadMMTiffSequence(final File[] listOfFiles) throws ImgIOException {
 		final List< Img< FloatType > > images = new ArrayList<>(listOfFiles.length);
 
 		for ( int i = 0; i < listOfFiles.length; i++ ) {
@@ -321,10 +312,6 @@ public class FloatTypeImgLoader {
 					} catch ( final ImgIOException e ) {
 						ioe.setStackTrace( e.getStackTrace() );
 					}
-					// Selective Normalization!
-					if ( normalize ) {
-						Normalize.normalize( images.get( t ), new FloatType( 0.0f ), new FloatType( 1.0f ) );
-					}
 				}
 			}
 		}
@@ -345,27 +332,10 @@ public class FloatTypeImgLoader {
 			}
 		}
 
-		// SINGLE THREADED ALTERNATIVE
-		// ---------------------------
-//		for ( int i = 0; i < listOfFiles.length; i++ ) {
-//			try {
-//				images.set( i, loadTiff( listOfFiles[ i ] ) );
-//			} catch ( final ImgIOException e ) {
-//				e.printStackTrace();
-//			}
-//			// Selective Normalization!
-//			if ( normalize ) {
-//				Normalize.normalize( images.get( i ), new FloatType( 0f ), new FloatType( 1f ) );
-//			}
-//		}
-
 		// Add the last image twice. This is to trick the MM to not having tracking problems towards the last frame.
 		// Note that this also means that the GUI always has to show one frame less!!!
 		try {
 			images.add( loadTiff( listOfFiles[ listOfFiles.length - 1 ] ) );
-			if ( normalize ) {
-				Normalize.normalize( images.get( listOfFiles.length ), new FloatType( 0.0f ), new FloatType( 1.0f ) );
-			}
 		} catch ( final ImgIOException e ) {
 			e.printStackTrace();
 		}
@@ -396,13 +366,13 @@ public class FloatTypeImgLoader {
 	 * 
 	 * @param inFolder
 	 *            Folder containing images (ending with '*.tif')
-	 * @return 3d Img, normalized to [0,1]
+	 * @return 3d Img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	public static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadFolderAsStack( final File inFolder, final boolean normalize ) throws ImgIOException, IncompatibleTypeException, Exception {
-		return loadPathAsStack( inFolder.getAbsolutePath(), normalize );
+	public static <T extends RealType<T> & NativeType<T>> Img<FloatType> loadFolderAsStack(final File inFolder) throws ImgIOException, IncompatibleTypeException, Exception {
+		return loadPathAsStack(inFolder.getAbsolutePath());
 	}
 
 	/**
@@ -410,7 +380,7 @@ public class FloatTypeImgLoader {
 	 * 
 	 * @param inFolder
 	 *            Folder containing images (ending with '*.tif')
-	 * @return 3d Img, normalized to [0,1]
+	 * @return 3d Img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
@@ -425,7 +395,7 @@ public class FloatTypeImgLoader {
 	 * @param strFolder
 	 *            String pointing to folder containing images (ending with
 	 *            '.tif')
-	 * @return 3d Img, normalized to [0,1]
+	 * @return 3d Img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
@@ -457,7 +427,6 @@ public class FloatTypeImgLoader {
 				} else {
 					DataMover.copy( Views.hyperSlice( image, 2, c ), iterChannel );
 				}
-				Normalize.normalize( iterChannel, new FloatType( 0.0f ), new FloatType( 1.0f ) );
 			}
 			i++;
 		}
@@ -472,16 +441,16 @@ public class FloatTypeImgLoader {
 	 * @param strFolder
 	 *            String pointing to folder containing images (ending with
 	 *            '.tif')
-	 * @return 3d Img, normalized to [0,1]
+	 * @return 3d Img
 	 * @throws ImgIOException
 	 * @throws IncompatibleTypeException
 	 * @throws Exception
 	 */
-	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder, final boolean normalize) throws ImgIOException, IncompatibleTypeException, Exception {
-		return loadPathAsStack( strFolder, -1, -1, normalize, ( String[] ) null );
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder) throws ImgIOException, IncompatibleTypeException, Exception {
+		return loadPathAsStack( strFolder, -1, -1, ( String[] ) null );
 	}
 
-	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadPathAsStack(final String strFolder, final int minTime, final int maxTime, final String... filter) throws Exception {
 
 		final List< Img< FloatType >> imageList = loadTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
@@ -500,18 +469,15 @@ public class FloatTypeImgLoader {
 			final IterableInterval< FloatType > iterZSlize = Views.iterable( viewZSlize );
 
 			DataMover.copy( Views.extendZero( image ), iterZSlize );
-			if ( normalize ) {
-				Normalize.normalize( iterZSlize, new FloatType( 0.0f ), new FloatType( 1.0f ) );
-			}
 			i++;
 		}
 
 		return stack;
 	}
 
-	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadMMPathAsStack(final String strFolder, final int minTime, final int maxTime, final boolean normalize, final String... filter) throws Exception {
+	private static < T extends RealType< T > & NativeType< T > > Img< FloatType > loadMMPathAsStack(final String strFolder, final int minTime, final int maxTime, final String... filter) throws Exception {
 
-		final List< Img< FloatType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, normalize, filter );
+		final List< Img< FloatType >> imageList = loadMMTiffsFromFolder( strFolder, minTime, maxTime, filter );
 		if ( imageList.size() == 0 ) return null;
 
 		Img< FloatType > stack;
@@ -634,7 +600,6 @@ public class FloatTypeImgLoader {
 			} else {
 				throw new ImgIOException( "MultiChannel image can only be composed out of non 2d images." );
 			}
-			Normalize.normalize( iterChannel, new FloatType( 0.0f ), new FloatType( 1.0f ) );
 		}
 
 //		ImageJFunctions.show( retImage, "muh" );
@@ -670,7 +635,6 @@ public class FloatTypeImgLoader {
 					final RandomAccessibleInterval< FloatType > viewChannel = Views.hyperSlice( Views.hyperSlice( retImage, 3, f ), 2, c );
 					final IterableInterval< FloatType > iterChannel = Views.iterable( viewChannel );
 
-					Normalize.normalize( iterChannel, new FloatType( 0.0f ), new FloatType( 1.0f ) );
 					DataMover.copy( sourceChannel, iterChannel );
 				}
 				frameList.remove( f );

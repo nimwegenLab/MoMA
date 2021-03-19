@@ -1,5 +1,8 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.Util;
+import net.imagej.ops.stats.DefaultMinMax;
+
 import com.jug.MoMA;
 import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
@@ -8,6 +11,7 @@ import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.stats.ComputeMinMax;
 import net.imglib2.img.Img;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
@@ -79,9 +83,16 @@ public class UnetProcessor {
      * @param inputImage input image
      * @return processed image (probability map)
      */
+
     public Img<FloatType> process(Img<FloatType> inputImage) {
         try {
-            inputImage = (Img)normalizeToPercentiles(inputImage, 1.0, 99.4);
+//            inputImage = (Img)normalizeToPercentiles(inputImage, 1.0, 99.4);
+//            FloatType min = null, max = null;
+            final FloatType min = new FloatType();
+            final FloatType max = new FloatType();
+            ComputeMinMax.computeMinMax(inputImage, min, max);
+//            Util.computeMinMax(Views.iterable(inputImage), min, max);
+//            new DefaultMinMax<>().calculate(Views.);
             FinalInterval roiForNetworkProcessing = getRoiForUnetProcessing(inputImage);
             IntervalView<FloatType> newImg = getReshapedImageForProcessing(inputImage, roiForNetworkProcessing);
             Dataset dataset = datasetService.create(Views.zeroMin(newImg)); // WHY DO WE NEED ZEROMIN HERE?!

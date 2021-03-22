@@ -760,7 +760,6 @@ public class MoMA {
 	private Img< FloatType > imgRaw;
 	private Img< FloatType > imgTemp;
 	private Img< FloatType > imgProbs;
-	private Img< ARGBType > imgAnnotated;
 
 	/**
 	 * Contains all GrowthLines found in the given data.
@@ -827,21 +826,6 @@ public class MoMA {
 	 */
 	private void setImgTemp(final Img<FloatType> imgTemp) {
 		this.imgTemp = imgTemp;
-	}
-
-	/**
-	 * @return the imgRendered
-	 */
-	private Img< ARGBType > getImgAnnotated() {
-		return imgAnnotated;
-	}
-
-	/**
-	 * @param imgRendered
-	 *            the imgRendered to set
-	 */
-	public void setImgRendered( final Img< ARGBType > imgRendered ) {
-		this.imgAnnotated = imgRendered;
 	}
 
 	/**
@@ -1226,17 +1210,6 @@ public class MoMA {
 		imgRaw = rawChannelImgs.get( 0 );
 //		Pair<FloatType, FloatType> result1 = ops.stats().minMax(Views.hyperSlice(imgRaw, 2, 1));
 
-		// setup ARGB image (that will eventually contain annotations)
-		System.out.print( "Spawning off annotation image (ARGB)..." );
-		resetImgAnnotatedLike( getImgRaw() );
-		try {
-			DataMover.convertAndCopy( getImgRaw(), getImgAnnotated() );
-		} catch ( final Exception e ) {
-			// conversion might not be supported
-			e.printStackTrace();
-		}
-		System.out.println( " done!" );
-
 		restartFromGLSegmentation();
 
 		if ( HEADLESS ) {
@@ -1257,12 +1230,6 @@ public class MoMA {
 		setImgTemp( imgRaw.copy() );
 	}
 
-	/**
-	 * Resets imgTemp to contain the raw data from imgRaw.
-	 */
-	private void resetImgAnnotatedLike(final Img<FloatType> img) {
-		imgAnnotated = DataMover.createEmptyArrayImgLike( img, new ARGBType() );
-	}
 
 	/**
 	 * Adds all intensity values of row i in view to rowSums[i].

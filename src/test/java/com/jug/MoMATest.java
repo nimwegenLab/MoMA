@@ -1,6 +1,7 @@
 package com.jug;
 
 import org.junit.Test;
+import scala.Int;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -11,7 +12,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
+        tests._lis_20210303__Pos0_GL14();
+//        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1();
 //        tests._20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02(); // problematic dataset
@@ -44,6 +46,14 @@ public class MoMATest {
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
 
+
+    @Test
+    public void _lis_20210303__Pos0_GL14() {
+//        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14.tiff";
+        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14__cropped.tiff";
+        String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/output/";
+        startMoma(inputPath, outputPath);
+    }
 
     @Test
     public void _theo__20210126_glc_spcm_1__Pos1_GL15() {
@@ -253,10 +263,16 @@ public class MoMATest {
 
     private void startMoma(String inputPath, String outputPath){
         remove_probability_maps(inputPath);
+        create_output_folder(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath};
         MoMA moma = new MoMA();
         moma.HEADLESS = false;
         MoMA.main(args);
+    }
+
+    private void create_output_folder(String outputPath) {
+        File file = new File(outputPath);
+        file.mkdir();
     }
 
     /**

@@ -69,22 +69,15 @@ public class FloatTypeImgLoader {
 			{
 				Img<FloatType> img = ImageJFunctions.convertFloat(channelImp);
 				System.out.println("size before dupl "  + img.max(2));
-
-				// dirty workaround, see FloatTypeImgLoader.loadMMTiffSequence
-//				img = duplicateLastSlice(img);
-
 				System.out.println("size after dupl "  + img.max(2));
 				rawChannelImgs.add(img);
 			}
-		} else { // this way is not very memory efficient, but I see no other easy alternative
+		} else {
 			int sliceCount = imp.getNSlices();
 
 			for (int c = minChannel; c <= maxChannel; c++) {
-				ImagePlus dupl = new Duplicator().run(imp, minChannel, maxChannel, 1, sliceCount, minTime, maxTime);
+				ImagePlus dupl = new Duplicator().run(imp, c, c, 1, sliceCount, minTime, maxTime);
 				Img<FloatType> img = ImageJFunctions.convertFloat(dupl);
-
-				// dirty workaround, see FloatTypeImgLoader.loadMMTiffSequence
-//				img = duplicateLastSlice(img);
 				rawChannelImgs.add(img);
 			}
 		}

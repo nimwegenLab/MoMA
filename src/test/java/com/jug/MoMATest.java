@@ -52,7 +52,10 @@ public class MoMATest {
 //        String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14.tiff";
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14__cropped.tiff";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/lis_20210303/Pos0_GL14/output/";
-        startMoma(inputPath, outputPath);
+        Integer tmin = 100;
+        Integer tmax = 200;
+//        startMoma(inputPath, outputPath);
+        startMoma(inputPath, outputPath, tmin, tmax);
     }
 
     @Test
@@ -259,6 +262,15 @@ public class MoMATest {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
         startMoma(inputPath, outputPath);
+    }
+
+    private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax){
+        remove_probability_maps(inputPath);
+        create_output_folder(outputPath);
+        String[] args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
+        MoMA moma = new MoMA();
+        moma.HEADLESS = false;
+        MoMA.main(args);
     }
 
     private void startMoma(String inputPath, String outputPath){

@@ -799,14 +799,6 @@ public class MoMA {
 	}
 
 	/**
-	 * @param imgRaw
-	 *            the imgRaw to set
-	 */
-	public void setImgRaw( final Img< FloatType > imgRaw ) {
-		this.imgRaw = imgRaw;
-	}
-
-	/**
 	 * @return the imgTemp
 	 */
 	public Img< FloatType > getImgTemp() {

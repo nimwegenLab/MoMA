@@ -32,10 +32,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private AssignmentsEditorCanvasView inactiveDivisionAssignments;
     private AssignmentsEditorCanvasView inactiveExitAssignments;
     private AssignmentsEditorCanvasView inactiveLysisAssignments;
-    private AssignmentsEditorCanvasView fixedAssignments;
     private int curTabIdx = 0;
     private JPanel nextHackTab;
     private HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data = new HashMap<>();
+    private JComponent[] tabsToRoll;
+    private String[] namesToRoll;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -58,6 +59,14 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     // methods
     // -------------------------------------------------------------------------------------
 
+    public void switchToTab(int targetTab){
+        if (targetTab >= tabsToRoll.length) targetTab = 0;
+        this.add(namesToRoll[targetTab], tabsToRoll[targetTab]);
+        this.remove(tabsToRoll[curTabIdx]);
+        curTabIdx = targetTab;
+        this.setSelectedIndex(1);
+    }
+
     /**
      * Builds the user interface.
      */
@@ -67,24 +76,16 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, gui);
         inactiveExitAssignments = new AssignmentsEditorCanvasView(height, gui);
         inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, gui);
-        fixedAssignments = new AssignmentsEditorCanvasView(height, gui);
 
         // Hack to enable non-Mac MoMA to only use one row of tabs
         nextHackTab = new JPanel();
-        final JComponent[] tabsToRoll =
-                {activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments, fixedAssignments};
-        final String[] namesToRoll =
-                {"OPT", "M", "D", "E", "L", "GT"};
-        final AssignmentsEditorViewer me = this;
+        tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
+        namesToRoll = new String[]{"OPT", "M", "D", "E", "L"};
         final ChangeListener changeListener = changeEvent -> {
             final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
             if (sourceTabbedPane.getSelectedComponent().equals(nextHackTab)) {
-                final int oldIdx = curTabIdx;
-                curTabIdx++;
-                if (curTabIdx >= tabsToRoll.length) curTabIdx = 0;
-                me.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
-                me.remove(tabsToRoll[oldIdx]);
-                me.setSelectedIndex(1);
+                int selectedTab = curTabIdx + 1;
+                switchToTab(selectedTab);
             }
         };
 
@@ -93,7 +94,6 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
         inactiveExitAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         inactiveLysisAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
-        fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
 
         if (!OSValidator.isMac()) {
             this.add(">", nextHackTab);
@@ -128,7 +128,6 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
             inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
             inactiveLysisAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
         }
-        fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
         activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(hashMap));
         this.data = hashMap;
     }
@@ -148,8 +147,6 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
             inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
         } else if (this.getSelectedComponent().equals(inactiveLysisAssignments)) {
             inactiveLysisAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
-        } else {
-            fixedAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isGroundTruth() || aa.isGroundUntruth()));
         }
     }
 

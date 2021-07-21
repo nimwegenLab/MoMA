@@ -298,6 +298,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // - - - - - - - - - - - - - - - - - - - - - - - -
         //  KEYSTROKE SETUP (usingInput- and ActionMaps)
         // - - - - - - - - - - - - - - - - - - - - - - - -
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
@@ -308,6 +309,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('e'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('v'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('b'), "MMGUI_bindings");
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('p'), "MMGUI_bindings");
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('n'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('?'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('0'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('1'), "MMGUI_bindings");
@@ -319,6 +322,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+
+        this.getActionMap().put("ESCAPE", new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                sliderTime.requestFocus();
+            }
+        });
 
         this.getActionMap().put("MMGUI_bindings", new AbstractAction() {
 
@@ -371,6 +383,31 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     }
                     cbWhichImgToShow.setSelectedIndex(selIdx);
                 }
+                if (e.getActionCommand().equals("0")) {
+                    leftAssignmentsEditorViewer.switchToTab(0);
+                    rightAssignmentsEditorViewer.switchToTab(0);
+                    dataToDisplayChanged();
+                }
+                if (e.getActionCommand().equals("1")) {
+                    leftAssignmentsEditorViewer.switchToTab(1);
+                    rightAssignmentsEditorViewer.switchToTab(1);
+                    dataToDisplayChanged();
+                }
+                if (e.getActionCommand().equals("2")) {
+                    leftAssignmentsEditorViewer.switchToTab(2);
+                    rightAssignmentsEditorViewer.switchToTab(2);
+                    dataToDisplayChanged();
+                }
+                if (e.getActionCommand().equals("3")) {
+                    leftAssignmentsEditorViewer.switchToTab(3);
+                    rightAssignmentsEditorViewer.switchToTab(3);
+                    dataToDisplayChanged();
+                }
+                if (e.getActionCommand().equals("4")) {
+                    leftAssignmentsEditorViewer.switchToTab(4);
+                    rightAssignmentsEditorViewer.switchToTab(4);
+                    dataToDisplayChanged();
+                }
                 if (e.getActionCommand().equals("b")) {
                     showSegmentationAnnotations = !showSegmentationAnnotations;
                     imgCanvasActiveLeft.showSegmentationAnnotations(showSegmentationAnnotations);
@@ -378,9 +415,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     imgCanvasActiveRight.showSegmentationAnnotations(showSegmentationAnnotations);
                     dataToDisplayChanged();
                 }
-                if (e.getActionCommand().equals("?") || e.getActionCommand().equals("0") || e.getActionCommand().equals("1") || e.getActionCommand().equals("2") || e.getActionCommand().equals("3") || e.getActionCommand().equals("4") || e.getActionCommand().equals("5") || e.getActionCommand().equals("6") || e.getActionCommand().equals("7") || e.getActionCommand().equals("8") || e.getActionCommand().equals("9")) {
+                if (e.getActionCommand().equals("?")) {
                     txtNumCells.requestFocus();
                     txtNumCells.setText(e.getActionCommand());
+                }
+                if (e.getActionCommand().equals("n")) {
+                    txtNumCells.requestFocus();
+                    txtNumCells.selectAll();
                 }
             }
         });

@@ -298,6 +298,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // - - - - - - - - - - - - - - - - - - - - - - - -
         //  KEYSTROKE SETUP (usingInput- and ActionMaps)
         // - - - - - - - - - - - - - - - - - - - - - - - -
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
@@ -321,6 +322,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+
+        this.getActionMap().put("ESCAPE", new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                sliderTime.requestFocus();
+            }
+        });
 
         this.getActionMap().put("MMGUI_bindings", new AbstractAction() {
 
@@ -373,7 +383,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     }
                     cbWhichImgToShow.setSelectedIndex(selIdx);
                 }
-                System.out.println("User pressed: " + e.paramString());
                 if (e.getActionCommand().equals("0")) {
                     leftAssignmentsEditorViewer.switchToTab(0);
                     rightAssignmentsEditorViewer.switchToTab(0);

@@ -85,7 +85,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 */
 	@Override
 	public int getId() {
-		return from.getId() + toUpper.getId() + toLower.getId();
+		return from.getId() + toUpper.getId() + toLower.getId() + GrowthLineTrackingILP.ASSIGNMENT_DIVISION;
 	}
 
 	/**

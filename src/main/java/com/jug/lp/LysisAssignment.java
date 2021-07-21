@@ -75,6 +75,6 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 */
 	@Override
 	public int getId() {
-		return who.getId();
+		return who.getId() + GrowthLineTrackingILP.ASSIGNMENT_LYSIS;
 	}
 }

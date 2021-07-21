@@ -71,7 +71,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 */
 	@Override
 	public int getId() {
-		return from.getId() + to.getId();
+		return from.getId() + to.getId() + GrowthLineTrackingILP.ASSIGNMENT_MAPPING;
 	}
 
 	/**

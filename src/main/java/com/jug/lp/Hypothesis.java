@@ -59,7 +59,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	}
 
 	public int getId() {
-		return location.limits.getA() * 1000 + location.limits.getB();
+		return location.limits.getA() * 1000 + location.limits.getB();  // TODO-MM20210721: Why the factor 1000?! This would better be a hash-value based on (multiple) hypothesis properties (e.g. max. segment probability, segment limits, etc.).
 	}
 
 	/**

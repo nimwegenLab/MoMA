@@ -143,6 +143,6 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 */
 	@Override
 	public int getId() {
-		return who.getId();
+		return who.getId() + GrowthLineTrackingILP.ASSIGNMENT_EXIT;
 	}
 }

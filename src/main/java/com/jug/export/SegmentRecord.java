@@ -132,6 +132,8 @@ final class SegmentRecord {
     public String getTerminationIdentifier(){
         if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
             return "exit";
+        } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
+            return "lysis";
         } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
             return "div";
         } else if (terminated_by == SegmentRecord.USER_PRUNING) {

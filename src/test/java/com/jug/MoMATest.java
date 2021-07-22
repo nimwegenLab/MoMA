@@ -1,6 +1,7 @@
 package com.jug;
 
 import org.junit.Test;
+import scala.Int;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -11,8 +12,7 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
-//        tests._export_failure__theo_20210517__Pos8_GL11();
+        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30();
 //        tests._lysing_cell__thomas_20200922__Pos16_GL17();
 //        tests._lis_20210303__Pos0_GL14();
@@ -51,17 +51,8 @@ public class MoMATest {
 
 
     @Test
-    public void _ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35() {
-        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210722__ilp_infeasible_crashes_moma/thomas_20200922/Pos18_GL35/";
-//        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
-        String inputPath = datasetPath + "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos28_GL35.tiff";
-        String outputPath = datasetPath + "/output/";
-        startMoma(inputPath, outputPath, 112, 116, false);
-    }
-
-    @Test
     public void _export_failure__theo_20210517__Pos8_GL11() {
-        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210722__exception_during_export/theo_20210517/Pos8_GL11/";
+        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/exception_during_export/theo_20210517/Pos8_GL11/";
 //        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
         String inputPath = datasetPath + "failing_frame_isolated__20210517_X_spm_1_MMStack_Pos8_GL11.tif";
         String outputPath = datasetPath + "/output/";

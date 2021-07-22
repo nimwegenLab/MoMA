@@ -948,12 +948,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             if (ilp != null) {
                 final int t = sliderTime.getValue();
-                if (t == 0 || !ilp.solutionAvailable()) {
+                if (t == 0) {
                     leftAssignmentsEditorViewer.display();
                 } else {
                     leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
                 }
-                if (t == sliderTime.getMaximum() || !ilp.solutionAvailable()) {
+                if (t == sliderTime.getMaximum()) {
                     rightAssignmentsEditorViewer.display();
                 } else {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));

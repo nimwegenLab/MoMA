@@ -46,7 +46,6 @@ public class GrowthLineTrackingILP {
 	private static final int SUBOPTIMAL = 4;
 	private static final int NUMERIC = 5;
 	private static final int LIMIT_REACHED = 6;
-	private static final int OPTIMIZATION_RUNNING = 7;
 
 	public static final int ASSIGNMENT_EXIT = 0;
 	public static final int ASSIGNMENT_MAPPING = 1;
@@ -771,7 +770,6 @@ public class GrowthLineTrackingILP {
 	 */
 	public synchronized void run() {
 		try {
-			status = OPTIMIZATION_RUNNING;
 			// Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
 			model.getEnv().set( GRB.IntParam.OutputFlag, 0 );
@@ -787,6 +785,9 @@ public class GrowthLineTrackingILP {
 			// - - - - - - - - - - - - - - - - - - - - -
 			model.optimize();
 			dialog.notifyGurobiTermination();
+			if ( MoMA.getGui() != null ) {
+				MoMA.getGui().dataToDisplayChanged();
+			}
 
 			// Relaxation run-test for Paul and Bogdan
 			// - - - - - - - - - - - - - - - - - - - -
@@ -840,19 +841,10 @@ public class GrowthLineTrackingILP {
 			}
 
 			new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();
-
-			if ( MoMA.getGui() != null ) {
-				MoMA.getGui().dataToDisplayChanged();
-			}
 		} catch ( final GRBException e ) {
 			System.out.println( "Could not run the generated ILP!" );
 			e.printStackTrace();
 		}
-	}
-
-	public boolean solutionAvailable() {
-//		return status == OPTIMAL || status == LIMIT_REACHED;
-		return status == OPTIMAL;
 	}
 
 	/**

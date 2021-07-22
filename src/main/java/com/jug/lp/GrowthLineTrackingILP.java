@@ -785,9 +785,6 @@ public class GrowthLineTrackingILP {
 			// - - - - - - - - - - - - - - - - - - - - -
 			model.optimize();
 			dialog.notifyGurobiTermination();
-			if ( MoMA.getGui() != null ) {
-				MoMA.getGui().dataToDisplayChanged();
-			}
 
 			// Relaxation run-test for Paul and Bogdan
 			// - - - - - - - - - - - - - - - - - - - -
@@ -838,6 +835,10 @@ public class GrowthLineTrackingILP {
 				if ( !MoMA.HEADLESS ) {
 					dialog.pushStatus( String.format( "Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0 ) );
 				}
+			}
+
+			if ( MoMA.getGui() != null ) {
+				MoMA.getGui().dataToDisplayChanged();
 			}
 
 			new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();

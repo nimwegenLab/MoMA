@@ -1,14 +1,9 @@
 package com.jug.lp;
 
-import java.util.List;
-
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
+import gurobi.*;
 
-import gurobi.GRB;
-import gurobi.GRBConstr;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBVar;
+import java.util.List;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -124,8 +119,15 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
     /**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
+	private boolean previousIsChoosen = false;
 	public boolean isChoosen() throws GRBException {
-		return ( getGRBVar().get( GRB.DoubleAttr.X ) == 1.0 );
+		if (ilp.getStatus() == 0) throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChoosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
+		try {
+			previousIsChoosen = (getGRBVar().get(GRB.DoubleAttr.X) == 1.0);
+			return previousIsChoosen;
+		} catch (GRBException err) {
+			return previousIsChoosen; /* This will be returned in case the ILP optimization fails. In that case GRBException will be thrown. We then return the previous state of all assignments, so that the user can correct any mistakes she mad. */
+		}
 	}
 
 	/**

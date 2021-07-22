@@ -23,9 +23,9 @@ public class Imglib2Utils {
         Cursor<FloatType> cursor = region.cursor();
         double totalIntensity = 0;
         while(cursor.hasNext()){
+            cursor.fwd();
             float value = cursor.get().get();
             totalIntensity += value;
-            cursor.fwd();
         }
         return totalIntensity;
     }

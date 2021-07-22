@@ -55,6 +55,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private String optionalSegmentInfoString = " ";
     private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
+
     public GrowthlaneViewer(final MoMAGui mmgui, final int w, final int h) {
         super();
 
@@ -266,11 +267,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                     e1.printStackTrace();
                 }
             }
-        } else {
+        } else { // TODO-MM-20210723: WE NEED A WAY OF DESELECTING THE GROUND-TRUTH!!!
             // simple click == SELECTING
             // -------------------------
             Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
-            if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return gracefully */
+            if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
             final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
 
             try {

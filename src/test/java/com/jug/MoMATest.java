@@ -12,7 +12,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._lysing_cell__thomas_20200922__Pos0_GL30();
+        tests._export_failure__theo_20210517__Pos8_GL11();
+//        tests._lysing_cell__thomas_20200922__Pos0_GL30();
 //        tests._lysing_cell__thomas_20200922__Pos16_GL17();
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
@@ -48,6 +49,15 @@ public class MoMATest {
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
 
+
+    @Test
+    public void _export_failure__theo_20210517__Pos8_GL11() {
+        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/exception_during_export/theo_20210517/Pos8_GL11/";
+//        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
+        String inputPath = datasetPath + "failing_frame_isolated__20210517_X_spm_1_MMStack_Pos8_GL11.tif";
+        String outputPath = datasetPath + "/output/";
+        startMoma(inputPath, outputPath, true);
+    }
 
     @Test
     public void _lysing_cell__thomas_20200922__Pos0_GL30() {
@@ -285,22 +295,30 @@ public class MoMATest {
         startMoma(inputPath, outputPath);
     }
 
-    private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax){
+    private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax, boolean headless){
         remove_probability_maps(inputPath);
         create_output_folder(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
         MoMA moma = new MoMA();
-        moma.HEADLESS = false;
+        moma.HEADLESS = headless;
         MoMA.main(args);
     }
 
-    private void startMoma(String inputPath, String outputPath){
+    private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax){
+        startMoma(inputPath, outputPath, tmin, tmax, false);
+    }
+
+    private void startMoma(String inputPath, String outputPath, boolean headless){
         remove_probability_maps(inputPath);
         create_output_folder(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath};
         MoMA moma = new MoMA();
-        moma.HEADLESS = false;
+        moma.HEADLESS = headless;
         MoMA.main(args);
+    }
+
+    private void startMoma(String inputPath, String outputPath){
+        startMoma(inputPath, outputPath, false);
     }
 
     private void create_output_folder(String outputPath) {

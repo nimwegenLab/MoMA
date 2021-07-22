@@ -20,6 +20,8 @@ public class IlpSolutionSanityChecker {
     }
 
     void CheckSolutionContinuityConstraintForAllTimesteps() {
+        if(ilp == null) return;
+        if(!ilp.solutionAvailable()) return;
         System.out.println("--------- Start: CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses ---------");
         for (int t = 1; t < gl.size(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
             CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(t);

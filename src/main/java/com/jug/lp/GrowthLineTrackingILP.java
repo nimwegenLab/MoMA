@@ -1688,10 +1688,10 @@ public class GrowthLineTrackingILP {
 				final List< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > assmnts =
 						nodes.getAssignmentsAt( t );
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assmnt : assmnts ) {
-					if ( assmnt.getGroundTroothConstraint() != null ) {
+					if ( assmnt.getGroundTruthConstraint() != null ) {
 						double rhs;
 						try {
-							rhs = assmnt.getGroundTroothConstraint().get( GRB.DoubleAttr.RHS );
+							rhs = assmnt.getGroundTruthConstraint().get( GRB.DoubleAttr.RHS );
 							out.write( String.format(
 									"\tASC, %d, %d, %s\n",
 									t + timeOffset,
@@ -1911,7 +1911,7 @@ public class GrowthLineTrackingILP {
 			nh = edgeSets.getRightNeighborhood( hyp );
 			if ( nh == null ) continue;
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assmnt : nh ) {
-				if ( assmnt.getGroundTroothConstraint() == null ) {
+				if ( assmnt.getGroundTruthConstraint() == null ) {
 					try {
 						if ( assmnt.isChoosen() ) {
 							assmnt.setGroundTruth( true );
@@ -1946,7 +1946,7 @@ public class GrowthLineTrackingILP {
 			nh = edgeSets.getRightNeighborhood( hyp );
 			if ( nh == null ) continue;
 			for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assmnt : nh ) {
-				if ( assmnt.getGroundTroothConstraint() != null ) {
+				if ( assmnt.getGroundTruthConstraint() != null ) {
 					assmnt.setGroundTruth( false );
 				}
 			}

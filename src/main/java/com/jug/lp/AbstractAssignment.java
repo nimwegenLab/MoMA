@@ -183,21 +183,21 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 *
 	 */
-	private void addOrRemoveGroundTruthConstraint(final boolean add ) {
+	private void addOrRemoveGroundTruthConstraint(final boolean add) {
 		try {
-			if ( add ) {
-				final float value = ( this.isGroundUntruth ) ? 0f : 1f;
+			if (add) {
+				final float value = (this.isGroundUntruth) ? 0f : 1f; /* sets whether the assignment will be added as ground-truth or ground-untruth */
 
 				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
-				exprGroundTruth.addTerm( 1.0, getGRBVar() );
-				constrGroundTruth = ilp.model.addConstr( exprGroundTruth, GRB.EQUAL, value, "GroundTruthConstraint_" + getGRBVar().toString() );
+				exprGroundTruth.addTerm(1.0, getGRBVar());
+				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "GroundTruthConstraint_" + getGRBVar().toString());
 			} else {
-				if ( constrGroundTruth != null ) {
-					ilp.model.remove( constrGroundTruth );
+				if (constrGroundTruth != null) {
+					ilp.model.remove(constrGroundTruth);
 					constrGroundTruth = null;
 				}
 			}
-		} catch ( final GRBException e ) {
+		} catch (final GRBException e) {
 			e.printStackTrace();
 		}
 	}
@@ -206,7 +206,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 *
 	 * @return null if not set, otherwise the GRBConstr.
 	 */
-	public GRBConstr getGroundTroothConstraint() {
+	public GRBConstr getGroundTruthConstraint() {
 		return constrGroundTruth;
 	}
 

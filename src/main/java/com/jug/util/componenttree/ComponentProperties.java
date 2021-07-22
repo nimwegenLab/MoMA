@@ -64,25 +64,35 @@ public class ComponentProperties {
 
     public double getTotalBackgroundIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
-        double intensity1 = Imglib2Utils.getTotalIntensity(roi1, img);
-        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
-        double intensity2 = Imglib2Utils.getTotalIntensity(roi2, img);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
+        double intensity1 = Imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
+        double intensity2 = Imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
         return intensity1 + intensity2;
     }
 
     public int getBackgroundArea(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        FinalInterval roi1 = getBackgroundRoi1(img, limits.getA(), limits.getB());
-        FinalInterval roi2 = getBackgroundRoi2(img, limits.getA(), limits.getB());
+        FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
+        FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());
         return (int) (roi1.dimension(0) * roi1.dimension(1) + roi2.dimension(0) * roi2.dimension(1));
     }
 
 
     long background_roi_width = 5; /* ROI width in pixels*/
 
+    /**
+     * Returns a ROI interval for calculating the background intensity of the segment under consideration.
+     * This ROI is situated at the left image edge, has width background_roi_width and the same vertical position as
+     * the region being considered.
+     *
+     * @param img: that will be accessed; necessary for calculating the horizontal position
+     * @param vert_start: vertical start position of the segment under consideration
+     * @param vert_stop: vertical stop position of the segment under consideration
+     * @return
+     */
     @NotNull
-    private FinalInterval getBackgroundRoi1(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
+    private FinalInterval getLeftBackgroundRoi(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
                 new long[]{0, vert_start},
                 new long[]{background_roi_width - 1, vert_stop}
@@ -90,8 +100,18 @@ public class ComponentProperties {
         return tmp;
     }
 
+    /**
+     * Returns a ROI interval for calculating the background intensity of the segment under consideration.
+     * This ROI is situated at the right image edge, has width background_roi_width and the same vertical position as
+     * the region being considered.
+     *
+     * @param img: that will be accessed; necessary for calculating the horizontal position
+     * @param vert_start: vertical start position of the segment under consideration
+     * @param vert_stop: vertical stop position of the segment under consideration
+     * @return
+     */
     @NotNull
-    private FinalInterval getBackgroundRoi2(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
+    private FinalInterval getRightBackgroundRoi(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
                 new long[]{img.max(0) - (background_roi_width - 1), vert_start},
                 new long[]{img.max(0), vert_stop}

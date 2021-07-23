@@ -1,13 +1,11 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
 import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
@@ -21,7 +19,6 @@ import org.scijava.command.CommandModule;
 import org.scijava.command.CommandService;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -38,9 +35,8 @@ public class UnetProcessor {
     private final DatasetService datasetService;
 
     public UnetProcessor(){
-        model_input_width = 32;
+        model_input_width = 32;  // TODO-MM-20210723: This should be a user-parameter under in the segmentation section of the config editor.
 
-        modelFile = getModelFilePath();
         System.out.println("Model file: " + modelFile);
 
         context = new Context();  // TODO-MM-20210413: this causes exception during debugging: java lang class SignatureParser cannot find local variable 'myPath'
@@ -53,16 +49,8 @@ public class UnetProcessor {
         return calculateModelChecksum(modelFile);
     }
 
-    private String getModelFilePath() {
-        try {
-            String mainClassParentPath = new File(MoMA.class.getProtectionDomain().getCodeSource().getLocation()
-                    .toURI()).getParent();
-            return mainClassParentPath + "/unet_models/current_tensorflow_model.zip";
-
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return null;
-        }
+    public void setModelFilePath(String modelFilePath) {
+        modelFile = modelFilePath;
     }
 
     private String calculateModelChecksum(String modelFile) {

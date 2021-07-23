@@ -148,13 +148,7 @@ public class MoMA {
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during segmentation.
 	 */
-	private static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
-
-	/**
-	 * String pointing at the weka-segmenter model file that should be used for
-	 * classification during cell-stats export for cell-size estimation.
-	 */
-	private static String CELLSIZE_CLASSIFIER_MODEL_FILE = "CellSizeClassifier.model";
+	public static String SEGMENTATION_CLASSIFIER_MODEL_FILE = "CellGapClassifier.model";
 
 	/**
 	 * Global switch that turns the use of the weka classifier for paramaxflow
@@ -602,7 +596,6 @@ public class MoMA {
 		SIGMA_GL_DETECTION_Y = Float.parseFloat( props.getProperty( "SIGMA_GL_DETECTION_Y", Float.toString( SIGMA_GL_DETECTION_Y ) ) );
 		SEGMENTATION_MIX_CT_INTO_PMFRF = Float.parseFloat( props.getProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Float.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) ) );
 		SEGMENTATION_CLASSIFIER_MODEL_FILE = props.getProperty( "SEGMENTATION_CLASSIFIER_MODEL_FILE", SEGMENTATION_CLASSIFIER_MODEL_FILE );
-		CELLSIZE_CLASSIFIER_MODEL_FILE = props.getProperty( "CELLSIZE_CLASSIFIER_MODEL_FILE", CELLSIZE_CLASSIFIER_MODEL_FILE );
 		DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
 
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
@@ -669,11 +662,6 @@ public class MoMA {
 		defaultFilenameDecoration = inputFolder.getName();
 		path = inputFolder.getAbsolutePath();
 		props.setProperty( "import_path", path );
-
-
-		//GrowthLineSegmentationMagic.setClassifier( tempfilename , "" );
-
-
 
 		if ( !HEADLESS ) {
 			// Setting up console window...
@@ -1129,7 +1117,6 @@ public class MoMA {
 			props.setProperty( "SIGMA_GL_DETECTION_Y", Double.toString( SIGMA_GL_DETECTION_Y ) );
 			props.setProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Double.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) );
 			props.setProperty( "SEGMENTATION_CLASSIFIER_MODEL_FILE", SEGMENTATION_CLASSIFIER_MODEL_FILE );
-			props.setProperty( "CELLSIZE_CLASSIFIER_MODEL_FILE", CELLSIZE_CLASSIFIER_MODEL_FILE );
 			props.setProperty( "DEFAULT_PATH", DEFAULT_PATH );
 
 			props.setProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) );
@@ -1294,7 +1281,7 @@ public class MoMA {
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
 		UnetProcessor unetProcessor = new UnetProcessor();
-
+		unetProcessor.setModelFilePath(MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE);
 		String checksum = unetProcessor.getModelChecksum();
 
 		/**

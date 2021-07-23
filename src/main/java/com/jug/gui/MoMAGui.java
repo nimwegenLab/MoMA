@@ -1165,7 +1165,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
-                            "Do you really want to restart the optimization?\nYou will loose all manual edits performed so far!",
+                            "Do you really want to restart the optimization?\nYou will lose all manual edits performed so far!",
                             "Are you sure?",
                             JOptionPane.YES_NO_OPTION);
             if (choice == JOptionPane.OK_OPTION) {
@@ -1217,41 +1217,49 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         setFocusToTimeSlider();
     }
 
+
+    public void restartFromGLSegmentation(){
+        model.mm.restartFromGLSegmentation();
+    }
+
     /**
      * Queries the user, if he wants to restart the tracking, e.g. after
      * changing a parameter or hitting the restart button.
      */
-    public void restartTrackingAsync() {
+    public Thread restartTrackingAsync() {
         final Thread t = new Thread(() -> {
-            model.getCurrentGL().getIlp().autosave();
-
-            prepareOptimization();
-
-            if (!(sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum())) {
-                final int extent =
-                        sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
-                sliderTrackingRange.setUpperValue(extent);
-            }
-            sliderTrackingRange.setValue(0);
-
-            model.getCurrentGL().getIlp().freezeBefore(sliderTrackingRange.getValue());
-            if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {
-                // this is needed because of the duplication of the last time-point
-                model.getCurrentGL().getIlp().ignoreBeyond(sliderTrackingRange.getUpperValue());
-            }
-
-            System.out.println("Finding optimal result...");
-            model.getCurrentGL().runILP();
-            System.out.println("...done!");
-
-            dataToDisplayChanged();
+            restartTracking();
         });
         t.start();
+        return t;
     }
 
-    /**
-     * Show a stack of the components of the current time step in a separate window.
-     */
+    public void restartTracking() {
+        prepareOptimization();
+
+        if (!(sliderTrackingRange.getUpperValue() == sliderTrackingRange.getMaximum())) {
+            final int extent =
+                    sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
+            sliderTrackingRange.setUpperValue(extent);
+        }
+        sliderTrackingRange.setValue(0);
+
+        model.getCurrentGL().getIlp().freezeBefore(sliderTrackingRange.getValue());
+        if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {
+            // this is needed because of the duplication of the last time-point
+            model.getCurrentGL().getIlp().ignoreBeyond(sliderTrackingRange.getUpperValue());
+        }
+
+        System.out.println("Finding optimal result...");
+        model.getCurrentGL().runILP();
+        System.out.println("...done!");
+
+        dataToDisplayChanged();
+    }
+
+        /**
+         * Show a stack of the components of the current time step in a separate window.
+         */
     private void ShowComponentsOfCurrentTimeStep() {
         List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
         GrowthLineFrame glf = model.getCurrentGLF();

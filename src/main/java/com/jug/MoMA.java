@@ -145,7 +145,7 @@ public class MoMA {
 	 * String pointing at the weka-segmenter model file that should be used for
 	 * classification during segmentation.
 	 */
-	public static String MODEL_PATH = "CellGapClassifier.model";
+	public static String SEGMENTATION_MODEL_PATH = "CellGapClassifier.model";
 
 	/**
 	 * Global switch that turns the use of the weka classifier for paramaxflow
@@ -592,7 +592,7 @@ public class MoMA {
 		SIGMA_GL_DETECTION_X = Float.parseFloat( props.getProperty( "SIGMA_GL_DETECTION_X", Float.toString( SIGMA_GL_DETECTION_X ) ) );
 		SIGMA_GL_DETECTION_Y = Float.parseFloat( props.getProperty( "SIGMA_GL_DETECTION_Y", Float.toString( SIGMA_GL_DETECTION_Y ) ) );
 		SEGMENTATION_MIX_CT_INTO_PMFRF = Float.parseFloat( props.getProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Float.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) ) );
-		MODEL_PATH = props.getProperty( "MODEL_PATH", MODEL_PATH);
+		SEGMENTATION_MODEL_PATH = props.getProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
 		DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
 
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
@@ -1113,7 +1113,7 @@ public class MoMA {
 			props.setProperty( "SIGMA_GL_DETECTION_X", Double.toString( SIGMA_GL_DETECTION_X ) );
 			props.setProperty( "SIGMA_GL_DETECTION_Y", Double.toString( SIGMA_GL_DETECTION_Y ) );
 			props.setProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Double.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) );
-			props.setProperty( "MODEL_PATH", MODEL_PATH);
+			props.setProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
 			props.setProperty( "DEFAULT_PATH", DEFAULT_PATH );
 
 			props.setProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) );
@@ -1278,7 +1278,7 @@ public class MoMA {
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
 		UnetProcessor unetProcessor = new UnetProcessor();
-		unetProcessor.setModelFilePath(MoMA.MODEL_PATH);
+		unetProcessor.setModelFilePath(MoMA.SEGMENTATION_MODEL_PATH);
 		String checksum = unetProcessor.getModelChecksum();
 
 		/**

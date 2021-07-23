@@ -44,12 +44,12 @@ public abstract class AssignmentView {
         this.isSelected = isSelected;
     }
 
-    public void addAsGroundTruth() {
+    public void toggleGroundTruth() {
         abstractAssignment.setGroundTruth(!abstractAssignment.isGroundTruth());
         abstractAssignment.reoptimize();
     }
 
-    public void addAsGroundUntruth() {
+    public void toggleGroundUntruth() {
         abstractAssignment.setGroundUntruth(!abstractAssignment.isGroundUntruth());
         abstractAssignment.reoptimize();
     }

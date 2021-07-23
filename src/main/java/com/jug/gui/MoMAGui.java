@@ -58,7 +58,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final String itemChannel0 = "Raw Channel 0";
     private final String itemChannel1 = "Raw Channel 1";
     private final String itemChannel2 = "Raw Channel 2";
-    public GrowthlaneViewer imgCanvasActiveCenter;
     public JSlider sliderGL;
     public JSlider sliderTime;
     public AssignmentsEditorViewer rightAssignmentsEditorViewer;
@@ -67,8 +66,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // -------------------------------------------------------------------------------------
     // gui-fields
     // -------------------------------------------------------------------------------------
-    private GrowthlaneViewer imgCanvasActiveLeft;
-    private GrowthlaneViewer imgCanvasActiveRight;
+    private GrowthlaneViewer growthLaneViewerLeft;
+    public GrowthlaneViewer growthLaneViewerCenter;
+    private GrowthlaneViewer growthLaneViewerRight;
     private RangeSlider sliderTrackingRange;
     private JLabel lblCurrentTime;
     private JTabbedPane tabsViews;
@@ -410,9 +410,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
                 if (e.getActionCommand().equals("b")) {
                     showSegmentationAnnotations = !showSegmentationAnnotations;
-                    imgCanvasActiveLeft.showSegmentationAnnotations(showSegmentationAnnotations);
-                    imgCanvasActiveCenter.showSegmentationAnnotations(showSegmentationAnnotations);
-                    imgCanvasActiveRight.showSegmentationAnnotations(showSegmentationAnnotations);
+                    growthLaneViewerLeft.showSegmentationAnnotations(showSegmentationAnnotations);
+                    growthLaneViewerCenter.showSegmentationAnnotations(showSegmentationAnnotations);
+                    growthLaneViewerRight.showSegmentationAnnotations(showSegmentationAnnotations);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("?")) {
@@ -545,8 +545,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(labelHelper);
         panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
         // - - - - - -
-        imgCanvasActiveLeft = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(imgCanvasActiveLeft, BorderLayout.CENTER);
+        growthLaneViewerLeft = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
+        panelVerticalHelper.add(growthLaneViewerLeft, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper);
@@ -582,8 +582,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(labelHelper);
         panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
         // - - - - - -
-        imgCanvasActiveCenter = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(imgCanvasActiveCenter, BorderLayout.CENTER);
+        growthLaneViewerCenter = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
+        panelVerticalHelper.add(growthLaneViewerCenter, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.RED));
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper);
@@ -606,8 +606,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(labelHelper);
         panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
         // - - - - - -
-        imgCanvasActiveRight = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(imgCanvasActiveRight, BorderLayout.CENTER);
+        growthLaneViewerRight = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
+        panelVerticalHelper.add(growthLaneViewerRight, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper);
@@ -848,10 +848,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                  * (left one in active assignments view).
                  */
                 IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                imgCanvasActiveLeft.setScreenImage(glf, viewImgLeftActive);
+                growthLaneViewerLeft.setScreenImage(glf, viewImgLeftActive);
             } else {
                 // show something empty
-                imgCanvasActiveLeft.setEmptyScreenImage();
+                growthLaneViewerLeft.setEmptyScreenImage();
             }
 
             // - - t+1 - - - - - -
@@ -863,10 +863,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                  * (right one in active assignments view).
                  */
                 IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                imgCanvasActiveRight.setScreenImage(glf, viewImgRightActive);
+                growthLaneViewerRight.setScreenImage(glf, viewImgRightActive);
             } else {
                 // show something empty
-                imgCanvasActiveRight.setEmptyScreenImage();
+                growthLaneViewerRight.setEmptyScreenImage();
             }
 
             // - -  t  - - - - - -
@@ -886,7 +886,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             IntervalView<FloatType> viewImgCenterActive;
             if (cbWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                imgCanvasActiveCenter.setScreenImage(glf, viewImgCenterActive);
+                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
@@ -898,7 +898,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                         new FloatType()),
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
-                imgCanvasActiveCenter.setScreenImage(glf, viewImgCenterActive);
+                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
@@ -910,7 +910,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                         new FloatType()),
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
-                imgCanvasActiveCenter.setScreenImage(glf, viewImgCenterActive);
+                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
 //			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemClassified ) ) {
 //				final Thread t = new Thread() {
 //
@@ -933,7 +933,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //				t.start();
             } else { // BG-subtracted Channel 0 selected or PMFRF not available
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                imgCanvasActiveCenter.setScreenImage(glf, viewImgCenterActive);
+                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             }
 
 //			if ( glf.isParaMaxFlowComponentTree() ) {

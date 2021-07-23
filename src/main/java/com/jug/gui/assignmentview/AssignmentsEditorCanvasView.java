@@ -66,9 +66,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private int dragInitiatingMouseButton = 0;
     private float dragStepWeight = 0;
 
-    private boolean doAddAsGroundTruth;
-    private boolean doAddAsGroundUntruth;
-
     private MoMAGui gui;
 
     private Color strokeColor;
@@ -308,15 +305,12 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         if (!isDragging) {
             if (e.getClickCount() == 1 && !e.isAltDown() && !e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {
                 if (e.isControlDown()) {
-                    this.doAddAsGroundUntruth = true;
-                    selectedAssignment.addAsGroundUntruth();
+                    selectedAssignment.toggleGroundUntruth();
                 } else {
-                    selectedAssignment.addAsGroundTruth();
-                    this.doAddAsGroundTruth = true;
+                    selectedAssignment.toggleGroundTruth();
                 }
             }
         }
-
         repaint();
     }
 
@@ -456,8 +450,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         this.mousePosX = e.getX();
         this.mousePosY = e.getY();
         updateHoveredAssignments();
-        this.doAddAsGroundTruth = false;
-        this.doAddAsGroundUntruth = false;
         this.repaint();
     }
 

@@ -60,9 +60,9 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "GUROBI_MAX_OPTIMALITY_GAP",
                                 "" + MoMA.GUROBI_MAX_OPTIMALITY_GAP);
                         break;
-                    case "SEGMENTATION_CLASSIFIER_MODEL_FILE": {
+                    case "MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
-                        if(newPath!=MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE) {
+                        if(newPath!=MoMA.MODEL_PATH) {
                             File f = new File(newPath);
                             if(!f.exists() || f.isDirectory()) {
                                 JOptionPane.showMessageDialog(
@@ -70,7 +70,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                         "Specified file does not exist. Falling back to previous path.",
                                         "Model file not found.",
                                         JOptionPane.ERROR_MESSAGE);
-                                sourceProperty.setValue(MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE);
+                                sourceProperty.setValue(MoMA.MODEL_PATH);
                                 break;
                             }
 
@@ -82,12 +82,12 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                             JOptionPane.YES_NO_OPTION);
 
                             if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE); /* User aborted. Reset value to previous setting. */
+                                sourceProperty.setValue(MoMA.MODEL_PATH); /* User aborted. Reset value to previous setting. */
                             } else {
-                                MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE = newPath;
+                                MoMA.MODEL_PATH = newPath;
                                 MoMA.props.setProperty(
-                                        "SEGMENTATION_CLASSIFIER_MODEL_FILE",
-                                        "" + MoMA.SEGMENTATION_CLASSIFIER_MODEL_FILE);
+                                        "MODEL_PATH",
+                                        "" + MoMA.MODEL_PATH);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -211,7 +211,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setShortDescription(key);
                     break;
                 case "SEGMENTATION_MIX_CT_INTO_PMFRF":
-                case "SEGMENTATION_CLASSIFIER_MODEL_FILE":
+                case "MODEL_PATH":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);

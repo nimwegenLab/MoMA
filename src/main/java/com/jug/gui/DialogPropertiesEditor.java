@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.util.Properties;
 
 import javax.swing.AbstractAction;
@@ -59,6 +60,43 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "GUROBI_MAX_OPTIMALITY_GAP",
                                 "" + MoMA.GUROBI_MAX_OPTIMALITY_GAP);
                         break;
+                    case "SEGMENTATION_MODEL_PATH": {
+                        String newPath = sourceProperty.getValue().toString();
+                        if(newPath!=MoMA.SEGMENTATION_MODEL_PATH) {
+                            File f = new File(newPath);
+                            if(!f.exists() || f.isDirectory()) {
+                                JOptionPane.showMessageDialog(
+                                        parent,
+                                        "Specified file does not exist. Falling back to previous path.",
+                                        "Model file not found.",
+                                        JOptionPane.ERROR_MESSAGE);
+                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH);
+                                break;
+                            }
+
+                            final int choice =
+                                    JOptionPane.showConfirmDialog(
+                                            parent,
+                                            "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
+                                            "Continue?",
+                                            JOptionPane.YES_NO_OPTION);
+
+                            if (choice != JOptionPane.OK_OPTION) {
+                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH); /* User aborted. Reset value to previous setting. */
+                            } else {
+                                MoMA.SEGMENTATION_MODEL_PATH = newPath;
+                                MoMA.props.setProperty(
+                                        "SEGMENTATION_MODEL_PATH",
+                                        "" + MoMA.SEGMENTATION_MODEL_PATH);
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
+                            }
+                        }
+                        break;
+                    }
                     case "GL_OFFSET_TOP": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         if(newValue!=MoMA.GL_OFFSET_TOP) {
@@ -173,11 +211,10 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setShortDescription(key);
                     break;
                 case "SEGMENTATION_MIX_CT_INTO_PMFRF":
-                case "CELLSIZE_CLASSIFIER_MODEL_FILE":
-                case "SEGMENTATION_CLASSIFIER_MODEL_FILE":
+                case "SEGMENTATION_MODEL_PATH":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
-                    property.setEditable(false);
+                    property.setEditable(true);
                     break;
                 case "DEFAULT_PATH":
                     property.setShortDescription(key);

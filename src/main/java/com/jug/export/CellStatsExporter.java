@@ -151,6 +151,7 @@ public class CellStatsExporter {
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
         writer.write(String.format("image_folder=%s\n", loadedDataFolder));
+        writer.write(String.format("segmentation_model=%s\n", MoMA.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {

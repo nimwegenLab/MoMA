@@ -259,6 +259,8 @@ public class MoMA {
 	public static double GUROBI_TIME_LIMIT = 15.0;
 	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
 
+	public static boolean OPTIMIZE_ON_ILP_CHANGE = false;
+
 	private static MoMAGui gui;
 
 	/**
@@ -1325,7 +1327,7 @@ public class MoMA {
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
-			gl.runILP();
+			gl.getIlp().run();
 			i++;
 		}
 	}

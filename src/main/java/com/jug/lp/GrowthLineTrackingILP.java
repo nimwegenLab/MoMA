@@ -762,13 +762,19 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
+	public void run(){
+		if (MoMA.OPTIMIZE_ON_ILP_CHANGE){
+			runImmediately();
+		}
+	}
+
 	/**
-	 * This function takes the ILP (hopefully) built up in <code>model</code>
+	 * This function takes the ILP built up in <code>model</code>
 	 * and starts the convex optimization procedure. This is actually the step
 	 * that will find the MAP in the given model and hence the solution to our
 	 * segmentation and tracking problem.
 	 */
-	public synchronized void run() {
+	public void runImmediately() {
 		try {
 			// Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!

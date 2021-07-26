@@ -11,7 +11,8 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
+        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
+//        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30();
 //        tests._lysing_cell__thomas_20200922__Pos16_GL17();
@@ -51,10 +52,18 @@ public class MoMATest {
 
 
     @Test
+    public void _exception_when_loading_gl__thomas_20200910__Pos3_GL33() {
+        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210726__exception_on_loading_gl/thomas_20200910/Pos3_GL33";
+        String inputPath = datasetPath + "/20200910_M9glc_VNG1040-hi2_AB_2_MMStack_Pos3_GL33.tif";
+        String outputPath = datasetPath + "/output/";
+        startMoma(inputPath, outputPath);
+    }
+
+    @Test
     public void _ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35() {
         String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210722__ilp_infeasible_crashes_moma/thomas_20200922/Pos18_GL35/";
 //        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
-        String inputPath = datasetPath + "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos28_GL35.tiff";
+        String inputPath = datasetPath + "/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos28_GL35.tiff";
         String outputPath = datasetPath + "/output/";
         startMoma(inputPath, outputPath, 112, 116, false);
     }

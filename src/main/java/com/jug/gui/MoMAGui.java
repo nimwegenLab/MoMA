@@ -698,7 +698,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // ComponentTreeNodes
         // ------------------
-        dumpCosts(model.getCurrentGLF().getComponentTree(), ilp);
+//        dumpCosts(model.getCurrentGLF().getComponentTree(), ilp);
         if (ilp != null) {
             printCosts(model.getCurrentGLF().getComponentTree(), ilp, "Segment");
             printCosts(model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment");

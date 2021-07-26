@@ -80,6 +80,13 @@ public class MoMAModel {
 			return null;
 		}
 	}
+	public GrowthLineFrame getCurrentGLFsSuccessorSuccessor() {
+		if ( currentGLFidx + 2 < getCurrentGL().size() ) {
+			return getCurrentGL().get( currentGLFidx + 2 );
+		} else {
+			return null;
+		}
+	}
 
 	public void setCurrentGLF( final int idx ) {
 		assert ( idx >= 0 );

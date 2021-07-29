@@ -1396,9 +1396,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 1);
             }
-            if (assignmentEditorPanelFarRight.isSelected()) {
-                ilp.fixAssignmentsAsAre(t + 1);
-            }
+            assignmentEditorPanelFarRight.setVariableConstraints();
             segmentationEditorPanelFarRight.setVariableConstraints();
         }
     }
@@ -1427,9 +1425,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 1);
             }
-            if (assignmentEditorPanelFarRight.isSelected()) {
-                ilp.removeAllAssignmentConstraints(t + 1);
-            }
+            assignmentEditorPanelFarRight.unsetVariableConstraints();
             segmentationEditorPanelFarRight.unsetVariableConstraints();
         }
     }

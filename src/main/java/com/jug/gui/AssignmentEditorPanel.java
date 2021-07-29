@@ -59,4 +59,28 @@ public class AssignmentEditorPanel extends JPanel {
         }
         assignmentView.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(timeStepToDisplay));
     }
+
+    /***
+     * This method set constraints for all ILP variables of the current time-step that are in the solution.
+     */
+    public void setVariableConstraints() {
+        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        if (ilp != null) {
+            if (this.isSelected()) {
+                ilp.fixAssignmentsAsAre(getTimeStepToDisplay());
+            }
+        }
+    }
+
+    /***
+     * This method unsets/removes constraints for all ILP variables of the current time-step that are in the solution.
+     */
+    public void unsetVariableConstraints() {
+        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        if (ilp != null) {
+            if (this.isSelected()) {
+                ilp.removeAllAssignmentConstraints(getTimeStepToDisplay());
+            }
+        }
+    }
 }

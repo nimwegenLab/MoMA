@@ -1233,7 +1233,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
-                setAllVariablesFreeWhereChecked();
+                removeAllSegmentConstraintsWhereChecked();
 
                 System.out.println("Finding optimal result...");
                 model.getCurrentGL().runILP();
@@ -1417,6 +1417,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 1);
             }
+            if (segmentationEditorPanelFarRight.isSelected()) {
+                ilp.fixSegmentationAsIs(t + 2);
+            }
         }
     }
 
@@ -1425,7 +1428,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * segmentations and assignments if they are clamped to any value in the
      * ILP.
      */
-    private void setAllVariablesFreeWhereChecked() {
+    private void removeAllSegmentConstraintsWhereChecked() {
         final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
         final int t = sliderTime.getValue();
         if (ilp != null) {
@@ -1443,6 +1446,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 1);
+            }
+            if (segmentationEditorPanelFarRight.isSelected()) {
+                ilp.removeAllSegmentConstraints(t + 2);
             }
         }
     }

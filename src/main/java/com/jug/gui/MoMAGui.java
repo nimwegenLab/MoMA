@@ -100,16 +100,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JTextField txtNumCells;
 
     // Batch interaction panels
-    private JCheckBox cbSegmentationOkLeft;
-    private JCheckBox cbSegmentationOkCenter;
-    private JCheckBox cbSegmentationOkRight;
+    private JCheckBox checkboxSelectSegmentationLeft;
+    private JCheckBox checkboxSelectSegmentationCenter;
+    private JCheckBox checkboxSelectSegmentationRight;
 
-    private JCheckBox cbAssignmentsOkLeft;
-    private JCheckBox cbAssignmentsOkRight;
+    private JCheckBox checkboxSelectAssignmentsLeft;
+    private JCheckBox checkboxSelectAssignmentsRight;
 
-    private JButton bFreezeHistory;
-    private JButton bCheckBoxLineSet;
-    private JButton bCheckBoxLineReset;
+    private JButton buttonFreezeHistory;
+    private JButton buttonSet;
+    private JButton buttonReset;
 
     // Menu-items
     private MenuItem menuViewShowConsole;
@@ -355,7 +355,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 					/*if ( !tabsViews.getComponent( tabsViews.getSelectedIndex() ).equals( panelCountingView ) ) {
 						tabsViews.setSelectedComponent( panelCountingView );
 					}*/
-                    bFreezeHistory.doClick();
+                    buttonFreezeHistory.doClick();
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("s")) {
@@ -664,33 +664,33 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JLabel lblCheckBoxLine = new JLabel("Correct are:");
         panelView.add(lblCheckBoxLine, "align center");
         // - - - - - -
-        cbSegmentationOkLeft = new JCheckBox();
-        cbSegmentationOkLeft.addActionListener(this);
-        panelView.add(cbSegmentationOkLeft, "align center");
+        checkboxSelectSegmentationLeft = new JCheckBox();
+        checkboxSelectSegmentationLeft.addActionListener(this);
+        panelView.add(checkboxSelectSegmentationLeft, "align center");
         // - - - - - -
-        cbAssignmentsOkLeft = new JCheckBox();
-        cbAssignmentsOkLeft.addActionListener(this);
-        panelView.add(cbAssignmentsOkLeft, "align center");
+        checkboxSelectAssignmentsLeft = new JCheckBox();
+        checkboxSelectAssignmentsLeft.addActionListener(this);
+        panelView.add(checkboxSelectAssignmentsLeft, "align center");
         // - - - - - -
-        cbSegmentationOkCenter = new JCheckBox();
-        cbSegmentationOkCenter.addActionListener(this);
-        panelView.add(cbSegmentationOkCenter, "align center");
+        checkboxSelectSegmentationCenter = new JCheckBox();
+        checkboxSelectSegmentationCenter.addActionListener(this);
+        panelView.add(checkboxSelectSegmentationCenter, "align center");
         // - - - - - -
-        cbAssignmentsOkRight = new JCheckBox();
-        cbAssignmentsOkRight.addActionListener(this);
-        panelView.add(cbAssignmentsOkRight, "align center");
+        checkboxSelectAssignmentsRight = new JCheckBox();
+        checkboxSelectAssignmentsRight.addActionListener(this);
+        panelView.add(checkboxSelectAssignmentsRight, "align center");
         // - - - - - -
-        cbSegmentationOkRight = new JCheckBox();
-        cbSegmentationOkRight.addActionListener(this);
-        panelView.add(cbSegmentationOkRight, "align center");
+        checkboxSelectSegmentationRight = new JCheckBox();
+        checkboxSelectSegmentationRight.addActionListener(this);
+        panelView.add(checkboxSelectSegmentationRight, "align center");
         // - - - - - -
-        bFreezeHistory = new JButton("<-all");
-        bFreezeHistory.addActionListener(this);
-        bCheckBoxLineSet = new JButton("set");
-        bCheckBoxLineSet.addActionListener(this);
-        panelView.add(bCheckBoxLineSet, "align center");
-        bCheckBoxLineReset = new JButton("reset");
-        bCheckBoxLineReset.addActionListener(this);
+        buttonFreezeHistory = new JButton("<-all");
+        buttonFreezeHistory.addActionListener(this);
+        buttonSet = new JButton("set");
+        buttonSet.addActionListener(this);
+        panelView.add(buttonSet, "align center");
+        buttonReset = new JButton("reset");
+        buttonReset.addActionListener(this);
 
         viewSegmentsButton = new JButton("View Segments");
         viewSegmentsButton.addActionListener(this);
@@ -698,9 +698,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // - - - - - -
 
-        panelView.add(bFreezeHistory, "align center");
+        panelView.add(buttonFreezeHistory, "align center");
         panelView.add(panelIsee, "cell 1 2 5 1, align center");
-        panelView.add(bCheckBoxLineReset, "align center, wrap");
+        panelView.add(buttonReset, "align center, wrap");
         panelView.add(viewSegmentsButton);
 
         panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
@@ -1207,7 +1207,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 System.out.println("...done!");
             }
         }
-        if (e.getSource().equals(bCheckBoxLineSet)) {
+        if (e.getSource().equals(buttonSet)) {
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -1222,7 +1222,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(bCheckBoxLineReset)) {
+        if (e.getSource().equals(buttonReset)) {
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -1237,7 +1237,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(bFreezeHistory)) {
+        if (e.getSource().equals(buttonFreezeHistory)) {
             final Thread t = new Thread(() -> {
                 final int t1 = sliderTime.getValue();
                 if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {
@@ -1395,19 +1395,19 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
         final int t = sliderTime.getValue();
         if (ilp != null) {
-            if (cbSegmentationOkLeft.isSelected()) {
+            if (checkboxSelectSegmentationLeft.isSelected()) {
                 ilp.fixSegmentationAsIs(t - 1);
             }
-            if (cbAssignmentsOkLeft.isSelected()) {
+            if (checkboxSelectAssignmentsLeft.isSelected()) {
                 ilp.fixAssignmentsAsAre(t - 1);
             }
-            if (cbSegmentationOkCenter.isSelected()) {
+            if (checkboxSelectSegmentationCenter.isSelected()) {
                 ilp.fixSegmentationAsIs(t);
             }
-            if (cbAssignmentsOkRight.isSelected()) {
+            if (checkboxSelectAssignmentsRight.isSelected()) {
                 ilp.fixAssignmentsAsAre(t);
             }
-            if (cbSegmentationOkRight.isSelected()) {
+            if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 1);
             }
         }
@@ -1422,19 +1422,19 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
         final int t = sliderTime.getValue();
         if (ilp != null) {
-            if (cbSegmentationOkLeft.isSelected()) {
+            if (checkboxSelectSegmentationLeft.isSelected()) {
                 ilp.removeAllSegmentConstraints(t - 1);
             }
-            if (cbAssignmentsOkLeft.isSelected()) {
+            if (checkboxSelectAssignmentsLeft.isSelected()) {
                 ilp.removeAllAssignmentConstraints(t - 1);
             }
-            if (cbSegmentationOkCenter.isSelected()) {
+            if (checkboxSelectSegmentationCenter.isSelected()) {
                 ilp.removeAllSegmentConstraints(t);
             }
-            if (cbAssignmentsOkRight.isSelected()) {
+            if (checkboxSelectAssignmentsRight.isSelected()) {
                 ilp.removeAllAssignmentConstraints(t);
             }
-            if (cbSegmentationOkRight.isSelected()) {
+            if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 1);
             }
         }

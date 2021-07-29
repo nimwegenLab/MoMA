@@ -640,7 +640,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // -- right data viewer remade (t+2)
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
         int viewheight = (int) model.mm.getImgRaw().dimension(1);
-        segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, "t+2", viewWidth, viewheight);
+        segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, model, "t+2", viewWidth, viewheight, 2);
         panelView.add(segmentationEditorPanelFarRight, "top");
 
 //        panelView.add(new JPanel());
@@ -915,19 +915,19 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
 
             // - - t+2 - - - - - -
-
-            if (model.getCurrentGLFsSuccessorSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() - 1) { // hence copy of last frame for border-problem avoidance
-                final GrowthLineFrame glf = model.getCurrentGLFsSuccessorSuccessor();
-                /**
-                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-                 * (right one in active assignments view).
-                 */
-                IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                segmentationEditorPanelFarRight.setScreenImage(glf, viewImgRightActive);
-            } else {
-                // show something empty
-                segmentationEditorPanelFarRight.setEmptyScreenImage();
-            }
+            segmentationEditorPanelFarRight.display();
+//            if (model.getCurrentGLFsSuccessorSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() - 1) { // hence copy of last frame for border-problem avoidance
+//                final GrowthLineFrame glf = model.getCurrentGLFsSuccessorSuccessor();
+//                /**
+//                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+//                 * (right one in active assignments view).
+//                 */
+//                IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//                segmentationEditorPanelFarRight.setScreenImage(glf, viewImgRightActive);
+//            } else {
+//                // show something empty
+//                segmentationEditorPanelFarRight.setEmptyScreenImage();
+//            }
 
             // - -  t  - - - - - -
 

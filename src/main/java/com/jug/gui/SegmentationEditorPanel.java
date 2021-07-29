@@ -1,8 +1,11 @@
 package com.jug.gui;
 
 import com.jug.GrowthLineFrame;
+import com.jug.MoMA;
+import com.jug.lp.GrowthLineTrackingILP;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,8 +13,12 @@ import java.awt.*;
 public class SegmentationEditorPanel extends JPanel {
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelected;
+    private MoMAModel momaModel;
+    private int timeStepOffset;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, String title, int viewWidth, int viewHeight){
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, String title, int viewWidth, int viewHeight, int timeStepOffset){
+        this.momaModel = momaModel;
+        this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
         this.addTitleLabel(title);
         this.addGrowthlaneViewer(growthlaneViewer);
@@ -55,5 +62,21 @@ public class SegmentationEditorPanel extends JPanel {
 
     public boolean isSelected() {
         return checkboxIsSelected.isSelected();
+    }
+
+    private int getTimeStepToDisplay() {
+        return momaModel.getCurrentTime() + this.timeStepOffset;
+    }
+
+    public void display(){
+        int timeStepToDisplay = getTimeStepToDisplay();
+
+        if (timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum() - 1) { // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+            growthlaneViewer.setEmptyScreenImage();
+            return;
+        }
+        GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay);
+        IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+        growthlaneViewer.setScreenImage(glf, viewImgRightActive);
     }
 }

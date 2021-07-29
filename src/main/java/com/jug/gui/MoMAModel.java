@@ -56,9 +56,14 @@ public class MoMAModel {
 		currentGLFidx = glfIdx;
 	}
 
+	public GrowthLineFrame getGrowthLineFrame(int index) {
+		return getCurrentGL().get(index);
+	}
+
 	public GrowthLineFrame getCurrentGLF() {
 		return getCurrentGL().get( currentGLFidx );
 	}
+
 	public GrowthLineFrame getCurrentGLFsPrePredecessor() {
 		if ( currentGLFidx - 2 >= 0 ) {
 			return getCurrentGL().get( currentGLFidx - 2 );

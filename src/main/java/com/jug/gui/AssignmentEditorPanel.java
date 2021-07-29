@@ -11,8 +11,8 @@ public class AssignmentEditorPanel extends JPanel {
     int sourceTimeStepOffset;
     private MoMAModel momaModel;
 
-    public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel model, int viewHeight, int sourceTimeStepOffset) {
-        this.momaModel = model;
+    public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset) {
+        this.momaModel = momaModel;
         assignmentView = new AssignmentsEditorViewer(viewHeight, mmgui);
         assignmentView.addChangeListener(mmgui);
         this.addAssignmentView(assignmentView);

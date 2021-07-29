@@ -73,7 +73,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private GrowthlaneViewer growthLaneViewerRight;
     private GrowthlaneViewer growthLaneViewerRightRight;
     private RangeSlider sliderTrackingRange;
-    private JLabel lblCurrentTime;
+    private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
@@ -81,18 +81,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private Plot2DPanel plot;
     private AssignmentsEditorViewer leftAssignmentsEditorViewer;
     private AssignmentsEditorViewer leftLeftAssignmentsEditorViewer;
-    private JCheckBox cbAutosave;
+    private JCheckBox checkboxAutosave;
     //	private JButton btnRedoAllHypotheses;
 //	private JButton btnExchangeSegHyps;
-    private JButton btnRestart;
+    private JButton buttonRestart;
     private JButton viewSegmentsButton;
-    private JButton btnOptimizeMore;
-    private JButton btnExportHtml;
-    private JButton btnExportData;
+    private JButton buttonOptimizeMore;
+    private JButton buttonExportHtml;
+    private JButton buttonExportData;
     //	String itemPMFRF = "PMFRF Sum Image";
 //	String itemClassified = "RF BG Probability";
 //	String itemSegmented = "RF Cell Segmentation";
-    private JComboBox cbWhichImgToShow;
+    private JComboBox comboboxWhichImgToShow;
 
     // REMOVED because load/save does not go easy with this shit!
 //	private JLabel lActiveHyps;
@@ -203,7 +203,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         sliderTime.setPaintTicks(true);
         sliderTime.setPaintLabels(true);
         sliderTime.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        lblCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
+        labelCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
 
         // --- Slider for TrackingRage ----------
 
@@ -230,7 +230,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
         panelSliderArrangement.add(lblIgnoreBeyond);
         panelSliderArrangement.add(sliderTrackingRange);
-        panelSliderArrangement.add(lblCurrentTime);
+        panelSliderArrangement.add(labelCurrentTime);
         panelSliderArrangement.add(sliderTime);
 
         panelHorizontalHelper = new JPanel(new BorderLayout());
@@ -272,26 +272,26 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         tabsViews.setSelectedComponent(panelSegmentationAndAssignmentView);
 
         // --- Controls ----------------------------------
-        cbAutosave = new JCheckBox("autosave?");
-        cbAutosave.addActionListener(this);
+        checkboxAutosave = new JCheckBox("autosave?");
+        checkboxAutosave.addActionListener(this);
 //		btnRedoAllHypotheses = new JButton( "Resegment" );
 //		btnRedoAllHypotheses.addActionListener( this );
-        btnRestart = new JButton("Restart");
-        btnRestart.addActionListener(this);
-        btnOptimizeMore = new JButton("Optimize");
-        btnOptimizeMore.addActionListener(this);
-        btnExportHtml = new JButton("Export HTML");
-        btnExportHtml.addActionListener(this);
-        btnExportData = new JButton("Export Data");
-        btnExportData.addActionListener(this);
+        buttonRestart = new JButton("Restart");
+        buttonRestart.addActionListener(this);
+        buttonOptimizeMore = new JButton("Optimize");
+        buttonOptimizeMore.addActionListener(this);
+        buttonExportHtml = new JButton("Export HTML");
+        buttonExportHtml.addActionListener(this);
+        buttonExportData = new JButton("Export Data");
+        buttonExportData.addActionListener(this);
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
-        panelHorizontalHelper.add(cbAutosave);
+        panelHorizontalHelper.add(checkboxAutosave);
 //		panelHorizontalHelper.add( btnRedoAllHypotheses );
-        panelHorizontalHelper.add(btnRestart);
-        panelHorizontalHelper.add(btnOptimizeMore);
-        panelHorizontalHelper.add(btnExportHtml);
-        panelHorizontalHelper.add(btnExportData);
+        panelHorizontalHelper.add(buttonRestart);
+        panelHorizontalHelper.add(buttonOptimizeMore);
+        panelHorizontalHelper.add(buttonExportHtml);
+        panelHorizontalHelper.add(buttonExportData);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // --- Final adding and layout steps -------------
@@ -371,21 +371,21 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("e")) {
-                    btnExportData.doClick();
+                    buttonExportData.doClick();
                 }
                 if (e.getActionCommand().equals("r")) {
-                    btnRestart.doClick();
+                    buttonRestart.doClick();
                 }
                 if (e.getActionCommand().equals("o")) {
-                    btnOptimizeMore.doClick();
+                    buttonOptimizeMore.doClick();
                 }
                 if (e.getActionCommand().equals("v")) {
-                    int selIdx = cbWhichImgToShow.getSelectedIndex();
+                    int selIdx = comboboxWhichImgToShow.getSelectedIndex();
                     selIdx++;
-                    if (selIdx == cbWhichImgToShow.getItemCount()) {
+                    if (selIdx == comboboxWhichImgToShow.getItemCount()) {
                         selIdx = 0;
                     }
-                    cbWhichImgToShow.setSelectedIndex(selIdx);
+                    comboboxWhichImgToShow.setSelectedIndex(selIdx);
                 }
                 if (e.getActionCommand().equals("0")) {
                     leftAssignmentsEditorViewer.switchToTab(0);
@@ -491,21 +491,21 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // =============== panelDropdown-part ===================
         final JPanel panelDropdown = new JPanel();
         panelDropdown.setLayout(new BoxLayout(panelDropdown, BoxLayout.LINE_AXIS));
-        cbWhichImgToShow = new JComboBox();
+        comboboxWhichImgToShow = new JComboBox();
         String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-        cbWhichImgToShow.addItem(itemChannel0BGSubtr);
-        cbWhichImgToShow.addItem(itemChannel0);
+        comboboxWhichImgToShow.addItem(itemChannel0BGSubtr);
+        comboboxWhichImgToShow.addItem(itemChannel0);
         if (model.mm.getRawChannelImgs().size() > 1) {
-            cbWhichImgToShow.addItem(itemChannel1);
+            comboboxWhichImgToShow.addItem(itemChannel1);
         }
         if (model.mm.getRawChannelImgs().size() > 2) {
-            cbWhichImgToShow.addItem(itemChannel2);
+            comboboxWhichImgToShow.addItem(itemChannel2);
         }
 
-        cbWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
+        comboboxWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
 
         panelDropdown.add(Box.createHorizontalGlue());
-        panelDropdown.add(cbWhichImgToShow);
+        panelDropdown.add(comboboxWhichImgToShow);
         panelDropdown.add(Box.createHorizontalGlue());
 
 
@@ -642,7 +642,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(rightRightAssignmentsEditorViewer, BorderLayout.CENTER);
         panelView.add(panelVerticalHelper);
 
-        // ---  Right data viewer (t+1) -------------
+        // ---  Right data viewer (t+2) -------------
 
         panelVerticalHelper = new JPanel(new BorderLayout());
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
@@ -958,10 +958,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
              * (center one in active assignments view).
              */
             IntervalView<FloatType> viewImgCenterActive;
-            if (cbWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
+            if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
+            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
                 viewImgCenterActive =
@@ -973,7 +973,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
+            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
                 viewImgCenterActive =
@@ -1094,7 +1094,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      */
     private void updateNumCellsField() {
-        this.lblCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
+        this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
         this.model.setCurrentGLF(sliderTime.getValue());
         if (model.getCurrentGL().getIlp() != null) {
             final int rhs =
@@ -1244,13 +1244,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     final int extent =
                             sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
                     sliderTrackingRange.setUpperValue(t1 - 1 + extent);
-                    btnOptimizeMore.doClick();
+                    buttonOptimizeMore.doClick();
                 }
                 sliderTrackingRange.setValue(t1 - 1);
             });
             t.start();
         }
-        if (e.getSource().equals(btnRestart)) {
+        if (e.getSource().equals(buttonRestart)) {
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
@@ -1261,7 +1261,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 restartTrackingAsync();
             }
         }
-        if (e.getSource().equals(btnOptimizeMore)) {
+        if (e.getSource().equals(buttonOptimizeMore)) {
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
@@ -1292,11 +1292,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(btnExportHtml)) {
+        if (e.getSource().equals(buttonExportHtml)) {
             final Thread t = new Thread(this::exportHtmlOverview);
             t.start();
         }
-        if (e.getSource().equals(btnExportData)) {
+        if (e.getSource().equals(buttonExportData)) {
             final Thread t = new Thread(this::exportDataFiles);
             t.start();
         }
@@ -1618,6 +1618,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * @return true if the corresponding CheckBox is checked.
      */
     public boolean isAutosaveRequested() {
-        return cbAutosave.isSelected();
+        return checkboxAutosave.isSelected();
     }
 }

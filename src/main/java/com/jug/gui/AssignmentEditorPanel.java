@@ -5,7 +5,7 @@ import com.jug.lp.GrowthLineTrackingILP;
 
 import javax.swing.*;
 
-public class AssignmentEditorPanel extends JPanel {
+public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     AssignmentsEditorViewer assignmentView;
     JCheckBox checkboxIsSelected;
     int sourceTimeStepOffset;
@@ -82,5 +82,8 @@ public class AssignmentEditorPanel extends JPanel {
                 ilp.removeAllAssignmentConstraints(getTimeStepToDisplay());
             }
         }
+    }
+
+    public void showSegmentationAnnotations(final boolean showSegmentationAnnotations) {
     }
 }

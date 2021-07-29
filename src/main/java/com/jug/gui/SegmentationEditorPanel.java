@@ -10,7 +10,7 @@ import net.imglib2.view.Views;
 import javax.swing.*;
 import java.awt.*;
 
-public class SegmentationEditorPanel extends JPanel {
+public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelected;
     private MoMAModel momaModel;

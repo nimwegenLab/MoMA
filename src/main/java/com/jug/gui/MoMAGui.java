@@ -70,8 +70,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private GrowthlaneViewer growthLaneViewerLeft;
     public GrowthlaneViewer growthLaneViewerCenter;
     private GrowthlaneViewer growthLaneViewerRight;
-    private SegmentationEditorPanel segmentationEditorPanelFarRight;
-    private AssignmentEditorPanel assignmentEditorPanelFarRight;
+    private IlpVariableEditorPanel segmentationEditorPanelFarRight;
+    private IlpVariableEditorPanel assignmentEditorPanelFarRight;
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -632,18 +632,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper, "top");
 
-        // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
+        int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
+
+        // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
         assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, model, viewHeight, 1);
         panelView.add(assignmentEditorPanelFarRight, "top");
 
         // -- right data viewer remade (t+2)
-        int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
-        int viewheight = (int) model.mm.getImgRaw().dimension(1);
-        segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, model, "t+2", viewWidth, viewheight, 2);
+        segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, model, "t+2", viewWidth, viewHeight, 2);
         panelView.add(segmentationEditorPanelFarRight, "top");
-
-//        panelView.add(new JPanel());
 
         // ---  ROW OF CHECKBOXES -------------
 

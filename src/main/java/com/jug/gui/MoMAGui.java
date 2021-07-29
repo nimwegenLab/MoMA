@@ -70,6 +70,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private GrowthlaneViewer growthLaneViewerLeft;
     public GrowthlaneViewer growthLaneViewerCenter;
     private GrowthlaneViewer growthLaneViewerRight;
+    private List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
     private IlpVariableEditorPanel segmentationEditorPanelFarRight;
     private IlpVariableEditorPanel assignmentEditorPanelFarRight;
     private RangeSlider sliderTrackingRange;
@@ -418,7 +419,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     growthLaneViewerLeft.showSegmentationAnnotations(showSegmentationAnnotations);
                     growthLaneViewerCenter.showSegmentationAnnotations(showSegmentationAnnotations);
                     growthLaneViewerRight.showSegmentationAnnotations(showSegmentationAnnotations);
-                    segmentationEditorPanelFarRight.showSegmentationAnnotations(showSegmentationAnnotations);
+                    for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+                        entry.showSegmentationAnnotations(showSegmentationAnnotations);
+                    }
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("?")) {
@@ -638,10 +641,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
         assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, model, viewHeight, 1);
         panelView.add(assignmentEditorPanelFarRight, "top");
+        ilpVariableEditorPanels.add(assignmentEditorPanelFarRight);
 
         // -- right data viewer remade (t+2)
         segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, model, "t+2", viewWidth, viewHeight, 2);
         panelView.add(segmentationEditorPanelFarRight, "top");
+        ilpVariableEditorPanels.add(segmentationEditorPanelFarRight);
 
         // ---  ROW OF CHECKBOXES -------------
 
@@ -913,7 +918,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
 
             // - - t+2 - - - - - -
-            segmentationEditorPanelFarRight.display();
+            updateIlpVariableEditorPanels();
+
 //            if (model.getCurrentGLFsSuccessorSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() - 1) { // hence copy of last frame for border-problem avoidance
 //                final GrowthLineFrame glf = model.getCurrentGLFsSuccessorSuccessor();
 //                /**
@@ -1019,22 +1025,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
                 if (t == sliderTime.getMaximum()) {
                     rightAssignmentsEditorViewer.display();
-                    assignmentEditorPanelFarRight.display();
                 }
                 else if (t == sliderTime.getMaximum() - 1) {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                    assignmentEditorPanelFarRight.display();
                 }
                 else {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                    assignmentEditorPanelFarRight.display();
                 }
             } else {
                 leftLeftAssignmentsEditorViewer.display();
                 leftAssignmentsEditorViewer.display();
                 rightAssignmentsEditorViewer.display();
-                assignmentEditorPanelFarRight.display();
             }
+
+            updateIlpVariableEditorPanels();
 
             // - -  i see ? cells  - - - - - -
             updateNumCellsField();
@@ -1047,6 +1051,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         setFocusToTimeSlider();
 
+    }
+
+    private void updateIlpVariableEditorPanels() {
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.display();
+        }
     }
 
     /**
@@ -1394,8 +1404,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 1);
             }
-            assignmentEditorPanelFarRight.setVariableConstraints();
-            segmentationEditorPanelFarRight.setVariableConstraints();
+            for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+                entry.setVariableConstraints();
+            }
         }
     }
 
@@ -1423,8 +1434,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 1);
             }
-            assignmentEditorPanelFarRight.unsetVariableConstraints();
-            segmentationEditorPanelFarRight.unsetVariableConstraints();
+            for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+                entry.unsetVariableConstraints();
+            }
         }
     }
 

@@ -86,4 +86,12 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     public void showSegmentationAnnotations(final boolean showSegmentationAnnotations) {
     }
+
+    public void switchToTab(int tabIndex) {
+        this.assignmentView.switchToTab(tabIndex);
+    }
+
+    public AssignmentsEditorViewer getAssignmentViewerPanel() {
+        return assignmentView;
+    }
 }

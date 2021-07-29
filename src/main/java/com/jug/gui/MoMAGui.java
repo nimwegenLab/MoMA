@@ -60,7 +60,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final String itemChannel2 = "Raw Channel 2";
     public JSlider sliderGL;
     public JSlider sliderTime;
-    public AssignmentsEditorViewer rightAssignmentsEditorViewer;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
     // -------------------------------------------------------------------------------------
@@ -69,8 +68,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private GrowthlaneViewer growthLaneViewerLeftLeft;
     private GrowthlaneViewer growthLaneViewerLeft;
     public GrowthlaneViewer growthLaneViewerCenter;
-    private GrowthlaneViewer growthLaneViewerRight;
     private List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
+    public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -388,27 +387,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
                 if (e.getActionCommand().equals("0")) {
                     leftAssignmentsEditorViewer.switchToTab(0);
-                    rightAssignmentsEditorViewer.switchToTab(0);
+                    switchAllAssignmentViewerTabs(0);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("1")) {
                     leftAssignmentsEditorViewer.switchToTab(1);
-                    rightAssignmentsEditorViewer.switchToTab(1);
+                    switchAllAssignmentViewerTabs(1);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("2")) {
                     leftAssignmentsEditorViewer.switchToTab(2);
-                    rightAssignmentsEditorViewer.switchToTab(2);
+                    switchAllAssignmentViewerTabs(2);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("3")) {
                     leftAssignmentsEditorViewer.switchToTab(3);
-                    rightAssignmentsEditorViewer.switchToTab(3);
+                    switchAllAssignmentViewerTabs(3);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("4")) {
                     leftAssignmentsEditorViewer.switchToTab(4);
-                    rightAssignmentsEditorViewer.switchToTab(4);
+                    switchAllAssignmentViewerTabs(4);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("b")) {
@@ -416,7 +415,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     growthLaneViewerLeftLeft.showSegmentationAnnotations(showSegmentationAnnotations);
                     growthLaneViewerLeft.showSegmentationAnnotations(showSegmentationAnnotations);
                     growthLaneViewerCenter.showSegmentationAnnotations(showSegmentationAnnotations);
-                    growthLaneViewerRight.showSegmentationAnnotations(showSegmentationAnnotations);
                     for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
                         entry.showSegmentationAnnotations(showSegmentationAnnotations);
                     }
@@ -432,6 +430,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
             }
         });
+    }
+
+    private void switchAllAssignmentViewerTabs(int tabIndex) {
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels ) {
+            ((AssignmentEditorPanel) entry).switchToTab(tabIndex);
+        }
     }
 
     /**
@@ -609,46 +613,26 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper, "top");
 
-        // --- Right assignment viewer (t -> t+1) -------------
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        // - - - - - -
-        rightAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
-        rightAssignmentsEditorViewer.addChangeListener(this);
-        if (ilp != null)
-            rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime()));
-        panelVerticalHelper.add(rightAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper, "top");
-
-        // ---  Right data viewer (t+1) -------------
-
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        labelHelper = new JLabel("t+1");
-        panelHorizontalHelper.add(labelHelper);
-        panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
-        // - - - - - -
-        growthLaneViewerRight = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(growthLaneViewerRight, BorderLayout.CENTER);
-        panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
-        panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper, "top");
-
         ////////// NEW CODE ////////////
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
+        List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
+
         // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
-        for (int time_offset = 2; time_offset < 3; time_offset++) {
-            IlpVariableEditorPanel assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, model, viewHeight, time_offset - 1);
-            panelView.add(assignmentEditorPanelFarRight, "top");
-            ilpVariableEditorPanels.add(assignmentEditorPanelFarRight);
+        for (int time_offset = 1; time_offset < 3; time_offset++) {
+            IlpVariableEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset - 1);
+            panelView.add(assignmentEditorPanel, "top");
+            ilpVariableEditorPanels.add(assignmentEditorPanel);
+            assignmentEditorPanels.add((AssignmentEditorPanel) assignmentEditorPanel);
 
             // -- right data viewer remade (t+2)
-            IlpVariableEditorPanel segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, model, "t+2", viewWidth, viewHeight, time_offset);
-            panelView.add(segmentationEditorPanelFarRight, "top");
-            ilpVariableEditorPanels.add(segmentationEditorPanelFarRight);
+            IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + time_offset, viewWidth, viewHeight, time_offset);
+            panelView.add(segmentationEditorPanel, "top");
+            ilpVariableEditorPanels.add(segmentationEditorPanel);
         }
 
+        assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanels.get(assignmentEditorPanels.size() / 2 + 1).getAssignmentViewerPanel();
 
         // ---  ROW OF CHECKBOXES -------------
 
@@ -904,21 +888,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 growthLaneViewerLeft.setEmptyScreenImage();
             }
 
-            // - - t+1 - - - - - -
-
-            if (model.getCurrentGLFsSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum()) { // hence copy of last frame for border-problem avoidance
-                final GrowthLineFrame glf = model.getCurrentGLFsSuccessor();
-                /**
-                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-                 * (right one in active assignments view).
-                 */
-                IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                growthLaneViewerRight.setScreenImage(glf, viewImgRightActive);
-            } else {
-                // show something empty
-                growthLaneViewerRight.setEmptyScreenImage();
-            }
-
             // - - t+2 - - - - - -
             updateIlpVariableEditorPanels();
 
@@ -1025,19 +994,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     leftLeftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 2));
                     leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
                 }
-                if (t == sliderTime.getMaximum()) {
-                    rightAssignmentsEditorViewer.display();
-                }
-                else if (t == sliderTime.getMaximum() - 1) {
-                    rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                }
-                else {
-                    rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                }
             } else {
                 leftLeftAssignmentsEditorViewer.display();
                 leftAssignmentsEditorViewer.display();
-                rightAssignmentsEditorViewer.display();
             }
 
             updateIlpVariableEditorPanels();

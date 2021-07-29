@@ -103,4 +103,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             }
         }
     }
+
+    public GrowthlaneViewer getGrowthlaneViewer() {
+        return this.growthlaneViewer;
+    }
 }

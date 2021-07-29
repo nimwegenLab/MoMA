@@ -135,4 +135,8 @@ public class MoMAModel {
 	public int getCurrentTime() {
 		return getCurrentGL().getFrames().indexOf( getCurrentGLF() );
 	}
+
+	public int getTimeStepMaximum() {
+		return getCurrentGL().getFrames().size() - 1;
+	}
 }

@@ -634,9 +634,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
-        assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, viewHeight);
-        if (ilp != null)
-            assignmentEditorPanelFarRight.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() + 1));
+        assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, model, viewHeight, 1);
         panelView.add(assignmentEditorPanelFarRight, "top");
 
         // -- right data viewer remade (t+2)
@@ -1031,7 +1029,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
                 else {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                    assignmentEditorPanelFarRight.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t+1));
+                    assignmentEditorPanelFarRight.display();
                 }
             } else {
                 leftLeftAssignmentsEditorViewer.display();

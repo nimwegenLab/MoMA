@@ -501,37 +501,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (model.mm.getRawChannelImgs().size() > 2) {
             cbWhichImgToShow.addItem(itemChannel2);
         }
-//		cbWhichImgToShow.addItem( itemPMFRF );
-//		cbWhichImgToShow.addItem( itemClassified );
-//		cbWhichImgToShow.addItem( itemSegmented );
+
         cbWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
 
         panelDropdown.add(Box.createHorizontalGlue());
         panelDropdown.add(cbWhichImgToShow);
         panelDropdown.add(Box.createHorizontalGlue());
 
-//		btnExchangeSegHyps = new JButton( "switch" );
-//		btnExchangeSegHyps.addActionListener( new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed( final ActionEvent e ) {
-//				final GrowthLineFrame glf = model.getCurrentGLF();
-//				if ( !glf.isParaMaxFlowComponentTree() ) {
-//					glf.generateAwesomeSegmentationHypotheses( model.mm.getImgTemp() );
-//				} else {
-//					glf.generateSimpleSegmentationHypotheses( model.mm.getImgTemp() );
-//				}
-//				dataToDisplayChanged();
-//			}
-//		} );
-//		lActiveHyps = new JLabel( "CT" );
-//		lActiveHyps.setHorizontalAlignment( SwingConstants.CENTER );
-//		lActiveHyps.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder( 2, 5, 2, 5 ) ) );
-//		lActiveHyps.setPreferredSize( new Dimension( 65, lActiveHyps.getPreferredSize().height ) );
-
-//		panelOptions.add( btnExchangeSegHyps );
-//		panelOptions.add( lActiveHyps );
-//		panelOptions.add( Box.createHorizontalGlue() );
 
         // =============== panelView-part ===================
 

@@ -12,17 +12,30 @@ import java.util.HashMap;
 import java.util.Set;
 
 public class AssignmentEditorPanel extends JPanel {
-    private final AssignmentsEditorViewer assignmentView;
+    AssignmentsEditorViewer assignmentView;
+    JCheckBox checkboxIsSelected;
 
     public AssignmentEditorPanel(final MoMAGui mmgui, int viewHeight) {
         assignmentView = new AssignmentsEditorViewer(viewHeight, mmgui);
         assignmentView.addChangeListener(mmgui);
         this.addAssignmentView(assignmentView);
         this.setAppearanceAndLayout();
+        this.addSelectionCheckbox(mmgui);
     }
 
     private void addAssignmentView(AssignmentsEditorViewer assignmentView){
         this.add(assignmentView);
+    }
+
+    private void addSelectionCheckbox(MoMAGui mmgui){
+        checkboxIsSelected = new JCheckBox();
+        checkboxIsSelected.addActionListener(mmgui);
+        checkboxIsSelected.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelected);
+    }
+
+    private void setAppearanceAndLayout() {
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     }
 
     public void display(){
@@ -33,7 +46,7 @@ public class AssignmentEditorPanel extends JPanel {
         assignmentView.display(hashMap);
     }
 
-    private void setAppearanceAndLayout() {
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+    public boolean isSelected() {
+        return checkboxIsSelected.isSelected();
     }
 }

@@ -61,7 +61,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public JSlider sliderGL;
     public JSlider sliderTime;
     public AssignmentsEditorViewer rightAssignmentsEditorViewer;
-    public AssignmentsEditorViewer rightRightAssignmentsEditorViewer;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
     // -------------------------------------------------------------------------------------
@@ -443,7 +442,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JPanel panelViewCenterHelper =
                 new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         final JPanel panelView =
-                new JPanel(new MigLayout("wrap 12", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+                new JPanel(new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
 
         // =============== panelIsee-part ===================
         final JPanel panelIsee = new JPanel();
@@ -631,16 +630,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerRight, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper, "top");
-
-        // --- Far-Right assignment viewer (t+1 -> t+2) -------------
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        // - - - - - -
-        rightRightAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
-        rightRightAssignmentsEditorViewer.addChangeListener(this);
-        if (ilp != null)
-            rightRightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() + 1));
-        panelVerticalHelper.add(rightRightAssignmentsEditorViewer, BorderLayout.CENTER);
         panelView.add(panelVerticalHelper, "top");
 
         // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
@@ -1034,24 +1023,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
                 if (t == sliderTime.getMaximum()) {
                     rightAssignmentsEditorViewer.display();
-                    rightRightAssignmentsEditorViewer.display();
                     assignmentEditorPanelFarRight.display();
                 }
                 else if (t == sliderTime.getMaximum() - 1) {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                    rightRightAssignmentsEditorViewer.display();
                     assignmentEditorPanelFarRight.display();
                 }
                 else {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                    rightRightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t+1));
                     assignmentEditorPanelFarRight.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t+1));
                 }
             } else {
                 leftLeftAssignmentsEditorViewer.display();
                 leftAssignmentsEditorViewer.display();
                 rightAssignmentsEditorViewer.display();
-                rightRightAssignmentsEditorViewer.display();
                 assignmentEditorPanelFarRight.display();
             }
 
@@ -1413,6 +1398,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 1);
             }
+            if (assignmentEditorPanelFarRight.isSelected()) {
+                ilp.fixAssignmentsAsAre(t + 1);
+            }
             if (segmentationEditorPanelFarRight.isSelected()) {
                 ilp.fixSegmentationAsIs(t + 2);
             }
@@ -1442,6 +1430,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
             if (checkboxSelectSegmentationRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 1);
+            }
+            if (assignmentEditorPanelFarRight.isSelected()) {
+                ilp.removeAllAssignmentConstraints(t + 1);
             }
             if (segmentationEditorPanelFarRight.isSelected()) {
                 ilp.removeAllSegmentConstraints(t + 2);

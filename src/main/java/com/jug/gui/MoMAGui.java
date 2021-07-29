@@ -72,6 +72,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public GrowthlaneViewer growthLaneViewerCenter;
     private GrowthlaneViewer growthLaneViewerRight;
     private SegmentationEditorPanel segmentationEditorPanelFarRight;
+    private AssignmentEditorPanel assignmentEditorPanelFarRight;
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -442,7 +443,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JPanel panelViewCenterHelper =
                 new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         final JPanel panelView =
-                new JPanel(new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+                new JPanel(new MigLayout("wrap 12", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
 
         // =============== panelIsee-part ===================
         final JPanel panelIsee = new JPanel();
@@ -641,6 +642,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             rightRightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() + 1));
         panelVerticalHelper.add(rightRightAssignmentsEditorViewer, BorderLayout.CENTER);
         panelView.add(panelVerticalHelper, "top");
+
+        // --- NEW: Far-Right assignment viewer (t+1 -> t+2) -------------
+        int viewHeight = (int) model.mm.getImgRaw().dimension(1);
+        assignmentEditorPanelFarRight = new AssignmentEditorPanel(this, viewHeight);
+        if (ilp != null)
+            assignmentEditorPanelFarRight.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() + 1));
+        panelView.add(assignmentEditorPanelFarRight, "top");
 
         // -- right data viewer remade (t+2)
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
@@ -1027,20 +1035,24 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 if (t == sliderTime.getMaximum()) {
                     rightAssignmentsEditorViewer.display();
                     rightRightAssignmentsEditorViewer.display();
+                    assignmentEditorPanelFarRight.display();
                 }
                 else if (t == sliderTime.getMaximum() - 1) {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
                     rightRightAssignmentsEditorViewer.display();
+                    assignmentEditorPanelFarRight.display();
                 }
                 else {
                     rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
                     rightRightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t+1));
+                    assignmentEditorPanelFarRight.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t+1));
                 }
             } else {
                 leftLeftAssignmentsEditorViewer.display();
                 leftAssignmentsEditorViewer.display();
                 rightAssignmentsEditorViewer.display();
                 rightRightAssignmentsEditorViewer.display();
+                assignmentEditorPanelFarRight.display();
             }
 
             // - -  i see ? cells  - - - - - -

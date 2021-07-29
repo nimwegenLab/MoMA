@@ -79,4 +79,28 @@ public class SegmentationEditorPanel extends JPanel {
         IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
     }
+
+    /***
+     * This method set constraints for all ILP variables of the current time-step that are in the solution.
+     */
+    public void setVariableConstraints() {
+        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        if (ilp != null) {
+            if (this.isSelected()) {
+                ilp.fixSegmentationAsIs(getTimeStepToDisplay());
+            }
+        }
+    }
+
+    /***
+     * This method unsets/removes constraints for all ILP variables of the current time-step that are in the solution.
+     */
+    public void unsetVariableConstraints() {
+        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        if (ilp != null) {
+            if (this.isSelected()) {
+                ilp.removeAllSegmentConstraints(getTimeStepToDisplay());
+            }
+        }
+    }
 }

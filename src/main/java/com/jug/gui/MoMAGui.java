@@ -1399,9 +1399,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (assignmentEditorPanelFarRight.isSelected()) {
                 ilp.fixAssignmentsAsAre(t + 1);
             }
-            if (segmentationEditorPanelFarRight.isSelected()) {
-                ilp.fixSegmentationAsIs(t + 2);
-            }
+            segmentationEditorPanelFarRight.setVariableConstraints();
         }
     }
 
@@ -1432,9 +1430,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (assignmentEditorPanelFarRight.isSelected()) {
                 ilp.removeAllAssignmentConstraints(t + 1);
             }
-            if (segmentationEditorPanelFarRight.isSelected()) {
-                ilp.removeAllSegmentConstraints(t + 2);
-            }
+            segmentationEditorPanelFarRight.unsetVariableConstraints();
         }
     }
 

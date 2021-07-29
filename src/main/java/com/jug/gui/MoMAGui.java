@@ -72,6 +72,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public GrowthlaneViewer growthLaneViewerCenter;
     private GrowthlaneViewer growthLaneViewerRight;
     private GrowthlaneViewer growthLaneViewerRightRight;
+    private SegmentationEditorPanel segmentationEditorPanelFarRight;
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -442,7 +443,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JPanel panelViewCenterHelper =
                 new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
         final JPanel panelView =
-                new JPanel(new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+                new JPanel(new MigLayout("wrap 12", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
 
         // =============== panelIsee-part ===================
         final JPanel panelIsee = new JPanel();
@@ -656,8 +657,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.setBackground(Color.BLACK);
         panelView.add(panelVerticalHelper);
 
+        // -- right data viewer remade (t+2)
+        int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
+        int viewheight = (int) model.mm.getImgRaw().dimension(1);
+        segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, "t+2", viewWidth, viewheight);
+        panelView.add(segmentationEditorPanelFarRight);
 
-        panelView.add(new JPanel());
+//        panelView.add(new JPanel());
 
         // ---  ROW OF CHECKBOXES -------------
 
@@ -938,6 +944,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                  */
                 IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerRightRight.setScreenImage(glf, viewImgRightActive);
+                segmentationEditorPanelFarRight.setScreenImage(glf, viewImgRightActive);
             } else {
                 // show something empty
                 growthLaneViewerRightRight.setEmptyScreenImage();

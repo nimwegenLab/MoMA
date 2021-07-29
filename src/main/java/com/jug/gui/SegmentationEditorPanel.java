@@ -20,8 +20,7 @@ public class SegmentationEditorPanel extends JPanel {
     }
 
     private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {
-        JPanel centeringPanel = new JPanel();
-        this.add(centeringPanel.add(growthlaneViewer));
+        this.add(growthlaneViewer);
     }
 
     private void setAppearanceAndLayout() {
@@ -36,15 +35,14 @@ public class SegmentationEditorPanel extends JPanel {
     private void addTitleLabel(String title){
         JLabel labelTitle = new JLabel(title);
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JPanel centeringPanel = new JPanel();
-        this.add(centeringPanel.add(labelTitle));
+        this.add(labelTitle);
     }
 
     private void addSelectionCheckbox(MoMAGui mmgui){
         checkboxIsSelected = new JCheckBox();
         checkboxIsSelected.addActionListener(mmgui);
-        JPanel centeringPanel = new JPanel();
-        this.add(centeringPanel.add(checkboxIsSelected));
+        checkboxIsSelected.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelected);
     }
 
     public boolean isSelected() {

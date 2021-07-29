@@ -12,11 +12,20 @@ public class SegmentationEditorPanel extends JPanel {
     JCheckBox checkboxIsSelected;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, String title, int viewWidth, int viewHeight){
-        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
-        this.add(createTitleLabel(title));
-        this.add(growthlaneViewer);
+        this.addTitleLabel(title);
+        this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);
+        this.setAppearanceAndLayout();
+    }
+
+    private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {
+        JPanel centeringPanel = new JPanel();
+        this.add(centeringPanel.add(growthlaneViewer));
+    }
+
+    private void setAppearanceAndLayout() {
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
     }
 
@@ -24,16 +33,18 @@ public class SegmentationEditorPanel extends JPanel {
         growthlaneViewer.setScreenImage(growthLineFrame, imageView);
     }
 
-    private JLabel createTitleLabel(String title){
+    private void addTitleLabel(String title){
         JLabel labelTitle = new JLabel(title);
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
-        return labelTitle;
+        JPanel centeringPanel = new JPanel();
+        this.add(centeringPanel.add(labelTitle));
     }
 
     private void addSelectionCheckbox(MoMAGui mmgui){
         checkboxIsSelected = new JCheckBox();
         checkboxIsSelected.addActionListener(mmgui);
-        this.add(checkboxIsSelected, Component.CENTER_ALIGNMENT);
+        JPanel centeringPanel = new JPanel();
+        this.add(centeringPanel.add(checkboxIsSelected));
     }
 
     public boolean isSelected() {

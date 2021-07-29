@@ -532,7 +532,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerLeftLeft, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
         // - - - - - -
 
         // --- Left assignment viewer (t-2 -> t-1) -------------
@@ -556,7 +556,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             leftLeftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() - 2));
         // - - - - - -
         panelVerticalHelper.add(leftLeftAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // --- Left data viewer (t-1) -------------
         panelView.add(new JPanel());
@@ -570,7 +570,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerLeft, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // --- Left assignment viewer (t-1 -> t) -------------
         panelVerticalHelper = new JPanel(new BorderLayout());
@@ -593,7 +593,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() - 1));
         // - - - - - -
         panelVerticalHelper.add(leftAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // --- Center data viewer (t) -------------
 
@@ -607,7 +607,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerCenter, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.RED));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // --- Right assignment viewer (t -> t+1) -------------
         panelVerticalHelper = new JPanel(new BorderLayout());
@@ -617,7 +617,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (ilp != null)
             rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime()));
         panelVerticalHelper.add(rightAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // ---  Right data viewer (t+1) -------------
 
@@ -631,7 +631,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerRight, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // --- Far-Right assignment viewer (t+1 -> t+2) -------------
         panelVerticalHelper = new JPanel(new BorderLayout());
@@ -641,7 +641,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (ilp != null)
             rightRightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() + 1));
         panelVerticalHelper.add(rightRightAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // ---  Right data viewer (t+2) -------------
 
@@ -655,13 +655,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelVerticalHelper.add(growthLaneViewerRightRight, BorderLayout.CENTER);
         panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
         panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
+        panelView.add(panelVerticalHelper, "top");
 
         // -- right data viewer remade (t+2)
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
         int viewheight = (int) model.mm.getImgRaw().dimension(1);
         segmentationEditorPanelFarRight = new SegmentationEditorPanel(this, "t+2", viewWidth, viewheight);
-        panelView.add(segmentationEditorPanelFarRight);
+        panelView.add(segmentationEditorPanelFarRight, "top");
 
 //        panelView.add(new JPanel());
 

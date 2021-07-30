@@ -446,8 +446,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
-        int min_time_offset = -3;
-        int max_time_offset = 3;
+        int min_time_offset = -5;
+        int max_time_offset = 5;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
             SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);

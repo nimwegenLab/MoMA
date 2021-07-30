@@ -73,12 +73,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
                 txtNumCells.setText("?");
-                ilp.removeSegmentsInFrameCountConstraint(momaModel.getCurrentTime());
+                ilp.removeSegmentsInFrameCountConstraint(getTimeStepToDisplay());
             }
             if (numCells != -1) {
                 try {
-                    ilp.removeSegmentsInFrameCountConstraint(momaModel.getCurrentTime());
-                    ilp.addSegmentsInFrameCountConstraint(momaModel.getCurrentTime(), numCells);
+                    ilp.removeSegmentsInFrameCountConstraint(getTimeStepToDisplay());
+                    ilp.addSegmentsInFrameCountConstraint(getTimeStepToDisplay(), numCells);
                 } catch (final GRBException e1) {
                     e1.printStackTrace();
                 }

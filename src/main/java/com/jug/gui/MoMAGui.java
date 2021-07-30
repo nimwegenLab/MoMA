@@ -487,25 +487,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -2;
         int max_time_offset = 3;
         for (int time_offset = min_time_offset; time_offset < 3; time_offset++) {
-            IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + time_offset, viewWidth, viewHeight, time_offset);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + time_offset, viewWidth, viewHeight, time_offset);
             panelView.add(segmentationEditorPanel, "top");
             ilpVariableEditorPanels.add(segmentationEditorPanel);
-            segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
+            segmentationEditorPanels.add(segmentationEditorPanel);
 
-            IlpVariableEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset + 1);
+            AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset);
             panelView.add(assignmentEditorPanel, "top");
             ilpVariableEditorPanels.add(assignmentEditorPanel);
-            assignmentEditorPanels.add((AssignmentEditorPanel) assignmentEditorPanel);
+            assignmentEditorPanels.add(assignmentEditorPanel);
+
+            if (time_offset == min_time_offset) {
+                assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
+            }
+            if (time_offset == 0) {
+                growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
+            }
         }
         IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + max_time_offset, viewWidth, viewHeight, max_time_offset);
         panelView.add(segmentationEditorPanel, "top");
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
-
-        int indexOfAssignmentEditorPanelToRightOfCenterGlView = assignmentEditorPanels.size() / 2 + 1;
-        assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanels.get(indexOfAssignmentEditorPanelToRightOfCenterGlView).getAssignmentViewerPanel();
-        int indexOfCenterSegementEditorPanel = segmentationEditorPanels.size() / 2;
-        growthLaneViewerCenter = segmentationEditorPanels.get(indexOfCenterSegementEditorPanel).getGrowthlaneViewer();
 
         final JLabel lblCheckBoxLine = new JLabel("Correct are:");
         panelView.add(lblCheckBoxLine, "align center");

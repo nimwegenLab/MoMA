@@ -84,8 +84,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private JComboBox comboboxWhichImgToShow;
 
-//    private JTextField txtNumCells;
-
     private JButton buttonFreezeHistory;
     private JButton buttonSet;
     private JButton buttonReset;
@@ -386,14 +384,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     }
                     dataToDisplayChanged();
                 }
-//                if (e.getActionCommand().equals("?")) {
-//                    txtNumCells.requestFocus();
-//                    txtNumCells.setText(e.getActionCommand());
-//                }
-//                if (e.getActionCommand().equals("n")) {
-//                    txtNumCells.requestFocus();
-//                    txtNumCells.selectAll();
-//                }
             }
         });
     }
@@ -421,41 +411,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         final JLabel labelNumCells1 = new JLabel("I see");
         final JLabel labelNumCells2 = new JLabel("cells!");
-//        txtNumCells = new JTextField("?", 2);
-//        txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
-//        txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
-//        txtNumCells.addActionListener(e -> {
-//            model.getCurrentGL().getIlp().autosave();
-//
-//            int numCells;
-//            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-//            try {
-//                numCells = Integer.parseInt(txtNumCells.getText());
-//            } catch (final NumberFormatException nfe) {
-//                numCells = -1;
-//                txtNumCells.setText("?");
-//                ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-//            }
-//            if (numCells != -1) {
-//                try {
-//                    ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-//                    ilp.addSegmentsInFrameCountConstraint(model.getCurrentTime(), numCells);
-//                } catch (final GRBException e1) {
-//                    e1.printStackTrace();
-//                }
-//            }
-//
-//            final Thread t = new Thread(() -> {
-//                model.getCurrentGL().runILP();
-//                dataToDisplayChanged();
-//                sliderTime.requestFocus();
-//            });
-//            t.start();
-//        });
 
         panelIsee.add(Box.createHorizontalGlue());
         panelIsee.add(labelNumCells1);
-//        panelIsee.add(txtNumCells);
         panelIsee.add(labelNumCells2);
         panelIsee.add(Box.createHorizontalGlue());
 

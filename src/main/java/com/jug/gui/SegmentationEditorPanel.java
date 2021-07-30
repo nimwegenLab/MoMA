@@ -14,13 +14,11 @@ import java.awt.*;
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelected;
-    private final MoMAGui mmgui;
     private final MoMAModel momaModel;
     private final int timeStepOffset;
     private JTextField txtNumCells;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewWidth, int viewHeight, int timeStepOffset) {
-        this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);

@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
+import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -13,16 +14,20 @@ import java.awt.*;
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelected;
+    private final MoMAGui mmgui;
     private final MoMAModel momaModel;
     private final int timeStepOffset;
+    private JTextField txtNumCells;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewWidth, int viewHeight, int timeStepOffset) {
+        this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
         this.addTitleLabel(timeStepOffset);
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);
+        this.addCellNumberInputField(mmgui);
         this.setAppearanceAndLayout();
     }
 
@@ -52,6 +57,54 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         JLabel labelTitle = new JLabel(title);
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(labelTitle);
+    }
+
+    private void addCellNumberInputField(MoMAGui mmgui){
+        txtNumCells = new JTextField("?", 2);
+        txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
+        txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
+        txtNumCells.addActionListener(e -> {
+            momaModel.getCurrentGL().getIlp().autosave();
+
+            int numCells;
+            final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+            try {
+                numCells = Integer.parseInt(txtNumCells.getText());
+            } catch (final NumberFormatException nfe) {
+                numCells = -1;
+                txtNumCells.setText("?");
+                ilp.removeSegmentsInFrameCountConstraint(momaModel.getCurrentTime());
+            }
+            if (numCells != -1) {
+                try {
+                    ilp.removeSegmentsInFrameCountConstraint(momaModel.getCurrentTime());
+                    ilp.addSegmentsInFrameCountConstraint(momaModel.getCurrentTime(), numCells);
+                } catch (final GRBException e1) {
+                    e1.printStackTrace();
+                }
+            }
+
+            final Thread t = new Thread(() -> {
+                momaModel.getCurrentGL().runILP();
+                mmgui.dataToDisplayChanged();
+                mmgui.sliderTime.requestFocus();
+            });
+            t.start();
+        });
+        this.add(txtNumCells);
+    }
+
+    private void updateNumCellsField() {
+        if (momaModel.getCurrentGL().getIlp() == null) {
+            return;
+        }
+        final int rhs =
+                momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(getTimeStepToDisplay());
+        if (rhs == -1) {
+            txtNumCells.setText("?");
+        } else {
+            txtNumCells.setText("" + rhs);
+        }
     }
 
     private String calculateTitel(int timeStepOffset) {
@@ -89,6 +142,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay);
         IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
+        updateNumCellsField();
     }
 
     /***

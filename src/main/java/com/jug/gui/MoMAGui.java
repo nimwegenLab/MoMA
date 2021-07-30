@@ -13,7 +13,6 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
-import gurobi.GRBException;
 import ij.ImageJ;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
@@ -85,7 +84,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private JComboBox comboboxWhichImgToShow;
 
-    private JTextField txtNumCells;
+//    private JTextField txtNumCells;
 
     private JButton buttonFreezeHistory;
     private JButton buttonSet;
@@ -387,14 +386,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     }
                     dataToDisplayChanged();
                 }
-                if (e.getActionCommand().equals("?")) {
-                    txtNumCells.requestFocus();
-                    txtNumCells.setText(e.getActionCommand());
-                }
-                if (e.getActionCommand().equals("n")) {
-                    txtNumCells.requestFocus();
-                    txtNumCells.selectAll();
-                }
+//                if (e.getActionCommand().equals("?")) {
+//                    txtNumCells.requestFocus();
+//                    txtNumCells.setText(e.getActionCommand());
+//                }
+//                if (e.getActionCommand().equals("n")) {
+//                    txtNumCells.requestFocus();
+//                    txtNumCells.selectAll();
+//                }
             }
         });
     }
@@ -422,41 +421,41 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         final JLabel labelNumCells1 = new JLabel("I see");
         final JLabel labelNumCells2 = new JLabel("cells!");
-        txtNumCells = new JTextField("?", 2);
-        txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
-        txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
-        txtNumCells.addActionListener(e -> {
-            model.getCurrentGL().getIlp().autosave();
-
-            int numCells;
-            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-            try {
-                numCells = Integer.parseInt(txtNumCells.getText());
-            } catch (final NumberFormatException nfe) {
-                numCells = -1;
-                txtNumCells.setText("?");
-                ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-            }
-            if (numCells != -1) {
-                try {
-                    ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-                    ilp.addSegmentsInFrameCountConstraint(model.getCurrentTime(), numCells);
-                } catch (final GRBException e1) {
-                    e1.printStackTrace();
-                }
-            }
-
-            final Thread t = new Thread(() -> {
-                model.getCurrentGL().runILP();
-                dataToDisplayChanged();
-                sliderTime.requestFocus();
-            });
-            t.start();
-        });
+//        txtNumCells = new JTextField("?", 2);
+//        txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
+//        txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
+//        txtNumCells.addActionListener(e -> {
+//            model.getCurrentGL().getIlp().autosave();
+//
+//            int numCells;
+//            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+//            try {
+//                numCells = Integer.parseInt(txtNumCells.getText());
+//            } catch (final NumberFormatException nfe) {
+//                numCells = -1;
+//                txtNumCells.setText("?");
+//                ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
+//            }
+//            if (numCells != -1) {
+//                try {
+//                    ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
+//                    ilp.addSegmentsInFrameCountConstraint(model.getCurrentTime(), numCells);
+//                } catch (final GRBException e1) {
+//                    e1.printStackTrace();
+//                }
+//            }
+//
+//            final Thread t = new Thread(() -> {
+//                model.getCurrentGL().runILP();
+//                dataToDisplayChanged();
+//                sliderTime.requestFocus();
+//            });
+//            t.start();
+//        });
 
         panelIsee.add(Box.createHorizontalGlue());
         panelIsee.add(labelNumCells1);
-        panelIsee.add(txtNumCells);
+//        panelIsee.add(txtNumCells);
         panelIsee.add(labelNumCells2);
         panelIsee.add(Box.createHorizontalGlue());
 
@@ -752,8 +751,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             }
-
-            updateNumCellsField();
         }
 
         // IF DETAILED DATA VIEW IS ACTIVE
@@ -782,7 +779,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         if (e.getSource().equals(sliderTime)) {
-            updateNumCellsField();
+            updateCenteredTimeStep();
         }
 
         if (e.getSource().equals(sliderTrackingRange)) {
@@ -799,19 +796,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     /**
      *
      */
-    private void updateNumCellsField() {
+    private void updateCenteredTimeStep() {
         this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
         this.model.setCurrentGLF(sliderTime.getValue());
-        if (model.getCurrentGL().getIlp() != null) {
-            final int rhs =
-                    model.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(
-                            sliderTime.getValue());
-            if (rhs == -1) {
-                txtNumCells.setText("?");
-            } else {
-                txtNumCells.setText("" + rhs);
-            }
-        }
     }
 
     /**
@@ -868,7 +855,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                         this,
                         MoMA.STATS_OUTPUT_PATH,
                         "Save current tracking to...",
-                        new ExtensionFileFilter("timm", "Curated TIMM tracking"));
+                        new ExtensionFileFilter("moma", "Curated MOMA tracking"));
                 System.out.println("File to save tracking to: " + file.getAbsolutePath());
                 ilp.saveState(file);
             } else {

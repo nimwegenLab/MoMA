@@ -84,7 +84,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private JComboBox comboboxWhichImgToShow;
 
-    private JButton buttonFreezeHistory;
+    private JButton buttonFreezePreviousTimeSteps;
     private JButton buttonSet;
     private JButton buttonReset;
 
@@ -325,7 +325,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("a")) {
-                    buttonFreezeHistory.doClick();
+                    buttonFreezePreviousTimeSteps.doClick();
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("s")) {
@@ -400,32 +400,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JPanel buildSegmentationAndAssignmentView() {
         final JPanel panelContent = new JPanel(new BorderLayout());
 
+        GridBagConstraints gridBagConstraintPanel1 = new GridBagConstraints();
+        gridBagConstraintPanel1.anchor = GridBagConstraints.NORTH;
+
+        GridBagConstraints gridBagConstraintPanel2 = new GridBagConstraints();
+        gridBagConstraintPanel2.anchor = GridBagConstraints.NORTH;
+        gridBagConstraintPanel2.insets = new Insets(10,3,10,3);
+
         final JPanel panelViewCenterHelper = new JPanel();
         panelViewCenterHelper.setLayout(new BoxLayout(panelViewCenterHelper, BoxLayout.PAGE_AXIS));
         final JPanel panel1 = new JPanel();
-//        FlowLayout panel1Layout = new FlowLayout(FlowLayout.CENTER, 0, 0);
-//        BoxLayout panel1Layout = new BoxLayout(panel1, BoxLayout.LINE_AXIS);
         GridBagLayout panel1Layout = new GridBagLayout();
         panel1.setLayout(panel1Layout);
 
-        final JPanel panel2 =
-                new JPanel(new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+        final JPanel panel2 = new JPanel();
+//        MigLayout panel2Layout = new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]");
+        GridBagLayout panel2Layout = new GridBagLayout();
+        panel2.setLayout(panel2Layout);
 
         panelViewCenterHelper.add(panel1);
         panelViewCenterHelper.add(panel2);
         panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
-
-        // =============== panelIsee-part ===================
-        final JPanel panelIsee = new JPanel();
-        panelIsee.setLayout(new BoxLayout(panelIsee, BoxLayout.LINE_AXIS));
-
-        final JLabel labelNumCells1 = new JLabel("I see");
-        final JLabel labelNumCells2 = new JLabel("cells!");
-
-        panelIsee.add(Box.createHorizontalGlue());
-        panelIsee.add(labelNumCells1);
-        panelIsee.add(labelNumCells2);
-        panelIsee.add(Box.createHorizontalGlue());
 
         // =============== panelDropdown-part ===================
         final JPanel panelDropdown = new JPanel();
@@ -451,18 +446,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
-        int min_time_offset = -2;
+        int min_time_offset = -3;
         int max_time_offset = 3;
-        GridBagConstraints gridBagConstraint = new GridBagConstraints();
-        gridBagConstraint.anchor = GridBagConstraints.NORTH;
         for (int time_offset = min_time_offset; time_offset < 3; time_offset++) {
             SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
-            panel1.add(segmentationEditorPanel, gridBagConstraint);
+            panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
 
             AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset);
-            panel1.add(assignmentEditorPanel, gridBagConstraint);
+            panel1.add(assignmentEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(assignmentEditorPanel);
             assignmentEditorPanels.add(assignmentEditorPanel);
 
@@ -472,18 +465,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);
-        panel1.add(segmentationEditorPanel, gridBagConstraint);
+        panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
 
-        final JLabel lblCheckBoxLine = new JLabel("Correct are:");
-        panel2.add(lblCheckBoxLine, "align center");
-
-        buttonFreezeHistory = new JButton("<-all");
-        buttonFreezeHistory.addActionListener(this);
+        buttonFreezePreviousTimeSteps = new JButton("<-all");
+        buttonFreezePreviousTimeSteps.addActionListener(this);
         buttonSet = new JButton("set");
         buttonSet.addActionListener(this);
-        panel2.add(buttonSet, "align center");
         buttonReset = new JButton("reset");
         buttonReset.addActionListener(this);
 
@@ -493,13 +482,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // - - - - - -
 
-        panel2.add(buttonFreezeHistory, "align center");
-        panel2.add(panelIsee, "cell 1 2 5 1, align center");
-        panel2.add(buttonReset, "align center, wrap");
-        panel2.add(viewSegmentsButton);
+        panel2.add(buttonFreezePreviousTimeSteps, gridBagConstraintPanel2);
+        panel2.add(buttonSet, gridBagConstraintPanel2);
+        panel2.add(buttonReset, gridBagConstraintPanel2);
+        panel2.add(viewSegmentsButton, gridBagConstraintPanel2);
 
-        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        panel2.add(panelDropdown, "cell 1 3 5 1, align center, wrap");
+//        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+        panel2.add(panelDropdown, gridBagConstraintPanel2);
 
         return panelContent;
     }
@@ -897,7 +886,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(buttonFreezeHistory)) {
+        if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
             final Thread t = new Thread(() -> {
                 final int t1 = sliderTime.getValue();
                 if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {

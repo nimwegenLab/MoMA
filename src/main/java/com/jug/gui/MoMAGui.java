@@ -448,7 +448,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         int min_time_offset = -3;
         int max_time_offset = 3;
-        for (int time_offset = min_time_offset; time_offset < 3; time_offset++) {
+        for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
             SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);

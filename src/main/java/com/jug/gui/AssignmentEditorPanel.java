@@ -44,20 +44,29 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         return checkboxIsSelected.isSelected();
     }
 
+    private void updateSelectionCheckbox() {
+        checkboxIsSelected.setEnabled(currentTimeStepIsValid());
+    }
+
     public void display() {
         GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
-
-        int timeStepToDisplay = getTimeStepToDisplay();
+        updateSelectionCheckbox();
 
         if (ilp == null) {
             assignmentView.display();
             return;
         }
-        if (timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum() - 2) { // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 2` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        if (!currentTimeStepIsValid()) {
             assignmentView.display();
             return;
         }
-        assignmentView.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(timeStepToDisplay));
+        assignmentView.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
+    }
+
+    private boolean currentTimeStepIsValid() {
+        int timeStepToDisplay = getTimeStepToDisplay();
+        boolean timeStepIsInvalid = timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum() - 2;  // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 2` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        return !timeStepIsInvalid;
     }
 
     /***

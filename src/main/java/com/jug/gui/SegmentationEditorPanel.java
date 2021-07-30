@@ -38,14 +38,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
     }
 
-    public void setScreenImage(final GrowthLineFrame growthLineFrame, final IntervalView<FloatType> imageView) {
-        growthlaneViewer.setScreenImage(growthLineFrame, imageView);
-    }
-
-    public void setEmptyScreenImage() {
-        growthlaneViewer.setEmptyScreenImage();
-    }
-
     public void showSegmentationAnnotations(final boolean showSegmentationAnnotations) {
         growthlaneViewer.showSegmentationAnnotations(showSegmentationAnnotations);
     }
@@ -71,12 +63,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
                 txtNumCells.setText("?");
-                ilp.removeSegmentsInFrameCountConstraint(getTimeStepToDisplay());
+                ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
             }
             if (numCells != -1) {
                 try {
-                    ilp.removeSegmentsInFrameCountConstraint(getTimeStepToDisplay());
-                    ilp.addSegmentsInFrameCountConstraint(getTimeStepToDisplay(), numCells);
+                    ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
+                    ilp.addSegmentsInFrameCountConstraint(timeStepToDisplay(), numCells);
                 } catch (final GRBException e1) {
                     e1.printStackTrace();
                 }
@@ -92,16 +84,31 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.add(txtNumCells);
     }
 
-    private void updateNumCellsField() {
+    private void updateSelectionCheckbox() {
+        checkboxIsSelected.setEnabled(currentTimeStepIsValid());
+    }
+
+    private void updateCellNumberInputField() {
         if (momaModel.getCurrentGL().getIlp() == null) {
             return;
         }
+
+        if (!currentTimeStepIsValid()) {
+            txtNumCells.setEnabled(false);
+            txtNumCells.setText("?");
+            txtNumCells.setBackground(Color.WHITE);
+            return;
+        }
+
         final int rhs =
-                momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(getTimeStepToDisplay());
+                momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
+        txtNumCells.setEnabled(true);
         if (rhs == -1) {
             txtNumCells.setText("?");
+            txtNumCells.setBackground(Color.WHITE);
         } else {
             txtNumCells.setText("" + rhs);
+            txtNumCells.setBackground(Color.ORANGE);
         }
     }
 
@@ -126,21 +133,26 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         return checkboxIsSelected.isSelected();
     }
 
-    private int getTimeStepToDisplay() {
+    private int timeStepToDisplay() {
         return momaModel.getCurrentTime() + this.timeStepOffset;
     }
 
     public void display() {
-        int timeStepToDisplay = getTimeStepToDisplay();
+        updateCellNumberInputField();
+        updateSelectionCheckbox();
 
-        if (timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum() - 1) { // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        if (!currentTimeStepIsValid()) {
             growthlaneViewer.setEmptyScreenImage();
             return;
         }
-        GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay);
+        GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay());
         IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
-        updateNumCellsField();
+    }
+
+    private boolean currentTimeStepIsValid() {
+        boolean timeStepIsInvalid =  timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum() - 1; // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        return !timeStepIsInvalid;
     }
 
     /***
@@ -150,7 +162,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
-                ilp.fixSegmentationAsIs(getTimeStepToDisplay());
+                ilp.fixSegmentationAsIs(timeStepToDisplay());
             }
         }
     }
@@ -162,7 +174,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
-                ilp.removeAllSegmentConstraints(getTimeStepToDisplay());
+                ilp.removeAllSegmentConstraints(timeStepToDisplay());
             }
         }
     }

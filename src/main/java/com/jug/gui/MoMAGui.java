@@ -34,8 +34,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,30 +76,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JPanel panelDetailedDataView;
     private Plot2DPanel plot;
     private JCheckBox checkboxAutosave;
-    //	private JButton btnRedoAllHypotheses;
-//	private JButton btnExchangeSegHyps;
+
     private JButton buttonRestart;
     private JButton viewSegmentsButton;
     private JButton buttonOptimizeMore;
     private JButton buttonExportHtml;
     private JButton buttonExportData;
-    //	String itemPMFRF = "PMFRF Sum Image";
-//	String itemClassified = "RF BG Probability";
-//	String itemSegmented = "RF Cell Segmentation";
+
     private JComboBox comboboxWhichImgToShow;
 
-    // REMOVED because load/save does not go easy with this shit!
-//	private JLabel lActiveHyps;
-
     private JTextField txtNumCells;
-
-    // Batch interaction panels
-    private JCheckBox checkboxSelectSegmentationLeft;
-    private JCheckBox checkboxSelectSegmentationCenter;
-    private JCheckBox checkboxSelectSegmentationRight;
-
-    private JCheckBox checkboxSelectAssignmentsLeft;
-    private JCheckBox checkboxSelectAssignmentsRight;
 
     private JButton buttonFreezeHistory;
     private JButton buttonSet;
@@ -261,7 +245,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelSegmentationAndAssignmentView.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panelDetailedDataView = buildDetailedDataView();
 
-        //tabsViews.add( "Cell Counting", panelCountingView );
         tabsViews.add("Segm. & Assignments", panelSegmentationAndAssignmentView);
         tabsViews.add("Detailed Data View", panelDetailedDataView);
 
@@ -270,8 +253,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- Controls ----------------------------------
         checkboxAutosave = new JCheckBox("autosave?");
         checkboxAutosave.addActionListener(this);
-//		btnRedoAllHypotheses = new JButton( "Resegment" );
-//		btnRedoAllHypotheses.addActionListener( this );
         buttonRestart = new JButton("Restart");
         buttonRestart.addActionListener(this);
         buttonOptimizeMore = new JButton("Optimize");
@@ -343,14 +324,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("g")) {
-                    //sliderGL.requestFocus();
                     sliderTime.setValue(sliderTrackingRange.getUpperValue());
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("a")) {
-					/*if ( !tabsViews.getComponent( tabsViews.getSelectedIndex() ).equals( panelCountingView ) ) {
-						tabsViews.setSelectedComponent( panelCountingView );
-					}*/
                     buttonFreezeHistory.doClick();
                     dataToDisplayChanged();
                 }
@@ -504,13 +481,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelDropdown.add(Box.createHorizontalGlue());
 
 
-        // =============== panelView-part ===================
-
-        JPanel panelVerticalHelper;
-        JPanel panelHorizontalHelper;
-        JLabel labelHelper;
-
-        ////////// NEW CODE ////////////
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
@@ -537,31 +507,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int indexOfCenterSegementEditorPanel = segmentationEditorPanels.size() / 2;
         growthLaneViewerCenter = segmentationEditorPanels.get(indexOfCenterSegementEditorPanel).getGrowthlaneViewer();
 
-        // ---  ROW OF CHECKBOXES -------------
-
         final JLabel lblCheckBoxLine = new JLabel("Correct are:");
         panelView.add(lblCheckBoxLine, "align center");
-        // - - - - - -
-        checkboxSelectSegmentationLeft = new JCheckBox();
-        checkboxSelectSegmentationLeft.addActionListener(this);
-        panelView.add(checkboxSelectSegmentationLeft, "align center");
-        // - - - - - -
-        checkboxSelectAssignmentsLeft = new JCheckBox();
-        checkboxSelectAssignmentsLeft.addActionListener(this);
-        panelView.add(checkboxSelectAssignmentsLeft, "align center");
-        // - - - - - -
-        checkboxSelectSegmentationCenter = new JCheckBox();
-        checkboxSelectSegmentationCenter.addActionListener(this);
-        panelView.add(checkboxSelectSegmentationCenter, "align center");
-        // - - - - - -
-        checkboxSelectAssignmentsRight = new JCheckBox();
-        checkboxSelectAssignmentsRight.addActionListener(this);
-        panelView.add(checkboxSelectAssignmentsRight, "align center");
-        // - - - - - -
-        checkboxSelectSegmentationRight = new JCheckBox();
-        checkboxSelectSegmentationRight.addActionListener(this);
-        panelView.add(checkboxSelectSegmentationRight, "align center");
-        // - - - - - -
+
         buttonFreezeHistory = new JButton("<-all");
         buttonFreezeHistory.addActionListener(this);
         buttonSet = new JButton("set");
@@ -764,29 +712,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             updateIlpVariableEditorPanels();
 
-//            if (model.getCurrentGLFsSuccessorSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum() - 1) { // hence copy of last frame for border-problem avoidance
-//                final GrowthLineFrame glf = model.getCurrentGLFsSuccessorSuccessor();
-//                /**
-//                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-//                 * (right one in active assignments view).
-//                 */
-//                IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//                segmentationEditorPanelFarRight.setScreenImage(glf, viewImgRightActive);
-//            } else {
-//                // show something empty
-//                segmentationEditorPanelFarRight.setEmptyScreenImage();
-//            }
-
-            // - -  t  - - - - - -
-
             final GrowthLineFrame glf = model.getCurrentGLF();
-//			final IntervalView< FloatType > paramaxflowSumImageFloatTyped = model.getCurrentGLF().getParamaxflowSumImageFloatTyped( null );
             final FloatType min = new FloatType();
             final FloatType max = new FloatType();
 
-//			if ( paramaxflowSumImageFloatTyped != null && cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
-//				imgCanvasActiveCenter.setScreenImage( glf, paramaxflowSumImageFloatTyped );
-//			} else
             /**
              * The view onto <code>imgRaw</code> that is supposed to be shown on screen
              * (center one in active assignments view).
@@ -819,40 +748,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemClassified ) ) {
-//				final Thread t = new Thread() {
-//
-//					@Override
-//					public void run() {
-//						final IntervalView< FloatType > sizeEstimationImageFloatTyped = Views.offset( Views.hyperSlice( model.mm.getCellClassificationImgs(), 2, glf.getOffsetF() ), glf.getOffsetX() - MotherMachine.GL_WIDTH_IN_PIXELS / 2 - MotherMachine.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-//						imgCanvasActiveCenter.setScreenImage( glf, sizeEstimationImageFloatTyped );
-//					}
-//				};
-//				t.start();
-//			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemSegmented ) ) {
-//				final Thread t = new Thread() {
-//
-//					@Override
-//					public void run() {
-//						final IntervalView< FloatType > sizeEstimationImageFloatTyped = Views.offset( Converters.convert( Views.hyperSlice( model.mm.getCellSegmentedChannelImgs(), 2, glf.getOffsetF() ), new RealFloatNormalizeConverter( 1.0f ), new FloatType() ), glf.getOffsetX() - MotherMachine.GL_WIDTH_IN_PIXELS / 2 - MotherMachine.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-//						imgCanvasActiveCenter.setScreenImage( glf, sizeEstimationImageFloatTyped );
-//					}
-//				};
-//				t.start();
             } else { // BG-subtracted Channel 0 selected or PMFRF not available
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             }
 
-//			if ( glf.isParaMaxFlowComponentTree() ) {
-//				lActiveHyps.setText( "PMFRF" );
-//				lActiveHyps.setForeground( Color.red );
-//			} else {
-//				lActiveHyps.setText( "CT " );
-//				lActiveHyps.setForeground( Color.black );
-//			}
-
-            // - -  i see ? cells  - - - - - -
             updateNumCellsField();
         }
 
@@ -1198,27 +1098,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * segmentations and assignments to current ILP state.
      */
     private void setAllVariablesFixedWhereChecked() {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        final int t = sliderTime.getValue();
-        if (ilp != null) {
-            if (checkboxSelectSegmentationLeft.isSelected()) {
-                ilp.fixSegmentationAsIs(t - 1);
-            }
-            if (checkboxSelectAssignmentsLeft.isSelected()) {
-                ilp.fixAssignmentsAsAre(t - 1);
-            }
-            if (checkboxSelectSegmentationCenter.isSelected()) {
-                ilp.fixSegmentationAsIs(t);
-            }
-            if (checkboxSelectAssignmentsRight.isSelected()) {
-                ilp.fixAssignmentsAsAre(t);
-            }
-            if (checkboxSelectSegmentationRight.isSelected()) {
-                ilp.fixSegmentationAsIs(t + 1);
-            }
-            for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
-                entry.setVariableConstraints();
-            }
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.setVariableConstraints();
         }
     }
 
@@ -1228,40 +1109,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * ILP.
      */
     private void removeAllSegmentConstraintsWhereChecked() {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        final int t = sliderTime.getValue();
-        if (ilp != null) {
-            if (checkboxSelectSegmentationLeft.isSelected()) {
-                ilp.removeAllSegmentConstraints(t - 1);
-            }
-            if (checkboxSelectAssignmentsLeft.isSelected()) {
-                ilp.removeAllAssignmentConstraints(t - 1);
-            }
-            if (checkboxSelectSegmentationCenter.isSelected()) {
-                ilp.removeAllSegmentConstraints(t);
-            }
-            if (checkboxSelectAssignmentsRight.isSelected()) {
-                ilp.removeAllAssignmentConstraints(t);
-            }
-            if (checkboxSelectSegmentationRight.isSelected()) {
-                ilp.removeAllSegmentConstraints(t + 1);
-            }
-            for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
-                entry.unsetVariableConstraints();
-            }
-        }
-    }
-
-    /**
-     * Depending on which checkboxes are checked, fix ALL respective
-     * segmentations and assignments to current ILP state.
-     */
-    protected void setAllVariablesFixedUpTo(final int t) {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        if (ilp != null) {
-            for (int i = 0; i < t; i++) {
-                ilp.freezeAssignmentsAsAre(i - 1);
-            }
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.unsetVariableConstraints();
         }
     }
 

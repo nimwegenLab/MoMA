@@ -400,10 +400,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JPanel buildSegmentationAndAssignmentView() {
         final JPanel panelContent = new JPanel(new BorderLayout());
 
-        final JPanel panelViewCenterHelper =
-                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
-        final JPanel panelView =
+        final JPanel panelViewCenterHelper = new JPanel();
+        panelViewCenterHelper.setLayout(new BoxLayout(panelViewCenterHelper, BoxLayout.PAGE_AXIS));
+        final JPanel panel1 = new JPanel();
+//        FlowLayout panel1Layout = new FlowLayout(FlowLayout.CENTER, 0, 0);
+//        BoxLayout panel1Layout = new BoxLayout(panel1, BoxLayout.LINE_AXIS);
+        GridBagLayout panel1Layout = new GridBagLayout();
+        panel1.setLayout(panel1Layout);
+
+        final JPanel panel2 =
                 new JPanel(new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+
+        panelViewCenterHelper.add(panel1);
+        panelViewCenterHelper.add(panel2);
+        panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
 
         // =============== panelIsee-part ===================
         final JPanel panelIsee = new JPanel();
@@ -443,14 +453,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         int min_time_offset = -2;
         int max_time_offset = 3;
+        GridBagConstraints gridBagConstraint = new GridBagConstraints();
+        gridBagConstraint.anchor = GridBagConstraints.NORTH;
         for (int time_offset = min_time_offset; time_offset < 3; time_offset++) {
             SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
-            panelView.add(segmentationEditorPanel, "top");
+            panel1.add(segmentationEditorPanel, gridBagConstraint);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
 
             AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset);
-            panelView.add(assignmentEditorPanel, "top");
+            panel1.add(assignmentEditorPanel, gridBagConstraint);
             ilpVariableEditorPanels.add(assignmentEditorPanel);
             assignmentEditorPanels.add(assignmentEditorPanel);
 
@@ -460,18 +472,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);
-        panelView.add(segmentationEditorPanel, "top");
+        panel1.add(segmentationEditorPanel, gridBagConstraint);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
 
         final JLabel lblCheckBoxLine = new JLabel("Correct are:");
-        panelView.add(lblCheckBoxLine, "align center");
+        panel2.add(lblCheckBoxLine, "align center");
 
         buttonFreezeHistory = new JButton("<-all");
         buttonFreezeHistory.addActionListener(this);
         buttonSet = new JButton("set");
         buttonSet.addActionListener(this);
-        panelView.add(buttonSet, "align center");
+        panel2.add(buttonSet, "align center");
         buttonReset = new JButton("reset");
         buttonReset.addActionListener(this);
 
@@ -481,16 +493,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // - - - - - -
 
-        panelView.add(buttonFreezeHistory, "align center");
-        panelView.add(panelIsee, "cell 1 2 5 1, align center");
-        panelView.add(buttonReset, "align center, wrap");
-        panelView.add(viewSegmentsButton);
+        panel2.add(buttonFreezeHistory, "align center");
+        panel2.add(panelIsee, "cell 1 2 5 1, align center");
+        panel2.add(buttonReset, "align center, wrap");
+        panel2.add(viewSegmentsButton);
 
         panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        panelView.add(panelDropdown, "cell 1 3 5 1, align center, wrap");
-
-        panelViewCenterHelper.add(panelView);
-        panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
+        panel2.add(panelDropdown, "cell 1 3 5 1, align center, wrap");
 
         return panelContent;
     }

@@ -9,7 +9,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     AssignmentsEditorViewer assignmentView;
     JCheckBox checkboxIsSelected;
     int sourceTimeStepOffset;
-    private MoMAModel momaModel;
+    private final MoMAModel momaModel;
 
     public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset) {
         this.momaModel = momaModel;
@@ -21,15 +21,15 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         this.sourceTimeStepOffset = sourceTimeStepOffset;
     }
 
-    public int getTimeStepToDisplay(){
+    public int getTimeStepToDisplay() {
         return momaModel.getCurrentTime() + sourceTimeStepOffset;
     }
 
-    private void addAssignmentView(AssignmentsEditorViewer assignmentView){
+    private void addAssignmentView(AssignmentsEditorViewer assignmentView) {
         this.add(assignmentView);
     }
 
-    private void addSelectionCheckbox(MoMAGui mmgui){
+    private void addSelectionCheckbox(MoMAGui mmgui) {
         checkboxIsSelected = new JCheckBox();
         checkboxIsSelected.addActionListener(mmgui);
         checkboxIsSelected.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
@@ -44,7 +44,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         return checkboxIsSelected.isSelected();
     }
 
-    public void display(){
+    public void display() {
         GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
 
         int timeStepToDisplay = getTimeStepToDisplay();

@@ -58,16 +58,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final String itemChannel2 = "Raw Channel 2";
     public JSlider sliderGL;
     public JSlider sliderTime;
-    // show helper lines in IntervalViews?
-    private boolean showSegmentationAnnotations = true;
     // -------------------------------------------------------------------------------------
     // gui-fields
     // -------------------------------------------------------------------------------------
     public GrowthlaneViewer growthLaneViewerCenter;
-    private List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
-    private List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
-    private List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
+    // show helper lines in IntervalViews?
+    private boolean showSegmentationAnnotations = true;
+    private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
+    private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
+    private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -400,7 +400,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void switchAllAssignmentViewerTabs(int tabIndex) {
-        for (AssignmentEditorPanel entry : assignmentEditorPanels ) {
+        for (AssignmentEditorPanel entry : assignmentEditorPanels) {
             entry.switchToTab(tabIndex);
         }
     }
@@ -1015,7 +1015,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
 
-    public void restartFromGLSegmentation(){
+    public void restartFromGLSegmentation() {
         model.mm.restartFromGLSegmentation();
     }
 
@@ -1054,9 +1054,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         dataToDisplayChanged();
     }
 
-        /**
-         * Show a stack of the components of the current time step in a separate window.
-         */
+    /**
+     * Show a stack of the components of the current time step in a separate window.
+     */
     private void ShowComponentsOfCurrentTimeStep() {
         List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
         GrowthLineFrame glf = model.getCurrentGLF();

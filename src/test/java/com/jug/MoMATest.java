@@ -81,8 +81,8 @@ public class MoMATest {
     public void _lysing_cell__thomas_20200922__Pos0_GL30() {
         String inputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30.tiff";
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/output/";
-        Integer tmin = 110;
-        Integer tmax = 115;
+        Integer tmin = 120;
+        Integer tmax = 140;
         startMoma(inputPath, outputPath, tmin, tmax);
 //        startMoma(inputPath, outputPath);
     }

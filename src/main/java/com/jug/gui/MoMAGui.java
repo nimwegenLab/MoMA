@@ -497,11 +497,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             ilpVariableEditorPanels.add(assignmentEditorPanel);
             assignmentEditorPanels.add(assignmentEditorPanel);
 
-            if (time_offset == min_time_offset) {
-                assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
-            }
             if (time_offset == 0) {
                 growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
+                assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
         IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);

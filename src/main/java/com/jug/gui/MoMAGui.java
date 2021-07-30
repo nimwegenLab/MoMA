@@ -487,7 +487,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -2;
         int max_time_offset = 3;
         for (int time_offset = min_time_offset; time_offset < 3; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + time_offset, viewWidth, viewHeight, time_offset);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
             panelView.add(segmentationEditorPanel, "top");
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -504,7 +504,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, "t+" + max_time_offset, viewWidth, viewHeight, max_time_offset);
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);
         panelView.add(segmentationEditorPanel, "top");
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);

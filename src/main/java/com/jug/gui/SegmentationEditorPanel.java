@@ -16,11 +16,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private MoMAModel momaModel;
     private int timeStepOffset;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, String title, int viewWidth, int viewHeight, int timeStepOffset){
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewWidth, int viewHeight, int timeStepOffset){
         this.momaModel = momaModel;
         this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
-        this.addTitleLabel(title);
+        this.addTitleLabel(timeStepOffset);
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);
         this.setAppearanceAndLayout();
@@ -47,10 +47,21 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         growthlaneViewer.showSegmentationAnnotations(showSegmentationAnnotations);
     }
 
-    private void addTitleLabel(String title){
+    private void addTitleLabel(int timeStepOffset){
+        String title = calculateTitel(timeStepOffset);
         JLabel labelTitle = new JLabel(title);
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(labelTitle);
+    }
+
+    private String calculateTitel(int timeStepOffset) {
+        if (timeStepOffset < 0) {
+            return "t-" + Math.abs(timeStepOffset);
+        } else if (timeStepOffset == 0) {
+            return "t";
+        } else {
+            return "t+" + timeStepOffset;
+        }
     }
 
     private void addSelectionCheckbox(MoMAGui mmgui){

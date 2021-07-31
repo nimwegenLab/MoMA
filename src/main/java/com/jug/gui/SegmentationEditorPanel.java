@@ -12,17 +12,18 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
-    GrowthlaneViewer growthlaneViewer;
-    JCheckBox checkboxIsSelected;
     private final MoMAModel momaModel;
     private final int timeStepOffset;
+    GrowthlaneViewer growthlaneViewer;
+    JCheckBox checkboxIsSelected;
     private JTextField txtNumCells;
+    private JLabel labelTitle;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewWidth, int viewHeight, int timeStepOffset) {
         this.momaModel = momaModel;
         this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
-        this.addTitleLabel(timeStepOffset);
+        this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);
         this.addCellNumberInputField(mmgui);
@@ -42,14 +43,25 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         growthlaneViewer.showSegmentationAnnotations(showSegmentationAnnotations);
     }
 
-    private void addTitleLabel(int timeStepOffset) {
-        String title = calculateTitel(timeStepOffset);
-        JLabel labelTitle = new JLabel(title);
+    private void addTitleLabel() {
+        String title = getTitleLabel();
+        labelTitle = new JLabel(title);
         labelTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(labelTitle);
     }
 
-    private void addCellNumberInputField(MoMAGui mmgui){
+    private String getTitleLabel() {
+        if (currentTimeStepIsValid()) {
+            return Integer.toString(timeStepToDisplay());
+        }
+        return "NA";
+    }
+
+    private void updateTitleLable() {
+        labelTitle.setText(getTitleLabel());
+    }
+
+    private void addCellNumberInputField(MoMAGui mmgui) {
         txtNumCells = new JTextField("?", 2);
         txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
         txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
@@ -112,16 +124,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         }
     }
 
-    private String calculateTitel(int timeStepOffset) {
-        if (timeStepOffset < 0) {
-            return "t-" + Math.abs(timeStepOffset);
-        } else if (timeStepOffset == 0) {
-            return "t";
-        } else {
-            return "t+" + timeStepOffset;
-        }
-    }
-
     private void addSelectionCheckbox(MoMAGui mmgui) {
         checkboxIsSelected = new JCheckBox();
         checkboxIsSelected.addActionListener(mmgui);
@@ -138,6 +140,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     public void display() {
+        updateTitleLable();
         updateCellNumberInputField();
         updateSelectionCheckbox();
 
@@ -151,7 +154,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private boolean currentTimeStepIsValid() {
-        boolean timeStepIsInvalid =  timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum() - 1; // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum() - 1; // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
         return !timeStepIsInvalid;
     }
 

@@ -36,7 +36,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void setAppearanceAndLayout() {
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
-        this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
+        if (timeStepOffset == 0) {
+            this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.RED));
+        } else {
+            this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
+        }
     }
 
     public void showSegmentationAnnotations(final boolean showSegmentationAnnotations) {

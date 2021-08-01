@@ -29,6 +29,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -59,6 +60,9 @@ public class MoMA {
 	public static MoMA instance;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
+
+	public static String TAG1 = "dead";
+	public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
 
 	/**
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image

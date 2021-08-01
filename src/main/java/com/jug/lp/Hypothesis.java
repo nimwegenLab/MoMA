@@ -3,6 +3,7 @@ package com.jug.lp;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import net.imglib2.algorithm.componenttree.Component;
@@ -36,6 +37,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	private final T wrappedComponent;
 	private final float cost;
 	private final HypLoc location;
+	public ArrayList<String> labels = new ArrayList<>();
 
 	/**
 	 * Used to store a 'segment in solution constraint' after it was added to

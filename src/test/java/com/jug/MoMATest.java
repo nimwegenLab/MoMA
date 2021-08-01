@@ -11,10 +11,10 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
+//        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
-//        tests._lysing_cell__thomas_20200922__Pos0_GL30();
+        tests._lysing_cell__thomas_20200922__Pos0_GL30();
 //        tests._lysing_cell__thomas_20200922__Pos16_GL17();
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
@@ -314,7 +314,7 @@ public class MoMATest {
     }
 
     private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax, boolean headless){
-        remove_probability_maps(inputPath);
+//        remove_probability_maps(inputPath);
         create_output_folder(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
         MoMA moma = new MoMA();

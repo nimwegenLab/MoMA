@@ -124,7 +124,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
-                if(glf.getParent().getIlp() != null){
+                if (glf.getParent().getIlp() != null) {
                     drawOptimalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
                 }
             }

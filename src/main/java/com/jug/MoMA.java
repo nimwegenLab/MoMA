@@ -239,6 +239,12 @@ public class MoMA {
 	 */
 	private static int GUI_CONSOLE_WIDTH = 600;
 
+
+	/**
+	 * Defines the number of time steps that will be shown side-by-side in the GUI.
+	 */
+	public static int GUI_NUMBER_OF_SHOWN_TIMESTEPS = 7;
+
 	/**
 	 * The path to usually open JFileChoosers at (except for initial load
 	 * dialog).
@@ -609,6 +615,7 @@ public class MoMA {
 		GUI_WIDTH = Integer.parseInt( props.getProperty( "GUI_WIDTH", Integer.toString( GUI_WIDTH ) ) );
 		GUI_HEIGHT = Integer.parseInt( props.getProperty( "GUI_HEIGHT", Integer.toString( GUI_HEIGHT ) ) );
 		GUI_CONSOLE_WIDTH = Integer.parseInt( props.getProperty( "GUI_CONSOLE_WIDTH", Integer.toString( GUI_CONSOLE_WIDTH ) ) );
+		GUI_NUMBER_OF_SHOWN_TIMESTEPS = Integer.parseInt( props.getProperty( "GUI_NUMBER_OF_SHOWN_TIMESTEPS", Integer.toString(GUI_NUMBER_OF_SHOWN_TIMESTEPS) ) );
 
 		EXPORT_DO_TRACK_EXPORT = props.getProperty( "EXPORT_DO_TRACK_EXPORT", Integer.toString(EXPORT_DO_TRACK_EXPORT?1:0) ).equals("1");
 		EXPORT_USER_INPUTS = props.getProperty( "EXPORT_USER_INPUTS", Integer.toString(EXPORT_USER_INPUTS?1:0) ).equals("1");

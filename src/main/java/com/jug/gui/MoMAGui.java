@@ -13,7 +13,6 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
-import gurobi.GRBException;
 import ij.ImageJ;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccessibleInterval;
@@ -34,8 +33,6 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,52 +57,36 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final String itemChannel2 = "Raw Channel 2";
     public JSlider sliderGL;
     public JSlider sliderTime;
-    public AssignmentsEditorViewer rightAssignmentsEditorViewer;
-    // show helper lines in IntervalViews?
-    private boolean showSegmentationAnnotations = true;
     // -------------------------------------------------------------------------------------
     // gui-fields
     // -------------------------------------------------------------------------------------
-    private GrowthlaneViewer growthLaneViewerLeft;
     public GrowthlaneViewer growthLaneViewerCenter;
-    private GrowthlaneViewer growthLaneViewerRight;
+    public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
+    // show helper lines in IntervalViews?
+    private boolean showSegmentationAnnotations = true;
+    private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
+    private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
+    private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private RangeSlider sliderTrackingRange;
-    private JLabel lblCurrentTime;
+    private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
     private JPanel panelDetailedDataView;
     private Plot2DPanel plot;
-    private AssignmentsEditorViewer leftAssignmentsEditorViewer;
-    private JCheckBox cbAutosave;
-    //	private JButton btnRedoAllHypotheses;
-//	private JButton btnExchangeSegHyps;
-    private JButton btnRestart;
+    private JCheckBox checkboxAutosave;
+
+    private JButton buttonRestart;
     private JButton viewSegmentsButton;
-    private JButton btnOptimizeMore;
-    private JButton btnExportHtml;
-    private JButton btnExportData;
-    //	String itemPMFRF = "PMFRF Sum Image";
-//	String itemClassified = "RF BG Probability";
-//	String itemSegmented = "RF Cell Segmentation";
-    private JComboBox cbWhichImgToShow;
+    private JButton buttonOptimizeMore;
+    private JButton buttonExportHtml;
+    private JButton buttonExportData;
 
-    // REMOVED because load/save does not go easy with this shit!
-//	private JLabel lActiveHyps;
+    private JComboBox comboboxWhichImgToShow;
 
-    private JTextField txtNumCells;
-
-    // Batch interaction panels
-    private JCheckBox cbSegmentationOkLeft;
-    private JCheckBox cbSegmentationOkCenter;
-    private JCheckBox cbSegmentationOkRight;
-
-    private JCheckBox cbAssignmentsOkLeft;
-    private JCheckBox cbAssignmentsOkRight;
-
-    private JButton bFreezeHistory;
-    private JButton bCheckBoxLineSet;
-    private JButton bCheckBoxLineReset;
+    private JButton buttonFreezePreviousTimeSteps;
+    private JButton buttonSet;
+    private JButton buttonReset;
 
     // Menu-items
     private MenuItem menuViewShowConsole;
@@ -199,7 +180,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         sliderTime.setPaintTicks(true);
         sliderTime.setPaintLabels(true);
         sliderTime.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        lblCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
+        labelCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
 
         // --- Slider for TrackingRage ----------
 
@@ -226,7 +207,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
         panelSliderArrangement.add(lblIgnoreBeyond);
         panelSliderArrangement.add(sliderTrackingRange);
-        panelSliderArrangement.add(lblCurrentTime);
+        panelSliderArrangement.add(labelCurrentTime);
         panelSliderArrangement.add(sliderTime);
 
         panelHorizontalHelper = new JPanel(new BorderLayout());
@@ -261,33 +242,30 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelSegmentationAndAssignmentView.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panelDetailedDataView = buildDetailedDataView();
 
-        //tabsViews.add( "Cell Counting", panelCountingView );
-        tabsViews.add("Segm. & Assingments", panelSegmentationAndAssignmentView);
+        tabsViews.add("Segm. & Assignments", panelSegmentationAndAssignmentView);
         tabsViews.add("Detailed Data View", panelDetailedDataView);
 
         tabsViews.setSelectedComponent(panelSegmentationAndAssignmentView);
 
         // --- Controls ----------------------------------
-        cbAutosave = new JCheckBox("autosave?");
-        cbAutosave.addActionListener(this);
-//		btnRedoAllHypotheses = new JButton( "Resegment" );
-//		btnRedoAllHypotheses.addActionListener( this );
-        btnRestart = new JButton("Restart");
-        btnRestart.addActionListener(this);
-        btnOptimizeMore = new JButton("Optimize");
-        btnOptimizeMore.addActionListener(this);
-        btnExportHtml = new JButton("Export HTML");
-        btnExportHtml.addActionListener(this);
-        btnExportData = new JButton("Export Data");
-        btnExportData.addActionListener(this);
+        checkboxAutosave = new JCheckBox("autosave?");
+        checkboxAutosave.addActionListener(this);
+        buttonRestart = new JButton("Restart");
+        buttonRestart.addActionListener(this);
+        buttonOptimizeMore = new JButton("Optimize");
+        buttonOptimizeMore.addActionListener(this);
+        buttonExportHtml = new JButton("Export HTML");
+        buttonExportHtml.addActionListener(this);
+        buttonExportData = new JButton("Export Data");
+        buttonExportData.addActionListener(this);
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
-        panelHorizontalHelper.add(cbAutosave);
+        panelHorizontalHelper.add(checkboxAutosave);
 //		panelHorizontalHelper.add( btnRedoAllHypotheses );
-        panelHorizontalHelper.add(btnRestart);
-        panelHorizontalHelper.add(btnOptimizeMore);
-        panelHorizontalHelper.add(btnExportHtml);
-        panelHorizontalHelper.add(btnExportData);
+        panelHorizontalHelper.add(buttonRestart);
+        panelHorizontalHelper.add(buttonOptimizeMore);
+        panelHorizontalHelper.add(buttonExportHtml);
+        panelHorizontalHelper.add(buttonExportData);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // --- Final adding and layout steps -------------
@@ -343,15 +321,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("g")) {
-                    //sliderGL.requestFocus();
                     sliderTime.setValue(sliderTrackingRange.getUpperValue());
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("a")) {
-					/*if ( !tabsViews.getComponent( tabsViews.getSelectedIndex() ).equals( panelCountingView ) ) {
-						tabsViews.setSelectedComponent( panelCountingView );
-					}*/
-                    bFreezeHistory.doClick();
+                    buttonFreezePreviousTimeSteps.doClick();
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("s")) {
@@ -367,64 +341,57 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("e")) {
-                    btnExportData.doClick();
+                    buttonExportData.doClick();
                 }
                 if (e.getActionCommand().equals("r")) {
-                    btnRestart.doClick();
+                    buttonRestart.doClick();
                 }
                 if (e.getActionCommand().equals("o")) {
-                    btnOptimizeMore.doClick();
+                    buttonOptimizeMore.doClick();
                 }
                 if (e.getActionCommand().equals("v")) {
-                    int selIdx = cbWhichImgToShow.getSelectedIndex();
+                    int selIdx = comboboxWhichImgToShow.getSelectedIndex();
                     selIdx++;
-                    if (selIdx == cbWhichImgToShow.getItemCount()) {
+                    if (selIdx == comboboxWhichImgToShow.getItemCount()) {
                         selIdx = 0;
                     }
-                    cbWhichImgToShow.setSelectedIndex(selIdx);
+                    comboboxWhichImgToShow.setSelectedIndex(selIdx);
                 }
                 if (e.getActionCommand().equals("0")) {
-                    leftAssignmentsEditorViewer.switchToTab(0);
-                    rightAssignmentsEditorViewer.switchToTab(0);
+                    switchAllAssignmentViewerTabs(0);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("1")) {
-                    leftAssignmentsEditorViewer.switchToTab(1);
-                    rightAssignmentsEditorViewer.switchToTab(1);
+                    switchAllAssignmentViewerTabs(1);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("2")) {
-                    leftAssignmentsEditorViewer.switchToTab(2);
-                    rightAssignmentsEditorViewer.switchToTab(2);
+                    switchAllAssignmentViewerTabs(2);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("3")) {
-                    leftAssignmentsEditorViewer.switchToTab(3);
-                    rightAssignmentsEditorViewer.switchToTab(3);
+                    switchAllAssignmentViewerTabs(3);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("4")) {
-                    leftAssignmentsEditorViewer.switchToTab(4);
-                    rightAssignmentsEditorViewer.switchToTab(4);
+                    switchAllAssignmentViewerTabs(4);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("b")) {
                     showSegmentationAnnotations = !showSegmentationAnnotations;
-                    growthLaneViewerLeft.showSegmentationAnnotations(showSegmentationAnnotations);
-                    growthLaneViewerCenter.showSegmentationAnnotations(showSegmentationAnnotations);
-                    growthLaneViewerRight.showSegmentationAnnotations(showSegmentationAnnotations);
+                    for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+                        entry.showSegmentationAnnotations(showSegmentationAnnotations);
+                    }
                     dataToDisplayChanged();
-                }
-                if (e.getActionCommand().equals("?")) {
-                    txtNumCells.requestFocus();
-                    txtNumCells.setText(e.getActionCommand());
-                }
-                if (e.getActionCommand().equals("n")) {
-                    txtNumCells.requestFocus();
-                    txtNumCells.selectAll();
                 }
             }
         });
+    }
+
+    private void switchAllAssignmentViewerTabs(int tabIndex) {
+        for (AssignmentEditorPanel entry : assignmentEditorPanels) {
+            entry.switchToTab(tabIndex);
+        }
     }
 
     /**
@@ -433,220 +400,81 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JPanel buildSegmentationAndAssignmentView() {
         final JPanel panelContent = new JPanel(new BorderLayout());
 
-        final JPanel panelViewCenterHelper =
-                new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 10));
-        final JPanel panelView =
-                new JPanel(new MigLayout("wrap 7", "[]0[]0[]0[]0[]0[]0[]", "[]0[]"));
+        GridBagConstraints gridBagConstraintPanel1 = new GridBagConstraints();
+        gridBagConstraintPanel1.anchor = GridBagConstraints.NORTH;
 
-        // =============== panelIsee-part ===================
-        final JPanel panelIsee = new JPanel();
-        panelIsee.setLayout(new BoxLayout(panelIsee, BoxLayout.LINE_AXIS));
+        GridBagConstraints gridBagConstraintPanel2 = new GridBagConstraints();
+        gridBagConstraintPanel2.anchor = GridBagConstraints.NORTH;
+        gridBagConstraintPanel2.insets = new Insets(10,3,10,3);
 
-        final JLabel labelNumCells1 = new JLabel("I see");
-        final JLabel labelNumCells2 = new JLabel("cells!");
-        txtNumCells = new JTextField("?", 2);
-        txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
-        txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
-        txtNumCells.addActionListener(e -> {
-            model.getCurrentGL().getIlp().autosave();
+        final JPanel panelViewCenterHelper = new JPanel();
+        panelViewCenterHelper.setLayout(new BoxLayout(panelViewCenterHelper, BoxLayout.PAGE_AXIS));
+        final JPanel panel1 = new JPanel();
+        GridBagLayout panel1Layout = new GridBagLayout();
+        panel1.setLayout(panel1Layout);
 
-            int numCells;
-            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-            try {
-                numCells = Integer.parseInt(txtNumCells.getText());
-            } catch (final NumberFormatException nfe) {
-                numCells = -1;
-                txtNumCells.setText("?");
-                ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-            }
-            if (numCells != -1) {
-                try {
-                    ilp.removeSegmentsInFrameCountConstraint(model.getCurrentTime());
-                    ilp.addSegmentsInFrameCountConstraint(model.getCurrentTime(), numCells);
-                } catch (final GRBException e1) {
-                    e1.printStackTrace();
-                }
-            }
+        final JPanel panel2 = new JPanel();
+//        MigLayout panel2Layout = new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]");
+        GridBagLayout panel2Layout = new GridBagLayout();
+        panel2.setLayout(panel2Layout);
 
-            final Thread t = new Thread(() -> {
-                model.getCurrentGL().getIlp().run();
-                dataToDisplayChanged();
-                sliderTime.requestFocus();
-            });
-            t.start();
-        });
-
-        panelIsee.add(Box.createHorizontalGlue());
-        panelIsee.add(labelNumCells1);
-        panelIsee.add(txtNumCells);
-        panelIsee.add(labelNumCells2);
-        panelIsee.add(Box.createHorizontalGlue());
+        panelViewCenterHelper.add(panel1);
+        panelViewCenterHelper.add(panel2);
+        panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
 
         // =============== panelDropdown-part ===================
         final JPanel panelDropdown = new JPanel();
         panelDropdown.setLayout(new BoxLayout(panelDropdown, BoxLayout.LINE_AXIS));
-        cbWhichImgToShow = new JComboBox();
+        comboboxWhichImgToShow = new JComboBox();
         String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-        cbWhichImgToShow.addItem(itemChannel0BGSubtr);
-        cbWhichImgToShow.addItem(itemChannel0);
+        comboboxWhichImgToShow.addItem(itemChannel0BGSubtr);
+        comboboxWhichImgToShow.addItem(itemChannel0);
         if (model.mm.getRawChannelImgs().size() > 1) {
-            cbWhichImgToShow.addItem(itemChannel1);
+            comboboxWhichImgToShow.addItem(itemChannel1);
         }
         if (model.mm.getRawChannelImgs().size() > 2) {
-            cbWhichImgToShow.addItem(itemChannel2);
+            comboboxWhichImgToShow.addItem(itemChannel2);
         }
-//		cbWhichImgToShow.addItem( itemPMFRF );
-//		cbWhichImgToShow.addItem( itemClassified );
-//		cbWhichImgToShow.addItem( itemSegmented );
-        cbWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
+
+        comboboxWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
 
         panelDropdown.add(Box.createHorizontalGlue());
-        panelDropdown.add(cbWhichImgToShow);
+        panelDropdown.add(comboboxWhichImgToShow);
         panelDropdown.add(Box.createHorizontalGlue());
 
-//		btnExchangeSegHyps = new JButton( "switch" );
-//		btnExchangeSegHyps.addActionListener( new ActionListener() {
-//
-//			@Override
-//			public void actionPerformed( final ActionEvent e ) {
-//				final GrowthLineFrame glf = model.getCurrentGLF();
-//				if ( !glf.isParaMaxFlowComponentTree() ) {
-//					glf.generateAwesomeSegmentationHypotheses( model.mm.getImgTemp() );
-//				} else {
-//					glf.generateSimpleSegmentationHypotheses( model.mm.getImgTemp() );
-//				}
-//				dataToDisplayChanged();
-//			}
-//		} );
-//		lActiveHyps = new JLabel( "CT" );
-//		lActiveHyps.setHorizontalAlignment( SwingConstants.CENTER );
-//		lActiveHyps.setBorder( BorderFactory.createCompoundBorder( BorderFactory.createEtchedBorder(), BorderFactory.createEmptyBorder( 2, 5, 2, 5 ) ) );
-//		lActiveHyps.setPreferredSize( new Dimension( 65, lActiveHyps.getPreferredSize().height ) );
 
-//		panelOptions.add( btnExchangeSegHyps );
-//		panelOptions.add( lActiveHyps );
-//		panelOptions.add( Box.createHorizontalGlue() );
+        int viewHeight = (int) model.mm.getImgRaw().dimension(1);
+        int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
-        // =============== panelView-part ===================
+        int min_time_offset = -MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
+        int max_time_offset = MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
+        for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
+            panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
+            ilpVariableEditorPanels.add(segmentationEditorPanel);
+            segmentationEditorPanels.add(segmentationEditorPanel);
 
-        JPanel panelVerticalHelper;
-        JPanel panelHorizontalHelper;
-        JLabel labelHelper;
+            AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset);
+            panel1.add(assignmentEditorPanel, gridBagConstraintPanel1);
+            ilpVariableEditorPanels.add(assignmentEditorPanel);
+            assignmentEditorPanels.add(assignmentEditorPanel);
 
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-
-        // --- Left data viewer (t-1) -------------
-
-        panelView.add(new JPanel());
-
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        labelHelper = new JLabel("t-1");
-        panelHorizontalHelper.add(labelHelper);
-        panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
-        // - - - - - -
-        growthLaneViewerLeft = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(growthLaneViewerLeft, BorderLayout.CENTER);
-        panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
-        panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
-
-        // --- Left assignment viewer (t-1 -> t) -------------
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        // - - - - - -
-        leftAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
-        leftAssignmentsEditorViewer.addChangeListener(this);
-        // the following block is a workaround. The left assignment viewer gets focus when MoMA starts. But it shouldn't
-        leftAssignmentsEditorViewer.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                focusOnSliderTime();
+            if (time_offset == 0) {
+                growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
+                assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
+        }
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);
+        panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
+        ilpVariableEditorPanels.add(segmentationEditorPanel);
+        segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
 
-            @Override
-            public void focusLost(FocusEvent e) {
-
-            }
-        });
-        if (ilp != null)
-            leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime() - 1));
-        // - - - - - -
-        panelVerticalHelper.add(leftAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
-
-        // --- Center data viewer (t) -------------
-
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        labelHelper = new JLabel("t");
-        panelHorizontalHelper.add(labelHelper);
-        panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
-        // - - - - - -
-        growthLaneViewerCenter = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(growthLaneViewerCenter, BorderLayout.CENTER);
-        panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.RED));
-        panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
-
-        // --- Right assignment viewer (t -> t+1) -------------
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        // - - - - - -
-        rightAssignmentsEditorViewer = new AssignmentsEditorViewer((int) model.mm.getImgRaw().dimension(1), this);
-        rightAssignmentsEditorViewer.addChangeListener(this);
-        if (ilp != null)
-            rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(model.getCurrentTime()));
-        panelVerticalHelper.add(rightAssignmentsEditorViewer, BorderLayout.CENTER);
-        panelView.add(panelVerticalHelper);
-
-        // ---  Right data viewer (t+1) -------------
-
-        panelVerticalHelper = new JPanel(new BorderLayout());
-        panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
-        labelHelper = new JLabel("t+1");
-        panelHorizontalHelper.add(labelHelper);
-        panelVerticalHelper.add(panelHorizontalHelper, BorderLayout.NORTH);
-        // - - - - - -
-        growthLaneViewerRight = new GrowthlaneViewer(this, MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS, (int) model.mm.getImgRaw().dimension(1));
-        panelVerticalHelper.add(growthLaneViewerRight, BorderLayout.CENTER);
-        panelVerticalHelper.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.GRAY));
-        panelVerticalHelper.setBackground(Color.BLACK);
-        panelView.add(panelVerticalHelper);
-
-        panelView.add(new JPanel());
-
-
-        // ---  ROW OF CHECKBOXES -------------
-
-        final JLabel lblCheckBoxLine = new JLabel("Correct are:");
-        panelView.add(lblCheckBoxLine, "align center");
-        // - - - - - -
-        cbSegmentationOkLeft = new JCheckBox();
-        cbSegmentationOkLeft.addActionListener(this);
-        panelView.add(cbSegmentationOkLeft, "align center");
-        // - - - - - -
-        cbAssignmentsOkLeft = new JCheckBox();
-        cbAssignmentsOkLeft.addActionListener(this);
-        panelView.add(cbAssignmentsOkLeft, "align center");
-        // - - - - - -
-        cbSegmentationOkCenter = new JCheckBox();
-        cbSegmentationOkCenter.addActionListener(this);
-        panelView.add(cbSegmentationOkCenter, "align center");
-        // - - - - - -
-        cbAssignmentsOkRight = new JCheckBox();
-        cbAssignmentsOkRight.addActionListener(this);
-        panelView.add(cbAssignmentsOkRight, "align center");
-        // - - - - - -
-        cbSegmentationOkRight = new JCheckBox();
-        cbSegmentationOkRight.addActionListener(this);
-        panelView.add(cbSegmentationOkRight, "align center");
-        // - - - - - -
-        bFreezeHistory = new JButton("<-all");
-        bFreezeHistory.addActionListener(this);
-        bCheckBoxLineSet = new JButton("set");
-        bCheckBoxLineSet.addActionListener(this);
-        panelView.add(bCheckBoxLineSet, "align center");
-        bCheckBoxLineReset = new JButton("reset");
-        bCheckBoxLineReset.addActionListener(this);
+        buttonFreezePreviousTimeSteps = new JButton("<-all");
+        buttonFreezePreviousTimeSteps.addActionListener(this);
+        buttonSet = new JButton("set");
+        buttonSet.addActionListener(this);
+        buttonReset = new JButton("reset");
+        buttonReset.addActionListener(this);
 
         viewSegmentsButton = new JButton("View Segments");
         viewSegmentsButton.addActionListener(this);
@@ -654,16 +482,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // - - - - - -
 
-        panelView.add(bFreezeHistory, "align center");
-        panelView.add(panelIsee, "cell 1 2 5 1, align center");
-        panelView.add(bCheckBoxLineReset, "align center, wrap");
-        panelView.add(viewSegmentsButton);
+        panel2.add(buttonFreezePreviousTimeSteps, gridBagConstraintPanel2);
+        panel2.add(buttonSet, gridBagConstraintPanel2);
+        panel2.add(buttonReset, gridBagConstraintPanel2);
+        panel2.add(viewSegmentsButton, gridBagConstraintPanel2);
 
-        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        panelView.add(panelDropdown, "cell 1 3 5 1, align center, wrap");
-
-        panelViewCenterHelper.add(panelView);
-        panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
+//        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+        panel2.add(panelDropdown, gridBagConstraintPanel2);
 
         return panelContent;
     }
@@ -698,7 +523,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // ComponentTreeNodes
         // ------------------
-        dumpCosts(model.getCurrentGLF().getComponentTree(), ilp);
+//        dumpCosts(model.getCurrentGLF().getComponentTree(), ilp);
         if (ilp != null) {
             printCosts(model.getCurrentGLF().getComponentTree(), ilp, "Segment");
             printCosts(model.getCurrentGLF().getComponentTree(), ilp, "ExitAssignment");
@@ -839,55 +664,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // IF SEGMENTATION AND ASSIGNMENT VIEW IS ACTIVE
         // =============================================
         if (tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelSegmentationAndAssignmentView)) {
-            // - - t-1 - - - - - -
 
-            if (model.getCurrentGLFsPredecessor() != null) {
-                final GrowthLineFrame glf = model.getCurrentGLFsPredecessor();
-                /**
-                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-                 * (left one in active assignments view).
-                 */
-                IntervalView<FloatType> viewImgLeftActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                growthLaneViewerLeft.setScreenImage(glf, viewImgLeftActive);
-            } else {
-                // show something empty
-                growthLaneViewerLeft.setEmptyScreenImage();
-            }
-
-            // - - t+1 - - - - - -
-
-            if (model.getCurrentGLFsSuccessor() != null && sliderTime.getValue() < sliderTime.getMaximum()) { // hence copy of last frame for border-problem avoidance
-                final GrowthLineFrame glf = model.getCurrentGLFsSuccessor();
-                /**
-                 * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-                 * (right one in active assignments view).
-                 */
-                IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                growthLaneViewerRight.setScreenImage(glf, viewImgRightActive);
-            } else {
-                // show something empty
-                growthLaneViewerRight.setEmptyScreenImage();
-            }
-
-            // - -  t  - - - - - -
+            updateIlpVariableEditorPanels();
 
             final GrowthLineFrame glf = model.getCurrentGLF();
-//			final IntervalView< FloatType > paramaxflowSumImageFloatTyped = model.getCurrentGLF().getParamaxflowSumImageFloatTyped( null );
             final FloatType min = new FloatType();
             final FloatType max = new FloatType();
 
-//			if ( paramaxflowSumImageFloatTyped != null && cbWhichImgToShow.getSelectedItem().equals( itemPMFRF ) ) {
-//				imgCanvasActiveCenter.setScreenImage( glf, paramaxflowSumImageFloatTyped );
-//			} else
             /**
              * The view onto <code>imgRaw</code> that is supposed to be shown on screen
              * (center one in active assignments view).
              */
             IntervalView<FloatType> viewImgCenterActive;
-            if (cbWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
+            if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
+            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
                 viewImgCenterActive =
@@ -899,7 +691,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (cbWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
+            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
                 final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
                 Util.computeMinMax(Views.iterable(viewToShow), min, max);
                 viewImgCenterActive =
@@ -911,60 +703,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                                 glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                                 glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemClassified ) ) {
-//				final Thread t = new Thread() {
-//
-//					@Override
-//					public void run() {
-//						final IntervalView< FloatType > sizeEstimationImageFloatTyped = Views.offset( Views.hyperSlice( model.mm.getCellClassificationImgs(), 2, glf.getOffsetF() ), glf.getOffsetX() - MotherMachine.GL_WIDTH_IN_PIXELS / 2 - MotherMachine.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-//						imgCanvasActiveCenter.setScreenImage( glf, sizeEstimationImageFloatTyped );
-//					}
-//				};
-//				t.start();
-//			} else if ( cbWhichImgToShow.getSelectedItem().equals( itemSegmented ) ) {
-//				final Thread t = new Thread() {
-//
-//					@Override
-//					public void run() {
-//						final IntervalView< FloatType > sizeEstimationImageFloatTyped = Views.offset( Converters.convert( Views.hyperSlice( model.mm.getCellSegmentedChannelImgs(), 2, glf.getOffsetF() ), new RealFloatNormalizeConverter( 1.0f ), new FloatType() ), glf.getOffsetX() - MotherMachine.GL_WIDTH_IN_PIXELS / 2 - MotherMachine.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY() );
-//						imgCanvasActiveCenter.setScreenImage( glf, sizeEstimationImageFloatTyped );
-//					}
-//				};
-//				t.start();
             } else { // BG-subtracted Channel 0 selected or PMFRF not available
                 viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
                 growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
             }
-
-//			if ( glf.isParaMaxFlowComponentTree() ) {
-//				lActiveHyps.setText( "PMFRF" );
-//				lActiveHyps.setForeground( Color.red );
-//			} else {
-//				lActiveHyps.setText( "CT " );
-//				lActiveHyps.setForeground( Color.black );
-//			}
-
-            // - -  assignment-views  - - - - - -
-
-            if (ilp != null) {
-                final int t = sliderTime.getValue();
-                if (t == 0) {
-                    leftAssignmentsEditorViewer.display();
-                } else {
-                    leftAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t - 1));
-                }
-                if (t == sliderTime.getMaximum()) {
-                    rightAssignmentsEditorViewer.display();
-                } else {
-                    rightAssignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(t));
-                }
-            } else {
-                leftAssignmentsEditorViewer.display();
-                rightAssignmentsEditorViewer.display();
-            }
-
-            // - -  i see ? cells  - - - - - -
-            updateNumCellsField();
         }
 
         // IF DETAILED DATA VIEW IS ACTIVE
@@ -974,6 +716,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         setFocusToTimeSlider();
 
+    }
+
+    private void updateIlpVariableEditorPanels() {
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.display();
+        }
     }
 
     /**
@@ -987,7 +735,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         if (e.getSource().equals(sliderTime)) {
-            updateNumCellsField();
+            updateCenteredTimeStep();
         }
 
         if (e.getSource().equals(sliderTrackingRange)) {
@@ -1004,19 +752,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     /**
      *
      */
-    private void updateNumCellsField() {
-        this.lblCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
+    private void updateCenteredTimeStep() {
+        this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
         this.model.setCurrentGLF(sliderTime.getValue());
-        if (model.getCurrentGL().getIlp() != null) {
-            final int rhs =
-                    model.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(
-                            sliderTime.getValue());
-            if (rhs == -1) {
-                txtNumCells.setText("?");
-            } else {
-                txtNumCells.setText("" + rhs);
-            }
-        }
     }
 
     /**
@@ -1073,7 +811,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                         this,
                         MoMA.STATS_OUTPUT_PATH,
                         "Save current tracking to...",
-                        new ExtensionFileFilter("timm", "Curated TIMM tracking"));
+                        new ExtensionFileFilter("moma", "Curated MOMA tracking"));
                 System.out.println("File to save tracking to: " + file.getAbsolutePath());
                 ilp.saveState(file);
             } else {
@@ -1118,14 +856,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 System.out.println("...done!");
             }
         }
-        if (e.getSource().equals(bCheckBoxLineSet)) {
+        if (e.getSource().equals(buttonSet)) {
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
                 setAllVariablesFixedWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().getIlp().run();
+                model.getCurrentGL().runILP();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -1133,14 +871,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(bCheckBoxLineReset)) {
+        if (e.getSource().equals(buttonReset)) {
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
-                setAllVariablesFreeWhereChecked();
+                removeAllSegmentConstraintsWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().getIlp().run();
+                model.getCurrentGL().runILP();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -1148,20 +886,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
             t.start();
         }
-        if (e.getSource().equals(bFreezeHistory)) {
+        if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
             final Thread t = new Thread(() -> {
                 final int t1 = sliderTime.getValue();
                 if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {
                     final int extent =
                             sliderTrackingRange.getUpperValue() - sliderTrackingRange.getValue();
                     sliderTrackingRange.setUpperValue(t1 - 1 + extent);
-                    btnOptimizeMore.doClick();
+                    buttonOptimizeMore.doClick();
                 }
                 sliderTrackingRange.setValue(t1 - 1);
             });
             t.start();
         }
-        if (e.getSource().equals(btnRestart)) {
+        if (e.getSource().equals(buttonRestart)) {
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
@@ -1172,7 +910,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 restartTrackingAsync();
             }
         }
-        if (e.getSource().equals(btnOptimizeMore)) {
+        if (e.getSource().equals(buttonOptimizeMore)) {
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
@@ -1196,18 +934,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().getIlp().runImmediately();
+                model.getCurrentGL().runILP();
                 System.out.println("...done!");
 
                 dataToDisplayChanged();
             });
             t.start();
         }
-        if (e.getSource().equals(btnExportHtml)) {
+        if (e.getSource().equals(buttonExportHtml)) {
             final Thread t = new Thread(this::exportHtmlOverview);
             t.start();
         }
-        if (e.getSource().equals(btnExportData)) {
+        if (e.getSource().equals(buttonExportData)) {
             final Thread t = new Thread(this::exportDataFiles);
             t.start();
         }
@@ -1218,7 +956,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
 
-    public void restartFromGLSegmentation(){
+    public void restartFromGLSegmentation() {
         model.mm.restartFromGLSegmentation();
     }
 
@@ -1251,15 +989,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Finding optimal result...");
-        model.getCurrentGL().getIlp().runImmediately();
+        model.getCurrentGL().runILP();
         System.out.println("...done!");
 
         dataToDisplayChanged();
     }
 
-        /**
-         * Show a stack of the components of the current time step in a separate window.
-         */
+    /**
+     * Show a stack of the components of the current time step in a separate window.
+     */
     private void ShowComponentsOfCurrentTimeStep() {
         List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
         GrowthLineFrame glf = model.getCurrentGLF();
@@ -1303,24 +1041,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * segmentations and assignments to current ILP state.
      */
     private void setAllVariablesFixedWhereChecked() {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        final int t = sliderTime.getValue();
-        if (ilp != null) {
-            if (cbSegmentationOkLeft.isSelected()) {
-                ilp.fixSegmentationAsIs(t - 1);
-            }
-            if (cbAssignmentsOkLeft.isSelected()) {
-                ilp.fixAssignmentsAsAre(t - 1);
-            }
-            if (cbSegmentationOkCenter.isSelected()) {
-                ilp.fixSegmentationAsIs(t);
-            }
-            if (cbAssignmentsOkRight.isSelected()) {
-                ilp.fixAssignmentsAsAre(t);
-            }
-            if (cbSegmentationOkRight.isSelected()) {
-                ilp.fixSegmentationAsIs(t + 1);
-            }
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.setVariableConstraints();
         }
     }
 
@@ -1329,38 +1051,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * segmentations and assignments if they are clamped to any value in the
      * ILP.
      */
-    private void setAllVariablesFreeWhereChecked() {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        final int t = sliderTime.getValue();
-        if (ilp != null) {
-            if (cbSegmentationOkLeft.isSelected()) {
-                ilp.removeAllSegmentConstraints(t - 1);
-            }
-            if (cbAssignmentsOkLeft.isSelected()) {
-                ilp.removeAllAssignmentConstraints(t - 1);
-            }
-            if (cbSegmentationOkCenter.isSelected()) {
-                ilp.removeAllSegmentConstraints(t);
-            }
-            if (cbAssignmentsOkRight.isSelected()) {
-                ilp.removeAllAssignmentConstraints(t);
-            }
-            if (cbSegmentationOkRight.isSelected()) {
-                ilp.removeAllSegmentConstraints(t + 1);
-            }
-        }
-    }
-
-    /**
-     * Depending on which checkboxes are checked, fix ALL respective
-     * segmentations and assignments to current ILP state.
-     */
-    protected void setAllVariablesFixedUpTo(final int t) {
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        if (ilp != null) {
-            for (int i = 0; i < t; i++) {
-                ilp.freezeAssignmentsAsAre(i - 1);
-            }
+    private void removeAllSegmentConstraintsWhereChecked() {
+        for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
+            entry.unsetVariableConstraints();
         }
     }
 
@@ -1529,6 +1222,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * @return true if the corresponding CheckBox is checked.
      */
     public boolean isAutosaveRequested() {
-        return cbAutosave.isSelected();
+        return checkboxAutosave.isSelected();
     }
 }

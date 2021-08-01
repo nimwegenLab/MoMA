@@ -756,7 +756,7 @@ public class GrowthLineTrackingILP {
 	public synchronized void autosave() {
 		if ( !MoMA.HEADLESS && MoMA.getGui().isAutosaveRequested() ) {
 			final File autosaveFile =
-					new File( MoMA.props.getProperty( "import_path" ) + "/--autosave.timm" );
+					new File( MoMA.props.getProperty( "import_path" ) + "/--autosave.moma" );
 			saveState( autosaveFile );
 			System.out.println( "Autosave to: " + autosaveFile.getAbsolutePath() );
 		}

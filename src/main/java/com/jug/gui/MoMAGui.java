@@ -863,7 +863,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 setAllVariablesFixedWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -878,7 +878,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 removeAllSegmentConstraintsWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -934,7 +934,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().runImmediately();
                 System.out.println("...done!");
 
                 dataToDisplayChanged();
@@ -989,7 +989,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Finding optimal result...");
-        model.getCurrentGL().runILP();
+        model.getCurrentGL().getIlp().runImmediately();
         System.out.println("...done!");
 
         dataToDisplayChanged();

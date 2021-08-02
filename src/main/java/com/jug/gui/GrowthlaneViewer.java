@@ -251,48 +251,54 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         if (e.isControlDown()) {
-            if (e.isShiftDown()) {
-                // ctrl + shift == PRUNING
-                // -----------------------
-                Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
-                if (hyp == null) return;
-                hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
-                mmgui.dataToDisplayChanged();
-                return; // avoid re-optimization!
-            } else {
-                // ctrl alone == AVOIDING
-                // ----------------------
-                final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
-                if (hyps2avoid == null) return;
-
-                try {
-                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
-                        }
-                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
-                    }
-                } catch (final GRBException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        } else { // TODO-MM-20210723: WE NEED A WAY OF DESELECTING THE GROUND-TRUTH!!!
-            // simple click == SELECTING
-            // -------------------------
-            Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
-            if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+            // ctrl alone == AVOIDING
+            // ----------------------
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
+            if (hyps2avoid == null) return;
 
             try {
-                if (hyp2add.getSegmentSpecificConstraint() != null) {
-                    ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
+                for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                    if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                        ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
+                    }
+                    ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                 }
-                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }
+            mmgui.dataToDisplayChanged();
+            runIlpAndFocusSlider(ilp);
+            return;
         }
 
+        if (e.isControlDown() && e.isShiftDown()) {
+            // ctrl + shift == PRUNING
+            // -----------------------
+            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            if (hyp == null) return;
+            hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
+            mmgui.dataToDisplayChanged();
+            return; // avoid re-optimization!
+        }
+        // TODO-MM-20210723: WE NEED A WAY OF DESELECTING THE GROUND-TRUTH!!!
+        // simple click == SELECTING
+        // -------------------------
+        Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
+        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
+        final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+
+        try {
+            if (hyp2add.getSegmentSpecificConstraint() != null) {
+                ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
+            }
+            ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
+        } catch (final GRBException e1) {
+            e1.printStackTrace();
+        }
+        runIlpAndFocusSlider(ilp);
+    }
+
+    private void runIlpAndFocusSlider(GrowthLineTrackingILP ilp) {
         class IlpThread extends Thread {
 
             @Override

@@ -120,7 +120,7 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
         HashMap<String, ResultTableColumn<Boolean>> labelColumns = new HashMap<>();
-        for (String label : MoMA.LABEL_LIST) {
+        for (String label : MoMA.CELL_LABEL_LIST) {
             labelColumns.put(label, resultTable.addColumn(new ResultTableColumn<>("label:" + label)));
         }
 
@@ -185,7 +185,7 @@ public class CellStatsExporter {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 
-                for (String label : MoMA.LABEL_LIST) {
+                for (String label : MoMA.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
                         labelColumns.get(label).addValue(true);
                     }

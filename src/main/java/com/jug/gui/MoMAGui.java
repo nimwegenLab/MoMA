@@ -450,7 +450,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
-        LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, MoMA.LABEL_LIST);
+        LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, MoMA.CELL_LABEL_LIST);
 
         int min_time_offset = -MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;

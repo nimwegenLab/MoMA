@@ -65,7 +65,9 @@ public class MoMA {
 //	public static String LABEL2 = "dying";
 //	public static String LABEL3 = "fading";
 //	public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList(LABEL1, LABEL2, LABEL3));
-public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
+	public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
+	public static String CELL_LABELS = "dead;dying;fading";
+
 
 	/**
 	 * Parameter: sigma for gaussian blurring in x-direction of the raw image
@@ -318,21 +320,6 @@ public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "d
 		 */
 		boolean showIJ = false;
 		if (showIJ) new ImageJ();
-
-//		// ===== set look and feel ========================================================================
-//		try {
-//			// Set cross-platform Java L&F (also called "Metal")
-//			UIManager.setLookAndFeel(
-//					UIManager.getCrossPlatformLookAndFeelClassName() );
-//		} catch ( final UnsupportedLookAndFeelException e ) {
-//			// handle exception
-//		} catch ( final ClassNotFoundException e ) {
-//			// handle exception
-//		} catch ( final InstantiationException e ) {
-//			// handle exception
-//		} catch ( final IllegalAccessException e ) {
-//			// handle exception
-//		}
 
 		// ===== command line parsing ======================================================================
 
@@ -607,6 +594,8 @@ public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "d
 		SEGMENTATION_MIX_CT_INTO_PMFRF = Float.parseFloat( props.getProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Float.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) ) );
 		SEGMENTATION_MODEL_PATH = props.getProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
 		DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
+		CELL_LABELS = props.getProperty( "CELL_LABELS", CELL_LABELS);
+		CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));
 
 		GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
 		GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble( props.getProperty( "GUROBI_MAX_OPTIMALITY_GAP", Double.toString( GUROBI_MAX_OPTIMALITY_GAP ) ) );

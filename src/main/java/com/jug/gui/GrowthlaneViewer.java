@@ -244,6 +244,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         ilp.autosave();
 
         if (e.isAltDown()) {
+            // ALT + CLICK == OPEN LABEL EDITOR
+            // ----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
             mmgui.focusOnSliderTime();
@@ -251,7 +253,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         if (e.isControlDown()) {
-            // ctrl alone == AVOIDING
+            // CTRL + CLICK == AVOIDING
             // ----------------------
             final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
             if (hyps2avoid == null) return;
@@ -272,7 +274,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         if (e.isControlDown() && e.isShiftDown()) {
-            // ctrl + shift == PRUNING
+            // CTRL + SHIFT == PRUNING
             // -----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
             if (hyp == null) return;
@@ -280,8 +282,26 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
         }
-        // TODO-MM-20210723: WE NEED A WAY OF DESELECTING THE GROUND-TRUTH!!!
-        // simple click == SELECTING
+
+        // SHIFT + CLICK == SELECTING
+        // -------------------------
+        if (e.isShiftDown()) {
+            // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
+            // -----------------------
+            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            if (hyp == null) return;
+            try {
+                ilp.model.remove(hyp.getSegmentSpecificConstraint());
+            } catch (final GRBException e1) {
+                e1.printStackTrace();
+                return;
+            }
+            mmgui.dataToDisplayChanged();
+            runIlpAndFocusSlider(ilp);
+            return;
+        }
+
+        // simple CLICK == SELECT/FORCE HYPOTHESIS
         // -------------------------
         Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
@@ -293,8 +313,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             }
             ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
         } catch (final GRBException e1) {
+            mmgui.dataToDisplayChanged();
             e1.printStackTrace();
+            return;
         }
+        mmgui.dataToDisplayChanged();
         runIlpAndFocusSlider(ilp);
     }
 

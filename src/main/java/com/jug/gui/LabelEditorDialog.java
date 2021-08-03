@@ -7,9 +7,11 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.ActionEvent;
 import java.util.List;
+
+import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
 public class LabelEditorDialog extends JDialog {
     private final List<String> labelList;
@@ -38,9 +40,11 @@ public class LabelEditorDialog extends JDialog {
         this.setRootPane(new JRootPane());
         MigLayout layout = new MigLayout("wrap 1", "", "");
         this.rootPane.setLayout(layout);
+        int keyNumber = 1;
         for (String label : labelList) {
+            String id = "key_" + keyNumber;
             JCheckBox checkbox = new JCheckBox();
-            checkbox.setText(label);
+            checkbox.setText(label + " (" + keyNumber + ")");
             if (hyp.labels.contains(label)){
                 checkbox.setSelected(true);
             }
@@ -52,7 +56,11 @@ public class LabelEditorDialog extends JDialog {
                     hyp.labels.remove(label);
                 }
             });
+            this.rootPane.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                    .put(KeyStroke.getKeyStroke(Integer.toString(keyNumber)), id);
+            this.rootPane.getActionMap().put(id, new ToggleSelectionAction(checkbox, id));
             this.rootPane.add(checkbox);
+            keyNumber++;
         }
     }
 }

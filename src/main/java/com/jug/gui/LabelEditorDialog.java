@@ -8,10 +8,10 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 import java.util.List;
 
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 
 public class LabelEditorDialog extends JDialog {
     private final List<String> labelList;
@@ -40,6 +40,7 @@ public class LabelEditorDialog extends JDialog {
         this.setRootPane(new JRootPane());
         MigLayout layout = new MigLayout("wrap 1", "", "");
         this.rootPane.setLayout(layout);
+        ArrayList<JCheckBox> checkBoxes = new ArrayList<>();
         int keyNumber = 1;
         for (String label : labelList) {
             String id = "key_" + keyNumber;
@@ -60,7 +61,38 @@ public class LabelEditorDialog extends JDialog {
                     .put(KeyStroke.getKeyStroke(Integer.toString(keyNumber)), id);
             this.rootPane.getActionMap().put(id, new ToggleSelectionAction(checkbox, id));
             this.rootPane.add(checkbox);
+            checkBoxes.add(checkbox);
             keyNumber++;
         }
+
+        /* define clear button */
+        JButton clearButton = new JButton();
+        clearButton.setText("Clear");
+        clearButton.addActionListener(e -> {
+            for (JCheckBox checkBox : checkBoxes) {
+                checkBox.setSelected(false);
+            }
+        });
+        this.rootPane.add(clearButton);
+        Action deleteAction = new AbstractAction("Close") {
+            public void actionPerformed(ActionEvent e) {
+                clearButton.doClick();
+            }
+        };
+        this.rootPane.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("DELETE"), "deleteAction");
+        this.rootPane.getActionMap().put("deleteAction", deleteAction);
+
+        /* attach close action to ESCAPE */
+        Action closeAction = new AbstractAction("Close") {
+            public void actionPerformed(ActionEvent e) {
+                java.awt.Component component = (java.awt.Component) e.getSource();
+                JDialog dialog = (JDialog) SwingUtilities.getRoot(component);
+                dialog.dispose();
+            }
+        };
+        this.rootPane.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke("ESCAPE"), "escapeAction");
+        this.rootPane.getActionMap().put("escapeAction", closeAction);
     }
 }

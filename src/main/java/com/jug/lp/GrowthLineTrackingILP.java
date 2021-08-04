@@ -2025,14 +2025,17 @@ public class GrowthLineTrackingILP {
 		}
 	}
 
-	/**
+	/***
+	 * Freezes all assignments before time step t, so that they will not change during optimization.
+	 *
+	 * @param t: time step before which to freeze
 	 */
-	public void freezeBefore( final int t ) {
-		for ( int i = 0; i <= t; i++ ) {
-			freezeAssignmentsAsAre( i );
+	public void freezeBefore(final int t) {
+		for (int i = 0; i < t; i++) {
+			freezeAssignmentsAsAre(i);
 		}
-		for ( int i = t + 1; i < gl.size(); i++ ) {
-			unfreezeAssignmentsFor( i );
+		for (int i = t; i < gl.size(); i++) {
+			unfreezeAssignmentsFor(i);
 		}
 	}
 

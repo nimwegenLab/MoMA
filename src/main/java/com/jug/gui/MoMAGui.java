@@ -933,9 +933,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     sliderTrackingRange.setUpperValue(sliderTime.getValue() + len / 2 + len % 2);
                 }
 
-                /* START: THIS IS THE CULPRIT CODE THAT CAUSES THE INFEASIBLE ERROR FOR t<=1 */
                 model.getCurrentGL().getIlp().freezeBefore(sliderTrackingRange.getValue());
-                /* END: THIS IS THE CULPRIT CODE THAT CAUSES THE INFEASIBLE ERROR FOR t<=1 */
                 if (sliderTrackingRange.getUpperValue() < sliderTrackingRange.getMaximum()) {
                     // this is needed because of the duplication of the last time-point
                     model.getCurrentGL().getIlp().ignoreBeyond(sliderTrackingRange.getUpperValue());

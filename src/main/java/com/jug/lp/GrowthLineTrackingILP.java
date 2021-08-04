@@ -994,7 +994,7 @@ public class GrowthLineTrackingILP {
      * the optimization procedure).
      */
     private List<Hypothesis<Component<FloatType, ?>>> getOptimalHypotheses(final int t) {
-        final ArrayList<Hypothesis<Component<FloatType, ?>>> ret = new ArrayList<>();
+        final ArrayList<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
 
         final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
 
@@ -1009,7 +1009,7 @@ public class GrowthLineTrackingILP {
             try {
                 final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> aa = findActiveAssignment(nh);
                 if (aa != null) {
-                    ret.add(hyp);
+                    result.add(hyp);
                 }
             } catch (final GRBException e) {
                 System.err.println("ERROR: It could not be determined if a certain assignment was chosen during the convex optimization! Hint: Maybe the ILP is infeasible and was therefore not solved?");
@@ -1017,7 +1017,7 @@ public class GrowthLineTrackingILP {
             }
         }
 
-        return ret;
+        return result;
     }
 
     public boolean isSelected(final Hypothesis<Component<FloatType, ?>> hypothesis) {

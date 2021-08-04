@@ -39,6 +39,10 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	private final HypLoc location;
 	public ArrayList<String> labels = new ArrayList<>();
 
+	public boolean isForced = false;
+	public boolean isIgnored = false;
+
+
 	/**
 	 * Used to store a 'segment in solution constraint' after it was added to
 	 * the ILP. If such a constraint does not exist for this hypothesis, this

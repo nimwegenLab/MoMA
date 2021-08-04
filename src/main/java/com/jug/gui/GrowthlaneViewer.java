@@ -23,11 +23,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
-import static com.jug.util.ArgbDrawingUtils.drawSegments;
 import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
+import static com.jug.util.ArgbDrawingUtils.drawSegments;
 
 /**
  * @author jug
@@ -129,7 +128,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
                     drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-//                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -229,6 +228,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         } else {
             indexOfCurrentHoveredHypothesis += increment;
         }
+        selectedHypothesis = hypothesesAtHoverPosition.get(indexOfCurrentHoveredHypothesis);
         repaint();
     }
 
@@ -260,10 +260,14 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
             if (hyps2avoid == null) return;
 
+//            if (getSelectedHypothesis() == null) return;
+//            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = new ArrayList<>();
+//            hyps2avoid.add(getSelectedHypothesis());
+
             try {
                 for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
                     if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                        ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
+                        ilp.removeSegmentConstraints(hyp2avoid);
                     }
                     ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                 }
@@ -278,7 +282,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (e.isControlDown() && e.isShiftDown()) {
             // CTRL + SHIFT == PRUNING
             // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
             if (hyp == null) return;
             hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
             mmgui.dataToDisplayChanged();
@@ -290,14 +294,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (e.isShiftDown()) {
             // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
             // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
             if (hyp == null) return;
-            try {
-                ilp.model.remove(hyp.getSegmentSpecificConstraint());
-            } catch (final GRBException e1) {
-                e1.printStackTrace();
-                return;
-            }
+            ilp.removeSegmentConstraints(hyp);
             mmgui.dataToDisplayChanged();
             runIlpAndFocusSlider(ilp);
             return;
@@ -305,13 +304,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         // simple CLICK == SELECT/FORCE HYPOTHESIS
         // -------------------------
-        Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
+        Hypothesis<Component<FloatType, ?>> hyp2add = getSelectedHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
         final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
 
         try {
             if (hyp2add.getSegmentSpecificConstraint() != null) {
-                ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
+                ilp.removeSegmentConstraints(hyp2add);
             }
             ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
         } catch (final GRBException e1) {
@@ -336,6 +335,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         mmgui.focusOnSliderTime();
     }
 
+    private Hypothesis<Component<FloatType, ?>> selectedHypothesis;
+
+    private Hypothesis<Component<FloatType, ?>> getSelectedHypothesis() {
+        return selectedHypothesis;
+    }
+
     private void updateHypothesesAtHoverPosition() {
         final int t = glf.getTime();
         if (!this.isMouseOver) {
@@ -346,10 +351,16 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthLineTrackingILP ilp = glf.getParent().getIlp();
-//              GET THE FORCED SEGMENT HERE FIRST
-                Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
+
+                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()
                         .orElse(null);
+
+                if (selectedHypothesis == null) {
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp)) // IF NO FORCED HYPOTHESIS EXISTS, THEN RETURN THE OPTIMAL ONE
+                            .findFirst()
+                            .orElse(null);
+                }
                 if (selectedHypothesis != null) { /* there is an optimal hypothesis at the hover position; get it */
                     indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
                 } else { /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */

@@ -19,7 +19,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import java.io.*;
@@ -984,8 +983,8 @@ public class GrowthLineTrackingILP {
     }
 
     /**
-     * Returns the optimal segmentation at time t, given by a list of non
-     * conflicting segmentation hypothesis.
+     * Returns the optimal segmentation at time t, given by a list of non-conflicting
+     * segmentation hypothesis.
      * Calling this function makes only sense if the <code>run</code>-method was
      * called and the convex optimizer could find a optimal feasible solution.
      *
@@ -1030,8 +1029,8 @@ public class GrowthLineTrackingILP {
     public List<Hypothesis<Component<FloatType, ?>>> getForcedHypotheses(final int t) {
         final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
         List<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
-        for (Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses){
-            if(hypothesis.getSegmentSpecificConstraint() != null){
+        for (Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses) {
+            if (hypothesis.getSegmentSpecificConstraint() != null) {
                 result.add(hypothesis);
             }
         }
@@ -1539,6 +1538,7 @@ public class GrowthLineTrackingILP {
 
         // Store the newly created constraint in hyp2add
         hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.hashCode()));
+        hyp2add.isForced = true;
     }
 
     /**
@@ -1557,12 +1557,14 @@ public class GrowthLineTrackingILP {
      *
      * @param hypothesisToRemove
      */
-    private void removeSegmentConstraints(Hypothesis<Component<FloatType, ?>> hypothesisToRemove) {
+    public void removeSegmentConstraints(Hypothesis<Component<FloatType, ?>> hypothesisToRemove) {
         final GRBConstr oldConstr = hypothesisToRemove.getSegmentSpecificConstraint();
         if (oldConstr != null) {
             try {
                 model.remove(oldConstr);
                 hypothesisToRemove.setSegmentSpecificConstraint(null);
+                hypothesisToRemove.isForced = false;
+                hypothesisToRemove.isIgnored = false;
             } catch (final GRBException e) {
                 e.printStackTrace();
             }
@@ -1585,6 +1587,7 @@ public class GrowthLineTrackingILP {
         }
 
         hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.hashCode()));
+        hyp2avoid.isIgnored = true;
     }
 
     public void addProgressListener(final ProgressListener pl) {

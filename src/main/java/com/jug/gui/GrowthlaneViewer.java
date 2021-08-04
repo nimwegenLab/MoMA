@@ -25,7 +25,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jug.util.ArgbDrawingUtils.drawOptimalSegmentation;
+import static com.jug.util.ArgbDrawingUtils.drawSegments;
 import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
 
 /**
@@ -127,7 +127,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    drawOptimalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
                 }
             }
 

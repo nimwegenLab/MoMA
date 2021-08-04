@@ -128,10 +128,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    HashSet<Hypothesis<Component<FloatType, ?>>> hypothesesToDraw = new HashSet<>();
-                    hypothesesToDraw.addAll(glf.getParent().getIlp().getOptimalSegmentation(t));
-                    hypothesesToDraw.addAll(glf.getParent().getIlp().getForcedHypotheses(t));
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), hypothesesToDraw); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+//                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -348,6 +346,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthLineTrackingILP ilp = glf.getParent().getIlp();
+//              GET THE FORCED SEGMENT HERE FIRST
                 Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
                         .findFirst()
                         .orElse(null);

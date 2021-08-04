@@ -937,16 +937,16 @@ public class GrowthLineTrackingILP {
      * hypothesis.
      *
      * @param t   the time-point at which to look for the optimal segmentation.
-     * @param hyp another hypothesis conflicts have to be queried for.
+     * @param hypothesis another hypothesis conflicts have to be queried for.
      * @return a list of <code>Hypothesis< Component< FloatType, ? >></code>
      * that
      * conflict with the given hypothesis. (Overlap in space!)
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<Component<FloatType, ?>> hyp) {
+    public List<Hypothesis<Component<FloatType, ?>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<Component<FloatType, ?>> hypothesis) {
         final List<Hypothesis<Component<FloatType, ?>>> ret = new ArrayList<>();
 
         final ValuePair<Integer, Integer> interval =
-                ComponentTreeUtils.getTreeNodeInterval(hyp.getWrappedComponent());
+                ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
         final int startpos = interval.getA();
         final int endpos = interval.getB();
 

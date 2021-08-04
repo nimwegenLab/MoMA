@@ -254,7 +254,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (e.isControlDown()) {
+        if (e.isControlDown()  && !e.isShiftDown()) {
             // CTRL + CLICK == AVOIDING
             // ----------------------
             Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
@@ -299,7 +299,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         // SHIFT + CLICK == SELECTING
         // -------------------------
-        if (e.isShiftDown()) {
+        if (e.isShiftDown() && !e.isControlDown()) {
             // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
             // -----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();

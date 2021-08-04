@@ -19,14 +19,14 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.util.ComponentTreeUtils.getComponentSize;
-import static com.jug.util.ComponentTreeUtils.getLeafNodes;
+import static com.jug.util.ComponentTreeUtils.*;
 
 /**
  * @author jug
@@ -930,6 +930,24 @@ public class GrowthLineTrackingILP {
             }
         }
         return null;
+    }
+
+    /**
+     * Returns the hypotheses with components/segements, which are children of
+     */
+    public List<Hypothesis<Component<FloatType, ?>>> getConflictingChildSegments(final int t, final Hypothesis<Component<FloatType, ?>> parentHypothesis){
+        SimpleComponent<FloatType> parentComponent = (SimpleComponent<FloatType>) parentHypothesis.getWrappedComponent();
+        ArrayList<SimpleComponent<FloatType>> componentList = new ArrayList<>();
+        addListOfNodes(parentComponent, componentList);
+        final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
+        ArrayList<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
+        for(Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses){
+            Component<FloatType, ?> wrappedComponent = hypothesis.getWrappedComponent();
+            if (componentList.contains(wrappedComponent)){
+                result.add(hypothesis);
+            }
+        }
+        return result;
     }
 
     /**

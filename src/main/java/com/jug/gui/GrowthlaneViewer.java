@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.GrowthLineFrame;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
@@ -257,12 +258,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (e.isControlDown()) {
             // CTRL + CLICK == AVOIDING
             // ----------------------
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
-            if (hyps2avoid == null) return;
+            Hypothesis<Component<FloatType, ?>> tmp = getSelectedHypothesis();
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, tmp);
+            hyps2avoid.add(tmp); /* add hypothesis of parent segment itself */
 
-//            if (getSelectedHypothesis() == null) return;
-//            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = new ArrayList<>();
-//            hyps2avoid.add(getSelectedHypothesis());
+            if (hyps2avoid == null) return;
 
             try {
                 for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {

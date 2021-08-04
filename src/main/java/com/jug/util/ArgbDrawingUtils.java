@@ -28,7 +28,7 @@ public class ArgbDrawingUtils {
      *                        component-tree-nodes that represent the optimal segmentation
      *                        (the one returned by the solution to the ILP)
      */
-    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> segments) {
+    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<Component<FloatType, ?>>> segments) {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
         for (final Hypothesis<Component<FloatType, ?>> hypothesis : segments) {

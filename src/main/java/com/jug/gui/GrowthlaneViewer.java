@@ -23,6 +23,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static com.jug.util.ArgbDrawingUtils.drawSegments;
@@ -127,7 +128,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
+                    HashSet<Hypothesis<Component<FloatType, ?>>> hypothesesToDraw = new HashSet<>();
+                    hypothesesToDraw.addAll(glf.getParent().getIlp().getOptimalSegmentation(t));
+                    hypothesesToDraw.addAll(glf.getParent().getIlp().getForcedHypotheses(t));
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), hypothesesToDraw); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 

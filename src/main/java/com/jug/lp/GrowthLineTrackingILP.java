@@ -19,6 +19,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import java.io.*;
@@ -1017,6 +1018,23 @@ public class GrowthLineTrackingILP {
             }
         }
 
+        return result;
+    }
+
+    /***
+     * Get all hypotheses at time t that have segment-specific constraint added to them.
+     *
+     * @param t: time
+     * @return List of hypotheses with constraint.
+     */
+    public List<Hypothesis<Component<FloatType, ?>>> getForcedHypotheses(final int t) {
+        final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
+        List<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
+        for (Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses){
+            if(hypothesis.getSegmentSpecificConstraint() != null){
+                result.add(hypothesis);
+            }
+        }
         return result;
     }
 

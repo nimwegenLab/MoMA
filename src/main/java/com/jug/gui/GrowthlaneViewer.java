@@ -3,7 +3,6 @@ package com.jug.gui;
 import com.jug.GrowthLineFrame;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
-import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
@@ -258,18 +257,27 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (e.isControlDown()) {
             // CTRL + CLICK == AVOIDING
             // ----------------------
-            Hypothesis<Component<FloatType, ?>> tmp = getSelectedHypothesis();
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, tmp);
-            hyps2avoid.add(tmp); /* add hypothesis of parent segment itself */
+            Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
+            hyps2avoid.add(selectedParentHypothesis); /* add hypothesis of parent segment itself */
 
             if (hyps2avoid == null) return;
 
             try {
-                for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
-                    if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                        ilp.removeSegmentConstraints(hyp2avoid);
+                if (!selectedParentHypothesis.isIgnored) {
+                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                            ilp.removeSegmentConstraints(hyp2avoid);
+                        }
+                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                     }
-                    ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
+                }
+                else {
+                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                            ilp.removeSegmentConstraints(hyp2avoid);
+                        }
+                    }
                 }
             } catch (final GRBException e1) {
                 e1.printStackTrace();
@@ -355,9 +363,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()
                         .orElse(null);
-
                 if (selectedHypothesis == null) {
-                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp)) // IF NO FORCED HYPOTHESIS EXISTS, THEN RETURN THE OPTIMAL ONE
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isIgnored) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
+                            .findFirst()
+                            .orElse(null);
+                }
+                if (selectedHypothesis == null) {
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp)) // IF NO FORCED OR IGNORED HYPOTHESIS EXISTS, THEN RETURN THE OPTIMAL ONE, IF IT EXISTS
                             .findFirst()
                             .orElse(null);
                 }

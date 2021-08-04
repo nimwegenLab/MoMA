@@ -1,13 +1,13 @@
 package com.jug.util.imglib2;
 
-import com.jug.util.componenttree.SimpleComponent;
-import net.imagej.ops.Ops;
 import net.imglib2.*;
-import net.imglib2.roi.Regions;
-import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
+
+import java.util.List;
 
 public class Imglib2Utils {
     public static <T extends Type<T>> void setImageToValue(IterableInterval<T> image, T value){
@@ -28,5 +28,10 @@ public class Imglib2Utils {
             totalIntensity += value;
         }
         return totalIntensity;
+    }
+
+    public static List<Localizable> calculateCenterOfMass(final Component<FloatType, ?> component){
+
+        throw new NotImplementedException();
     }
 }

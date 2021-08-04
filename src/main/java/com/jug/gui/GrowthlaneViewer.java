@@ -246,7 +246,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         ilp.autosave();
 
         if (e.isAltDown()) {
-            // ALT + CLICK == OPEN LABEL EDITOR
+            // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
@@ -255,7 +255,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         if (e.isControlDown()  && !e.isShiftDown()) {
-            // CTRL + CLICK == AVOIDING
+            // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
             Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
             final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
@@ -288,7 +288,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         if (e.isControlDown() && e.isShiftDown()) {
-            // CTRL + SHIFT == PRUNING
+            // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
             if (hyp == null) return;
@@ -297,34 +297,25 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return; // avoid re-optimization!
         }
 
-        // SHIFT + CLICK == SELECTING
-        // -------------------------
-        if (e.isShiftDown() && !e.isControlDown()) {
-            // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
-            // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
-            if (hyp == null) return;
-            ilp.removeSegmentConstraints(hyp);
-            mmgui.dataToDisplayChanged();
-            runIlpAndFocusSlider(ilp);
-            return;
-        }
-
-        // simple CLICK == SELECT/FORCE HYPOTHESIS
+        // simple CLICK: ADD/REMOVE ENFORCING CONSTRAINT HYPOTHESIS
         // -------------------------
         Hypothesis<Component<FloatType, ?>> hyp2add = getSelectedHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
-        final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
 
-        try {
-            if (hyp2add.getSegmentSpecificConstraint() != null) {
-                ilp.removeSegmentConstraints(hyp2add);
+        if(hyp2add.isForced){
+            ilp.removeSegmentConstraints(hyp2add);
+        }
+        else{
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+
+            try {
+                if (hyp2add.getSegmentSpecificConstraint() != null) {
+                    ilp.removeSegmentConstraints(hyp2add);
+                }
+                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
+            } catch (final GRBException e1) {
+                e1.printStackTrace();
             }
-            ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
-        } catch (final GRBException e1) {
-            mmgui.dataToDisplayChanged();
-            e1.printStackTrace();
-            return;
         }
         mmgui.dataToDisplayChanged();
         runIlpAndFocusSlider(ilp);

@@ -39,7 +39,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 *
      */
 	@Override
-	public void addConstraintsToLP() {}
+	public void addConstraintsToILP() {}
 
 	/**
 	 * Division assignments do not come with constraints.

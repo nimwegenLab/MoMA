@@ -196,7 +196,7 @@ public class GrowthLineTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             for (final List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerList : nodes.getAllAssignments()) {
                 for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : innerList) {
-                    assignment.addConstraintsToLP();
+                    assignment.addConstraintsToILP();
                 }
             }
 

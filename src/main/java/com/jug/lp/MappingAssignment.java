@@ -37,7 +37,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 *
      */
 	@Override
-	public void addConstraintsToLP() {}
+	public void addConstraintsToILP() {}
 
 	/**
 	 * Mapping assignments do not come with constraints.

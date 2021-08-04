@@ -29,19 +29,22 @@ public class ArgbDrawingUtils {
      *                        (the one returned by the solution to the ILP)
      */
     public static void drawOptimalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegments) {
-        final RandomAccess<ARGBType> raArgbImg = imgDestination.randomAccess();
-        final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
-        for (final Hypothesis<Component<FloatType, ?>> hyp : optimalSegments) {
-            final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+        final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
+        final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
+        for (final Hypothesis<Component<FloatType, ?>> hypothesis : optimalSegments) {
+            final Component<FloatType, ?> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
-            if (hyp.isPruned()) {
+            if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
-            } else if (hyp.getSegmentSpecificConstraint() != null) {
+            } else if (hypothesis.getSegmentSpecificConstraint() != null) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
             }
-            drawSegmentColorOverlay(ctn, raArgbImg, raUnaltered, offsetX, offsetY, pixelOverlayColorCalculator);
+            drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
+            if(!hypothesis.labels.isEmpty()){
+                drawLabelingMarker(component, targetImage, offsetX, offsetY);
+            }
         }
     }
 
@@ -91,6 +94,43 @@ public class ArgbDrawingUtils {
             final int currentPixelValue = ArgbImageSource.get().get();
             ArgbImageTarget.get().set(pixelColorCalculator.apply(currentPixelValue));
         }
+    }
+
+    /**
+     * Draw {@param component} to {@param ArgbImageTarget} offsetting the component
+     * position by {@param offsetX} and {@param offsetX}. The color of the
+     * component pixels in {@param ArgbImageTarget} is calculated by applying
+     * {@param pixelColorCalculator} to the pixel values in {@param ArgbImageTarget}.
+     *
+     * @param component            component to draw to image
+     * @param ArgbImageTarget      image to draw the overlay pixel values to
+     * @param offsetX              x-offset
+     * @param offsetY              y-offset
+     */
+    @SuppressWarnings("unchecked")
+    private static void drawLabelingMarker(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final long offsetX, final long offsetY) {
+        long[] centerPixelPos = calculateCenterOfMass(component.iterator());
+
+        for(long x=-2; x<3; x++){
+            for (long y=-2; y<3; y++){
+                long[] currentPos = new long[] {centerPixelPos[0]+x+offsetX, centerPixelPos[1]+y+offsetY};
+                ArgbImageTarget.setPosition(currentPos);
+                ArgbImageTarget.get().set(ARGBType.blue(255));
+            }
+        }
+    }
+
+    private static long[] calculateCenterOfMass(Iterator<Localizable> positionIterator) {
+        long xPosSum = 0;
+        long yPosSum = 0;
+        long counter = 0;
+        while (positionIterator.hasNext()) {
+            Localizable position = positionIterator.next();
+            xPosSum += position.getLongPosition(0);
+            yPosSum += position.getLongPosition(1);
+            counter++;
+        }
+        return new long[]{xPosSum / counter, yPosSum / counter};
     }
 
     /**

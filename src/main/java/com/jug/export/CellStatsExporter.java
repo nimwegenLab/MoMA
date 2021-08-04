@@ -3,7 +3,6 @@ package com.jug.export;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.gui.MoMAGui;
-import com.jug.gui.OsDependentFileChooser;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.ComponentTreeUtils;
@@ -18,14 +17,9 @@ import net.imglib2.view.Views;
 
 import javax.swing.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import static com.jug.MoMA.INTENSITY_FIT_RANGE_IN_PIXELS;
 
 /**
  * @author jug
@@ -125,6 +119,11 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
+        HashMap<String, ResultTableColumn<Boolean>> labelColumns = new HashMap<>();
+        for (String label : MoMA.CELL_LABEL_LIST) {
+            labelColumns.put(label, resultTable.addColumn(new ResultTableColumn<>("label:" + label)));
+        }
+
         List<ResultTableColumn> cellMaskTotalIntensityCols = new ArrayList<>();
         List<ResultTableColumn> backgroundMaskTotalIntensityCols = new ArrayList<>();
         List<ResultTableColumn> intensityFitCellIntensityCols = new ArrayList<>();
@@ -185,6 +184,15 @@ public class CellStatsExporter {
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
+
+                for (String label : MoMA.CELL_LABEL_LIST) {
+                    if (segmentRecord.hyp.labels.contains(label)){
+                        labelColumns.get(label).addValue(true);
+                    }
+                    else{
+                        labelColumns.get(label).addValue(false);
+                    }
+                }
 
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;

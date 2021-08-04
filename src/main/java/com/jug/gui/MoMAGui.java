@@ -277,6 +277,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         //  KEYSTROKE SETUP (usingInput- and ActionMaps)
         // - - - - - - - - - - - - - - - - - - - - - - - -
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
@@ -316,6 +317,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
+                if (e.getActionCommand().equals("l")) {
+                    dataToDisplayChanged();
+                }
                 if (e.getActionCommand().equals("t")) {
                     sliderTime.requestFocus();
                     dataToDisplayChanged();
@@ -446,10 +450,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
+        LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, MoMA.CELL_LABEL_LIST);
+
         int min_time_offset = -MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, time_offset);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, labelEditorDialog, viewWidth, viewHeight, time_offset);
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -464,7 +470,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, viewWidth, viewHeight, max_time_offset);
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, labelEditorDialog, viewWidth, viewHeight, max_time_offset);
         panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);

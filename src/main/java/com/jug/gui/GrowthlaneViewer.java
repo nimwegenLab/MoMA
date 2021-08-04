@@ -38,6 +38,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private final int w;
     private final int h;
     private final MoMAGui mmgui;
+    private LabelEditorDialog labelEditorDialog;
     Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = null;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
@@ -56,10 +57,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, final int w, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int w, final int h) {
         super();
 
         this.mmgui = mmgui;
+        this.labelEditorDialog = labelEditorDialog;
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -241,49 +243,85 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         ilp.autosave();
 
-        if (e.isControlDown()) {
-            if (e.isShiftDown()) {
-                // ctrl + shift == PRUNING
-                // -----------------------
-                Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
-                if (hyp == null) return;
-                hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
-                mmgui.dataToDisplayChanged();
-                return; // avoid re-optimization!
-            } else {
-                // ctrl alone == AVOIDING
-                // ----------------------
-                final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
-                if (hyps2avoid == null) return;
+        if (e.isAltDown()) {
+            // ALT + CLICK == OPEN LABEL EDITOR
+            // ----------------------
+            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            labelEditorDialog.edit(hyp);
+            mmgui.focusOnSliderTime();
+            return;
+        }
 
-                try {
-                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
-                        }
-                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
-                    }
-                } catch (final GRBException e1) {
-                    e1.printStackTrace();
-                }
-            }
-        } else { // TODO-MM-20210723: WE NEED A WAY OF DESELECTING THE GROUND-TRUTH!!!
-            // simple click == SELECTING
-            // -------------------------
-            Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
-            if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+        if (e.isControlDown()) {
+            // CTRL + CLICK == AVOIDING
+            // ----------------------
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
+            if (hyps2avoid == null) return;
 
             try {
-                if (hyp2add.getSegmentSpecificConstraint() != null) {
-                    ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
+                for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                    if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                        ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
+                    }
+                    ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                 }
-                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }
+            mmgui.dataToDisplayChanged();
+            runIlpAndFocusSlider(ilp);
+            return;
         }
 
+        if (e.isControlDown() && e.isShiftDown()) {
+            // CTRL + SHIFT == PRUNING
+            // -----------------------
+            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            if (hyp == null) return;
+            hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
+            mmgui.dataToDisplayChanged();
+            return; // avoid re-optimization!
+        }
+
+        // SHIFT + CLICK == SELECTING
+        // -------------------------
+        if (e.isShiftDown()) {
+            // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
+            // -----------------------
+            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            if (hyp == null) return;
+            try {
+                ilp.model.remove(hyp.getSegmentSpecificConstraint());
+            } catch (final GRBException e1) {
+                e1.printStackTrace();
+                return;
+            }
+            mmgui.dataToDisplayChanged();
+            runIlpAndFocusSlider(ilp);
+            return;
+        }
+
+        // simple CLICK == SELECT/FORCE HYPOTHESIS
+        // -------------------------
+        Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
+        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
+        final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+
+        try {
+            if (hyp2add.getSegmentSpecificConstraint() != null) {
+                ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
+            }
+            ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
+        } catch (final GRBException e1) {
+            mmgui.dataToDisplayChanged();
+            e1.printStackTrace();
+            return;
+        }
+        mmgui.dataToDisplayChanged();
+        runIlpAndFocusSlider(ilp);
+    }
+
+    private void runIlpAndFocusSlider(GrowthLineTrackingILP ilp) {
         class IlpThread extends Thread {
 
             @Override

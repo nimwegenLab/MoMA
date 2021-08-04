@@ -19,10 +19,10 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private JTextField txtNumCells;
     private JLabel labelTitle;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewWidth, int viewHeight, int timeStepOffset) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
         this.momaModel = momaModel;
         this.timeStepOffset = timeStepOffset;
-        growthlaneViewer = new GrowthlaneViewer(mmgui, viewWidth, viewHeight);
+        growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);

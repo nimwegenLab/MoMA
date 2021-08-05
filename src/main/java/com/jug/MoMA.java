@@ -274,7 +274,7 @@ public class MoMA {
 	public static double GUROBI_TIME_LIMIT = 15.0;
 	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
 
-	public static boolean GUI_OPTIMIZE_ON_ILP_CHANGE = false;
+	public static boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
 	private static MoMAGui gui;
 

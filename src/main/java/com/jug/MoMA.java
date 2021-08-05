@@ -61,10 +61,6 @@ public class MoMA {
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
-//	public static String LABEL1 = "dead";
-//	public static String LABEL2 = "dying";
-//	public static String LABEL3 = "fading";
-//	public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList(LABEL1, LABEL2, LABEL3));
 	public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
 	public static String CELL_LABELS = "dead;dying;fading";
 

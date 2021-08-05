@@ -134,7 +134,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * Abstract method that will, once implemented, add a set of assignment
 	 * related constraints to the ILP (model) later to be solved by Gurobi.
 	 */
-	public abstract void addConstraintsToLP() throws GRBException;
+	public abstract void addConstraintsToILP() throws GRBException;
 
 	/**
 	 * Abstract method that will, once implemented, build the constraint

@@ -271,7 +271,7 @@ public class ComponentTreeUtils {
      * @param ct
      * @return
      */
-    public static <C extends Component<?, C>> List<C> getListOfNodes(final ComponentForest<C> ct) {
+    public static <C extends Component<FloatType, C>> List<C> getListOfNodes(final ComponentForest<C> ct) {
         final ArrayList<C> ret = new ArrayList<>();
         for (final C root : ct.roots()) {
             ret.add(root);
@@ -283,7 +283,7 @@ public class ComponentTreeUtils {
     /**
      * @param list
      */
-    private static <C extends Component<?, C>> void addListOfNodes(final C ctn, final ArrayList<C> list) {
+    public static <C extends Component<FloatType, C>> void addListOfNodes(final C ctn, final ArrayList<C> list) {
         for (final C child : ctn.getChildren()) {
             list.add(child);
             addListOfNodes(child, list);

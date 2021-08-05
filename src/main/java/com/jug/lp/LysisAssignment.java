@@ -42,7 +42,7 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 *
 	 */
 	@Override
-	public void addConstraintsToLP() throws GRBException { }
+	public void addConstraintsToILP() throws GRBException { }
 
 	/**
 	 * @see AbstractAssignment#getConstraintsToSave_PASCAL()

@@ -91,7 +91,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             }
 
             final Thread t = new Thread(() -> {
-                momaModel.getCurrentGL().runILP();
+                momaModel.getCurrentGL().getIlp().run();
                 mmgui.dataToDisplayChanged();
                 mmgui.sliderTime.requestFocus();
             });
@@ -188,5 +188,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     public GrowthlaneViewer getGrowthlaneViewer() {
         return this.growthlaneViewer;
+    }
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        growthlaneViewer.addIlpModelChangedEventListener(listener);
     }
 }

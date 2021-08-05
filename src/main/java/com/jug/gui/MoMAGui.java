@@ -253,7 +253,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonRestart = new JButton("Restart");
         buttonRestart.addActionListener(this);
         buttonOptimizeMore = new JButton("Optimize");
+        buttonOptimizeMore.setForeground(Color.RED);
         buttonOptimizeMore.addActionListener(this);
+
+        for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
+            ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
+                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE){
+                    buttonOptimizeMore.setForeground(Color.RED);
+                }
+            });
+        }
+
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);
         buttonExportData = new JButton("Export Data");
@@ -495,6 +505,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 //        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         panel2.add(panelDropdown, gridBagConstraintPanel2);
+
+        JCheckBox checkboxOptimizeOnIlpChange = new JCheckBox();
+        checkboxOptimizeOnIlpChange.setSelected(MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE);
+        checkboxOptimizeOnIlpChange.setText("Run optimization on change");
+        checkboxOptimizeOnIlpChange.addActionListener(e -> {
+            if (checkboxOptimizeOnIlpChange.isSelected()){
+                MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+                JOptionPane.showMessageDialog(this, "Optimization will now run automatically after each change. It is suggested to run optimization once now before continuing by pressing the button 'Optimize'." );
+                return;
+            }
+            MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
+            JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes." );
+        });
+        panel2.add(checkboxOptimizeOnIlpChange);
 
         return panelContent;
     }
@@ -869,7 +893,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 setAllVariablesFixedWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -884,7 +908,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 removeAllSegmentConstraintsWhereChecked();
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
                 sliderTime.requestFocus();
@@ -940,9 +964,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().runILP();
+                model.getCurrentGL().getIlp().runImmediately();
                 System.out.println("...done!");
-
+                buttonOptimizeMore.setForeground(Color.BLACK);
                 dataToDisplayChanged();
             });
             t.start();
@@ -995,7 +1019,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Finding optimal result...");
-        model.getCurrentGL().runILP();
+        model.getCurrentGL().getIlp().runImmediately();
         System.out.println("...done!");
 
         dataToDisplayChanged();

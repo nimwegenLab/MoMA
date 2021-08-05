@@ -43,7 +43,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @throws GRBException
 	 */
 	@Override
-	public void addConstraintsToLP() throws GRBException { // builds equation 8, jug paper
+	public void addConstraintsToILP() throws GRBException { // builds equation 8, jug paper
 		final GRBLinExpr expr = new GRBLinExpr();
 
 		expr.addTerm( Hup.size(), this.getGRBVar() );

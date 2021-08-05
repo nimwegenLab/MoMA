@@ -17,6 +17,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -25,8 +26,8 @@ import java.awt.event.MouseWheelListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.jug.util.ArgbDrawingUtils.drawOptimalSegmentation;
 import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
+import static com.jug.util.ArgbDrawingUtils.drawSegments;
 
 /**
  * @author jug
@@ -127,7 +128,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    drawOptimalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW OPTIMAL SEGMENTATION + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -227,7 +229,23 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         } else {
             indexOfCurrentHoveredHypothesis += increment;
         }
+        selectedHypothesis = hypothesesAtHoverPosition.get(indexOfCurrentHoveredHypothesis);
         repaint();
+    }
+
+    protected EventListenerList listenerList = new EventListenerList();
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.add(IlpModelChangedEventListener.class, listener);
+    }
+
+    private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = 0; i < listeners.length; i = i+2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
+            if (listeners[i] == IlpModelChangedEventListener.class) {
+                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+            }
+        }
     }
 
     /**
@@ -244,7 +262,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         ilp.autosave();
 
         if (e.isAltDown()) {
-            // ALT + CLICK == OPEN LABEL EDITOR
+            // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
@@ -252,72 +270,72 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (e.isControlDown()) {
-            // CTRL + CLICK == AVOIDING
+        if (e.isControlDown()  && !e.isShiftDown()) {
+            // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = getHypothesesAtHoverPosition();
+            Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
+            hyps2avoid.add(selectedParentHypothesis); /* add hypothesis of parent segment itself */
+
             if (hyps2avoid == null) return;
 
             try {
-                for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
-                    if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                        ilp.model.remove(hyp2avoid.getSegmentSpecificConstraint());
+                if (!selectedParentHypothesis.isIgnored) {
+                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                            ilp.removeSegmentConstraints(hyp2avoid);
+                        }
+                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                     }
-                    ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
+                }
+                else {
+                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
+                            ilp.removeSegmentConstraints(hyp2avoid);
+                        }
+                    }
                 }
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }
             mmgui.dataToDisplayChanged();
+            fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
             runIlpAndFocusSlider(ilp);
             return;
         }
 
         if (e.isControlDown() && e.isShiftDown()) {
-            // CTRL + SHIFT == PRUNING
+            // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
             if (hyp == null) return;
             hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
         }
 
-        // SHIFT + CLICK == SELECTING
+        // simple CLICK: ADD/REMOVE ENFORCING CONSTRAINT HYPOTHESIS
         // -------------------------
-        if (e.isShiftDown()) {
-            // SHIFT + CLICK == REMOVE ANY CONSTRAINT FOR OPTIMAL HYPOTHESIS
-            // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
-            if (hyp == null) return;
+        Hypothesis<Component<FloatType, ?>> hyp2add = getSelectedHypothesis();
+        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
+
+        if(hyp2add.isForced){
+            ilp.removeSegmentConstraints(hyp2add);
+        }
+        else{
+            final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+
             try {
-                ilp.model.remove(hyp.getSegmentSpecificConstraint());
+                if (hyp2add.getSegmentSpecificConstraint() != null) {
+                    ilp.removeSegmentConstraints(hyp2add);
+                }
+                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
-                return;
             }
-            mmgui.dataToDisplayChanged();
-            runIlpAndFocusSlider(ilp);
-            return;
-        }
-
-        // simple CLICK == SELECT/FORCE HYPOTHESIS
-        // -------------------------
-        Hypothesis<Component<FloatType, ?>> hyp2add = getHoveredOptionalHypothesis();
-        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
-        final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
-
-        try {
-            if (hyp2add.getSegmentSpecificConstraint() != null) {
-                ilp.model.remove(hyp2add.getSegmentSpecificConstraint());
-            }
-            ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
-        } catch (final GRBException e1) {
-            mmgui.dataToDisplayChanged();
-            e1.printStackTrace();
-            return;
         }
         mmgui.dataToDisplayChanged();
+        fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
         runIlpAndFocusSlider(ilp);
     }
 
@@ -334,6 +352,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         mmgui.focusOnSliderTime();
     }
 
+    private Hypothesis<Component<FloatType, ?>> selectedHypothesis;
+
+    private Hypothesis<Component<FloatType, ?>> getSelectedHypothesis() {
+        return selectedHypothesis;
+    }
+
     private void updateHypothesesAtHoverPosition() {
         final int t = glf.getTime();
         if (!this.isMouseOver) {
@@ -344,9 +368,20 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthLineTrackingILP ilp = glf.getParent().getIlp();
-                Hypothesis<Component<FloatType, ?>> selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp))
+
+                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()
                         .orElse(null);
+                if (selectedHypothesis == null) {
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isIgnored) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
+                            .findFirst()
+                            .orElse(null);
+                }
+                if (selectedHypothesis == null) {
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> ilp.isSelected(hyp)) // IF NO FORCED OR IGNORED HYPOTHESIS EXISTS, THEN RETURN THE OPTIMAL ONE, IF IT EXISTS
+                            .findFirst()
+                            .orElse(null);
+                }
                 if (selectedHypothesis != null) { /* there is an optimal hypothesis at the hover position; get it */
                     indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
                 } else { /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */

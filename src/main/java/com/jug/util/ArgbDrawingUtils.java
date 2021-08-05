@@ -24,20 +24,22 @@ public class ArgbDrawingUtils {
      *
      * @param imgDestination  image to draw calculated overlay pixel values to
      * @param imgSource       pixel value source
-     * @param optimalSegments a <code>List</code> of the hypotheses containing
+     * @param segments a <code>List</code> of the hypotheses containing
      *                        component-tree-nodes that represent the optimal segmentation
      *                        (the one returned by the solution to the ILP)
      */
-    public static void drawOptimalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final List<Hypothesis<Component<FloatType, ?>>> optimalSegments) {
+    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<Component<FloatType, ?>>> segments) {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
-        for (final Hypothesis<Component<FloatType, ?>> hypothesis : optimalSegments) {
+        for (final Hypothesis<Component<FloatType, ?>> hypothesis : segments) {
             final Component<FloatType, ?> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
-            } else if (hypothesis.getSegmentSpecificConstraint() != null) {
+            } else if (hypothesis.isForced) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
+            } else if (hypothesis.isIgnored) {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
             }
@@ -61,8 +63,8 @@ public class ArgbDrawingUtils {
     public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegment) {
         final RandomAccess<ARGBType> raAnnotationImg = imgDestination.randomAccess();
         final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
-        Function<Integer, ARGBType> redPixelOverlayCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight optional component in red */
-        drawSegmentColorOverlay(optionalSegment, raAnnotationImg, raUnaltered, offsetX, offsetY, redPixelOverlayCalculator);
+        Function<Integer, ARGBType> pixelColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight optional component in blue */
+        drawSegmentColorOverlay(optionalSegment, raAnnotationImg, raUnaltered, offsetX, offsetY, pixelColorCalculator);
     }
 
     /**
@@ -143,6 +145,19 @@ public class ArgbDrawingUtils {
         final int redToUse = (int) (Math.min(10, (255 - ARGBType.red(grayscaleValue))) / 1.25);
         final int greenToUse = Math.min(35, (255 - ARGBType.green(grayscaleValue)));
         final int blueToUse = (int) (Math.min(10, (255 - ARGBType.blue(grayscaleValue))) / 1.25);
+        return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
+    }
+
+    /**
+     * Calculate blue ARGB pixel value from current {@param grayscaleValue}.
+     *
+     * @param grayscaleValue current grayscale value.
+     * @return ARBG pixel value.
+     */
+    private static ARGBType calculateBluePixelOverlayValue(int grayscaleValue) {
+        final int redToUse = Math.min(100, (255 - ARGBType.red(grayscaleValue))) / 4;
+        final int greenToUse = Math.min(100, (255 - ARGBType.green(grayscaleValue))) / 4;
+        final int blueToUse = Math.min(255, (255 - ARGBType.blue(grayscaleValue)));
         return new ARGBType(ARGBType.rgba(ARGBType.red(grayscaleValue) + (redToUse), ARGBType.green(grayscaleValue) + (greenToUse), ARGBType.blue(grayscaleValue) + (blueToUse), ARGBType.alpha(grayscaleValue)));
     }
 

@@ -61,10 +61,6 @@ public class MoMA {
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
-//	public static String LABEL1 = "dead";
-//	public static String LABEL2 = "dying";
-//	public static String LABEL3 = "fading";
-//	public static List<String> LABEL_LIST = new ArrayList<>(Arrays.asList(LABEL1, LABEL2, LABEL3));
 	public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
 	public static String CELL_LABELS = "dead;dying;fading";
 
@@ -273,6 +269,8 @@ public class MoMA {
 	 */
 	public static double GUROBI_TIME_LIMIT = 15.0;
 	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
+
+	public static boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
 	private static MoMAGui gui;
 
@@ -1328,7 +1326,7 @@ public class MoMA {
 		int i = 0;
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
-			gl.runILP();
+			gl.getIlp().run();
 			i++;
 		}
 	}

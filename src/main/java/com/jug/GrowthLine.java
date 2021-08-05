@@ -99,12 +99,4 @@ public class GrowthLine {
 			guiProgressReceiver.dispose();
 		}
 	}
-
-	/**
-	 * Runs the ILP.
-	 */
-	public void runILP() {
-		getIlp().run();
-	}
-
 }

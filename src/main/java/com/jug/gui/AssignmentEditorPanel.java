@@ -108,8 +108,4 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
         assignmentView.addIlpModelChangedEventListener(listener);
     }
-
-    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
-        assignmentView.removeIlpModelChangedEventListener(listener);
-    }
 }

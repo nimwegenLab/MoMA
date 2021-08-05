@@ -239,15 +239,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         listenerList.add(IlpModelChangedEventListener.class, listener);
     }
 
-    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
-        listenerList.remove(IlpModelChangedEventListener.class, listener);
-    }
-
     private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
         Object[] listeners = listenerList.getListenerList();
-        for (int i = 0; i < listeners.length; i++) {
+        for (int i = 0; i < listeners.length; i = i+2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
             if (listeners[i] == IlpModelChangedEventListener.class) {
-                ((IlpModelChangedEventListener) listeners[i]).IlpModelChangedEventOccurred(evt);
+                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
             }
         }
     }
@@ -303,6 +299,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 e1.printStackTrace();
             }
             mmgui.dataToDisplayChanged();
+            fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
             runIlpAndFocusSlider(ilp);
             return;
         }
@@ -338,6 +335,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             }
         }
         mmgui.dataToDisplayChanged();
+        fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
         runIlpAndFocusSlider(ilp);
     }
 

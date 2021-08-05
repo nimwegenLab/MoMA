@@ -255,11 +255,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonOptimizeMore = new JButton("Optimize");
         buttonOptimizeMore.setForeground(Color.RED);
         buttonOptimizeMore.addActionListener(this);
+
         for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
-            ilpVariableEditorPanel.addIlpModelChangedEventListener(e -> {
-                buttonOptimizeMore.setForeground(Color.RED);
+            ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
+                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE){
+                    buttonOptimizeMore.setForeground(Color.RED);
+                }
             });
         }
+
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);
         buttonExportData = new JButton("Export Data");
@@ -960,7 +964,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 System.out.println("Finding optimal result...");
                 model.getCurrentGL().getIlp().runImmediately();
                 System.out.println("...done!");
-
+                buttonOptimizeMore.setForeground(Color.BLACK);
                 dataToDisplayChanged();
             });
             t.start();

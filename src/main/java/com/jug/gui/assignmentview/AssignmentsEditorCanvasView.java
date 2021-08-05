@@ -1,6 +1,8 @@
 package com.jug.gui.assignmentview;
 
 import com.jug.MoMA;
+import com.jug.gui.IlpModelChangedEvent;
+import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
@@ -8,6 +10,7 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -306,8 +309,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             if (e.getClickCount() == 1 && !e.isAltDown() && !e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {
                 if (e.isControlDown()) {
                     selectedAssignment.toggleGroundUntruth();
+                    fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
                 } else {
                     selectedAssignment.toggleGroundTruth();
+                    fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
                 }
             }
         }
@@ -525,6 +530,21 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     void resetSelectedAssignments(){
         for(AssignmentView assView : assignmentViews){
             assView.setIsSelected(false);
+        }
+    }
+
+    protected EventListenerList listenerList = new EventListenerList();
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.add(IlpModelChangedEventListener.class, listener);
+    }
+
+    private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = 0; i < listeners.length; i = i+2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
+            if (listeners[i] == IlpModelChangedEventListener.class) {
+                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+            }
         }
     }
 }

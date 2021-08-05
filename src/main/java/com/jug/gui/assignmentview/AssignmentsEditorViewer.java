@@ -163,22 +163,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         return this.activeAssignments;
     }
 
-    protected EventListenerList listenerList = new EventListenerList();
-
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
-        listenerList.add(IlpModelChangedEventListener.class, listener);
-    }
-
-    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
-        listenerList.remove(IlpModelChangedEventListener.class, listener);
-    }
-
-    private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = 0; i < listeners.length; i++) {
-            if (listeners[i] == IlpModelChangedEventListener.class) {
-                ((IlpModelChangedEventListener) listeners[i]).IlpModelChangedEventOccurred(evt);
-            }
-        }
+        activeAssignments.addIlpModelChangedEventListener(listener);
+        inactiveMappingAssignments.addIlpModelChangedEventListener(listener);
+        inactiveDivisionAssignments.addIlpModelChangedEventListener(listener);
+        inactiveExitAssignments.addIlpModelChangedEventListener(listener);
+        inactiveLysisAssignments.addIlpModelChangedEventListener(listener);
     }
 }

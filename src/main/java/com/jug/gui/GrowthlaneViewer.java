@@ -245,9 +245,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
         Object[] listeners = listenerList.getListenerList();
-        for (int i = 0; i < listeners.length; i = i+2) {
+        for (int i = 0; i < listeners.length; i++) {
             if (listeners[i] == IlpModelChangedEventListener.class) {
-                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+                ((IlpModelChangedEventListener) listeners[i]).IlpModelChangedEventOccurred(evt);
             }
         }
     }

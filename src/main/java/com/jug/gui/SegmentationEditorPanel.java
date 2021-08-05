@@ -189,4 +189,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public GrowthlaneViewer getGrowthlaneViewer() {
         return this.growthlaneViewer;
     }
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        growthlaneViewer.addIlpModelChangedEventListener(listener);
+    }
+
+    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        growthlaneViewer.removeIlpModelChangedEventListener(listener);
+    }
 }

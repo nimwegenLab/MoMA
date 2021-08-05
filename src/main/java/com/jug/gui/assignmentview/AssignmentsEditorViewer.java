@@ -1,5 +1,7 @@
 package com.jug.gui.assignmentview;
 
+import com.jug.gui.IlpModelChangedEvent;
+import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthLineTrackingILP;
@@ -11,6 +13,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.EventListenerList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -160,4 +163,22 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         return this.activeAssignments;
     }
 
+    protected EventListenerList listenerList = new EventListenerList();
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.add(IlpModelChangedEventListener.class, listener);
+    }
+
+    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.remove(IlpModelChangedEventListener.class, listener);
+    }
+
+    private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = 0; i < listeners.length; i++) {
+            if (listeners[i] == IlpModelChangedEventListener.class) {
+                ((IlpModelChangedEventListener) listeners[i]).IlpModelChangedEventOccurred(evt);
+            }
+        }
+    }
 }

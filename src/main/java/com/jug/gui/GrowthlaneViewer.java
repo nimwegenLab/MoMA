@@ -17,6 +17,7 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import javax.swing.*;
+import javax.swing.event.EventListenerList;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -230,6 +231,25 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
         selectedHypothesis = hypothesesAtHoverPosition.get(indexOfCurrentHoveredHypothesis);
         repaint();
+    }
+
+    protected EventListenerList listenerList = new EventListenerList();
+
+    public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.add(IlpModelChangedEventListener.class, listener);
+    }
+
+    public void removeIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
+        listenerList.remove(IlpModelChangedEventListener.class, listener);
+    }
+
+    private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = 0; i < listeners.length; i = i+2) {
+            if (listeners[i] == IlpModelChangedEventListener.class) {
+                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+            }
+        }
     }
 
     /**

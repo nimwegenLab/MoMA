@@ -253,7 +253,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonRestart = new JButton("Restart");
         buttonRestart.addActionListener(this);
         buttonOptimizeMore = new JButton("Optimize");
+        buttonOptimizeMore.setForeground(Color.RED);
         buttonOptimizeMore.addActionListener(this);
+        for(IlpVariableEditorPanel ilpVariableEditorPanel: ilpVariableEditorPanels){
+            ilpVariableEditorPanel.addIlpModelChangedEventListener(e -> {
+                buttonOptimizeMore.setForeground(Color.RED);
+            });
+        }
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);
         buttonExportData = new JButton("Export Data");

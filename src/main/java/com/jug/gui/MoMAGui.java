@@ -496,6 +496,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         panel2.add(panelDropdown, gridBagConstraintPanel2);
 
+        JCheckBox checkboxOptimizeOnIlpChange = new JCheckBox();
+        checkboxOptimizeOnIlpChange.setSelected(true);
+        checkboxOptimizeOnIlpChange.setText("Run optimization on change");
+        checkboxOptimizeOnIlpChange.addActionListener(e -> {
+            if (checkboxOptimizeOnIlpChange.isSelected()){
+                MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+                return;
+            }
+            MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
+        });
+        panel2.add(checkboxOptimizeOnIlpChange);
+
         return panelContent;
     }
 

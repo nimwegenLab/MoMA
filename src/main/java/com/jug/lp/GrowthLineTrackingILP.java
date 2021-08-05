@@ -19,7 +19,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import java.io.*;
@@ -782,7 +781,7 @@ public class GrowthLineTrackingILP {
     }
 
     public void run() {
-        if (MoMA.OPTIMIZE_ON_ILP_CHANGE) {
+        if (MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE) {
             runImmediately();
         }
     }

@@ -51,29 +51,32 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;
+    protected EventListenerList listenerList = new EventListenerList();
+    ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
+    int selectedAssignmentIndex = 0;
+    AssignmentView selectedAssignment;
     private boolean doFilterDataByCost;
     private float filterMinCost = -100f;
     private float filterMaxCost = 100f;
     private boolean doFilterDataByIdentity = false;
     private boolean doAddToFilter = false; // if 'true' all assignments at the mouse location will be added to the filter next time repaint is called...
     private HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data;
-
     private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentsEditorCanvasView instance */
     private int mousePosX;
     private int mousePosY;
     private int currentCostLine;
-
     private boolean isDragging = false;
     private int dragX;
     private int dragY;
     private int dragInitiatingMouseButton = 0;
     private float dragStepWeight = 0;
-
     private MoMAGui gui;
 
+    // -------------------------------------------------------------------------------------
+    // getters and setters
+    // -------------------------------------------------------------------------------------
     private Color strokeColor;
-
-    private ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
+    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -121,7 +124,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     // -------------------------------------------------------------------------------------
-    // getters and setters
+    // methods
     // -------------------------------------------------------------------------------------
 
     /**
@@ -151,10 +154,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     public void setCostFilterMax(final float filterMaxCost) {
         this.filterMaxCost = filterMaxCost;
     }
-
-    // -------------------------------------------------------------------------------------
-    // methods
-    // -------------------------------------------------------------------------------------
 
     /**
      * Turns of filtering and shows all the given data.
@@ -240,11 +239,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         g.draw(polygon);
     }
 
-    private void drawCostTooltip(Graphics2D g2){
-        g2.setPaint(new Color(0f, 0f,0f, 1.0f));
+    private void drawCostTooltip(Graphics2D g2) {
+        g2.setPaint(new Color(0f, 0f, 0f, 1.0f));
         currentCostLine = 0;
 //        Font currentFont = g2.getFont();
-        for(AssignmentView assView : hoveredAssignments){
+        for (AssignmentView assView : hoveredAssignments) {
             String valueString = assView.getCostTooltipString();
             if (assView.equals(selectedAssignment)) valueString = "* " + assView.getCostTooltipString();
 //            if (assView.equals(selectedAssignment)) g2.setFont(new Font("default", Font.BOLD, currentFont.getSize()));
@@ -275,14 +274,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
                 if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                }
-                else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                }
-                else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
                     assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                }
-                else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
+                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
                     assignmentViews.add(new LysisAssignmentView((LysisAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }
@@ -335,7 +331,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             System.out.println("Filter!");
             this.doFilterDataByIdentity = true;
             this.doAddToFilter = true; // when repainting component next time...
-            for(AssignmentView assignmentView : hoveredAssignments){
+            for (AssignmentView assignmentView : hoveredAssignments) {
                 assignmentView.hide();
             }
         }
@@ -344,7 +340,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         if (!e.isAltDown() && !e.isControlDown() && e.getButton() == MouseEvent.BUTTON3) {
             this.doFilterDataByIdentity = false;
             this.filteredAssignments.clear();
-            for(AssignmentView assignmentView : assignmentViews){
+            for (AssignmentView assignmentView : assignmentViews) {
                 assignmentView.unhide();
             }
             resetCostFilterValues();
@@ -430,22 +426,17 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         repaint();
     }
 
-    void fiterShownAssignmentsByCost(){
+    void fiterShownAssignmentsByCost() {
         float currentMinCost = this.getCostFilterMin();
         float currentMaxCost = this.getCostFilterMax();
-        for(AssignmentView assView : assignmentViews){
-            if(assView.getCost() < currentMinCost || assView.getCost() > currentMaxCost){
+        for (AssignmentView assView : assignmentViews) {
+            if (assView.getCost() < currentMinCost || assView.getCost() > currentMaxCost) {
                 assView.hide();
-            }
-            else{
+            } else {
                 assView.unhide();
             }
         }
     }
-
-    ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
-    int selectedAssignmentIndex = 0;
-    AssignmentView selectedAssignment;
 
     /**
      * @see java.awt.event.MouseMotionListener#mouseMoved(java.awt.event.MouseEvent)
@@ -459,7 +450,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     }
 
     private void clearHoveredAssignments() {
-        if(selectedAssignment != null) selectedAssignment.setIsSelected(false);
+        if (selectedAssignment != null) selectedAssignment.setIsSelected(false);
         selectedAssignment = null;
         hoveredAssignments = new ArrayList<>();
 
@@ -470,11 +461,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         sortAssignmentViews(updatedHoveredAssignments);
 
-        if(updatedHoveredAssignments.isEmpty()){
+        if (updatedHoveredAssignments.isEmpty()) {
             resetSelectedAssignments();
             clearHoveredAssignments();
-        }
-        else if(!updatedHoveredAssignments.equals(hoveredAssignments)){
+        } else if (!updatedHoveredAssignments.equals(hoveredAssignments)) {
             resetSelectedAssignments();
             hoveredAssignments = updatedHoveredAssignments;
             selectedAssignmentIndex = getIndexOfOptimalAssignmentIfAvailable(hoveredAssignments);
@@ -483,7 +473,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         }
     }
 
-    private int getIndexOfOptimalAssignmentIfAvailable(ArrayList<AssignmentView> assignmentViews){
+    private int getIndexOfOptimalAssignmentIfAvailable(ArrayList<AssignmentView> assignmentViews) {
         AssignmentView selectedHypothesis = assignmentViews.stream().filter(assView -> assView.isGroundTruth() || assView.isChosen())
                 .findFirst()
                 .orElse(null);
@@ -495,15 +485,15 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         }
     }
 
-    private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews){
+    private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews) {
         assignmentViews.sort(Comparator.comparingDouble(AssignmentView::getCost));
         Collections.reverse(assignmentViews);
     }
 
-    private ArrayList<AssignmentView> getHoveredAssignmentViews(int mousePosX, int mousePosY){
+    private ArrayList<AssignmentView> getHoveredAssignmentViews(int mousePosX, int mousePosY) {
         ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
-        for(AssignmentView assView : assignmentViews){
-            if(assView.isHovered(mousePosX, mousePosY)){
+        for (AssignmentView assView : assignmentViews) {
+            if (assView.isHovered(mousePosX, mousePosY)) {
                 hoveredAssignments.add(assView);
             }
         }
@@ -527,13 +517,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         repaint();
     }
 
-    void resetSelectedAssignments(){
-        for(AssignmentView assView : assignmentViews){
+    void resetSelectedAssignments() {
+        for (AssignmentView assView : assignmentViews) {
             assView.setIsSelected(false);
         }
     }
-
-    protected EventListenerList listenerList = new EventListenerList();
 
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
         listenerList.add(IlpModelChangedEventListener.class, listener);
@@ -541,9 +529,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
         Object[] listeners = listenerList.getListenerList();
-        for (int i = 0; i < listeners.length; i = i+2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
+        for (int i = 0; i < listeners.length; i = i + 2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
             if (listeners[i] == IlpModelChangedEventListener.class) {
-                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+                ((IlpModelChangedEventListener) listeners[i + 1]).IlpModelChangedEventOccurred(evt);
             }
         }
     }

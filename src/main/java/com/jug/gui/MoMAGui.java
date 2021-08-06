@@ -72,7 +72,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
-    private JPanel panelDetailedDataView;
     private Plot2DPanel plot;
     private JCheckBox checkboxAutosave;
 
@@ -240,10 +239,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelCountingView = new CountOverviewPanel();
         panelSegmentationAndAssignmentView = new JScrollPane(buildSegmentationAndAssignmentView());
         panelSegmentationAndAssignmentView.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        panelDetailedDataView = buildDetailedDataView();
 
         tabsViews.add("Segm. & Assignments", panelSegmentationAndAssignmentView);
-        tabsViews.add("Detailed Data View", panelDetailedDataView);
 
         tabsViews.setSelectedComponent(panelSegmentationAndAssignmentView);
 
@@ -345,12 +342,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 if (e.getActionCommand().equals("s")) {
                     if (!tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelSegmentationAndAssignmentView)) {
                         tabsViews.setSelectedComponent(panelSegmentationAndAssignmentView);
-                    }
-                    dataToDisplayChanged();
-                }
-                if (e.getActionCommand().equals("d")) {
-                    if (!tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelDetailedDataView)) {
-                        tabsViews.setSelectedComponent(panelDetailedDataView);
                     }
                     dataToDisplayChanged();
                 }
@@ -755,13 +746,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
 
-        // IF DETAILED DATA VIEW IS ACTIVE
-        // ===============================
-        if (tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelDetailedDataView)) {
-            updatePlotPanels();
-        }
         setFocusToTimeSlider();
-
     }
 
     private void updateIlpVariableEditorPanels() {

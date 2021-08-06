@@ -119,7 +119,7 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
-        HashMap<String, ResultTableColumn<Boolean>> labelColumns = new HashMap<>();
+        HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
         for (String label : MoMA.CELL_LABEL_LIST) {
             labelColumns.put(label, resultTable.addColumn(new ResultTableColumn<>("label:" + label)));
         }
@@ -187,10 +187,10 @@ public class CellStatsExporter {
 
                 for (String label : MoMA.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
-                        labelColumns.get(label).addValue(true);
+                        labelColumns.get(label).addValue(1);
                     }
                     else{
-                        labelColumns.get(label).addValue(false);
+                        labelColumns.get(label).addValue(0);
                     }
                 }
 

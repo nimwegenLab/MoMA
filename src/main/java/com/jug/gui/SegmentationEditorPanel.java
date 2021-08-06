@@ -5,6 +5,7 @@ import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
+import com.moma.auxiliary.Plotting;
 import gurobi.GRBException;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.Converters;
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
@@ -32,7 +35,32 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addSelectionCheckbox(mmgui);
         this.addCellNumberInputField(mmgui);
+        this.addShowSegmentsButton();
         this.setAppearanceAndLayout();
+    }
+
+    private void addShowSegmentsButton() {
+        JButton showSegmentsButton = new JButton("Seg");
+        showSegmentsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        showSegmentsButton.addActionListener(e -> {
+            ShowComponentsOfCurrentTimeStep();
+        });
+        showSegmentsButton.setMargin(new Insets(0,0,0,0));
+        this.add(showSegmentsButton);
+    }
+
+    /**
+     * Show a stack of the components of the current time step in a separate window.
+     */
+    private void ShowComponentsOfCurrentTimeStep() {
+        List<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> optimalSegs = new ArrayList<>();
+        GrowthLineFrame glf = momaModel.getCurrentGLF();
+        int timeStep = timeStepToDisplay();
+        GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        if (ilp != null) {
+            optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
+        }
+        Plotting.drawComponentTree(momaModel.getCurrentGLF().getComponentTree(), optimalSegs, timeStep);
     }
 
     private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {

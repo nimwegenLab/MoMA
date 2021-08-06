@@ -74,7 +74,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JCheckBox checkboxAutosave;
 
     private JButton buttonRestart;
-    private JButton viewSegmentsButton;
     private JButton buttonOptimizeMore;
     private JButton buttonExportHtml;
     private JButton buttonExportData;
@@ -503,16 +502,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonReset = new JButton("reset");
         buttonReset.addActionListener(this);
 
-        viewSegmentsButton = new JButton("View Segments");
-        viewSegmentsButton.addActionListener(this);
-
-
         // - - - - - -
 
         panel2.add(buttonFreezePreviousTimeSteps, gridBagConstraintPanel2);
         panel2.add(buttonSet, gridBagConstraintPanel2);
         panel2.add(buttonReset, gridBagConstraintPanel2);
-        panel2.add(viewSegmentsButton, gridBagConstraintPanel2);
 
 //        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         panel2.add(panelDropdown, gridBagConstraintPanel2);
@@ -608,7 +602,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
         for (final C root : ct.roots()) {
             System.out.println();
-            int level = 0;
             ArrayList<C> ctnLevel = new ArrayList<>();
             ctnLevel.add(root);
             while (ctnLevel.size() > 0) {
@@ -632,7 +625,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     }
                 }
                 ctnLevel = ComponentTreeUtils.getAllChildren(ctnLevel);
-                level++;
                 System.out.println();
             }
         }
@@ -974,9 +966,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(this::exportDataFiles);
             t.start();
         }
-        if (e.getSource().equals(viewSegmentsButton)) {
-            ShowComponentsOfCurrentTimeStep();
-        }
         setFocusToTimeSlider();
     }
 
@@ -1018,20 +1007,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         System.out.println("...done!");
 
         dataToDisplayChanged();
-    }
-
-    /**
-     * Show a stack of the components of the current time step in a separate window.
-     */
-    private void ShowComponentsOfCurrentTimeStep() {
-        List<Component<FloatType, ?>> optimalSegs = new ArrayList<>();
-        GrowthLineFrame glf = model.getCurrentGLF();
-        int timeStep = glf.getParent().getFrames().indexOf(glf);
-        GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
-        if (ilp != null) {
-            optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
-        }
-        Plotting.drawComponentTree(model.getCurrentGLF().getComponentTree(), optimalSegs, timeStep);
     }
 
     private void setFocusToTimeSlider() {

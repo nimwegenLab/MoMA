@@ -66,7 +66,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void addCellNumberInputField(MoMAGui mmgui) {
-        txtNumCells = new JTextField("?", 2);
+        txtNumCells = new JTextField("-", 2);
         txtNumCells.setHorizontalAlignment(SwingConstants.CENTER);
         txtNumCells.setMaximumSize(txtNumCells.getPreferredSize());
         txtNumCells.addActionListener(e -> {
@@ -78,7 +78,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                 numCells = Integer.parseInt(txtNumCells.getText());
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
-                txtNumCells.setText("?");
+                txtNumCells.setText("-");
                 ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
             }
             if (numCells != -1) {
@@ -111,7 +111,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
         if (!currentTimeStepIsValid()) {
             txtNumCells.setEnabled(false);
-            txtNumCells.setText("?");
+            txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
             return;
         }
@@ -120,7 +120,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                 momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
         txtNumCells.setEnabled(true);
         if (rhs == -1) {
-            txtNumCells.setText("?");
+            txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
         } else {
             txtNumCells.setText("" + rhs);

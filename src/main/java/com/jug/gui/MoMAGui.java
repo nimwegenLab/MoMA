@@ -52,6 +52,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
+    private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
+    private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
+    private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     public JSlider sliderGL;
     public JSlider sliderTime;
     // -------------------------------------------------------------------------------------
@@ -61,9 +64,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
-    private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
-    private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
-    private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private RangeSlider sliderTrackingRange;
     private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
@@ -251,7 +251,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
             ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
-                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE){
+                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE) {
                     buttonOptimizeMore.setForeground(Color.RED);
                 }
             });
@@ -394,16 +394,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         });
     }
 
-    private AssignmentEditorPanel getHoveredAssignmentEditorPanel(){
+    private AssignmentEditorPanel getHoveredAssignmentEditorPanel() {
         for (AssignmentEditorPanel entry : assignmentEditorPanels) {
-            if (entry.isMouseOver()){ return entry;}
+            if (entry.isMouseOver()) {
+                return entry;
+            }
         }
         return null;
     }
 
     private void switchAssignmentViewerTabs(int tabIndex) {
         AssignmentEditorPanel hoveredAssignmentEditorPanel = getHoveredAssignmentEditorPanel();
-        if (hoveredAssignmentEditorPanel != null ) {
+        if (hoveredAssignmentEditorPanel != null) {
             hoveredAssignmentEditorPanel.switchToTab(tabIndex);
             return;
         }
@@ -427,7 +429,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         GridBagConstraints gridBagConstraintPanel2 = new GridBagConstraints();
         gridBagConstraintPanel2.anchor = GridBagConstraints.NORTH;
-        gridBagConstraintPanel2.insets = new Insets(10,3,10,3);
+        gridBagConstraintPanel2.insets = new Insets(10, 3, 10, 3);
 
         final JPanel panelViewCenterHelper = new JPanel();
         panelViewCenterHelper.setLayout(new BoxLayout(panelViewCenterHelper, BoxLayout.PAGE_AXIS));
@@ -519,13 +521,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         checkboxOptimizeOnIlpChange.setSelected(MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE);
         checkboxOptimizeOnIlpChange.setText("Run optimization on change");
         checkboxOptimizeOnIlpChange.addActionListener(e -> {
-            if (checkboxOptimizeOnIlpChange.isSelected()){
+            if (checkboxOptimizeOnIlpChange.isSelected()) {
                 MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
-                JOptionPane.showMessageDialog(this, "Optimization will now run automatically after each change. It is suggested to run optimization once now before continuing by pressing the button 'Optimize'." );
+                JOptionPane.showMessageDialog(this, "Optimization will now run automatically after each change. It is suggested to run optimization once now before continuing by pressing the button 'Optimize'.");
                 return;
             }
             MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
-            JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes." );
+            JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes.");
         });
         panel2.add(checkboxOptimizeOnIlpChange);
 
@@ -534,29 +536,30 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private void setColorChannelOnSegmentEditorPanels() {
         ColorChannel channelToDisplay = ColorChannel.CHANNEL0; // default channel is ColorChannel.CHANNEL0
-        if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)){
+        if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
             channelToDisplay = ColorChannel.CHANNEL1;
-        }
-        else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)){
+        } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
             channelToDisplay = ColorChannel.CHANNEL2;
         }
         setColorChannelOnHoveredPanelOrAllPanels(channelToDisplay);
     }
 
-    private void setColorChannelOnHoveredPanelOrAllPanels(ColorChannel colorChannelToDisplay){
+    private void setColorChannelOnHoveredPanelOrAllPanels(ColorChannel colorChannelToDisplay) {
         SegmentationEditorPanel hoveredAssignmentEditorPanel = getHoveredSegmentationEditorPanel();
-        if(hoveredAssignmentEditorPanel != null){
+        if (hoveredAssignmentEditorPanel != null) {
             hoveredAssignmentEditorPanel.colorChannelToDisplay = colorChannelToDisplay;
             return;
         }
-        for (SegmentationEditorPanel segmentationEditorPanel : segmentationEditorPanels){
+        for (SegmentationEditorPanel segmentationEditorPanel : segmentationEditorPanels) {
             segmentationEditorPanel.colorChannelToDisplay = colorChannelToDisplay;
         }
     }
 
-    private SegmentationEditorPanel getHoveredSegmentationEditorPanel(){
+    private SegmentationEditorPanel getHoveredSegmentationEditorPanel() {
         for (SegmentationEditorPanel entry : segmentationEditorPanels) {
-            if (entry.isMouseOver()){ return entry;}
+            if (entry.isMouseOver()) {
+                return entry;
+            }
         }
         return null;
     }

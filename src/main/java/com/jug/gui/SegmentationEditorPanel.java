@@ -3,7 +3,11 @@ package com.jug.gui;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.util.Util;
+import com.jug.util.converter.RealFloatNormalizeConverter;
 import gurobi.GRBException;
+import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.converter.Converters;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -153,8 +157,55 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
         GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay());
-        IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+        IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
+    }
+
+    public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
+
+    private IntervalView<FloatType> getImageToDisplay(GrowthLineFrame glf){
+//        IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//        final GrowthLineFrame glf = momaModel.getCurrentGLF();
+        final FloatType min = new FloatType();
+        final FloatType max = new FloatType();
+
+        /**
+         * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+         * (center one in active assignments view).
+         */
+        IntervalView<FloatType> viewImgCenterActive;
+        if (colorChannelToDisplay == ColorChannel.CHANNEL0) {
+            viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//            this.setScreenImage(glf, viewImgCenterActive);
+        } else if (colorChannelToDisplay == ColorChannel.CHANNEL1) {
+            final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
+            Util.computeMinMax(Views.iterable(viewToShow), min, max);
+            viewImgCenterActive =
+                    Views.offset(
+                            Converters.convert(
+                                    (RandomAccessibleInterval<FloatType>) viewToShow,
+                                    new RealFloatNormalizeConverter(max.get()),
+                                    new FloatType()),
+                            glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+                            glf.getOffsetY());
+//            this.setScreenImage(glf, viewImgCenterActive);
+        } else if (colorChannelToDisplay == ColorChannel.CHANNEL2) {
+            final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
+            Util.computeMinMax(Views.iterable(viewToShow), min, max);
+            viewImgCenterActive =
+                    Views.offset(
+                            Converters.convert(
+                                    (RandomAccessibleInterval<FloatType>) viewToShow,
+                                    new RealFloatNormalizeConverter(max.get()),
+                                    new FloatType()),
+                            glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+                            glf.getOffsetY());
+//            this.setScreenImage(glf, viewImgCenterActive);
+        } else { // BG-subtracted Channel 0 selected or PMFRF not available; CORRESPONDS TO ColorChannel.BG_SUBTRACTED
+            viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//            this.setScreenImage(glf, viewImgCenterActive);
+        }
+        return viewImgCenterActive;
     }
 
     private boolean currentTimeStepIsValid() {

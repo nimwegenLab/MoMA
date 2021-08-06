@@ -465,7 +465,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             comboboxWhichImgToShow.addItem(itemChannel2);
         }
 
-        comboboxWhichImgToShow.addActionListener(e -> dataToDisplayChanged());
+        comboboxWhichImgToShow.addActionListener(e -> {
+            setColorChannelOnSegmentEditorPanels();
+            dataToDisplayChanged();
+        });
 
         panelDropdown.add(Box.createHorizontalGlue());
         panelDropdown.add(comboboxWhichImgToShow);
@@ -536,6 +539,26 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panel2.add(checkboxOptimizeOnIlpChange);
 
         return panelContent;
+    }
+
+    private void setColorChannelOnSegmentEditorPanels() {
+        ColorChannel channelToDisplay = ColorChannel.BG_SUBTRACTED; // DEFAULT STATE
+        if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)){
+            channelToDisplay = ColorChannel.CHANNEL0;
+        }
+        else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)){
+            channelToDisplay = ColorChannel.CHANNEL1;
+        }
+        else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)){
+            channelToDisplay = ColorChannel.CHANNEL2;
+        }
+        setColorChannel(channelToDisplay);
+    }
+
+    private void setColorChannel(ColorChannel colorChannelToDisplay){
+        for (SegmentationEditorPanel segmentationEditorPanel : segmentationEditorPanels){
+            segmentationEditorPanel.colorChannelToDisplay = colorChannelToDisplay;
+        }
     }
 
     /**
@@ -712,46 +735,46 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             updateIlpVariableEditorPanels();
 
-            final GrowthLineFrame glf = model.getCurrentGLF();
-            final FloatType min = new FloatType();
-            final FloatType max = new FloatType();
-
-            /**
-             * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-             * (center one in active assignments view).
-             */
-            IntervalView<FloatType> viewImgCenterActive;
-            if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
-                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
-                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
-                Util.computeMinMax(Views.iterable(viewToShow), min, max);
-                viewImgCenterActive =
-                        Views.offset(
-                                Converters.convert(
-                                        (RandomAccessibleInterval<FloatType>) viewToShow,
-                                        new RealFloatNormalizeConverter(max.get()),
-                                        new FloatType()),
-                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-                                glf.getOffsetY());
-                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
-                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
-                Util.computeMinMax(Views.iterable(viewToShow), min, max);
-                viewImgCenterActive =
-                        Views.offset(
-                                Converters.convert(
-                                        (RandomAccessibleInterval<FloatType>) viewToShow,
-                                        new RealFloatNormalizeConverter(max.get()),
-                                        new FloatType()),
-                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-                                glf.getOffsetY());
-                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            } else { // BG-subtracted Channel 0 selected or PMFRF not available
-                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-            }
+//            final GrowthLineFrame glf = model.getCurrentGLF();
+//            final FloatType min = new FloatType();
+//            final FloatType max = new FloatType();
+//
+//            /**
+//             * The view onto <code>imgRaw</code> that is supposed to be shown on screen
+//             * (center one in active assignments view).
+//             */
+//            IntervalView<FloatType> viewImgCenterActive;
+//            if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
+//                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
+//            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
+//                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
+//                Util.computeMinMax(Views.iterable(viewToShow), min, max);
+//                viewImgCenterActive =
+//                        Views.offset(
+//                                Converters.convert(
+//                                        (RandomAccessibleInterval<FloatType>) viewToShow,
+//                                        new RealFloatNormalizeConverter(max.get()),
+//                                        new FloatType()),
+//                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+//                                glf.getOffsetY());
+//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
+//            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
+//                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
+//                Util.computeMinMax(Views.iterable(viewToShow), min, max);
+//                viewImgCenterActive =
+//                        Views.offset(
+//                                Converters.convert(
+//                                        (RandomAccessibleInterval<FloatType>) viewToShow,
+//                                        new RealFloatNormalizeConverter(max.get()),
+//                                        new FloatType()),
+//                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+//                                glf.getOffsetY());
+//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
+//            } else { // BG-subtracted Channel 0 selected or PMFRF not available
+//                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
+//            }
         }
 
         // IF DETAILED DATA VIEW IS ACTIVE

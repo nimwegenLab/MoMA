@@ -430,6 +430,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         gridBagConstraintPanel2.anchor = GridBagConstraints.NORTH;
         gridBagConstraintPanel2.insets = new Insets(10, 3, 10, 3);
 
+        GridBagConstraints gridBagConstraintPanel3 = new GridBagConstraints();
+        gridBagConstraintPanel3.anchor = GridBagConstraints.NORTH;
+
+        GridBagConstraints gridBagConstraintPanel4 = new GridBagConstraints();
+        gridBagConstraintPanel4.anchor = GridBagConstraints.NORTH;
+
         final JPanel panelViewCenterHelper = new JPanel();
         panelViewCenterHelper.setLayout(new BoxLayout(panelViewCenterHelper, BoxLayout.PAGE_AXIS));
         final JPanel panel1 = new JPanel();
@@ -437,17 +443,24 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panel1.setLayout(panel1Layout);
 
         final JPanel panel2 = new JPanel();
-//        MigLayout panel2Layout = new MigLayout("wrap 11", "[]0[]0[]0[]0[]0[]0[]0[]0[]0[]0[]", "[]0[]");
         GridBagLayout panel2Layout = new GridBagLayout();
         panel2.setLayout(panel2Layout);
 
+        final JPanel panel3 = new JPanel();
+        GridBagLayout panel3Layout = new GridBagLayout();
+        panel3.setLayout(panel3Layout);
+
+        final JPanel panel4 = new JPanel();
+        GridBagLayout panel4Layout = new GridBagLayout();
+        panel4.setLayout(panel4Layout);
+
         panelViewCenterHelper.add(panel1);
         panelViewCenterHelper.add(panel2);
+        panelViewCenterHelper.add(panel3);
+        panelViewCenterHelper.add(panel4);
         panelContent.add(panelViewCenterHelper, BorderLayout.CENTER);
 
         // =============== panelDropdown-part ===================
-        final JPanel panelDropdown = new JPanel();
-        panelDropdown.setLayout(new BoxLayout(panelDropdown, BoxLayout.LINE_AXIS));
         comboboxWhichImgToShow = new JComboBox();
         comboboxWhichImgToShow.addItem(itemChannel0);
         if (model.mm.getRawChannelImgs().size() > 1) {
@@ -461,11 +474,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             setColorChannelOnSegmentEditorPanels();
             dataToDisplayChanged();
         });
-
-        panelDropdown.add(Box.createHorizontalGlue());
-        panelDropdown.add(comboboxWhichImgToShow);
-        panelDropdown.add(Box.createHorizontalGlue());
-
 
         int viewHeight = (int) model.mm.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
@@ -509,7 +517,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panel2.add(buttonReset, gridBagConstraintPanel2);
 
 //        panelDropdown.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
-        panel2.add(panelDropdown, gridBagConstraintPanel2);
+        panel3.add(comboboxWhichImgToShow, gridBagConstraintPanel3);
 
         JCheckBox checkboxOptimizeOnIlpChange = new JCheckBox();
         checkboxOptimizeOnIlpChange.setSelected(MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE);
@@ -523,7 +531,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
             JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes.");
         });
-        panel2.add(checkboxOptimizeOnIlpChange);
+        panel4.add(checkboxOptimizeOnIlpChange, gridBagConstraintPanel4);
 
         return panelContent;
     }

@@ -235,4 +235,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
         growthlaneViewer.addIlpModelChangedEventListener(listener);
     }
+
+    public boolean isMouseOver() {
+        return growthlaneViewer.isMouseOver();
+    }
 }

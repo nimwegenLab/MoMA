@@ -11,14 +11,11 @@ import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
-import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
 import ij.ImageJ;
 import net.imglib2.Localizable;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.converter.Converters;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -543,13 +540,25 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)){
             channelToDisplay = ColorChannel.CHANNEL2;
         }
-        setColorChannel(channelToDisplay);
+        setColorChannelOnHoveredPanelOrAllPanels(channelToDisplay);
     }
 
-    private void setColorChannel(ColorChannel colorChannelToDisplay){
+    private void setColorChannelOnHoveredPanelOrAllPanels(ColorChannel colorChannelToDisplay){
+        SegmentationEditorPanel hoveredAssignmentEditorPanel = getHoveredSegmentationEditorPanel();
+        if(hoveredAssignmentEditorPanel != null){
+            hoveredAssignmentEditorPanel.colorChannelToDisplay = colorChannelToDisplay;
+            return;
+        }
         for (SegmentationEditorPanel segmentationEditorPanel : segmentationEditorPanels){
             segmentationEditorPanel.colorChannelToDisplay = colorChannelToDisplay;
         }
+    }
+
+    private SegmentationEditorPanel getHoveredSegmentationEditorPanel(){
+        for (SegmentationEditorPanel entry : segmentationEditorPanels) {
+            if (entry.isMouseOver()){ return entry;}
+        }
+        return null;
     }
 
     /**

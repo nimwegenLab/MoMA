@@ -372,23 +372,23 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     comboboxWhichImgToShow.setSelectedIndex(selIdx);
                 }
                 if (e.getActionCommand().equals("0")) {
-                    switchAllAssignmentViewerTabs(0);
+                    switchAssignmentViewerTabs(0);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("1")) {
-                    switchAllAssignmentViewerTabs(1);
+                    switchAssignmentViewerTabs(1);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("2")) {
-                    switchAllAssignmentViewerTabs(2);
+                    switchAssignmentViewerTabs(2);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("3")) {
-                    switchAllAssignmentViewerTabs(3);
+                    switchAssignmentViewerTabs(3);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("4")) {
-                    switchAllAssignmentViewerTabs(4);
+                    switchAssignmentViewerTabs(4);
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("b")) {
@@ -400,6 +400,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
             }
         });
+    }
+
+    private AssignmentEditorPanel getHoveredAssignmentEditorPanel(){
+        for (AssignmentEditorPanel entry : assignmentEditorPanels) {
+            if (entry.isMouseOver()){ return entry;}
+        }
+        return null;
+    }
+
+    private void switchAssignmentViewerTabs(int tabIndex) {
+        AssignmentEditorPanel hoveredAssignmentEditorPanel = getHoveredAssignmentEditorPanel();
+        if (hoveredAssignmentEditorPanel != null ) {
+            hoveredAssignmentEditorPanel.switchToTab(tabIndex);
+            return;
+        }
+        switchAllAssignmentViewerTabs(tabIndex);
     }
 
     private void switchAllAssignmentViewerTabs(int tabIndex) {

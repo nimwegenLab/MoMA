@@ -11,6 +11,7 @@ import net.imglib2.converter.Converters;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -164,9 +165,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
 
     private IntervalView<FloatType> getImageToDisplay(GrowthLineFrame glf){
-        final FloatType min = new FloatType();
-        final FloatType max = new FloatType();
-
         /**
          * The view onto <code>imgRaw</code> that is supposed to be shown on screen
          * (center one in active assignments view).
@@ -175,30 +173,31 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         if (colorChannelToDisplay == ColorChannel.CHANNEL0) {
             viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL1) {
-            final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
-            Util.computeMinMax(Views.iterable(viewToShow), min, max);
-            viewImgCenterActive =
-                    Views.offset(
-                            Converters.convert(
-                                    (RandomAccessibleInterval<FloatType>) viewToShow,
-                                    new RealFloatNormalizeConverter(max.get()),
-                                    new FloatType()),
-                            glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-                            glf.getOffsetY());
+            viewImgCenterActive = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
+            viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL2) {
-            final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
-            Util.computeMinMax(Views.iterable(viewToShow), min, max);
-            viewImgCenterActive =
-                    Views.offset(
-                            Converters.convert(
-                                    (RandomAccessibleInterval<FloatType>) viewToShow,
-                                    new RealFloatNormalizeConverter(max.get()),
-                                    new FloatType()),
-                            glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-                            glf.getOffsetY());
-        } else { // BG-subtracted Channel 0 selected or PMFRF not available; CORRESPONDS TO ColorChannel.BG_SUBTRACTED
+            viewImgCenterActive = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
+            viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
+        } else { // BG-subtracted Channel 0; CORRESPONDS to default value of ColorChannel.BG_SUBTRACTED because that is the only value not caught by the pervious IF-statements
             viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         }
+        return viewImgCenterActive;
+    }
+
+    @NotNull
+    private IntervalView<FloatType> normalizeImage(GrowthLineFrame glf, IntervalView<FloatType> viewToShow) {
+        IntervalView<FloatType> viewImgCenterActive;
+        final FloatType min = new FloatType();
+        final FloatType max = new FloatType();
+        Util.computeMinMax(Views.iterable(viewToShow), min, max);
+        viewImgCenterActive =
+                Views.offset(
+                        Converters.convert(
+                                (RandomAccessibleInterval<FloatType>) viewToShow,
+                                new RealFloatNormalizeConverter(max.get()),
+                                new FloatType()),
+                        glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+                        glf.getOffsetY());
         return viewImgCenterActive;
     }
 

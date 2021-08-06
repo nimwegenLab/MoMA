@@ -52,9 +52,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // fields
     // -------------------------------------------------------------------------------------
     public final MoMAModel model;
-    private final String itemChannel0 = "Raw Channel 0";
-    private final String itemChannel1 = "Raw Channel 1";
-    private final String itemChannel2 = "Raw Channel 2";
+    private final String itemChannel0 = "Channel 0";
+    private final String itemChannel1 = "Channel 1";
+    private final String itemChannel2 = "Channel 2";
     public JSlider sliderGL;
     public JSlider sliderTime;
     // -------------------------------------------------------------------------------------
@@ -91,7 +91,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // Menu-items
     private MenuItem menuViewShowConsole;
     private MenuItem menuShowImgRaw;
-    private MenuItem menuShowImgTemp;
 
     private MenuItem menuProps;
     private MenuItem menuLoad;
@@ -144,17 +143,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final Menu menuView = new Menu("View");
         menuViewShowConsole = new MenuItem("Show/hide Console");
         menuViewShowConsole.addActionListener(this);
-        menuShowImgRaw = new MenuItem("Show raw imges...");
+        menuShowImgRaw = new MenuItem("Show raw images...");
         menuShowImgRaw.addActionListener(this);
-        menuShowImgTemp = new MenuItem("Show BG-subtrackted imges...");
-        menuShowImgTemp.addActionListener(this);
         MenuItem menuTrain = new MenuItem("Show trainer window...");
         menuTrain.addActionListener(this);
         menuView.add(menuViewShowConsole);
         menuView.add(menuTrain);
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
-        menuView.add(menuShowImgTemp);
         menuBar.add(menuView);
         if (!MoMA.HEADLESS) {
             MoMA.getGuiFrame().setMenuBar(menuBar);
@@ -455,8 +451,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JPanel panelDropdown = new JPanel();
         panelDropdown.setLayout(new BoxLayout(panelDropdown, BoxLayout.LINE_AXIS));
         comboboxWhichImgToShow = new JComboBox();
-        String itemChannel0BGSubtr = "BG-subtr. Ch.0";
-        comboboxWhichImgToShow.addItem(itemChannel0BGSubtr);
         comboboxWhichImgToShow.addItem(itemChannel0);
         if (model.mm.getRawChannelImgs().size() > 1) {
             comboboxWhichImgToShow.addItem(itemChannel1);
@@ -542,11 +536,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void setColorChannelOnSegmentEditorPanels() {
-        ColorChannel channelToDisplay = ColorChannel.BG_SUBTRACTED; // DEFAULT STATE
-        if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)){
-            channelToDisplay = ColorChannel.CHANNEL0;
-        }
-        else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)){
+        ColorChannel channelToDisplay = ColorChannel.CHANNEL0; // default channel is ColorChannel.CHANNEL0
+        if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)){
             channelToDisplay = ColorChannel.CHANNEL1;
         }
         else if(comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)){
@@ -732,49 +723,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // IF SEGMENTATION AND ASSIGNMENT VIEW IS ACTIVE
         // =============================================
         if (tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelSegmentationAndAssignmentView)) {
-
             updateIlpVariableEditorPanels();
-
-//            final GrowthLineFrame glf = model.getCurrentGLF();
-//            final FloatType min = new FloatType();
-//            final FloatType max = new FloatType();
-//
-//            /**
-//             * The view onto <code>imgRaw</code> that is supposed to be shown on screen
-//             * (center one in active assignments view).
-//             */
-//            IntervalView<FloatType> viewImgCenterActive;
-//            if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel0)) {
-//                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel1)) {
-//                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
-//                Util.computeMinMax(Views.iterable(viewToShow), min, max);
-//                viewImgCenterActive =
-//                        Views.offset(
-//                                Converters.convert(
-//                                        (RandomAccessibleInterval<FloatType>) viewToShow,
-//                                        new RealFloatNormalizeConverter(max.get()),
-//                                        new FloatType()),
-//                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-//                                glf.getOffsetY());
-//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//            } else if (comboboxWhichImgToShow.getSelectedItem().equals(itemChannel2)) {
-//                final IntervalView<FloatType> viewToShow = Views.hyperSlice(model.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
-//                Util.computeMinMax(Views.iterable(viewToShow), min, max);
-//                viewImgCenterActive =
-//                        Views.offset(
-//                                Converters.convert(
-//                                        (RandomAccessibleInterval<FloatType>) viewToShow,
-//                                        new RealFloatNormalizeConverter(max.get()),
-//                                        new FloatType()),
-//                                glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
-//                                glf.getOffsetY());
-//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//            } else { // BG-subtracted Channel 0 selected or PMFRF not available
-//                viewImgCenterActive = Views.offset(Views.hyperSlice(model.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//                growthLaneViewerCenter.setScreenImage(glf, viewImgCenterActive);
-//            }
         }
 
         // IF DETAILED DATA VIEW IS ACTIVE
@@ -893,10 +842,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(menuViewShowConsole)) {
             MoMA.instance.showConsoleWindow(!MoMA.instance.isConsoleVisible());
             MoMA.getGuiFrame().setVisible(true);
-        }
-        if (e.getSource().equals(menuShowImgTemp)) {
-            new ImageJ();
-            ImageJFunctions.show(MoMA.instance.getImgTemp(), "BG-subtracted data");
         }
         if (e.getSource().equals(menuShowImgRaw)) {
             new ImageJ();

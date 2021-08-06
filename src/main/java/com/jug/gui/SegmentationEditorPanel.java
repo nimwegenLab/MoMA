@@ -164,8 +164,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
 
     private IntervalView<FloatType> getImageToDisplay(GrowthLineFrame glf){
-//        IntervalView<FloatType> viewImgRightActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//        final GrowthLineFrame glf = momaModel.getCurrentGLF();
         final FloatType min = new FloatType();
         final FloatType max = new FloatType();
 
@@ -176,7 +174,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         IntervalView<FloatType> viewImgCenterActive;
         if (colorChannelToDisplay == ColorChannel.CHANNEL0) {
             viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//            this.setScreenImage(glf, viewImgCenterActive);
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL1) {
             final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
             Util.computeMinMax(Views.iterable(viewToShow), min, max);
@@ -188,7 +185,6 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                                     new FloatType()),
                             glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                             glf.getOffsetY());
-//            this.setScreenImage(glf, viewImgCenterActive);
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL2) {
             final IntervalView<FloatType> viewToShow = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
             Util.computeMinMax(Views.iterable(viewToShow), min, max);
@@ -200,10 +196,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                                     new FloatType()),
                             glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
                             glf.getOffsetY());
-//            this.setScreenImage(glf, viewImgCenterActive);
         } else { // BG-subtracted Channel 0 selected or PMFRF not available; CORRESPONDS TO ColorChannel.BG_SUBTRACTED
             viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgTemp(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
-//            this.setScreenImage(glf, viewImgCenterActive);
         }
         return viewImgCenterActive;
     }

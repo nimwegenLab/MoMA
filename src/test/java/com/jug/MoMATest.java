@@ -11,10 +11,11 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
 //        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
-        tests._lysing_cell__thomas_20200922__Pos0_GL30();
+//        tests._lysing_cell__thomas_20200922__Pos0_GL30();
 //        tests._lysing_cell__thomas_20200922__Pos16_GL17();
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
@@ -50,6 +51,14 @@ public class MoMATest {
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
 
+
+    @Test
+    public void _missing_mapping_assignment__lis_20201119__Pos14_GL30() {
+        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CEF/lis_20201119/Pos14_GL30";
+        String inputPath = datasetPath + "/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos14_GL30.tif";
+        String outputPath = datasetPath + "/output/";
+        startMoma(inputPath, outputPath, true, 261, 264);
+    }
 
     @Test
     public void _exception_when_loading_gl__thomas_20200910__Pos3_GL33() {
@@ -316,7 +325,6 @@ public class MoMATest {
     }
 
     private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax, boolean headless){
-//        remove_probability_maps(inputPath);
         create_output_folder(outputPath);
         String[] args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
         MoMA moma = new MoMA();
@@ -325,6 +333,13 @@ public class MoMATest {
     }
 
     private void startMoma(String inputPath, String outputPath, Integer tmin, Integer tmax){
+        startMoma(inputPath, outputPath, tmin, tmax, false);
+    }
+
+    private void startMoma(String inputPath, String outputPath, boolean deleteProabilityMap, Integer tmin, Integer tmax) {
+        if (deleteProabilityMap) {
+            remove_probability_maps(inputPath);
+        }
         startMoma(inputPath, outputPath, tmin, tmax, false);
     }
 

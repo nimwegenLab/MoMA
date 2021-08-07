@@ -203,6 +203,15 @@ public final class SimpleComponent<T extends Type<T>>
         return nodeLevel;
     }
 
+    private List<SimpleComponent<T>> componentTreeRoots;
+    public void setComponentTreeRoots(List<SimpleComponent<T>> roots) {
+        componentTreeRoots = roots;
+    }
+
+    public List<SimpleComponent<T>> getComponentTreeRoots() {
+        return componentTreeRoots;
+    }
+
     private class RegionLocalizableIterator implements Iterator<Localizable> {
         Cursor<Void> c;
         private LabelRegion<?> region;

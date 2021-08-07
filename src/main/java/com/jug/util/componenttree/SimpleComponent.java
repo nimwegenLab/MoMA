@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import net.imagej.ops.OpService;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
@@ -231,5 +232,52 @@ public final class SimpleComponent<T extends Type<T>>
             c.fwd();
             return c;
         }
+    }
+
+    private static ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+
+    /**
+     * Returns the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the lower neighbor node
+     */
+    public Component<T, ?> getLowerNeighborClosestToRootLevel() {
+        final SimpleComponent<T> parentNode = this.getParent();
+        if(parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
+            final int idx = parentNode.getChildren().indexOf(this);
+            if (idx + 1 < parentNode.getChildren().size()) {
+                return parentNode.getChildren().get(idx + 1);
+            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
+                return parentNode.getLowerNeighborClosestToRootLevel();
+            }
+        }
+        else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
+            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            roots.sort(verticalComponentPositionComparator);
+            final int idx = roots.indexOf(this);
+            if (idx + 1 < roots.size()) {
+                return roots.get(idx + 1);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns list of all neighboring nodes below the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    public List<Component<T, ?>> getLowerNeighbors() {
+        final ArrayList<Component<T, ?>> neighbors = new ArrayList<>();
+        Component<T, ?> neighbor = this.getLowerNeighborClosestToRootLevel();
+        if (neighbor != null) {
+            neighbors.add(neighbor);
+            while (neighbor.getChildren().size() > 0) {
+                neighbor = neighbor.getChildren().get(0);
+                neighbors.add(neighbor);
+            }
+        }
+        return neighbors;
     }
 }

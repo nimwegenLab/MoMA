@@ -197,54 +197,6 @@ public class ComponentTreeUtils {
     }
 
     /**
-     * Returns list of all neighboring nodes below the current node.
-     *
-     * @return list of neighboring nodes
-     */
-    public static List<Component<FloatType, ?>> getLowerNeighbors(final Component<FloatType, ?> node,
-                                                                  final ComponentForest<SimpleComponent<FloatType>> componentForest) {
-        final ArrayList<Component<FloatType, ?>> neighbors = new ArrayList<>();
-        Component<FloatType, ?> neighbor = getLowerNeighborClosestToRootLevel(node, componentForest);
-        if (neighbor != null) {
-            neighbors.add(neighbor);
-            while (neighbor.getChildren().size() > 0) {
-                neighbor = neighbor.getChildren().get(0);
-                neighbors.add(neighbor);
-            }
-        }
-        return neighbors;
-    }
-
-    /**
-     * Returns the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
-     * returned as neighbor, will be the closest to root-level of the component tree.
-     *
-     * @param node node for which the neighbor is returned.
-     * @return the lower neighbor node
-     */
-    private static Component<FloatType, ?> getLowerNeighborClosestToRootLevel(final Component<FloatType, ?> node,
-                                                                              final ComponentForest<SimpleComponent<FloatType>> componentTree) {
-        final Component<FloatType, ?> parentNode = node.getParent();
-        if(parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
-            final int idx = parentNode.getChildren().indexOf(node);
-            if (idx + 1 < parentNode.getChildren().size()) {
-                return parentNode.getChildren().get(idx + 1);
-            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
-                return getLowerNeighborClosestToRootLevel(parentNode, componentTree);
-            }
-        }
-        else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
-            List<SimpleComponent<FloatType>> roots = new ArrayList<>(componentTree.roots());
-            roots.sort(verticalComponentPositionComparator);
-            final int idx = roots.indexOf(node);
-            if (idx + 1 < roots.size()) {
-                return roots.get(idx + 1);
-            }
-        }
-        return null;
-    }
-
-    /**
      * @param ct
      * @return
      */

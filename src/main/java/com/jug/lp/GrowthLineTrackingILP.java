@@ -571,7 +571,7 @@ public class GrowthLineTrackingILP {
                 if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
 
                     float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
-                    final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(upperTargetComponent, targetComponentTree);
+                    final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
                     for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
                         @SuppressWarnings("unchecked")

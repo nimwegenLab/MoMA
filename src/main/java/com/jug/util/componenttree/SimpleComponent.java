@@ -283,6 +283,76 @@ public final class SimpleComponent<T extends Type<T>>
         return null;
     }
 
+    /**
+     * Returns list of all neighboring nodes above the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    public List<SimpleComponent<T>> getUpperNeighbors() {
+        if (Objects.isNull(upperNeighbors)){
+            upperNeighbors = calculateUpperNeighbors();
+        }
+        return upperNeighbors;
+    }
+    List<SimpleComponent<T>> upperNeighbors;
+
+    /**
+     * Calculate list of all neighboring nodes above the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    private List<SimpleComponent<T>> calculateUpperNeighbors() {
+        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+        if (neighbor != null) {
+            neighbors.add(neighbor);
+            while (neighbor.getChildren().size() - 1 >= 0) {
+                neighbor = neighbor.getChildren().get(neighbor.getChildren().size() - 1); /* get last item in the list, which is the lowest one */
+                neighbors.add(neighbor);
+            }
+        }
+        return neighbors;
+    }
+
+    /**
+     * Returns the upper neighbor of {@param node}.
+     *
+     * @return the lower neighbor node
+     */
+    public SimpleComponent<T> getUpperNeighborClosestToRootLevel() {
+        if (Objects.isNull(upperNeighborClosestToRootLevel)) {
+            upperNeighborClosestToRootLevel = calculateUpperNeighborClosestToRootLevel();
+        }
+        return upperNeighborClosestToRootLevel;
+    }
+    SimpleComponent<T> upperNeighborClosestToRootLevel;
+
+    /**
+     * Calculates the upper neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the upper neighbor node
+     */
+    private SimpleComponent<T> calculateUpperNeighborClosestToRootLevel() {
+        final SimpleComponent<T> parentNode = this.getParent();
+        if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
+            final int idx = parentNode.getChildren().indexOf(this);
+            if (idx - 1 >= 0) {
+                return parentNode.getChildren().get(idx - 1);
+            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
+                return parentNode.calculateUpperNeighborClosestToRootLevel();
+            }
+        } else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
+            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            roots.sort(verticalComponentPositionComparator);
+            final int idx = roots.indexOf(this);
+            if (idx - 1 >= 0) {
+                return roots.get(idx - 1);
+            }
+        }
+        return null;
+    }
+
     private class RegionLocalizableIterator implements Iterator<Localizable> {
         Cursor<Void> c;
         private final LabelRegion<?> region;

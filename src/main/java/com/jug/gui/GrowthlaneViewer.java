@@ -494,4 +494,19 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     public void showSegmentationAnnotations(final boolean showSegmentationAnnotations) {
         this.showSegmentationAnnotations = showSegmentationAnnotations;
     }
+
+    private boolean mouseIsOverDisplayPanel() {
+        if (MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
+                && MouseInfo.getPointerInfo().getLocation().x <= this.getLocationOnScreen().x + this.getWidth()
+                && MouseInfo.getPointerInfo().getLocation().y >= this.getLocationOnScreen().y
+                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isMouseOver(){
+        return mouseIsOverDisplayPanel();
+    }
 }

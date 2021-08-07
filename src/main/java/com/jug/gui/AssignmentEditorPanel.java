@@ -4,7 +4,6 @@ import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.lp.GrowthLineTrackingILP;
 
 import javax.swing.*;
-import javax.swing.event.EventListenerList;
 
 public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     AssignmentsEditorViewer assignmentView;
@@ -107,5 +106,9 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
         assignmentView.addIlpModelChangedEventListener(listener);
+    }
+
+    public boolean isMouseOver(){
+        return assignmentView.isMouseOver();
     }
 }

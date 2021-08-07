@@ -1,6 +1,5 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.gui.IlpModelChangedEvent;
 import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
@@ -13,7 +12,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.EventListenerList;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -169,5 +168,20 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments.addIlpModelChangedEventListener(listener);
         inactiveExitAssignments.addIlpModelChangedEventListener(listener);
         inactiveLysisAssignments.addIlpModelChangedEventListener(listener);
+    }
+
+    private boolean mouseIsOverDisplayPanel() {
+        if (MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
+                && MouseInfo.getPointerInfo().getLocation().x <= this.getLocationOnScreen().x + this.getWidth()
+                && MouseInfo.getPointerInfo().getLocation().y >= this.getLocationOnScreen().y
+                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isMouseOver(){
+        return mouseIsOverDisplayPanel();
     }
 }

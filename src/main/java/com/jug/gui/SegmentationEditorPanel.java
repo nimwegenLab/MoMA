@@ -26,6 +26,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     JCheckBox checkboxIsSelected;
     private JTextField txtNumCells;
     private JLabel labelTitle;
+    private JButton showSegmentsButton;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
         this.momaModel = momaModel;
@@ -40,13 +41,21 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void addShowSegmentsButton() {
-        JButton showSegmentsButton = new JButton("Seg");
+        showSegmentsButton = new JButton("Seg");
         showSegmentsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         showSegmentsButton.addActionListener(e -> {
             ShowComponentsOfCurrentTimeStep();
         });
         showSegmentsButton.setMargin(new Insets(0,0,0,0));
         this.add(showSegmentsButton);
+    }
+
+    /**
+     * Enables calling code to open the corresponding segment view for this
+     * instance.
+     */
+    public void openSegmentView() {
+        showSegmentsButton.doClick();
     }
 
     /**

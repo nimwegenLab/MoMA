@@ -11,7 +11,6 @@ import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
-import com.moma.auxiliary.Plotting;
 import ij.ImageJ;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
@@ -61,6 +60,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // gui-fields
     // -------------------------------------------------------------------------------------
     public GrowthlaneViewer growthLaneViewerCenter;
+    private SegmentationEditorPanel segmentationEditorPanelCenter;
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
@@ -331,10 +331,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("s")) {
-                    if (!tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelSegmentationAndAssignmentView)) {
-                        tabsViews.setSelectedComponent(panelSegmentationAndAssignmentView);
-                    }
-                    dataToDisplayChanged();
+                    openSegmentView();
                 }
                 if (e.getActionCommand().equals("e")) {
                     buttonExportData.doClick();
@@ -382,6 +379,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
             }
         });
+    }
+
+    private void openSegmentView() {
+        SegmentationEditorPanel hoveredAssignmentEditorPanel = getHoveredSegmentationEditorPanel();
+        if (hoveredAssignmentEditorPanel != null) {
+            hoveredAssignmentEditorPanel.openSegmentView();
+            return;
+        }
+        segmentationEditorPanelCenter.openSegmentView();
     }
 
     private AssignmentEditorPanel getHoveredAssignmentEditorPanel() {
@@ -486,6 +492,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             if (time_offset == 0) {
                 growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
+                segmentationEditorPanelCenter = segmentationEditorPanel;
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }

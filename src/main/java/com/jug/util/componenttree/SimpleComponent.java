@@ -217,7 +217,7 @@ public final class SimpleComponent<T extends Type<T>>
      *
      * @return the lower neighbor node
      */
-    public Component<T, ?> getLowerNeighborClosestToRootLevel() {
+    public SimpleComponent<T> getLowerNeighborClosestToRootLevel() {
         final SimpleComponent<T> parentNode = this.getParent();
         if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
             final int idx = parentNode.getChildren().indexOf(this);
@@ -242,9 +242,9 @@ public final class SimpleComponent<T extends Type<T>>
      *
      * @return list of neighboring nodes
      */
-    public List<Component<T, ?>> getLowerNeighbors() {
-        final ArrayList<Component<T, ?>> neighbors = new ArrayList<>();
-        Component<T, ?> neighbor = this.getLowerNeighborClosestToRootLevel();
+    public List<SimpleComponent<T>> getLowerNeighbors() {
+        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
         if (neighbor != null) {
             neighbors.add(neighbor);
             while (neighbor.getChildren().size() > 0) {

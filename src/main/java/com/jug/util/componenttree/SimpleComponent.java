@@ -14,6 +14,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
@@ -218,6 +219,20 @@ public final class SimpleComponent<T extends Type<T>>
      * @return the lower neighbor node
      */
     public SimpleComponent<T> getLowerNeighborClosestToRootLevel() {
+        if (Objects.isNull(lowerNeighborClosestToRootLevel)) {
+            lowerNeighborClosestToRootLevel = calculateLowerNeighborClosestToRootLevel();
+        }
+        return lowerNeighborClosestToRootLevel;
+    }
+    SimpleComponent<T> lowerNeighborClosestToRootLevel;
+
+    /**
+     * Calculates the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the lower neighbor node
+     */
+    public SimpleComponent<T> calculateLowerNeighborClosestToRootLevel() {
         final SimpleComponent<T> parentNode = this.getParent();
         if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
             final int idx = parentNode.getChildren().indexOf(this);

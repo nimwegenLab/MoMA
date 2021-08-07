@@ -441,18 +441,26 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final JPanel panel1 = new JPanel();
         GridBagLayout panel1Layout = new GridBagLayout();
         panel1.setLayout(panel1Layout);
+        panel1.setSize(600, 100);
+        panel1.setBackground(Color.RED);
 
         final JPanel panel2 = new JPanel();
         GridBagLayout panel2Layout = new GridBagLayout();
         panel2.setLayout(panel2Layout);
+        panel2.setSize(600, 30);
+        panel2.setBackground(Color.GREEN);
 
         final JPanel panel3 = new JPanel();
         GridBagLayout panel3Layout = new GridBagLayout();
         panel3.setLayout(panel3Layout);
+        panel3.setSize(600, 30);
+        panel3.setBackground(Color.BLUE);
 
         final JPanel panel4 = new JPanel();
         GridBagLayout panel4Layout = new GridBagLayout();
         panel4.setLayout(panel4Layout);
+        panel4.setSize(600, 30);
+        panel4.setBackground(Color.ORANGE);
 
         panelViewCenterHelper.add(panel1);
         panelViewCenterHelper.add(panel2);
@@ -532,7 +540,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes.");
         });
         panel4.add(checkboxOptimizeOnIlpChange, gridBagConstraintPanel4);
-
+        panelViewCenterHelper.add(Box.createVerticalGlue());
         return panelContent;
     }
 

@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -70,18 +71,27 @@ public class ComponentTreeGeneratorTests {
 
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
 
+        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+
         /* test that each returned area above is equal to the summed area of roots above */
         int totalSizeOfComponentsSoFar = 0;
-        for (SimpleComponent<FloatType> root : tree.rootsSorted()) {
+        for (SimpleComponent<FloatType> root : roots) {
             assertEquals(totalSizeOfComponentsSoFar, root.getTotalAreaOfComponentsAbove());
             totalSizeOfComponentsSoFar += root.size();
         }
 
         /* test that each returned area above is equal to the summed area of roots below */
         totalSizeOfComponentsSoFar = 0;
-        for (SimpleComponent<FloatType> root : Lists.reverse(tree.rootsSorted())) {
+        for (SimpleComponent<FloatType> root : Lists.reverse(roots)) {
             assertEquals(totalSizeOfComponentsSoFar, root.getTotalAreaOfComponentsBelow());
             totalSizeOfComponentsSoFar += root.size();
         }
+
+        /* test that each returned area above is equal to the summed area of roots below */
+        totalSizeOfComponentsSoFar = 0;
+        for (SimpleComponent<FloatType> root : roots) {
+            totalSizeOfComponentsSoFar += root.size();
+        }
+        assertEquals(totalSizeOfComponentsSoFar, roots.get(0).getTotalAreaOfRootComponents());
     }
 }

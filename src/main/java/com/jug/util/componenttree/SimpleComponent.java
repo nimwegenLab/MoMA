@@ -353,7 +353,7 @@ public final class SimpleComponent<T extends Type<T>>
         return null;
     }
 
-    int totalAreaOfRoots = -1;
+    private int totalAreaOfRoots = -1;
     public int getTotalAreaOfRootComponents() {
         if (totalAreaOfRoots < 0) {
             totalAreaOfRoots = calculateTotalAreaOfRootComponents();
@@ -369,7 +369,7 @@ public final class SimpleComponent<T extends Type<T>>
         return area;
     }
 
-    int totalComponentAreaAbove = -1;
+    private int totalComponentAreaAbove = -1;
     public int getTotalAreaOfComponentsAbove() {
         if (totalComponentAreaAbove < 0) {
             totalComponentAreaAbove = calculateTotalAreaOfComponentsAbove();
@@ -387,7 +387,7 @@ public final class SimpleComponent<T extends Type<T>>
         return cellAreaPixels;
     }
 
-    int totalComponentAreaBelow = -1;
+    private int totalComponentAreaBelow = -1;
     public int getTotalAreaOfComponentsBelow() {
         if (totalComponentAreaBelow < 0) {
             totalComponentAreaBelow = calculateTotalAreaOfComponentsBelow();

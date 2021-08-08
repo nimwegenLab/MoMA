@@ -126,6 +126,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         return new HashSet(roots);
     }
 
-    public Iterable<SimpleComponent<T>> getAllComponents(){ return nodes; }
+    public List<SimpleComponent<T>> rootsSorted() {
+        return roots;
+    }
+
+    public List<SimpleComponent<T>> getAllComponents(){ return nodes; }
 }
 

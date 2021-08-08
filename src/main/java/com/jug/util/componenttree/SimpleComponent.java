@@ -353,6 +353,58 @@ public final class SimpleComponent<T extends Type<T>>
         return null;
     }
 
+    int totalAreaOfRoots = -1;
+    public int getTotalAreaOfRootComponents() {
+        if (totalAreaOfRoots < 0) {
+            totalAreaOfRoots = calculateTotalAreaOfRootComponents();
+        }
+        return totalAreaOfRoots;
+    }
+
+    private int calculateTotalAreaOfRootComponents() {
+        int area = 0;
+        for (SimpleComponent<T> root : getComponentTreeRoots()){
+            area += root.size();
+        }
+        return area;
+    }
+
+    int totalComponentAreaAbove = -1;
+    public int getTotalAreaOfComponentsAbove() {
+        if (totalComponentAreaAbove < 0) {
+            totalComponentAreaAbove = calculateTotalAreaOfComponentsAbove();
+        }
+        return totalComponentAreaAbove;
+    }
+
+    private int calculateTotalAreaOfComponentsAbove(){
+        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+        int cellAreaPixels = 0;
+        while (neighbor != null) {
+            cellAreaPixels += neighbor.size();
+            neighbor = neighbor.getUpperNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return cellAreaPixels;
+    }
+
+    int totalComponentAreaBelow = -1;
+    public int getTotalAreaOfComponentsBelow() {
+        if (totalComponentAreaBelow < 0) {
+            totalComponentAreaBelow = calculateTotalAreaOfComponentsBelow();
+        }
+        return totalComponentAreaBelow;
+    }
+
+    private int calculateTotalAreaOfComponentsBelow(){
+        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+        int cellAreaPixels = 0;
+        while (neighbor != null) {
+            cellAreaPixels += neighbor.size();
+            neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return cellAreaPixels;
+    }
+
     private class RegionLocalizableIterator implements Iterator<Localizable> {
         Cursor<Void> c;
         private final LabelRegion<?> region;

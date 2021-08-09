@@ -397,12 +397,12 @@ public final class SimpleComponent<T extends Type<T>>
 
     private int calculateTotalAreaOfComponentsBelow(){
         SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
-        int cellAreaPixels = 0;
+        int totalCellAreaPixels = 0;
         while (neighbor != null) {
-            cellAreaPixels += neighbor.size();
+            totalCellAreaPixels += neighbor.size();
             neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
         }
-        return cellAreaPixels;
+        return totalCellAreaPixels;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

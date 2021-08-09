@@ -137,7 +137,7 @@ public class ComponentTreeUtils {
             differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
         }
         int lowerTargetAreaLimit = totalAreaBelowSourceComponent - (int) Math.floor(MoMA.MAXIMUM_SHRINKAGE_PER_FRAME * totalAreaBelowSourceComponent);
-        int upperTargetAreaLimit = (int) Math.ceil(MoMA.MAXIMUM_GROWTH_PER_FRAME * totalAreaIncludingSourceComponent) + differenceOfTotalArea;
+        int upperTargetAreaLimit = totalAreaIncludingSourceComponent + (int) Math.ceil(MoMA.MAXIMUM_GROWTH_PER_FRAME * totalAreaIncludingSourceComponent) + differenceOfTotalArea;
 
         int totalAreaBelowTargetComponent = targetComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingTargetComponent = totalAreaBelowTargetComponent + (int) targetComponent.size();

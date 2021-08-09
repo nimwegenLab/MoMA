@@ -2,6 +2,8 @@ package com.jug.util.componenttree;
 
 import com.google.common.collect.Lists;
 import com.moma.auxiliary.Plotting;
+import ij.ImagePlus;
+import ij.gui.TextRoi;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -11,6 +13,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.junit.Test;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,7 +24,8 @@ import static org.junit.Assert.*;
 public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
         ImageJ ij = new ImageJ();
-        new ComponentTreeGeneratorTests().testWatershedding();
+//        new ComponentTreeGeneratorTests().testWatershedding();
+        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
     }
 
     /**
@@ -93,5 +97,41 @@ public class ComponentTreeGeneratorTests {
             totalSizeOfComponentsSoFar += root.size();
         }
         assertEquals(totalSizeOfComponentsSoFar, roots.get(0).getTotalAreaOfRootComponents());
+    }
+
+    /**
+     * Add test for methods that calculate the total component area above and below a component.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testSegmentAreaCalculationOfChildren() throws IOException, InterruptedException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        int frameIndex = 10;
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
+        assertEquals(2, currentImage.numDimensions());
+
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
+
+        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+
+        int counter = 0;
+        for (SimpleComponent<FloatType> root : roots) {
+//            List<SimpleComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
+            List<SimpleComponent<FloatType>> components = new ArrayList<>();
+            components.add(root);
+            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
+            TextRoi text = new TextRoi(0, 0, String.format("y_center=%d", (int) root.firstMomentPixelCoordinates()[1]));
+//            TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
+            imp.setOverlay(text, Color.white, 0, Color.black);
+            counter ++;
+        }
     }
 }

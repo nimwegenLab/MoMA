@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.MoMA;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import com.jug.util.componenttree.SimpleComponent;
@@ -109,6 +110,41 @@ public class ComponentTreeUtils {
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
 
         return (targetUpperBoundary - sourceLowerBoundary) > maximumAllowedDownwardMovement;
+    }
+
+    /**
+     * @param sourceComponent
+     * @return
+     */
+    public static List<SimpleComponent<FloatType>> getPlausibleComponents(
+            final SimpleComponent<FloatType> sourceComponent,
+            final List<SimpleComponent<FloatType>> targetComponents) {
+        List<SimpleComponent<FloatType>> result = new ArrayList<>();
+        for (SimpleComponent<FloatType> targetComponent : targetComponents) {
+            if (isPlausibleTargetComponent(sourceComponent, targetComponent)) {
+                result.add(targetComponent);
+            }
+        }
+        return result;
+    }
+
+    public static boolean isPlausibleTargetComponent(final SimpleComponent<FloatType> sourceComponent,
+                                                     final SimpleComponent<FloatType> targetComponent) {
+        int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
+        int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();
+        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
+        if (differenceOfTotalArea > 0) {
+            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+        }
+        int lowerTargetAreaLimit = totalAreaBelowSourceComponent - (int) Math.floor(MoMA.MAXIMUM_SHRINKAGE_PER_FRAME * totalAreaBelowSourceComponent);
+        int upperTargetAreaLimit = (int) Math.ceil(MoMA.MAXIMUM_GROWTH_PER_FRAME * totalAreaIncludingSourceComponent) + differenceOfTotalArea;
+
+        int totalAreaBelowTargetComponent = targetComponent.getTotalAreaOfComponentsBelow();
+        int totalAreaIncludingTargetComponent = totalAreaBelowTargetComponent + (int) targetComponent.size();
+        if (totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit) {
+            return true;
+        }
+        return false;
     }
 
     /**

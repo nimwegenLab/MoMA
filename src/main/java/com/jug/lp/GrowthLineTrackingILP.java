@@ -405,7 +405,7 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+            for (final SimpleComponent<FloatType> targetComponent : ComponentTreeUtils.getPlausibleComponents(sourceComponent, targetComponentTree.getAllComponents())) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
                 if (!(ComponentTreeUtils.isBelowByMoreThen(targetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {

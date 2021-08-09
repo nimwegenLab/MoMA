@@ -382,6 +382,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                             .findFirst()
                             .orElse(null);
                 }
+                if (selectedHypothesis == null) {
+                    selectedHypothesis = hypothesesAtHoverPosition.get(0); // IF NON OF THE ABOVE APPLIES
+                }
                 if (selectedHypothesis != null) { /* there is an optimal hypothesis at the hover position; get it */
                     indexOfCurrentHoveredHypothesis = hypothesesAtHoverPosition.indexOf(selectedHypothesis); /* set indexOfCurrentHoveredHypothesis to optimal hypothesis at that position */
                 } else { /* there is no optimal hypothesis at the hover position; use the first hypothesis in the list */

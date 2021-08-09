@@ -396,13 +396,22 @@ public final class SimpleComponent<T extends Type<T>>
     }
 
     private int calculateTotalAreaOfComponentsBelow(){
-        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+        List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         int totalCellAreaPixels = 0;
-        while (neighbor != null) {
-            totalCellAreaPixels += neighbor.size();
-            neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        for (SimpleComponent<T> component : componentsBelow) {
+            totalCellAreaPixels += component.size();
         }
         return totalCellAreaPixels;
+    }
+
+    public List<SimpleComponent<T>> getComponentsBelowClosestToRoot(){
+        List<SimpleComponent<T>> result = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+        while (neighbor != null) {
+            result.add(neighbor);
+            neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return result;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

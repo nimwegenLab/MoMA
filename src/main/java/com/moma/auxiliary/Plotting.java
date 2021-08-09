@@ -101,10 +101,10 @@ public class Plotting {
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
         Consumer<Pair<List<C>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
-            List<C> componentOfLevel = levelComponentsListAndLevel.getValue0();
+            List<C> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {
                 final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
-                for(C ctn : componentOfLevel){
+                for(C ctn : componentsOfLevel){
                     boolean val = componentsInOptimalSolution.contains(ctn);
                     drawComponentToImage2(ctn, componentLevelImage, val);
                 }

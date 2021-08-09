@@ -132,15 +132,41 @@ public class ComponentTreeUtils {
                                                      final SimpleComponent<FloatType> targetComponent) {
         int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();
-        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
-        if (differenceOfTotalArea > 0) {
-            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
-        }
-        int lowerTargetAreaLimit = totalAreaBelowSourceComponent - (int) Math.floor(MoMA.MAXIMUM_SHRINKAGE_PER_FRAME * totalAreaBelowSourceComponent);
-        int upperTargetAreaLimit = totalAreaIncludingSourceComponent + (int) Math.ceil(MoMA.MAXIMUM_GROWTH_PER_FRAME * totalAreaIncludingSourceComponent) + differenceOfTotalArea;
 
         int totalAreaBelowTargetComponent = targetComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingTargetComponent = totalAreaBelowTargetComponent + (int) targetComponent.size();
+
+        int differenceOfTotalArea = 0;
+//        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
+//        if (differenceOfTotalArea > 0) {
+//            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+//        }
+
+        int lowerTargetAreaLimit = totalAreaBelowSourceComponent - (int) Math.floor(MoMA.MAXIMUM_SHRINKAGE_PER_FRAME * totalAreaBelowSourceComponent);
+        int upperTargetAreaLimit = totalAreaIncludingSourceComponent + (int) Math.ceil(MoMA.MAXIMUM_GROWTH_PER_FRAME * totalAreaIncludingSourceComponent) + differenceOfTotalArea;
+
+        double yCenterSource = sourceComponent.firstMomentPixelCoordinates()[1];
+        double yCenterTarget = targetComponent.firstMomentPixelCoordinates()[1];
+        if(Math.abs(yCenterSource - yCenterTarget) < 10) {
+            System.out.println("yCenterSource: " + yCenterSource);
+            System.out.println("yCenterTarget: " + yCenterTarget);
+            System.out.println("");
+            System.out.println("totalAreaBelowSourceComponent: " + totalAreaBelowSourceComponent);
+            System.out.println("totalAreaIncludingSourceComponent: " + totalAreaIncludingSourceComponent);
+            System.out.println("");
+            System.out.println("totalAreaBelowTargetComponent: " + totalAreaBelowTargetComponent);
+            System.out.println("totalAreaIncludingTargetComponent: " + totalAreaIncludingTargetComponent);
+            System.out.println("");
+            System.out.println("lowerTargetAreaLimit: " + lowerTargetAreaLimit);
+            System.out.println("upperTargetAreaLimit: " + upperTargetAreaLimit);
+            System.out.println("");
+            System.out.println("lower condition: " + (totalAreaBelowTargetComponent >= lowerTargetAreaLimit));
+            System.out.println("upper condition: " + (totalAreaIncludingTargetComponent <= upperTargetAreaLimit));
+            System.out.println("");
+            System.out.println("");
+            System.out.println("");
+        }
+
         if (totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit) {
             return true;
         }

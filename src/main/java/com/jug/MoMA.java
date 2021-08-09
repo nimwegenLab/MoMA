@@ -188,7 +188,7 @@ public class MoMA {
 	 */
 	public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
-	public static final int MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+	public static final int MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
 
 	public static final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
 	public static final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;

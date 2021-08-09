@@ -92,6 +92,8 @@ public class MoMATest {
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/output/";
         Integer tmin = 120;
         Integer tmax = 140;
+//        Integer tmin = 126;
+//        Integer tmax = 128;
         startMoma(inputPath, outputPath, tmin, tmax);
 //        startMoma(inputPath, outputPath);
     }

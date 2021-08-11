@@ -641,10 +641,9 @@ public class GrowthLineTrackingILP {
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
         final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize);
-        final float unevenDivisionCost = CostFactory.getUnevenDivisionCost(upperTargetSize, lowerTargetSize);
         final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
 
-        return growthCost.getA() + averageMigrationCost + unevenDivisionCost + divisionLikelihoodCost;
+        return growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
     }
 
     /**

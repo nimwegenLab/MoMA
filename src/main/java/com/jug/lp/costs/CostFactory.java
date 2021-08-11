@@ -60,17 +60,6 @@ public class CostFactory {
 	}
 
 
-    public static float getUnevenDivisionCost( final float upperTargetSize, final float lowerTargetSize ) {
-		final float scaledSizeDifference = Math.abs( upperTargetSize - lowerTargetSize ) / Math.min( upperTargetSize, lowerTargetSize );
-		float exponent = 2.0f;
-		if ( scaledSizeDifference > 1.15 ) {
-			exponent = 7.0f;
-		}
-		float unevenDivisionCost = ( float ) Math.pow( scaledSizeDifference, exponent );
-
-		return unevenDivisionCost;
-	}
-
 	/**
 	 * @param component
 	 * @return

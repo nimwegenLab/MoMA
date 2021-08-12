@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.GRBModelFactory;
 import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GRBModelAdapter;
 
 /**
  * @author jug
@@ -88,7 +90,8 @@ public class GrowthLine {
 			guiProgressReceiver.setVisible( true );
 		}
 
-		ilp = new GrowthLineTrackingILP( this );
+		GRBModelAdapter model = GRBModelFactory.getModel();
+		ilp = new GrowthLineTrackingILP( this, model );
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

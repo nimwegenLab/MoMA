@@ -51,7 +51,6 @@ public class GrowthLineTrackingILP {
     private static final int SUBOPTIMAL = 4;
     private static final int NUMERIC = 5;
     private static final int LIMIT_REACHED = 6;
-    private static GRBEnv env;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -67,36 +66,17 @@ public class GrowthLineTrackingILP {
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
     private final List<ProgressListener> progressListener;
-    public GRBModel model;
+    public IGRBModelAdapter model;
     private int status = OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl) {
+    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel) {
         this.gl = gl;
-
-        // Array to hold segment# constraints
+        this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
-
-        // Setting static stuff (this IS ugly!)
-        if (env == null) {
-            try {
-                env = new GRBEnv("MotherMachineILPs.log");
-            } catch (final GRBException e) {
-                System.out.println("GrowthLineTrackingILP::env could not be initialized!");
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            model = new GRBModel(env);
-        } catch (final GRBException e) {
-            System.out.println("GrowthLineTrackingILP::model could not be initialized!");
-            e.printStackTrace();
-        }
-
         this.progressListener = new ArrayList<>();
     }
 

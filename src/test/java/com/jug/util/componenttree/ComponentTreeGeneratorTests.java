@@ -127,10 +127,12 @@ public class ComponentTreeGeneratorTests {
             List<SimpleComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
 //            List<SimpleComponent<FloatType>> components = new ArrayList<>();
 //            components.add(root);
-            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
+            if (!components.isEmpty()){
+                ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
 //            TextRoi text = new TextRoi(0, 0, String.format("y_center=%d", (int) root.firstMomentPixelCoordinates()[1]));
-            TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
-            imp.setOverlay(text, Color.white, 0, Color.black);
+                TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
+                imp.setOverlay(text, Color.white, 0, Color.black);
+            }
             counter ++;
         }
     }

@@ -25,7 +25,8 @@ public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
         ImageJ ij = new ImageJ();
 //        new ComponentTreeGeneratorTests().testWatershedding();
-        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
+//        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
+        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
     }
 
     /**
@@ -116,7 +117,6 @@ public class ComponentTreeGeneratorTests {
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         RandomAccessibleInterval<FloatType> currentImage = input;
-//        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
@@ -137,4 +137,30 @@ public class ComponentTreeGeneratorTests {
             counter++;
         }
     }
+
+    @Test
+    public void testPrintRankOfSegment() throws IOException {
+       String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127__20210812.tif";
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+        RandomAccessibleInterval<FloatType> currentImage = input;
+        assertEquals(2, currentImage.numDimensions());
+
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
+
+        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+
+        for (SimpleComponent<FloatType> root : roots) {
+            ArrayList<SimpleComponent<FloatType>> componentsToDraw = new ArrayList<>();
+            componentsToDraw.add(root);
+            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
+            int rank = root.getRankRelativeToComponentsClosestToRoot();
+            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
+            imp.setOverlay(text, Color.white, 0, Color.black);
+        }
+    }
 }
+

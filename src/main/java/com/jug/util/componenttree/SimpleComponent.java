@@ -404,7 +404,7 @@ public final class SimpleComponent<T extends Type<T>>
         return totalCellAreaPixels;
     }
 
-    public int getRankConsideringOnlyComponentsClosestToRoot(){
+    public int getRankRelativeToComponentsClosestToRoot(){
         List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         return componentsBelow.size();
     }

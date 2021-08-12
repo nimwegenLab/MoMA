@@ -5,6 +5,7 @@ import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
+import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;

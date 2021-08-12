@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.GRBModelFactory;
+import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthLineTrackingILP;
-import com.jug.lp.GRBModelAdapter;
+import com.jug.lp.GRBModel.GRBModelAdapter;
 
 /**
  * @author jug

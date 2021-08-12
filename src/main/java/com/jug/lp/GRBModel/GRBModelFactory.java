@@ -1,4 +1,4 @@
-package com.jug.lp;
+package com.jug.lp.GRBModel;
 
 import gurobi.GRBEnv;
 import gurobi.GRBException;

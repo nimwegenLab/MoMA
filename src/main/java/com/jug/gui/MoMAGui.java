@@ -8,6 +8,7 @@ import com.jug.export.HtmlOverviewExporter;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
+import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
@@ -48,6 +49,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // fields
     // -------------------------------------------------------------------------------------
     public final MoMAModel model;
+    private IImageProvider imageProvider;
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
@@ -102,10 +104,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      * @param mmm the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel mmm) {
+    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider) {
         super(new BorderLayout());
 
         this.model = mmm;
+        this.imageProvider = imageProvider;
 
         buildGui();
         dataToDisplayChanged();
@@ -460,10 +463,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // =============== panelDropdown-part ===================
         comboboxWhichImgToShow = new JComboBox();
         comboboxWhichImgToShow.addItem(itemChannel0);
-        if (model.mm.getRawChannelImgs().size() > 1) {
+        if (imageProvider.getRawChannelImgs().size() > 1) {
             comboboxWhichImgToShow.addItem(itemChannel1);
         }
-        if (model.mm.getRawChannelImgs().size() > 2) {
+        if (imageProvider.getRawChannelImgs().size() > 2) {
             comboboxWhichImgToShow.addItem(itemChannel2);
         }
 
@@ -472,7 +475,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             dataToDisplayChanged();
         });
 
-        int viewHeight = (int) model.mm.getImgRaw().dimension(1);
+        int viewHeight = (int) imageProvider.getImgRaw().dimension(1);
         int viewWidth = MoMA.GL_WIDTH_IN_PIXELS + 2 * MoMA.GL_PIXEL_PADDING_IN_VIEWS;
 
         LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, MoMA.CELL_LABEL_LIST);
@@ -480,7 +483,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = MoMA.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, labelEditorDialog, viewWidth, viewHeight, time_offset);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset);
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -496,7 +499,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, labelEditorDialog, viewWidth, viewHeight, max_time_offset);
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, max_time_offset);
         panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
@@ -848,7 +851,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(menuShowImgRaw)) {
             new ImageJ();
-            ImageJFunctions.show(MoMA.instance.getRawChannelImgs().get(0), "raw data (ch.0)");
+            ImageJFunctions.show(imageProvider.getRawChannelImgs().get(0), "raw data (ch.0)");
         }
         if (e.getSource().equals(menuSaveFG)) {
             final File file = OsDependentFileChooser.showSaveFileChooser(
@@ -970,7 +973,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 
     public void restartFromGLSegmentation() {
-        model.mm.restartFromGLSegmentation();
+        model.mm.restartFromGLSegmentation(imageProvider);
     }
 
     /**
@@ -1021,7 +1024,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int frameIndex = 0;
         for (final GrowthLineFrame glf : model.getCurrentGL().getFrames()) {
             if (glf.getComponentTree() == null) {
-                glf.generateSimpleSegmentationHypotheses(MoMA.instance.getImgProbs(), frameIndex);
+                glf.generateSimpleSegmentationHypotheses(imageProvider.getImgProbs(), frameIndex);
                 frameIndex++;
             }
         }
@@ -1087,7 +1090,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {
-        final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(0), 2, 0);
+        final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, 0);
 
         if (channelFrame.dimension(0) >= INTENSITY_FIT_RANGE_IN_PIXELS)
             return true; /* Image wider then fit range. No need to warn. */
@@ -1180,7 +1183,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int frameIndex = 0;
         for (final GrowthLineFrame glf : gl.getFrames()) {
             System.out.print(".");
-            glf.generateSimpleSegmentationHypotheses(model.mm.getImgProbs(), frameIndex);
+            glf.generateSimpleSegmentationHypotheses(imageProvider.getImgProbs(), frameIndex);
             frameIndex++;
         }
         System.out.println();

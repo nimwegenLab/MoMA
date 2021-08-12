@@ -3,6 +3,7 @@ package com.jug.lp;
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
@@ -66,6 +67,7 @@ public class GrowthLineTrackingILP {
     private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> freezeSegmentConstraints =
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
+    private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
     private int status = OPTIMIZATION_NEVER_PERFORMED;
@@ -74,10 +76,11 @@ public class GrowthLineTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel) {
+    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
+        this.imageProvider = imageProvider;
         this.progressListener = new ArrayList<>();
     }
 
@@ -291,7 +294,7 @@ public class GrowthLineTrackingILP {
      * @return
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
-        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(MoMA.instance.getImgProbs(), 2, t);
+        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
         return CostFactory.getComponentCost(ctNode, img);
     }
 

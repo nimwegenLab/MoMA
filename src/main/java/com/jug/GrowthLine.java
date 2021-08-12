@@ -3,6 +3,7 @@ package com.jug;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthLineTrackingILP;
@@ -18,6 +19,7 @@ public class GrowthLine {
 	// -------------------------------------------------------------------------------------
 	private final List< GrowthLineFrame > frames;
 	private GrowthLineTrackingILP ilp; //<
+	private IImageProvider imageProvider;
 
 	// Hypothesis< Component< FloatType, ? > >,
 	// AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > ilp;
@@ -42,7 +44,8 @@ public class GrowthLine {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public GrowthLine() {
+	public GrowthLine(IImageProvider imageProvider) {
+		this.imageProvider = imageProvider;
 		this.frames = new ArrayList<>();
 	}
 
@@ -91,7 +94,7 @@ public class GrowthLine {
 		}
 
 		GRBModelAdapter model = GRBModelFactory.getModel();
-		ilp = new GrowthLineTrackingILP( this, model );
+		ilp = new GrowthLineTrackingILP( this, model, imageProvider );
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

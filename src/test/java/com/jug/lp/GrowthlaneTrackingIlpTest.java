@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.GrowthLine;
+import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.SimpleComponent;
 import com.jug.util.componenttree.SimpleComponentTree;
@@ -42,9 +43,10 @@ public class GrowthlaneTrackingIlpTest {
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
 
-        GrowthLine gl = new GrowthLine();
+        IImageProvider imageProviderMock = new ImageProviderMock();
+        GrowthLine gl = new GrowthLine(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel);
+        GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel, imageProviderMock);
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }

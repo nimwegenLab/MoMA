@@ -1,5 +1,6 @@
 package com.jug;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
 import com.jug.util.FloatTypeImgLoader;
@@ -42,7 +43,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
 /**
  * @author jug
  */
-public class MoMA {
+public class MoMA implements IImageProvider {
 
 
 	static {
@@ -699,7 +700,7 @@ public class MoMA {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm );
+		gui = new MoMAGui( mmm, main );
 
 		if ( !HEADLESS ) {
 			System.out.print( "Build GUI..." );
@@ -785,13 +786,6 @@ public class MoMA {
 	 */
 	public List< Img< FloatType >> getRawChannelImgs() {
 		return rawChannelImgs;
-	}
-
-	/**
-	 * @return the imgTemp
-	 */
-	public Img< FloatType > getImgTemp() {
-		return imgTemp;
 	}
 
 	/**
@@ -1190,7 +1184,7 @@ public class MoMA {
 		imgRaw = rawChannelImgs.get( 0 );
 //		Pair<FloatType, FloatType> result1 = ops.stats().minMax(Views.hyperSlice(imgRaw, 2, 1));
 
-		restartFromGLSegmentation();
+		restartFromGLSegmentation(this);
 
 		if ( HEADLESS ) {
 			System.out.println( "Generating Integer Linear Program(s)..." );
@@ -1251,9 +1245,9 @@ public class MoMA {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-    private void findGrowthLines() {
+    private void findGrowthLines(IImageProvider imageProvider) {
         this.setGrowthLines(new ArrayList<>() );
-        getGrowthLines().add( new GrowthLine() );
+        getGrowthLines().add( new GrowthLine(imageProvider) );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
             GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
@@ -1402,7 +1396,7 @@ public class MoMA {
 	 * Allows one to restart by GL segmentation. This is e.g. needed after top
 	 * or bottom offsets are altered, which invalidates all analysis run so far.
 	 */
-	public void restartFromGLSegmentation() {
+	public void restartFromGLSegmentation(IImageProvider imageProvider) {
 		boolean hideConsoleLater = false;
 		if ( !HEADLESS && !isConsoleVisible() ) {
 			showConsoleWindow( true );
@@ -1411,7 +1405,7 @@ public class MoMA {
 
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
-        findGrowthLines();
+        findGrowthLines(imageProvider);
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );

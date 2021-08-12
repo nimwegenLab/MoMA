@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.datahandling.IImageProvider;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
@@ -21,6 +22,7 @@ import java.util.List;
 
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
+    private IImageProvider imageProvider;
     private final int timeStepOffset;
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelected;
@@ -28,8 +30,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private JLabel labelTitle;
     private JButton showSegmentsButton;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
         this.momaModel = momaModel;
+        this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
         growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
@@ -208,13 +211,13 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
          */
         IntervalView<FloatType> viewImgCenterActive;
         if (colorChannelToDisplay == ColorChannel.CHANNEL1) {
-            viewImgCenterActive = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(1), 2, glf.getOffsetF());
+            viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(1), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL2) {
-            viewImgCenterActive = Views.hyperSlice(momaModel.mm.getRawChannelImgs().get(2), 2, glf.getOffsetF());
+            viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(2), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else { // default value to ColorChannel.CHANNEL0
-            viewImgCenterActive = Views.offset(Views.hyperSlice(momaModel.mm.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         }
         return viewImgCenterActive;
     }

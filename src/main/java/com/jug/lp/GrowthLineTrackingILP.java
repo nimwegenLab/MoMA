@@ -374,7 +374,7 @@ public class GrowthLineTrackingILP {
      * @param targetComponentTree the component tree containing target components of the mapping-assignments.
      * @throws GRBException
      */
-    private void addMappingAssignments(final int t,
+    public void addMappingAssignments(final int t,
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
         for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {

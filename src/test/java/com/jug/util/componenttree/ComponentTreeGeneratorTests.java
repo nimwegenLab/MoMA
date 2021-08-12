@@ -108,15 +108,14 @@ public class ComponentTreeGeneratorTests {
      */
     @Test
     public void testSegmentAreaCalculationOfChildren() throws IOException, InterruptedException {
-//        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127__20210812.tif";
-        int frameIndex = 10;
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127_duplicated_frame__20210812.tif";
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
-        RandomAccessibleInterval<FloatType> currentImage = input;
+        int frameIndex = 0;
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
@@ -140,13 +139,14 @@ public class ComponentTreeGeneratorTests {
 
     @Test
     public void testPrintRankOfSegment() throws IOException {
-       String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127__20210812.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127_duplicated_frame__20210812.tif";
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
-        RandomAccessibleInterval<FloatType> currentImage = input;
+        int frameIndex = 0;
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);

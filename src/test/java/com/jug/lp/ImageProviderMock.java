@@ -7,9 +7,15 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.util.List;
 
 public class ImageProviderMock implements IImageProvider {
+    private Img<FloatType> probabilityImage;
+
+    public ImageProviderMock(Img<FloatType> probabilityImage){
+        this.probabilityImage = probabilityImage;
+    }
+
     @Override
     public Img<FloatType> getImgProbs() {
-        return null;
+        return this.probabilityImage;
     }
 
     @Override

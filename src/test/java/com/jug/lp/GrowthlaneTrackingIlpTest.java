@@ -14,13 +14,11 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 import org.junit.Test;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -31,19 +29,22 @@ public class GrowthlaneTrackingIlpTest {
 
     @Test
     public void testMappingAssignmentGeneration() throws IOException, GRBException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127__20210812.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127_duplicated_frame__20210812.tif";
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
-        RandomAccessibleInterval<FloatType> currentImage = input;
+        Img currentImageStack = (Img) ij.io().open(imageFile);
+        assertNotNull(currentImageStack);
+        int frameIndex = 0;
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(currentImageStack, 2, frameIndex);
+
+        assertEquals(3, currentImageStack.numDimensions());
         assertEquals(2, currentImage.numDimensions());
 
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
 
-        IImageProvider imageProviderMock = new ImageProviderMock();
+        IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
         GrowthLine gl = new GrowthLine(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel, imageProviderMock);

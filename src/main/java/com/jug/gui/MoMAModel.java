@@ -64,42 +64,14 @@ public class MoMAModel {
         return getCurrentGL().get(currentGLFidx);
     }
 
+    public GrowthLineFrame getGlfAtTimeStep(int timestep) {
+        return getCurrentGL().get(timestep);
+    }
+
     public void setCurrentGLF(final int idx) {
         assert (idx >= 0);
         assert (idx <= getCurrentGL().size());
         currentGLFidx = idx;
-    }
-
-    public GrowthLineFrame getCurrentGLFsPrePredecessor() {
-        if (currentGLFidx - 2 >= 0) {
-            return getCurrentGL().get(currentGLFidx - 2);
-        } else {
-            return null;
-        }
-    }
-
-    public GrowthLineFrame getCurrentGLFsPredecessor() {
-        if (currentGLFidx - 1 >= 0) {
-            return getCurrentGL().get(currentGLFidx - 1);
-        } else {
-            return null;
-        }
-    }
-
-    public GrowthLineFrame getCurrentGLFsSuccessor() {
-        if (currentGLFidx + 1 < getCurrentGL().size()) {
-            return getCurrentGL().get(currentGLFidx + 1);
-        } else {
-            return null;
-        }
-    }
-
-    public GrowthLineFrame getCurrentGLFsSuccessorSuccessor() {
-        if (currentGLFidx + 2 < getCurrentGL().size()) {
-            return getCurrentGL().get(currentGLFidx + 2);
-        } else {
-            return null;
-        }
     }
 
     // -------------------------------------------------------------------------------------

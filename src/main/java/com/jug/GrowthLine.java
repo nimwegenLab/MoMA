@@ -81,8 +81,12 @@ public class GrowthLine {
 	/**
 	 * @return
 	 */
-	public GrowthLineFrame get( final int i ) {
-		return this.getFrames().get( i );
+	public GrowthLineFrame get(final int i) {
+		try {
+			return this.getFrames().get(i);
+		} catch (IndexOutOfBoundsException err) {
+			return null;
+		}
 	}
 
 	/**

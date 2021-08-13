@@ -136,14 +136,17 @@ public class ComponentTreeUtils {
         int totalAreaBelowTargetComponent = targetComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingTargetComponent = totalAreaBelowTargetComponent + (int) targetComponent.size();
 
-        int differenceOfTotalArea = 0;
-//        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
-//        if (differenceOfTotalArea > 0) {
-//            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
-//        }
+//        int differenceOfTotalArea = 0;
+        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
+        if (differenceOfTotalArea > 0) {
+            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+        }
+        if (differenceOfTotalArea < 0 ){
+            return true;
+        }
 
-        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME));
-        int upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME)) + differenceOfTotalArea;
+        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
+        int upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME));
 
 //        double yCenterSource = sourceComponent.firstMomentPixelCoordinates()[1];
 //        double yCenterTarget = targetComponent.firstMomentPixelCoordinates()[1];

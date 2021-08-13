@@ -102,7 +102,7 @@ public class MoMATest {
 //        Integer tmin = 120;
 //        Integer tmax = 140;
         Integer tmin = 0;
-        Integer tmax = 130;
+        Integer tmax = 480;
         startMoma(inputPath, outputPath, tmin, tmax);
 //        startMoma(inputPath, outputPath);
     }

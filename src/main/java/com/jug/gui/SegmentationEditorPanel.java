@@ -63,13 +63,16 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      */
     private void ShowComponentsOfCurrentTimeStep() {
         List<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> optimalSegs = new ArrayList<>();
-        GrowthLineFrame glf = momaModel.getCurrentGLF();
         int timeStep = timeStepToDisplay();
+        GrowthLineFrame glf = momaModel.getGlfAtTimeStep(timeStep);
+        if (glf == null) {
+            return; /* this method was called at an invalid time-step so there is no component-tree; do nothing */
+        }
         GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
-        Plotting.drawComponentTree(momaModel.getCurrentGLF().getComponentTree(), optimalSegs, timeStep);
+        Plotting.drawComponentTree(glf.getComponentTree(), optimalSegs, timeStep);
     }
 
     private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {
@@ -189,6 +192,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         updateTitleLable();
         updateCellNumberInputField();
         updateSelectionCheckbox();
+        updateShowSegmentsButton();
 
         if (!currentTimeStepIsValid()) {
             growthlaneViewer.setEmptyScreenImage();
@@ -197,6 +201,10 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay());
         IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
+    }
+
+    private void updateShowSegmentsButton() {
+        showSegmentsButton.setEnabled(currentTimeStepIsValid());
     }
 
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;

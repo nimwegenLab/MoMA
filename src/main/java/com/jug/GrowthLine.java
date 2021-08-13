@@ -1,10 +1,10 @@
 package com.jug;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jug
@@ -76,8 +76,12 @@ public class GrowthLine {
 	/**
 	 * @return
 	 */
-	public GrowthLineFrame get( final int i ) {
-		return this.getFrames().get( i );
+	public GrowthLineFrame get(final int i) {
+		try {
+			return this.getFrames().get(i);
+		} catch (IndexOutOfBoundsException err) {
+			return null;
+		}
 	}
 
 	/**

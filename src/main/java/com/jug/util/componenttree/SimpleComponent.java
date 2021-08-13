@@ -170,6 +170,7 @@ public final class SimpleComponent<T extends Type<T>>
 
     public void setRegion(LabelRegion<Integer> region) {
         this.region = region;
+        pixelList.clear();
         LabelRegionCursor c = region.cursor();
         while (c.hasNext()) {
             c.fwd();

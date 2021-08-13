@@ -389,17 +389,21 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            for (final SimpleComponent<FloatType> targetComponent : ComponentTreeUtils.getPlausibleComponents(sourceComponent, targetComponentTree.getAllComponents())) {
+            List<SimpleComponent<FloatType>> targetComponents = getPlausibleComponents(sourceComponent, targetComponentTree.getAllComponents());
+            for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
-                if (!(ComponentTreeUtils.isBelowByMoreThen(targetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
+                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, MoMA.MAX_CELL_DROP))) {
 
                     final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                     float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
                     cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                     if (cost <= CUTOFF_COST) {
+//                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
+//                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
+
                         final Hypothesis<Component<FloatType, ?>> to =
                                 nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
                         final Hypothesis<Component<FloatType, ?>> from =

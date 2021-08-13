@@ -11,12 +11,13 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+//        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
 //        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
-//        tests._lysing_cell__thomas_20200922__Pos0_GL30();
-        tests._lysing_cell__thomas_20200922__Pos16_GL17();
+        tests._lysing_cell__thomas_20200922__Pos0_GL30();
+//        tests._lysing_cell__thomas_20200922__Pos16_GL17();
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -51,6 +52,14 @@ public class MoMATest {
 //        -i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
 
+
+    @Test
+    public void _debug_mapping_assignment_issue_when_using_only_plausible_assignments() {
+        String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210812__issue_with_generating_plausible_assignments";
+        String inputPath = datasetPath + "/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__frame_126__6_repeats_of_same_frame__20210812.tif";
+        String outputPath = datasetPath + "/output/";
+        startMoma(inputPath, outputPath);
+    }
 
     @Test
     public void _missing_mapping_assignment__lis_20201119__Pos14_GL30() {
@@ -92,8 +101,8 @@ public class MoMATest {
         String outputPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/output/";
 //        Integer tmin = 120;
 //        Integer tmax = 140;
-        Integer tmin = 126;
-        Integer tmax = 128;
+        Integer tmin = 0;
+        Integer tmax = 130;
         startMoma(inputPath, outputPath, tmin, tmax);
 //        startMoma(inputPath, outputPath);
     }

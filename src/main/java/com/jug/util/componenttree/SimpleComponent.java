@@ -10,6 +10,7 @@ import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -136,6 +137,23 @@ public final class SimpleComponent<T extends Type<T>>
     public SimpleComponent<T> getParent() {
         return parent;
     }
+
+//    public SimpleComponent<T> getSibling() {
+//        SimpleComponent<T> parent = this.getParent();
+//        if (parent == null) {
+//            return null; /* there is no parent component and hence no sibling component */
+//        }
+//        List<SimpleComponent<T>> children = parent.getChildren();
+//        if (children.size() == 1) {
+//            return null; /* there is only one child component of this component parent, which will be this component. Hence there is no sibling component. */
+//        }
+//        if (children.size() > 2) {
+//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+//        }
+//        children.remove(this);
+//        SimpleComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
+//        return sibling;
+//    }
 
     void setParent(SimpleComponent<T> parent) {
         this.parent = parent;
@@ -418,6 +436,18 @@ public final class SimpleComponent<T extends Type<T>>
             neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
         }
         return result;
+    }
+
+    List<T> getWatershedLineValues(){
+        List<T> watershedLineValues = new ArrayList<>();
+        List<SimpleComponent<T>> children = this.getChildren();
+        if (children.size() <= 1) {
+            return watershedLineValues; /* there is zero or one child component and hence no watershed line. */
+        }
+        if (children.size() > 2) {
+            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+        }
+        throw new NotImplementedException();
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

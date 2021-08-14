@@ -116,7 +116,7 @@ public class ComponentTreeUtils {
      * @param sourceComponent
      * @return
      */
-    public static List<SimpleComponent<FloatType>> getPlausibleComponents(
+    public static List<SimpleComponent<FloatType>> getPlausibleTargetComponents(
             final SimpleComponent<FloatType> sourceComponent,
             final List<SimpleComponent<FloatType>> targetComponents) {
         List<SimpleComponent<FloatType>> result = new ArrayList<>();

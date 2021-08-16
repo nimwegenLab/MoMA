@@ -118,18 +118,22 @@ public class ComponentTreeUtils {
      */
     public static List<SimpleComponent<FloatType>> getPlausibleTargetComponents(
             final SimpleComponent<FloatType> sourceComponent,
-            final List<SimpleComponent<FloatType>> targetComponents) {
+            final List<SimpleComponent<FloatType>> targetComponents,
+            int sourceTime) {
         List<SimpleComponent<FloatType>> result = new ArrayList<>();
         for (SimpleComponent<FloatType> targetComponent : targetComponents) {
-            if (isPlausibleTargetComponent(sourceComponent, targetComponent)) {
+            if (isPlausibleTargetComponent(sourceComponent, targetComponent, sourceTime)) {
                 result.add(targetComponent);
             }
         }
         return result;
     }
 
+    private static int currentTime = -1;
+
     public static boolean isPlausibleTargetComponent(final SimpleComponent<FloatType> sourceComponent,
-                                                     final SimpleComponent<FloatType> targetComponent) {
+                                                     final SimpleComponent<FloatType> targetComponent,
+                                                     int sourceTime) {
         int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();
 
@@ -138,15 +142,40 @@ public class ComponentTreeUtils {
 
 //        int differenceOfTotalArea = 0;
         int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
-        if (differenceOfTotalArea > 0) {
-            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+//        if (differenceOfTotalArea > 0) {
+//            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+//        }
+//        if (differenceOfTotalArea < 0 ){
+//            return true;
+//        }
+
+//        if (sourceTime != currentTime) {
+//            System.out.println("sourceTime: " + sourceTime);
+//            System.out.println("totalAreaSource: " + sourceComponent.getTotalAreaOfRootComponents());
+//            System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
+//            System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
+//            System.out.println("");
+//            currentTime = sourceTime;
+//        }
+
+//        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
+        int lowerTargetAreaLimit;
+        if (differenceOfTotalArea < 0){
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + MoMA.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
         }
-        if (differenceOfTotalArea < 0 ){
-            return true;
+        else{
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME));
         }
 
-        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
-        int upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME));
+        int upperTargetAreaLimit;
+        if (differenceOfTotalArea > 0) {
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME));
+        }
+        else {
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + MoMA.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));;
+        }
+
+
 
 //        double yCenterSource = sourceComponent.firstMomentPixelCoordinates()[1];
 //        double yCenterTarget = targetComponent.firstMomentPixelCoordinates()[1];
@@ -169,11 +198,27 @@ public class ComponentTreeUtils {
 //            System.out.println("");
 //            System.out.println("");
 //        }
-
+        boolean isValid;
         if (totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit) {
-            return true;
+            isValid = true;
         }
-        return false;
+        else{
+            isValid = false;
+        }
+
+        if (sourceTime == 16) {
+            if(sourceComponent.getRankRelativeToComponentsClosestToRoot() == 2) {
+                if (targetComponent.getRankRelativeToComponentsClosestToRoot() == 0) {
+                    System.out.println("sourceTime: " + sourceTime);
+                    System.out.println("totalAreaSource: " + sourceComponent.getTotalAreaOfRootComponents());
+                    System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
+                    System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
+                    System.out.println("");
+                    currentTime = sourceTime;
+                }
+            }
+        }
+        return isValid;
     }
 
     /**

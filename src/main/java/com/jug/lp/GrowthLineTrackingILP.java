@@ -389,7 +389,8 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents());
+//            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
+            List<SimpleComponent<FloatType>> targetComponents = targetComponentTree.getAllComponents();
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
@@ -795,7 +796,11 @@ public class GrowthLineTrackingILP {
 
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
+            long startTime = System.currentTimeMillis();
             model.optimize();
+            long endTime = System.currentTimeMillis();
+            System.out.println("Optimization time: " + (endTime-startTime));
+            System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
             dialog.notifyGurobiTermination();
 
             // Relaxation run-test for Paul and Bogdan

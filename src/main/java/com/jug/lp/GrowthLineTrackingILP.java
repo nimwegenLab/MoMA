@@ -806,7 +806,11 @@ public class GrowthLineTrackingILP {
 
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
+            long startTime = System.currentTimeMillis();
             model.optimize();
+            long endTime = System.currentTimeMillis();
+            System.out.println("Optimization time: " + (endTime-startTime));
+            System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
             dialog.notifyGurobiTermination();
 
             // Relaxation run-test for Paul and Bogdan
@@ -859,6 +863,7 @@ public class GrowthLineTrackingILP {
                     dialog.pushStatus(String.format("Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0));
                 }
             }
+            System.out.println("Status: " + status);
 
             if (MoMA.getGui() != null) {
                 MoMA.getGui().dataToDisplayChanged();

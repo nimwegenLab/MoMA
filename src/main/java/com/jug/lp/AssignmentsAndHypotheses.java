@@ -86,6 +86,19 @@ public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H exte
 	}
 
 	/**
+	 * Return the total number of all assignments.
+	 *
+	 * @return
+	 */
+	public int getTotalNumberOfAssignments() {
+		int numberOfAssignments = 0;
+		for (List<A> assignmentsAtT : getAllAssignments()) {
+			numberOfAssignments += assignmentsAtT.size();
+		}
+		return numberOfAssignments;
+	}
+
+	/**
 	 * Returns a <code>List</code> containing all assignments stored at
 	 * time-point t.
 	 * By definition those are all the assignments between t and t+1.

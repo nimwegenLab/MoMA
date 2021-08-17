@@ -389,8 +389,8 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-//            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
-            List<SimpleComponent<FloatType>> targetComponents = targetComponentTree.getAllComponents();
+            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
+//            List<SimpleComponent<FloatType>> targetComponents = targetComponentTree.getAllComponents();
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);

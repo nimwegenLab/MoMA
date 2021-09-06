@@ -1,9 +1,7 @@
 package com.jug.util.componenttree;
 
-import net.imagej.ops.OpService;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -12,17 +10,17 @@ import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
-import org.scijava.Context;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import java.util.Objects;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
         Component<T, SimpleComponent<T>> {
 
+    private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
      * Pixels in the component.
      */
@@ -35,16 +33,18 @@ public final class SimpleComponent<T extends Type<T>>
     /**
      * List of child nodes.
      */
-    private ArrayList<SimpleComponent<T>> children = new ArrayList<>();
+    private final ArrayList<SimpleComponent<T>> children = new ArrayList<>();
     /**
      * Parent node. Is null if this is a root component.
      */
     private SimpleComponent<T> parent;
     private double[] mean;
     private double[] sumPos;
-    private ImgLabeling<Integer, IntType> labeling;
-    private Integer label;
+    private final ImgLabeling<Integer, IntType> labeling;
+    private final Integer label;
     private LabelRegion<Integer> region;
+    private double[] firstMomentPixelCoordinates = null;
+    private List<SimpleComponent<T>> componentTreeRoots;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
@@ -66,10 +66,11 @@ public final class SimpleComponent<T extends Type<T>>
 
     /**
      * Labels the corresponding pixels in image labeling with label.
+     *
      * @param labeling image that is labeled
-     * @param label label that will be set for this component
+     * @param label    label that will be set for this component
      */
-    public void writeLabels(ImgLabeling<Integer, IntType> labeling, Integer label){
+    public void writeLabels(ImgLabeling<Integer, IntType> labeling, Integer label) {
         // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside of labeling!
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : pixelList) {
@@ -78,9 +79,9 @@ public final class SimpleComponent<T extends Type<T>>
         }
     }
 
-
     /**
      * Labels the center of mass of this component in image labeling with label.
+     *
      * @param label label that will be set for this component
      */
     public ImgLabeling<Integer, IntType> getLabeling(Integer label) {
@@ -88,7 +89,7 @@ public final class SimpleComponent<T extends Type<T>>
         return createLabelingImage(sourceImage);
     }
 
-    private ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval<T> sourceImage){
+    private ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval<T> sourceImage) {
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         Img<IntType> img = ArrayImgs.ints(dims);
@@ -97,15 +98,16 @@ public final class SimpleComponent<T extends Type<T>>
 
     /**
      * Labels the center of mass of this component in image labeling with label.
+     *
      * @param labeling image that is labeled
-     * @param label label that will be set for this component
+     * @param label    label that will be set for this component
      */
-    public void writeCenterLabel(ImgLabeling<Integer, IntType> labeling, Integer label){
+    public void writeCenterLabel(ImgLabeling<Integer, IntType> labeling, Integer label) {
         // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside of labeling!
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         double[] centerDouble = this.firstMomentPixelCoordinates();
         final int[] centerInt = new int[centerDouble.length];
-        for (int i=0; i<centerInt.length; ++i)
+        for (int i = 0; i < centerInt.length; ++i)
             centerInt[i] = (int) centerDouble[i];
         accessor.setPosition(new Point(centerInt));
         accessor.get().add(label);
@@ -113,6 +115,7 @@ public final class SimpleComponent<T extends Type<T>>
 
     /**
      * Return copy the image from which this component was created.
+     *
      * @return copy of the image
      */
     public RandomAccessibleInterval<T> getSourceImage() {
@@ -138,6 +141,11 @@ public final class SimpleComponent<T extends Type<T>>
         this.parent = parent;
     }
 
+//    @Override
+//    public Iterator<Localizable> iterator() {
+//        return new RegionLocalizableIterator(region);
+//    }
+
     @Override
     public List<SimpleComponent<T>> getChildren() {
         return children;
@@ -147,18 +155,22 @@ public final class SimpleComponent<T extends Type<T>>
         this.children.add(child);
     }
 
+//    public void setRegion(LabelRegion<Integer> region) {
+//        LabelRegion<Integer> newRegion = region;
+//    }
+
     @Override
     public Iterator<Localizable> iterator() {
         return pixelList.iterator();
     }
 
-//    @Override
-//    public Iterator<Localizable> iterator() {
-//        return new RegionLocalizableIterator(region);
-//    }
+    public LabelRegion<Integer> getRegion() {
+        return region;
+    }
 
     public void setRegion(LabelRegion<Integer> region) {
         this.region = region;
+        pixelList.clear();
         LabelRegionCursor c = region.cursor();
         while (c.hasNext()) {
             c.fwd();
@@ -166,18 +178,8 @@ public final class SimpleComponent<T extends Type<T>>
         }
     }
 
-    public LabelRegion<Integer> getRegion(){
-        return region;
-    }
-
-//    public void setRegion(LabelRegion<Integer> region) {
-//        LabelRegion<Integer> newRegion = region;
-//    }
-
-
-    private double[] firstMomentPixelCoordinates = null;
     public double[] firstMomentPixelCoordinates() {
-        if(firstMomentPixelCoordinates != null) return firstMomentPixelCoordinates;
+        if (firstMomentPixelCoordinates != null) return firstMomentPixelCoordinates;
 
         int n = pixelList.get(0).numDimensions();
         sumPos = new double[n];
@@ -203,9 +205,224 @@ public final class SimpleComponent<T extends Type<T>>
         return nodeLevel;
     }
 
+    public List<SimpleComponent<T>> getComponentTreeRoots() {
+        return componentTreeRoots;
+    }
+
+    public void setComponentTreeRoots(List<SimpleComponent<T>> roots) {
+        componentTreeRoots = roots;
+    }
+
+    /**
+     * Returns list of all neighboring nodes below the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    public List<SimpleComponent<T>> getLowerNeighbors() {
+        if (Objects.isNull(lowerNeighbors)){
+            lowerNeighbors = calculateLowerNeighbors();
+        }
+        return lowerNeighbors;
+    }
+    List<SimpleComponent<T>> lowerNeighbors;
+
+    /**
+     * Calculate list of all neighboring nodes below the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    private List<SimpleComponent<T>> calculateLowerNeighbors() {
+        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+        if (neighbor != null) {
+            neighbors.add(neighbor);
+            while (neighbor.getChildren().size() > 0) {
+                neighbor = neighbor.getChildren().get(0);
+                neighbors.add(neighbor);
+            }
+        }
+        return neighbors;
+    }
+
+    /**
+     * Returns the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the lower neighbor node
+     */
+    public SimpleComponent<T> getLowerNeighborClosestToRootLevel() {
+        if (Objects.isNull(lowerNeighborClosestToRootLevel)) {
+            lowerNeighborClosestToRootLevel = calculateLowerNeighborClosestToRootLevel();
+        }
+        return lowerNeighborClosestToRootLevel;
+    }
+    SimpleComponent<T> lowerNeighborClosestToRootLevel;
+
+    /**
+     * Calculates the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the lower neighbor node
+     */
+    private SimpleComponent<T> calculateLowerNeighborClosestToRootLevel() {
+        final SimpleComponent<T> parentNode = this.getParent();
+        if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
+            final int idx = parentNode.getChildren().indexOf(this);
+            if (idx + 1 < parentNode.getChildren().size()) {
+                return parentNode.getChildren().get(idx + 1);
+            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
+                return parentNode.calculateLowerNeighborClosestToRootLevel();
+            }
+        } else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
+            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            roots.sort(verticalComponentPositionComparator);
+            final int idx = roots.indexOf(this);
+            if (idx + 1 < roots.size()) {
+                return roots.get(idx + 1);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns list of all neighboring nodes above the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    public List<SimpleComponent<T>> getUpperNeighbors() {
+        if (Objects.isNull(upperNeighbors)){
+            upperNeighbors = calculateUpperNeighbors();
+        }
+        return upperNeighbors;
+    }
+    List<SimpleComponent<T>> upperNeighbors;
+
+    /**
+     * Calculate list of all neighboring nodes above the current node.
+     *
+     * @return list of neighboring nodes
+     */
+    private List<SimpleComponent<T>> calculateUpperNeighbors() {
+        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+        if (neighbor != null) {
+            neighbors.add(neighbor);
+            while (neighbor.getChildren().size() - 1 >= 0) {
+                neighbor = neighbor.getChildren().get(neighbor.getChildren().size() - 1); /* get last item in the list, which is the lowest one */
+                neighbors.add(neighbor);
+            }
+        }
+        return neighbors;
+    }
+
+    /**
+     * Returns the upper neighbor of {@param node}.
+     *
+     * @return the lower neighbor node
+     */
+    public SimpleComponent<T> getUpperNeighborClosestToRootLevel() {
+        if (Objects.isNull(upperNeighborClosestToRootLevel)) {
+            upperNeighborClosestToRootLevel = calculateUpperNeighborClosestToRootLevel();
+        }
+        return upperNeighborClosestToRootLevel;
+    }
+    SimpleComponent<T> upperNeighborClosestToRootLevel;
+
+    /**
+     * Calculates the upper neighbor of {@param node}. The algorithm is written in such a way, that the component that is
+     * returned as neighbor, will be the closest to root-level of the component tree.
+     *
+     * @return the upper neighbor node
+     */
+    private SimpleComponent<T> calculateUpperNeighborClosestToRootLevel() {
+        final SimpleComponent<T> parentNode = this.getParent();
+        if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
+            final int idx = parentNode.getChildren().indexOf(this);
+            if (idx - 1 >= 0) {
+                return parentNode.getChildren().get(idx - 1);
+            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
+                return parentNode.calculateUpperNeighborClosestToRootLevel();
+            }
+        } else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
+            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            roots.sort(verticalComponentPositionComparator);
+            final int idx = roots.indexOf(this);
+            if (idx - 1 >= 0) {
+                return roots.get(idx - 1);
+            }
+        }
+        return null;
+    }
+
+    private int totalAreaOfRoots = -1;
+    public int getTotalAreaOfRootComponents() {
+        if (totalAreaOfRoots < 0) {
+            totalAreaOfRoots = calculateTotalAreaOfRootComponents();
+        }
+        return totalAreaOfRoots;
+    }
+
+    private int calculateTotalAreaOfRootComponents() {
+        int area = 0;
+        for (SimpleComponent<T> root : getComponentTreeRoots()){
+            area += root.size();
+        }
+        return area;
+    }
+
+    private int totalComponentAreaAbove = -1;
+    public int getTotalAreaOfComponentsAbove() {
+        if (totalComponentAreaAbove < 0) {
+            totalComponentAreaAbove = calculateTotalAreaOfComponentsAbove();
+        }
+        return totalComponentAreaAbove;
+    }
+
+    private int calculateTotalAreaOfComponentsAbove(){
+        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+        int cellAreaPixels = 0;
+        while (neighbor != null) {
+            cellAreaPixels += neighbor.size();
+            neighbor = neighbor.getUpperNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return cellAreaPixels;
+    }
+
+    private int totalComponentAreaBelow = -1;
+    public int getTotalAreaOfComponentsBelow() {
+        if (totalComponentAreaBelow < 0) {
+            totalComponentAreaBelow = calculateTotalAreaOfComponentsBelow();
+        }
+        return totalComponentAreaBelow;
+    }
+
+    private int calculateTotalAreaOfComponentsBelow(){
+        List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
+        int totalCellAreaPixels = 0;
+        for (SimpleComponent<T> component : componentsBelow) {
+            totalCellAreaPixels += component.size();
+        }
+        return totalCellAreaPixels;
+    }
+
+    public int getRankRelativeToComponentsClosestToRoot(){
+        List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
+        return componentsBelow.size();
+    }
+
+    public List<SimpleComponent<T>> getComponentsBelowClosestToRoot(){
+        List<SimpleComponent<T>> result = new ArrayList<>();
+        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+        while (neighbor != null) {
+            result.add(neighbor);
+            neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return result;
+    }
+
     private class RegionLocalizableIterator implements Iterator<Localizable> {
         Cursor<Void> c;
-        private LabelRegion<?> region;
+        private final LabelRegion<?> region;
 
         public RegionLocalizableIterator(LabelRegion<?> region) {
             this.region = region;

@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.MoMA;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import com.jug.util.componenttree.SimpleComponent;
@@ -112,6 +113,115 @@ public class ComponentTreeUtils {
     }
 
     /**
+     * @param sourceComponent
+     * @return
+     */
+    public static List<SimpleComponent<FloatType>> getPlausibleTargetComponents(
+            final SimpleComponent<FloatType> sourceComponent,
+            final List<SimpleComponent<FloatType>> targetComponents,
+            int sourceTime) {
+        List<SimpleComponent<FloatType>> result = new ArrayList<>();
+        for (SimpleComponent<FloatType> targetComponent : targetComponents) {
+            if (isPlausibleTargetComponent(sourceComponent, targetComponent, sourceTime)) {
+                result.add(targetComponent);
+            }
+        }
+        return result;
+    }
+
+    private static int currentTime = -1;
+
+    public static boolean isPlausibleTargetComponent(final SimpleComponent<FloatType> sourceComponent,
+                                                     final SimpleComponent<FloatType> targetComponent,
+                                                     int sourceTime) {
+        int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
+        int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();
+
+        int totalAreaBelowTargetComponent = targetComponent.getTotalAreaOfComponentsBelow();
+        int totalAreaIncludingTargetComponent = totalAreaBelowTargetComponent + (int) targetComponent.size();
+
+//        int differenceOfTotalArea = 0;
+        int differenceOfTotalArea = targetComponent.getTotalAreaOfRootComponents() - sourceComponent.getTotalAreaOfRootComponents();
+//        if (differenceOfTotalArea > 0) {
+//            differenceOfTotalArea = 0; /* we only use the correction term for the reduction in area to account for cases when cells die */
+//        }
+//        if (differenceOfTotalArea < 0 ){
+//            return true;
+//        }
+
+//        if (sourceTime != currentTime) {
+//            System.out.println("sourceTime: " + sourceTime);
+//            System.out.println("totalAreaSource: " + sourceComponent.getTotalAreaOfRootComponents());
+//            System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
+//            System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
+//            System.out.println("");
+//            currentTime = sourceTime;
+//        }
+
+//        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
+        int lowerTargetAreaLimit;
+        if (differenceOfTotalArea < 0){
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + MoMA.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
+        }
+        else{
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME));
+        }
+
+        int upperTargetAreaLimit;
+        if (differenceOfTotalArea > 0) {
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME));
+        }
+        else {
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + MoMA.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));;
+        }
+
+
+
+//        double yCenterSource = sourceComponent.firstMomentPixelCoordinates()[1];
+//        double yCenterTarget = targetComponent.firstMomentPixelCoordinates()[1];
+//        if(Math.abs(yCenterSource - yCenterTarget) < 10) {
+//            System.out.println("yCenterSource: " + yCenterSource);
+//            System.out.println("yCenterTarget: " + yCenterTarget);
+//            System.out.println("");
+//            System.out.println("totalAreaBelowSourceComponent: " + totalAreaBelowSourceComponent);
+//            System.out.println("totalAreaIncludingSourceComponent: " + totalAreaIncludingSourceComponent);
+//            System.out.println("");
+//            System.out.println("totalAreaBelowTargetComponent: " + totalAreaBelowTargetComponent);
+//            System.out.println("totalAreaIncludingTargetComponent: " + totalAreaIncludingTargetComponent);
+//            System.out.println("");
+//            System.out.println("lowerTargetAreaLimit: " + lowerTargetAreaLimit);
+//            System.out.println("upperTargetAreaLimit: " + upperTargetAreaLimit);
+//            System.out.println("");
+//            System.out.println("lower condition: " + (totalAreaBelowTargetComponent >= lowerTargetAreaLimit));
+//            System.out.println("upper condition: " + (totalAreaIncludingTargetComponent <= upperTargetAreaLimit));
+//            System.out.println("");
+//            System.out.println("");
+//            System.out.println("");
+//        }
+        boolean isValid;
+        if (totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit) {
+            isValid = true;
+        }
+        else{
+            isValid = false;
+        }
+
+        if (sourceTime == 16) {
+            if(sourceComponent.getRankRelativeToComponentsClosestToRoot() == 2) {
+                if (targetComponent.getRankRelativeToComponentsClosestToRoot() == 0) {
+                    System.out.println("sourceTime: " + sourceTime);
+                    System.out.println("totalAreaSource: " + sourceComponent.getTotalAreaOfRootComponents());
+                    System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
+                    System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
+                    System.out.println("");
+                    currentTime = sourceTime;
+                }
+            }
+        }
+        return isValid;
+    }
+
+    /**
      * Returns the smallest and largest value on the y-axis that is spanned by
      * this component-tree-node, which is in direction of the growthlane.
      *
@@ -194,54 +304,6 @@ public class ComponentTreeUtils {
         }
 //		ImageJFunctions.show(img, "Segment Image");
         return new ValuePair<>(minimumPixelIntensity, maximumPixelIntensity);
-    }
-
-    /**
-     * Returns list of all neighboring nodes below the current node.
-     *
-     * @return list of neighboring nodes
-     */
-    public static List<Component<FloatType, ?>> getLowerNeighbors(final Component<FloatType, ?> node,
-                                                                  final ComponentForest<SimpleComponent<FloatType>> componentForest) {
-        final ArrayList<Component<FloatType, ?>> neighbors = new ArrayList<>();
-        Component<FloatType, ?> neighbor = getLowerNeighborClosestToRootLevel(node, componentForest);
-        if (neighbor != null) {
-            neighbors.add(neighbor);
-            while (neighbor.getChildren().size() > 0) {
-                neighbor = neighbor.getChildren().get(0);
-                neighbors.add(neighbor);
-            }
-        }
-        return neighbors;
-    }
-
-    /**
-     * Returns the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
-     * returned as neighbor, will be the closest to root-level of the component tree.
-     *
-     * @param node node for which the neighbor is returned.
-     * @return the lower neighbor node
-     */
-    private static Component<FloatType, ?> getLowerNeighborClosestToRootLevel(final Component<FloatType, ?> node,
-                                                                              final ComponentForest<SimpleComponent<FloatType>> componentTree) {
-        final Component<FloatType, ?> parentNode = node.getParent();
-        if(parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
-            final int idx = parentNode.getChildren().indexOf(node);
-            if (idx + 1 < parentNode.getChildren().size()) {
-                return parentNode.getChildren().get(idx + 1);
-            } else { /* {@param node} is bottom-most child node, we therefore need to get bottom neighbor of its parent */
-                return getLowerNeighborClosestToRootLevel(parentNode, componentTree);
-            }
-        }
-        else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
-            List<SimpleComponent<FloatType>> roots = new ArrayList<>(componentTree.roots());
-            roots.sort(verticalComponentPositionComparator);
-            final int idx = roots.indexOf(node);
-            if (idx + 1 < roots.size()) {
-                return roots.get(idx + 1);
-            }
-        }
-        return null;
     }
 
     /**

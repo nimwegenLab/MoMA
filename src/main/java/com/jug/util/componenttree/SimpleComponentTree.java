@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class is a new version of {@link Component}. The goal is for all other code to depend on this class and remove
@@ -27,8 +28,8 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         implements
         ComponentForest<SimpleComponent<T>> {
     final ImgLabeling<Integer, IntType> labeling;
-    private final ArrayList<SimpleComponent<T>> nodes = new ArrayList<>();
-    private final HashSet<SimpleComponent<T>> roots = new HashSet<>();
+    private final List<SimpleComponent<T>> nodes = new ArrayList<>();
+    private final List<SimpleComponent<T>> roots = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
     private final Img<IntType> img;
     Integer label = 1;
@@ -47,6 +48,19 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         labeling = new ImgLabeling<>(img);
         CreateTree(componentForest);
         SortChildrenByPosition();
+        sortRootNodes();
+        writeRootNodesToAllNodes();
+    }
+
+    private void writeRootNodesToAllNodes() {
+        for (SimpleComponent<T> node : nodes) {
+            node.setComponentTreeRoots(roots);
+        }
+    }
+
+    private void sortRootNodes(){
+        ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
+        roots.sort(positionComparator);
     }
 
     private void SortChildrenByPosition() {
@@ -108,10 +122,14 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     @Override
-    public HashSet<SimpleComponent<T>> roots() {
+    public Set<SimpleComponent<T>> roots() {
+        return new HashSet(roots);
+    }
+
+    public List<SimpleComponent<T>> rootsSorted() {
         return roots;
     }
 
-    public Iterable<SimpleComponent<T>> getAllComponents(){ return nodes; }
+    public List<SimpleComponent<T>> getAllComponents(){ return nodes; }
 }
 

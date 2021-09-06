@@ -3,8 +3,10 @@ package com.jug.lp;
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
+import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.SimpleComponent;
@@ -51,7 +53,6 @@ public class GrowthLineTrackingILP {
     private static final int SUBOPTIMAL = 4;
     private static final int NUMERIC = 5;
     private static final int LIMIT_REACHED = 6;
-    private static GRBEnv env;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -66,37 +67,20 @@ public class GrowthLineTrackingILP {
     private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> freezeSegmentConstraints =
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
+    private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
-    public GRBModel model;
+    public IGRBModelAdapter model;
     private int status = OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl) {
+    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider) {
         this.gl = gl;
-
-        // Array to hold segment# constraints
+        this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
-
-        // Setting static stuff (this IS ugly!)
-        if (env == null) {
-            try {
-                env = new GRBEnv("MotherMachineILPs.log");
-            } catch (final GRBException e) {
-                System.out.println("GrowthLineTrackingILP::env could not be initialized!");
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            model = new GRBModel(env);
-        } catch (final GRBException e) {
-            System.out.println("GrowthLineTrackingILP::model could not be initialized!");
-            e.printStackTrace();
-        }
-
+        this.imageProvider = imageProvider;
         this.progressListener = new ArrayList<>();
     }
 
@@ -310,7 +294,7 @@ public class GrowthLineTrackingILP {
      * @return
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
-        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(MoMA.instance.getImgProbs(), 2, t);
+        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
         return CostFactory.getComponentCost(ctNode, img);
     }
 
@@ -393,7 +377,7 @@ public class GrowthLineTrackingILP {
      * @param targetComponentTree the component tree containing target components of the mapping-assignments.
      * @throws GRBException
      */
-    private void addMappingAssignments(final int t,
+    public void addMappingAssignments(final int t,
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
         for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
@@ -405,16 +389,22 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
+//            List<SimpleComponent<FloatType>> targetComponents = targetComponentTree.getAllComponents();
+            for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
+//            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
-                if (!(ComponentTreeUtils.isBelowByMoreThen(targetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
+                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, MoMA.MAX_CELL_DROP))) {
 
                     final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                     float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
                     cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                     if (cost <= CUTOFF_COST) {
+//                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
+//                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
+
                         final Hypothesis<Component<FloatType, ?>> to =
                                 nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
                         final Hypothesis<Component<FloatType, ?>> from =
@@ -571,7 +561,7 @@ public class GrowthLineTrackingILP {
                 if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
 
                     float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
-                    final List<Component<FloatType, ?>> lowerNeighborComponents = ComponentTreeUtils.getLowerNeighbors(upperTargetComponent, targetComponentTree);
+                    final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
                     for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
                         @SuppressWarnings("unchecked")

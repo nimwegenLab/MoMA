@@ -92,22 +92,13 @@ public class Plotting {
 
         // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
-        RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
-        long xDim = sourceImage.dimension(0);
-        long yDim = sourceImage.dimension(1);
-
-        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
 
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
         Consumer<Pair<List<C>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
-            List<C> componentOfLevel = levelComponentsListAndLevel.getValue0();
+            List<C> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {
-                final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
-                for(C ctn : componentOfLevel){
-                    boolean val = componentsInOptimalSolution.contains(ctn);
-                    drawComponentToImage2(ctn, componentLevelImage, val);
-                }
+                RandomAccessibleInterval<ARGBType> componentLevelImage = createImageWithComponents(componentsOfLevel, componentsInOptimalSolution);
                 componentLevelImageStack.add(componentLevelImage);
             }
         };
@@ -117,6 +108,22 @@ public class Plotting {
 
         // show
         ImageJFunctions.show(Views.stack(componentLevelImageStack));
+    }
+
+    public static <C extends Component<FloatType, C>> RandomAccessibleInterval<ARGBType> createImageWithComponents(List<C> components,
+                                                                                                                   List<C> optimalComponents) {
+        C first = components.get(0);
+        RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
+        long xDim = sourceImage.dimension(0);
+        long yDim = sourceImage.dimension(1);
+        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
+
+        final RandomAccessibleInterval<ARGBType> resultImage = imageFactory.create(xDim, yDim);
+        for (C ctn : components) {
+            boolean val = optimalComponents.contains(ctn);
+            drawComponentToImage2(ctn, resultImage, val);
+        }
+        return resultImage;
     }
 
     private static void drawComponentToImage2(final Component<?, ?> ctn,

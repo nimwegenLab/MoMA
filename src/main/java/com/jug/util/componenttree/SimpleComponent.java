@@ -440,6 +440,25 @@ public final class SimpleComponent<T extends Type<T>>
         return result;
     }
 
+    List<T> componentPixelValues = null;
+
+    List<T> getComponentPixelValues() {
+        if (componentPixelValues != null) {
+            return componentPixelValues;
+        }
+
+        componentPixelValues = new ArrayList<>();
+        if (this.size() == 0) {
+            return componentPixelValues; /* there is no watershed line; return empty array */
+        }
+        Iterator<Localizable> it = this.iterator();
+        while(it.hasNext()) {
+            Localizable pos = it.next();
+            componentPixelValues.add(this.sourceImage.getAt(pos));
+        }
+        return componentPixelValues;
+    }
+
     List<T> watershedLinePixelValues = null;
 
     List<T> getWatershedLinePixelValues() {
@@ -451,8 +470,10 @@ public final class SimpleComponent<T extends Type<T>>
         if (pixelPositions.size() == 0) {
             return watershedLinePixelValues; /* there is no watershed line; return empty array */
         }
-        for(Localizable pixelPos : watershedLinePixelPositions ) {
-            watershedLinePixelValues.add(this.sourceImage.getAt(pixelPos));
+        Iterator<Localizable> it = watershedLinePixelPositions.iterator();
+        while(it.hasNext()){
+            Localizable pos = it.next();
+            watershedLinePixelValues.add(this.sourceImage.getAt(pos));
         }
         return watershedLinePixelValues;
     }

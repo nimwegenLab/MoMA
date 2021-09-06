@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
+import static com.jug.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**
@@ -381,7 +382,6 @@ public class GrowthLineTrackingILP {
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
         for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
-
             if (t > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
@@ -389,8 +389,13 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            List<SimpleComponent<FloatType>> targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
-//            List<SimpleComponent<FloatType>> targetComponents = targetComponentTree.getAllComponents();
+            List<SimpleComponent<FloatType>> targetComponents;
+            if (featureFlagUseAssignmentPlausibilityFilter) {
+                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
+            } else {
+                targetComponents = targetComponentTree.getAllComponents();
+            }
+
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);

@@ -43,7 +43,7 @@ public class SimpleComponentTests {
 
         List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
         for (SimpleComponent<FloatType> root: roots) {
-            List<FloatType> watershedProbabilityValues = root.getWatershedLineValues();
+            List<FloatType> watershedProbabilityValues = root.getWatershedLinePixelValues();
         }
     }
 
@@ -72,13 +72,14 @@ public class SimpleComponentTests {
             RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
             ImagePlus impParent = ImageJFunctions.show(parentComponentImage);
             ImagePlus impChildren = ImageJFunctions.show(childComponentsImage);
-            List<Localizable> watershedProbabilityValues = root.getWatershedLinePixelPositions();
+            List<Localizable> watershedProbabilityPositions = root.getWatershedLinePixelPositions();
             Img<NativeBoolType> img = root.createImage(root.getSourceImage());
             RandomAccess<NativeBoolType> rndAcc = img.randomAccess();
-            for (Localizable loc : watershedProbabilityValues) {
+            for (Localizable loc : watershedProbabilityPositions) {
                 rndAcc.setPosition(loc);
                 rndAcc.get().set(true);
             }
+            List<FloatType> pixelValues = root.getWatershedLinePixelValues();
             ImagePlus imp = ImageJFunctions.show(img);
         }
     }

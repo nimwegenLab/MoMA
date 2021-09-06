@@ -12,6 +12,7 @@ import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang.NotImplementedException;
+import org.springframework.cglib.core.Local;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -439,16 +440,21 @@ public final class SimpleComponent<T extends Type<T>>
         return result;
     }
 
-    List<T> getWatershedLineValues(){
-        List<T> watershedLineValues = new ArrayList<>();
-        List<SimpleComponent<T>> children = this.getChildren();
-        if (children.size() <= 1) {
-            return watershedLineValues; /* there is zero or one child component and hence no watershed line. */
+    List<T> watershedLinePixelValues = null;
+
+    List<T> getWatershedLinePixelValues() {
+        if (watershedLinePixelValues != null) {
+            return watershedLinePixelValues;
         }
-        if (children.size() > 2) {
-            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+        List<Localizable> pixelPositions = this.getWatershedLinePixelPositions();
+        watershedLinePixelValues = new ArrayList<>();
+        if (pixelPositions.size() == 0) {
+            return watershedLinePixelValues; /* there is no watershed line; return empty array */
         }
-        throw new NotImplementedException();
+        for(Localizable pixelPos : watershedLinePixelPositions ) {
+            watershedLinePixelValues.add(this.sourceImage.getAt(pixelPos));
+        }
+        return watershedLinePixelValues;
     }
 
     List<Localizable> watershedLinePixelPositions = null;

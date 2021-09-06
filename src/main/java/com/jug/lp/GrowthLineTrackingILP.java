@@ -853,6 +853,7 @@ public class GrowthLineTrackingILP {
                     dialog.pushStatus(String.format("Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0));
                 }
             }
+            System.out.println("Status: " + status);
 
             if (MoMA.getGui() != null) {
                 MoMA.getGui().dataToDisplayChanged();

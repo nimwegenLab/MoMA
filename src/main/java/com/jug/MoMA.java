@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
+import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
@@ -189,7 +190,8 @@ public class MoMA implements IImageProvider {
 	 */
 	public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
-	public static final int MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+	public static final int MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+//	public static final int MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
 
 	public static final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
 	public static final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
@@ -715,6 +717,7 @@ public class MoMA implements IImageProvider {
 			guiFrame.setSize( GUI_WIDTH, GUI_HEIGHT );
 			guiFrame.setLocation( GUI_POS_X, GUI_POS_Y );
 			guiFrame.setVisible( true );
+			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
 //			SwingUtilities.invokeLater( new Runnable() {
 //
@@ -786,6 +789,13 @@ public class MoMA implements IImageProvider {
 	 */
 	public List< Img< FloatType >> getRawChannelImgs() {
 		return rawChannelImgs;
+	}
+
+	/**
+	 * @return the imgTemp
+	 */
+	public Img< FloatType > getImgTemp() {
+		return imgTemp;
 	}
 
 	/**
@@ -1184,7 +1194,7 @@ public class MoMA implements IImageProvider {
 		imgRaw = rawChannelImgs.get( 0 );
 //		Pair<FloatType, FloatType> result1 = ops.stats().minMax(Views.hyperSlice(imgRaw, 2, 1));
 
-		restartFromGLSegmentation(this);
+		restartFromGLSegmentation();
 
 		if ( HEADLESS ) {
 			System.out.println( "Generating Integer Linear Program(s)..." );
@@ -1245,9 +1255,9 @@ public class MoMA implements IImageProvider {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-    private void findGrowthLines(IImageProvider imageProvider) {
+    private void findGrowthLines() {
         this.setGrowthLines(new ArrayList<>() );
-        getGrowthLines().add( new GrowthLine(imageProvider) );
+        getGrowthLines().add( new GrowthLine() );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
             GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
@@ -1396,7 +1406,7 @@ public class MoMA implements IImageProvider {
 	 * Allows one to restart by GL segmentation. This is e.g. needed after top
 	 * or bottom offsets are altered, which invalidates all analysis run so far.
 	 */
-	public void restartFromGLSegmentation(IImageProvider imageProvider) {
+	public void restartFromGLSegmentation() {
 		boolean hideConsoleLater = false;
 		if ( !HEADLESS && !isConsoleVisible() ) {
 			showConsoleWindow( true );
@@ -1405,7 +1415,7 @@ public class MoMA implements IImageProvider {
 
 		System.out.print( "Searching for GrowthLines..." );
 		resetImgTempToRaw();
-        findGrowthLines(imageProvider);
+        findGrowthLines();
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );

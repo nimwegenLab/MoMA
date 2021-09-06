@@ -261,7 +261,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         ilp.autosave();
 
-        if (e.isAltDown()) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.isAltDown()) {
             // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
@@ -270,7 +270,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (e.isControlDown()  && !e.isShiftDown()) {
+        if (SwingUtilities.isRightMouseButton(e)) {
             // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
             Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
@@ -304,7 +304,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (e.isControlDown() && e.isShiftDown()) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();

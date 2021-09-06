@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
+import static com.jug.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /*
@@ -189,8 +190,7 @@ public class MoMA implements IImageProvider {
 	 */
 	public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
-	public static final int MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-//	public static final int MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+	public static int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
 
 	public static final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
 	public static final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
@@ -318,6 +318,16 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		/* process feature flags */
+		if(featureFlagDisableMaxCellDrop)
+		{
+			MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+		}
+		else
+		{
+			MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+		}
+
 		/*
 		  Control if ImageJ and loaded data will be shown...
 		 */

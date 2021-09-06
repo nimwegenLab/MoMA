@@ -8,6 +8,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
+import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang.NotImplementedException;
@@ -448,6 +449,50 @@ public final class SimpleComponent<T extends Type<T>>
             throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
         }
         throw new NotImplementedException();
+    }
+
+    List<Localizable> watershedLinePixelPositions = null;
+
+    public List<Localizable> getWatershedLinePixelPositions(){
+        List<SimpleComponent<T>> children = this.getChildren();
+        if (children.size() <= 1) {
+            return watershedLinePixelPositions; /* there is zero or one child component and hence no watershed line. */
+        }
+        if (children.size() > 2) {
+            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+        }
+
+        if(watershedLinePixelPositions == null){
+            watershedLinePixelPositions = getWatershedLineInternal(this, children);
+        }
+        return watershedLinePixelPositions;
+    }
+
+    private List<Localizable> getWatershedLineInternal(SimpleComponent<T> parent, List<SimpleComponent<T>> children) {
+        List<Localizable> watershedLinePositions = new ArrayList<>();
+        Img<NativeBoolType> tmpImage = createImage(this.getSourceImage());
+        RandomAccess<NativeBoolType> rndAccess = tmpImage.randomAccess();
+        for (SimpleComponent<T> child : children) {
+            for (Iterator<Localizable> it = child.iterator(); it.hasNext(); ) {
+                rndAccess.setPosition(it.next());
+                rndAccess.get().set(true);
+            }
+        }
+        for (Iterator<Localizable> it = parent.iterator(); it.hasNext(); ) {
+            Localizable loc = it.next();
+            rndAccess.setPosition(loc);
+            if (!rndAccess.get().get()) {
+                watershedLinePositions.add(loc);
+            }
+        }
+        return watershedLinePositions;
+    }
+
+    private Img<NativeBoolType> createImage(RandomAccessibleInterval sourceImage) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<NativeBoolType> img = ArrayImgs.booleans(dims);
+        return img;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

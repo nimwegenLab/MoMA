@@ -139,7 +139,7 @@ public class ComponentTreeGeneratorTests {
 
     @Test
     public void testPrintRankOfSegment() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_127_duplicated_frame__20210812.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();

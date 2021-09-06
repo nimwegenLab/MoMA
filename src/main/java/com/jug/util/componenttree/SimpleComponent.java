@@ -488,7 +488,7 @@ public final class SimpleComponent<T extends Type<T>>
         return watershedLinePositions;
     }
 
-    private Img<NativeBoolType> createImage(RandomAccessibleInterval sourceImage) {
+    public Img<NativeBoolType> createImage(RandomAccessibleInterval sourceImage) {
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         Img<NativeBoolType> img = ArrayImgs.booleans(dims);

@@ -63,8 +63,8 @@ String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__mi
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/output/";
 //        Integer tmin = 120;
 //        Integer tmax = 140;
-        Integer tmin = 0;
-        Integer tmax = 480;
+        Integer tmin = 160;
+        Integer tmax = 303;
         startMoma(inputPath, outputPath, tmin, tmax);
 //        startMoma(inputPath, outputPath);
     }

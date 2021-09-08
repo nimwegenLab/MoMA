@@ -1,17 +1,14 @@
 package com.jug.lp.costs;
 
-import java.util.List;
-
 import com.jug.MoMA;
-import com.jug.lp.Hypothesis;
-import com.jug.util.ComponentTreeUtils;
-
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+
+import java.util.List;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -71,7 +68,8 @@ public class CostFactory {
         double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
         double maximumCost = 0.2; // maximum component cost outside the ROI
         double minimumCost = -0.2; // minimum component cost inside the ROI
-        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-positionRelativeToRoiBoundary/componentExitRange)));
+		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
+        float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
 		return cost;
     }
 

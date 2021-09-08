@@ -67,11 +67,11 @@ public class CostFactory {
 	public static float getComponentCost(final Component< ?, ? > component, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
         float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
         double verticalPositionOfComponent = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
-        double distanceFromBoundary = roiBoundaryPosition - verticalPositionOfComponent;
+        double positionRelativeToRoiBoundary = roiBoundaryPosition - verticalPositionOfComponent;
         double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
         double maximumCost = 0.2; // maximum component cost outside the ROI
         double minimumCost = -0.2; // minimum component cost inside the ROI
-        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-distanceFromBoundary/componentExitRange)));
+        float cost = (float) (minimumCost + (-minimumCost + maximumCost)/(1 + Math.exp(-positionRelativeToRoiBoundary/componentExitRange)));
 		return cost;
     }
 

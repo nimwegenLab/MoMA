@@ -11,13 +11,14 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+        tests._filamenting_cell__lis_20201119__Pos5_GL17();
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
 //        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
-        tests._lysing_cell__thomas_20200922__Pos0_GL30();
-//        tests._lysing_cell__thomas_20200922__Pos16_GL17();
+//        tests._lysing_cell__thomas_20200922__Pos0_GL30(); /* nice example for lysing cells */
+//        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -55,6 +56,18 @@ public class MoMATest {
 //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
 String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__micha__Documents__01_work/MoMA/test_datasets";
 
+
+    @Test
+    public void _filamenting_cell__lis_20201119__Pos5_GL17() {
+        String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
+        String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/output/";
+//        Integer tmin = 120;
+//        Integer tmax = 140;
+        Integer tmin = 0;
+        Integer tmax = 480;
+        startMoma(inputPath, outputPath, tmin, tmax);
+//        startMoma(inputPath, outputPath);
+    }
 
     @Test
     public void _debug_mapping_assignment_issue_when_using_only_plausible_assignments() {

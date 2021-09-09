@@ -10,6 +10,7 @@ import net.imglib2.util.ValuePair;
 
 import java.util.List;
 
+import static com.jug.FeatureFlags.featureFlagUseComponentCostWithProbabilityMap;
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
 /**
@@ -58,22 +59,76 @@ public class CostFactory {
 
 
 	/**
+	 * Calculate the component costs using the component position relative to the upper boundary and the
+	 * pixel-values of probability map.
+	 *
 	 * @param component
 	 * @return
 	 */
-	public static float getComponentCost(final Component< ?, ? > component, final RandomAccessibleInterval<FloatType> imageProbabilities ) {
-        float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
-        double verticalPositionOfComponent = ((SimpleComponent<FloatType>) component).firstMomentPixelCoordinates()[1];
-        double positionRelativeToRoiBoundary = roiBoundaryPosition - verticalPositionOfComponent;
-        double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
-        double maximumCost = 0.2; // maximum component cost outside the ROI
-        double minimumCost = -0.2; // minimum component cost inside the ROI
-		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
-        float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
-		return cost;
-    }
+	public static float getComponentCost(final Component<?, ?> component, final RandomAccessibleInterval<FloatType> imageProbabilities) {
+		double maximumCost = 0.2; // maximum component cost
+		double minimumCost = -0.2; // minimum component cost
+		double exitCostFactor = getCostFactorComponentExit((SimpleComponent<FloatType>) component);
+		if (!featureFlagUseComponentCostWithProbabilityMap) {
+			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
+			return cost;
+		} else {
+			double componentWatershedLineFactor = getComponentWatershedLineCostFactor((SimpleComponent<FloatType>) component);
+			double parentComponentWatershedLineFactor = getParentComponentWatershedLineCostFactor((SimpleComponent<FloatType>) component);
+			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
+			return cost;
+		}
+	}
 
-    /**
+	/**
+	 * Calculate the prefactor for the component cost that is incurred, when the component exits the ROI.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getCostFactorComponentExit(SimpleComponent<FloatType> component) {
+		float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
+		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
+		double positionRelativeToRoiBoundary = roiBoundaryPosition - verticalPositionOfComponent;
+		double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
+		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
+		return exitCostFactor;
+	}
+
+	/**
+	 * Calculate the cost factor for the watershed line in the probability map of the component itself.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getComponentWatershedLineCostFactor(SimpleComponent<FloatType> component){
+		List<FloatType> vals = component.getWatershedLinePixelValues();
+		double avg = vals.stream()
+				.map(d -> d.getRealDouble())
+				.mapToDouble(d -> d)
+				.average()
+				.orElse(1.0);
+		return avg;
+	}
+
+	/**
+	 * Calculate the cost factor for the watershed line in the probability map of the components parent component.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getParentComponentWatershedLineCostFactor(SimpleComponent<FloatType> component){
+		SimpleComponent<FloatType> parent = component.getParent();
+		List<FloatType> vals = parent.getWatershedLinePixelValues();
+		double avg = vals.stream()
+				.map(d -> d.getRealDouble())
+				.mapToDouble(d -> d)
+				.average()
+				.orElse(0.0); /* return 0.0, if the parent component has no watershed line */
+		return 1 - avg; /* the probability of the child being a valid component, is inverse to the value of the watershed line values of the parent-component; this means that if the watershed-line of the parent has a high value, then the child component is likely not valid */
+	}
+
+	/**
 	 * @param sourceComponent
 	 * @return
 	 */

@@ -461,7 +461,7 @@ public final class SimpleComponent<T extends Type<T>>
 
     List<T> watershedLinePixelValues = null;
 
-    List<T> getWatershedLinePixelValues() {
+    public List<T> getWatershedLinePixelValues() {
         if (watershedLinePixelValues != null) {
             return watershedLinePixelValues;
         }
@@ -483,11 +483,12 @@ public final class SimpleComponent<T extends Type<T>>
     public List<Localizable> getWatershedLinePixelPositions(){
         List<SimpleComponent<T>> children = this.getChildren();
         if (children.size() <= 1) {
-            return watershedLinePixelPositions; /* there is zero or one child component and hence no watershed line. */
+            watershedLinePixelPositions = new ArrayList<>(); /* there exist zero or one child component and hence no watershed line. */
+            return watershedLinePixelPositions;
         }
-        if (children.size() > 2) {
-            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
-        }
+//        if (children.size() > 2) {
+//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+//        }
 
         if(watershedLinePixelPositions == null){
             watershedLinePixelPositions = getWatershedLineInternal(this, children);

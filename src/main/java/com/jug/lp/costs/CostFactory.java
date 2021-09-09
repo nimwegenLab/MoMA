@@ -73,8 +73,8 @@ public class CostFactory {
 			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
 			return cost;
 		} else {
-			double componentWatershedLineFactor = getComponentWatershedLineCostFactor((SimpleComponent<FloatType>) component);
-			double parentComponentWatershedLineFactor = getParentComponentWatershedLineCostFactor((SimpleComponent<FloatType>) component);
+			double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
+			double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
 			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
 			return cost;
 		}
@@ -101,7 +101,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getComponentWatershedLineCostFactor(SimpleComponent<FloatType> component){
+	public static double getCostFactorComponentWatershedLine(SimpleComponent<FloatType> component){
 		List<FloatType> vals = component.getWatershedLinePixelValues();
 		double avg = vals.stream()
 				.map(d -> d.getRealDouble())
@@ -117,7 +117,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getParentComponentWatershedLineCostFactor(SimpleComponent<FloatType> component){
+	public static double getCostFactorParentComponentWatershedLine(SimpleComponent<FloatType> component){
 		SimpleComponent<FloatType> parent = component.getParent();
 		List<FloatType> vals = parent.getWatershedLinePixelValues();
 		double avg = vals.stream()

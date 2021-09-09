@@ -457,6 +457,33 @@ public final class SimpleComponent<T extends Type<T>>
         return componentPixelValues;
     }
 
+    Double watershedLinePixelValueAverage = Double.MIN_VALUE;
+
+    /**
+     * Return the average value of the pixels of the watershed line. Returns Null if there is no watershed line.
+     * @return
+     */
+    public Double getWatershedLinePixelValueAverage() {
+        if (watershedLinePixelValueAverage == null) {
+            return watershedLinePixelValueAverage;
+        }
+        if (!(Math.abs(watershedLinePixelValueAverage - Double.MIN_VALUE) < 0.001)) {
+            return watershedLinePixelValueAverage;
+        }
+
+        List<FloatType> vals = (List<FloatType>) this.getWatershedLinePixelValues();
+        if (vals.size() == 0) {
+            watershedLinePixelValueAverage = null;
+            return watershedLinePixelValueAverage;
+        }
+        watershedLinePixelValueAverage = vals.stream()
+                .map(d -> d.getRealDouble())
+                .mapToDouble(d -> d)
+                .average()
+                .orElse(1.0);
+        return watershedLinePixelValueAverage;
+    }
+
     List<T> watershedLinePixelValues = null;
 
     public List<T> getWatershedLinePixelValues() {

@@ -86,7 +86,7 @@ public class CostFactory {
 		double exitCostFactor = getCostFactorComponentExit(component);
 		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
 		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
-		float cost = (float) (minimumComponentCost + (maximumComponentCost - minimumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
+		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
 		return cost;
 	}
 
@@ -113,13 +113,11 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getCostFactorComponentWatershedLine(SimpleComponent<FloatType> component){
-		List<FloatType> vals = component.getWatershedLinePixelValues();
-		double avg = vals.stream()
-				.map(d -> d.getRealDouble())
-				.mapToDouble(d -> d)
-				.average()
-				.orElse(1.0);
-		return 1.0 - avg;
+		Double val = component.getWatershedLinePixelValueAverage();
+		if (val == null) {
+			return 1.0; /* there is no watershed line so we return 1.0 */
+		}
+		return val.doubleValue();
 	}
 
 	/**
@@ -137,13 +135,7 @@ public class CostFactory {
 		if (parent == null) {
 			return 1.0; /* If there is no parent component then this is a root component. We set the factor to 1, because this means that all surrounding pixel probabilities fall below the global threshold. */
 		}
-		List<FloatType> vals = parent.getWatershedLinePixelValues();
-		double avg = vals.stream()
-				.map(d -> d.getRealDouble())
-				.mapToDouble(d -> d)
-				.average()
-				.orElse(0.0); /* return 0.0, if the parent component has no watershed line */
-		return 1 - avg; /* the probability of the child being a valid component, is inverse to the value of the watershed line values of the parent-component; this means that if the watershed-line of the parent has a high value, then the child component is likely not valid */
+		return 1. - getCostFactorComponentWatershedLine(parent);
 	}
 
 	/**

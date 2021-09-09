@@ -59,13 +59,13 @@ public class CostFactory {
 
 
 	/**
-	 * Calculate the component costs using the component position relative to the upper boundary and the
-	 * pixel-values of probability map.
+	 * Calculate the component costs. The component cost is modulated between -0.2 and 0.2 using cost-factors, which
+	 * depend on the component position relative to the upper boundary and the pixel-values of probability map.
 	 *
 	 * @param component
 	 * @return
 	 */
-	public static float getComponentCost(final Component<?, ?> component, final RandomAccessibleInterval<FloatType> imageProbabilities) {
+	public static float getComponentCost(final SimpleComponent<FloatType> component, final RandomAccessibleInterval<FloatType> imageProbabilities) {
 		double maximumCost = 0.2; // maximum component cost
 		double minimumCost = -0.2; // minimum component cost
 		double exitCostFactor = getCostFactorComponentExit((SimpleComponent<FloatType>) component);
@@ -108,17 +108,24 @@ public class CostFactory {
 				.mapToDouble(d -> d)
 				.average()
 				.orElse(1.0);
-		return avg;
+		return 1.0 - avg;
 	}
 
 	/**
-	 * Calculate the cost factor for the watershed line in the probability map of the components parent component.
+	 * Calculate for the parent component the cost factor for the watershed line that gave rise to this child component.
+	 * The probability of the child being a valid component, is inverse to the value of the watershed line values of
+	 * the parent-component:
+	 * This means that if the watershed-line of the parent has a high (average) value, then the corresponding child
+	 * component is likely not valid.
 	 *
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getCostFactorParentComponentWatershedLine(SimpleComponent<FloatType> component){
 		SimpleComponent<FloatType> parent = component.getParent();
+		if (parent == null) {
+			return 1.0; /* If there is no parent component then this is a root component. We set the factor to 1, because this means that all surrounding pixel probabilities fall below the global threshold. */
+		}
 		List<FloatType> vals = parent.getWatershedLinePixelValues();
 		double avg = vals.stream()
 				.map(d -> d.getRealDouble())

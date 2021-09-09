@@ -1,6 +1,7 @@
 package com.jug.lp.costs;
 
 import com.jug.MoMA;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -65,10 +66,10 @@ public class CostFactory {
 	 * @param component
 	 * @return
 	 */
-	public static float getComponentCost(final SimpleComponent<FloatType> component, final RandomAccessibleInterval<FloatType> imageProbabilities) {
+	public static float getComponentCost(final ComponentInterface component) {
 		double maximumCost = 0.2; // maximum component cost
 		double minimumCost = -0.2; // minimum component cost
-		double exitCostFactor = getCostFactorComponentExit((SimpleComponent<FloatType>) component);
+		double exitCostFactor = getCostFactorComponentExit(component);
 		if (!featureFlagUseComponentCostWithProbabilityMap) {
 			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
 			return cost;
@@ -86,7 +87,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorComponentExit(SimpleComponent<FloatType> component) {
+	public static double getCostFactorComponentExit(ComponentInterface component) {
 		float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
 		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
 		double positionRelativeToRoiBoundary = roiBoundaryPosition - verticalPositionOfComponent;

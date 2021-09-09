@@ -296,7 +296,7 @@ public class GrowthLineTrackingILP {
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
         RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
-        return CostFactory.getComponentCost((SimpleComponent<FloatType>) ctNode, img);
+        return CostFactory.getComponentCost((SimpleComponent<FloatType>) ctNode);
     }
 
     /**

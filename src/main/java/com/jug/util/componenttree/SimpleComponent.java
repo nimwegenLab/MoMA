@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
-        Component<T, SimpleComponent<T>> {
+        ComponentInterface<T, SimpleComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**

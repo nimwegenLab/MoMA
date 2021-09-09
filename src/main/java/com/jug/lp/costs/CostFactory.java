@@ -3,7 +3,6 @@ package com.jug.lp.costs;
 import com.jug.MoMA;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.SimpleComponent;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
@@ -67,19 +66,30 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getComponentCost(final ComponentInterface component) {
-		double maximumCost = 0.2; // maximum component cost
-		double minimumCost = -0.2; // minimum component cost
-		double exitCostFactor = getCostFactorComponentExit(component);
 		if (!featureFlagUseComponentCostWithProbabilityMap) {
-			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor);
-			return cost;
+			return getComponentCostLegacy(component);
 		} else {
-			double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
-			double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
-			float cost = (float) (minimumCost + (maximumCost - minimumCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
-			return cost;
+			return getComponentCostUsingWatershedLines(component);
 		}
 	}
+
+	public static double maximumComponentCost = 0.2; // maximum component cost
+	public static double minimumComponentCost = -0.2; // minimum component cost
+
+	public static float getComponentCostLegacy(final ComponentInterface component) {
+		double exitCostFactor = getCostFactorComponentExit(component);
+		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor);
+		return cost;
+	}
+
+	public static float getComponentCostUsingWatershedLines(final ComponentInterface component) {
+		double exitCostFactor = getCostFactorComponentExit(component);
+		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
+		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
+		float cost = (float) (minimumComponentCost + (maximumComponentCost - minimumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
+		return cost;
+	}
+
 
 	/**
 	 * Calculate the prefactor for the component cost that is incurred, when the component exits the ROI.
@@ -90,7 +100,7 @@ public class CostFactory {
 	public static double getCostFactorComponentExit(ComponentInterface component) {
 		float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
 		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
-		double positionRelativeToRoiBoundary = roiBoundaryPosition - verticalPositionOfComponent;
+		double positionRelativeToRoiBoundary = verticalPositionOfComponent - roiBoundaryPosition;
 		double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
 		return exitCostFactor;

@@ -11,8 +11,6 @@ import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.lang.NotImplementedException;
-import org.springframework.cglib.core.Local;
 
 import java.util.ArrayList;
 import java.util.Iterator;

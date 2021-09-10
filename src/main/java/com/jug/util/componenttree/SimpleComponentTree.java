@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -37,12 +38,12 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private ComponentProperties componentProperties;
 
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
-        this(componentForest, sourceImage, new DummyComponentTester(), componentProperties);
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
+        this(componentForest, sourceImage, new DummyComponentTester());
     }
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester, ComponentProperties componentProperties) {
-        this. componentProperties = componentProperties;
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
+        this.componentProperties = MoMA.componentProperties;
         this.sourceImage = sourceImage;
         this.tester = tester;
         long[] dims = new long[sourceImage.numDimensions()];
@@ -94,7 +95,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage, componentProperties);
+            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -117,7 +118,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, C sourceChild) {
-        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage, componentProperties);
+        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

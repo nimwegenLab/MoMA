@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
@@ -50,7 +51,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
+    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage) {
         this.labeling = labeling;
         this.label = label;
         RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
@@ -63,7 +64,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
-        this.componentProperties = componentProperties;
+        this.componentProperties = MoMA.componentProperties;
     }
 
     /**
@@ -466,8 +467,6 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
             return convexHullArea;
         }
         convexHullArea = componentProperties.getConvexHullArea(this);
-        int pixelListSize = componentPixelValues.size();
-        long regionSize = this.getRegion().size();
         return convexHullArea;
     }
 

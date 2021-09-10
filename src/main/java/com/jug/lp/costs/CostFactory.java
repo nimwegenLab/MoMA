@@ -153,10 +153,10 @@ public class CostFactory {
 	}
 
 	public static double getCostFactorComponentProbability(SimpleComponent<FloatType> component) {
-//		return component.getPixelValueAverage();
-		double total = component.getPixelValueTotal();
-		double hullArea = component.getConvexHullArea();
-		return total / hullArea;
+		return component.getPixelValueAverage();
+//		double total = component.getPixelValueTotal();
+//		double hullArea = component.getConvexHullArea();
+//		return total / hullArea;
 	}
 
 	/**

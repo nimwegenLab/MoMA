@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
@@ -16,15 +17,15 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.jetbrains.annotations.NotNull;
-import org.scijava.Context;
 
 public class ComponentProperties {
-    private OpService ops = (new Context()).service(OpService.class);
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
+    private final OpService ops;
 
     public ComponentProperties() {
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        regionToPolygonConverter.setContext(ops.context());
+        ops = MoMA.ops;
+        regionToPolygonConverter.setContext(MoMA.ops.context());
     }
 
     public ValuePair<Double, Double> getMinorMajorAxis(SimpleComponent<?> component){

@@ -42,10 +42,9 @@ public class ComponentTreeGenerator {
         ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         // filter components that do not have siblings
-        ComponentProperties componentProperties = new ComponentProperties();
-        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentProperties);
+        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
         HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentProperties);
+        tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
         // watershed components into their parent-components
         tree = new RecursiveComponentWatershedder().recursivelyWatershedComponents(tree);

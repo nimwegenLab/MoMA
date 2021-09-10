@@ -5,12 +5,14 @@ import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
+import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
+import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -23,6 +25,7 @@ import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -47,7 +50,6 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 
-
 	static {
 		LegacyInjector.preinit();
 	}
@@ -60,6 +62,8 @@ public class MoMA implements IImageProvider {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
+	public static OpService ops;
+	public static ComponentProperties componentProperties;
 	public static MoMA instance;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
@@ -319,6 +323,10 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		Context context = new Context();
+		ops = context.service(OpService.class);
+		componentProperties = new ComponentProperties();
+
 		/* process feature flags */
 		if(featureFlagDisableMaxCellDrop)
 		{

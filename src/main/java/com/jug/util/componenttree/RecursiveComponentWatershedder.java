@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
@@ -31,7 +32,11 @@ import java.util.function.Consumer;
 
 
 public class RecursiveComponentWatershedder<T extends Type<T>, C extends Component<T, C>> {
-    private static OpService ops = (new Context()).service(OpService.class); /* making this static should improve performance; test this! */
+    private OpService ops;
+
+    public RecursiveComponentWatershedder(){
+        ops = MoMA.ops;
+    }
 
     /**
      * Recursively grow child components into their corresponding parent components. After running this the child

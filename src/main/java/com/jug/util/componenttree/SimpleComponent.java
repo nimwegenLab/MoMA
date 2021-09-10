@@ -6,6 +6,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
@@ -33,6 +34,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      * List of child nodes.
      */
     private final ArrayList<SimpleComponent<T>> children = new ArrayList<>();
+    private final ComponentProperties componentProperties;
     /**
      * Parent node. Is null if this is a root component.
      */
@@ -48,7 +50,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage) {
+    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
         this.labeling = labeling;
         this.label = label;
         RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
@@ -61,6 +63,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
+        this.componentProperties = componentProperties;
     }
 
     /**
@@ -456,8 +459,6 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         return pixelValueTotal;
     }
 
-    ComponentProperties componentProperties = new ComponentProperties();
-
     double convexHullArea = -1;
 
     public double getConvexHullArea() {
@@ -465,6 +466,8 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
             return convexHullArea;
         }
         convexHullArea = componentProperties.getConvexHullArea(this);
+        int pixelListSize = componentPixelValues.size();
+        long regionSize = this.getRegion().size();
         return convexHullArea;
     }
 

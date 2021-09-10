@@ -34,12 +34,15 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private final Img<IntType> img;
     Integer label = 1;
     private IComponentTester<T, C> tester;
+    private ComponentProperties componentProperties;
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
-        this(componentForest, sourceImage, new DummyComponentTester());
+
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
+        this(componentForest, sourceImage, new DummyComponentTester(), componentProperties);
     }
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester, ComponentProperties componentProperties) {
+        this. componentProperties = componentProperties;
         this.sourceImage = sourceImage;
         this.tester = tester;
         long[] dims = new long[sourceImage.numDimensions()];
@@ -91,7 +94,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage);
+            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage, componentProperties);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -114,7 +117,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, C sourceChild) {
-        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage);
+        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage, componentProperties);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

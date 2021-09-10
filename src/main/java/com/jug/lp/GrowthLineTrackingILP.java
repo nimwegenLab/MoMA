@@ -27,7 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**

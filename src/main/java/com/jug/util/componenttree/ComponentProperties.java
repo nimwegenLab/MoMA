@@ -4,6 +4,10 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
+import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
+import net.imagej.ops.geom.GeomUtils;
+import net.imagej.ops.geom.AbstractBoundarySizeConvexHull;
+import net.imagej.ops.geom.AbstractSizeConvexHull;
 import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
@@ -50,6 +54,16 @@ public class ComponentProperties {
 
     public int getArea(SimpleComponent<?> component){
         return (int) component.getRegion().size();
+    }
+
+    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
+
+    public double getConvexHullArea(SimpleComponent<?> component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        Polygon2D hull = convexHullCalculator.calculate(poly);
+        DoubleType res = (DoubleType) ops.run("geom.sizeConvexHull", hull);
+        double result = res.getRealDouble();
+        return result;
     }
 
     public ValuePair<Double, Double> getCentroid(SimpleComponent<?> component) {

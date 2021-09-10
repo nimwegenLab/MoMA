@@ -35,7 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static com.jug.FeatureFlags.featureFlagDisableMaxCellDrop;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /*

@@ -1,16 +1,18 @@
 package com.jug.lp.costs;
 
 import com.jug.MoMA;
+import com.jug.development.featureflags.ComponentCostCalculationMethod;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
-import static com.jug.FeatureFlags.featureFlagUseComponentCostWithProbabilityMap;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagComponentCost;
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
 /**
@@ -66,11 +68,15 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getComponentCost(final ComponentInterface component) {
-		if (!featureFlagUseComponentCostWithProbabilityMap) {
+		if (featureFlagComponentCost == ComponentCostCalculationMethod.Legacy) {
 			return getComponentCostLegacy(component);
-		} else {
+		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingWatershedLineOnly) {
 			return getComponentCostUsingWatershedLines(component);
+		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps)
+		{
+			return getComponentCostUsingFullProbabilityMap(component);
 		}
+		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
 
 	public static double maximumComponentCost = 0.2; // maximum component cost
@@ -90,6 +96,14 @@ public class CostFactory {
 		return cost;
 	}
 
+	public static float getComponentCostUsingFullProbabilityMap(ComponentInterface component) {
+		double exitCostFactor = getCostFactorComponentExit(component);
+		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
+		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
+		double componentProbabilityFactor = getCostFactorComponentProbability((SimpleComponent<FloatType>) component);
+		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor * componentProbabilityFactor);
+		return cost;
+	}
 
 	/**
 	 * Calculate the prefactor for the component cost that is incurred, when the component exits the ROI.
@@ -136,6 +150,12 @@ public class CostFactory {
 			return 1.0; /* If there is no parent component then this is a root component. We set the factor to 1, because this means that all surrounding pixel probabilities fall below the global threshold. */
 		}
 		return 1. - getCostFactorComponentWatershedLine(parent);
+	}
+
+	public static double getCostFactorComponentProbability(SimpleComponent<FloatType> component) {
+		double total = component.getPixelValueTotal();
+		double hullArea = component.getConvexHullArea();
+		return total / hullArea;
 	}
 
 	/**

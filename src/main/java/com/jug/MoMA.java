@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
+import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
@@ -726,6 +727,7 @@ public class MoMA implements IImageProvider {
 			guiFrame.setSize( GUI_WIDTH, GUI_HEIGHT );
 			guiFrame.setLocation( GUI_POS_X, GUI_POS_Y );
 			guiFrame.setVisible( true );
+			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
 //			SwingUtilities.invokeLater( new Runnable() {
 //

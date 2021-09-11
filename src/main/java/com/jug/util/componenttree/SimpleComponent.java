@@ -8,6 +8,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
+import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -18,7 +19,7 @@ import java.util.Objects;
 
 public final class SimpleComponent<T extends Type<T>>
         implements
-        Component<T, SimpleComponent<T>> {
+        ComponentInterface<T, SimpleComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
@@ -136,6 +137,23 @@ public final class SimpleComponent<T extends Type<T>>
     public SimpleComponent<T> getParent() {
         return parent;
     }
+
+//    public SimpleComponent<T> getSibling() {
+//        SimpleComponent<T> parent = this.getParent();
+//        if (parent == null) {
+//            return null; /* there is no parent component and hence no sibling component */
+//        }
+//        List<SimpleComponent<T>> children = parent.getChildren();
+//        if (children.size() == 1) {
+//            return null; /* there is only one child component of this component parent, which will be this component. Hence there is no sibling component. */
+//        }
+//        if (children.size() > 2) {
+//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+//        }
+//        children.remove(this);
+//        SimpleComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
+//        return sibling;
+//    }
 
     void setParent(SimpleComponent<T> parent) {
         this.parent = parent;
@@ -418,6 +436,116 @@ public final class SimpleComponent<T extends Type<T>>
             neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
         }
         return result;
+    }
+
+    List<T> componentPixelValues = null;
+
+    List<T> getComponentPixelValues() {
+        if (componentPixelValues != null) {
+            return componentPixelValues;
+        }
+
+        componentPixelValues = new ArrayList<>();
+        if (this.size() == 0) {
+            return componentPixelValues; /* there is no watershed line; return empty array */
+        }
+        Iterator<Localizable> it = this.iterator();
+        while(it.hasNext()) {
+            Localizable pos = it.next();
+            componentPixelValues.add(this.sourceImage.getAt(pos));
+        }
+        return componentPixelValues;
+    }
+
+    Double watershedLinePixelValueAverage = Double.MIN_VALUE;
+
+    /**
+     * Return the average value of the pixels of the watershed line. Returns Null if there is no watershed line.
+     * @return
+     */
+    public Double getWatershedLinePixelValueAverage() {
+        if (watershedLinePixelValueAverage == null) {
+            return watershedLinePixelValueAverage;
+        }
+        if (!(Math.abs(watershedLinePixelValueAverage - Double.MIN_VALUE) < 0.001)) {
+            return watershedLinePixelValueAverage;
+        }
+
+        List<FloatType> vals = (List<FloatType>) this.getWatershedLinePixelValues();
+        if (vals.size() == 0) {
+            watershedLinePixelValueAverage = null;
+            return watershedLinePixelValueAverage;
+        }
+        watershedLinePixelValueAverage = vals.stream()
+                .map(d -> d.getRealDouble())
+                .mapToDouble(d -> d)
+                .average()
+                .orElse(1.0);
+        return watershedLinePixelValueAverage;
+    }
+
+    List<T> watershedLinePixelValues = null;
+
+    public List<T> getWatershedLinePixelValues() {
+        if (watershedLinePixelValues != null) {
+            return watershedLinePixelValues;
+        }
+        List<Localizable> pixelPositions = this.getWatershedLinePixelPositions();
+        watershedLinePixelValues = new ArrayList<>();
+        if (pixelPositions.size() == 0) {
+            return watershedLinePixelValues; /* there is no watershed line; return empty array */
+        }
+        Iterator<Localizable> it = watershedLinePixelPositions.iterator();
+        while(it.hasNext()){
+            Localizable pos = it.next();
+            watershedLinePixelValues.add(this.sourceImage.getAt(pos));
+        }
+        return watershedLinePixelValues;
+    }
+
+    List<Localizable> watershedLinePixelPositions = null;
+
+    public List<Localizable> getWatershedLinePixelPositions(){
+        List<SimpleComponent<T>> children = this.getChildren();
+        if (children.size() <= 1) {
+            watershedLinePixelPositions = new ArrayList<>(); /* there exist zero or one child component and hence no watershed line. */
+            return watershedLinePixelPositions;
+        }
+//        if (children.size() > 2) {
+//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
+//        }
+
+        if(watershedLinePixelPositions == null){
+            watershedLinePixelPositions = getWatershedLineInternal(this, children);
+        }
+        return watershedLinePixelPositions;
+    }
+
+    private List<Localizable> getWatershedLineInternal(SimpleComponent<T> parent, List<SimpleComponent<T>> children) {
+        List<Localizable> watershedLinePositions = new ArrayList<>();
+        Img<NativeBoolType> tmpImage = createImage(this.getSourceImage());
+        RandomAccess<NativeBoolType> rndAccess = tmpImage.randomAccess();
+        for (SimpleComponent<T> child : children) {
+            for (Iterator<Localizable> it = child.iterator(); it.hasNext(); ) {
+                rndAccess.setPosition(it.next());
+                rndAccess.get().set(true);
+            }
+        }
+        for (Iterator<Localizable> it = parent.iterator(); it.hasNext(); ) {
+            Localizable loc = it.next();
+            rndAccess.setPosition(loc);
+            if (!rndAccess.get().get()) {
+                watershedLinePositions.add(loc);
+            }
+        }
+        return watershedLinePositions;
+    }
+
+    public Img<NativeBoolType> createImage(RandomAccessibleInterval sourceImage) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<NativeBoolType> img = ArrayImgs.booleans(dims);
+        return img;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

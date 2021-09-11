@@ -62,6 +62,7 @@ public class MoMA implements IImageProvider {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
+	public static Context context;
 	public static OpService ops;
 	public static ComponentProperties componentProperties;
 	public static MoMA instance;
@@ -323,7 +324,7 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		Context context = new Context();
+		context = new Context();
 		ops = context.service(OpService.class);
 		componentProperties = new ComponentProperties();
 

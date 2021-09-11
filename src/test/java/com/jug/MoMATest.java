@@ -11,9 +11,9 @@ public class MoMATest {
     public static void main(String[] args){
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
-        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
+//        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
-//        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
+        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
 //        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();

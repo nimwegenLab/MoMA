@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
@@ -36,11 +37,8 @@ public class UnetProcessor {
 
     public UnetProcessor(){
         model_input_width = 32;  // TODO-MM-20210723: This should be a user-parameter under in the segmentation section of the config editor.
-
-        System.out.println("Model file: " + modelFile);
-
-        context = new Context();  // TODO-MM-20210413: this causes exception during debugging: java lang class SignatureParser cannot find local variable 'myPath'
-        ops = context.service(OpService.class);
+        context = MoMA.context;
+        ops = MoMA.ops;
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
     }

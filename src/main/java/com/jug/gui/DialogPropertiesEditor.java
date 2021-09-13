@@ -1,31 +1,19 @@
 package com.jug.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Toolkit;
+import com.jug.MoMA;
+import com.l2fprod.common.propertysheet.DefaultProperty;
+import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertySheet;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Properties;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
-import com.jug.MoMA;
-import com.l2fprod.common.propertysheet.DefaultProperty;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
 /**
  * @author jug
@@ -99,24 +87,17 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     }
                     case "GL_OFFSET_TOP": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
-                        if(newValue!=MoMA.GL_OFFSET_TOP) {
-                            final int choice =
-                                    JOptionPane.showConfirmDialog(
-                                            parent,
-                                            "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                            "Continue?",
-                                            JOptionPane.YES_NO_OPTION);
-
-                            if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.GL_OFFSET_TOP);
-                            } else {
-                                MoMA.GL_OFFSET_TOP = newValue;
-                                MoMA.props.setProperty(
-                                        "GL_OFFSET_TOP",
-                                        "" + MoMA.GL_OFFSET_TOP);
-                                ((MoMAGui) parent).restartTrackingAsync();
-                            }
-                        }
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                newValue,
+                                () -> sourceProperty.setValue(MoMA.GL_OFFSET_TOP),
+                                () -> {
+                                    MoMA.GL_OFFSET_TOP = newValue;
+                                    MoMA.props.setProperty(
+                                            "GL_OFFSET_TOP",
+                                            "" + MoMA.GL_OFFSET_TOP);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
@@ -170,7 +151,24 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	}
 
-	private static class PropFactory {
+    private static void showPropertyEditedNeedsRerunDialog(String title, String message, int newValue, Runnable rejectionCallback, Runnable acceptionCallback) {
+        if (newValue != MoMA.GL_OFFSET_TOP) {
+            final int choice =
+                    JOptionPane.showConfirmDialog(
+                            parent,
+                            message,
+                            title,
+                            JOptionPane.YES_NO_OPTION);
+
+            if (choice != JOptionPane.OK_OPTION) {
+                rejectionCallback.run();
+            } else {
+                acceptionCallback.run();
+            }
+        }
+    }
+
+    private static class PropFactory {
 
         static Property buildFor(final String key, final Object value) {
 			final DefaultProperty property = new DefaultProperty();

@@ -44,16 +44,6 @@ public class GrowthLineTrackingILP {
     public static final int ASSIGNMENT_LYSIS = 3;
     public static final float CUTOFF_COST = Float.MAX_VALUE; // TODO-PARAMETRIZE: This value is critical(!): Assignments with costs higher than this value will be ignored. This should become a parameter at some point!
     public static final float LYSIS_ASSIGNMENT_COST = 10; // NOTE: This value is set so high, that it will not be considered for assignment during optimization. However, it can be forced during curation.
-    // -------------------------------------------------------------------------------------
-    // statics
-    // -------------------------------------------------------------------------------------
-    private static final int OPTIMIZATION_NEVER_PERFORMED = 0;
-    private static final int OPTIMAL = 1;
-    private static final int INFEASIBLE = 2;
-    private static final int UNBOUNDED = 3;
-    private static final int SUBOPTIMAL = 4;
-    private static final int NUMERIC = 5;
-    private static final int LIMIT_REACHED = 6;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -71,7 +61,7 @@ public class GrowthLineTrackingILP {
     private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
-    private int status = OPTIMIZATION_NEVER_PERFORMED;
+    private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
     // -------------------------------------------------------------------------------------
@@ -147,7 +137,7 @@ public class GrowthLineTrackingILP {
      * OPTIMIZATION_NEVER_PERFORMED shows, that the optimizer was never
      * started on this ILP setup.
      */
-    public int getStatus() {
+    public IlpStatus getStatus() {
         return status;
     }
 
@@ -832,7 +822,7 @@ public class GrowthLineTrackingILP {
             // Read solution and extract interpretation
             // - - - - - - - - - - - - - - - - - - - - -
             if (model.get(GRB.IntAttr.Status) == GRB.Status.OPTIMAL) {
-                status = OPTIMAL;
+                status = IlpStatus.OPTIMAL;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus("Optimum was found!");
                     if (MoMA.getGui() != null) {
@@ -842,18 +832,18 @@ public class GrowthLineTrackingILP {
                     dialog.dispose();
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.INFEASIBLE) {
-                status = INFEASIBLE;
+                status = IlpStatus.INFEASIBLE;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus("ILP now infeasible. Please reoptimize!");
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.UNBOUNDED) {
-                status = UNBOUNDED;
+                status = IlpStatus.UNBOUNDED;
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.SUBOPTIMAL) {
-                status = SUBOPTIMAL;
+                status = IlpStatus.SUBOPTIMAL;
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.NUMERIC) {
-                status = NUMERIC;
+                status = IlpStatus.NUMERIC;
             } else {
-                status = LIMIT_REACHED;
+                status = IlpStatus.LIMIT_REACHED;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus(String.format("Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0));
                 }

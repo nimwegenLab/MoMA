@@ -792,6 +792,7 @@ public class GrowthLineTrackingILP {
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
             long startTime = System.currentTimeMillis();
+            status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             model.optimize();
             long endTime = System.currentTimeMillis();
             System.out.println("Optimization time: " + (endTime-startTime));
@@ -854,8 +855,13 @@ public class GrowthLineTrackingILP {
                 MoMA.getGui().dataToDisplayChanged();
             }
 
+            if (status == IlpStatus.OPTIMIZATION_IS_RUNNING) {
+                status = IlpStatus.UNDEFINED; /* something went wrong and `this.status` was not set to something different than OPTIMIZATION_RUNNING; so set it to UNDEFINED */
+            }
+
             new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();
         } catch (final GRBException e) {
+            status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
         }

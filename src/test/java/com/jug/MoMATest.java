@@ -84,10 +84,11 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/20210521_VNG1040_AB2h_2h_1_MMStack_Pos0_GL10.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/output/";
         Integer tmin = 0;
-        Integer tmax = 50;
+        Integer tmax = 10;
 //        Integer tmin = 0;
 //        Integer tmax = 480;
-        startMoma(inputPath, outputPath, tmin, tmax);
+//        startMoma(inputPath, outputPath, tmin, tmax);
+        startMoma(inputPath, outputPath, tmin, tmax, false);
     }
 
     @Test

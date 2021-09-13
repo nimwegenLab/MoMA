@@ -18,6 +18,7 @@
  */
 package com.jug.export;
 
+import com.jug.config.ConfigurationManager;
 import ij.gui.Plot;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -59,11 +60,11 @@ public class MixtureModelFit {
 
         // initial parameter values & bounds, as in Kaiser 2018. Might be included as parameters in order to better adapt to other systems (e.g with wider bacteria) ?
         double muStart = observedFluo.length / 2; // middle of peak starts at middle of bacteria object. -xMin because in the fitting function the index is 0-based
-        double wStart = INTENSITY_FIT_INITIAL_WIDTH; // in a more general case, should it be a value depending on bacteria width ?; TODO: this parameter should better be in microns
+        double wStart = ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH; // in a more general case, should it be a value depending on bacteria width ?; TODO: this parameter should better be in microns
         double[] muBounds = new double[]{muStart - 0.1 * imageWidth, muStart + 0.1 * imageWidth}; /* Calculate fit bounds based on image width; to be independent of resolution; TODO: this would better be calculated based on effective pixel size (e.g. microns) */
         double[] wBounds = new double[] {(double)imageWidth / 50., (double)imageWidth / 8.}; /* Calculate fit bounds based on image width; to be independent of resolution; TODO: this would better be calculated based on effective pixel size (e.g. microns) */
-        double precision = INTENSITY_FIT_PRECISION;
-        int maxIterations = INTENSITY_FIT_ITERATIONS;
+        double precision = ConfigurationManager.INTENSITY_FIT_PRECISION;
+        int maxIterations = ConfigurationManager.INTENSITY_FIT_ITERATIONS;
 
         // actual call to the fitting method
         double[] fittedParams = fitFluo(observedFluo, muStart, muBounds, wStart, wBounds, maxIterations, precision);

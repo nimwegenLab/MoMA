@@ -3,6 +3,7 @@ package com.jug.lp;
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -390,7 +391,7 @@ public class GrowthLineTrackingILP {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
-                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, MoMA.MAX_CELL_DROP))) {
+                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP))) {
 
                     final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                     float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
@@ -553,7 +554,7 @@ public class GrowthLineTrackingILP {
             float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
             for (final Component<FloatType, ?> upperTargetComponent : targetComponentTree.getAllComponents()) {
-                if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
+                if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP))) {
 
                     float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
                     final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();

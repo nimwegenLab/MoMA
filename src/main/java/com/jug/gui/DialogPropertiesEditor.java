@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -51,7 +52,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         break;
                     case "SEGMENTATION_MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
-                        if(newPath!=MoMA.SEGMENTATION_MODEL_PATH) {
+                        if(newPath!=ConfigurationManager.SEGMENTATION_MODEL_PATH) {
                             File f = new File(newPath);
                             if(!f.exists() || f.isDirectory()) {
                                 JOptionPane.showMessageDialog(
@@ -59,19 +60,19 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                         "Specified file does not exist. Falling back to previous path.",
                                         "Model file not found.",
                                         JOptionPane.ERROR_MESSAGE);
-                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH);
+                                sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                 break;
                             }
 
                             showPropertyEditedNeedsRerunDialog("Continue?",
                                     "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
-                                    () -> newPath != MoMA.SEGMENTATION_MODEL_PATH,
-                                    () -> sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH),
+                                    () -> newPath != ConfigurationManager.SEGMENTATION_MODEL_PATH,
+                                    () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
-                                        MoMA.SEGMENTATION_MODEL_PATH = newPath;
+                                        ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
                                         MoMA.props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
-                                                "" + MoMA.SEGMENTATION_MODEL_PATH);
+                                                "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                         final Thread t = new Thread(() -> {
                                             ((MoMAGui) parent).restartFromGLSegmentation();
                                             ((MoMAGui) parent).restartTracking();
@@ -85,47 +86,47 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != MoMA.GL_OFFSET_TOP,
-                                () -> sourceProperty.setValue(MoMA.GL_OFFSET_TOP),
+                                () -> newValue != ConfigurationManager.GL_OFFSET_TOP,
+                                () -> sourceProperty.setValue(ConfigurationManager.GL_OFFSET_TOP),
                                 () -> {
-                                    MoMA.GL_OFFSET_TOP = newValue;
+                                    ConfigurationManager.GL_OFFSET_TOP = newValue;
                                     MoMA.props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + MoMA.GL_OFFSET_TOP);
+                                            "" + ConfigurationManager.GL_OFFSET_TOP);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
-                        MoMA.INTENSITY_FIT_ITERATIONS =
+                        ConfigurationManager.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_ITERATIONS",
-                                "" + MoMA.INTENSITY_FIT_ITERATIONS);
+                                "" + ConfigurationManager.INTENSITY_FIT_ITERATIONS);
                         break;
                     }
                     case "INTENSITY_FIT_PRECISION": {
-                        MoMA.INTENSITY_FIT_PRECISION =
+                        ConfigurationManager.INTENSITY_FIT_PRECISION =
                                 Double.parseDouble(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_PRECISION",
-                                "" + MoMA.INTENSITY_FIT_PRECISION);
+                                "" + ConfigurationManager.INTENSITY_FIT_PRECISION);
                         break;
                     }
                     case "INTENSITY_FIT_INITIAL_WIDTH": {
-                        MoMA.INTENSITY_FIT_INITIAL_WIDTH =
+                        ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH =
                                 Double.parseDouble(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_INITIAL_WIDTH",
-                                "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
+                                "" + ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
                     }
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
-                        MoMA.INTENSITY_FIT_RANGE_IN_PIXELS =
+                        ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_RANGE_IN_PIXELS",
-                                "" + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS);
+                                "" + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
                         break;
                     }
                     default:

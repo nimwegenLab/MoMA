@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
 import gurobi.GRB;
@@ -62,7 +63,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 			}
 		}
 
-		if ( add && !MoMA.DISABLE_EXIT_CONSTRAINTS ) {
+		if ( add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS ) {
 			ilp.model.addConstr( expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId );
 		}
 		dcId++;

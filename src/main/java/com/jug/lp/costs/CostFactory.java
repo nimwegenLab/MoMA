@@ -1,6 +1,7 @@
 package com.jug.lp.costs;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.development.featureflags.ComponentCostCalculationMethod;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.SimpleComponent;
@@ -112,10 +113,10 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getCostFactorComponentExit(ComponentInterface component) {
-		float roiBoundaryPosition = (float) MoMA.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
+		float roiBoundaryPosition = (float) ConfigurationManager.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
 		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
 		double positionRelativeToRoiBoundary = verticalPositionOfComponent - roiBoundaryPosition;
-		double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
+		double componentExitRange = ConfigurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
 		return exitCostFactor;
 	}

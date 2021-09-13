@@ -14,6 +14,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 /**
  * @author jug
@@ -89,7 +90,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                newValue,
+                                () -> newValue != MoMA.GL_OFFSET_TOP,
                                 () -> sourceProperty.setValue(MoMA.GL_OFFSET_TOP),
                                 () -> {
                                     MoMA.GL_OFFSET_TOP = newValue;
@@ -151,8 +152,8 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	}
 
-    private static void showPropertyEditedNeedsRerunDialog(String title, String message, int newValue, Runnable rejectionCallback, Runnable acceptionCallback) {
-        if (newValue != MoMA.GL_OFFSET_TOP) {
+    private static void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable rejectionCallback, Runnable acceptCallback) {
+        if (condition.get()) {
             final int choice =
                     JOptionPane.showConfirmDialog(
                             parent,
@@ -163,7 +164,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
             if (choice != JOptionPane.OK_OPTION) {
                 rejectionCallback.run();
             } else {
-                acceptionCallback.run();
+                acceptCallback.run();
             }
         }
     }

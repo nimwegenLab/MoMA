@@ -63,26 +63,21 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 break;
                             }
 
-                            final int choice =
-                                    JOptionPane.showConfirmDialog(
-                                            parent,
-                                            "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
-                                            "Continue?",
-                                            JOptionPane.YES_NO_OPTION);
-
-                            if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH); /* User aborted. Reset value to previous setting. */
-                            } else {
-                                MoMA.SEGMENTATION_MODEL_PATH = newPath;
-                                MoMA.props.setProperty(
-                                        "SEGMENTATION_MODEL_PATH",
-                                        "" + MoMA.SEGMENTATION_MODEL_PATH);
-                                    final Thread t = new Thread(() -> {
-                                        ((MoMAGui) parent).restartFromGLSegmentation();
-                                        ((MoMAGui) parent).restartTracking();
-                                    });
-                                    t.start();
-                            }
+                            showPropertyEditedNeedsRerunDialog("Continue?",
+                                    "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
+                                    () -> newPath != MoMA.SEGMENTATION_MODEL_PATH,
+                                    () -> sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH),
+                                    () -> {
+                                        MoMA.SEGMENTATION_MODEL_PATH = newPath;
+                                        MoMA.props.setProperty(
+                                                "SEGMENTATION_MODEL_PATH",
+                                                "" + MoMA.SEGMENTATION_MODEL_PATH);
+                                        final Thread t = new Thread(() -> {
+                                            ((MoMAGui) parent).restartFromGLSegmentation();
+                                            ((MoMAGui) parent).restartTracking();
+                                        });
+                                        t.start();
+                            });
                         }
                         break;
                     }
@@ -152,7 +147,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	}
 
-    private static void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable rejectionCallback, Runnable acceptCallback) {
+    private static void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable abortCallback, Runnable acceptCallback) {
         if (condition.get()) {
             final int choice =
                     JOptionPane.showConfirmDialog(
@@ -162,7 +157,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                             JOptionPane.YES_NO_OPTION);
 
             if (choice != JOptionPane.OK_OPTION) {
-                rejectionCallback.run();
+                abortCallback.run();
             } else {
                 acceptCallback.run();
             }

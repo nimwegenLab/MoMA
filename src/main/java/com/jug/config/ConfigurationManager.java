@@ -107,6 +107,11 @@ public class ConfigurationManager {
      */
     public static int GUI_NUMBER_OF_SHOWN_TIMESTEPS = 7;
 
+    /**
+     * Shortest time in which we can expect a cell-doubling provided as number of frames.
+     */
+    public static int SHORTEST_DOUBLING_TIME_IN_FRAMES = 20;
+
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public static void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory){

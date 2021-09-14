@@ -6,6 +6,7 @@ import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
+import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
@@ -51,7 +52,6 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  * @author jug
  */
 public class MoMA implements IImageProvider {
-
 	static {
 		LegacyInjector.preinit();
 	}
@@ -60,6 +60,11 @@ public class MoMA implements IImageProvider {
 	 * Identifier of current version
 	 */
 	public static final String VERSION_STRING = "MoMA_1.0.0";
+
+	/**
+	 * This is the pseudo dependency injection container, which we use to clean-up and initialize our instances.
+	 */
+	public static PseudoDic dic;
 
 	// -------------------------------------------------------------------------------------
 	// statics
@@ -159,6 +164,8 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		dic = new PseudoDic();
+
 		context = new Context();
 		ops = context.service(OpService.class);
 		componentProperties = new ComponentProperties();

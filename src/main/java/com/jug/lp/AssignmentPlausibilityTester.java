@@ -1,7 +1,5 @@
 package com.jug.lp;
 
-import org.apache.commons.lang.NotImplementedException;
-
 /**
  * Methods in this class are used to test whether the combination of components in assignments are physically plausible.
  * They are used to determine whether an assignment should be added to the optimizer.

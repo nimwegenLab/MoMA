@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.lp.AssignmentPlausibilityTester;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -23,11 +24,13 @@ import java.util.function.Supplier;
 class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -5529104109524798394L;
-	private static final PropEditedListener propEditListener = new PropEditedListener();
+	private final PropEditedListener propEditListener = new PropEditedListener();
     private static Component parent = null;
+    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
+    private final PropFactory propFactory;
     private PropertySheetPanel sheet;
 
-    static class PropEditedListener implements PropertyChangeListener {
+    public class PropEditedListener implements PropertyChangeListener {
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent evt ) {
@@ -97,6 +100,22 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
+                    case "SHORTEST_DOUBLING_TIME_IN_FRAMES": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES,
+                                () -> sourceProperty.setValue(ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES),
+                                () -> {
+                                    ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES = newValue;
+                                    MoMA.props.setProperty(
+                                            "DOUBLING_TIME_THRESHOLD",
+                                            "" + newValue);
+                                    assignmentPlausibilityTester.setShortestDoublingTimeInFrames(newValue);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
                     case "INTENSITY_FIT_ITERATIONS": {
                         ConfigurationManager.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());
@@ -148,7 +167,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	}
 
-    private static void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable abortCallback, Runnable acceptCallback) {
+    private void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable abortCallback, Runnable acceptCallback) {
         if (condition.get()) {
             final int choice =
                     JOptionPane.showConfirmDialog(
@@ -165,9 +184,9 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
         }
     }
 
-    private static class PropFactory {
+    private class PropFactory {
 
-        static Property buildFor(final String key, final Object value) {
+        Property buildFor(final String key, final Object value) {
 			final DefaultProperty property = new DefaultProperty();
 			property.setDisplayName( key );
 			property.setName( key );
@@ -216,9 +235,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor( final Component parent, final Properties props ) {
+	public DialogPropertiesEditor(final Component parent, final Properties props, AssignmentPlausibilityTester assignmentPlausibilityTester) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
+        propFactory = new PropFactory();
 		this.parent = parent;
+        this.assignmentPlausibilityTester = assignmentPlausibilityTester;
 		this.dialogInit();
 		this.setModal( true );
 
@@ -246,7 +267,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 		sheet.setSortingProperties( false );
 		sheet.setRestoreToggleStates( false );
 		for ( final String key : this.props.stringPropertyNames() ) {
-			sheet.addProperty( PropFactory.buildFor( key, props.getProperty( key ) ) );
+			sheet.addProperty( propFactory.buildFor( key, props.getProperty( key ) ) );
 		}
 //		sheet.setEditorFactory( PropertyEditorRegistry.Instance );
 

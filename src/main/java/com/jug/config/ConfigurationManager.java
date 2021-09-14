@@ -1,6 +1,5 @@
 package com.jug.config;
 
-//import com.jug.MoMA;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -11,6 +10,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.jug.MoMA.*;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
 public class ConfigurationManager {
@@ -142,6 +142,17 @@ public class ConfigurationManager {
         INTENSITY_FIT_ITERATIONS = Integer.parseInt(props.getProperty("INTENSITY_FIT_ITERATIONS", Integer.toString(INTENSITY_FIT_ITERATIONS)));
         INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
+
+        /* process feature flags */
+        if(featureFlagDisableMaxCellDrop)
+        {
+            ConfigurationManager.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+        }
+        else
+        {
+            ConfigurationManager.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+        }
+
     }
 
     /**

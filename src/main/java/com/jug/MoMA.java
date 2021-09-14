@@ -170,16 +170,6 @@ public class MoMA implements IImageProvider {
 		ops = context.service(OpService.class);
 		componentProperties = new ComponentProperties();
 
-		/* process feature flags */
-		if(featureFlagDisableMaxCellDrop)
-		{
-			ConfigurationManager.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-		}
-		else
-		{
-			ConfigurationManager.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-		}
-
 		// ===== command line parsing ======================================================================
 
 		// create Options object & the parser

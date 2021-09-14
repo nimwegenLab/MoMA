@@ -64,6 +64,11 @@ public class MoMA implements IImageProvider {
 	// -------------------------------------------------------------------------------------
 	// statics
 	// -------------------------------------------------------------------------------------
+	/*
+	  Control if ImageJ and loaded data will be shown...
+	 */
+	static boolean showIJ = false;
+
 	public static Context context;
 	public static OpService ops;
 	public static ComponentProperties componentProperties;
@@ -167,12 +172,6 @@ public class MoMA implements IImageProvider {
 		{
 			ConfigurationManager.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
 		}
-
-		/*
-		  Control if ImageJ and loaded data will be shown...
-		 */
-		boolean showIJ = false;
-		if (showIJ) new ImageJ();
 
 		// ===== command line parsing ======================================================================
 

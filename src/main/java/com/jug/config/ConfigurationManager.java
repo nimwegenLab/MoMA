@@ -45,16 +45,16 @@ public class ConfigurationManager {
      */
     public static int GL_WIDTH_IN_PIXELS = 20;
 
-    /**
-     * Parameter: sigma for gaussian blurring in x-direction of the raw image
-     * data. Used while searching the gaps between bacteria.
-     */
-    public static float SIGMA_PRE_SEGMENTATION_X = 0f;
-    public static float SIGMA_PRE_SEGMENTATION_Y = 0f;
+//    /**
+//     * Parameter: sigma for gaussian blurring in x-direction of the raw image
+//     * data. Used while searching the gaps between bacteria.
+//     */
+//    public static float SIGMA_PRE_SEGMENTATION_X = 0f;
+//    public static float SIGMA_PRE_SEGMENTATION_Y = 0f;
 
     public static int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
     public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
-    public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
+//    public static int MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = 10;
 
     public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
     public static String CELL_LABELS = "dead;dying;fading";
@@ -66,60 +66,60 @@ public class ConfigurationManager {
 //    public static float SIGMA_GL_DETECTION_X = 20f;
 //    public static float SIGMA_GL_DETECTION_Y = 0f;
 
-    /**
-     * Parameter: later border in pixels - well centers detected too close to
-     * the left and right image border will be neglected. Reason: detection not
-     * reliable if well is truncated.
-     */
-    public static int GL_OFFSET_LATERAL = 20;
+//    /**
+//     * Parameter: later border in pixels - well centers detected too close to
+//     * the left and right image border will be neglected. Reason: detection not
+//     * reliable if well is truncated.
+//     */
+//    public static int GL_OFFSET_LATERAL = 20;
 
     /**
-     * Vertical center position on which the exit range defined with {@link COMPONENT_EXIT_RANGE} is centered.
+     * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
     public static int GL_OFFSET_TOP = 65;
 
     /**
      * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
-     * at the vertical position defined by {@link GL_OFFSET_TOP}.
+     * at the vertical position defined by GL_OFFSET_TOP.
      */
     public static float COMPONENT_EXIT_RANGE = 50;
 
-    /**
-     * Prior knowledge: minimal length of detected cells
-     */
-    public static int MIN_CELL_LENGTH = 18;
+//    /**
+//     * Prior knowledge: minimal length of detected cells
+//     */
+//    public static int MIN_CELL_LENGTH = 18;
+
+//    /**
+//     * Prior knowledge: minimal contrast of a gap (also used for MSERs)
+//     */
+//    public static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
+//    // value that will basically
+//    // not filter anything...
+
+//    /**
+//     * When using the learned classification boosted paramaxflow segmentation,
+//     * how much of the midline data obtained by the 'simple' linescan +
+//     * component tree segmentation should mix in? Rational: if the
+//     * classification is flat, the original (simple) mehod might still offer
+//     * some modulation!
+//     */
+//    public static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
 
     /**
-     * Prior knowledge: minimal contrast of a gap (also used for MSERs)
-     */
-    public static float MIN_GAP_CONTRAST = 0.02f; // This is set to a very low
-    // value that will basically
-    // not filter anything...
-
-    /**
-     * When using the learned classification boosted paramaxflow segmentation,
-     * how much of the midline data obtained by the 'simple' linescan +
-     * component tree segmentation should mix in? Rational: if the
-     * classification is flat, the original (simple) mehod might still offer
-     * some modulation!
-     */
-    public static float SEGMENTATION_MIX_CT_INTO_PMFRF = 0.25f;
-
-    /**
-     * String pointing at the weka-segmenter model file that should be used for
+     * String pointing at the U-Net TensorFlow model file that should be used for
      * classification during segmentation.
      */
-    public static String SEGMENTATION_MODEL_PATH = "CellGapClassifier.model";
+    public static String SEGMENTATION_MODEL_PATH = "";
 
     /**
      * Global switches for export options
      */
-    public static boolean EXPORT_DO_TRACK_EXPORT = false;
-    public static boolean EXPORT_USER_INPUTS = true;
-    public static boolean EXPORT_INCLUDE_HISTOGRAMS = false;
-    public static boolean EXPORT_INCLUDE_QUANTILES = false;
-    public static boolean EXPORT_INCLUDE_COL_INTENSITY_SUMS = true;
-    public static boolean EXPORT_INCLUDE_PIXEL_INTENSITIES = false;
+//    public static boolean EXPORT_DO_TRACK_EXPORT = false;
+//    public static boolean EXPORT_USER_INPUTS = true;
+//    public static boolean EXPORT_INCLUDE_HISTOGRAMS = false;
+//    public static boolean EXPORT_INCLUDE_QUANTILES = false;
+//    public static boolean EXPORT_INCLUDE_COL_INTENSITY_SUMS = true;
+//    public static boolean EXPORT_INCLUDE_PIXEL_INTENSITIES = false;
 
     /**
      *
@@ -188,17 +188,17 @@ public class ConfigurationManager {
 //        BGREM_TEMPLATE_XMAX = Integer.parseInt( props.getProperty( "BGREM_TEMPLATE_XMAX", Integer.toString( BGREM_TEMPLATE_XMAX ) ) );
 //        BGREM_X_OFFSET = Integer.parseInt( props.getProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) ) );
         GL_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) ) );
-        MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
+//        MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS = Integer.parseInt( props.getProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) ) );
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt( props.getProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) ) );
         GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
-        GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
-        MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
-        MIN_GAP_CONTRAST = Float.parseFloat( props.getProperty( "MIN_GAP_CONTRAST", Float.toString( MIN_GAP_CONTRAST ) ) );
-        SIGMA_PRE_SEGMENTATION_X = Float.parseFloat( props.getProperty( "SIGMA_PRE_SEGMENTATION_X", Float.toString( SIGMA_PRE_SEGMENTATION_X ) ) );
-        SIGMA_PRE_SEGMENTATION_Y = Float.parseFloat( props.getProperty( "SIGMA_PRE_SEGMENTATION_Y", Float.toString( SIGMA_PRE_SEGMENTATION_Y ) ) );
+//        GL_OFFSET_LATERAL = Integer.parseInt( props.getProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) ) );
+//        MIN_CELL_LENGTH = Integer.parseInt( props.getProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) ) );
+//        MIN_GAP_CONTRAST = Float.parseFloat( props.getProperty( "MIN_GAP_CONTRAST", Float.toString( MIN_GAP_CONTRAST ) ) );
+//        SIGMA_PRE_SEGMENTATION_X = Float.parseFloat( props.getProperty( "SIGMA_PRE_SEGMENTATION_X", Float.toString( SIGMA_PRE_SEGMENTATION_X ) ) );
+//        SIGMA_PRE_SEGMENTATION_Y = Float.parseFloat( props.getProperty( "SIGMA_PRE_SEGMENTATION_Y", Float.toString( SIGMA_PRE_SEGMENTATION_Y ) ) );
 //        SIGMA_GL_DETECTION_X = Float.parseFloat( props.getProperty( "SIGMA_GL_DETECTION_X", Float.toString( SIGMA_GL_DETECTION_X ) ) );
 //        SIGMA_GL_DETECTION_Y = Float.parseFloat( props.getProperty( "SIGMA_GL_DETECTION_Y", Float.toString( SIGMA_GL_DETECTION_Y ) ) );
-        SEGMENTATION_MIX_CT_INTO_PMFRF = Float.parseFloat( props.getProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Float.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) ) );
+//        SEGMENTATION_MIX_CT_INTO_PMFRF = Float.parseFloat( props.getProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Float.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) ) );
         SEGMENTATION_MODEL_PATH = props.getProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
         DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
         CELL_LABELS = props.getProperty( "CELL_LABELS", CELL_LABELS);
@@ -219,12 +219,12 @@ public class ConfigurationManager {
         GUI_CONSOLE_WIDTH = Integer.parseInt( props.getProperty( "GUI_CONSOLE_WIDTH", Integer.toString( GUI_CONSOLE_WIDTH ) ) );
         GUI_NUMBER_OF_SHOWN_TIMESTEPS = Integer.parseInt( props.getProperty( "GUI_NUMBER_OF_SHOWN_TIMESTEPS", Integer.toString(GUI_NUMBER_OF_SHOWN_TIMESTEPS) ) );
 
-        EXPORT_DO_TRACK_EXPORT = props.getProperty( "EXPORT_DO_TRACK_EXPORT", Integer.toString(EXPORT_DO_TRACK_EXPORT?1:0) ).equals("1");
-        EXPORT_USER_INPUTS = props.getProperty( "EXPORT_USER_INPUTS", Integer.toString(EXPORT_USER_INPUTS?1:0) ).equals("1");
-        EXPORT_INCLUDE_HISTOGRAMS = props.getProperty( "EXPORT_INCLUDE_HISTOGRAMS", Integer.toString(EXPORT_INCLUDE_HISTOGRAMS?1:0) ).equals("1");
-        EXPORT_INCLUDE_QUANTILES = props.getProperty( "EXPORT_INCLUDE_QUANTILES", Integer.toString(EXPORT_INCLUDE_QUANTILES?1:0) ).equals("1");
-        EXPORT_INCLUDE_COL_INTENSITY_SUMS = props.getProperty( "EXPORT_INCLUDE_COL_INTENSITY_SUMS", Integer.toString(EXPORT_INCLUDE_COL_INTENSITY_SUMS?1:0) ).equals("1");
-        EXPORT_INCLUDE_PIXEL_INTENSITIES = props.getProperty( "EXPORT_INCLUDE_PIXEL_INTENSITIES", Integer.toString(EXPORT_INCLUDE_PIXEL_INTENSITIES?1:0) ).equals("1");
+//        EXPORT_DO_TRACK_EXPORT = props.getProperty( "EXPORT_DO_TRACK_EXPORT", Integer.toString(EXPORT_DO_TRACK_EXPORT?1:0) ).equals("1");
+//        EXPORT_USER_INPUTS = props.getProperty( "EXPORT_USER_INPUTS", Integer.toString(EXPORT_USER_INPUTS?1:0) ).equals("1");
+//        EXPORT_INCLUDE_HISTOGRAMS = props.getProperty( "EXPORT_INCLUDE_HISTOGRAMS", Integer.toString(EXPORT_INCLUDE_HISTOGRAMS?1:0) ).equals("1");
+//        EXPORT_INCLUDE_QUANTILES = props.getProperty( "EXPORT_INCLUDE_QUANTILES", Integer.toString(EXPORT_INCLUDE_QUANTILES?1:0) ).equals("1");
+//        EXPORT_INCLUDE_COL_INTENSITY_SUMS = props.getProperty( "EXPORT_INCLUDE_COL_INTENSITY_SUMS", Integer.toString(EXPORT_INCLUDE_COL_INTENSITY_SUMS?1:0) ).equals("1");
+//        EXPORT_INCLUDE_PIXEL_INTENSITIES = props.getProperty( "EXPORT_INCLUDE_PIXEL_INTENSITIES", Integer.toString(EXPORT_INCLUDE_PIXEL_INTENSITIES?1:0) ).equals("1");
 
 
         OPTIMISATION_INTERVAL_LENGTH = Integer.parseInt( props.getProperty( "OPTIMISATION_INTERVAL_LENGTH", Integer.toString(OPTIMISATION_INTERVAL_LENGTH) ));
@@ -317,17 +317,17 @@ public class ConfigurationManager {
 //            props.setProperty( "BGREM_TEMPLATE_XMAX", Integer.toString( BGREM_TEMPLATE_XMAX ) );
 //            props.setProperty( "BGREM_X_OFFSET", Integer.toString( BGREM_X_OFFSET ) );
             props.setProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) );
-            props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
+//            props.setProperty( "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS", Integer.toString( MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS ) );
             props.setProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) );
             props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );
-            props.setProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) );
-            props.setProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) );
-            props.setProperty( "MIN_GAP_CONTRAST", Double.toString( MIN_GAP_CONTRAST ) );
-            props.setProperty( "SIGMA_PRE_SEGMENTATION_X", Double.toString( SIGMA_PRE_SEGMENTATION_X ) );
-            props.setProperty( "SIGMA_PRE_SEGMENTATION_Y", Double.toString( SIGMA_PRE_SEGMENTATION_Y ) );
+//            props.setProperty( "GL_OFFSET_LATERAL", Integer.toString( GL_OFFSET_LATERAL ) );
+//            props.setProperty( "MIN_CELL_LENGTH", Integer.toString( MIN_CELL_LENGTH ) );
+//            props.setProperty( "MIN_GAP_CONTRAST", Double.toString( MIN_GAP_CONTRAST ) );
+//            props.setProperty( "SIGMA_PRE_SEGMENTATION_X", Double.toString( SIGMA_PRE_SEGMENTATION_X ) );
+//            props.setProperty( "SIGMA_PRE_SEGMENTATION_Y", Double.toString( SIGMA_PRE_SEGMENTATION_Y ) );
 //            props.setProperty( "SIGMA_GL_DETECTION_X", Double.toString( SIGMA_GL_DETECTION_X ) );
 //            props.setProperty( "SIGMA_GL_DETECTION_Y", Double.toString( SIGMA_GL_DETECTION_Y ) );
-            props.setProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Double.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) );
+//            props.setProperty( "SEGMENTATION_MIX_CT_INTO_PMFRF", Double.toString( SEGMENTATION_MIX_CT_INTO_PMFRF ) );
             props.setProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
             props.setProperty( "DEFAULT_PATH", DEFAULT_PATH );
 
@@ -349,12 +349,12 @@ public class ConfigurationManager {
             props.setProperty( "GUI_CONSOLE_WIDTH", Integer.toString( GUI_CONSOLE_WIDTH ) );
 
 
-            props.setProperty( "EXPORT_DO_TRACK_EXPORT", Integer.toString(EXPORT_DO_TRACK_EXPORT?1:0) );
-            props.setProperty( "EXPORT_USER_INPUTS", Integer.toString(EXPORT_USER_INPUTS?1:0) );
-            props.setProperty( "EXPORT_INCLUDE_HISTOGRAMS", Integer.toString(EXPORT_INCLUDE_HISTOGRAMS?1:0) );
-            props.setProperty( "EXPORT_INCLUDE_QUANTILES", Integer.toString(EXPORT_INCLUDE_QUANTILES?1:0) );
-            props.setProperty( "EXPORT_INCLUDE_COL_INTENSITY_SUMS", Integer.toString(EXPORT_INCLUDE_COL_INTENSITY_SUMS?1:0) );
-            props.setProperty( "EXPORT_INCLUDE_PIXEL_INTENSITIES", Integer.toString(EXPORT_INCLUDE_PIXEL_INTENSITIES?1:0) );
+//            props.setProperty( "EXPORT_DO_TRACK_EXPORT", Integer.toString(EXPORT_DO_TRACK_EXPORT?1:0) );
+//            props.setProperty( "EXPORT_USER_INPUTS", Integer.toString(EXPORT_USER_INPUTS?1:0) );
+//            props.setProperty( "EXPORT_INCLUDE_HISTOGRAMS", Integer.toString(EXPORT_INCLUDE_HISTOGRAMS?1:0) );
+//            props.setProperty( "EXPORT_INCLUDE_QUANTILES", Integer.toString(EXPORT_INCLUDE_QUANTILES?1:0) );
+//            props.setProperty( "EXPORT_INCLUDE_COL_INTENSITY_SUMS", Integer.toString(EXPORT_INCLUDE_COL_INTENSITY_SUMS?1:0) );
+//            props.setProperty( "EXPORT_INCLUDE_PIXEL_INTENSITIES", Integer.toString(EXPORT_INCLUDE_PIXEL_INTENSITIES?1:0) );
 
             props.setProperty("OPTIMISATION_INTERVAL_LENGTH", Integer.toString(OPTIMISATION_INTERVAL_LENGTH));
 

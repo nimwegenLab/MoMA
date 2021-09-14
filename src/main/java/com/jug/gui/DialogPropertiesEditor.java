@@ -177,8 +177,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
             String GRB = "GUROBI Properties";
             String SEG = "Segmentation Properties";
-            String TRA = "Tracking Properties";
-            String GL = "GrowthLine Properties";
             String EXPORT = "Export Properties";
 
             switch (key) {

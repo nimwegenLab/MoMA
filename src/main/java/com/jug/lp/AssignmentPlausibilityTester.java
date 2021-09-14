@@ -10,7 +10,10 @@ public class AssignmentPlausibilityTester {
 
     private double sizeDifferenceThreshold;
 
+    private int shortestDoublingTimeInFrames;
+
     public AssignmentPlausibilityTester(int shortestDoublingTimeInFrames) {
+        this.shortestDoublingTimeInFrames = shortestDoublingTimeInFrames;
         setShortestDoublingTimeInFrames(shortestDoublingTimeInFrames);
     }
 
@@ -20,12 +23,14 @@ public class AssignmentPlausibilityTester {
      * @param totalTargetComponentSize
      * @return
      */
-    public boolean sizeDifferenceIsPlausible(int sourceComponentSize, int totalTargetComponentSize) {
+    public boolean sizeDifferenceIsPlausible(long sourceComponentSize, long totalTargetComponentSize) {
         double foldChange = ((double) totalTargetComponentSize) / ((double) sourceComponentSize);
-        return foldChange <= sizeDifferenceThreshold;
+        boolean res = foldChange <= sizeDifferenceThreshold;
+        return res;
     }
 
     public void setShortestDoublingTimeInFrames(int shortestDoublingTimeInFrames) {
+        this.shortestDoublingTimeInFrames = shortestDoublingTimeInFrames;
         this.growthRateInFrames = Math.log(2) / ((double) shortestDoublingTimeInFrames);
         this.sizeDifferenceThreshold = Math.exp(growthRateInFrames * 1); /* *1 is symbolic and represent the single frame time step for which we calculate the change; i.e.: N_t/N_0 = exp(growthRate*t) */
     }

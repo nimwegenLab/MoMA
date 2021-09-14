@@ -195,17 +195,22 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 			property.addPropertyChangeListener( propEditListener );
 
             String GRB = "GUROBI Properties";
-            String SEG = "Segmentation Properties";
+            String SEG = "Segmentation";
+            String TRACK = "Tracking";
             String EXPORT = "Export Properties";
 
             switch (key) {
                 case "GL_WIDTH_IN_PIXELS":
-                case "GL_OFFSET_TOP":
                 case "SEGMENTATION_MODEL_PATH":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);
                     break;
+                case "GL_OFFSET_TOP":
+                case "SHORTEST_DOUBLING_TIME_IN_FRAMES":
+                    property.setCategory(TRACK);
+                    property.setShortDescription(key);
+                    property.setEditable(true);
                 case "DEFAULT_PATH":
                     property.setShortDescription(key);
                     break;

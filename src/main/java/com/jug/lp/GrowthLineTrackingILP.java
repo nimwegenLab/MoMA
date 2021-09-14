@@ -391,6 +391,10 @@ public class GrowthLineTrackingILP {
 
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+                if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.size(), targetComponent.size())){
+                    continue;
+                }
+
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
                 if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP)) {
@@ -566,6 +570,10 @@ public class GrowthLineTrackingILP {
                 final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
+                    if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.size(), upperTargetComponent.size() + lowerTargetComponent.size())){
+                        continue;
+                    }
+
                     @SuppressWarnings("unchecked")
                     float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
                     final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,

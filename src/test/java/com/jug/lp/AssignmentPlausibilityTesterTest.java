@@ -10,8 +10,7 @@ public class AssignmentPlausibilityTesterTest {
         int sourceSize = 10;
         int totalTargetSize = 19;
         int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester();
-        sut.setShortestDoublingTimeInFrames(doublingTime);
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
         assertTrue(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
     }
 
@@ -20,8 +19,7 @@ public class AssignmentPlausibilityTesterTest {
         int sourceSize = 10;
         int totalTargetSize = 20;
         int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester();
-        sut.setShortestDoublingTimeInFrames(doublingTime);
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
         assertTrue(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
     }
 
@@ -30,8 +28,7 @@ public class AssignmentPlausibilityTesterTest {
         int sourceSize = 10;
         int totalTargetSize = 21;
         int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester();
-        sut.setShortestDoublingTimeInFrames(doublingTime);
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
         assertFalse(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
     }
 
@@ -39,8 +36,7 @@ public class AssignmentPlausibilityTesterTest {
     public void getShortestDoublingTimeInFrames__returns_expected_value() {
         double expected = 0.0346;
         int doublingTime = 20;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester();
-        sut.setShortestDoublingTimeInFrames(doublingTime);
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
         assertEquals(expected, sut.getGrowthRateInFrames(), 1e-3);
     }
 
@@ -48,8 +44,7 @@ public class AssignmentPlausibilityTesterTest {
     public void setShortestDoublingTimeInFrames__sets_correct_growth_rate() {
         double expected = 0.0346;
         int doublingTime = 20;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester();
-        sut.setShortestDoublingTimeInFrames(doublingTime);
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
         assertEquals(expected, sut.getGrowthRateInFrames(), 1e-3);
     }
 }

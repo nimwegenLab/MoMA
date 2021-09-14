@@ -52,6 +52,8 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  * @author jug
  */
 public class MoMA implements IImageProvider {
+	private static ConfigurationManager configurationManager;
+
 	static {
 		LegacyInjector.preinit();
 	}
@@ -164,7 +166,12 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		dic = new PseudoDic();
+		System.out.println( "VERSION: " + VERSION_STRING );
+		
+		configurationManager = new ConfigurationManager();
+		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+
+		dic = new PseudoDic(configurationManager);
 
 		context = new Context();
 		ops = context.service(OpService.class);
@@ -422,10 +429,6 @@ public class MoMA implements IImageProvider {
 			guiFrame = new JFrame();
 			main.initMainWindow( guiFrame );
 		}
-
-		System.out.println( "VERSION: " + VERSION_STRING );
-
-		ConfigurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
 		if ( !HEADLESS ) {
 			// Iterate over all currently attached monitors and check if sceen

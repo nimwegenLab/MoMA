@@ -10,6 +10,10 @@ public class AssignmentPlausibilityTester {
 
     private double sizeDifferenceThreshold;
 
+    public AssignmentPlausibilityTester(int shortestDoublingTimeInFrames) {
+        setShortestDoublingTimeInFrames(shortestDoublingTimeInFrames);
+    }
+
     /**
      * Test if the size difference between the source component and the total size of the target components is plausible.
      * @param sourceComponentSize

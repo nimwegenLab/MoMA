@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.config.ConfigurationManager;
 import com.jug.lp.AssignmentPlausibilityTester;
 
 /**
@@ -9,8 +10,8 @@ import com.jug.lp.AssignmentPlausibilityTester;
 public class PseudoDic {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
 
-    public PseudoDic(){
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester();
+    public PseudoDic(ConfigurationManager configurationManager){
+        assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES);
     }
 
     public AssignmentPlausibilityTester getAssignmentPlausibilityTester() {

@@ -48,7 +48,7 @@ public class GrowthlaneTrackingIlpTest {
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
         GrowthLine gl = new GrowthLine(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel, imageProviderMock);
+        GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(0));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }

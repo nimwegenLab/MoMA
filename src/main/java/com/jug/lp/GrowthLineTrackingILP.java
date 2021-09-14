@@ -59,6 +59,7 @@ public class GrowthLineTrackingILP {
     private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> freezeSegmentConstraints =
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
+    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
@@ -68,12 +69,13 @@ public class GrowthLineTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider) {
+    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider, AssignmentPlausibilityTester assignmentPlausibilityTester) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
         this.imageProvider = imageProvider;
         this.progressListener = new ArrayList<>();
+        this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
 
     // -------------------------------------------------------------------------------------
@@ -391,33 +393,35 @@ public class GrowthLineTrackingILP {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
-                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP))) {
+                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP)) {
+                    continue;
+                }
 
-                    final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                    float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
-                    cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
+                final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
+                float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
+                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
-                    if (cost <= CUTOFF_COST) {
+                if (cost > CUTOFF_COST) {
+                    continue;
+                }
 //                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
-                        final Hypothesis<Component<FloatType, ?>> to =
-                                nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
-                        final Hypothesis<Component<FloatType, ?>> from =
-                                nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
+                final Hypothesis<Component<FloatType, ?>> to =
+                        nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
+                final Hypothesis<Component<FloatType, ?>> from =
+                        nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
 
-                        final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
-                        final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+                final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
-                        final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
-                        nodes.addAssignment(t, ma);
-                        if (!edgeSets.addToRightNeighborhood(from, ma)) {
-                            System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
-                        }
-                        if (!edgeSets.addToLeftNeighborhood(to, ma)) {
-                            System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
-                        }
-                    }
+                final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
+                nodes.addAssignment(t, ma);
+                if (!edgeSets.addToRightNeighborhood(from, ma)) {
+                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
+                }
+                if (!edgeSets.addToLeftNeighborhood(to, ma)) {
+                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
                 }
             }
         }

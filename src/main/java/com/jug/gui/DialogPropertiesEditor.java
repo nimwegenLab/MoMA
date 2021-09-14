@@ -179,33 +179,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
             String SEG = "Segmentation Properties";
             String TRA = "Tracking Properties";
             String GL = "GrowthLine Properties";
-            String BGREM = "Background Properties";
             String EXPORT = "Export Properties";
 
             switch (key) {
-                case "BGREM_TEMPLATE_XMIN":
-                case "BGREM_X_OFFSET":
-                case "BGREM_TEMPLATE_XMAX":
-                    property.setCategory(BGREM);
-                    property.setShortDescription(key);
-                    break;
                 case "GL_WIDTH_IN_PIXELS":
-                case "MIN_GAP_CONTRAST":
-                case "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS":
-                case "GL_OFFSET_LATERAL":
                 case "GL_OFFSET_TOP":
-                case "MIN_CELL_LENGTH":
-                    property.setCategory(TRA);
-                    property.setShortDescription(key);
-                    break;
-                case "SIGMA_PRE_SEGMENTATION_X":
-                case "SIGMA_GL_DETECTION_Y":
-                case "SIGMA_GL_DETECTION_X":
-                case "SIGMA_PRE_SEGMENTATION_Y":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    break;
-                case "SEGMENTATION_MIX_CT_INTO_PMFRF":
                 case "SEGMENTATION_MODEL_PATH":
                     property.setCategory(SEG);
                     property.setShortDescription(key);

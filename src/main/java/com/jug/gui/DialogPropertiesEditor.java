@@ -100,18 +100,15 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
-                    case "SHORTEST_DOUBLING_TIME_IN_FRAMES": {
-                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                    case "MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES": {
+                        double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES,
-                                () -> sourceProperty.setValue(ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES),
+                                () -> newValue != ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES,
+                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES),
                                 () -> {
-                                    ConfigurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES = newValue;
-                                    MoMA.props.setProperty(
-                                            "DOUBLING_TIME_THRESHOLD",
-                                            "" + newValue);
-                                    assignmentPlausibilityTester.setShortestDoublingTimeInFrames(newValue);
+                                    ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES = newValue;
+                                    assignmentPlausibilityTester.setMaximumRelativeSizeChangeBetweenFrames(newValue);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;

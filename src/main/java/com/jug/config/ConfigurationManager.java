@@ -110,7 +110,7 @@ public class ConfigurationManager {
     /**
      * Shortest time in which we can expect a cell-doubling provided as number of frames.
      */
-    public static int SHORTEST_DOUBLING_TIME_IN_FRAMES = 20;
+    public static double MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES = 1.5;
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
@@ -119,7 +119,7 @@ public class ConfigurationManager {
         GL_WIDTH_IN_PIXELS = Integer.parseInt( props.getProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) ) );
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt( props.getProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) ) );
         GL_OFFSET_TOP = Integer.parseInt( props.getProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) ) );
-        SHORTEST_DOUBLING_TIME_IN_FRAMES = Integer.parseInt( props.getProperty( "SHORTEST_DOUBLING_TIME_IN_FRAMES", Integer.toString( SHORTEST_DOUBLING_TIME_IN_FRAMES ) ) );
+        MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES = Double.parseDouble( props.getProperty( "MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES", Double.toString(MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES) ) );
         SEGMENTATION_MODEL_PATH = props.getProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
         DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
         CELL_LABELS = props.getProperty( "CELL_LABELS", CELL_LABELS);
@@ -238,7 +238,7 @@ public class ConfigurationManager {
             props.setProperty( "GL_WIDTH_IN_PIXELS", Integer.toString( GL_WIDTH_IN_PIXELS ) );
             props.setProperty( "INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString( INTENSITY_FIT_RANGE_IN_PIXELS ) );
             props.setProperty( "GL_OFFSET_TOP", Integer.toString( GL_OFFSET_TOP ) );
-            props.setProperty( "SHORTEST_DOUBLING_TIME_IN_FRAMES", Integer.toString( SHORTEST_DOUBLING_TIME_IN_FRAMES ) );
+            props.setProperty( "MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES", Double.toString(MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES) );
             props.setProperty( "SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
             props.setProperty( "DEFAULT_PATH", DEFAULT_PATH );
 

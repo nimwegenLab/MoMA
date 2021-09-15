@@ -6,36 +6,30 @@ package com.jug.lp;
  */
 public class AssignmentPlausibilityTester {
 
-    double growthRateInFrames = 0;
+    private double maximumRelativeSizeChangeBetweenFrames;
 
-    private double sizeDifferenceThreshold;
-
-    private int shortestDoublingTimeInFrames;
-
-    public AssignmentPlausibilityTester(int shortestDoublingTimeInFrames) {
-        this.shortestDoublingTimeInFrames = shortestDoublingTimeInFrames;
-        setShortestDoublingTimeInFrames(shortestDoublingTimeInFrames);
+    public AssignmentPlausibilityTester(double maximumRelativeSizeChangeBetweenFrames) {
+        setMaximumRelativeSizeChangeBetweenFrames(maximumRelativeSizeChangeBetweenFrames);
     }
 
     /**
      * Test if the size difference between the source component and the total size of the target components is plausible.
+     *
      * @param sourceComponentSize
      * @param totalTargetComponentSize
      * @return
      */
     public boolean sizeDifferenceIsPlausible(double sourceComponentSize, double totalTargetComponentSize) {
-        double foldChange = ((double) totalTargetComponentSize) / ((double) sourceComponentSize);
-        boolean res = foldChange <= sizeDifferenceThreshold;
+        double foldChange = totalTargetComponentSize / sourceComponentSize;
+        boolean res = foldChange <= maximumRelativeSizeChangeBetweenFrames;
         return res;
     }
 
-    public void setShortestDoublingTimeInFrames(int shortestDoublingTimeInFrames) {
-        this.shortestDoublingTimeInFrames = shortestDoublingTimeInFrames;
-        this.growthRateInFrames = Math.log(2) / ((double) shortestDoublingTimeInFrames);
-        this.sizeDifferenceThreshold = Math.exp(growthRateInFrames * 1); /* *1 is symbolic and represent the single frame time step for which we calculate the change; i.e.: N_t/N_0 = exp(growthRate*t) */
+    public double getMaximumRelativeSizeChangeBetweenFrames() {
+        return this.maximumRelativeSizeChangeBetweenFrames;
     }
 
-    public double getGrowthRateInFrames() {
-        return growthRateInFrames;
+    public void setMaximumRelativeSizeChangeBetweenFrames(double maximumRelativeSizeChangeBetweenFrames) {
+        this.maximumRelativeSizeChangeBetweenFrames = maximumRelativeSizeChangeBetweenFrames;
     }
 }

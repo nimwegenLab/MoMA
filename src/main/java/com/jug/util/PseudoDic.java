@@ -11,7 +11,7 @@ public class PseudoDic {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
 
     public PseudoDic(ConfigurationManager configurationManager){
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager.SHORTEST_DOUBLING_TIME_IN_FRAMES);
+        assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES);
     }
 
     public AssignmentPlausibilityTester getAssignmentPlausibilityTester() {

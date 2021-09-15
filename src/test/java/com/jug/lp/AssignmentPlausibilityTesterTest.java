@@ -4,47 +4,48 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class AssignmentPlausibilityTesterTest {
+    double tol = 1e-5;
 
     @Test
-    public void sizeDifferenceIsPlausible__for_smaller_than_valid_target_size__returns_true() {
-        int sourceSize = 10;
-        int totalTargetSize = 19;
-        int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
-        assertTrue(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
+    public void constructor__sets_maximumRelativeSizeChangeBetweenFrames_correctly(){
+        double expected = 1.1;
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(expected);
+        assertEquals(expected, sut.getMaximumRelativeSizeChangeBetweenFrames(), tol);
     }
 
     @Test
-    public void sizeDifferenceIsPlausible__for_equal_to_valid_target_size__returns_true() {
-        int sourceSize = 10;
-        int totalTargetSize = 20;
-        int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
-        assertTrue(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
+    public void maximumRelativeSizeChangeBetweenFrames__getter_and_setter_behave_correctly(){
+        double previousSize = 1.0;
+        double expected = 1.2;
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(previousSize);
+        sut.setMaximumRelativeSizeChangeBetweenFrames(expected);
+        assertEquals(expected, sut.getMaximumRelativeSizeChangeBetweenFrames(), tol);
     }
 
     @Test
-    public void sizeDifferenceIsPlausible__for_valid_target_size__returns_false() {
-        int sourceSize = 10;
-        int totalTargetSize = 21;
-        int doublingTime = 1;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
-        assertFalse(sut.sizeDifferenceIsPlausible(sourceSize, totalTargetSize));
+    public void sizeDifferenceIsPlausible__for_growth_smaller_than_growth_rate__returns_true() {
+        double previousSize = 1.;
+        double newSize = 1.09;
+        double maximumRelativeSizeChangeBetweenFrames = 1.1;
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(maximumRelativeSizeChangeBetweenFrames);
+        assertTrue(sut.sizeDifferenceIsPlausible(previousSize, newSize));
     }
 
     @Test
-    public void getShortestDoublingTimeInFrames__returns_expected_value() {
-        double expected = 0.0346;
-        int doublingTime = 20;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
-        assertEquals(expected, sut.getGrowthRateInFrames(), 1e-3);
+    public void sizeDifferenceIsPlausible__for_growth_equal_to_growth_rate__returns_true() {
+        double initialSize = 1.;
+        double newSize = 1.1;
+        double maximumRelativeSizeChangeBetweenFrames = 1.1;
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(maximumRelativeSizeChangeBetweenFrames);
+        assertTrue(sut.sizeDifferenceIsPlausible(initialSize, newSize));
     }
 
     @Test
-    public void setShortestDoublingTimeInFrames__sets_correct_growth_rate() {
-        double expected = 0.0346;
-        int doublingTime = 20;
-        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(doublingTime);
-        assertEquals(expected, sut.getGrowthRateInFrames(), 1e-3);
+    public void sizeDifferenceIsPlausible__for_growth_larger_than_growth_rate__returns_false() {
+        double initialSize = 1.;
+        double newSize = 1.11;
+        double maximumRelativeSizeChangeBetweenFrames = 1.1;
+        AssignmentPlausibilityTester sut = new AssignmentPlausibilityTester(maximumRelativeSizeChangeBetweenFrames);
+        assertFalse(sut.sizeDifferenceIsPlausible(initialSize, newSize));
     }
 }

@@ -391,7 +391,7 @@ public class GrowthLineTrackingILP {
 
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
-                if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.size(), targetComponent.size())){
+                if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())){
                     continue;
                 }
 
@@ -552,7 +552,7 @@ public class GrowthLineTrackingILP {
                                         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
             throws GRBException {
 
-        for (final Component<FloatType, ?> sourceComponent : sourceComponentTree.getAllComponents()) {
+        for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
 
             if (timeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -561,16 +561,16 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
-            for (final Component<FloatType, ?> upperTargetComponent : targetComponentTree.getAllComponents()) {
+            for (final SimpleComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
                 if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP)) {
                     continue;
                 }
 
                 float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
-                final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
+                final List<SimpleComponent<FloatType>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
-                for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
-                    if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.size(), upperTargetComponent.size() + lowerTargetComponent.size())){
+                for (final SimpleComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                    if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())){
                         continue;
                     }
 

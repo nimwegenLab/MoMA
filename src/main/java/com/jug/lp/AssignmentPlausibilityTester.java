@@ -23,7 +23,7 @@ public class AssignmentPlausibilityTester {
      * @param totalTargetComponentSize
      * @return
      */
-    public boolean sizeDifferenceIsPlausible(long sourceComponentSize, long totalTargetComponentSize) {
+    public boolean sizeDifferenceIsPlausible(double sourceComponentSize, double totalTargetComponentSize) {
         double foldChange = ((double) totalTargetComponentSize) / ((double) sourceComponentSize);
         boolean res = foldChange <= sizeDifferenceThreshold;
         return res;

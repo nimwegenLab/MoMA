@@ -7,12 +7,12 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.roi.Regions;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -196,6 +196,29 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
             c.fwd();
             pixelList.add(new Point(c));
         }
+    }
+
+    double majorAxisLength = -1;
+    double minorAxisLength = -1;
+
+    public double getMajorAxisLength(){
+        if (majorAxisLength > 0) {
+            return majorAxisLength;
+        }
+        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getA();
+        majorAxisLength = minorAndMajorAxis.getB();
+        return majorAxisLength;
+    }
+
+    public double getMinorAxisLength(){
+        if (minorAxisLength > 0) {
+            return minorAxisLength;
+        }
+        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getA();
+        majorAxisLength = minorAndMajorAxis.getB();
+        return minorAxisLength;
     }
 
     public double[] firstMomentPixelCoordinates() {

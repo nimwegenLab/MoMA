@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
+import static com.jug.development.featureflags.FeatureFlags.filterAssignmentsByComponentSizeMatch;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**
@@ -391,8 +392,10 @@ public class GrowthLineTrackingILP {
 
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
-                if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())){
-                    continue;
+                if (filterAssignmentsByComponentSizeMatch) {
+                    if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
+                        continue;
+                    }
                 }
 
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
@@ -570,8 +573,10 @@ public class GrowthLineTrackingILP {
                 final List<SimpleComponent<FloatType>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final SimpleComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if(!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())){
-                        continue;
+                    if (filterAssignmentsByComponentSizeMatch) {
+                        if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
+                            continue;
+                        }
                     }
 
                     @SuppressWarnings("unchecked")

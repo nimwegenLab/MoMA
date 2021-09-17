@@ -69,16 +69,6 @@ public class GrowthLine {
     }
 
 	/**
-	 * @param frame
-	 *            the GrowthLineFrame to be prepended as first frame
-	 * @return true, if add was successful.
-	 */
-	public void prepand( final GrowthLineFrame frame ) {
-		frame.setParent( this );
-		frames.add( 0, frame );
-	}
-
-	/**
 	 * @return
 	 */
 	public GrowthLineFrame get(final int i) {
@@ -98,7 +88,7 @@ public class GrowthLine {
 		}
 
 		GRBModelAdapter model = GRBModelFactory.getModel();
-		ilp = new GrowthLineTrackingILP( this, model, imageProvider );
+		ilp = new GrowthLineTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester() );
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

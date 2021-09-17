@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import com.jug.util.componenttree.SimpleComponent;
@@ -161,18 +162,18 @@ public class ComponentTreeUtils {
 //        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
         int lowerTargetAreaLimit;
         if (differenceOfTotalArea < 0){
-            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + MoMA.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
         }
         else{
-            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME));
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME));
         }
 
         int upperTargetAreaLimit;
         if (differenceOfTotalArea > 0) {
-            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME));
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME));
         }
         else {
-            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + MoMA.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + MoMA.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));;
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));;
         }
 
 

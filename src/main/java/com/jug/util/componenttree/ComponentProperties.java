@@ -1,9 +1,11 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
+//import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
@@ -15,15 +17,15 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.jetbrains.annotations.NotNull;
-import org.scijava.Context;
 
 public class ComponentProperties {
-    private OpService ops = (new Context()).service(OpService.class);
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
+    private final OpService ops;
 
     public ComponentProperties() {
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        regionToPolygonConverter.setContext(ops.context());
+        ops = MoMA.ops;
+        regionToPolygonConverter.setContext(MoMA.ops.context());
     }
 
     public ValuePair<Double, Double> getMinorMajorAxis(SimpleComponent<?> component){
@@ -50,6 +52,17 @@ public class ComponentProperties {
 
     public int getArea(SimpleComponent<?> component){
         return (int) component.getRegion().size();
+    }
+
+//    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
+
+    public double getConvexHullArea(SimpleComponent<?> component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+//        Polygon2D hull = convexHullCalculator.calculate(poly);
+//        DoubleType res = (DoubleType) ops.run("geom.size", hull);
+        DoubleType res = (DoubleType) ops.run("geom.sizeConvexHull", poly);
+        double result = res.getRealDouble();
+        return result;
     }
 
     public ValuePair<Double, Double> getCentroid(SimpleComponent<?> component) {

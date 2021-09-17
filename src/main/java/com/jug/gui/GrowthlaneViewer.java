@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.GrowthLineFrame;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
@@ -168,6 +169,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (getHoveredOptimalHypothesis() != null) {
                 float cost = getHoveredOptimalHypothesis().getCost();
                 optimalSegmentInfoString = String.format("c=%.4f", cost);
+//                Object length = ((SimpleComponent<FloatType>)getHoveredOptimalHypothesis().getWrappedComponent()).getMajorAxisLength();
+//                optimalSegmentInfoString = String.format("l=%.4f", length);
             } else {
                 optimalSegmentInfoString = "---";
             }

@@ -1,6 +1,7 @@
 package com.jug.gui.assignmentview;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEvent;
 import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
@@ -207,7 +208,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      * @param g
      */
     private void drawGlOffsetTop(final Graphics2D g) {
-        double componentExitRange = MoMA.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
+        double componentExitRange = ConfigurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 
         final int x1 = 0;
         strokeColor = Color.RED.darker();
@@ -215,24 +216,24 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         BasicStroke solidStroke = new BasicStroke(1);
 
         GeneralPath polygon = new GeneralPath();
-        polygon.moveTo(x1, MoMA.GL_OFFSET_TOP);
-        polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP);
+        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP);
+        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(solidStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, MoMA.GL_OFFSET_TOP - componentExitRange);
-        polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP - componentExitRange);
+        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
+        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, MoMA.GL_OFFSET_TOP + componentExitRange);
-        polygon.lineTo(this.width, MoMA.GL_OFFSET_TOP + componentExitRange);
+        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
+        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);

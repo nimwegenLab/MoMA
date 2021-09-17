@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
@@ -11,15 +12,14 @@ import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public final class SimpleComponent<T extends Type<T>>
-        implements
-        ComponentInterface<T, SimpleComponent<T>> {
+public final class SimpleComponent<T extends Type<T>> implements ComponentInterface<T, SimpleComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
@@ -35,6 +35,7 @@ public final class SimpleComponent<T extends Type<T>>
      * List of child nodes.
      */
     private final ArrayList<SimpleComponent<T>> children = new ArrayList<>();
+    private final ComponentProperties componentProperties;
     /**
      * Parent node. Is null if this is a root component.
      */
@@ -63,6 +64,7 @@ public final class SimpleComponent<T extends Type<T>>
         this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
+        this.componentProperties = MoMA.componentProperties;
     }
 
     /**
@@ -194,6 +196,29 @@ public final class SimpleComponent<T extends Type<T>>
             c.fwd();
             pixelList.add(new Point(c));
         }
+    }
+
+    double majorAxisLength = -1;
+    double minorAxisLength = -1;
+
+    public double getMajorAxisLength(){
+        if (majorAxisLength > 0) {
+            return majorAxisLength;
+        }
+        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getA();
+        majorAxisLength = minorAndMajorAxis.getB();
+        return majorAxisLength;
+    }
+
+    public double getMinorAxisLength(){
+        if (minorAxisLength > 0) {
+            return minorAxisLength;
+        }
+        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getA();
+        majorAxisLength = minorAndMajorAxis.getB();
+        return minorAxisLength;
     }
 
     public double[] firstMomentPixelCoordinates() {
@@ -438,6 +463,36 @@ public final class SimpleComponent<T extends Type<T>>
         return result;
     }
 
+    double pixelValueAverage = 0;
+
+    public double getPixelValueAverage() {
+        if (!(pixelValueAverage < 0.001)) {
+            return pixelValueAverage;
+        }
+        pixelValueAverage = calculateAverageOrReturnDefault((List<FloatType>) getComponentPixelValues(), Double.MIN_VALUE);
+        return pixelValueAverage;
+    }
+
+    double pixelValueTotal = -1;
+
+    public double getPixelValueTotal() {
+        if (pixelValueTotal > 0) {
+            return pixelValueTotal;
+        }
+        pixelValueTotal = calculateSum((List<FloatType>) getComponentPixelValues());
+        return pixelValueTotal;
+    }
+
+    double convexHullArea = -1;
+
+    public double getConvexHullArea() {
+        if (convexHullArea > 0) {
+            return convexHullArea;
+        }
+        convexHullArea = componentProperties.getConvexHullArea(this);
+        return convexHullArea;
+    }
+
     List<T> componentPixelValues = null;
 
     List<T> getComponentPixelValues() {
@@ -476,12 +531,23 @@ public final class SimpleComponent<T extends Type<T>>
             watershedLinePixelValueAverage = null;
             return watershedLinePixelValueAverage;
         }
-        watershedLinePixelValueAverage = vals.stream()
+        watershedLinePixelValueAverage = calculateAverageOrReturnDefault(vals, 1.0);
+        return watershedLinePixelValueAverage;
+    }
+
+    private Double calculateAverageOrReturnDefault(List<FloatType> listOfValues, Double defaultValue) {
+        return listOfValues.stream()
                 .map(d -> d.getRealDouble())
                 .mapToDouble(d -> d)
                 .average()
-                .orElse(1.0);
-        return watershedLinePixelValueAverage;
+                .orElse(defaultValue);
+    }
+
+    private Double calculateSum(List<FloatType> listOfValues) {
+        return listOfValues.stream()
+                .map(d -> d.getRealDouble())
+                .mapToDouble(d -> d)
+                .sum();
     }
 
     List<T> watershedLinePixelValues = null;

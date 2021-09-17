@@ -19,6 +19,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public Double getWatershedLinePixelValueAverage() {
+        return null;
+    }
+
+    @Override
     public long size() {
         return 0;
     }

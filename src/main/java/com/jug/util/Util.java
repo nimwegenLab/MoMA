@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import net.imglib2.Cursor;
 import net.imglib2.Point;
@@ -168,14 +169,14 @@ public class Util {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
 
-		if (channelFrame.dimension(0) <= MoMA.INTENSITY_FIT_RANGE_IN_PIXELS) {
+		if (channelFrame.dimension(0) <= ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS) {
 			lt[0] = glMiddleInImg - channelFrame.dimension(0) / 2;
 			rb[0] = glMiddleInImg + channelFrame.dimension(0) / 2 + channelFrame.dimension(0) % 2 - 1;
 		}
 		else
 		{
-			lt[0] = glMiddleInImg - MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2;
-			rb[0] = glMiddleInImg + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS / 2 + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
+			lt[0] = glMiddleInImg - ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS / 2;
+			rb[0] = glMiddleInImg + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS / 2 + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
 		}
 		return Views.interval( Views.zeroMin( channelFrame ), lt, rb );
 	}
@@ -187,9 +188,9 @@ public class Util {
 	 */
 	public static IntervalView< FloatType > getIntensityBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
-		lt[ 0 ] = glMiddleInImg - MoMA.GL_WIDTH_IN_PIXELS / 2;
+		lt[ 0 ] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
-		rb[ 0 ] = glMiddleInImg + MoMA.GL_WIDTH_IN_PIXELS / 2 + MoMA.GL_WIDTH_IN_PIXELS % 2 - 1;
+		rb[ 0 ] = glMiddleInImg + ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 + ConfigurationManager.GL_WIDTH_IN_PIXELS % 2 - 1;
 		return Views.interval( channelFrame, lt, rb );
 	}
 
@@ -200,9 +201,9 @@ public class Util {
 	 */
 	public static IntervalView< ShortType > getClassificationBoxInImg( final IntervalView< ShortType > segmentedFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
-		lt[ 0 ] = glMiddleInImg - MoMA.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
+		lt[ 0 ] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
-		rb[ 0 ] = glMiddleInImg + MoMA.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
+		rb[ 0 ] = glMiddleInImg + ConfigurationManager.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
 //		if ( false ) {
 //			new ImageJ();
 //			ImageJFunctions.showUnsignedShort( Views.interval( segmentedFrame, lt, rb ) );
@@ -237,7 +238,7 @@ public class Util {
 	 */
 	private static long[] getTopLeftInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
-		final long left = middle - MoMA.GL_WIDTH_IN_PIXELS / 2;
+		final long left = middle - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
 		final long top = limits.getA();
         return new long[] { left, top };
 	}
@@ -248,7 +249,7 @@ public class Util {
 	 */
 	private static long[] getRightBottomInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
-		final long right = middle + MoMA.GL_WIDTH_IN_PIXELS / 2 + MoMA.GL_WIDTH_IN_PIXELS % 2 - 1;
+		final long right = middle + ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 + ConfigurationManager.GL_WIDTH_IN_PIXELS % 2 - 1;
 		final long bottom = limits.getB();
 		return new long[] { right, bottom };
 	}

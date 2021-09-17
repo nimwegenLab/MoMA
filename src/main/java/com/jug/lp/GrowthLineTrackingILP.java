@@ -3,6 +3,7 @@ package com.jug.lp;
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -27,7 +28,8 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
+import static com.jug.development.featureflags.FeatureFlags.filterAssignmentsByComponentSizeMatch;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**
@@ -44,16 +46,6 @@ public class GrowthLineTrackingILP {
     public static final int ASSIGNMENT_LYSIS = 3;
     public static final float CUTOFF_COST = Float.MAX_VALUE; // TODO-PARAMETRIZE: This value is critical(!): Assignments with costs higher than this value will be ignored. This should become a parameter at some point!
     public static final float LYSIS_ASSIGNMENT_COST = 10; // NOTE: This value is set so high, that it will not be considered for assignment during optimization. However, it can be forced during curation.
-    // -------------------------------------------------------------------------------------
-    // statics
-    // -------------------------------------------------------------------------------------
-    private static final int OPTIMIZATION_NEVER_PERFORMED = 0;
-    private static final int OPTIMAL = 1;
-    private static final int INFEASIBLE = 2;
-    private static final int UNBOUNDED = 3;
-    private static final int SUBOPTIMAL = 4;
-    private static final int NUMERIC = 5;
-    private static final int LIMIT_REACHED = 6;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -68,21 +60,23 @@ public class GrowthLineTrackingILP {
     private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> freezeSegmentConstraints =
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
+    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
-    private int status = OPTIMIZATION_NEVER_PERFORMED;
+    private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider) {
+    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider, AssignmentPlausibilityTester assignmentPlausibilityTester) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
         this.imageProvider = imageProvider;
         this.progressListener = new ArrayList<>();
+        this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
 
     // -------------------------------------------------------------------------------------
@@ -147,7 +141,7 @@ public class GrowthLineTrackingILP {
      * OPTIMIZATION_NEVER_PERFORMED shows, that the optimizer was never
      * started on this ILP setup.
      */
-    public int getStatus() {
+    public IlpStatus getStatus() {
         return status;
     }
 
@@ -398,35 +392,43 @@ public class GrowthLineTrackingILP {
 
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+                if (filterAssignmentsByComponentSizeMatch) {
+                    if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
+                        continue;
+                    }
+                }
+
                 float targetComponentCost = getComponentCost(t + 1, targetComponent);
 
-                if (!(ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, MoMA.MAX_CELL_DROP))) {
+                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP)) {
+                    continue;
+                }
 
-                    final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                    float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
-                    cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
+                final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
+                float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
+                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
-                    if (cost <= CUTOFF_COST) {
+                if (cost > CUTOFF_COST) {
+                    continue;
+                }
 //                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
-                        final Hypothesis<Component<FloatType, ?>> to =
-                                nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
-                        final Hypothesis<Component<FloatType, ?>> from =
-                                nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
+                final Hypothesis<Component<FloatType, ?>> to =
+                        nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
+                final Hypothesis<Component<FloatType, ?>> from =
+                        nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
 
-                        final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
-                        final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+                final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
-                        final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
-                        nodes.addAssignment(t, ma);
-                        if (!edgeSets.addToRightNeighborhood(from, ma)) {
-                            System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
-                        }
-                        if (!edgeSets.addToLeftNeighborhood(to, ma)) {
-                            System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
-                        }
-                    }
+                final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
+                nodes.addAssignment(t, ma);
+                if (!edgeSets.addToRightNeighborhood(from, ma)) {
+                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
+                }
+                if (!edgeSets.addToLeftNeighborhood(to, ma)) {
+                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
                 }
             }
         }
@@ -553,7 +555,7 @@ public class GrowthLineTrackingILP {
                                         SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
             throws GRBException {
 
-        for (final Component<FloatType, ?> sourceComponent : sourceComponentTree.getAllComponents()) {
+        for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
 
             if (timeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -562,42 +564,50 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
-            for (final Component<FloatType, ?> upperTargetComponent : targetComponentTree.getAllComponents()) {
-                if (!(ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, MoMA.MAX_CELL_DROP))) {
+            for (final SimpleComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
+                if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP)) {
+                    continue;
+                }
 
-                    float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
-                    final List<Component<FloatType, ?>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
+                float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
+                final List<SimpleComponent<FloatType>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
-                    for (final Component<FloatType, ?> lowerTargetComponent : lowerNeighborComponents) {
-                        @SuppressWarnings("unchecked")
-                        float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
-                        final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
-                                upperTargetComponent, lowerTargetComponent);
-
-                        float cost = costModulationForSubstitutedILP(
-                                sourceComponentCost,
-                                upperTargetComponentCost,
-                                lowerTargetComponentCost,
-                                compatibilityCostOfDivision);
-
-                        if (cost <= CUTOFF_COST) {
-                            final Hypothesis<Component<FloatType, ?>> to =
-                                    nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
-                            final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
-                                    nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
-                            final Hypothesis<Component<FloatType, ?>> from =
-                                    nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
-
-                            final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
-                            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
-
-                            final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
-                            nodes.addAssignment(timeStep, da);
-                            edgeSets.addToRightNeighborhood(from, da);
-                            edgeSets.addToLeftNeighborhood(to, da);
-                            edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+                for (final SimpleComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                    if (filterAssignmentsByComponentSizeMatch) {
+                        if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
+                            continue;
                         }
                     }
+
+                    @SuppressWarnings("unchecked")
+                    float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
+                    final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
+                            upperTargetComponent, lowerTargetComponent);
+
+                    float cost = costModulationForSubstitutedILP(
+                            sourceComponentCost,
+                            upperTargetComponentCost,
+                            lowerTargetComponentCost,
+                            compatibilityCostOfDivision);
+
+                    if (cost > CUTOFF_COST) {
+                        continue;
+                    }
+                    final Hypothesis<Component<FloatType, ?>> to =
+                            nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
+                    final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
+                            nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
+                    final Hypothesis<Component<FloatType, ?>> from =
+                            nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
+
+                    final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
+                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+
+                    final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
+                    nodes.addAssignment(timeStep, da);
+                    edgeSets.addToRightNeighborhood(from, da);
+                    edgeSets.addToLeftNeighborhood(to, da);
+                    edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
                 }
             }
         }
@@ -802,6 +812,7 @@ public class GrowthLineTrackingILP {
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
             long startTime = System.currentTimeMillis();
+            status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             model.optimize();
             long endTime = System.currentTimeMillis();
             System.out.println("Optimization time: " + (endTime-startTime));
@@ -832,7 +843,7 @@ public class GrowthLineTrackingILP {
             // Read solution and extract interpretation
             // - - - - - - - - - - - - - - - - - - - - -
             if (model.get(GRB.IntAttr.Status) == GRB.Status.OPTIMAL) {
-                status = OPTIMAL;
+                status = IlpStatus.OPTIMAL;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus("Optimum was found!");
                     if (MoMA.getGui() != null) {
@@ -842,18 +853,18 @@ public class GrowthLineTrackingILP {
                     dialog.dispose();
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.INFEASIBLE) {
-                status = INFEASIBLE;
+                status = IlpStatus.INFEASIBLE;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus("ILP now infeasible. Please reoptimize!");
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.UNBOUNDED) {
-                status = UNBOUNDED;
+                status = IlpStatus.UNBOUNDED;
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.SUBOPTIMAL) {
-                status = SUBOPTIMAL;
+                status = IlpStatus.SUBOPTIMAL;
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.NUMERIC) {
-                status = NUMERIC;
+                status = IlpStatus.NUMERIC;
             } else {
-                status = LIMIT_REACHED;
+                status = IlpStatus.LIMIT_REACHED;
                 if (!MoMA.HEADLESS) {
                     dialog.pushStatus(String.format("Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0));
                 }
@@ -864,8 +875,13 @@ public class GrowthLineTrackingILP {
                 MoMA.getGui().dataToDisplayChanged();
             }
 
+            if (status == IlpStatus.OPTIMIZATION_IS_RUNNING) {
+                status = IlpStatus.UNDEFINED; /* something went wrong and `this.status` was not set to something different than OPTIMIZATION_RUNNING; so set it to UNDEFINED */
+            }
+
             new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();
         } catch (final GRBException e) {
+            status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
         }

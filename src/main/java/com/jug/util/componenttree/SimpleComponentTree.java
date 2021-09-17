@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -34,12 +35,15 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private final Img<IntType> img;
     Integer label = 1;
     private IComponentTester<T, C> tester;
+    private ComponentProperties componentProperties;
+
 
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
         this(componentForest, sourceImage, new DummyComponentTester());
     }
 
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
+        this.componentProperties = MoMA.componentProperties;
         this.sourceImage = sourceImage;
         this.tester = tester;
         long[] dims = new long[sourceImage.numDimensions()];

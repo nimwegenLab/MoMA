@@ -2,6 +2,7 @@ package com.jug.export;
 
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
@@ -55,7 +56,7 @@ public class CellStatsExporter {
             e.printStackTrace();
         }
         // always export mmproperties
-        MoMA.instance.saveParams(new File(folderToUse, "mm.properties"));
+        ConfigurationManager.saveParams(new File(folderToUse, "mm.properties"), MoMA.getGuiFrame());
     }
 
     /**
@@ -120,7 +121,7 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
-        for (String label : MoMA.CELL_LABEL_LIST) {
+        for (String label : ConfigurationManager.CELL_LABEL_LIST) {
             labelColumns.put(label, resultTable.addColumn(new ResultTableColumn<>("label:" + label)));
         }
 
@@ -150,7 +151,7 @@ public class CellStatsExporter {
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
         writer.write(String.format("image_folder=%s\n", loadedDataFolder));
-        writer.write(String.format("segmentation_model=%s\n", MoMA.SEGMENTATION_MODEL_PATH));
+        writer.write(String.format("segmentation_model=%s\n", ConfigurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
@@ -185,7 +186,7 @@ public class CellStatsExporter {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 
-                for (String label : MoMA.CELL_LABEL_LIST) {
+                for (String label : ConfigurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
                         labelColumns.get(label).addValue(1);
                     }

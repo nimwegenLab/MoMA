@@ -1,6 +1,7 @@
 package com.jug.export;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -216,8 +217,8 @@ final class SegmentRecord {
      * @return
      */
     float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
-        if ( MoMA.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
-            System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS );
+        if ( ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension( 0 ) ) {
+            System.out.println( "EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension( 0 ) + " instead of " + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS );
         }
 
         final float[] ret = new float[ ( int ) columnBoxInChannel.dimension( 0 ) ];

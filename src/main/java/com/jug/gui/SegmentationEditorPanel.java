@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.Util;
@@ -225,7 +226,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(2), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else { // default value to ColorChannel.CHANNEL0
-            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         }
         return viewImgCenterActive;
     }
@@ -242,7 +243,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                                 (RandomAccessibleInterval<FloatType>) viewToShow,
                                 new RealFloatNormalizeConverter(max.get()),
                                 new FloatType()),
-                        glf.getOffsetX() - MoMA.GL_WIDTH_IN_PIXELS / 2 - MoMA.GL_PIXEL_PADDING_IN_VIEWS,
+                        glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS,
                         glf.getOffsetY());
         return viewImgCenterActive;
     }

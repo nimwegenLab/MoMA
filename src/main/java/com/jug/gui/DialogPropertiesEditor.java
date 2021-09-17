@@ -1,31 +1,22 @@
 package com.jug.gui;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Toolkit;
+import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
+import com.jug.lp.AssignmentPlausibilityTester;
+import com.l2fprod.common.propertysheet.DefaultProperty;
+import com.l2fprod.common.propertysheet.Property;
+import com.l2fprod.common.propertysheet.PropertySheet;
+import com.l2fprod.common.propertysheet.PropertySheetPanel;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Properties;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.SwingUtilities;
-
-import com.jug.MoMA;
-import com.l2fprod.common.propertysheet.DefaultProperty;
-import com.l2fprod.common.propertysheet.Property;
-import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
+import java.util.function.Supplier;
 
 /**
  * @author jug
@@ -33,11 +24,13 @@ import com.l2fprod.common.propertysheet.PropertySheetPanel;
 class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -5529104109524798394L;
-	private static final PropEditedListener propEditListener = new PropEditedListener();
+	private final PropEditedListener propEditListener = new PropEditedListener();
     private static Component parent = null;
+    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
+    private final PropFactory propFactory;
     private PropertySheetPanel sheet;
 
-    static class PropEditedListener implements PropertyChangeListener {
+    public class PropEditedListener implements PropertyChangeListener {
 
 		@Override
 		public void propertyChange( final PropertyChangeEvent evt ) {
@@ -62,7 +55,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         break;
                     case "SEGMENTATION_MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
-                        if(newPath!=MoMA.SEGMENTATION_MODEL_PATH) {
+                        if(newPath!=ConfigurationManager.SEGMENTATION_MODEL_PATH) {
                             File f = new File(newPath);
                             if(!f.exists() || f.isDirectory()) {
                                 JOptionPane.showMessageDialog(
@@ -70,85 +63,86 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                         "Specified file does not exist. Falling back to previous path.",
                                         "Model file not found.",
                                         JOptionPane.ERROR_MESSAGE);
-                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH);
+                                sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                 break;
                             }
 
-                            final int choice =
-                                    JOptionPane.showConfirmDialog(
-                                            parent,
-                                            "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
-                                            "Continue?",
-                                            JOptionPane.YES_NO_OPTION);
-
-                            if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.SEGMENTATION_MODEL_PATH); /* User aborted. Reset value to previous setting. */
-                            } else {
-                                MoMA.SEGMENTATION_MODEL_PATH = newPath;
-                                MoMA.props.setProperty(
-                                        "SEGMENTATION_MODEL_PATH",
-                                        "" + MoMA.SEGMENTATION_MODEL_PATH);
-                                    final Thread t = new Thread(() -> {
-                                        ((MoMAGui) parent).restartFromGLSegmentation();
-                                        ((MoMAGui) parent).restartTracking();
-                                    });
-                                    t.start();
-                            }
+                            showPropertyEditedNeedsRerunDialog("Continue?",
+                                    "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
+                                    () -> newPath != ConfigurationManager.SEGMENTATION_MODEL_PATH,
+                                    () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
+                                    () -> {
+                                        ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
+                                        MoMA.props.setProperty(
+                                                "SEGMENTATION_MODEL_PATH",
+                                                "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
+                                        final Thread t = new Thread(() -> {
+                                            ((MoMAGui) parent).restartFromGLSegmentation();
+                                            ((MoMAGui) parent).restartTracking();
+                                        });
+                                        t.start();
+                            });
                         }
                         break;
                     }
                     case "GL_OFFSET_TOP": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
-                        if(newValue!=MoMA.GL_OFFSET_TOP) {
-                            final int choice =
-                                    JOptionPane.showConfirmDialog(
-                                            parent,
-                                            "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                            "Continue?",
-                                            JOptionPane.YES_NO_OPTION);
-
-                            if (choice != JOptionPane.OK_OPTION) {
-                                sourceProperty.setValue(MoMA.GL_OFFSET_TOP);
-                            } else {
-                                MoMA.GL_OFFSET_TOP = newValue;
-                                MoMA.props.setProperty(
-                                        "GL_OFFSET_TOP",
-                                        "" + MoMA.GL_OFFSET_TOP);
-                                ((MoMAGui) parent).restartTrackingAsync();
-                            }
-                        }
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.GL_OFFSET_TOP,
+                                () -> sourceProperty.setValue(ConfigurationManager.GL_OFFSET_TOP),
+                                () -> {
+                                    ConfigurationManager.GL_OFFSET_TOP = newValue;
+                                    MoMA.props.setProperty(
+                                            "GL_OFFSET_TOP",
+                                            "" + ConfigurationManager.GL_OFFSET_TOP);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
+                    case "MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES": {
+                        double newValue = Double.parseDouble(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES,
+                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES),
+                                () -> {
+                                    ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES = newValue;
+                                    assignmentPlausibilityTester.setMaximumRelativeSizeChangeBetweenFrames(newValue);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
-                        MoMA.INTENSITY_FIT_ITERATIONS =
+                        ConfigurationManager.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_ITERATIONS",
-                                "" + MoMA.INTENSITY_FIT_ITERATIONS);
+                                "" + ConfigurationManager.INTENSITY_FIT_ITERATIONS);
                         break;
                     }
                     case "INTENSITY_FIT_PRECISION": {
-                        MoMA.INTENSITY_FIT_PRECISION =
+                        ConfigurationManager.INTENSITY_FIT_PRECISION =
                                 Double.parseDouble(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_PRECISION",
-                                "" + MoMA.INTENSITY_FIT_PRECISION);
+                                "" + ConfigurationManager.INTENSITY_FIT_PRECISION);
                         break;
                     }
                     case "INTENSITY_FIT_INITIAL_WIDTH": {
-                        MoMA.INTENSITY_FIT_INITIAL_WIDTH =
+                        ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH =
                                 Double.parseDouble(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_INITIAL_WIDTH",
-                                "" + MoMA.INTENSITY_FIT_INITIAL_WIDTH);
+                                "" + ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
                     }
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
-                        MoMA.INTENSITY_FIT_RANGE_IN_PIXELS =
+                        ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         MoMA.props.setProperty(
                                 "INTENSITY_FIT_RANGE_IN_PIXELS",
-                                "" + MoMA.INTENSITY_FIT_RANGE_IN_PIXELS);
+                                "" + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
                         break;
                     }
                     default:
@@ -170,9 +164,26 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	}
 
-	private static class PropFactory {
+    private void showPropertyEditedNeedsRerunDialog(String title, String message, Supplier<Boolean> condition, Runnable abortCallback, Runnable acceptCallback) {
+        if (condition.get()) {
+            final int choice =
+                    JOptionPane.showConfirmDialog(
+                            parent,
+                            message,
+                            title,
+                            JOptionPane.YES_NO_OPTION);
 
-        static Property buildFor(final String key, final Object value) {
+            if (choice != JOptionPane.OK_OPTION) {
+                abortCallback.run();
+            } else {
+                acceptCallback.run();
+            }
+        }
+    }
+
+    private class PropFactory {
+
+        Property buildFor(final String key, final Object value) {
 			final DefaultProperty property = new DefaultProperty();
 			property.setDisplayName( key );
 			property.setName( key );
@@ -181,41 +192,22 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 			property.addPropertyChangeListener( propEditListener );
 
             String GRB = "GUROBI Properties";
-            String SEG = "Segmentation Properties";
-            String TRA = "Tracking Properties";
-            String GL = "GrowthLine Properties";
-            String BGREM = "Background Properties";
+            String SEG = "Segmentation";
+            String TRACK = "Tracking";
             String EXPORT = "Export Properties";
 
             switch (key) {
-                case "BGREM_TEMPLATE_XMIN":
-                case "BGREM_X_OFFSET":
-                case "BGREM_TEMPLATE_XMAX":
-                    property.setCategory(BGREM);
-                    property.setShortDescription(key);
-                    break;
                 case "GL_WIDTH_IN_PIXELS":
-                case "MIN_GAP_CONTRAST":
-                case "MOTHER_CELL_BOTTOM_TRICK_MAX_PIXELS":
-                case "GL_OFFSET_LATERAL":
-                case "GL_OFFSET_TOP":
-                case "MIN_CELL_LENGTH":
-                    property.setCategory(TRA);
-                    property.setShortDescription(key);
-                    break;
-                case "SIGMA_PRE_SEGMENTATION_X":
-                case "SIGMA_GL_DETECTION_Y":
-                case "SIGMA_GL_DETECTION_X":
-                case "SIGMA_PRE_SEGMENTATION_Y":
-                    property.setCategory(SEG);
-                    property.setShortDescription(key);
-                    break;
-                case "SEGMENTATION_MIX_CT_INTO_PMFRF":
                 case "SEGMENTATION_MODEL_PATH":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);
                     break;
+                case "GL_OFFSET_TOP":
+                case "SHORTEST_DOUBLING_TIME_IN_FRAMES":
+                    property.setCategory(TRACK);
+                    property.setShortDescription(key);
+                    property.setEditable(true);
                 case "DEFAULT_PATH":
                     property.setShortDescription(key);
                     break;
@@ -245,9 +237,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor( final Component parent, final Properties props ) {
+	public DialogPropertiesEditor(final Component parent, final Properties props, AssignmentPlausibilityTester assignmentPlausibilityTester) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
+        propFactory = new PropFactory();
 		this.parent = parent;
+        this.assignmentPlausibilityTester = assignmentPlausibilityTester;
 		this.dialogInit();
 		this.setModal( true );
 
@@ -275,7 +269,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 		sheet.setSortingProperties( false );
 		sheet.setRestoreToggleStates( false );
 		for ( final String key : this.props.stringPropertyNames() ) {
-			sheet.addProperty( PropFactory.buildFor( key, props.getProperty( key ) ) );
+			sheet.addProperty( propFactory.buildFor( key, props.getProperty( key ) ) );
 		}
 //		sheet.setEditorFactory( PropertyEditorRegistry.Instance );
 

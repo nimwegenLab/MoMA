@@ -1,5 +1,6 @@
 package com.jug;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.ComponentTreeUtils;
@@ -111,16 +112,15 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    public void generateSimpleSegmentationHypotheses(final Img<FloatType> img, int frameIndex) {
-        IntervalView<FloatType> currentImage = Views.hyperSlice(img, 2, frameIndex);
-        componentTree = buildIntensityTree(currentImage);
+    public void generateSimpleSegmentationHypotheses(final IImageProvider imageProvider, int frameIndex) {
+        componentTree = buildIntensityTree(imageProvider, frameIndex);
     }
 
     /**
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    protected abstract ComponentForest<C> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt);
+    protected abstract ComponentForest<C> buildIntensityTree(final IImageProvider imageProvider, int frameIndex);
 
     /**
      * @return the average X coordinate of the center line of this

@@ -42,10 +42,11 @@ public class GrowthlaneTrackingIlpTest {
         assertEquals(3, currentImageStack.numDimensions());
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
-
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
+
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+
         GrowthLine gl = new GrowthLine(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         GrowthLineTrackingILP ilp = new GrowthLineTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(0));

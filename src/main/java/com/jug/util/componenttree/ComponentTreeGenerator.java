@@ -1,11 +1,14 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
@@ -15,7 +18,10 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
-    public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final RandomAccessibleInterval<FloatType> raiFkt) {
+    public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
+        Img<FloatType> img = imageProvider.getImgProbs();
+        IntervalView<FloatType> raiFkt = Views.hyperSlice(img, 2, frameIndex);
+
         float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
 ////        Img<FloatType> raiFkt = ((Img<FloatType>) raiFktOrig).copy();
 //        Img<FloatType> raiFkt = new ArrayImgFactory(new FloatType()).create(raiFktOrig.numDimensions());

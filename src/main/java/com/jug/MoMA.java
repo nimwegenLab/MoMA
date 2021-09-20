@@ -933,7 +933,7 @@ public class MoMA implements IImageProvider {
 		for ( final GrowthLine gl : getGrowthLines() ) {
 			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imgProbs, glf.getFrameIndex() );
+				glf.generateSimpleSegmentationHypotheses( this, glf.getFrameIndex() );
 			});
 			System.out.println( " ...done!" );
 		}

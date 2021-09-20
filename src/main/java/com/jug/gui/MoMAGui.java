@@ -1024,7 +1024,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int frameIndex = 0;
         for (final GrowthLineFrame glf : model.getCurrentGL().getFrames()) {
             if (glf.getComponentTree() == null) {
-                glf.generateSimpleSegmentationHypotheses(imageProvider.getImgProbs(), frameIndex);
+                glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
                 frameIndex++;
             }
         }
@@ -1183,7 +1183,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int frameIndex = 0;
         for (final GrowthLineFrame glf : gl.getFrames()) {
             System.out.print(".");
-            glf.generateSimpleSegmentationHypotheses(imageProvider.getImgProbs(), frameIndex);
+            glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
             frameIndex++;
         }
         System.out.println();

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class ResultTable {
     List<ResultTableColumn> columnList = new ArrayList<>();
-    String separator = ";";
+    String separator = ",";
 
     /**
      * Write table to {@param writer}.

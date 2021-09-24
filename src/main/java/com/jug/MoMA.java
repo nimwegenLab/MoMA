@@ -503,10 +503,6 @@ public class MoMA implements IImageProvider {
 			System.out.print( "Build GUI..." );
 			main.showConsoleWindow( false );
 
-//			final JFrameSnapper snapper = new JFrameSnapper();
-//			snapper.addFrame( main.frameConsoleWindow );
-//			snapper.addFrame( guiFrame );
-
 			gui.setVisible( true );
 			guiFrame.add( gui );
 			guiFrame.setSize( configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT );
@@ -514,17 +510,8 @@ public class MoMA implements IImageProvider {
 			guiFrame.setVisible( true );
 			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
-//			SwingUtilities.invokeLater( new Runnable() {
-//
-//				@Override
-//				public void run() {
-//					snapper.snapFrames( main.frameConsoleWindow, guiFrame, JFrameSnapper.EAST );
-//				}
-//			} );
 			System.out.println( " done!" );
 		} else {
-//			final String name = inputFolder.getName();
-
 			gui.exportHtmlOverview();
 			gui.exportDataFiles();
 

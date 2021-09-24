@@ -1,5 +1,7 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
+import com.jug.lp.ImageProviderMock;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
@@ -36,10 +38,11 @@ public class SimpleComponentTests {
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         int frameIndex = 10;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
         List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
         for (SimpleComponent<FloatType> root: roots) {
@@ -56,10 +59,11 @@ public class SimpleComponentTests {
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         int frameIndex = 10;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(currentImage);
+        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
         List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
         for (SimpleComponent<FloatType> root : roots) {

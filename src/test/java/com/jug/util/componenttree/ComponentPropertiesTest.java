@@ -1,5 +1,7 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
+import com.jug.lp.ImageProviderMock;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
@@ -38,11 +40,13 @@ public class ComponentPropertiesTest {
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
 
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, 12);
+        int frameIndex = 12;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(currentImage);
+        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
         ComponentProperties props = new ComponentProperties();
 

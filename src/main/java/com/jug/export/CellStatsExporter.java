@@ -28,11 +28,15 @@ import java.util.regex.Pattern;
 public class CellStatsExporter {
 
     private final MoMAGui gui;
-    private ComponentProperties componentProperties = new ComponentProperties();
-    private MixtureModelFit mixtureModelFit = new MixtureModelFit();
+    private ConfigurationManager configurationManager;
+    private MixtureModelFit mixtureModelFit;
+    private ComponentProperties componentProperties;
 
-    public CellStatsExporter(final MoMAGui gui) {
+    public CellStatsExporter(final MoMAGui gui, final ConfigurationManager configurationManager, MixtureModelFit mixtureModelFit, ComponentProperties componentProperties) {
         this.gui = gui;
+        this.configurationManager = configurationManager;
+        this.mixtureModelFit = mixtureModelFit;
+        this.componentProperties = componentProperties;
     }
 
     public void export(File folderToUse) {
@@ -56,7 +60,7 @@ public class CellStatsExporter {
             e.printStackTrace();
         }
         // always export mmproperties
-        ConfigurationManager.saveParams(new File(folderToUse, "mm.properties"), MoMA.getGuiFrame());
+        configurationManager.saveParams(new File(folderToUse, "mm.properties"), MoMA.getGuiFrame());
     }
 
     /**
@@ -121,7 +125,7 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
-        for (String label : ConfigurationManager.CELL_LABEL_LIST) {
+        for (String label : configurationManager.CELL_LABEL_LIST) {
             labelColumns.put(label, resultTable.addColumn(new ResultTableColumn<>("label:" + label)));
         }
 
@@ -151,7 +155,7 @@ public class CellStatsExporter {
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
         writer.write(String.format("image_folder=%s\n", loadedDataFolder));
-        writer.write(String.format("segmentation_model=%s\n", ConfigurationManager.SEGMENTATION_MODEL_PATH));
+        writer.write(String.format("segmentation_model=%s\n", configurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
@@ -186,7 +190,7 @@ public class CellStatsExporter {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
 
-                for (String label : ConfigurationManager.CELL_LABEL_LIST) {
+                for (String label : configurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
                         labelColumns.get(label).addValue(1);
                     }

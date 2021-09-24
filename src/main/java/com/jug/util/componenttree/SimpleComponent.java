@@ -51,7 +51,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage) {
+    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
         this.labeling = labeling;
         this.label = label;
         RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
@@ -64,7 +64,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
-        this.componentProperties = MoMA.componentProperties;
+        this.componentProperties = componentProperties;
     }
 
     /**

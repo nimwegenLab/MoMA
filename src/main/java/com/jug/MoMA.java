@@ -7,7 +7,6 @@ import com.jug.gui.MoMAModel;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.PseudoDic;
-import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
@@ -78,7 +77,6 @@ public class MoMA implements IImageProvider {
 
 	public static Context context;
 	public static OpService ops;
-	public static ComponentProperties componentProperties;
 	public static MoMA instance;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
@@ -167,15 +165,14 @@ public class MoMA implements IImageProvider {
 	 */
 	public static void main( final String[] args ) {
 		System.out.println( "VERSION: " + VERSION_STRING );
-		
+
+		context = new Context();
+		ops = context.service(OpService.class);
+
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
 		dic = new PseudoDic(configurationManager);
-
-		context = new Context();
-		ops = context.service(OpService.class);
-		componentProperties = new ComponentProperties();
 
 		// ===== command line parsing ======================================================================
 

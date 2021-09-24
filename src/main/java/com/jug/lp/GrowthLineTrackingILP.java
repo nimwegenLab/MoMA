@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
-import static com.jug.development.featureflags.FeatureFlags.filterAssignmentsByComponentSizeMatch;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagFilterAssignmentsByComponentSizeMatch;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**
@@ -392,7 +392,7 @@ public class GrowthLineTrackingILP {
 
             for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
 //            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
-                if (filterAssignmentsByComponentSizeMatch) {
+                if (featureFlagFilterAssignmentsByComponentSizeMatch) {
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
                         continue;
                     }
@@ -573,7 +573,7 @@ public class GrowthLineTrackingILP {
                 final List<SimpleComponent<FloatType>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final SimpleComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (filterAssignmentsByComponentSizeMatch) {
+                    if (featureFlagFilterAssignmentsByComponentSizeMatch) {
                         if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                             continue;
                         }

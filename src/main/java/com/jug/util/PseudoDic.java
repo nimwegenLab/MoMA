@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.config.ConfigurationManager;
+import com.jug.export.MixtureModelFit;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
 
@@ -11,10 +12,14 @@ import com.jug.util.componenttree.ComponentProperties;
 public class PseudoDic {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final ComponentProperties componentProperties;
+    private ConfigurationManager configurationManager;
+    private MixtureModelFit mixtureModelFit;
 
     public PseudoDic(ConfigurationManager configurationManager) {
+        this.configurationManager = configurationManager;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES);
         componentProperties = new ComponentProperties();
+        mixtureModelFit = new MixtureModelFit(getConfigurationManager());
     }
 
     public AssignmentPlausibilityTester getAssignmentPlausibilityTester() {
@@ -23,5 +28,13 @@ public class PseudoDic {
 
     public ComponentProperties getComponentProperties() {
         return componentProperties;
+    }
+
+    public ConfigurationManager getConfigurationManager() {
+        return configurationManager;
+    }
+
+    public MixtureModelFit getMixtureModelFit() {
+        return mixtureModelFit;
     }
 }

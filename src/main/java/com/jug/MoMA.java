@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static com.jug.config.ConfigurationManager.DEFAULT_GUI_POS_X;
-import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /*
@@ -436,21 +434,21 @@ public class MoMA implements IImageProvider {
 			final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			final GraphicsDevice[] gs = ge.getScreenDevices();
 			for (GraphicsDevice g : gs) {
-				if (g.getDefaultConfiguration().getBounds().contains(new java.awt.Point(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y))) {
+				if (g.getDefaultConfiguration().getBounds().contains(new java.awt.Point(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y))) {
 					pos_ok = true;
 				}
 			}
 			// None of the screens contained the top-left window coordinates -->
 			// fall back onto default values...
 			if ( !pos_ok ) {
-				ConfigurationManager.GUI_POS_X = DEFAULT_GUI_POS_X;
+				configurationManager.GUI_POS_X = configurationManager.DEFAULT_GUI_POS_X;
 				/*
 				  Default y-position of the main GUI-window. This value will be used if the
 				  values in the properties file are not fitting on any of the currently
 				  attached screens.
 				 */
 				int DEFAULT_GUI_POS_Y = 100;
-				ConfigurationManager.GUI_POS_Y = DEFAULT_GUI_POS_Y;
+				configurationManager.GUI_POS_Y = DEFAULT_GUI_POS_Y;
 			}
 		}
 
@@ -510,8 +508,8 @@ public class MoMA implements IImageProvider {
 
 			gui.setVisible( true );
 			guiFrame.add( gui );
-			guiFrame.setSize( ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT );
-			guiFrame.setLocation( ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y );
+			guiFrame.setSize( configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT );
+			guiFrame.setLocation( configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y );
 			guiFrame.setVisible( true );
 			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
@@ -529,7 +527,7 @@ public class MoMA implements IImageProvider {
 			gui.exportHtmlOverview();
 			gui.exportDataFiles();
 
-			ConfigurationManager.saveParams(getGuiFrame());
+			configurationManager.saveParams(getGuiFrame());
 
 			if (!running_as_Fiji_plugin) {
 				System.exit( 11 );
@@ -634,7 +632,7 @@ public class MoMA implements IImageProvider {
 
 		final int centerX = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
 		final int centerY = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2;
-		frameConsoleWindow.setBounds(centerX - ConfigurationManager.GUI_CONSOLE_WIDTH / 2, centerY - ConfigurationManager.GUI_HEIGHT / 2, ConfigurationManager.GUI_CONSOLE_WIDTH, ConfigurationManager.GUI_HEIGHT);
+		frameConsoleWindow.setBounds(centerX - configurationManager.GUI_CONSOLE_WIDTH / 2, centerY - configurationManager.GUI_HEIGHT / 2, configurationManager.GUI_CONSOLE_WIDTH, configurationManager.GUI_HEIGHT);
 		final JScrollPane scrollPane = new JScrollPane( consoleWindowTextArea );
 //		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
 		scrollPane.setBorder( BorderFactory.createEmptyBorder( 0, 15, 0, 0 ) );
@@ -720,7 +718,7 @@ public class MoMA implements IImageProvider {
 
 			@Override
 			public void windowClosing( final WindowEvent we ) {
-				ConfigurationManager.saveParams(getGuiFrame());
+				configurationManager.saveParams(getGuiFrame());
 				if (!running_as_Fiji_plugin) {
 					System.exit(0);
 				}
@@ -938,7 +936,7 @@ public class MoMA implements IImageProvider {
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
 		UnetProcessor unetProcessor = new UnetProcessor();
-		unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+		unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
 		String checksum = unetProcessor.getModelChecksum();
 
 		/**

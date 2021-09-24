@@ -1,6 +1,5 @@
 package com.jug.export;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthLineTrackingILP;

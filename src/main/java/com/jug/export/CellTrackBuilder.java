@@ -62,7 +62,7 @@ public class CellTrackBuilder {
                 final DivisionAssignment da = ( DivisionAssignment ) rightAssmt;
 
                 prepPoint.pid = prepPoint.id;
-                prepPoint.tbirth = prepPoint.frame;
+                prepPoint.tbirth = prepPoint.timestep;
 
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getLowerDesinationHypothesis();
@@ -71,7 +71,7 @@ public class CellTrackBuilder {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
                     newPoint.genealogy.add( SegmentRecord.LOWER );
                     startingPoints.add( newPoint.clone() );
-                    newPoint.frame++;
+                    newPoint.timestep++;
                     queue.add( newPoint );
                     nextCellId++;
                 }
@@ -83,7 +83,7 @@ public class CellTrackBuilder {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
                     newPoint.genealogy.add( SegmentRecord.UPPER );
                     startingPoints.add( newPoint.clone() );
-                    newPoint.frame++;
+                    newPoint.timestep++;
                     queue.add( newPoint );
                     nextCellId++;
                 }

@@ -12,6 +12,7 @@ import com.jug.util.Util;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
@@ -128,8 +129,9 @@ public class CellStatsExporter {
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.5f"));
-        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
-        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
+        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px"));
+        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px"));
+        ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au"));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
         for (String label : configurationManager.CELL_LABEL_LIST) {
@@ -170,7 +172,7 @@ public class CellStatsExporter {
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
-                final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
+                final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
 
                 final int numCells = glf.getSolutionStats_numberOfTrackedCells();
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
@@ -179,7 +181,7 @@ public class CellStatsExporter {
                 cellIdCol.addValue(segmentRecord.getId());
                 parentIdCol.addValue(segmentRecord.getParentId());
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
-                frameCol.addValue(segmentRecord.frame);
+                frameCol.addValue(segmentRecord.timestep);
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
@@ -197,8 +199,8 @@ public class CellStatsExporter {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
 
-                final IntervalView<FloatType> phaseContrastChannel = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, segmentRecord.frame);
-//                final IntervalView<FloatType> phaseContrastChannel = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, segmentRecord.frame);
+                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, segmentRecord.timestep);
+                phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
 
                 for (String label : configurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
@@ -212,7 +214,7 @@ public class CellStatsExporter {
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;
                 for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
-                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.timestep);
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 

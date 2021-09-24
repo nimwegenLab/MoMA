@@ -14,6 +14,7 @@ import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
 import net.imagej.ops.OpService;
+import net.imagej.ops.Ops;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -24,6 +25,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
+import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.SystemUtils;
 import org.scijava.Context;
 
@@ -75,7 +77,6 @@ public class MoMA implements IImageProvider {
 
 	public static Context context;
 	public static OpService ops;
-	public static MoMA instance;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
@@ -170,7 +171,9 @@ public class MoMA implements IImageProvider {
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
-		dic = new PseudoDic(configurationManager);
+		final MoMA main = new MoMA();
+
+		dic = new PseudoDic(configurationManager, main);
 
 		// ===== command line parsing ======================================================================
 
@@ -419,7 +422,6 @@ public class MoMA implements IImageProvider {
 		}
 		// ******* END CHECK GUROBI **** END CHECK GUROBI **** END CHECK GUROBI ********
 
-		final MoMA main = new MoMA();
 		if ( !HEADLESS ) {
 			guiFrame = new JFrame();
 			main.initMainWindow( guiFrame );
@@ -470,7 +472,6 @@ public class MoMA implements IImageProvider {
 		// ------------------------------------------------------------------------------------------------------
 		// ------------------------------------------------------------------------------------------------------
 		final MoMAModel mmm = new MoMAModel( main );
-		instance = main;
 		try {
 			main.processDataFromFolder( path, minTime, maxTime, minChannelIdx, numChannels );
 		} catch ( final Exception e ) {
@@ -496,7 +497,7 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, main );
+		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance() );
 
 		if ( !HEADLESS ) {
 			System.out.print( "Build GUI..." );
@@ -590,6 +591,10 @@ public class MoMA implements IImageProvider {
 	 */
 	public Img< FloatType > getImgProbs() {
 		return imgProbs;
+	}
+
+	public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
+		return ImgView.wrap(Views.hyperSlice(dic.getImageProvider().getRawChannelImgs().get(channel), 2, timestep));
 	}
 
 	/**

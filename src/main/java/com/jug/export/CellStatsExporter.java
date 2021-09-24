@@ -3,6 +3,7 @@ package com.jug.export;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
@@ -28,15 +29,21 @@ import java.util.regex.Pattern;
 public class CellStatsExporter {
 
     private final MoMAGui gui;
+    private final IImageProvider imageProvider;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
 
-    public CellStatsExporter(final MoMAGui gui, final ConfigurationManager configurationManager, MixtureModelFit mixtureModelFit, ComponentProperties componentProperties) {
+    public CellStatsExporter(final MoMAGui gui,
+                             final ConfigurationManager configurationManager,
+                             MixtureModelFit mixtureModelFit,
+                             ComponentProperties componentProperties,
+                             IImageProvider imageProvider) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
         this.componentProperties = componentProperties;
+        this.imageProvider = imageProvider;
     }
 
     public void export(File folderToUse) {
@@ -135,7 +142,7 @@ public class CellStatsExporter {
         List<ResultTableColumn> intensityFitBackgroundIntensityCols = new ArrayList<>();
 
         /* Add columns for per fluorescence-channel output. */
-        for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+        for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
             cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c), "%.5f")));
             backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c), "%.5f")));
             intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.5f")));
@@ -188,7 +195,10 @@ public class CellStatsExporter {
                 cellLengthCol.addValue(minorAndMajorAxis.getB());
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
-                backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
+                backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
+
+                final IntervalView<FloatType> phaseContrastChannel = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, segmentRecord.frame);
+//                final IntervalView<FloatType> phaseContrastChannel = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, segmentRecord.frame);
 
                 for (String label : configurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
@@ -201,8 +211,8 @@ public class CellStatsExporter {
 
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;
-                for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+                for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
+                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.frame);
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 

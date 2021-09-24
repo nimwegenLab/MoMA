@@ -1,6 +1,8 @@
 package com.jug.util;
 
+import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IImageProvider;
 import com.jug.export.MixtureModelFit;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
@@ -13,10 +15,12 @@ public class PseudoDic {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final ComponentProperties componentProperties;
     private ConfigurationManager configurationManager;
+    private MoMA momaInstance;
     private MixtureModelFit mixtureModelFit;
 
-    public PseudoDic(ConfigurationManager configurationManager) {
+    public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
+        this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES);
         componentProperties = new ComponentProperties();
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
@@ -36,5 +40,13 @@ public class PseudoDic {
 
     public MixtureModelFit getMixtureModelFit() {
         return mixtureModelFit;
+    }
+
+    public IImageProvider getImageProvider() {
+        return momaInstance;
+    }
+
+    public MoMA getMomaInstance() {
+        return momaInstance;
     }
 }

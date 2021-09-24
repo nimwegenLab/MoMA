@@ -29,9 +29,4 @@ public class Imglib2Utils {
         }
         return totalIntensity;
     }
-
-    public static List<Localizable> calculateCenterOfMass(final Component<FloatType, ?> component){
-
-        throw new NotImplementedException();
-    }
 }

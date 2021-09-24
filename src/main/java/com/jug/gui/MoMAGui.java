@@ -1085,7 +1085,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
         }
 
-        final CellStatsExporter exporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit());
+        final CellStatsExporter exporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties());
         exporter.export(folderToUse);
     }
 

@@ -30,13 +30,13 @@ public class CellStatsExporter {
     private final MoMAGui gui;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
-    private ComponentProperties componentProperties = new ComponentProperties();
+    private ComponentProperties componentProperties;
 
-
-    public CellStatsExporter(final MoMAGui gui, final ConfigurationManager configurationManager, MixtureModelFit mixtureModelFit) {
+    public CellStatsExporter(final MoMAGui gui, final ConfigurationManager configurationManager, MixtureModelFit mixtureModelFit, ComponentProperties componentProperties) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
+        this.componentProperties = componentProperties;
     }
 
     public void export(File folderToUse) {

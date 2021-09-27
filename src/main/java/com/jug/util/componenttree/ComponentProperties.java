@@ -21,10 +21,12 @@ import org.jetbrains.annotations.NotNull;
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
+    private Imglib2Utils imglib2Utils;
 
-    public ComponentProperties() {
+    public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
+        this.imglib2Utils = imglib2Utils;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        ops = MoMA.ops;
+        this.ops = ops;
         regionToPolygonConverter.setContext(MoMA.ops.context());
     }
 
@@ -72,15 +74,15 @@ public class ComponentProperties {
     }
 
     public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return Imglib2Utils.getTotalIntensity(component.getRegion(), img);
+        return imglib2Utils.getTotalIntensity(component.getRegion(), img);
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
-        double intensity1 = Imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
-        double intensity2 = Imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        double intensity2 = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
         return intensity1 + intensity2;
     }
 

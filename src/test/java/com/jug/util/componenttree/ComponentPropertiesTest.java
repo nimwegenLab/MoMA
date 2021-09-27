@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
@@ -48,7 +49,7 @@ public class ComponentPropertiesTest {
         ImageJFunctions.show(currentImage);
         ComponentForest<AdvancedComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        ComponentProperties props = new ComponentProperties();
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());

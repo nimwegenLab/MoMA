@@ -11,10 +11,9 @@ import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
-import ij.ImageJ;
+import ij.ImageJ; // TODO: I should be using net.imagej.ImageJ here
 import ij.ImagePlus;
 import net.imagej.ops.OpService;
-import net.imagej.ops.Ops;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -25,7 +24,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
-import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang3.SystemUtils;
 import org.scijava.Context;
 

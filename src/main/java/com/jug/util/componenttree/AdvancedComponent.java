@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
@@ -19,7 +18,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
-public final class SimpleComponent<T extends Type<T>> implements ComponentInterface<T, SimpleComponent<T>> {
+public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
@@ -34,24 +33,24 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     /**
      * List of child nodes.
      */
-    private final ArrayList<SimpleComponent<T>> children = new ArrayList<>();
+    private final ArrayList<AdvancedComponent<T>> children = new ArrayList<>();
     private final ComponentProperties componentProperties;
     /**
      * Parent node. Is null if this is a root component.
      */
-    private SimpleComponent<T> parent;
+    private AdvancedComponent<T> parent;
     private double[] mean;
     private double[] sumPos;
     private final ImgLabeling<Integer, IntType> labeling;
     private final Integer label;
     private LabelRegion<Integer> region;
     private double[] firstMomentPixelCoordinates = null;
-    private List<SimpleComponent<T>> componentTreeRoots;
+    private List<AdvancedComponent<T>> componentTreeRoots;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> SimpleComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
+    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
         this.labeling = labeling;
         this.label = label;
         RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
@@ -136,16 +135,16 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     }
 
     @Override
-    public SimpleComponent<T> getParent() {
+    public AdvancedComponent<T> getParent() {
         return parent;
     }
 
-//    public SimpleComponent<T> getSibling() {
-//        SimpleComponent<T> parent = this.getParent();
+//    public AdvancedComponent<T> getSibling() {
+//        AdvancedComponent<T> parent = this.getParent();
 //        if (parent == null) {
 //            return null; /* there is no parent component and hence no sibling component */
 //        }
-//        List<SimpleComponent<T>> children = parent.getChildren();
+//        List<AdvancedComponent<T>> children = parent.getChildren();
 //        if (children.size() == 1) {
 //            return null; /* there is only one child component of this component parent, which will be this component. Hence there is no sibling component. */
 //        }
@@ -153,11 +152,11 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
 //            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
 //        }
 //        children.remove(this);
-//        SimpleComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
+//        AdvancedComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
 //        return sibling;
 //    }
 
-    void setParent(SimpleComponent<T> parent) {
+    void setParent(AdvancedComponent<T> parent) {
         this.parent = parent;
     }
 
@@ -167,11 +166,11 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
 //    }
 
     @Override
-    public List<SimpleComponent<T>> getChildren() {
+    public List<AdvancedComponent<T>> getChildren() {
         return children;
     }
 
-    void addChild(SimpleComponent<T> child) {
+    void addChild(AdvancedComponent<T> child) {
         this.children.add(child);
     }
 
@@ -240,7 +239,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
 
     public int getNodeLevel() {
         int nodeLevel = 0;
-        SimpleComponent<T> parent = this.getParent();
+        AdvancedComponent<T> parent = this.getParent();
         while (parent != null) {
             nodeLevel++;
             parent = parent.getParent();
@@ -248,11 +247,11 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         return nodeLevel;
     }
 
-    public List<SimpleComponent<T>> getComponentTreeRoots() {
+    public List<AdvancedComponent<T>> getComponentTreeRoots() {
         return componentTreeRoots;
     }
 
-    public void setComponentTreeRoots(List<SimpleComponent<T>> roots) {
+    public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {
         componentTreeRoots = roots;
     }
 
@@ -261,22 +260,22 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return list of neighboring nodes
      */
-    public List<SimpleComponent<T>> getLowerNeighbors() {
+    public List<AdvancedComponent<T>> getLowerNeighbors() {
         if (Objects.isNull(lowerNeighbors)){
             lowerNeighbors = calculateLowerNeighbors();
         }
         return lowerNeighbors;
     }
-    List<SimpleComponent<T>> lowerNeighbors;
+    List<AdvancedComponent<T>> lowerNeighbors;
 
     /**
      * Calculate list of all neighboring nodes below the current node.
      *
      * @return list of neighboring nodes
      */
-    private List<SimpleComponent<T>> calculateLowerNeighbors() {
-        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
-        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+    private List<AdvancedComponent<T>> calculateLowerNeighbors() {
+        final ArrayList<AdvancedComponent<T>> neighbors = new ArrayList<>();
+        AdvancedComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
         if (neighbor != null) {
             neighbors.add(neighbor);
             while (neighbor.getChildren().size() > 0) {
@@ -293,13 +292,13 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return the lower neighbor node
      */
-    public SimpleComponent<T> getLowerNeighborClosestToRootLevel() {
+    public AdvancedComponent<T> getLowerNeighborClosestToRootLevel() {
         if (Objects.isNull(lowerNeighborClosestToRootLevel)) {
             lowerNeighborClosestToRootLevel = calculateLowerNeighborClosestToRootLevel();
         }
         return lowerNeighborClosestToRootLevel;
     }
-    SimpleComponent<T> lowerNeighborClosestToRootLevel;
+    AdvancedComponent<T> lowerNeighborClosestToRootLevel;
 
     /**
      * Calculates the lower neighbor of {@param node}. The algorithm is written in such a way, that the component that is
@@ -307,8 +306,8 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return the lower neighbor node
      */
-    private SimpleComponent<T> calculateLowerNeighborClosestToRootLevel() {
-        final SimpleComponent<T> parentNode = this.getParent();
+    private AdvancedComponent<T> calculateLowerNeighborClosestToRootLevel() {
+        final AdvancedComponent<T> parentNode = this.getParent();
         if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
             final int idx = parentNode.getChildren().indexOf(this);
             if (idx + 1 < parentNode.getChildren().size()) {
@@ -317,7 +316,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
                 return parentNode.calculateLowerNeighborClosestToRootLevel();
             }
         } else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
-            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            List<AdvancedComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
             roots.sort(verticalComponentPositionComparator);
             final int idx = roots.indexOf(this);
             if (idx + 1 < roots.size()) {
@@ -332,22 +331,22 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return list of neighboring nodes
      */
-    public List<SimpleComponent<T>> getUpperNeighbors() {
+    public List<AdvancedComponent<T>> getUpperNeighbors() {
         if (Objects.isNull(upperNeighbors)){
             upperNeighbors = calculateUpperNeighbors();
         }
         return upperNeighbors;
     }
-    List<SimpleComponent<T>> upperNeighbors;
+    List<AdvancedComponent<T>> upperNeighbors;
 
     /**
      * Calculate list of all neighboring nodes above the current node.
      *
      * @return list of neighboring nodes
      */
-    private List<SimpleComponent<T>> calculateUpperNeighbors() {
-        final ArrayList<SimpleComponent<T>> neighbors = new ArrayList<>();
-        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+    private List<AdvancedComponent<T>> calculateUpperNeighbors() {
+        final ArrayList<AdvancedComponent<T>> neighbors = new ArrayList<>();
+        AdvancedComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
         if (neighbor != null) {
             neighbors.add(neighbor);
             while (neighbor.getChildren().size() - 1 >= 0) {
@@ -363,13 +362,13 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return the lower neighbor node
      */
-    public SimpleComponent<T> getUpperNeighborClosestToRootLevel() {
+    public AdvancedComponent<T> getUpperNeighborClosestToRootLevel() {
         if (Objects.isNull(upperNeighborClosestToRootLevel)) {
             upperNeighborClosestToRootLevel = calculateUpperNeighborClosestToRootLevel();
         }
         return upperNeighborClosestToRootLevel;
     }
-    SimpleComponent<T> upperNeighborClosestToRootLevel;
+    AdvancedComponent<T> upperNeighborClosestToRootLevel;
 
     /**
      * Calculates the upper neighbor of {@param node}. The algorithm is written in such a way, that the component that is
@@ -377,8 +376,8 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
      *
      * @return the upper neighbor node
      */
-    private SimpleComponent<T> calculateUpperNeighborClosestToRootLevel() {
-        final SimpleComponent<T> parentNode = this.getParent();
+    private AdvancedComponent<T> calculateUpperNeighborClosestToRootLevel() {
+        final AdvancedComponent<T> parentNode = this.getParent();
         if (parentNode != null) { /* {@param node} is child node, so we can get the sibling node below it (if {@param node} is not bottom-most child), which is its lower neighbor */
             final int idx = parentNode.getChildren().indexOf(this);
             if (idx - 1 >= 0) {
@@ -387,7 +386,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
                 return parentNode.calculateUpperNeighborClosestToRootLevel();
             }
         } else { /* {@param node} is a root, so we need to find the root below and return it, if it exists*/
-            List<SimpleComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
+            List<AdvancedComponent<T>> roots = new ArrayList<>(getComponentTreeRoots());
             roots.sort(verticalComponentPositionComparator);
             final int idx = roots.indexOf(this);
             if (idx - 1 >= 0) {
@@ -407,7 +406,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
 
     private int calculateTotalAreaOfRootComponents() {
         int area = 0;
-        for (SimpleComponent<T> root : getComponentTreeRoots()){
+        for (AdvancedComponent<T> root : getComponentTreeRoots()){
             area += root.size();
         }
         return area;
@@ -422,7 +421,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     }
 
     private int calculateTotalAreaOfComponentsAbove(){
-        SimpleComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
+        AdvancedComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
         int cellAreaPixels = 0;
         while (neighbor != null) {
             cellAreaPixels += neighbor.size();
@@ -440,22 +439,22 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     }
 
     private int calculateTotalAreaOfComponentsBelow(){
-        List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
+        List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         int totalCellAreaPixels = 0;
-        for (SimpleComponent<T> component : componentsBelow) {
+        for (AdvancedComponent<T> component : componentsBelow) {
             totalCellAreaPixels += component.size();
         }
         return totalCellAreaPixels;
     }
 
     public int getRankRelativeToComponentsClosestToRoot(){
-        List<SimpleComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
+        List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         return componentsBelow.size();
     }
 
-    public List<SimpleComponent<T>> getComponentsBelowClosestToRoot(){
-        List<SimpleComponent<T>> result = new ArrayList<>();
-        SimpleComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
+    public List<AdvancedComponent<T>> getComponentsBelowClosestToRoot(){
+        List<AdvancedComponent<T>> result = new ArrayList<>();
+        AdvancedComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
         while (neighbor != null) {
             result.add(neighbor);
             neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
@@ -572,7 +571,7 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
     List<Localizable> watershedLinePixelPositions = null;
 
     public List<Localizable> getWatershedLinePixelPositions(){
-        List<SimpleComponent<T>> children = this.getChildren();
+        List<AdvancedComponent<T>> children = this.getChildren();
         if (children.size() <= 1) {
             watershedLinePixelPositions = new ArrayList<>(); /* there exist zero or one child component and hence no watershed line. */
             return watershedLinePixelPositions;
@@ -587,11 +586,11 @@ public final class SimpleComponent<T extends Type<T>> implements ComponentInterf
         return watershedLinePixelPositions;
     }
 
-    private List<Localizable> getWatershedLineInternal(SimpleComponent<T> parent, List<SimpleComponent<T>> children) {
+    private List<Localizable> getWatershedLineInternal(AdvancedComponent<T> parent, List<AdvancedComponent<T>> children) {
         List<Localizable> watershedLinePositions = new ArrayList<>();
         Img<NativeBoolType> tmpImage = createImage(this.getSourceImage());
         RandomAccess<NativeBoolType> rndAccess = tmpImage.randomAccess();
-        for (SimpleComponent<T> child : children) {
+        for (AdvancedComponent<T> child : children) {
             for (Iterator<Localizable> it = child.iterator(); it.hasNext(); ) {
                 rndAccess.setPosition(it.next());
                 rndAccess.get().set(true);

@@ -1,9 +1,8 @@
 package com.jug;
 
 import com.jug.datahandling.IImageProvider;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentTreeGenerator;
-import com.jug.util.componenttree.SimpleComponent;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -16,7 +15,7 @@ import net.imglib2.type.numeric.real.FloatType;
  * series (2d+t) representation of an growth line is
  * <code>GrowthLine</code>.
  */
-public class GrowthLineFrame extends AbstractGrowthLineFrame<SimpleComponent<FloatType>> {
+public class GrowthLineFrame extends AbstractGrowthLineFrame<AdvancedComponent<FloatType>> {
 
     private int frameIndex;
 
@@ -32,7 +31,7 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame<SimpleComponent<Flo
      * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
      */
     @Override
-    protected ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
+    protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
         return new ComponentTreeGenerator().buildIntensityTree(imageProvider, frameIndex);
     }
 }

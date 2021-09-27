@@ -1,7 +1,7 @@
 package com.moma.auxiliary;
 
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.componenttree.SimpleComponent;
+import com.jug.util.componenttree.AdvancedComponent;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Plot;
@@ -35,7 +35,7 @@ public class Plotting {
 
         // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
-        RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
+        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
         ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
@@ -113,7 +113,7 @@ public class Plotting {
     public static <C extends Component<FloatType, C>> RandomAccessibleInterval<ARGBType> createImageWithComponents(List<C> components,
                                                                                                                    List<C> optimalComponents) {
         C first = components.get(0);
-        RandomAccessibleInterval sourceImage = ((SimpleComponent) first).getSourceImage();
+        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
         ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());

@@ -27,10 +27,10 @@ import java.util.Set;
  */
 public final class SimpleComponentTree<T extends Type<T>, C extends Component<T, C>>
         implements
-        ComponentForest<SimpleComponent<T>> {
+        ComponentForest<AdvancedComponent<T>> {
     final ImgLabeling<Integer, IntType> labeling;
-    private final List<SimpleComponent<T>> nodes = new ArrayList<>();
-    private final List<SimpleComponent<T>> roots = new ArrayList<>();
+    private final List<AdvancedComponent<T>> nodes = new ArrayList<>();
+    private final List<AdvancedComponent<T>> roots = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
     private final Img<IntType> img;
     Integer label = 1;
@@ -55,7 +55,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     private void writeRootNodesToAllNodes() {
-        for (SimpleComponent<T> node : nodes) {
+        for (AdvancedComponent<T> node : nodes) {
             node.setComponentTreeRoots(roots);
         }
     }
@@ -66,16 +66,16 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     private void SortChildrenByPosition() {
-        for (final SimpleComponent root : roots()) {
+        for (final AdvancedComponent root : roots()) {
             SortChildrenRecursively(root);
         }
     }
 
-    private void SortChildrenRecursively(SimpleComponent parent) {
-        List<SimpleComponent<T>> children = parent.getChildren();
+    private void SortChildrenRecursively(AdvancedComponent parent) {
+        List<AdvancedComponent<T>> children = parent.getChildren();
         ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
         children.sort(positionComparator);
-        for (SimpleComponent<T> component : children) {
+        for (AdvancedComponent<T> component : children) {
             SortChildrenRecursively(component);
         }
     }
@@ -84,7 +84,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         for (final C root : componentForest.roots()) {
             RecursivelyFindValidComponent(root);
         }
-        for (SimpleComponent<T> node : nodes) {
+        for (AdvancedComponent<T> node : nodes) {
             if (node.getParent() == null) {
                 roots.add(node);
             }
@@ -93,7 +93,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            SimpleComponent<T> newRoot = new SimpleComponent<>(labeling, label++, sourceComponent, sourceImage, MoMA.dic.getComponentProperties());
+            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, MoMA.dic.getComponentProperties());
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -103,10 +103,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         }
     }
 
-    private void RecursivelyAddToTree(C sourceParent, SimpleComponent<T> targetParent) {
+    private void RecursivelyAddToTree(C sourceParent, AdvancedComponent<T> targetParent) {
         for (final C sourceChild : sourceParent.getChildren()) {
             if (tester.IsValid(sourceChild)) {  // if child meets condition, add it and with its children
-                SimpleComponent<T> targetChild = CreateTargetChild(targetParent, sourceChild);
+                AdvancedComponent<T> targetChild = CreateTargetChild(targetParent, sourceChild);
                 RecursivelyAddToTree(sourceChild, targetChild);
             } else {  // continue search for deeper component-nodes
                 RecursivelyAddToTree(sourceChild, targetParent);
@@ -115,8 +115,8 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     @NotNull
-    private SimpleComponent<T> CreateTargetChild(SimpleComponent<T> targetComponent, C sourceChild) {
-        SimpleComponent<T> targetChild = new SimpleComponent<>(labeling, label++, sourceChild, sourceImage, MoMA.dic.getComponentProperties());
+    private AdvancedComponent<T> CreateTargetChild(AdvancedComponent<T> targetComponent, C sourceChild) {
+        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, MoMA.dic.getComponentProperties());
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);
@@ -124,14 +124,14 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     }
 
     @Override
-    public Set<SimpleComponent<T>> roots() {
+    public Set<AdvancedComponent<T>> roots() {
         return new HashSet(roots);
     }
 
-    public List<SimpleComponent<T>> rootsSorted() {
+    public List<AdvancedComponent<T>> rootsSorted() {
         return roots;
     }
 
-    public List<SimpleComponent<T>> getAllComponents(){ return nodes; }
+    public List<AdvancedComponent<T>> getAllComponents(){ return nodes; }
 }
 

@@ -9,8 +9,8 @@ import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentProperties;
-import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
@@ -168,7 +168,7 @@ public class CellStatsExporter {
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
-                SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
+                AdvancedComponent<?> currentComponent = (AdvancedComponent<?>) segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 

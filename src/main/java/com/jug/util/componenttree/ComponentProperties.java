@@ -28,7 +28,7 @@ public class ComponentProperties {
         regionToPolygonConverter.setContext(MoMA.ops.context());
     }
 
-    public ValuePair<Double, Double> getMinorMajorAxis(SimpleComponent<?> component){
+    public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
@@ -41,7 +41,7 @@ public class ComponentProperties {
      * @param component
      * @return tilte angle in radians.
      */
-    public double getTiltAngle(SimpleComponent<?> component) {
+    public double getTiltAngle(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         double angle = -((DoubleType) ops.run(DefaultMinimumFeretAngle.class, poly)).get();
         if (angle < -90) angle += 180;
@@ -50,13 +50,13 @@ public class ComponentProperties {
         return 2 * Math.PI * angleInRadians / 360.0f;
     }
 
-    public int getArea(SimpleComponent<?> component){
+    public int getArea(AdvancedComponent<?> component){
         return (int) component.getRegion().size();
     }
 
 //    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
 
-    public double getConvexHullArea(SimpleComponent<?> component) {
+    public double getConvexHullArea(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
 //        Polygon2D hull = convexHullCalculator.calculate(poly);
 //        DoubleType res = (DoubleType) ops.run("geom.size", hull);
@@ -65,17 +65,17 @@ public class ComponentProperties {
         return result;
     }
 
-    public ValuePair<Double, Double> getCentroid(SimpleComponent<?> component) {
+    public ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
         return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
     }
 
-    public double getTotalIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         return Imglib2Utils.getTotalIntensity(component.getRegion(), img);
     }
 
-    public double getTotalBackgroundIntensity(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity1 = Imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
@@ -84,7 +84,7 @@ public class ComponentProperties {
         return intensity1 + intensity2;
     }
 
-    public int getBackgroundArea(SimpleComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
         FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());

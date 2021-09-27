@@ -77,6 +77,10 @@ public class ComponentProperties {
         return imglib2Utils.getTotalIntensity(component.getRegion(), img);
     }
 
+    public double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
+    }
+
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());

@@ -132,6 +132,7 @@ public class CellStatsExporter {
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au"));
+        ResultTableColumn<Double> phaseContrastCoefficientOfVariation = resultTable.addColumn(new ResultTableColumn<>("phc_intensity_coefficient_of_variation"));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
         for (String label : configurationManager.CELL_LABEL_LIST) {
@@ -201,6 +202,7 @@ public class CellStatsExporter {
 
                 Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, segmentRecord.timestep);
                 phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
+                phaseContrastCoefficientOfVariation.addValue(componentProperties.getIntensityCoefficientOfVariation(currentComponent, phaseContrastImage));
 
                 for (String label : configurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){

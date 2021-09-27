@@ -1,15 +1,13 @@
 package com.jug.util.imglib2;
 
 import net.imagej.ops.OpService;
-import net.imglib2.*;
-import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.Cursor;
+import net.imglib2.Interval;
+import net.imglib2.IterableInterval;
+import net.imglib2.RandomAccessible;
 import net.imglib2.type.Type;
-import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
-
-import java.util.List;
 
 public class Imglib2Utils {
     private OpService ops;
@@ -28,21 +26,23 @@ public class Imglib2Utils {
 
     public double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img){
         IterableInterval< FloatType > region = Views.interval( img, interval );
-        Cursor<FloatType> cursor = region.cursor();
-        double totalIntensity = 0;
-        while(cursor.hasNext()){
-            cursor.fwd();
-            float value = cursor.get().get();
-            totalIntensity += value;
-        }
-        return totalIntensity;
+        return ops.stats().sum(region).getRealDouble();
     }
 
-    public double getAverageIntensity(final Interval interval, final RandomAccessible<FloatType> img){
-        IterableInterval< FloatType > region = Views.interval( img, interval );
-        DoubleType output = new DoubleType();
-        ops.stats().mean(output, region);
-        double result = output.getRealDouble();
-        return result;
+    public double getIntensityMean(final Interval interval, final RandomAccessible<FloatType> img) {
+        IterableInterval<FloatType> region = Views.interval(img, interval);
+        return ops.stats().mean(region).getRealDouble();
+    }
+
+    public double getIntensityStDev(final Interval interval, final RandomAccessible<FloatType> img) {
+        IterableInterval<FloatType> region = Views.interval(img, interval);
+        return ops.stats().stdDev(region).getRealDouble();
+    }
+
+    public double getIntensityCoeffVariation(final Interval interval, final RandomAccessible<FloatType> img) {
+        IterableInterval<FloatType> region = Views.interval(img, interval);
+        double std = ops.stats().stdDev(region).getRealDouble();
+        double mean = ops.stats().mean(region).getRealDouble();
+        return std / mean;
     }
 }

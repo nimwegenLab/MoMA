@@ -3,7 +3,6 @@ package com.jug.lp;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
@@ -33,8 +32,8 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @param edges
 	 * @param who
      */
-	public ExitAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) {
-		super( GrowthLineTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
+	public ExitAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) {
+		super( GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
 		this.Hup = Hup;
 		this.edges = edges;
         this.who = who;
@@ -54,7 +53,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
 					add = true;
-					if ( a_j.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
 					}
 					// add term if assignment is NOT another exit-assignment
@@ -82,7 +81,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
-					if ( a_j.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
 					}
 					// add term if assignment is NOT another exit-assignment
@@ -113,7 +112,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
 				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
-					if ( a_j.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
 					}
 					// add term if assignment is NOT another exit-assignment
@@ -144,6 +143,6 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 */
 	@Override
 	public int getId() {
-		return who.getId() + GrowthLineTrackingILP.ASSIGNMENT_EXIT;
+		return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
 	}
 }

@@ -13,9 +13,9 @@ import net.imglib2.type.numeric.real.FloatType;
  * This corresponds to one growth line micrograph. The class
  * representing an entire time
  * series (2d+t) representation of an growth line is
- * <code>GrowthLine</code>.
+ * <code>Growthlane</code>.
  */
-public class GrowthLineFrame extends AbstractGrowthLineFrame<AdvancedComponent<FloatType>> {
+public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<FloatType>> {
 
     private int frameIndex;
 
@@ -23,12 +23,12 @@ public class GrowthLineFrame extends AbstractGrowthLineFrame<AdvancedComponent<F
         return frameIndex;
     }
 
-    public GrowthLineFrame(int frameIndex) {
+    public GrowthlaneFrame(int frameIndex) {
         this.frameIndex = frameIndex;
     }
 
     /**
-     * @see com.jug.AbstractGrowthLineFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
+     * @see AbstractGrowthlaneFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
      */
     @Override
     protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {

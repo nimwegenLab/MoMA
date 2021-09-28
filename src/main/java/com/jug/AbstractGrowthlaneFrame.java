@@ -2,22 +2,15 @@ package com.jug;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
-import com.jug.util.ArgbDrawingUtils;
 import com.jug.util.ComponentTreeUtils;
 import net.imglib2.Localizable;
-import net.imglib2.RandomAccess;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import net.imglib2.view.IntervalView;
-import net.imglib2.view.Views;
 
 import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -28,18 +21,18 @@ import java.util.Vector;
  * This corresponds to one growth line micrograph. The class
  * representing an entire time
  * series (2d+t) representation of an growth line is
- * <code>GrowthLine</code>.
+ * <code>Growthlane</code>.
  */
-public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>> {
+public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>> {
 
     // -------------------------------------------------------------------------------------
     // private fields
     // -------------------------------------------------------------------------------------
     /**
-     * Points at all the detected GrowthLine centers associated with this
-     * GrowthLine.
+     * Points at all the detected Growthlane centers associated with this
+     * Growthlane.
      */
-    private GrowthLine parent;
+    private Growthlane parent;
     private ComponentForest<C> componentTree;
     private Img<FloatType> image;
 
@@ -50,7 +43,7 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
     // -------------------------------------------------------------------------------------
     // constructors
     // -------------------------------------------------------------------------------------
-    AbstractGrowthLineFrame() {
+    AbstractGrowthlaneFrame() {
     }
 
     public Img<FloatType> getImage() {
@@ -64,14 +57,14 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
     /**
      * @return the growth line time series this one growth line is part of.
      */
-    public GrowthLine getParent() {
+    public Growthlane getParent() {
         return parent;
     }
 
     /**
      * @param parent - the growth line time series this one growth line is part of.
      */
-    public void setParent(final GrowthLine parent) {
+    public void setParent(final Growthlane parent) {
         this.parent = parent;
     }
 
@@ -83,21 +76,21 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
     }
 
     /**
-     * @return the x-offset of the GrowthLineFrame given the original micrograph
+     * @return the x-offset of the GrowthlaneFrame given the original micrograph
      */
     public long getOffsetX() {
         return image.dimension(0) / 2;
     }
 
     /**
-     * @return the y-offset of the GrowthLineFrame given the original micrograph
+     * @return the y-offset of the GrowthlaneFrame given the original micrograph
      */
     public long getOffsetY() {
         return 0;
     }
 
     /**
-     * @return the f-offset of the GrowthLineFrame given the original micrograph
+     * @return the f-offset of the GrowthlaneFrame given the original micrograph
      * (stack)
      */
     public long getOffsetF() {
@@ -124,7 +117,7 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
 
     /**
      * @return the average X coordinate of the center line of this
-     * <code>GrowthLine</code>
+     * <code>Growthlane</code>
      */
     public int getAvgXpos() {
         return (int) getOffsetX();
@@ -142,7 +135,7 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
      */
     public int getSolutionStats_numberOfTrackedCells() {
         int cells = 0;
-        final GrowthLineTrackingILP ilp = getParent().getIlp();
+        final GrowthlaneTrackingILP ilp = getParent().getIlp();
         for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set : ilp.getOptimalRightAssignments(this.getTime()).values()) {
             for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ora : set) {
                 cells++;
@@ -162,7 +155,7 @@ public abstract class AbstractGrowthLineFrame<C extends Component<FloatType, C>>
     public int getSolutionStats_cellRank(final Hypothesis<Component<FloatType, ?>> hyp) {
         int pos = 0;
 
-        final GrowthLineTrackingILP ilp = getParent().getIlp();
+        final GrowthlaneTrackingILP ilp = getParent().getIlp();
         for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> optRightAssmnt : ilp.getOptimalRightAssignments(
                 this.getTime()).values()) {
 

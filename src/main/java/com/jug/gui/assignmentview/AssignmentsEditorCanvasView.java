@@ -1,6 +1,5 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEvent;
 import com.jug.gui.IlpModelChangedEventListener;
@@ -83,7 +82,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // construction
     // -------------------------------------------------------------------------------------
     public AssignmentsEditorCanvasView(final int height, final MoMAGui callbackGui) {
-        this(height, -GrowthLineTrackingILP.CUTOFF_COST, GrowthLineTrackingILP.CUTOFF_COST);
+        this(height, -GrowthlaneTrackingILP.CUTOFF_COST, GrowthlaneTrackingILP.CUTOFF_COST);
         this.doFilterDataByCost = false;
         this.gui = callbackGui;
     }
@@ -273,13 +272,13 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         assignmentViews.clear();
         for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> setOfAssignments : data.values()) {
             for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
-                if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
+                if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
                     assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS) {
                     assignmentViews.add(new LysisAssignmentView((LysisAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }

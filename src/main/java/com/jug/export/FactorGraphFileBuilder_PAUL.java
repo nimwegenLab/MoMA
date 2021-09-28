@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.jug.lp.DivisionAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 
@@ -113,7 +113,7 @@ public class FactorGraphFileBuilder_PAUL {
 	 *
 	 * @return the id of the added hypothesis.
 	 */
-	public int addHyp( final GrowthLineTrackingILP ilp, final Hypothesis< Component< FloatType, ? > > hyp ) {
+	public int addHyp(final GrowthlaneTrackingILP ilp, final Hypothesis< Component< FloatType, ? > > hyp ) {
 		mapHypId.put( hyp, next_hyp_id );
 		final double exitCost = ilp.costModulationForSubstitutedILP( hyp.getCost() );
 		lines.add( String.format( "H %d %d %.16f (%d,%d)", next_hyp_id, hyp.getId(), 0f, hyp.getLocation().a, hyp.getLocation().b ) );
@@ -131,12 +131,12 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param t
 	 * @param assmnt
 	 */
-	public void addMapping( final GrowthLineTrackingILP ilp, final int t, final MappingAssignment assmnt ) {
+	public void addMapping(final GrowthlaneTrackingILP ilp, final int t, final MappingAssignment assmnt ) {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesis = assmnt.getDestinationHypothesis();
 		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis.getWrappedComponent(), destinationHypothesis.getWrappedComponent() );
 		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost );
-		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
+		if ( cost <= GrowthlaneTrackingILP.CUTOFF_COST ) {
 			lines.add(
 					String.format(
 							"MOVE %d %d %d %d %.16f",
@@ -153,7 +153,7 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param t
 	 * @param assmnt
 	 */
-	public void addDivision( final GrowthLineTrackingILP ilp, final int t, final DivisionAssignment assmnt ) {
+	public void addDivision(final GrowthlaneTrackingILP ilp, final int t, final DivisionAssignment assmnt ) {
 		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
 		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
@@ -164,7 +164,7 @@ public class FactorGraphFileBuilder_PAUL {
 				destinationHypothesisUpper.getCost(),
 				destinationHypothesisLower.getCost(),
 				divisionCost );
-		if ( cost <= GrowthLineTrackingILP.CUTOFF_COST ) {
+		if ( cost <= GrowthlaneTrackingILP.CUTOFF_COST ) {
 			lines.add(
 				String.format(
 						"DIV %d %d %d %d %d %d %.16f",

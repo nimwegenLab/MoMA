@@ -1,7 +1,7 @@
 package com.jug.lp;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
@@ -36,7 +36,7 @@ import static com.jug.util.ComponentTreeUtils.*;
  * @author jug
  */
 @SuppressWarnings("restriction")
-public class GrowthLineTrackingILP {
+public class GrowthlaneTrackingILP {
 
     // < H extends Hypothesis< Component< FloatType, ? > >, A extends AbstractAssignment< H > >
 
@@ -50,7 +50,7 @@ public class GrowthLineTrackingILP {
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
-    private final GrowthLine gl;
+    private final Growthlane gl;
     private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes =
             new AssignmentsAndHypotheses<>();  // all variables of FG
     private final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets =
@@ -70,7 +70,7 @@ public class GrowthLineTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthLineTrackingILP(final GrowthLine gl, IGRBModelAdapter grbModel, IImageProvider imageProvider, AssignmentPlausibilityTester assignmentPlausibilityTester) {
+    public GrowthlaneTrackingILP(final Growthlane gl, IGRBModelAdapter grbModel, IImageProvider imageProvider, AssignmentPlausibilityTester assignmentPlausibilityTester) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
@@ -232,7 +232,7 @@ public class GrowthLineTrackingILP {
             model.update();
 
         } catch (final GRBException e) {
-            System.out.println("Could not fill data into GrowthLineTrackingILP!");
+            System.out.println("Could not fill data into GrowthlaneTrackingILP!");
             e.printStackTrace();
         }
 
@@ -259,7 +259,7 @@ public class GrowthLineTrackingILP {
      * This method calls <code>recursivelyAddCTNsAsHypotheses(...)</code>.
      */
     private void createSegmentationHypotheses(final int t) {
-        final GrowthLineFrame glf = gl.getFrames().get(t);
+        final GrowthlaneFrame glf = gl.getFrames().get(t);
 
         for (final Component<FloatType, ?> ctRoot : glf.getComponentTree().roots()) {
             recursivelyAddCTNsAsHypotheses(t, ctRoot); //, glf.isParaMaxFlowComponentTree()
@@ -706,7 +706,7 @@ public class GrowthLineTrackingILP {
             final GRBLinExpr exprR = new GRBLinExpr();
             while (runnerNode != null) {
                 @SuppressWarnings("unchecked") final Hypothesis<Component<FloatType, ?>> hypothesis = (Hypothesis<Component<FloatType, ?>>) nodes.findHypothesisContaining(runnerNode);
-                assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!";
+                assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!";
 
                 if (edgeSets.getRightNeighborhood(hypothesis) != null) {
                     for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : edgeSets.getRightNeighborhood(hypothesis)) {
@@ -1311,9 +1311,9 @@ public class GrowthLineTrackingILP {
     }
 
     /**
-     * @return the GrowthLine this is the ILP for.
+     * @return the Growthlane this is the ILP for.
      */
-    protected GrowthLine getGrowthLine() {
+    protected Growthlane getGrowthlane() {
         return gl;
     }
 

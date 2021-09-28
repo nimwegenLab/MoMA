@@ -1,7 +1,7 @@
 package com.jug.lp;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
@@ -15,11 +15,11 @@ import java.util.Set;
 import java.util.function.Consumer;
 
 public class HypothesesAndAssignmentsSanityChecker {
-    private GrowthLine gl;
+    private Growthlane gl;
     private AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes;
     private HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets;
 
-    public HypothesesAndAssignmentsSanityChecker(GrowthLine gl,
+    public HypothesesAndAssignmentsSanityChecker(Growthlane gl,
                                                  AssignmentsAndHypotheses< AbstractAssignment< Hypothesis<Component< FloatType, ? >> >, Hypothesis< Component< FloatType, ? > > > nodes,
                                                  HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets){
         this.gl = gl;
@@ -43,7 +43,7 @@ public class HypothesesAndAssignmentsSanityChecker {
                 }
             }
         };
-        final GrowthLineFrame glf = gl.getFrames().get(t);
+        final GrowthlaneFrame glf = gl.getFrames().get(t);
         ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentTree(), levelComponentsConsumer);
     }
 

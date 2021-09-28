@@ -23,11 +23,11 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 * @param from
 	 */
 	public DivisionAssignment(final GRBVar ilpVariable,
-							  final GrowthLineTrackingILP ilp,
+							  final GrowthlaneTrackingILP ilp,
 							  final Hypothesis<Component<FloatType, ?>> from,
 							  final Hypothesis<Component<FloatType, ?>> toUpper,
 							  final Hypothesis<Component<FloatType, ?>> toLower) {
-		super(GrowthLineTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
+		super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
 		this.from = from;
 		this.toUpper = toUpper;
 		this.toLower = toLower;
@@ -85,7 +85,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 */
 	@Override
 	public int getId() {
-		return from.getId() + toUpper.getId() + toLower.getId() + GrowthLineTrackingILP.ASSIGNMENT_DIVISION;
+		return from.getId() + toUpper.getId() + toLower.getId() + GrowthlaneTrackingILP.ASSIGNMENT_DIVISION;
 	}
 
 	/**

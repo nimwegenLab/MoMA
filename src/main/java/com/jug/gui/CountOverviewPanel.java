@@ -15,13 +15,13 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
+import com.jug.lp.GrowthlaneTrackingILP;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
 import com.jug.lp.AbstractAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.lp.Hypothesis;
 
 /**
@@ -93,13 +93,13 @@ class CountOverviewPanel extends JPanel {
 	/**
 	 * @param currentGL
 	 */
-	public void showData( final GrowthLine currentGL ) {
+	public void showData( final Growthlane currentGL ) {
 		data = new Vector<>();
 
 		int sumOfCells = 0;
 		if ( currentGL != null && currentGL.getIlp() != null ) {
 			// collect data
-			for ( final GrowthLineFrame glf : currentGL.getFrames() ) {
+			for ( final GrowthlaneFrame glf : currentGL.getFrames() ) {
 				final Vector< String > row = new Vector<>();
 
 				int cells = 0;
@@ -109,9 +109,9 @@ class CountOverviewPanel extends JPanel {
 				for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set : currentGL.getIlp().getOptimalRightAssignments( glf.getTime() ).values() ) {
 					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ora : set ) {
 						cells++;
-						if ( ora.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION )
+						if ( ora.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION )
 							divisions++;
-						if ( ora.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT )
+						if ( ora.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT )
 							exits++;
 					}
 				}

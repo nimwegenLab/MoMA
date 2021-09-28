@@ -1,6 +1,6 @@
 package com.jug.lp;
 
-import com.jug.GrowthLine;
+import com.jug.Growthlane;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 public class IlpSolutionSanityChecker {
-    private GrowthLineTrackingILP ilp;
-    private GrowthLine gl;
+    private GrowthlaneTrackingILP ilp;
+    private Growthlane gl;
 
-    public IlpSolutionSanityChecker(GrowthLineTrackingILP ilp,
-                                    GrowthLine gl) {
+    public IlpSolutionSanityChecker(GrowthlaneTrackingILP ilp,
+                                    Growthlane gl) {
         this.ilp = ilp;
         this.gl = gl;
     }

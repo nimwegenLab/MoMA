@@ -1,10 +1,9 @@
 package com.jug.gui;
 
-import com.jug.GrowthLineFrame;
-import com.jug.MoMA;
+import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
@@ -68,11 +67,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private void ShowComponentsOfCurrentTimeStep() {
         List<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> optimalSegs = new ArrayList<>();
         int timeStep = timeStepToDisplay();
-        GrowthLineFrame glf = momaModel.getGlfAtTimeStep(timeStep);
+        GrowthlaneFrame glf = momaModel.getGlfAtTimeStep(timeStep);
         if (glf == null) {
             return; /* this method was called at an invalid time-step so there is no component-tree; do nothing */
         }
-        GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
@@ -122,7 +121,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             momaModel.getCurrentGL().getIlp().autosave();
 
             int numCells;
-            final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+            final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
             try {
                 numCells = Integer.parseInt(txtNumCells.getText());
             } catch (final NumberFormatException nfe) {
@@ -202,7 +201,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             growthlaneViewer.setEmptyScreenImage();
             return;
         }
-        GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay());
+        GrowthlaneFrame glf = momaModel.getGrowthlaneFrame(timeStepToDisplay());
         IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
     }
@@ -213,7 +212,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
 
-    private IntervalView<FloatType> getImageToDisplay(GrowthLineFrame glf){
+    private IntervalView<FloatType> getImageToDisplay(GrowthlaneFrame glf){
         /**
          * The view onto <code>imgRaw</code> that is supposed to be shown on screen
          * (center one in active assignments view).
@@ -232,7 +231,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     @NotNull
-    private IntervalView<FloatType> normalizeImage(GrowthLineFrame glf, IntervalView<FloatType> viewToShow) {
+    private IntervalView<FloatType> normalizeImage(GrowthlaneFrame glf, IntervalView<FloatType> viewToShow) {
         IntervalView<FloatType> viewImgCenterActive;
         final FloatType min = new FloatType();
         final FloatType max = new FloatType();
@@ -257,7 +256,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * This method set constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void setVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
                 ilp.fixSegmentationAsIs(timeStepToDisplay());
@@ -269,7 +268,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * This method unsets/removes constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void unsetVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
                 ilp.removeAllSegmentConstraints(timeStepToDisplay());

@@ -1,12 +1,12 @@
 package com.jug.export;
 
-import com.jug.GrowthLineFrame;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -96,8 +96,8 @@ public class CellStatsExporter {
 
         final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
 
-        final GrowthLineFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
-        final GrowthLineTrackingILP ilp = firstGLF.getParent().getIlp();
+        final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+        final GrowthlaneTrackingILP ilp = firstGLF.getParent().getIlp();
 
         CellTrackBuilder trackBuilder = new CellTrackBuilder();
         trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
@@ -173,7 +173,7 @@ public class CellStatsExporter {
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
-                final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
+                final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
 
                 final int numCells = glf.getSolutionStats_numberOfTrackedCells();
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
@@ -299,7 +299,7 @@ public class CellStatsExporter {
         dataToExport.add(secondLine);
 
         int i = 0;
-        for (final GrowthLineFrame glf : gui.model.getCurrentGL().getFrames()) {
+        for (final GrowthlaneFrame glf : gui.model.getCurrentGL().getFrames()) {
             final Vector<String> newRow = new Vector<>();
             newRow.add("" + i);
 

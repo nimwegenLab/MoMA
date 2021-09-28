@@ -3,7 +3,7 @@ package com.jug.gui.assignmentview;
 import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.OSValidator;
 import net.imglib2.algorithm.componenttree.Component;
@@ -91,11 +91,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
             }
         };
 
-        activeAssignments.display(GrowthLineTrackingILP.getActiveAssignments(data));
-        inactiveMappingAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
-        inactiveDivisionAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
-        inactiveExitAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
-        inactiveLysisAssignments.display(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
+        activeAssignments.display(GrowthlaneTrackingILP.getActiveAssignments(data));
+        inactiveMappingAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
+        inactiveDivisionAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
+        inactiveExitAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
+        inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
 
         if (!OSValidator.isMac()) {
             this.add(">", nextHackTab);
@@ -125,12 +125,12 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      */
     public void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> hashMap) {
         if (!hashMap.equals(this.data)) {
-            inactiveMappingAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
-            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
-            inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
-            inactiveLysisAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
+            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
+            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
         }
-        activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(hashMap));
+        activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(hashMap));
         this.data = hashMap;
     }
 
@@ -140,15 +140,15 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     @Override
     public void stateChanged(final ChangeEvent e) {
         if (this.getSelectedComponent().equals(activeAssignments)) {
-            activeAssignments.setData(GrowthLineTrackingILP.getActiveAssignments(data));
+            activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(data));
         } else if (this.getSelectedComponent().equals(inactiveMappingAssignments)) {
-            inactiveMappingAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
         } else if (this.getSelectedComponent().equals(inactiveDivisionAssignments)) {
-            inactiveDivisionAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
         } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
-            inactiveExitAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT));
+            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
         } else if (this.getSelectedComponent().equals(inactiveLysisAssignments)) {
-            inactiveLysisAssignments.setData(GrowthLineTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS));
+            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
         }
     }
 

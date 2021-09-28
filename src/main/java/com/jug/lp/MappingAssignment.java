@@ -25,8 +25,8 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * @param from
 	 * @param to
      */
-	public MappingAssignment( final int t, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) {
-		super( GrowthLineTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
+	public MappingAssignment(final int t, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) {
+		super( GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
 		this.from = from;
 		this.to = to;
     }
@@ -71,7 +71,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 */
 	@Override
 	public int getId() {
-		return from.getId() + to.getId() + GrowthLineTrackingILP.ASSIGNMENT_MAPPING;
+		return from.getId() + to.getId() + GrowthlaneTrackingILP.ASSIGNMENT_MAPPING;
 	}
 
 	/**

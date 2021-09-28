@@ -2,7 +2,7 @@ package com.jug.export;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.AbstractAssignment;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import gurobi.GRBException;
@@ -130,11 +130,11 @@ final class SegmentRecord {
     }
 
     public String getTerminationIdentifier(){
-        if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+        if (terminated_by == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
             return "exit";
-        } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
+        } else if (terminated_by == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS) {
             return "lysis";
-        } else if (terminated_by == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+        } else if (terminated_by == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
             return "div";
         } else if (terminated_by == SegmentRecord.USER_PRUNING) {
             return "pruned";
@@ -148,7 +148,7 @@ final class SegmentRecord {
     /**
      * @return
      */
-    SegmentRecord nextSegmentInTime(final GrowthLineTrackingILP ilp) {
+    SegmentRecord nextSegmentInTime(final GrowthlaneTrackingILP ilp) {
         SegmentRecord ret = this;
 
         exists = true;
@@ -157,7 +157,7 @@ final class SegmentRecord {
             if ( rightAssmt == null ) {
                 exists = false;
                 terminated_by = SegmentRecord.ENDOFTRACKING;
-            } else if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
+            } else if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING ) {
                 final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
                 if ( !ma.isPruned() ) {
                     ret = new SegmentRecord(this, 1);

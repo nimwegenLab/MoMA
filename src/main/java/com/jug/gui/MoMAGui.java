@@ -1,7 +1,7 @@
 package com.jug.gui;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.export.CellStatsExporter;
@@ -213,7 +213,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelContent.add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // Does not exist any more...
-        sliderGL = new JSlider(SwingConstants.VERTICAL, 0, model.mm.getGrowthLines().size() - 1, 0);
+        sliderGL = new JSlider(SwingConstants.VERTICAL, 0, model.mm.getGrowthlanes().size() - 1, 0);
         sliderGL.setValue(0);
         sliderGL.addChangeListener(this);
         sliderGL.setMajorTickSpacing(5);
@@ -591,7 +591,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     private void updatePlotPanels() {
 
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // Intensity plot
         // --------------
@@ -610,7 +610,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
     }
 
-    private <C extends Component<FloatType, C>> void printCosts(final ComponentForest<C> ct, final GrowthLineTrackingILP ilp, String costType) {
+    private <C extends Component<FloatType, C>> void printCosts(final ComponentForest<C> ct, final GrowthlaneTrackingILP ilp, String costType) {
         final int t = sliderTime.getValue();
         System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
         for (final C root : ct.roots()) {
@@ -645,7 +645,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         System.out.println();
     }
 
-    private <C extends Component<FloatType, C>> void dumpCosts(final ComponentForest<C> ct, final GrowthLineTrackingILP ilp) {
+    private <C extends Component<FloatType, C>> void dumpCosts(final ComponentForest<C> ct, final GrowthlaneTrackingILP ilp) {
         final int numCTNs = ComponentTreeUtils.countNodes(ct);
         final float[][] xydxdyCTNBorders = new float[numCTNs][4];
         final int t = sliderTime.getValue();
@@ -725,7 +725,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     @SuppressWarnings({"unchecked"})
     public void dataToDisplayChanged() {
 
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // IF 'COUNTING VIEW' VIEW IS ACTIVE
         // =================================
@@ -798,7 +798,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final MoMAGui self = this;
 
             final Thread t = new Thread(() -> {
-                GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+                GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
                 final File file = OsDependentFileChooser.showLoadFileChooser(
                         self,
@@ -823,9 +823,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(menuSave)) {
 
-            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+            final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
-            if (ilp != null) { // && ilp.getStatus() != GrowthLineTrackingILP.OPTIMIZATION_NEVER_PERFORMED
+            if (ilp != null) { // && ilp.getStatus() != GrowthlaneTrackingILP.OPTIMIZATION_NEVER_PERFORMED
                 final File file = OsDependentFileChooser.showSaveFileChooser(
                         this,
                         momaInstance.STATS_OUTPUT_PATH,
@@ -1018,7 +1018,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void prepareOptimization() {
         System.out.println("Filling in CT hypotheses where needed...");
         int frameIndex = 0;
-        for (final GrowthLineFrame glf : model.getCurrentGL().getFrames()) {
+        for (final GrowthlaneFrame glf : model.getCurrentGL().getFrames()) {
             if (glf.getComponentTree() == null) {
                 glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
                 frameIndex++;
@@ -1173,9 +1173,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         activateSimpleHypothesesForGL(model.getCurrentGL());
     }
 
-    private void activateSimpleHypothesesForGL(final GrowthLine gl) {
+    private void activateSimpleHypothesesForGL(final Growthlane gl) {
         int frameIndex = 0;
-        for (final GrowthLineFrame glf : gl.getFrames()) {
+        for (final GrowthlaneFrame glf : gl.getFrames()) {
             System.out.print(".");
             glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
             frameIndex++;

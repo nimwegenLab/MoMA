@@ -1,6 +1,6 @@
 package com.jug.lp;
 
-import com.jug.GrowthLine;
+import com.jug.Growthlane;
 import com.jug.export.FactorGraphFileBuilder_PASCAL;
 import com.jug.export.FactorGraphFileBuilder_PAUL;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Set;
 
 public class FactorGraphExporter {
-    private GrowthLine gl;
-    private GrowthLineTrackingILP ilp;
+    private Growthlane gl;
+    private GrowthlaneTrackingILP ilp;
     private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes;
     private final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets;
 
-    public FactorGraphExporter(GrowthLine gl) {
+    public FactorGraphExporter(Growthlane gl) {
         this.ilp = ilp;
-        this.gl = ilp.getGrowthLine();
+        this.gl = ilp.getGrowthlane();
         this.nodes = ilp.getNodes();
         this.edgeSets = ilp.getEdgeSets();
     }
@@ -52,11 +52,11 @@ public class FactorGraphExporter {
                 assmt.setVarId( var_id );
 
                 // unaries associated to assignments
-                if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
+                if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING ) {
                     final MappingAssignment ma = ( MappingAssignment ) assmt;
-                } else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
+                } else if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION ) {
                     final DivisionAssignment da = ( DivisionAssignment ) assmt;
-                } else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+                } else if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
                     final ExitAssignment ea = ( ExitAssignment ) assmt;
                 }
                 fgFile.addFkt( assmt.getVarIdx() );
@@ -113,19 +113,19 @@ public class FactorGraphExporter {
                 assmt.setVarId( var_id );
 
                 float cost = 0.0f;
-                if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
+                if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING ) {
                     fgFile.addVarComment( "- - MAPPING (var: " + var_id + ") - - - - - " );
                     fgFile.addFktComment( "- - MAPPING (var: " + var_id + ") - - - - - " );
                     final MappingAssignment ma = ( MappingAssignment ) assmt;
                     cost = ma.getSourceHypothesis().getCost() + ma.getDestinationHypothesis().getCost();
-                } else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
+                } else if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION ) {
                     fgFile.addVarComment( "- - DIVISION (var: " + var_id + ") - - - - - " );
                     fgFile.addFktComment( "- - DIVISION (var: " + var_id + ") - - - - - " );
                     final DivisionAssignment da = ( DivisionAssignment ) assmt;
                     cost = da.getSourceHypothesis().getCost() + da.getUpperDesinationHypothesis().getCost() + da
                             .getLowerDesinationHypothesis()
                             .getCost();
-                } else if ( assmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT ) {
+                } else if ( assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
                     fgFile.addVarComment( "- - EXIT (var: " + var_id + ") - - - - - " );
                     fgFile.addFktComment( "- - EXIT (var: " + var_id + ") - - - - - " );
                     final ExitAssignment ea = ( ExitAssignment ) assmt;
@@ -226,7 +226,7 @@ public class FactorGraphExporter {
                 @SuppressWarnings( "unchecked" )
                 final Hypothesis< Component< FloatType, ? > > hypothesis = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
-                    System.err.println( "WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!" );
+                    System.err.println( "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );
                 }
 
                 if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
@@ -291,7 +291,7 @@ public class FactorGraphExporter {
                         ( Hypothesis< Component< FloatType, ? > > ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
                     System.err.println(
-                            "WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!" );
+                            "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );
                 }
 
                 if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
@@ -442,7 +442,7 @@ public class FactorGraphExporter {
                         ( Hypothesis< Component< FloatType, ? > > ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
                     System.err.println(
-                            "A WARNING: Hypothesis for a CTN was not found in GrowthLineTrackingILP -- this is an indication for some design problem of the system!" );
+                            "A WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );
                 } else {
                     hyps.add( hypothesis );
                 }

@@ -127,7 +127,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 	/**
 	 *
 	 */
-	public void setPruneRoot( final boolean value, final GrowthLineTrackingILP ilp ) {
+	public void setPruneRoot( final boolean value, final GrowthlaneTrackingILP ilp ) {
 
 		this.isPruneRoot = value;
 
@@ -147,7 +147,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 					assmnt.setPruned( value );
 
 					switch ( assmnt.getType() ) {
-					case GrowthLineTrackingILP.ASSIGNMENT_DIVISION:
+					case GrowthlaneTrackingILP.ASSIGNMENT_DIVISION:
 						if ( !( ( DivisionAssignment ) assmnt ).getUpperDesinationHypothesis().isPruneRoot() ) {
 							queue.add( ( ( DivisionAssignment ) assmnt ).getUpperDesinationHypothesis() );
 						}
@@ -155,7 +155,7 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 							queue.add( ( ( DivisionAssignment ) assmnt ).getLowerDesinationHypothesis() );
 						}
 						break;
-					case GrowthLineTrackingILP.ASSIGNMENT_MAPPING:
+					case GrowthlaneTrackingILP.ASSIGNMENT_MAPPING:
 						if ( !( ( MappingAssignment ) assmnt ).getDestinationHypothesis().isPruneRoot() ) {
 							queue.add( ( ( MappingAssignment ) assmnt ).getDestinationHypothesis() );
 						}

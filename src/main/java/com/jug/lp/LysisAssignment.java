@@ -1,15 +1,11 @@
 package com.jug.lp;
 
-import com.jug.MoMA;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
-import gurobi.GRB;
 import gurobi.GRBException;
-import gurobi.GRBLinExpr;
 import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,8 +26,8 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 * @param edges
 	 * @param who
      */
-	public LysisAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> who) {
-		super( GrowthLineTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp );
+	public LysisAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> who) {
+		super( GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp );
 		this.edges = edges;
         this.who = who;
 	}
@@ -75,6 +71,6 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 */
 	@Override
 	public int getId() {
-		return who.getId() + GrowthLineTrackingILP.ASSIGNMENT_LYSIS;
+		return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
 	}
 }

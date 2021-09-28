@@ -535,9 +535,9 @@ public class MoMA implements IImageProvider {
 	private Img< FloatType > imgProbs;
 
 	/**
-	 * Contains all GrowthLines found in the given data.
+	 * Contains all Growthlanes found in the given data.
 	 */
-	private List< GrowthLine > growthLines;
+	private List<Growthlane> growthlanes;
 
 	/**
 	 * Frame hosting the console output.
@@ -591,18 +591,18 @@ public class MoMA implements IImageProvider {
 	}
 
 	/**
-	 * @return the growthLines
+	 * @return the growthlanes
 	 */
-	public List< GrowthLine > getGrowthLines() {
-		return growthLines;
+	public List<Growthlane> getGrowthlanes() {
+		return growthlanes;
 	}
 
 	/**
-	 * @param growthLines
-	 *            the growthLines to set
+	 * @param growthlanes
+	 *            the growthlanes to set
 	 */
-	private void setGrowthLines(final List<GrowthLine> growthLines) {
-		this.growthLines = growthLines;
+	private void setGrowthlanes(final List<Growthlane> growthlanes) {
+		this.growthlanes = growthlanes;
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -895,27 +895,27 @@ public class MoMA implements IImageProvider {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-    private void findGrowthLines(IImageProvider imageProvider) {
-        this.setGrowthLines(new ArrayList<>() );
-        getGrowthLines().add( new GrowthLine(imageProvider) );
+    private void findGrowthlanes(IImageProvider imageProvider) {
+        this.setGrowthlanes(new ArrayList<>() );
+        getGrowthlanes().add( new Growthlane(imageProvider) );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-            GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
+            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx);
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
-            getGrowthLines().get(0).add(currentFrame);
+            getGrowthlanes().get(0).add(currentFrame);
         }
     }
 
 
 	/**
-	 * Iterates over all found GrowthLines and evokes
-	 * GrowthLine.findGapHypotheses(Img). Note that this function always uses
+	 * Iterates over all found Growthlanes and evokes
+	 * Growthlane.findGapHypotheses(Img). Note that this function always uses
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
 		imgProbs = processImageOrLoadFromDisk();
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
 				glf.generateSimpleSegmentationHypotheses( this, glf.getFrameIndex() );
@@ -961,7 +961,7 @@ public class MoMA implements IImageProvider {
 	 * optimization-related structures used to compute the optimal tracking.
 	 */
 	private void generateILPs() {
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			gl.generateILP( null );
 		}
 	}
@@ -971,7 +971,7 @@ public class MoMA implements IImageProvider {
 	 */
 	private void runILPs() {
 		int i = 0;
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
 			gl.getIlp().run();
 			i++;
@@ -1053,9 +1053,9 @@ public class MoMA implements IImageProvider {
 			hideConsoleLater = true;
 		}
 
-		System.out.print( "Searching for GrowthLines..." );
+		System.out.print( "Searching for Growthlanes..." );
 		resetImgTempToRaw();
-        findGrowthLines(imageProvider);
+        findGrowthlanes(imageProvider);
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );

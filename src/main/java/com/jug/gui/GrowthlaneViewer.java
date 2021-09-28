@@ -1,7 +1,7 @@
 package com.jug.gui;
 
-import com.jug.GrowthLineFrame;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.GrowthlaneFrame;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import gurobi.GRBException;
 import ij.IJ;
@@ -45,7 +45,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
     private IntervalView<FloatType> view;
-    private GrowthLineFrame glf;
+    private GrowthlaneFrame glf;
     private boolean showSegmentationAnnotations = true;
     // tracking the mouse (when over)
     private boolean isMouseOver;
@@ -80,11 +80,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     /**
      * Sets the image data to be displayed when paintComponent is called.
      *
-     * @param glf     the GrowthLineFrameto be displayed
+     * @param glf     the GrowthlaneFrame to be displayed
      * @param viewImg an IntervalView<FloatType> containing the desired view
      *                onto the raw image data
      */
-    public void setScreenImage(final GrowthLineFrame glf, final IntervalView<FloatType> viewImg) {
+    public void setScreenImage(final GrowthlaneFrame glf, final IntervalView<FloatType> viewImg) {
         setEmptyScreenImage();
         this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
         this.view = viewImg;
@@ -137,7 +137,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // this can happen if a growth line, due to shift, exists in one
             // frame, and does not exist in others.
             // If for this growth line we want to visualize a time where the
-            // GrowthLine is empty, the projector
+            // Growthlane is empty, the projector
             // throws a ArrayIndexOutOfBoundsException that I catch
             // hereby... ;)
             System.err.println("ArrayIndexOutOfBoundsException in paintComponent of GrowthlaneViewer!");
@@ -259,7 +259,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         final int t = glf.getTime();
-        final GrowthLineTrackingILP ilp = glf.getParent().getIlp();
+        final GrowthlaneTrackingILP ilp = glf.getParent().getIlp();
 
         ilp.autosave();
 
@@ -341,7 +341,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         runIlpAndFocusSlider(ilp);
     }
 
-    private void runIlpAndFocusSlider(GrowthLineTrackingILP ilp) {
+    private void runIlpAndFocusSlider(GrowthlaneTrackingILP ilp) {
         class IlpThread extends Thread {
 
             @Override
@@ -369,7 +369,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
-                GrowthLineTrackingILP ilp = glf.getParent().getIlp();
+                GrowthlaneTrackingILP ilp = glf.getParent().getIlp();
 
                 selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()

@@ -1,6 +1,6 @@
 package com.jug.export;
 
-import com.jug.GrowthLineFrame;
+import com.jug.GrowthlaneFrame;
 import com.jug.lp.*;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
@@ -16,8 +16,8 @@ public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
 
     public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<Component<FloatType, ?>>>> segmentsInFirstFrameSorted,
-                                   GrowthLineFrame firstGlf,
-                                   final GrowthLineTrackingILP ilp,
+                                   GrowthlaneFrame firstGlf,
+                                   final GrowthlaneTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
 
         final LinkedList< SegmentRecord > queue = new LinkedList<>();
@@ -49,7 +49,7 @@ public class CellTrackBuilder {
                 continue;
             }
             // MAPPING -- JUST DROP SEGMENT STATS
-            if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING ) {
+            if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING ) {
                 final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
                 final SegmentRecord next = new SegmentRecord(prepPoint, 1);
                 next.hyp = ma.getDestinationHypothesis();
@@ -58,7 +58,7 @@ public class CellTrackBuilder {
                 }
             }
             // DIVISON -- NEW CELLS ARE BORN CURRENT ONE ENDS
-            if ( rightAssmt.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION ) {
+            if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION ) {
                 final DivisionAssignment da = ( DivisionAssignment ) rightAssmt;
 
                 prepPoint.pid = prepPoint.id;

@@ -56,6 +56,19 @@ public class ResultTable {
                 writeSeparator(writer);
             }
         }
+        writeEndOfLine(writer);
+    }
+
+    /**
+     * Write end-of-row specifier according to CSV format, which consists of a carriage return (CR) and a linefeed (LF),
+     * i.e. CRLF according to:
+     * https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml.
+     * https://stackoverflow.com/a/13821601/653770
+     *
+     * @param writer
+     * @throws IOException
+     */
+    private void writeEndOfLine(Writer writer) throws IOException {
         writer.write("\n");
     }
 
@@ -75,10 +88,16 @@ public class ResultTable {
                     writeSeparator(writer);
                 }
             }
-            writer.write("\n");
+            writeEndOfLine(writer);
         }
     }
 
+    /**
+     * Returns if this is the last column in the table.
+     *
+     * @param column
+     * @return
+     */
     private boolean isLastColumn(ResultTableColumn column) {
         boolean isLastColumn = (columnList.indexOf(column) == (columnList.size() - 1));
         return isLastColumn;

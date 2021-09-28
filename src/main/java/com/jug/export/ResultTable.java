@@ -52,7 +52,9 @@ public class ResultTable {
     private void writeHeader(Writer writer) throws IOException {
         for (ResultTableColumn column : columnList) {
             column.writeHeader(writer);
-            writeSeparator(writer);
+            if (!isLastColumn(column)) {
+                writeSeparator(writer);
+            }
         }
         writer.write("\n");
     }
@@ -69,10 +71,17 @@ public class ResultTable {
         for (int ind = 0; ind < numberOfEntries; ind++) {
             for (ResultTableColumn column : columnList) {
                 column.writeValue(ind, writer);
-                writeSeparator(writer);
+                if (!isLastColumn(column)) {
+                    writeSeparator(writer);
+                }
             }
             writer.write("\n");
         }
+    }
+
+    private boolean isLastColumn(ResultTableColumn column) {
+        boolean isLastColumn = (columnList.indexOf(column) == (columnList.size() - 1));
+        return isLastColumn;
     }
 
     /**

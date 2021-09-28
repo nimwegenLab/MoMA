@@ -23,10 +23,10 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
-public class SimpleComponentTests {
+public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
-//        new SimpleComponentTests().testGetParentWatershedLineValues();
-        new SimpleComponentTests().testGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().testGetParentWatershedLineValues();
+        new AdvancedComponentTests().testGetParentWatershedLineCoordinates();
     }
 
     @Test
@@ -42,10 +42,10 @@ public class SimpleComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
-        for (SimpleComponent<FloatType> root: roots) {
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+        for (AdvancedComponent<FloatType> root: roots) {
             List<FloatType> watershedProbabilityValues = root.getWatershedLinePixelValues();
         }
     }
@@ -63,14 +63,14 @@ public class SimpleComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
-        for (SimpleComponent<FloatType> root : roots) {
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+        for (AdvancedComponent<FloatType> root : roots) {
             if (root.getChildren().size() == 0) {
                 return;
             }
-            ArrayList<SimpleComponent<FloatType>> componentsToDraw = new ArrayList<>();
+            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
             componentsToDraw.add(root);
             RandomAccessibleInterval<ARGBType> parentComponentImage = Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>());
             RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());

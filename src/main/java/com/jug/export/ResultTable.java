@@ -11,8 +11,13 @@ import java.util.List;
  * the values of individual columns.
  */
 public class ResultTable {
+    String separator;
+
+    public ResultTable(String separator) {
+        this.separator = separator;
+    }
+
     List<ResultTableColumn> columnList = new ArrayList<>();
-    String separator = ",";
 
     /**
      * Write table to {@param writer}.
@@ -47,8 +52,23 @@ public class ResultTable {
     private void writeHeader(Writer writer) throws IOException {
         for (ResultTableColumn column : columnList) {
             column.writeHeader(writer);
-            writeSeparator(writer);
+            if (!isLastColumn(column)) {
+                writeSeparator(writer);
+            }
         }
+        writeEndOfLine(writer);
+    }
+
+    /**
+     * Write end-of-row specifier according to CSV format, which consists of a carriage return (CR) and a linefeed (LF),
+     * i.e. CRLF according to:
+     * https://www.loc.gov/preservation/digital/formats/fdd/fdd000323.shtml.
+     * https://stackoverflow.com/a/13821601/653770
+     *
+     * @param writer
+     * @throws IOException
+     */
+    private void writeEndOfLine(Writer writer) throws IOException {
         writer.write("\n");
     }
 
@@ -64,10 +84,23 @@ public class ResultTable {
         for (int ind = 0; ind < numberOfEntries; ind++) {
             for (ResultTableColumn column : columnList) {
                 column.writeValue(ind, writer);
-                writeSeparator(writer);
+                if (!isLastColumn(column)) {
+                    writeSeparator(writer);
+                }
             }
-            writer.write("\n");
+            writeEndOfLine(writer);
         }
+    }
+
+    /**
+     * Returns if this is the last column in the table.
+     *
+     * @param column
+     * @return
+     */
+    private boolean isLastColumn(ResultTableColumn column) {
+        boolean isLastColumn = (columnList.indexOf(column) == (columnList.size() - 1));
+        return isLastColumn;
     }
 
     /**

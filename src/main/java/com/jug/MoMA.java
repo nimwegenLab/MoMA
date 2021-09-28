@@ -11,7 +11,7 @@ import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
-import ij.ImageJ;
+import ij.ImageJ; // TODO: I should be using net.imagej.ImageJ here
 import ij.ImagePlus;
 import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
@@ -75,7 +75,6 @@ public class MoMA implements IImageProvider {
 
 	public static Context context;
 	public static OpService ops;
-	public static MoMA instance;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
@@ -170,7 +169,9 @@ public class MoMA implements IImageProvider {
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
-		dic = new PseudoDic(configurationManager);
+		final MoMA main = new MoMA();
+
+		dic = new PseudoDic(configurationManager, main);
 
 		// ===== command line parsing ======================================================================
 
@@ -419,7 +420,6 @@ public class MoMA implements IImageProvider {
 		}
 		// ******* END CHECK GUROBI **** END CHECK GUROBI **** END CHECK GUROBI ********
 
-		final MoMA main = new MoMA();
 		if ( !HEADLESS ) {
 			guiFrame = new JFrame();
 			main.initMainWindow( guiFrame );
@@ -470,7 +470,6 @@ public class MoMA implements IImageProvider {
 		// ------------------------------------------------------------------------------------------------------
 		// ------------------------------------------------------------------------------------------------------
 		final MoMAModel mmm = new MoMAModel( main );
-		instance = main;
 		try {
 			main.processDataFromFolder( path, minTime, maxTime, minChannelIdx, numChannels );
 		} catch ( final Exception e ) {
@@ -496,15 +495,11 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, main );
+		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance() );
 
 		if ( !HEADLESS ) {
 			System.out.print( "Build GUI..." );
 			main.showConsoleWindow( false );
-
-//			final JFrameSnapper snapper = new JFrameSnapper();
-//			snapper.addFrame( main.frameConsoleWindow );
-//			snapper.addFrame( guiFrame );
 
 			gui.setVisible( true );
 			guiFrame.add( gui );
@@ -513,17 +508,8 @@ public class MoMA implements IImageProvider {
 			guiFrame.setVisible( true );
 			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
-//			SwingUtilities.invokeLater( new Runnable() {
-//
-//				@Override
-//				public void run() {
-//					snapper.snapFrames( main.frameConsoleWindow, guiFrame, JFrameSnapper.EAST );
-//				}
-//			} );
 			System.out.println( " done!" );
 		} else {
-//			final String name = inputFolder.getName();
-
 			gui.exportHtmlOverview();
 			gui.exportDataFiles();
 
@@ -590,6 +576,10 @@ public class MoMA implements IImageProvider {
 	 */
 	public Img< FloatType > getImgProbs() {
 		return imgProbs;
+	}
+
+	public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
+		return ImgView.wrap(Views.hyperSlice(dic.getImageProvider().getRawChannelImgs().get(channel), 2, timestep));
 	}
 
 	/**

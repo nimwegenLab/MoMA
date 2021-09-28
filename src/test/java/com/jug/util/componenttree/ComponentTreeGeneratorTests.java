@@ -54,7 +54,7 @@ public class ComponentTreeGeneratorTests {
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -78,27 +78,27 @@ public class ComponentTreeGeneratorTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
         /* test that each returned area above is equal to the summed area of roots above */
         int totalSizeOfComponentsSoFar = 0;
-        for (SimpleComponent<FloatType> root : roots) {
+        for (AdvancedComponent<FloatType> root : roots) {
             assertEquals(totalSizeOfComponentsSoFar, root.getTotalAreaOfComponentsAbove());
             totalSizeOfComponentsSoFar += root.size();
         }
 
         /* test that each returned area above is equal to the summed area of roots below */
         totalSizeOfComponentsSoFar = 0;
-        for (SimpleComponent<FloatType> root : Lists.reverse(roots)) {
+        for (AdvancedComponent<FloatType> root : Lists.reverse(roots)) {
             assertEquals(totalSizeOfComponentsSoFar, root.getTotalAreaOfComponentsBelow());
             totalSizeOfComponentsSoFar += root.size();
         }
 
         /* test that each returned area above is equal to the summed area of roots below */
         totalSizeOfComponentsSoFar = 0;
-        for (SimpleComponent<FloatType> root : roots) {
+        for (AdvancedComponent<FloatType> root : roots) {
             totalSizeOfComponentsSoFar += root.size();
         }
         assertEquals(totalSizeOfComponentsSoFar, roots.get(0).getTotalAreaOfRootComponents());
@@ -123,14 +123,14 @@ public class ComponentTreeGeneratorTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
         int counter = 0;
-        for (SimpleComponent<FloatType> root : roots) {
-            List<SimpleComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
-//            List<SimpleComponent<FloatType>> components = new ArrayList<>();
+        for (AdvancedComponent<FloatType> root : roots) {
+            List<AdvancedComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
+//            List<AdvancedComponent<FloatType>> components = new ArrayList<>();
 //            components.add(root);
             if (!components.isEmpty()){
                 ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
@@ -155,12 +155,12 @@ public class ComponentTreeGeneratorTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> tree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<SimpleComponent<FloatType>> roots = tree.rootsSorted();
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
-        for (SimpleComponent<FloatType> root : roots) {
-            ArrayList<SimpleComponent<FloatType>> componentsToDraw = new ArrayList<>();
+        for (AdvancedComponent<FloatType> root : roots) {
+            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
             componentsToDraw.add(root);
             ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
             int rank = root.getRankRelativeToComponentsClosestToRoot();

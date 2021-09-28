@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
@@ -46,16 +47,16 @@ public class ComponentPropertiesTest {
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<SimpleComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
-        ComponentProperties props = new ComponentProperties();
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
-        List<SimpleComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
         System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
-        for(SimpleComponent component : roots){
+        for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();

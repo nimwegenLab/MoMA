@@ -53,7 +53,7 @@ final class SegmentRecord {
     /**
      * The frame that this segments belongs to.
      */
-    int frame;
+    int timestep;
 
     final List< Integer > genealogy;
 
@@ -73,7 +73,7 @@ final class SegmentRecord {
         this.tbirth = tbirth;
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = genealogy;
-        this.frame = 0;
+        this.timestep = 0;
     }
 
     SegmentRecord(
@@ -89,7 +89,7 @@ final class SegmentRecord {
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = new ArrayList<>();
         genealogy.add( daughterTypeOrPosition );
-        this.frame = 0;
+        this.timestep = 0;
     }
 
     SegmentRecord(final SegmentRecord point, final int frameOffset) {
@@ -98,7 +98,7 @@ final class SegmentRecord {
         this.pid = point.pid;
         this.tbirth = point.tbirth;
         this.daughterTypeOrPosition = point.daughterTypeOrPosition;
-        this.frame = point.frame + frameOffset;
+        this.timestep = point.timestep + frameOffset;
         this.genealogy = new ArrayList<>(point.genealogy);
     }
 
@@ -107,7 +107,7 @@ final class SegmentRecord {
         final SegmentRecord ret =
                 new SegmentRecord(this.hyp, this.id, this.pid, this.tbirth, this.daughterTypeOrPosition, this.genealogy);
         ret.exists = this.exists;
-        ret.frame = this.frame;
+        ret.timestep = this.timestep;
         ret.terminated_by = this.terminated_by;
         return ret;
     }

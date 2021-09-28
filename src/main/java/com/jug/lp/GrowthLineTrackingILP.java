@@ -10,7 +10,7 @@ import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.componenttree.SimpleComponent;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.*;
 import net.imglib2.Localizable;
@@ -290,7 +290,7 @@ public class GrowthLineTrackingILP {
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
         RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
-        return CostFactory.getComponentCost((SimpleComponent<FloatType>) ctNode);
+        return CostFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
     }
 
     /**
@@ -301,10 +301,10 @@ public class GrowthLineTrackingILP {
      * @throws GRBException
      */
     private void enumerateAndAddAssignments(final int timeStep) throws GRBException {
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree =
-                (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep).getComponentTree();
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree =
-                (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) gl.getFrames().get(timeStep + 1).getComponentTree();
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(timeStep).getComponentTree();
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(timeStep + 1).getComponentTree();
 
         addMappingAssignments(timeStep, sourceComponentTree, targetComponentTree);
         addDivisionAssignments(timeStep, sourceComponentTree, targetComponentTree);
@@ -373,9 +373,9 @@ public class GrowthLineTrackingILP {
      * @throws GRBException
      */
     public void addMappingAssignments(final int t,
-                                       SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
-                                       SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree) throws GRBException {
-        for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
+                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
+                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree) throws GRBException {
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
             if (t > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
@@ -383,15 +383,15 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(t, sourceComponent);
 
-            List<SimpleComponent<FloatType>> targetComponents;
+            List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
                 targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
             } else {
                 targetComponents = targetComponentTree.getAllComponents();
             }
 
-            for (final SimpleComponent<FloatType> targetComponent : targetComponents) {
-//            for (final SimpleComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+            for (final AdvancedComponent<FloatType> targetComponent : targetComponents) {
+//            for (final AdvancedComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
                 if (featureFlagFilterAssignmentsByComponentSizeMatch) {
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
                         continue;
@@ -497,8 +497,8 @@ public class GrowthLineTrackingILP {
      * @param cost            current cost, that will be rescaled
      * @return rescaled cost
      */
-    public float scaleAssignmentCost(SimpleComponent sourceComponent,
-                                     SimpleComponent targetComponent,
+    public float scaleAssignmentCost(AdvancedComponent sourceComponent,
+                                     AdvancedComponent targetComponent,
                                      float cost) {
         int numberOfLeavesUnderSource = getLeafNodes(sourceComponent).size();
         int numberOfLeavesUnderTarget = getLeafNodes(targetComponent).size();
@@ -551,11 +551,11 @@ public class GrowthLineTrackingILP {
      * @throws GRBException
      */
     private void addDivisionAssignments(final int timeStep,
-                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceComponentTree,
-                                        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetComponentTree)
+                                        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
+                                        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree)
             throws GRBException {
 
-        for (final SimpleComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
 
             if (timeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -564,15 +564,15 @@ public class GrowthLineTrackingILP {
 
             float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
 
-            for (final SimpleComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
+            for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
                 if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP)) {
                     continue;
                 }
 
                 float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
-                final List<SimpleComponent<FloatType>> lowerNeighborComponents = ((SimpleComponent) upperTargetComponent).getLowerNeighbors();
+                final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
-                for (final SimpleComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
                     if (featureFlagFilterAssignmentsByComponentSizeMatch) {
                         if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                             continue;
@@ -950,8 +950,8 @@ public class GrowthLineTrackingILP {
      * Returns the hypotheses with components/segements, which are children of
      */
     public List<Hypothesis<Component<FloatType, ?>>> getConflictingChildSegments(final int t, final Hypothesis<Component<FloatType, ?>> parentHypothesis){
-        SimpleComponent<FloatType> parentComponent = (SimpleComponent<FloatType>) parentHypothesis.getWrappedComponent();
-        ArrayList<SimpleComponent<FloatType>> componentList = new ArrayList<>();
+        AdvancedComponent<FloatType> parentComponent = (AdvancedComponent<FloatType>) parentHypothesis.getWrappedComponent();
+        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         addListOfNodes(parentComponent, componentList);
         final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
         ArrayList<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();

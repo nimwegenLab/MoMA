@@ -2,17 +2,13 @@ package com.jug.lp;
 
 import com.jug.GrowthLine;
 import com.jug.datahandling.IImageProvider;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentTreeGenerator;
-import com.jug.util.componenttree.SimpleComponent;
 import com.jug.util.componenttree.SimpleComponentTree;
-import com.moma.auxiliary.Plotting;
 import gurobi.GRBException;
-import ij.ImagePlus;
-import ij.gui.TextRoi;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.junit.Test;
@@ -44,8 +40,8 @@ public class GrowthlaneTrackingIlpTest {
 
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
 
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
-        SimpleComponentTree<FloatType, SimpleComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, SimpleComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
 
         GrowthLine gl = new GrowthLine(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();

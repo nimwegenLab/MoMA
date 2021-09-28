@@ -1,10 +1,9 @@
 package com.jug.util;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentPositionComparator;
-import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -46,9 +45,9 @@ public class ComponentTreeUtils {
      * @param component_node
      * @return
      */
-    public static <T extends Type<T>> List<SimpleComponent<T>> getLeafNodes(final SimpleComponent<T> component_node) {
-        final List<SimpleComponent<T>> leaves = new ArrayList<>();
-        for (final SimpleComponent<T> node : component_node.getChildren()) {
+    public static <T extends Type<T>> List<AdvancedComponent<T>> getLeafNodes(final AdvancedComponent<T> component_node) {
+        final List<AdvancedComponent<T>> leaves = new ArrayList<>();
+        for (final AdvancedComponent<T> node : component_node.getChildren()) {
             recursivelyAddLeavesToList(node, leaves);
         }
         return leaves;
@@ -70,11 +69,11 @@ public class ComponentTreeUtils {
     /**
      * @param leaves
      */
-    private static <T extends Type<T>> void recursivelyAddLeavesToList(final SimpleComponent<T> node, final List<SimpleComponent<T>> leaves) {
+    private static <T extends Type<T>> void recursivelyAddLeavesToList(final AdvancedComponent<T> node, final List<AdvancedComponent<T>> leaves) {
         if (node.getChildren().size() == 0) {
             leaves.add(node);
         } else {
-            for (final SimpleComponent child : node.getChildren()) {
+            for (final AdvancedComponent child : node.getChildren()) {
                 recursivelyAddLeavesToList(child, leaves);
             }
         }
@@ -92,8 +91,8 @@ public class ComponentTreeUtils {
     public static boolean isAbove(
             final Hypothesis<Component<FloatType, ?>> candidate,
             final Hypothesis<Component<FloatType, ?>> hyp) {
-        SimpleComponent<FloatType> candidateComponent = (SimpleComponent<FloatType>)candidate.getWrappedComponent();
-        SimpleComponent<FloatType> referenceComponent = (SimpleComponent<FloatType>)hyp.getWrappedComponent();
+        AdvancedComponent<FloatType> candidateComponent = (AdvancedComponent<FloatType>)candidate.getWrappedComponent();
+        AdvancedComponent<FloatType> referenceComponent = (AdvancedComponent<FloatType>)hyp.getWrappedComponent();
         return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1; /* NOTE: since we are using image/matrix coordinates (e.g. origin at the top), the coordinate value for {@param candidate} will be lower than {@param hyp}, when it is above {@param hyp} */
     }
 
@@ -117,12 +116,12 @@ public class ComponentTreeUtils {
      * @param sourceComponent
      * @return
      */
-    public static List<SimpleComponent<FloatType>> getPlausibleTargetComponents(
-            final SimpleComponent<FloatType> sourceComponent,
-            final List<SimpleComponent<FloatType>> targetComponents,
+    public static List<AdvancedComponent<FloatType>> getPlausibleTargetComponents(
+            final AdvancedComponent<FloatType> sourceComponent,
+            final List<AdvancedComponent<FloatType>> targetComponents,
             int sourceTime) {
-        List<SimpleComponent<FloatType>> result = new ArrayList<>();
-        for (SimpleComponent<FloatType> targetComponent : targetComponents) {
+        List<AdvancedComponent<FloatType>> result = new ArrayList<>();
+        for (AdvancedComponent<FloatType> targetComponent : targetComponents) {
             if (isPlausibleTargetComponent(sourceComponent, targetComponent, sourceTime)) {
                 result.add(targetComponent);
             }
@@ -132,8 +131,8 @@ public class ComponentTreeUtils {
 
     private static int currentTime = -1;
 
-    public static boolean isPlausibleTargetComponent(final SimpleComponent<FloatType> sourceComponent,
-                                                     final SimpleComponent<FloatType> targetComponent,
+    public static boolean isPlausibleTargetComponent(final AdvancedComponent<FloatType> sourceComponent,
+                                                     final AdvancedComponent<FloatType> targetComponent,
                                                      int sourceTime) {
         int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();

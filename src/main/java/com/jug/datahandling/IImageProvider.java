@@ -11,4 +11,6 @@ public interface IImageProvider {
     Img<FloatType> getImgRaw();
 
     List<Img<FloatType>> getRawChannelImgs();
+
+    Img<FloatType> getColorChannelAtTime(int channel, int timestep);
 }

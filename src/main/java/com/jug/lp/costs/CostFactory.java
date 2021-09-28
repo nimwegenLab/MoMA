@@ -1,10 +1,9 @@
 package com.jug.lp.costs;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.development.featureflags.ComponentCostCalculationMethod;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
-import com.jug.util.componenttree.SimpleComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
@@ -91,17 +90,17 @@ public class CostFactory {
 
 	public static float getComponentCostUsingWatershedLines(final ComponentInterface component) {
 		double exitCostFactor = getCostFactorComponentExit(component);
-		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
-		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
+		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((AdvancedComponent<FloatType>) component);
+		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((AdvancedComponent<FloatType>) component);
 		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor);
 		return cost;
 	}
 
 	public static float getComponentCostUsingFullProbabilityMap(ComponentInterface component) {
 		double exitCostFactor = getCostFactorComponentExit(component);
-		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((SimpleComponent<FloatType>) component);
-		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((SimpleComponent<FloatType>) component);
-		double componentProbabilityFactor = getCostFactorComponentProbability((SimpleComponent<FloatType>) component);
+		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((AdvancedComponent<FloatType>) component);
+		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((AdvancedComponent<FloatType>) component);
+		double componentProbabilityFactor = getCostFactorComponentProbability((AdvancedComponent<FloatType>) component);
 		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor * componentWatershedLineFactor * parentComponentWatershedLineFactor * componentProbabilityFactor);
 		return cost;
 	}
@@ -127,7 +126,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorComponentWatershedLine(SimpleComponent<FloatType> component){
+	public static double getCostFactorComponentWatershedLine(AdvancedComponent<FloatType> component){
 		Double val = component.getWatershedLinePixelValueAverage();
 		if (val == null) {
 			return 1.0; /* there is no watershed line so we return 1.0 */
@@ -145,15 +144,15 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorParentComponentWatershedLine(SimpleComponent<FloatType> component){
-		SimpleComponent<FloatType> parent = component.getParent();
+	public static double getCostFactorParentComponentWatershedLine(AdvancedComponent<FloatType> component){
+		AdvancedComponent<FloatType> parent = component.getParent();
 		if (parent == null) {
 			return 1.0; /* If there is no parent component then this is a root component. We set the factor to 1, because this means that all surrounding pixel probabilities fall below the global threshold. */
 		}
 		return 1. - getCostFactorComponentWatershedLine(parent);
 	}
 
-	public static double getCostFactorComponentProbability(SimpleComponent<FloatType> component) {
+	public static double getCostFactorComponentProbability(AdvancedComponent<FloatType> component) {
 		return component.getPixelValueAverage();
 //		double total = component.getPixelValueTotal();
 //		double hullArea = component.getConvexHullArea();

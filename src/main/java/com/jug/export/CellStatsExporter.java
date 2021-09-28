@@ -3,14 +3,16 @@ package com.jug.export;
 import com.jug.GrowthLineFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthLineTrackingILP;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentProperties;
-import com.jug.util.componenttree.SimpleComponent;
 import gurobi.GRBException;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
@@ -28,15 +30,21 @@ import java.util.regex.Pattern;
 public class CellStatsExporter {
 
     private final MoMAGui gui;
+    private final IImageProvider imageProvider;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
 
-    public CellStatsExporter(final MoMAGui gui, final ConfigurationManager configurationManager, MixtureModelFit mixtureModelFit, ComponentProperties componentProperties) {
+    public CellStatsExporter(final MoMAGui gui,
+                             final ConfigurationManager configurationManager,
+                             MixtureModelFit mixtureModelFit,
+                             ComponentProperties componentProperties,
+                             IImageProvider imageProvider) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
         this.componentProperties = componentProperties;
+        this.imageProvider = imageProvider;
     }
 
     public void export(File folderToUse) {
@@ -105,7 +113,7 @@ public class CellStatsExporter {
             dialogProgress.setVisible(true);
         }
 
-        ResultTable resultTable = new ResultTable();
+        ResultTable resultTable = new ResultTable(",");
         ResultTableColumn<String> laneIdCol = resultTable.addColumn(new ResultTableColumn<>("lane_ID"));
         ResultTableColumn<Integer> cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
         ResultTableColumn<Integer> frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
@@ -121,8 +129,10 @@ public class CellStatsExporter {
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.5f"));
-        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px^2"));
-        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px^2"));
+        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px"));
+        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px"));
+        ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
+        ResultTableColumn<Double> phaseContrastCoefficientOfVariation = resultTable.addColumn(new ResultTableColumn<>("phc_intensity_coefficient_of_variation", "%.5f"));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
         for (String label : configurationManager.CELL_LABEL_LIST) {
@@ -135,7 +145,7 @@ public class CellStatsExporter {
         List<ResultTableColumn> intensityFitBackgroundIntensityCols = new ArrayList<>();
 
         /* Add columns for per fluorescence-channel output. */
-        for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
+        for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
             cellMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_cellmask_%d", c), "%.5f")));
             backgroundMaskTotalIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bgmask_ch_%d", c), "%.5f")));
             intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.5f")));
@@ -159,11 +169,11 @@ public class CellStatsExporter {
 
         for (SegmentRecord segmentRecord : startingPoints) {
             do {
-                SimpleComponent<?> currentComponent = (SimpleComponent<?>) segmentRecord.hyp.getWrappedComponent();
+                AdvancedComponent<?> currentComponent = (AdvancedComponent<?>) segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
-                final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.frame);
+                final GrowthLineFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
 
                 final int numCells = glf.getSolutionStats_numberOfTrackedCells();
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
@@ -172,7 +182,7 @@ public class CellStatsExporter {
                 cellIdCol.addValue(segmentRecord.getId());
                 parentIdCol.addValue(segmentRecord.getParentId());
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
-                frameCol.addValue(segmentRecord.frame);
+                frameCol.addValue(segmentRecord.timestep);
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
@@ -188,7 +198,11 @@ public class CellStatsExporter {
                 cellLengthCol.addValue(minorAndMajorAxis.getB());
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
-                backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, MoMA.instance.getRawChannelImgs().get(0)));
+                backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
+
+                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, segmentRecord.timestep);
+                phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
+                phaseContrastCoefficientOfVariation.addValue(componentProperties.getIntensityCoefficientOfVariation(currentComponent, phaseContrastImage));
 
                 for (String label : configurationManager.CELL_LABEL_LIST) {
                     if (segmentRecord.hyp.labels.contains(label)){
@@ -201,8 +215,8 @@ public class CellStatsExporter {
 
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;
-                for (int c = 1; c < MoMA.instance.getRawChannelImgs().size(); c++) {
-                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(MoMA.instance.getRawChannelImgs().get(c), 2, segmentRecord.frame);
+                for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
+                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.timestep);
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 

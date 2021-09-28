@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
-    public ComponentForest<SimpleComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
+    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
         Img<FloatType> img = imageProvider.getImgProbs();
         IntervalView<FloatType> raiFkt = Views.hyperSlice(img, 2, frameIndex);
 
@@ -45,11 +45,11 @@ public class ComponentTreeGenerator {
         ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
         ArrayList<ILocationTester> testers = new ArrayList<>();
         testers.add(widthLimit);
-        ComponentTester<FloatType, SimpleComponent<FloatType>> tester = new ComponentTester<>(testers);
+        ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         // filter components that do not have siblings
         SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
-        HasSiblingsComponentTester<FloatType, SimpleComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
+        HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
         // watershed components into their parent-components

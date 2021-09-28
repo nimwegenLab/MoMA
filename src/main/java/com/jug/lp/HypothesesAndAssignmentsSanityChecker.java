@@ -3,7 +3,7 @@ package com.jug.lp;
 import com.jug.GrowthLine;
 import com.jug.GrowthLineFrame;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.componenttree.SimpleComponent;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
@@ -34,10 +34,10 @@ public class HypothesesAndAssignmentsSanityChecker {
     }
 
     private void allHypothesisForComponentsExistAtTime(int t) {
-        Consumer<Pair<List<SimpleComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
-            List<SimpleComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
+        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
+            List<AdvancedComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {
-                for (SimpleComponent<FloatType> component : componentsOfLevel) {
+                for (AdvancedComponent<FloatType> component : componentsOfLevel) {
                     Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(component);
                     assert (wrappingHypothesis != null): "ERROR: Found component without corresponding hypothesis!";
                 }
@@ -56,12 +56,12 @@ public class HypothesesAndAssignmentsSanityChecker {
     private void allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(int t){
         if(t+1 >= gl.getFrames().size())
             return;
-        ComponentForest<SimpleComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentTree();
-        ComponentForest<SimpleComponent<FloatType>> targetComponentTree = gl.getFrames().get(t+1).getComponentTree();
-        List<SimpleComponent<FloatType>> allSourceComponents = ComponentTreeUtils.getListOfNodes(sourceComponentTree);
-        List<SimpleComponent<FloatType>> allTargetComponents = ComponentTreeUtils.getListOfNodes(targetComponentTree);
+        ComponentForest<AdvancedComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentTree();
+        ComponentForest<AdvancedComponent<FloatType>> targetComponentTree = gl.getFrames().get(t+1).getComponentTree();
+        List<AdvancedComponent<FloatType>> allSourceComponents = ComponentTreeUtils.getListOfNodes(sourceComponentTree);
+        List<AdvancedComponent<FloatType>> allTargetComponents = ComponentTreeUtils.getListOfNodes(targetComponentTree);
 
-        for(SimpleComponent<FloatType> sourceComponent : allSourceComponents){
+        for(AdvancedComponent<FloatType> sourceComponent : allSourceComponents){
             Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(sourceComponent);
             assert (wrappingHypothesis != null): "ERROR: Found component without corresponding hypothesis!";
             if(wrappingHypothesis != null) {
@@ -70,7 +70,7 @@ public class HypothesesAndAssignmentsSanityChecker {
                 for (MappingAssignment assignment : assignments) {
                     assignmentTargetComponents.add(assignment.getDestinationHypothesis().getWrappedComponent());
                 }
-                for (SimpleComponent<FloatType> component : allTargetComponents) {
+                for (AdvancedComponent<FloatType> component : allTargetComponents) {
                     assert (assignmentTargetComponents.contains(component)) : String.format("ERROR at t=%d: Found component, which misses an incoming mapping-assignment.", t);
                 }
             }

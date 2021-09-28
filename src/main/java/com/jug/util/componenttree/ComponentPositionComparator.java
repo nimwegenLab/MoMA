@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * Compares the position of the two components that are passed using their center of mass as position.
  */
-public class ComponentPositionComparator implements Comparator<SimpleComponent> {
+public class ComponentPositionComparator implements Comparator<AdvancedComponent> {
     /**
      * Dimension of the components that will be compared.
      */
@@ -24,7 +24,7 @@ public class ComponentPositionComparator implements Comparator<SimpleComponent> 
      * @param c2
      * @return Returns int value for comparison of center: -1: c1<c2, 0: c1==2, 1: c1>c2
      */
-     public int compare(SimpleComponent c1, SimpleComponent c2) {
+     public int compare(AdvancedComponent c1, AdvancedComponent c2) {
             if (c1.firstMomentPixelCoordinates()[dim] < c2.firstMomentPixelCoordinates()[dim]) return -1;
             if (c1.firstMomentPixelCoordinates()[dim] > c2.firstMomentPixelCoordinates()[dim]) return 1;
             return 0;

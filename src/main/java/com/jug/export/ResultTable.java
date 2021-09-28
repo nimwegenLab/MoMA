@@ -11,8 +11,13 @@ import java.util.List;
  * the values of individual columns.
  */
 public class ResultTable {
+    String separator;
+
+    public ResultTable(String separator) {
+        this.separator = separator;
+    }
+
     List<ResultTableColumn> columnList = new ArrayList<>();
-    String separator = ",";
 
     /**
      * Write table to {@param writer}.

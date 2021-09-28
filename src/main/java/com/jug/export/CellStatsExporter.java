@@ -113,7 +113,7 @@ public class CellStatsExporter {
             dialogProgress.setVisible(true);
         }
 
-        ResultTable resultTable = new ResultTable();
+        ResultTable resultTable = new ResultTable(",");
         ResultTableColumn<String> laneIdCol = resultTable.addColumn(new ResultTableColumn<>("lane_ID"));
         ResultTableColumn<Integer> cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
         ResultTableColumn<Integer> frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));

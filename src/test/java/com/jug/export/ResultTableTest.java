@@ -13,7 +13,7 @@ public class ResultTableTest {
         ResultTableColumn<Integer> columnInteger = new ResultTableColumn<>("IntegerColumn");
         ResultTableColumn<String> columnString = new ResultTableColumn<>("StringColumn");
 
-        ResultTable table = new ResultTable();
+        ResultTable table = new ResultTable(",");
 
         columnDouble.addValue(1.2345);
         columnDouble.addValue(2.3456);

@@ -1,7 +1,7 @@
 /*.log
 /*.properties
 /bin/
-/target/
+/target*/
 .classpath
 .project
 #/.idea/
@@ -13,6 +13,7 @@
 !*.exe
 dependency-reduced-pom.xml
 .settings/
+.idea/
 .idea/workspace.xml
 .idea/tasks.xml
 /models/

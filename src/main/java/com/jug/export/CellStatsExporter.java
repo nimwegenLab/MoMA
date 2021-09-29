@@ -47,15 +47,15 @@ public class CellStatsExporter {
         this.imageProvider = imageProvider;
     }
 
-    public void export(File folderToUse) {
+    public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
         /* Export cell tracks */
-        exportTracks(new File(folderToUse, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv"));
+        exportTracks(new File(outputFolder, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 
         /* Export user inputs to the tracking algorithm */
         final int tmin = MoMA.getMinTime();
         final int tmax = MoMA.getMaxTime();
         final File file =
-                new File(folderToUse, String.format(
+                new File(outputFolder, String.format(
                         "[%d-%d]_%s.moma",
                         tmin,
                         tmax,
@@ -65,17 +65,12 @@ public class CellStatsExporter {
         final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
         final GrowthlaneTrackingILP ilp = firstGLF.getParent().getIlp();
         long avgXpos = firstGLF.getAvgXpos();
-        try {
-            List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF);
-            exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"),
-                    cellTrackStartingPoints,
-                    ilp,
-                    avgXpos);
-        } catch (final GRBException e) {
-            e.printStackTrace();
-        }
+        exportCellStats(new File(outputFolder, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"),
+                cellTrackStartingPoints,
+                ilp,
+                avgXpos);
         // always export mmproperties
-        configurationManager.saveParams(new File(folderToUse, "mm.properties"), MoMA.getGuiFrame());
+        configurationManager.saveParams(new File(outputFolder, "mm.properties"), MoMA.getGuiFrame());
     }
 
     /**
@@ -244,16 +239,6 @@ public class CellStatsExporter {
 
         writer.write("\n");
         resultTable.writeTable(writer);
-    }
-
-    private List<SegmentRecord> getCellTrackStartingPoints(GrowthlaneFrame firstGLF) throws GRBException {
-        CellTrackBuilder trackBuilder = new CellTrackBuilder();
-        trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
-                firstGLF,
-                firstGLF.getParent().getIlp(),
-                gui.sliderTime.getMaximum());
-        List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-        return startingPoints;
     }
 
     private void exportTracks(final File file) {

@@ -5,7 +5,9 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.export.CellStatsExporter;
+import com.jug.export.GroundTruthExporter;
 import com.jug.export.HtmlOverviewExporter;
+import com.jug.export.ResultExporter;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
@@ -1083,8 +1085,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             folderToUse = new File(momaInstance.STATS_OUTPUT_PATH);
         }
 
-        final CellStatsExporter exporter = new CellStatsExporter(this, momaInstance.dic.getConfigurationManager(), momaInstance.dic.getMixtureModelFit(), momaInstance.dic.getComponentProperties(), momaInstance.dic.getMomaInstance());
-        exporter.export(folderToUse);
+        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
+        final GroundTruthExporter groundTruthExporter = new GroundTruthExporter();
+        final ResultExporter resultExporter = new ResultExporter(cellStatsExporter, groundTruthExporter);
+        resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {

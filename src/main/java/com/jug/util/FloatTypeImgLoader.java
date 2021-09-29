@@ -76,7 +76,7 @@ public class FloatTypeImgLoader {
 			int sliceCount = imp.getNSlices();
 
 			for (int c = minChannel; c <= maxChannel; c++) {
-				ImagePlus dupl = new Duplicator().run(imp, c, c, 1, sliceCount, minTime, maxTime);
+				ImagePlus dupl = new Duplicator().run(imp, c, c, 1, sliceCount, minTime + 1, maxTime);
 				Img<FloatType> img = ImageJFunctions.convertFloat(dupl);
 				rawChannelImgs.add(img);
 			}

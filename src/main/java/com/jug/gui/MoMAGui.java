@@ -183,8 +183,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- Slider for TrackingRage ----------
 
         int max = model.getCurrentGL().size() - 2;
-        if (momaInstance.getInitialOptRange() != -1) {
-            max = Math.min(momaInstance.getInitialOptRange(), model.getCurrentGL().size() - 2);
+        if (momaInstance.getInitialOptimizationRange() != -1) {
+            max = Math.min(momaInstance.getInitialOptimizationRange(), model.getCurrentGL().size() - 2);
         }
         sliderTrackingRange =
                 new RangeSlider(0, model.getCurrentGL().size() - 2);

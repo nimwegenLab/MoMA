@@ -11,7 +11,7 @@ import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
-import ij.ImageJ; // TODO: I should be using net.imagej.ImageJ here
+import ij.ImageJ;
 import ij.ImagePlus;
 import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
@@ -84,7 +84,7 @@ public class MoMA implements IImageProvider {
 	// - - - - - - - - - - - - - -
 	private static int minTime = -1;
 	private static int maxTime = -1;
-	private static int initOptRange = -1;
+	private static int initialOptimizationRange = -1;
 	private static int minChannelIdx = 1;
 	private static int numChannels = 1;
 
@@ -184,15 +184,17 @@ public class MoMA implements IImageProvider {
 		final Option headless = new Option( "h", "headless", false, "start without user interface (note: input-folder must be given!)" );
 		headless.setRequired( false );
 
+		final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
+		groundTruthGeneration.setRequired( false );
+
 		final Option timeFirst = new Option( "tmin", "min_time", true, "first time-point to be processed" );
 		timeFirst.setRequired( false );
 
 		final Option timeLast = new Option( "tmax", "max_time", true, "last time-point to be processed" );
 		timeLast.setRequired( false );
 
-		final Option optRange = new Option( "orange", "opt_range", true, "initial optimization range" );
+		final Option optRange = new Option( "orange", "optimization_range", true, "initial optimization range" );
 		optRange.setRequired( false );
-
 
 		final Option infolder = new Option( "i", "infolder", true, "folder to read data from" );
 		infolder.setRequired( false );
@@ -203,14 +205,15 @@ public class MoMA implements IImageProvider {
 		final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
 		userProps.setRequired( false );
 
-		options.addOption( help );
-		options.addOption( headless );
-		options.addOption( timeFirst );
-		options.addOption( timeLast );
-		options.addOption( optRange );
-		options.addOption( infolder );
-		options.addOption( outfolder );
-		options.addOption( userProps );
+		options.addOption(help);
+		options.addOption(headless);
+		options.addOption(groundTruthGeneration);
+		options.addOption(timeFirst);
+		options.addOption(timeLast);
+		options.addOption(optRange);
+		options.addOption(infolder);
+		options.addOption(outfolder);
+		options.addOption(userProps);
 		// get the commands parsed
 		CommandLine cmd = null;
 		try {
@@ -218,7 +221,7 @@ public class MoMA implements IImageProvider {
 		} catch ( final ParseException e1 ) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(
-					"... [-p props-file] -i in-folder [-o out-folder] -c <num-channels> [-cmin start-channel-ids] [-tmin idx] [-tmax idx] [-orange num-frames] [-headless]",
+					"... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-orange num-frames] [-headless]",
 					"",
 					options,
 					"Error: " + e1.getMessage() );
@@ -375,7 +378,7 @@ public class MoMA implements IImageProvider {
 		}
 
 		if ( cmd.hasOption( "orange" ) ) {
-			initOptRange = Integer.parseInt( cmd.getOptionValue( "orange" ) );
+			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "orange" ) );
 		}
 
 		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********
@@ -1024,8 +1027,8 @@ public class MoMA implements IImageProvider {
 	/**
 	 * @return the initial optimization range, -1 if it is infinity.
 	 */
-	public static int getInitialOptRange() {
-		return initOptRange;
+	public static int getInitialOptimizationRange() {
+		return initialOptimizationRange;
 	}
 
 	/**

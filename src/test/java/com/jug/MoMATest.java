@@ -87,7 +87,9 @@ public class MoMATest {
         Integer tmax = 20;
 //        Integer tmin = 0;
 //        Integer tmax = 480;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true);
+//        startMoma(false, inputPath, outputPath, tmin, tmax, true);
+//        MoMA.HEADLESS = false;
+        MoMA.main(new String[]{"-i", inputPath,"-orange", "50","-tmax", "200"});
     }
 
     @Test

@@ -26,6 +26,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final int timeStepOffset;
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelectedForSettingIlpConstraints;
+    JCheckBox checkboxIsSelectedForGtExport;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -40,6 +41,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
+        this.addCheckboxForSelectingGtExport(mmgui);
         this.setAppearanceAndLayout();
     }
 
@@ -181,6 +183,13 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         checkboxIsSelectedForSettingIlpConstraints.addActionListener(mmgui);
         checkboxIsSelectedForSettingIlpConstraints.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedForSettingIlpConstraints);
+    }
+
+    private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
+        checkboxIsSelectedForGtExport = new JCheckBox();
+        checkboxIsSelectedForGtExport.addActionListener(mmgui);
+        checkboxIsSelectedForGtExport.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelectedForGtExport);
     }
 
     public boolean isSelectedForSettingIlpConstraints() {

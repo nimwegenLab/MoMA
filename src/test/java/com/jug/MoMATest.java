@@ -88,7 +88,7 @@ public class MoMATest {
         Integer tmax = 50;
 //        Integer tmin = 0;
 //        Integer tmax = 480;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-orange", "20", "-ground_truth_export"});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-optrange", "20", "-ground_truth_export"});
 //        startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 

@@ -194,7 +194,7 @@ public class MoMA implements IImageProvider {
 		final Option timeLast = new Option( "tmax", "max_time", true, "last time-point to be processed" );
 		timeLast.setRequired( false );
 
-		final Option optRange = new Option( "orange", "optimization_range", true, "initial optimization range" );
+		final Option optRange = new Option( "optrange", "optimization_range", true, "initial optimization range" );
 		optRange.setRequired( false );
 
 		final Option infolder = new Option( "i", "infolder", true, "folder to read data from" );
@@ -222,7 +222,7 @@ public class MoMA implements IImageProvider {
 		} catch ( final ParseException e1 ) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(
-					"... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-orange num-frames] [-headless]",
+					"... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
 					"",
 					options,
 					"Error: " + e1.getMessage() );
@@ -382,8 +382,8 @@ public class MoMA implements IImageProvider {
 			maxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) );
 		}
 
-		if ( cmd.hasOption( "orange" ) ) {
-			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "orange" ) );
+		if ( cmd.hasOption( "optrange" ) ) {
+			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
 		}
 
 		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********

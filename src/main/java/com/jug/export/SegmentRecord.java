@@ -34,12 +34,12 @@ final class SegmentRecord {
     /**
      * The parent ID.
      */
-    int pid;
+    int parentId;
 
     /**
      * Frame in which this cell was first observed (i.e. born).
      */
-    int tbirth;
+    int timeOfBirth;
 
     /**
      * The type of daughter-cell this is. This index corresponds to either TOP, BOTTOM or UNKNOWN as defined below.
@@ -69,8 +69,8 @@ final class SegmentRecord {
             final List<Integer> genealogy) {
         this.hyp = hyp;
         this.id = id;
-        this.pid = pid;
-        this.tbirth = tbirth;
+        this.parentId = pid;
+        this.timeOfBirth = tbirth;
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = genealogy;
         this.timestep = 0;
@@ -84,8 +84,8 @@ final class SegmentRecord {
             final int daughterTypeOrPosition) {
         this.hyp = hyp;
         this.id = id;
-        this.pid = pid;
-        this.tbirth = tbirth;
+        this.parentId = pid;
+        this.timeOfBirth = tbirth;
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = new ArrayList<>();
         genealogy.add( daughterTypeOrPosition );
@@ -95,8 +95,8 @@ final class SegmentRecord {
     SegmentRecord(final SegmentRecord point, final int frameOffset) {
         this.hyp = point.hyp;
         this.id = point.id;
-        this.pid = point.pid;
-        this.tbirth = point.tbirth;
+        this.parentId = point.parentId;
+        this.timeOfBirth = point.timeOfBirth;
         this.daughterTypeOrPosition = point.daughterTypeOrPosition;
         this.timestep = point.timestep + frameOffset;
         this.genealogy = new ArrayList<>(point.genealogy);
@@ -105,7 +105,7 @@ final class SegmentRecord {
     @Override
     public SegmentRecord clone() {
         final SegmentRecord ret =
-                new SegmentRecord(this.hyp, this.id, this.pid, this.tbirth, this.daughterTypeOrPosition, this.genealogy);
+                new SegmentRecord(this.hyp, this.id, this.parentId, this.timeOfBirth, this.daughterTypeOrPosition, this.genealogy);
         ret.exists = this.exists;
         ret.timestep = this.timestep;
         ret.terminated_by = this.terminated_by;
@@ -118,7 +118,7 @@ final class SegmentRecord {
         if ( daughterTypeOrPosition == SegmentRecord.UPPER ) dt = "TOP";
         if ( daughterTypeOrPosition == SegmentRecord.LOWER ) dt = "BOTTOM";
         if ( daughterTypeOrPosition >= 0 ) dt = "CELL#" + daughterTypeOrPosition;
-        return String.format( "id=%d; pid=%d; birth_frame=%d; daughter_type=%s", id, pid, tbirth, dt );
+        return String.format( "id=%d; pid=%d; birth_frame=%d; daughter_type=%s", id, parentId, timeOfBirth, dt );
     }
 
     public int getId() {
@@ -126,7 +126,7 @@ final class SegmentRecord {
     }
 
     public int getParentId(){
-        return pid;
+        return parentId;
     }
 
     public String getTerminationIdentifier(){

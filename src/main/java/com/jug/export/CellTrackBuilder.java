@@ -61,13 +61,13 @@ public class CellTrackBuilder {
             if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION ) {
                 final DivisionAssignment da = ( DivisionAssignment ) rightAssmt;
 
-                prepPoint.pid = prepPoint.id;
-                prepPoint.tbirth = prepPoint.timestep;
+                prepPoint.parentId = prepPoint.id;
+                prepPoint.timeOfBirth = prepPoint.timestep;
 
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getLowerDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
-                if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > userRangeMaximum ) ) {
+                if ( !prepPoint.hyp.isPruned() && !( prepPoint.timeOfBirth > userRangeMaximum ) ) {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
                     newPoint.genealogy.add( SegmentRecord.LOWER );
                     startingPoints.add( newPoint.clone() );
@@ -79,7 +79,7 @@ public class CellTrackBuilder {
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getUpperDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
-                if ( !prepPoint.hyp.isPruned() && !( prepPoint.tbirth > userRangeMaximum ) ) {
+                if ( !prepPoint.hyp.isPruned() && !( prepPoint.timeOfBirth > userRangeMaximum ) ) {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
                     newPoint.genealogy.add( SegmentRecord.UPPER );
                     startingPoints.add( newPoint.clone() );

@@ -20,46 +20,46 @@ public class CellTrackBuilder {
                                    final GrowthlaneTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
 
-        final LinkedList< SegmentRecord > queue = new LinkedList<>();
+        final LinkedList<SegmentRecord> queue = new LinkedList<>();
 
         int nextCellId = 0;
 
         startingPoints = new ArrayList<>();
 
-        for ( final ValuePair< Integer, Hypothesis<Component<FloatType, ? >>> valuePair : segmentsInFirstFrameSorted ) {
+        for (final ValuePair<Integer, Hypothesis<Component<FloatType, ?>>> valuePair : segmentsInFirstFrameSorted) {
             final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
 
             final SegmentRecord point =
                     new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank);
-            startingPoints.add( point );
+            startingPoints.add(point);
 
             final SegmentRecord prepPoint = new SegmentRecord(point, 1);
             prepPoint.hyp = point.hyp;
 
-            if ( !prepPoint.hyp.isPruned() ) {
-                queue.add( prepPoint );
+            if (!prepPoint.hyp.isPruned()) {
+                queue.add(prepPoint);
             }
         }
-        while ( !queue.isEmpty() ) {
+        while (!queue.isEmpty()) {
             final SegmentRecord prepPoint = queue.poll();
 
-            final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> rightAssmt = ilp.getOptimalRightAssignment( prepPoint.hyp );
+            final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> rightAssmt = ilp.getOptimalRightAssignment(prepPoint.hyp);
 
-            if ( rightAssmt == null ) {
+            if (rightAssmt == null) {
                 continue;
             }
             // MAPPING -- JUST DROP SEGMENT STATS
-            if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING ) {
-                final MappingAssignment ma = ( MappingAssignment ) rightAssmt;
+            if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
+                final MappingAssignment ma = (MappingAssignment) rightAssmt;
                 final SegmentRecord next = new SegmentRecord(prepPoint, 1);
                 next.hyp = ma.getDestinationHypothesis();
-                if ( !prepPoint.hyp.isPruned() ) {
-                    queue.add( next );
+                if (!prepPoint.hyp.isPruned()) {
+                    queue.add(next);
                 }
             }
             // DIVISON -- NEW CELLS ARE BORN CURRENT ONE ENDS
-            if ( rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION ) {
-                final DivisionAssignment da = ( DivisionAssignment ) rightAssmt;
+            if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+                final DivisionAssignment da = (DivisionAssignment) rightAssmt;
 
                 prepPoint.parentId = prepPoint.id;
                 prepPoint.timeOfBirth = prepPoint.timestep;
@@ -67,24 +67,24 @@ public class CellTrackBuilder {
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getLowerDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
-                if ( !prepPoint.hyp.isPruned() && !( prepPoint.timeOfBirth > userRangeMaximum ) ) {
+                if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
-                    newPoint.genealogy.add( SegmentRecord.LOWER );
-                    startingPoints.add( newPoint.clone() );
+                    newPoint.genealogy.add(SegmentRecord.LOWER);
+                    startingPoints.add(newPoint.clone());
                     newPoint.timestep++;
-                    queue.add( newPoint );
+                    queue.add(newPoint);
                     nextCellId++;
                 }
 
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getUpperDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
-                if ( !prepPoint.hyp.isPruned() && !( prepPoint.timeOfBirth > userRangeMaximum ) ) {
+                if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0);
-                    newPoint.genealogy.add( SegmentRecord.UPPER );
-                    startingPoints.add( newPoint.clone() );
+                    newPoint.genealogy.add(SegmentRecord.UPPER);
+                    startingPoints.add(newPoint.clone());
                     newPoint.timestep++;
-                    queue.add( newPoint );
+                    queue.add(newPoint);
                     nextCellId++;
                 }
             }

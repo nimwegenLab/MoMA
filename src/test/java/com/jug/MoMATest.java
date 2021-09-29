@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class MoMATest {
     public static void main(String[] args){
@@ -87,9 +88,8 @@ public class MoMATest {
         Integer tmax = 20;
 //        Integer tmin = 0;
 //        Integer tmax = 480;
-//        startMoma(false, inputPath, outputPath, tmin, tmax, true);
-//        MoMA.HEADLESS = false;
-        MoMA.main(new String[]{"-i", inputPath,"-orange", "50","-tmax", "200"});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-orange", "50", "-ground_truth_export"});
+//        MoMA.main(new String[]{"-i", inputPath,"-orange", "50","-tmax", "200", "-ground_truth_export"});
     }
 
     @Test
@@ -388,6 +388,10 @@ public class MoMATest {
     }
 
     private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
+        startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
+    }
+
+    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
         if (deleteProbabilityMaps) {
             remove_probability_maps(inputPath);
         }
@@ -403,6 +407,9 @@ public class MoMATest {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
         } else { // both tmin and tmax are null
             args = new String[]{"-i", inputPath, "-o", outputPath};
+        }
+        if (additionalArgs != null) {
+            args = concatenateWithCollection(args, additionalArgs);
         }
         MoMA.HEADLESS = headless;
         MoMA.main(args);

@@ -19,6 +19,7 @@ public class ResultExporter {
         try {
             List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
             cellStatsExporter.export(outputFolder, cellTrackStartingPoints);
+            groundTruthExporter.export(outputFolder, cellTrackStartingPoints);
         } catch (GRBException e) {
             e.printStackTrace();
         }

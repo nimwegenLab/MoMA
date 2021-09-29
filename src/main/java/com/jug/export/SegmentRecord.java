@@ -93,7 +93,6 @@ final class SegmentRecord {
         this.genealogy = new ArrayList<>(point.genealogy);
     }
 
-    @Override
     public SegmentRecord clone() {
         final SegmentRecord ret =
                 new SegmentRecord(this.hyp, this.id, this.parentId, this.timeOfBirth, this.daughterTypeOrPosition, this.genealogy);
@@ -103,7 +102,6 @@ final class SegmentRecord {
         return ret;
     }
 
-    @Override
     public String toString() {
         String dt = "UNKNOWN";
         if (daughterTypeOrPosition == SegmentRecord.UPPER) dt = "TOP";

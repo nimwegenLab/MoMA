@@ -31,7 +31,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private JLabel labelTitle;
     private JButton showSegmentsButton;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality) {
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
@@ -41,7 +41,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
-        this.addCheckboxForSelectingGtExport(mmgui);
+        if(showGroundTruthExportFunctionality){
+            this.addCheckboxForSelectingGtExport(mmgui);
+        }
         this.setAppearanceAndLayout();
     }
 

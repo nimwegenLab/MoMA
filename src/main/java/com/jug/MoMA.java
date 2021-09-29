@@ -50,6 +50,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 	private static ConfigurationManager configurationManager;
+	private static boolean showGroundTruthExportFunctionality;
 
 	static {
 		LegacyInjector.preinit();
@@ -254,6 +255,10 @@ public class MoMA implements IImageProvider {
 					return;
 				}
 			}
+		}
+
+		if ( cmd.hasOption( "ground_truth_export" ) ) {
+			showGroundTruthExportFunctionality = true;
 		}
 
 		File inputFolder = null;
@@ -498,7 +503,8 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance() );
+		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance(), showGroundTruthExportFunctionality);
+
 
 		if ( !HEADLESS ) {
 			System.out.print( "Build GUI..." );

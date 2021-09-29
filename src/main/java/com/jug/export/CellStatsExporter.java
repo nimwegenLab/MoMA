@@ -62,11 +62,11 @@ public class CellStatsExporter {
                         MoMA.getDefaultFilenameDecoration()));
         MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
 
+        final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+        final GrowthlaneTrackingILP ilp = firstGLF.getParent().getIlp();
+        long avgXpos = firstGLF.getAvgXpos();
         try {
-            final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
-            final GrowthlaneTrackingILP ilp = firstGLF.getParent().getIlp();
             List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF);
-            long avgXpos = firstGLF.getAvgXpos();
             exportCellStats(new File(folderToUse, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                     cellTrackStartingPoints,
                     ilp,

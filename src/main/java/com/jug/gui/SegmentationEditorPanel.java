@@ -152,8 +152,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.add(txtNumCells);
     }
 
-    private void updateSelectionCheckbox() {
+    private void updateSelectionCheckboxes() {
         checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelectedForGtExport.setEnabled(currentTimeStepIsValid());
     }
 
     private void updateCellNumberInputField() {
@@ -205,7 +206,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public void display() {
         updateTitleLable();
         updateCellNumberInputField();
-        updateSelectionCheckbox();
+        updateSelectionCheckboxes();
         updateShowSegmentsButton();
 
         if (!currentTimeStepIsValid()) {

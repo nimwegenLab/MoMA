@@ -25,7 +25,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private IImageProvider imageProvider;
     private final int timeStepOffset;
     GrowthlaneViewer growthlaneViewer;
-    JCheckBox checkboxIsSelected;
+    JCheckBox checkboxIsSelectedForSettingIlpConstraints;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -37,7 +37,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
-        this.addSelectionCheckbox(mmgui);
+        this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
         this.setAppearanceAndLayout();
@@ -149,7 +149,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void updateSelectionCheckbox() {
-        checkboxIsSelected.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
     }
 
     private void updateCellNumberInputField() {
@@ -176,15 +176,15 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         }
     }
 
-    private void addSelectionCheckbox(MoMAGui mmgui) {
-        checkboxIsSelected = new JCheckBox();
-        checkboxIsSelected.addActionListener(mmgui);
-        checkboxIsSelected.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.add(checkboxIsSelected);
+    private void addCheckboxForSettingIlpConstraints(MoMAGui mmgui) {
+        checkboxIsSelectedForSettingIlpConstraints = new JCheckBox();
+        checkboxIsSelectedForSettingIlpConstraints.addActionListener(mmgui);
+        checkboxIsSelectedForSettingIlpConstraints.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelectedForSettingIlpConstraints);
     }
 
-    public boolean isSelected() {
-        return checkboxIsSelected.isSelected();
+    public boolean isSelectedForSettingIlpConstraints() {
+        return checkboxIsSelectedForSettingIlpConstraints.isSelected();
     }
 
     private int timeStepToDisplay() {
@@ -258,7 +258,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public void setVariableConstraints() {
         final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
-            if (this.isSelected()) {
+            if (this.isSelectedForSettingIlpConstraints()) {
                 ilp.fixSegmentationAsIs(timeStepToDisplay());
             }
         }
@@ -270,7 +270,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public void unsetVariableConstraints() {
         final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
-            if (this.isSelected()) {
+            if (this.isSelectedForSettingIlpConstraints()) {
                 ilp.removeAllSegmentConstraints(timeStepToDisplay());
             }
         }

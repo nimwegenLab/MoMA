@@ -368,11 +368,11 @@ public class MoMA implements IImageProvider {
 			minChannelIdx = 1;
 			numChannels = imp.getNChannels();
 		}
-		System.out.println("Determined minTime" + minTime);
-		System.out.println("Determined maxTime" + maxTime);
+		System.out.println("Determined minTime: " + minTime);
+		System.out.println("Determined maxTime: " + maxTime);
 
-		System.out.println("Determined minChannelIdx" + minChannelIdx);
-		System.out.println("Determined numChannels" + numChannels);
+		System.out.println("Determined minChannelIdx: " + minChannelIdx);
+		System.out.println("Determined numChannels: " + numChannels);
 
 
 		if ( cmd.hasOption( "tmin" ) ) {

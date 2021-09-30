@@ -75,19 +75,26 @@ public class FloatTypeImgLoader {
 		} else {
 			int sliceCount = imp.getNSlices();
 
+			int firstT;
+			if (minTime == 0) {
+				firstT = minTime + 1;
+			} else {
+				firstT = minTime;
+			}
+
 			for (int c = minChannel; c <= maxChannel; c++) {
-				ImagePlus dupl = new Duplicator().run(imp, c, c, 1, sliceCount, minTime + 1, maxTime);
+				ImagePlus dupl = new Duplicator().run(imp, c, c, 1, sliceCount, firstT, maxTime);
 				Img<FloatType> img = ImageJFunctions.convertFloat(dupl);
 				rawChannelImgs.add(img);
 			}
 		}
 
-		System.out.println("size before norm  "  + rawChannelImgs.get(0).max(2));
+//		System.out.println("size before norm  "  + rawChannelImgs.get(0).max(2));
 		// Normalise first channel
 		ArrayList<IntervalView<FloatType>> firstChannelSlices = Util.slice(rawChannelImgs.get( 0 ));
 		rawChannelImgs.set(0, Util.stack(firstChannelSlices));
 
-		System.out.println("size after norm  "  + rawChannelImgs.get(0).max(2));
+//		System.out.println("size after norm  "  + rawChannelImgs.get(0).max(2));
 		return rawChannelImgs;
 	}
 

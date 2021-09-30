@@ -5,6 +5,7 @@ import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
 import gurobi.GRBException;
@@ -69,7 +70,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * Show a stack of the components of the current time step in a separate window.
      */
     private void ShowComponentsOfCurrentTimeStep() {
-        List<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> optimalSegs = new ArrayList<>();
+        List<AdvancedComponent<FloatType>> optimalSegs = new ArrayList<>();
         int timeStep = timeStepToDisplay();
         GrowthlaneFrame glf = momaModel.getGlfAtTimeStep(timeStep);
         if (glf == null) {

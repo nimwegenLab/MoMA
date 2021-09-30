@@ -15,6 +15,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import ij.ImageJ;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
@@ -626,8 +627,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     if (costType.equals("Segment")) {
                         System.out.print(String.format("%8.4f;\t", ilp.getComponentCost(t, ctn)));
                     } else {
-                        List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
-                        for (AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments) {
+                        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
+                        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : assignments) {
                             if (costType.equals("ExitAssignment")) {
                                 if (ass instanceof ExitAssignment)
                                     System.out.print(String.format("%8.4f;\t", ass.getCost()));
@@ -682,8 +683,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp.getOptimalSegmentation(t).size() > 0) {
                 final float[][] xydxdyCTNBordersActive = new float[ilp.getOptimalSegmentation(t).size()][4];
                 i = 0;
-                for (final Hypothesis<Component<FloatType, ?>> hyp : ilp.getOptimalSegmentation(t)) {
-                    final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp : ilp.getOptimalSegmentation(t)) {
+                    final AdvancedComponent<FloatType> ctn = hyp.getWrappedComponent();
                     addBoxAtIndex(i, ctn, xydxdyCTNBordersActive, ComponentTreeUtils.getLevelInTree(ctn));
                     i++;
                 }

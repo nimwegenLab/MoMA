@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -136,8 +137,8 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     public int getSolutionStats_numberOfTrackedCells() {
         int cells = 0;
         final GrowthlaneTrackingILP ilp = getParent().getIlp();
-        for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set : ilp.getOptimalRightAssignments(this.getTime()).values()) {
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ora : set) {
+        for (final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set : ilp.getOptimalRightAssignments(this.getTime()).values()) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ora : set) {
                 cells++;
             }
         }
@@ -152,15 +153,15 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * segment with center above {@param hyp} the return value is
      * increased by 1.
      */
-    public int getSolutionStats_cellRank(final Hypothesis<Component<FloatType, ?>> hyp) {
+    public int getSolutionStats_cellRank(final Hypothesis<AdvancedComponent<FloatType>> hyp) {
         int pos = 0;
 
         final GrowthlaneTrackingILP ilp = getParent().getIlp();
-        for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> optRightAssmnt : ilp.getOptimalRightAssignments(
+        for (final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> optRightAssmnt : ilp.getOptimalRightAssignments(
                 this.getTime()).values()) {
 
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ora : optRightAssmnt) {
-                Hypothesis<Component<FloatType, ?>> srcHyp = null;
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ora : optRightAssmnt) {
+                Hypothesis<AdvancedComponent<FloatType>> srcHyp = null;
                 if (ora instanceof MappingAssignment) {
                     srcHyp = ((MappingAssignment) ora).getSourceHypothesis();
                 }
@@ -182,9 +183,9 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
 
     public Vector<ValuePair<ValuePair<Integer, Integer>, ValuePair<Integer, Integer>>> getSolutionStats_limitsAndRightAssType() {
         final Vector<ValuePair<ValuePair<Integer, Integer>, ValuePair<Integer, Integer>>> ret = new Vector<>();
-        for (final Hypothesis<Component<FloatType, ?>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
 
-            final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> aa = getParent().getIlp().getOptimalRightAssignments(this.getTime()).get(hyp).iterator().next();
+            final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> aa = getParent().getIlp().getOptimalRightAssignments(this.getTime()).get(hyp).iterator().next();
 
             int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
             for (Localizable localizable : hyp.getWrappedComponent()) {
@@ -200,10 +201,10 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
         return ret;
     }
 
-    public Vector<ValuePair<Integer, Hypothesis<Component<FloatType, ?>>>> getSortedActiveHypsAndPos() {
-        final Vector<ValuePair<Integer, Hypothesis<Component<FloatType, ?>>>> positionedHyps = new Vector<>();
+    public Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getSortedActiveHypsAndPos() {
+        final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
             // find out where this hypothesis is located along the GL
             int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
             for (Localizable localizable : hyp.getWrappedComponent()) {

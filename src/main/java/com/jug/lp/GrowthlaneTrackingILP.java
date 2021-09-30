@@ -51,13 +51,13 @@ public class GrowthlaneTrackingILP {
     // fields
     // -------------------------------------------------------------------------------------
     private final Growthlane gl;
-    private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes =
+    private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes =
             new AssignmentsAndHypotheses<>();  // all variables of FG
-    private final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets =
+    private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets =
             new HypothesisNeighborhoods<>();  // incoming and outgoing assignments per hypothesis
-    private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> ignoreSegmentConstraints =
+    private final HashMap<Hypothesis<AdvancedComponent<FloatType>>, GRBConstr> ignoreSegmentConstraints =
             new HashMap<>(); // for user interaction: avoid node
-    private final HashMap<Hypothesis<Component<FloatType, ?>>, GRBConstr> freezeSegmentConstraints =
+    private final HashMap<Hypothesis<AdvancedComponent<FloatType>>, GRBConstr> freezeSegmentConstraints =
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
@@ -89,12 +89,12 @@ public class GrowthlaneTrackingILP {
      * @param data data to filter and keep only the active assignments
      * @return
      */
-    public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getActiveAssignments(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
-        HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
+    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getActiveAssignments(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
+        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
         if (data != null) {
-            for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
+            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
+                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
                     try {
                         if (ass.isChoosen() || ass.isGroundTruth()) {
                             activeSet.add(ass);
@@ -116,12 +116,12 @@ public class GrowthlaneTrackingILP {
      * @param predicate predicate that the assignment must fulfill in order to be returned
      * @return correct assignment types or null
      */
-    public static HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> filterAssignmentsWithPredicate(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data, Function<AbstractAssignment, Boolean> predicate) {
-        HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> activeData = new HashMap<>();
+    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> filterAssignmentsWithPredicate(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data, Function<AbstractAssignment, Boolean> predicate) {
+        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
         if (data != null) {
-            for (final Hypothesis<Component<FloatType, ?>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : data.get(hypo)) {
+            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
+                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
                     if (predicate.apply(ass)) {
                         activeSet.add(ass);
                     }
@@ -145,11 +145,11 @@ public class GrowthlaneTrackingILP {
         return status;
     }
 
-    public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> getNodes() {
+    public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> getNodes() {
         return nodes;
     }
 
-    public HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> getEdgeSets() {
+    public HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getEdgeSets() {
         return edgeSets;
     }
 
@@ -172,8 +172,8 @@ public class GrowthlaneTrackingILP {
             // Iterate over all assignments and ask them to add their
             // constraints to the model
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            for (final List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerList : nodes.getAllAssignments()) {
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : innerList) {
+            for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
                     assignment.addConstraintsToILP();
                 }
             }
@@ -249,7 +249,7 @@ public class GrowthlaneTrackingILP {
         }
         // add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
         // in order have some right assignment for LP hypotheses variable substitution.
-        final List<Hypothesis<Component<FloatType, ?>>> curHyps = nodes.getHypothesesAt(gl.size() - 1);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.size() - 1);
         addExitAssignments(gl.size() - 1, curHyps); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
     }
 
@@ -261,7 +261,7 @@ public class GrowthlaneTrackingILP {
     private void createSegmentationHypotheses(final int t) {
         final GrowthlaneFrame glf = gl.getFrames().get(t);
 
-        for (final Component<FloatType, ?> ctRoot : glf.getComponentTree().roots()) {
+        for (final AdvancedComponent<FloatType> ctRoot : glf.getComponentTree().roots()) {
             recursivelyAddCTNsAsHypotheses(t, ctRoot); //, glf.isParaMaxFlowComponentTree()
         }
 
@@ -275,10 +275,10 @@ public class GrowthlaneTrackingILP {
      * @param component a node in a <code>ComponentTree</code>.
      * @param t         the time-index the ctNode comes from.
      */
-    private void recursivelyAddCTNsAsHypotheses(final int t, final Component<FloatType, ?> component) { //, final boolean isForParaMaxFlowSumImg
+    private void recursivelyAddCTNsAsHypotheses(final int t, final AdvancedComponent<FloatType> component) { //, final boolean isForParaMaxFlowSumImg
         float componentCost = getComponentCost(t, component);
         nodes.addHypothesis(t, new Hypothesis<>(t, component, componentCost));
-        for (final Component<FloatType, ?> ctChild : component.getChildren()) {
+        for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
             recursivelyAddCTNsAsHypotheses(t, ctChild);
         }
     }
@@ -321,11 +321,11 @@ public class GrowthlaneTrackingILP {
      *             should be added.
      * @throws GRBException
      */
-    private void addLysisAssignments(final int t, final List<Hypothesis<Component<FloatType, ?>>> hyps) throws GRBException {
+    private void addLysisAssignments(final int t, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         if (hyps == null) return; // edge case?!
 
         float cost;
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = LYSIS_ASSIGNMENT_COST;
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", t, hyp.getId()));
@@ -348,15 +348,15 @@ public class GrowthlaneTrackingILP {
      *             should be added.
      * @throws GRBException
      */
-    private void addExitAssignments(final int t, final List<Hypothesis<Component<FloatType, ?>>> hyps) throws GRBException {
+    private void addExitAssignments(final int t, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         if (hyps == null) return; // edge case?!
 
         float cost;
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = costModulationForSubstitutedILP(hyp.getCost());
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", t, hyp.getId()));
-            final List<Hypothesis<Component<FloatType, ?>>> Hup = LpUtils.getHup(hyp, hyps); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
             final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(t, ea);
             edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
@@ -414,9 +414,9 @@ public class GrowthlaneTrackingILP {
 //                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
-                final Hypothesis<Component<FloatType, ?>> to =
+                final Hypothesis<AdvancedComponent<FloatType>> to =
                         nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
-                final Hypothesis<Component<FloatType, ?>> from =
+                final Hypothesis<AdvancedComponent<FloatType>> from =
                         nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
 
                 final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
@@ -445,8 +445,8 @@ public class GrowthlaneTrackingILP {
      * hypothesis.
      */
     public Float compatibilityCostOfMapping(
-            final Component<FloatType, ?> sourceComponent,
-            final Component<FloatType, ?> targetComponent) {
+            final AdvancedComponent<FloatType> sourceComponent,
+            final AdvancedComponent<FloatType> targetComponent) {
         final long sourceComponentSize = getComponentSize(sourceComponent, 1);
         final long targetComponentSize = getComponentSize(targetComponent, 1);
 
@@ -593,11 +593,11 @@ public class GrowthlaneTrackingILP {
                     if (cost > CUTOFF_COST) {
                         continue;
                     }
-                    final Hypothesis<Component<FloatType, ?>> to =
+                    final Hypothesis<AdvancedComponent<FloatType>> to =
                             nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
-                    final Hypothesis<Component<FloatType, ?>> lowerNeighbor =
+                    final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
                             nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
-                    final Hypothesis<Component<FloatType, ?>> from =
+                    final Hypothesis<AdvancedComponent<FloatType>> from =
                             nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
 
                     final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
@@ -622,9 +622,9 @@ public class GrowthlaneTrackingILP {
      * hypothesis.
      */
     public Float compatibilityCostOfDivision(
-            final Component<FloatType, ?> sourceComponent,
-            final Component<FloatType, ?> upperTargetComponent,
-            final Component<FloatType, ?> lowerTargetComponent) {
+            final AdvancedComponent<FloatType> sourceComponent,
+            final AdvancedComponent<FloatType> upperTargetComponent,
+            final AdvancedComponent<FloatType> lowerTargetComponent) {
 
 
         final ValuePair<Integer, Integer> sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
@@ -705,11 +705,11 @@ public class GrowthlaneTrackingILP {
 
             final GRBLinExpr exprR = new GRBLinExpr();
             while (runnerNode != null) {
-                @SuppressWarnings("unchecked") final Hypothesis<Component<FloatType, ?>> hypothesis = (Hypothesis<Component<FloatType, ?>>) nodes.findHypothesisContaining(runnerNode);
+                @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(runnerNode);
                 assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!";
 
                 if (edgeSets.getRightNeighborhood(hypothesis) != null) {
-                    for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : edgeSets.getRightNeighborhood(hypothesis)) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : edgeSets.getRightNeighborhood(hypothesis)) {
                         exprR.addTerm(1.0, a.getGRBVar());  // again we build the constraints for the assignments, because we do not optimize for nodes; we therefore need to add *all* right-assignments to the constraint of a given node
                     }
                 }
@@ -741,14 +741,14 @@ public class GrowthlaneTrackingILP {
 
         // For each time-point
         for (int t = 1; t < gl.size(); t++) {
-            for (final Hypothesis<Component<FloatType, ?>> hyp : nodes.getHypothesesAt(t)) {
+            for (final Hypothesis<AdvancedComponent<FloatType>> hyp : nodes.getHypothesesAt(t)) {
                 final GRBLinExpr expr = new GRBLinExpr();
 
                 /* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
                  * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
                  */
                 if (edgeSets.getLeftNeighborhood(hyp) != null) {
-                    for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a_j : edgeSets.getLeftNeighborhood(hyp)) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getLeftNeighborhood(hyp)) {
                         expr.addTerm(1.0, a_j.getGRBVar());
                     }
                 } else {
@@ -756,7 +756,7 @@ public class GrowthlaneTrackingILP {
                     System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
                 }
                 if (edgeSets.getRightNeighborhood(hyp) != null) {
-                    for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a_j : edgeSets.getRightNeighborhood(hyp)) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hyp)) {
                         expr.addTerm(-1.0, a_j.getGRBVar());
                     }
                 } else {
@@ -899,7 +899,7 @@ public class GrowthlaneTrackingILP {
      * active segmentation hypothesis (chosen by the optimization
      * procedure).
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getOptimalSegmentation(final int t) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentation(final int t) {
         return getOptimalHypotheses(t);
     }
 
@@ -909,11 +909,11 @@ public class GrowthlaneTrackingILP {
      * @param t time
      * @return List<Component < FloatType, ?>> list of components at time t that are part of the optimal solution
      */
-    public List<Component<FloatType, ?>> getOptimalComponents(final int t) {
-        List<Hypothesis<Component<FloatType, ?>>> ilpSelectedHypotheses = getOptimalSegmentation(t);
+    public List<AdvancedComponent<FloatType>> getOptimalComponents(final int t) {
+        List<Hypothesis<AdvancedComponent<FloatType>>> ilpSelectedHypotheses = getOptimalSegmentation(t);
 
-        List<Component<FloatType, ?>> selectedComponents = new ArrayList<>();
-        for (Hypothesis<Component<FloatType, ?>> hypothesis : ilpSelectedHypotheses) {
+        List<AdvancedComponent<FloatType>> selectedComponents = new ArrayList<>();
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : ilpSelectedHypotheses) {
             selectedComponents.add(hypothesis.getWrappedComponent());
         }
         return selectedComponents;
@@ -934,9 +934,9 @@ public class GrowthlaneTrackingILP {
      * Note: this function might return <code>null</code> since not all
      * y-locations are occupied by active segmentation hypotheses!
      */
-    public Hypothesis<Component<FloatType, ?>> getOptimalSegmentationAtLocation(final int t, final int gapSepYPos) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = getOptimalHypotheses(t);
-        for (final Hypothesis<Component<FloatType, ?>> h : hyps) {
+    public Hypothesis<AdvancedComponent<FloatType>> getOptimalSegmentationAtLocation(final int t, final int gapSepYPos) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
+        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
             final ValuePair<Integer, Integer> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos) {
@@ -949,14 +949,14 @@ public class GrowthlaneTrackingILP {
     /**
      * Returns the hypotheses with components/segements, which are children of
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getConflictingChildSegments(final int t, final Hypothesis<Component<FloatType, ?>> parentHypothesis){
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getConflictingChildSegments(final int t, final Hypothesis<AdvancedComponent<FloatType>> parentHypothesis){
         AdvancedComponent<FloatType> parentComponent = (AdvancedComponent<FloatType>) parentHypothesis.getWrappedComponent();
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         addListOfNodes(parentComponent, componentList);
-        final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
-        ArrayList<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
-        for(Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses){
-            Component<FloatType, ?> wrappedComponent = hypothesis.getWrappedComponent();
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getHypothesesAt(t);
+        ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
+        for(Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses){
+            AdvancedComponent<FloatType> wrappedComponent = hypothesis.getWrappedComponent();
             if (componentList.contains(wrappedComponent)){
                 result.add(hypothesis);
             }
@@ -974,16 +974,16 @@ public class GrowthlaneTrackingILP {
      * that
      * conflict with the given hypothesis. (Overlap in space!)
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<Component<FloatType, ?>> hypothesis) {
-        final List<Hypothesis<Component<FloatType, ?>>> ret = new ArrayList<>();
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> ret = new ArrayList<>();
 
         final ValuePair<Integer, Integer> interval =
                 ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
         final int startpos = interval.getA();
         final int endpos = interval.getB();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = getOptimalHypotheses(t);
-        for (final Hypothesis<Component<FloatType, ?>> h : hyps) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
+        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
             final ValuePair<Integer, Integer> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if ((ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos) || // overlap at top
@@ -1000,11 +1000,11 @@ public class GrowthlaneTrackingILP {
      * @param gapSepYPos
      * @return
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getSegmentsAtLocation(final int t, final int gapSepYPos) {
-        final List<Hypothesis<Component<FloatType, ?>>> ret = new ArrayList<>();
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getSegmentsAtLocation(final int t, final int gapSepYPos) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> ret = new ArrayList<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> h : hyps) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
+        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
             final ValuePair<Integer, Integer> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos) {  // fully contained inside
@@ -1025,13 +1025,13 @@ public class GrowthlaneTrackingILP {
      * that correspond to the active segmentation hypothesis (chosen by
      * the optimization procedure).
      */
-    private List<Hypothesis<Component<FloatType, ?>>> getOptimalHypotheses(final int t) {
-        final ArrayList<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
+        final ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> nh;
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> nh;
             if (t > 0) {
                 nh = edgeSets.getLeftNeighborhood(hyp);
             } else {
@@ -1039,7 +1039,7 @@ public class GrowthlaneTrackingILP {
             }
 
             try {
-                final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> aa = findActiveAssignment(nh);
+                final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> aa = findActiveAssignment(nh);
                 if (aa != null) {
                     result.add(hyp);
                 }
@@ -1058,10 +1058,10 @@ public class GrowthlaneTrackingILP {
      * @param t: time
      * @return List of hypotheses with constraint.
      */
-    public List<Hypothesis<Component<FloatType, ?>>> getForcedHypotheses(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hypotheses = nodes.getHypothesesAt(t);
-        List<Hypothesis<Component<FloatType, ?>>> result = new ArrayList<>();
-        for (Hypothesis<Component<FloatType, ?>> hypothesis : hypotheses) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getForcedHypotheses(final int t) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getHypothesesAt(t);
+        List<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
             if (hypothesis.getSegmentSpecificConstraint() != null) {
                 result.add(hypothesis);
             }
@@ -1069,8 +1069,8 @@ public class GrowthlaneTrackingILP {
         return result;
     }
 
-    public boolean isSelected(final Hypothesis<Component<FloatType, ?>> hypothesis) {
-        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> connectedHyptheses;
+    public boolean isSelected(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> connectedHyptheses;
         if (hypothesis.getTime() > 0) {
             connectedHyptheses = edgeSets.getLeftNeighborhood(hypothesis);
         } else {
@@ -1078,7 +1078,7 @@ public class GrowthlaneTrackingILP {
         }
 
         try {
-            final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> aa =
+            final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> aa =
                     findActiveAssignment(connectedHyptheses);
             if (aa != null) {
                 return true;
@@ -1106,19 +1106,19 @@ public class GrowthlaneTrackingILP {
      * Note that segmentation hypothesis that are not active will NOT be
      * included in the hash-map.
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getOptimalLeftAssignments(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getOptimalLeftAssignments(final int t) {
         assert (t >= 1);
         assert (t < nodes.getNumberOfTimeSteps());
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             try {
-                final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ola = getOptimalLeftAssignment(hyp);
+                final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ola = getOptimalLeftAssignment(hyp);
                 if (ola != null) {
-                    final HashSet<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> oneElemSet = new HashSet<>();
+                    final HashSet<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> oneElemSet = new HashSet<>();
                     oneElemSet.add(ola);
                     ret.put(hyp, oneElemSet);
                 }
@@ -1145,7 +1145,7 @@ public class GrowthlaneTrackingILP {
      * previous time-point.
      * @throws GRBException
      */
-    public AbstractAssignment<Hypothesis<Component<FloatType, ?>>> getOptimalLeftAssignment(final Hypothesis<Component<FloatType, ?>> hypothesis) throws GRBException {
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOptimalLeftAssignment(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
         return findActiveAssignment(edgeSets.getLeftNeighborhood(hypothesis));
     }
 
@@ -1155,7 +1155,7 @@ public class GrowthlaneTrackingILP {
      * @param t time step
      * @return set of optimal assignments
      */
-    public Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> getOptimalAssignments(final int t) {
+    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getOptimalAssignments(final int t) {
         return getOptimalAssignments(nodes.getAssignmentsAt(t));
     }
 
@@ -1165,10 +1165,10 @@ public class GrowthlaneTrackingILP {
      * @param assignments iterable of assignments
      * @return set of optimal assignments
      */
-    public Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> getOptimalAssignments(Iterable<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments) {
-        HashSet<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> activeAssignments = new HashSet<>();
+    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getOptimalAssignments(Iterable<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments) {
+        HashSet<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeAssignments = new HashSet<>();
         try {
-            for (AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : assignments) {
+            for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
                 if (assignment.isChoosen()) activeAssignments.add(assignment);
             }
         } catch (GRBException e) {
@@ -1193,21 +1193,21 @@ public class GrowthlaneTrackingILP {
      * Note that segmentation hypothesis that are not active will NOT be
      * included in the hash-map.
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getOptimalRightAssignments(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getOptimalRightAssignments(final int t) {
         assert (t >= 0);
         assert (t < nodes.getNumberOfTimeSteps() - 1) : String.format("Assert failed: t<nodes.getNumberOfTimeSteps()-1, because t=%d and nodes.getNumberOfTimeSteps()-1=%d", t, nodes.getNumberOfTimeSteps() - 1);
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
 
         if (hyps == null) return ret;
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             try {
-                final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ora = getOptimalRightAssignment(hyp);
+                final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ora = getOptimalRightAssignment(hyp);
                 if (ora != null) {
-                    final HashSet<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> oneElemSet = new HashSet<>();
+                    final HashSet<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> oneElemSet = new HashSet<>();
                     oneElemSet.add(ora);
                     ret.put(hyp, oneElemSet);
                 }
@@ -1234,7 +1234,7 @@ public class GrowthlaneTrackingILP {
      * next time-point.
      * @throws GRBException
      */
-    public AbstractAssignment<Hypothesis<Component<FloatType, ?>>> getOptimalRightAssignment(final Hypothesis<Component<FloatType, ?>> hypothesis) throws GRBException {
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOptimalRightAssignment(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
         return findActiveAssignment(edgeSets.getRightNeighborhood(hypothesis));
     }
 
@@ -1250,10 +1250,10 @@ public class GrowthlaneTrackingILP {
      * optimizer!)
      * @throws GRBException
      */
-    private AbstractAssignment<Hypothesis<Component<FloatType, ?>>> findActiveAssignment(final Iterable<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set) throws GRBException {
+    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> findActiveAssignment(final Iterable<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set) throws GRBException {
         if (set == null) return null;
 
-        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : set) {
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
             if (a.isChoosen()) {
                 return a;
             }
@@ -1275,23 +1275,23 @@ public class GrowthlaneTrackingILP {
      * assignments that (i) are NOT active, and (ii) come in from the
      * left (from t-1).
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getInactiveLeftAssignments(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getInactiveLeftAssignments(final int t) {
         assert (t >= 1);
         assert (t < nodes.getNumberOfTimeSteps());
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = this.getOptimalHypotheses(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             try {
-                final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set = edgeSets.getLeftNeighborhood(hyp);
+                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getLeftNeighborhood(hyp);
 
                 if (set == null) continue;
 
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : set) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
                     if (!a.isChoosen()) {
-                        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerSet = ret.get(hyp);
+                        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
                             innerSet.add(a);
@@ -1331,23 +1331,23 @@ public class GrowthlaneTrackingILP {
      * assignments that (i) are NOT active, and (ii) come in from the
      * right (from t+1).
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getInactiveRightAssignments(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getInactiveRightAssignments(final int t) {
         assert (t >= 0);
         assert (t < nodes.getNumberOfTimeSteps() - 1);
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = this.getOptimalHypotheses(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             try {
-                final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set = edgeSets.getRightNeighborhood(hyp);
+                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getRightNeighborhood(hyp);
 
                 if (set == null) continue;
 
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : set) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
                     if (!a.isChoosen()) {
-                        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerSet = ret.get(hyp);
+                        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
                             innerSet.add(a);
@@ -1377,21 +1377,21 @@ public class GrowthlaneTrackingILP {
      * @return a hash-map that maps from segmentation hypothesis to a set of
      * assignments that come in from the left (from t-1).
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getAllCompatibleLeftAssignments(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getAllCompatibleLeftAssignments(final int t) {
         assert (t >= 1);
         assert (t < nodes.getNumberOfTimeSteps());
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = this.getOptimalHypotheses(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set = edgeSets.getLeftNeighborhood(hyp);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getLeftNeighborhood(hyp);
 
             if (set == null) continue;
 
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : set) {
-                Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerSet = ret.get(hyp);
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
+                Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                 if (innerSet == null) {
                     innerSet = new HashSet<>();
                     innerSet.add(a);
@@ -1417,21 +1417,21 @@ public class GrowthlaneTrackingILP {
      * @return a hash-map that maps from segmentation hypothesis to a set of
      * assignments that come in from the right (from t+1).
      */
-    public HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> getAllRightAssignmentsThatStartFromOptimalHypothesesAt(final int t) {
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getAllRightAssignmentsThatStartFromOptimalHypothesesAt(final int t) {
         assert (t >= 0);
         assert (t < nodes.getNumberOfTimeSteps() - 1);
 
-        final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> ret = new HashMap<>();
+        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = this.getOptimalHypotheses(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
 
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> set = edgeSets.getRightNeighborhood(hyp);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getRightNeighborhood(hyp);
 
             if (set == null) continue;
 
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> a : set) {
-                Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerSet = ret.get(hyp);
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
+                Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                 if (innerSet == null) {
                     innerSet = new HashSet<>();
                     innerSet.add(a);
@@ -1457,10 +1457,10 @@ public class GrowthlaneTrackingILP {
     public void addSegmentsInFrameCountConstraint(final int t, final int numCells) throws GRBException {
         final GRBLinExpr expr = new GRBLinExpr();
 
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp);
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : rightNeighbors) {
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp);
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
                 expr.addTerm(1.0, assmnt.getGRBVar());
             }
         }
@@ -1514,12 +1514,12 @@ public class GrowthlaneTrackingILP {
      * @param testPosition
      * @return
      */
-    public Hypothesis<Component<FloatType, ?>> getLowestInTreeHypAt(final int t, final Point testPosition) {
-        Hypothesis<Component<FloatType, ?>> ret = null;
+    public Hypothesis<AdvancedComponent<FloatType>> getLowestInTreeHypAt(final int t, final Point testPosition) {
+        Hypothesis<AdvancedComponent<FloatType>> ret = null;
         long min = Long.MAX_VALUE;
-        final List<Hypothesis<Component<FloatType, ?>>> hyps = nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            final Component<FloatType, ?> comp = hyp.getWrappedComponent();
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            final AdvancedComponent<FloatType> comp = hyp.getWrappedComponent();
             int componentSize = ComponentTreeUtils.getComponentSize(comp, 1);
             if (ComponentTreeUtils.componentContainsYPosition(comp, testPosition)) {
                 if (componentSize < min) {
@@ -1536,7 +1536,7 @@ public class GrowthlaneTrackingILP {
      * @param gapSepYPos
      * @return
      */
-    private boolean isComponentContainingYpos(final Component<FloatType, ?> comp, final int gapSepYPos) {
+    private boolean isComponentContainingYpos(final AdvancedComponent<FloatType> comp, final int gapSepYPos) {
         for (Localizable localizable : comp) {
             if (gapSepYPos == localizable.getIntPosition(0)) {
                 return true;
@@ -1555,7 +1555,7 @@ public class GrowthlaneTrackingILP {
      * @param hyp2add the hypothesis for which the constraint should be installed.
      * @throws GRBException
      */
-    public void addSegmentInSolutionConstraint(final Hypothesis<Component<FloatType, ?>> hyp2add, final List<Hypothesis<Component<FloatType, ?>>> hypothesesToRemove) throws GRBException {
+    public void addSegmentInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2add, final List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) throws GRBException {
         final GRBLinExpr expr = new GRBLinExpr();
 
         // Remove constraints form all given hypotheses
@@ -1563,8 +1563,8 @@ public class GrowthlaneTrackingILP {
             removeSegmentConstraints(hypothesesToRemove);
         }
 
-        final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2add);
-        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : rightNeighbors) {
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2add);
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
@@ -1578,8 +1578,8 @@ public class GrowthlaneTrackingILP {
      *
      * @param hypothesesToRemove
      */
-    private void removeSegmentConstraints(List<Hypothesis<Component<FloatType, ?>>> hypothesesToRemove) {
-        for (final Hypothesis<Component<FloatType, ?>> hyp2remove : hypothesesToRemove) {
+    private void removeSegmentConstraints(List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp2remove : hypothesesToRemove) {
             removeSegmentConstraints(hyp2remove);
         }
     }
@@ -1589,7 +1589,7 @@ public class GrowthlaneTrackingILP {
      *
      * @param hypothesisToRemove
      */
-    public void removeSegmentConstraints(Hypothesis<Component<FloatType, ?>> hypothesisToRemove) {
+    public void removeSegmentConstraints(Hypothesis<AdvancedComponent<FloatType>> hypothesisToRemove) {
         final GRBConstr oldConstr = hypothesisToRemove.getSegmentSpecificConstraint();
         if (oldConstr != null) {
             try {
@@ -1610,11 +1610,11 @@ public class GrowthlaneTrackingILP {
      * @param hyp2avoid
      * @throws GRBException
      */
-    public void addSegmentNotInSolutionConstraint(final Hypothesis<Component<FloatType, ?>> hyp2avoid) throws GRBException {
+    public void addSegmentNotInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid) throws GRBException {
         final GRBLinExpr expr = new GRBLinExpr();
 
-        final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2avoid);
-        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : rightNeighbors) {
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2avoid);
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
@@ -1649,14 +1649,14 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             final int numT = gl.size() - 1;
             int numH = 0;
-            for (final List<Hypothesis<Component<FloatType, ?>>> innerList : nodes.getAllHypotheses()) {
-                for (@SuppressWarnings("unused") final Hypothesis<Component<FloatType, ?>> hypothesis : innerList) {
+            for (final List<Hypothesis<AdvancedComponent<FloatType>>> innerList : nodes.getAllHypotheses()) {
+                for (@SuppressWarnings("unused") final Hypothesis<AdvancedComponent<FloatType>> hypothesis : innerList) {
                     numH++;
                 }
             }
             int numA = 0;
-            for (final List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> innerList : nodes.getAllAssignments()) {
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : innerList) {
+            for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
                     numA++;
                 }
             }
@@ -1681,9 +1681,9 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# SegmentSelectionConstraints (SSC)\n");
             for (int t = 0; t < gl.size(); t++) {
-                final List<Hypothesis<Component<FloatType, ?>>> hyps =
+                final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                         nodes.getHypothesesAt(t);
-                for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                     if (hyp.getSegmentSpecificConstraint() != null) {
                         double rhs;
                         try {
@@ -1704,9 +1704,9 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# AssignmentSelectionConstraints (ASC)\n");
             for (int t = 0; t < gl.size(); t++) {
-                final List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assmnts =
+                final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assmnts =
                         nodes.getAssignmentsAt(t);
-                for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : assmnts) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : assmnts) {
                     if (assmnt.getGroundTruthConstraint() != null) {
                         double rhs;
                         try {
@@ -1727,9 +1727,9 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# PruningRoots (PR)\n");
             for (int t = 0; t < gl.size(); t++) {
-                final List<Hypothesis<Component<FloatType, ?>>> hyps =
+                final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                         nodes.getHypothesesAt(t);
-                for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                     if (hyp.isPruneRoot()) {
                         out.write(String.format("\tPR, %d, %d\n", t + timeOffset, hyp.getId()));
                     }
@@ -1812,9 +1812,9 @@ public class GrowthlaneTrackingILP {
                         final double rhs = Double.parseDouble(columns[3].trim());
                         try {
                             System.out.println(String.format("SSC %d %d %f", t, id, rhs));
-                            final List<Hypothesis<Component<FloatType, ?>>> hyps =
+                            final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                                     nodes.getHypothesesAt(t);
-                            for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+                            for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                                 if (hyp.getId() == id) {
                                     if (1 == (int) rhs) {
                                         addSegmentInSolutionConstraint(hyp, null);
@@ -1838,9 +1838,9 @@ public class GrowthlaneTrackingILP {
                         final int id = Integer.parseInt(columns[2].trim());
                         final double rhs = Double.parseDouble(columns[3].trim());
                         System.out.println(String.format("ASC %d %d %f", t, id, rhs));
-                        final List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assmnts =
+                        final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assmnts =
                                 nodes.getAssignmentsAt(t);
-                        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : assmnts) {
+                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : assmnts) {
                             if (assmnt.getId() == id) {
                                 if (1 == (int) rhs) {
                                     assmnt.setGroundTruth(true);
@@ -1860,9 +1860,9 @@ public class GrowthlaneTrackingILP {
                         final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
                         final int id = Integer.parseInt(columns[2].trim());
                         System.out.println(String.format("PR %d %d", t, id));
-                        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+                        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                                 nodes.getHypothesesAt(t);
-                        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+                        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                             if (hyp.getId() == id) {
                                 pruneRoots.add(hyp);
                             }
@@ -1893,16 +1893,16 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     public synchronized void fixSegmentationAsIs(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             // only if hypothesis is not already clamped
             if (hyp.getSegmentSpecificConstraint() == null) {
-                Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> nh;
+                Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> nh;
                 nh = edgeSets.getRightNeighborhood(hyp);
 
                 try {
-                    final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> aa =
+                    final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> aa =
                             findActiveAssignment(nh);
                     if (aa != null) {
                         // fix this segment
@@ -1923,13 +1923,13 @@ public class GrowthlaneTrackingILP {
      */
     public synchronized void fixAssignmentsAsAre(final int t) {
         // TODO: don't forget that assignment constraints removal kills also fixed segmentation
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> nh;
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> nh;
             nh = edgeSets.getRightNeighborhood(hyp);
             if (nh == null) continue;
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : nh) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : nh) {
                 if (assmnt.getGroundTruthConstraint() == null) {
                     try {
                         if (assmnt.isChoosen()) {
@@ -1949,7 +1949,7 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     public synchronized void removeAllSegmentConstraints(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
         removeSegmentConstraints(hyps);
     }
@@ -1958,13 +1958,13 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     public void removeAllAssignmentConstraints(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
-            Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> nh;
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> nh;
             nh = edgeSets.getRightNeighborhood(hyp);
             if (nh == null) continue;
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : nh) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : nh) {
                 if (assmnt.getGroundTruthConstraint() != null) {
                     assmnt.setGroundTruth(false);
                 }
@@ -1997,9 +1997,9 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     private void unignoreSegmentsAt(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             final GRBConstr constr = ignoreSegmentConstraints.get(hyp);
             if (constr != null) {
                 try {
@@ -2016,16 +2016,16 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     private void ignoreSegmentsAt(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             if (ignoreSegmentConstraints.get(hyp) == null) {
                 try {
-                    final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightNeighbors =
+                    final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors =
                             edgeSets.getRightNeighborhood(hyp);
                     final GRBLinExpr expr = new GRBLinExpr();
                     if (rightNeighbors != null) {
-                        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : rightNeighbors) {
+                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
@@ -2057,17 +2057,17 @@ public class GrowthlaneTrackingILP {
      *
      */
     public void freezeAssignmentsAsAre(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             if (freezeSegmentConstraints.get(hyp) == null) {
                 try {
-                    final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> rightNeighbors =
+                    final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors =
                             edgeSets.getRightNeighborhood(hyp);
                     final GRBLinExpr expr = new GRBLinExpr();
                     if (rightNeighbors != null) {
                         double rhs = 0.0;
-                        for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assmnt : rightNeighbors) {
+                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
                             if (assmnt.isChoosen()) {
                                 expr.addTerm(1.0, assmnt.getGRBVar());
                                 rhs = 1.0;
@@ -2090,9 +2090,9 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     private void unfreezeAssignmentsFor(final int t) {
-        final List<Hypothesis<Component<FloatType, ?>>> hyps =
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
-        for (final Hypothesis<Component<FloatType, ?>> hyp : hyps) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             final GRBConstr constr = freezeSegmentConstraints.get(hyp);
             if (constr != null) {
                 try {

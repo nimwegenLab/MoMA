@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.miginfocom.swing.MigLayout;
@@ -22,7 +23,7 @@ public class LabelEditorDialog extends JDialog {
         this.dialogInit();
     }
 
-    public void edit(Hypothesis<Component<FloatType, ?>> hyp) {
+    public void edit(Hypothesis<AdvancedComponent<FloatType>> hyp) {
         buildGui(hyp);
         this.setVisibleNew(true);
     }
@@ -36,7 +37,7 @@ public class LabelEditorDialog extends JDialog {
         super.setVisible(show);
     }
 
-    private void buildGui(Hypothesis<Component<FloatType, ?>> hyp) {
+    private void buildGui(Hypothesis<AdvancedComponent<FloatType>> hyp) {
         this.setRootPane(new JRootPane());
         MigLayout layout = new MigLayout("wrap 1", "", "");
         this.rootPane.setLayout(layout);

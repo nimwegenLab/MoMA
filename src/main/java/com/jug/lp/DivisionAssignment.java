@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -12,11 +13,11 @@ import net.imglib2.type.numeric.real.FloatType;
 /**
  * @author jug
  */
-public class DivisionAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
+public class DivisionAssignment extends AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > {
 
-    private final Hypothesis< Component< FloatType, ? >> from;
-	private final Hypothesis< Component< FloatType, ? >> toUpper;
-	private final Hypothesis< Component< FloatType, ? >> toLower;
+    private final Hypothesis< AdvancedComponent<FloatType>> from;
+	private final Hypothesis< AdvancedComponent<FloatType>> toUpper;
+	private final Hypothesis< AdvancedComponent<FloatType>> toLower;
 
 	/**
 	 * Creates an DivisionAssignment.
@@ -24,9 +25,9 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 */
 	public DivisionAssignment(final GRBVar ilpVariable,
 							  final GrowthlaneTrackingILP ilp,
-							  final Hypothesis<Component<FloatType, ?>> from,
-							  final Hypothesis<Component<FloatType, ?>> toUpper,
-							  final Hypothesis<Component<FloatType, ?>> toLower) {
+							  final Hypothesis<AdvancedComponent<FloatType>> from,
+							  final Hypothesis<AdvancedComponent<FloatType>> toUpper,
+							  final Hypothesis<AdvancedComponent<FloatType>> toLower) {
 		super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
 		this.from = from;
 		this.toUpper = toUpper;
@@ -54,7 +55,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getSourceHypothesis() {
+	public Hypothesis< AdvancedComponent<FloatType>> getSourceHypothesis() {
 		return from;
 	}
 
@@ -65,7 +66,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getUpperDesinationHypothesis() {
+	public Hypothesis< AdvancedComponent<FloatType>> getUpperDesinationHypothesis() {
 		return toUpper;
 	}
 
@@ -76,7 +77,7 @@ public class DivisionAssignment extends AbstractAssignment< Hypothesis< Componen
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getLowerDesinationHypothesis() {
+	public Hypothesis<AdvancedComponent<FloatType>> getLowerDesinationHypothesis() {
 		return toLower;
 	}
 

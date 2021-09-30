@@ -89,8 +89,8 @@ public class ComponentTreeUtils {
      * @return boolean indicating if it is above or not
      */
     public static boolean isAbove(
-            final Hypothesis<Component<FloatType, ?>> candidate,
-            final Hypothesis<Component<FloatType, ?>> hyp) {
+            final Hypothesis<AdvancedComponent<FloatType>> candidate,
+            final Hypothesis<AdvancedComponent<FloatType>> hyp) {
         AdvancedComponent<FloatType> candidateComponent = (AdvancedComponent<FloatType>)candidate.getWrappedComponent();
         AdvancedComponent<FloatType> referenceComponent = (AdvancedComponent<FloatType>)hyp.getWrappedComponent();
         return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1; /* NOTE: since we are using image/matrix coordinates (e.g. origin at the top), the coordinate value for {@param candidate} will be lower than {@param hyp}, when it is above {@param hyp} */
@@ -387,11 +387,11 @@ public class ComponentTreeUtils {
      * @param componentlevelListConsumer consumer of the list of components in the level and corresponding level number.
      * @param <C> type of component being processed.
      */
-    public static <C extends Component<T, C>, T extends Type<T>> void doForEachComponentInTreeLevel(final ComponentForest<C> componentForest,
-                                                                                                 Consumer<Pair<List<C>, Integer>> componentlevelListConsumer ){
+    public static <T extends Type<T>> void doForEachComponentInTreeLevel(final ComponentForest<AdvancedComponent<T>> componentForest,
+                                                                                                 Consumer<Pair<List<AdvancedComponent<T>>, Integer>> componentlevelListConsumer ){
         int level = 0;
-        ArrayList<C> ctnLevel = new ArrayList<>();
-        for ( final C root : componentForest.roots() ) { // populate the root-level component list
+        ArrayList<AdvancedComponent<T>> ctnLevel = new ArrayList<>();
+        for ( final AdvancedComponent<T> root : componentForest.roots() ) { // populate the root-level component list
             ctnLevel.add(root);
         }
 

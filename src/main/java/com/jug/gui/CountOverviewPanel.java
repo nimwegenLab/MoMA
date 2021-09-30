@@ -18,6 +18,7 @@ import javax.swing.table.TableCellRenderer;
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -106,8 +107,8 @@ class CountOverviewPanel extends JPanel {
 				int exits = 0;
 				int divisions = 0;
 
-				for ( final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? >>> > set : currentGL.getIlp().getOptimalRightAssignments( glf.getTime() ).values() ) {
-					for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> ora : set ) {
+				for ( final Set< AbstractAssignment< Hypothesis<AdvancedComponent<FloatType>>> > set : currentGL.getIlp().getOptimalRightAssignments( glf.getTime() ).values() ) {
+					for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> ora : set ) {
 						cells++;
 						if ( ora.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION )
 							divisions++;

@@ -16,12 +16,12 @@ import java.util.function.Consumer;
 
 public class HypothesesAndAssignmentsSanityChecker {
     private Growthlane gl;
-    private AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes;
-    private HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets;
+    private AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes;
+    private HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets;
 
     public HypothesesAndAssignmentsSanityChecker(Growthlane gl,
-                                                 AssignmentsAndHypotheses< AbstractAssignment< Hypothesis<Component< FloatType, ? >> >, Hypothesis< Component< FloatType, ? > > > nodes,
-                                                 HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edgeSets){
+                                                 AssignmentsAndHypotheses< AbstractAssignment< Hypothesis<AdvancedComponent<FloatType>> >, Hypothesis< AdvancedComponent<FloatType> > > nodes,
+                                                 HypothesisNeighborhoods< Hypothesis< AdvancedComponent<FloatType> >, AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > edgeSets){
         this.gl = gl;
         this.nodes = nodes;
         this.edgeSets = edgeSets;
@@ -65,8 +65,8 @@ public class HypothesesAndAssignmentsSanityChecker {
             Hypothesis<?> wrappingHypothesis = nodes.findHypothesisContaining(sourceComponent);
             assert (wrappingHypothesis != null): "ERROR: Found component without corresponding hypothesis!";
             if(wrappingHypothesis != null) {
-                Set<MappingAssignment> assignments = edgeSets.getRightAssignmentsOfType((Hypothesis<Component<FloatType, ?>>) wrappingHypothesis, MappingAssignment.class);
-                Set<Component<FloatType, ?>> assignmentTargetComponents = new HashSet<>();
+                Set<MappingAssignment> assignments = edgeSets.getRightAssignmentsOfType((Hypothesis<AdvancedComponent<FloatType>>) wrappingHypothesis, MappingAssignment.class);
+                Set<AdvancedComponent<FloatType>> assignmentTargetComponents = new HashSet<>();
                 for (MappingAssignment assignment : assignments) {
                     assignmentTargetComponents.add(assignment.getDestinationHypothesis().getWrappedComponent());
                 }

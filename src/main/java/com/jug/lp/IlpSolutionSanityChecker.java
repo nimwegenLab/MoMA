@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -34,8 +35,8 @@ public class IlpSolutionSanityChecker {
     }
 
     void CheckContinuityConstraintForAllOptimalAssignments(int t){
-        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> incomingAssignments = ilp.getOptimalAssignments(t - 1);
-        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> outgoingAssignments = ilp.getOptimalAssignments(t);
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = ilp.getOptimalAssignments(t - 1);
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> outgoingAssignments = ilp.getOptimalAssignments(t);
         Set<ExitAssignment> incomingExitAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, ExitAssignment.class);
         Set<LysisAssignment> incomingLysisAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, LysisAssignment.class);
         Set<DivisionAssignment> incomingDivisionAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, DivisionAssignment.class);
@@ -64,10 +65,10 @@ public class IlpSolutionSanityChecker {
      */
     void CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t) {
         try{
-            List<Hypothesis<Component<FloatType, ?>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> incomingAssignments = new ArrayList<>();
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> outgoingAssignments = new ArrayList<>();
-            for (Hypothesis<Component<FloatType, ?>> hyp : currentOptimalHypotheses) {
+            List<Hypothesis<AdvancedComponent<FloatType>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> outgoingAssignments = new ArrayList<>();
+            for (Hypothesis<AdvancedComponent<FloatType>> hyp : currentOptimalHypotheses) {
                 incomingAssignments.add(ilp.getOptimalLeftAssignment(hyp));
                 outgoingAssignments.add(ilp.getOptimalRightAssignment(hyp));
             }

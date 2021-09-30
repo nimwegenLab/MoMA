@@ -2,6 +2,7 @@ package com.jug.gui.assignmentview;
 
 import com.jug.lp.DivisionAssignment;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -31,9 +32,9 @@ public class DivisionAssignmentView extends AssignmentView {
 
     void setupPolygon() {
         DivisionAssignment da = (DivisionAssignment) abstractAssignment;
-        final Hypothesis<Component<FloatType, ?>> leftHyp = da.getSourceHypothesis();
-        final Hypothesis<Component<FloatType, ?>> rightHypUpper = da.getUpperDesinationHypothesis();
-        final Hypothesis<Component<FloatType, ?>> rightHypLower = da.getLowerDesinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> leftHyp = da.getSourceHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> rightHypUpper = da.getUpperDesinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> rightHypLower = da.getLowerDesinationHypothesis();
 
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
         final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();

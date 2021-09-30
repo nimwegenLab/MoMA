@@ -1,5 +1,8 @@
 package com.jug.lp;
 
+import com.jug.util.componenttree.AdvancedComponent;
+import net.imglib2.type.numeric.real.FloatType;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +11,7 @@ import java.util.Map;
 /**
  * @author jug
  */
-public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H extends Hypothesis< ? > > {
+public class AssignmentsAndHypotheses< A extends AbstractAssignment< H >, H extends Hypothesis<AdvancedComponent<FloatType>> > {
 
 	// -------------------------------------------------------------------------------------
 	// fields

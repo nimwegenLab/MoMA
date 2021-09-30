@@ -4,6 +4,7 @@ package com.jug.util.componenttree;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 import java.util.Iterator;

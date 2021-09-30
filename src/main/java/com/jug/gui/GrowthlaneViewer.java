@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.GrowthlaneFrame;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
@@ -40,7 +41,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private final int h;
     private final MoMAGui mmgui;
     private LabelEditorDialog labelEditorDialog;
-    Hypothesis<Component<FloatType, ?>> hoveredOptimalHypothesis = null;
+    Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -55,7 +56,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private boolean isDragging;
     private String optimalSegmentInfoString = "";
     private String optionalSegmentInfoString = " ";
-    private List<Hypothesis<Component<FloatType, ?>>> hypothesesAtHoverPosition = new ArrayList<>();
+    private List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
 
     public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int w, final int h) {
@@ -183,9 +184,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     }
 
     private void drawHoveredOptionalHypothesis() {
-        Hypothesis<Component<FloatType, ?>> hoverOptionalHyp = getHoveredOptionalHypothesis();
+        Hypothesis<AdvancedComponent<FloatType>> hoverOptionalHyp = getHoveredOptionalHypothesis();
         if (hoverOptionalHyp != null) {
-            final Component<FloatType, ?> comp = hoverOptionalHyp.getWrappedComponent();
+            final AdvancedComponent<FloatType> comp = hoverOptionalHyp.getWrappedComponent();
             drawOptionalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), comp);
         }
     }
@@ -202,12 +203,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     // MouseInputListener related methods
     // -------------------------------------------------------------------------------------
 
-    private Hypothesis<Component<FloatType, ?>> getHoveredOptimalHypothesis() {
+    private Hypothesis<AdvancedComponent<FloatType>> getHoveredOptimalHypothesis() {
         return hoveredOptimalHypothesis;
     }
 
-    private Hypothesis<Component<FloatType, ?>> getHoveredOptionalHypothesis() {
-        List<Hypothesis<Component<FloatType, ?>>> currentHoveredHypotheses = getHypothesesAtHoverPosition();
+    private Hypothesis<AdvancedComponent<FloatType>> getHoveredOptionalHypothesis() {
+        List<Hypothesis<AdvancedComponent<FloatType>>> currentHoveredHypotheses = getHypothesesAtHoverPosition();
         if (currentHoveredHypotheses.isEmpty()) {
             return null;
         }
@@ -266,7 +267,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown()) {
             // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getHoveredOptimalHypothesis();
+            Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
             mmgui.focusOnSliderTime();
             return;
@@ -275,15 +276,15 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (SwingUtilities.isRightMouseButton(e)) {
             // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
-            Hypothesis<Component<FloatType, ?>> selectedParentHypothesis = getSelectedHypothesis();
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
+            Hypothesis<AdvancedComponent<FloatType>> selectedParentHypothesis = getSelectedHypothesis();
+            final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
             hyps2avoid.add(selectedParentHypothesis); /* add hypothesis of parent segment itself */
 
             if (hyps2avoid == null) return;
 
             try {
                 if (!selectedParentHypothesis.isIgnored) {
-                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
                         if (hyp2avoid.getSegmentSpecificConstraint() != null) {
                             ilp.removeSegmentConstraints(hyp2avoid);
                         }
@@ -291,7 +292,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                     }
                 }
                 else {
-                    for (final Hypothesis<Component<FloatType, ?>> hyp2avoid : hyps2avoid) {
+                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
                         if (hyp2avoid.getSegmentSpecificConstraint() != null) {
                             ilp.removeSegmentConstraints(hyp2avoid);
                         }
@@ -309,7 +310,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
-            Hypothesis<Component<FloatType, ?>> hyp = getSelectedHypothesis();
+            Hypothesis<AdvancedComponent<FloatType>> hyp = getSelectedHypothesis();
             if (hyp == null) return;
             hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
             mmgui.dataToDisplayChanged();
@@ -318,14 +319,14 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         // simple CLICK: ADD/REMOVE ENFORCING CONSTRAINT HYPOTHESIS
         // -------------------------
-        Hypothesis<Component<FloatType, ?>> hyp2add = getSelectedHypothesis();
+        Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
 
         if(hyp2add.isForced){
             ilp.removeSegmentConstraints(hyp2add);
         }
         else{
-            final List<Hypothesis<Component<FloatType, ?>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
+            final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
 
             try {
                 if (hyp2add.getSegmentSpecificConstraint() != null) {
@@ -354,9 +355,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         mmgui.focusOnSliderTime();
     }
 
-    private Hypothesis<Component<FloatType, ?>> selectedHypothesis;
+    private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    private Hypothesis<Component<FloatType, ?>> getSelectedHypothesis() {
+    private Hypothesis<AdvancedComponent<FloatType>> getSelectedHypothesis() {
         return selectedHypothesis;
     }
 
@@ -366,7 +367,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             hypothesesAtHoverPosition = new ArrayList<>();
             indexOfCurrentHoveredHypothesis = -1;
         } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-            List<Hypothesis<Component<FloatType, ?>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
+            List<Hypothesis<AdvancedComponent<FloatType>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthlaneTrackingILP ilp = glf.getParent().getIlp();
@@ -398,7 +399,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
     }
 
-    private List<Hypothesis<Component<FloatType, ?>>> getHypothesesAtHoverPosition() {
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesAtHoverPosition() {
         return hypothesesAtHoverPosition;
     }
 

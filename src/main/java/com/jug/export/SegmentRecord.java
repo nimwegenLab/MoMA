@@ -5,6 +5,7 @@ import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.IterableInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -48,11 +49,11 @@ final class SegmentRecord {
      * The frame that this segments belongs to.
      */
     int timestep;
-    Hypothesis<Component<FloatType, ?>> hyp;
+    Hypothesis<AdvancedComponent<FloatType>> hyp;
     int terminated_by = Integer.MIN_VALUE;
 
     SegmentRecord(
-            final Hypothesis<Component<FloatType, ?>> hyp,
+            final Hypothesis<AdvancedComponent<FloatType>> hyp,
             final int id,
             final int pid,
             final int tbirth,
@@ -68,7 +69,7 @@ final class SegmentRecord {
     }
 
     SegmentRecord(
-            final Hypothesis<Component<FloatType, ?>> hyp,
+            final Hypothesis<AdvancedComponent<FloatType>> hyp,
             final int id,
             final int pid,
             final int tbirth,
@@ -142,7 +143,7 @@ final class SegmentRecord {
 
         exists = true;
         try {
-            final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> rightAssmt = ilp.getOptimalRightAssignment(this.hyp);
+            final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(this.hyp);
             if (rightAssmt == null) {
                 exists = false;
                 terminated_by = SegmentRecord.ENDOFTRACKING;

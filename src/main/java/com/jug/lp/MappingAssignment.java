@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -12,10 +13,10 @@ import net.imglib2.type.numeric.real.FloatType;
 /**
  * @author jug
  */
-public class MappingAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
+public class MappingAssignment extends AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > {
 
-    private final Hypothesis< Component< FloatType, ? >> from;
-	private final Hypothesis< Component< FloatType, ? >> to;
+    private final Hypothesis<AdvancedComponent<FloatType>> from;
+	private final Hypothesis< AdvancedComponent<FloatType>> to;
 
 	/**
 	 * Creates an MappingAssignment.
@@ -25,7 +26,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 * @param from
 	 * @param to
      */
-	public MappingAssignment(final int t, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< Component< FloatType, ? > > >, Hypothesis< Component< FloatType, ? > > > nodes, final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges, final Hypothesis< Component< FloatType, ? >> from, final Hypothesis< Component< FloatType, ? >> to ) {
+	public MappingAssignment(final int t, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > >, Hypothesis< AdvancedComponent<FloatType> > > nodes, final HypothesisNeighborhoods< Hypothesis< AdvancedComponent<FloatType> >, AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > edges, final Hypothesis< AdvancedComponent<FloatType>> from, final Hypothesis< AdvancedComponent<FloatType>> to ) {
 		super( GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp );
 		this.from = from;
 		this.to = to;
@@ -52,7 +53,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getSourceHypothesis() {
+	public Hypothesis< AdvancedComponent<FloatType>> getSourceHypothesis() {
 		return from;
 	}
 
@@ -62,7 +63,7 @@ public class MappingAssignment extends AbstractAssignment< Hypothesis< Component
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getDestinationHypothesis() {
+	public Hypothesis< AdvancedComponent<FloatType>> getDestinationHypothesis() {
 		return to;
 	}
 

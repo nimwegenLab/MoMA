@@ -1,5 +1,6 @@
 package com.jug.lp;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
 
@@ -21,7 +22,7 @@ import com.jug.util.ComponentTreeUtils;
  * @author jug
  */
 @SuppressWarnings( "restriction" )
-public class Hypothesis< T extends Component< FloatType, ? > > {
+public class Hypothesis< T extends AdvancedComponent<FloatType>> {
 
 	public class HypLoc {
 
@@ -131,15 +132,15 @@ public class Hypothesis< T extends Component< FloatType, ? > > {
 
 		this.isPruneRoot = value;
 
-		final LinkedList< Hypothesis< Component< FloatType, ? > > > queue =
+		final LinkedList< Hypothesis< AdvancedComponent<FloatType> > > queue =
                 new LinkedList<>();
 		// TODO there will be no time, but this is of course not nice...
-		queue.add( ( Hypothesis< Component< FloatType, ? > > ) this );
+		queue.add( ( Hypothesis< AdvancedComponent<FloatType> > ) this );
 		while ( !queue.isEmpty() ) {
-			final Hypothesis< Component< FloatType, ? > > node = queue.removeFirst();
+			final Hypothesis< AdvancedComponent<FloatType> > node = queue.removeFirst();
 			node.setPruned( value );
 
-			AbstractAssignment< Hypothesis< Component< FloatType, ? >>> assmnt;
+			AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> assmnt;
 			try {
 				assmnt = ilp.getOptimalRightAssignment( node );
 

@@ -13,6 +13,7 @@ import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -26,7 +27,7 @@ public class FactorGraphFileBuilder_PAUL {
 
 	private final List< String > lines = new ArrayList<>();
 
-	private final HashMap< Hypothesis< Component< FloatType, ? > >, Integer > mapHypId;
+	private final HashMap< Hypothesis<AdvancedComponent<FloatType>>, Integer > mapHypId;
 
 	public FactorGraphFileBuilder_PAUL() {
 		mapHypId = new HashMap<>();
@@ -65,10 +66,10 @@ public class FactorGraphFileBuilder_PAUL {
 	 *
 	 * @param hyps
 	 */
-	public void addPathBlockingConstraint( final List< Hypothesis< Component< FloatType, ? > > > hyps ) {
+	public void addPathBlockingConstraint( final List< Hypothesis< AdvancedComponent<FloatType> > > hyps ) {
 		StringBuilder str = new StringBuilder("CONFSET ");// + hyps.get( 0 ).getTime();
 		boolean first = true;
-		for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps ) {
+		for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : hyps ) {
 			if ( first ) {
 				first = false;
 			} else {
@@ -113,7 +114,7 @@ public class FactorGraphFileBuilder_PAUL {
 	 *
 	 * @return the id of the added hypothesis.
 	 */
-	public int addHyp(final GrowthlaneTrackingILP ilp, final Hypothesis< Component< FloatType, ? > > hyp ) {
+	public int addHyp(final GrowthlaneTrackingILP ilp, final Hypothesis< AdvancedComponent<FloatType> > hyp ) {
 		mapHypId.put( hyp, next_hyp_id );
 		final double exitCost = ilp.costModulationForSubstitutedILP( hyp.getCost() );
 		lines.add( String.format( "H %d %d %.16f (%d,%d)", next_hyp_id, hyp.getId(), 0f, hyp.getLocation().a, hyp.getLocation().b ) );
@@ -132,8 +133,8 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param assmnt
 	 */
 	public void addMapping(final GrowthlaneTrackingILP ilp, final int t, final MappingAssignment assmnt ) {
-		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
-		final Hypothesis< Component< FloatType, ? > > destinationHypothesis = assmnt.getDestinationHypothesis();
+		final Hypothesis< AdvancedComponent<FloatType> > sourceHypothesis = assmnt.getSourceHypothesis();
+		final Hypothesis< AdvancedComponent<FloatType> > destinationHypothesis = assmnt.getDestinationHypothesis();
 		final float mappingCost = ilp.compatibilityCostOfMapping( sourceHypothesis.getWrappedComponent(), destinationHypothesis.getWrappedComponent() );
 		final double cost = ilp.costModulationForSubstitutedILP( sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost );
 		if ( cost <= GrowthlaneTrackingILP.CUTOFF_COST ) {
@@ -154,9 +155,9 @@ public class FactorGraphFileBuilder_PAUL {
 	 * @param assmnt
 	 */
 	public void addDivision(final GrowthlaneTrackingILP ilp, final int t, final DivisionAssignment assmnt ) {
-		final Hypothesis< Component< FloatType, ? > > sourceHypothesis = assmnt.getSourceHypothesis();
-		final Hypothesis< Component< FloatType, ? > > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
-		final Hypothesis< Component< FloatType, ? > > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
+		final Hypothesis< AdvancedComponent<FloatType> > sourceHypothesis = assmnt.getSourceHypothesis();
+		final Hypothesis< AdvancedComponent<FloatType> > destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
+		final Hypothesis< AdvancedComponent<FloatType> > destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
 		final float divisionCost = ilp.compatibilityCostOfDivision( sourceHypothesis.getWrappedComponent(),
 				destinationHypothesisUpper.getWrappedComponent(), destinationHypothesisLower.getWrappedComponent() );
 		final double cost = ilp.costModulationForSubstitutedILP(

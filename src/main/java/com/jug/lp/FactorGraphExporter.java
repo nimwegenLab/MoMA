@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.export.FactorGraphFileBuilder_PASCAL;
 import com.jug.export.FactorGraphFileBuilder_PAUL;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
@@ -20,8 +21,8 @@ import java.util.Set;
 public class FactorGraphExporter {
     private Growthlane gl;
     private GrowthlaneTrackingILP ilp;
-    private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes;
-    private final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edgeSets;
+    private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes;
+    private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets;
 
     public FactorGraphExporter(Growthlane gl) {
         this.ilp = ilp;
@@ -44,8 +45,8 @@ public class FactorGraphExporter {
         // FIRST RUN: set all varId's
         for ( int t = 0; t < nodes.getNumberOfTimeSteps(); t++ ) {
 
-            final List< AbstractAssignment< Hypothesis<Component<FloatType, ? >> > > assmts_t = nodes.getAssignmentsAt( t );
-            for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmt : assmts_t ) {
+            final List< AbstractAssignment< Hypothesis<AdvancedComponent<FloatType>> > > assmts_t = nodes.getAssignmentsAt( t );
+            for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmt : assmts_t ) {
 
                 // variables for assignments
                 final int var_id = fgFile.addVar( 2 );
@@ -67,8 +68,8 @@ public class FactorGraphExporter {
         fgFile.addConstraintComment( "--- EXIT CONSTRAINTS -----------------------------" );
         for ( int t = 0; t < nodes.getNumberOfTimeSteps(); t++ ) {
 
-            final List< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmts_t = nodes.getAssignmentsAt( t );
-            for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmt : assmts_t ) {
+            final List< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > assmts_t = nodes.getAssignmentsAt( t );
+            for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmt : assmts_t ) {
 
                 fgFile.addConstraints( assmt.getConstraintsToSave_PASCAL() );
             }
@@ -107,8 +108,8 @@ public class FactorGraphExporter {
             fgFile.addFactorComment( "=== FAC-SECTION :: TimePoint t=" + ( t + 1 ) + " ================" );
             fgFile.addFactorComment( "--- FAC-SECTION :: Unary (Segmentation) Factors -------" );
 
-            final List< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmts_t = nodes.getAssignmentsAt( t );
-            for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmt : assmts_t ) {
+            final List< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > assmts_t = nodes.getAssignmentsAt( t );
+            for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmt : assmts_t ) {
                 final int var_id = fgFile.addVar( 2 );
                 assmt.setVarId( var_id );
 
@@ -147,8 +148,8 @@ public class FactorGraphExporter {
             fgFile.addFactorComment( "=== FAC-SECTION :: TimePoint t=" + ( t + 1 ) + " ================" );
             fgFile.addFactorComment( "--- FAC-SECTION :: Assignment Factors ----------------" );
 
-            final List< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmts_t = nodes.getAssignmentsAt( t );
-            for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmt : assmts_t ) {
+            final List< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > assmts_t = nodes.getAssignmentsAt( t );
+            for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmt : assmts_t ) {
                 final List< Integer > regionIds = new ArrayList<>();
                 regionIds.add(regionId);
                 assmt.addFunctionsAndFactors( fgFile, regionIds );
@@ -167,19 +168,19 @@ public class FactorGraphExporter {
                 fgFile.addFktComment( "--- FKT-SECTION :: Explanation-Continuity Constraints ------" );
                 fgFile.addFactorComment( "--- FAC-SECTION :: Explanation-Continuity Constraints ------" );
 
-                for ( final Hypothesis< Component< FloatType, ? > > hyp : nodes.getHypothesesAt( t ) ) {
+                for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : nodes.getHypothesesAt( t ) ) {
                     final List< Integer > varIds = new ArrayList<>();
                     final List< Integer > coeffs = new ArrayList<>();
 
                     if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
-                        for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
+                        for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
                             //expr.addTerm( 1.0, a_j.getGRBVar() );
                             coeffs.add(1);
                             varIds.add(a_j.getVarIdx());
                         }
                     }
                     if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
-                        for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
+                        for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
                             //expr.addTerm( -1.0, a_j.getGRBVar() );
                             coeffs.add(-1);
                             varIds.add(a_j.getVarIdx());
@@ -224,13 +225,13 @@ public class FactorGraphExporter {
             // final GRBLinExpr exprR = new GRBLinExpr();
             while ( runnerNode != null ) {
                 @SuppressWarnings( "unchecked" )
-                final Hypothesis< Component< FloatType, ? > > hypothesis = ( Hypothesis< Component< FloatType, ? >> ) nodes.findHypothesisContaining( runnerNode );
+                final Hypothesis< AdvancedComponent<FloatType> > hypothesis = ( Hypothesis< AdvancedComponent<FloatType>> ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
                     System.err.println( "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );
                 }
 
                 if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a : edgeSets.getRightNeighborhood( hypothesis ) ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> a : edgeSets.getRightNeighborhood( hypothesis ) ) {
                         // exprR.addTerm( 1.0, a.getGRBVar() );
                         coeffs.add(1);
 //						varIds.add( new Integer( a.getVarIdx() ) );
@@ -287,15 +288,15 @@ public class FactorGraphExporter {
             StringBuilder constraint = new StringBuilder();
             while ( runnerNode != null ) {
                 @SuppressWarnings( "unchecked" )
-                final Hypothesis< Component< FloatType, ? > > hypothesis =
-                        ( Hypothesis< Component< FloatType, ? > > ) nodes.findHypothesisContaining( runnerNode );
+                final Hypothesis< AdvancedComponent<FloatType> > hypothesis =
+                        ( Hypothesis< AdvancedComponent<FloatType> > ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
                     System.err.println(
                             "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );
                 }
 
                 if ( edgeSets.getRightNeighborhood( hypothesis ) != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a : edgeSets.getRightNeighborhood( hypothesis ) ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > a : edgeSets.getRightNeighborhood( hypothesis ) ) {
                         constraint.append(String.format("(%d,1)+", a.getVarIdx()));
                     }
                 }
@@ -320,11 +321,11 @@ public class FactorGraphExporter {
         // For each time-point
         for ( int t = 1; t < gl.size() - 1; t++ ) { // !!! sparing out the border !!!
 
-            for ( final Hypothesis< Component< FloatType, ? > > hyp : nodes.getHypothesesAt( t ) ) {
+            for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : nodes.getHypothesesAt( t ) ) {
                 StringBuilder constraint = new StringBuilder();
 
                 if ( edgeSets.getLeftNeighborhood( hyp ) != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > a_j : edgeSets.getLeftNeighborhood( hyp ) ) {
                         constraint.append(String.format("(%d,1)+", a_j.getVarIdx()));
                     }
                 }
@@ -332,7 +333,7 @@ public class FactorGraphExporter {
                     constraint = new StringBuilder(constraint.substring(0, constraint.length() - 1)); //remove last '+' sign
                 }
                 if ( edgeSets.getRightNeighborhood( hyp ) != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > a_j : edgeSets.getRightNeighborhood( hyp ) ) {
                         constraint.append(String.format("-(%d,1)", a_j.getVarIdx()));
                     }
                 }
@@ -367,8 +368,8 @@ public class FactorGraphExporter {
 
             fgFile.markNextTimepoint();
 
-            final List< Hypothesis< Component< FloatType, ? > > > hyps_t = nodes.getAllHypotheses().get( t );
-            for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps_t ) {
+            final List< Hypothesis< AdvancedComponent<FloatType> > > hyps_t = nodes.getAllHypotheses().get( t );
+            for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : hyps_t ) {
 
                 // variables for assignments
                 final int hyp_id = fgFile.addHyp( ilp, hyp );
@@ -388,13 +389,13 @@ public class FactorGraphExporter {
 
         fgFile.addLine( "\n# MAPPINGS" );
         for ( int t = 0; t < nodes.getNumberOfTimeSteps(); t++ ) {
-            final List< Hypothesis< Component< FloatType, ? > > > hyps_t = nodes.getAllHypotheses().get( t );
-            for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps_t ) {
-                final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > >> mapRightNeighbors =
+            final List< Hypothesis< AdvancedComponent<FloatType> > > hyps_t = nodes.getAllHypotheses().get( t );
+            for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : hyps_t ) {
+                final HashMap< Hypothesis< AdvancedComponent<FloatType> >, Set< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > >> mapRightNeighbors =
                         ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t );
-                final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmnts = mapRightNeighbors.get( hyp );
+                final Set< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > assmnts = mapRightNeighbors.get( hyp );
                 if ( assmnts != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmnt : assmnts ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmnt : assmnts ) {
                         if ( assmnt instanceof MappingAssignment ) {
                             fgFile.addMapping( ilp, t, ( MappingAssignment ) assmnt );
                         }
@@ -405,13 +406,13 @@ public class FactorGraphExporter {
 
         fgFile.addLine( "\n# DIVISIONS" );
         for ( int t = 0; t < nodes.getNumberOfTimeSteps(); t++ ) {
-            final List< Hypothesis< Component< FloatType, ? > > > hyps_t = nodes.getAllHypotheses().get( t );
-            for ( final Hypothesis< Component< FloatType, ? > > hyp : hyps_t ) {
-                final HashMap< Hypothesis< Component< FloatType, ? > >, Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > > mapRightNeighbors =
+            final List< Hypothesis< AdvancedComponent<FloatType> > > hyps_t = nodes.getAllHypotheses().get( t );
+            for ( final Hypothesis< AdvancedComponent<FloatType> > hyp : hyps_t ) {
+                final HashMap< Hypothesis< AdvancedComponent<FloatType> >, Set< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > > mapRightNeighbors =
                         ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt( t );
-                final Set< AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > assmnts = mapRightNeighbors.get( hyp );
+                final Set< AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > assmnts = mapRightNeighbors.get( hyp );
                 if ( assmnts != null ) {
-                    for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? > > > assmnt : assmnts ) {
+                    for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > assmnt : assmnts ) {
                         if ( assmnt instanceof DivisionAssignment ) {
                             fgFile.addDivision( ilp, t, ( DivisionAssignment ) assmnt );
                         }
@@ -435,11 +436,11 @@ public class FactorGraphExporter {
         if ( ctNode.getChildren().size() == 0 ) {
             Component< ?, ? > runnerNode = ctNode;
 
-            final List< Hypothesis< Component< FloatType, ? > > > hyps = new ArrayList<>();
+            final List< Hypothesis< AdvancedComponent<FloatType> > > hyps = new ArrayList<>();
             while ( runnerNode != null ) {
                 @SuppressWarnings( "unchecked" )
-                final Hypothesis< Component< FloatType, ? > > hypothesis =
-                        ( Hypothesis< Component< FloatType, ? > > ) nodes.findHypothesisContaining( runnerNode );
+                final Hypothesis< AdvancedComponent<FloatType> > hypothesis =
+                        ( Hypothesis< AdvancedComponent<FloatType> > ) nodes.findHypothesisContaining( runnerNode );
                 if ( hypothesis == null ) {
                     System.err.println(
                             "A WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!" );

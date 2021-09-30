@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
@@ -28,11 +29,11 @@ public class ArgbDrawingUtils {
      *                        component-tree-nodes that represent the optimal segmentation
      *                        (the one returned by the solution to the ILP)
      */
-    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<Component<FloatType, ?>>> segments) {
+    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<AdvancedComponent<FloatType>>> segments) {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
-        for (final Hypothesis<Component<FloatType, ?>> hypothesis : segments) {
-            final Component<FloatType, ?> component = hypothesis.getWrappedComponent();
+        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
+            final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
@@ -60,7 +61,7 @@ public class ArgbDrawingUtils {
      *                        component-tree-nodes that represent the optimal segmentation
      *                        (the one returned by the solution to the ILP)
      */
-    public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegment) {
+    public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final AdvancedComponent<FloatType> optionalSegment) {
         final RandomAccess<ARGBType> raAnnotationImg = imgDestination.randomAccess();
         final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
         Function<Integer, ARGBType> pixelColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight optional component in blue */
@@ -83,7 +84,7 @@ public class ArgbDrawingUtils {
      *                             grayscale value
      */
     @SuppressWarnings("unchecked")
-    private static void drawSegmentColorOverlay(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final RandomAccess<ARGBType> ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator) {
+    private static void drawSegmentColorOverlay(final AdvancedComponent<FloatType> component, final RandomAccess<ARGBType> ArgbImageTarget, final RandomAccess<ARGBType> ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator) {
         Iterator<Localizable> componentIterator = component.iterator();
         while (componentIterator.hasNext()) {
             Localizable position = componentIterator.next();
@@ -110,7 +111,7 @@ public class ArgbDrawingUtils {
      * @param offsetY              y-offset
      */
     @SuppressWarnings("unchecked")
-    private static void drawLabelingMarker(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final long offsetX, final long offsetY) {
+    private static void drawLabelingMarker(final AdvancedComponent<FloatType> component, final RandomAccess<ARGBType> ArgbImageTarget, final long offsetX, final long offsetY) {
         long[] centerPixelPos = calculateCenterOfMass(component.iterator());
 
         for(long x=-2; x<3; x++){

@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.Cursor;
 import net.imglib2.Point;
 import net.imglib2.*;
@@ -165,7 +166,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static IntervalView< FloatType > getColumnBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static IntervalView< FloatType > getColumnBoxInImg(final IntervalView< FloatType > channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
 
@@ -186,7 +187,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static IntervalView< FloatType > getIntensityBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static IntervalView< FloatType > getIntensityBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< AdvancedComponent<FloatType>> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		lt[ 0 ] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
@@ -199,7 +200,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static IntervalView< ShortType > getClassificationBoxInImg( final IntervalView< ShortType > segmentedFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static IntervalView< ShortType > getClassificationBoxInImg( final IntervalView< ShortType > segmentedFrame, final Hypothesis< AdvancedComponent<FloatType>> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		lt[ 0 ] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
@@ -216,7 +217,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static IterableInterval< FloatType > getSegmentBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static IterableInterval< FloatType > getSegmentBoxInImg( final IntervalView< FloatType > channelFrame, final Hypothesis< AdvancedComponent<FloatType>> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
 		return Views.iterable( Views.interval( channelFrame, lt, rb ) );
@@ -226,7 +227,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	public static int getSegmentBoxPixelCount( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long glMiddleInImg ) {
+	public static int getSegmentBoxPixelCount( final Hypothesis< AdvancedComponent<FloatType>> hyp, final long glMiddleInImg ) {
 		final long[] lt = Util.getTopLeftInSourceImg( hyp, glMiddleInImg );
 		final long[] rb = Util.getRightBottomInSourceImg( hyp, glMiddleInImg );
 		return (int) ( ( rb[ 0 ] - lt[ 0 ] + 1 ) * ( rb[ 1 ] - lt[ 1 ] + 1 ) );
@@ -236,7 +237,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	private static long[] getTopLeftInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
+	private static long[] getTopLeftInSourceImg( final Hypothesis< AdvancedComponent<FloatType>> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
 		final long left = middle - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
 		final long top = limits.getA();
@@ -247,7 +248,7 @@ public class Util {
 	 * @param hyp
 	 * @return
 	 */
-	private static long[] getRightBottomInSourceImg( final Hypothesis< net.imglib2.algorithm.componenttree.Component< FloatType, ? >> hyp, final long middle ) {
+	private static long[] getRightBottomInSourceImg( final Hypothesis< AdvancedComponent<FloatType>> hyp, final long middle ) {
 		final ValuePair< Integer, Integer > limits = hyp.getLocation();
 		final long right = middle + ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 + ConfigurationManager.GL_WIDTH_IN_PIXELS % 2 - 1;
 		final long bottom = limits.getB();

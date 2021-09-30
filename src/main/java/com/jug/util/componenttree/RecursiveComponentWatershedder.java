@@ -40,7 +40,7 @@ public class RecursiveComponentWatershedder<T extends Type<T>, C extends Compone
      * @param tree
      * @return
      */
-    public SimpleComponentTree<T, C> recursivelyWatershedComponents(SimpleComponentTree<T, C> tree) {
+    public SimpleComponentTree<T, AdvancedComponent<T>> recursivelyWatershedComponents(SimpleComponentTree<T, AdvancedComponent<T>> tree) {
         Consumer<Pair<List<AdvancedComponent<T>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
             List<AdvancedComponent<T>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {

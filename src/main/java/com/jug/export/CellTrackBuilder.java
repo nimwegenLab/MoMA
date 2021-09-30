@@ -2,6 +2,7 @@ package com.jug.export;
 
 import com.jug.GrowthlaneFrame;
 import com.jug.lp.*;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
@@ -15,7 +16,7 @@ import java.util.Vector;
 public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
 
-    public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<Component<FloatType, ?>>>> segmentsInFirstFrameSorted,
+    public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> segmentsInFirstFrameSorted,
                                    GrowthlaneFrame firstGlf,
                                    final GrowthlaneTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
@@ -26,7 +27,7 @@ public class CellTrackBuilder {
 
         startingPoints = new ArrayList<>();
 
-        for (final ValuePair<Integer, Hypothesis<Component<FloatType, ?>>> valuePair : segmentsInFirstFrameSorted) {
+        for (final ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> valuePair : segmentsInFirstFrameSorted) {
             final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
 
             final SegmentRecord point =
@@ -43,7 +44,7 @@ public class CellTrackBuilder {
         while (!queue.isEmpty()) {
             final SegmentRecord prepPoint = queue.poll();
 
-            final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> rightAssmt = ilp.getOptimalRightAssignment(prepPoint.hyp);
+            final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(prepPoint.hyp);
 
             if (rightAssmt == null) {
                 continue;

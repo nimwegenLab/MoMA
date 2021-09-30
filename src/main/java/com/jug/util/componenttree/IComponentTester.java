@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.real.FloatType;
 
 /**
  * Interface for testing if a {@link Component} is validity.

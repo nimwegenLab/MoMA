@@ -2,6 +2,7 @@ package com.jug.gui.assignmentview;
 
 import com.jug.lp.ExitAssignment;
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -30,7 +31,7 @@ public class ExitAssignmentView extends AssignmentView {
     }
 
     private void setupPolygon() {
-        final Hypothesis<Component<FloatType, ?>> leftHyp = ((ExitAssignment) abstractAssignment).getAssociatedHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> leftHyp = ((ExitAssignment) abstractAssignment).getAssociatedHypothesis();
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
 
         final int x1 = 0;

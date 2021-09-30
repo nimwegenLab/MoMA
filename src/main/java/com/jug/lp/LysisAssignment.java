@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
@@ -12,10 +13,10 @@ import java.util.List;
  * @author jug
  */
 @SuppressWarnings( "restriction" )
-public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
+public class LysisAssignment extends AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > {
 
-    private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> who;
+    private final HypothesisNeighborhoods< Hypothesis< AdvancedComponent<FloatType> >, AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > edges;
+	private final Hypothesis< AdvancedComponent<FloatType>> who;
 
 	private static int dcId = 0;
 
@@ -26,7 +27,7 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 * @param edges
 	 * @param who
      */
-	public LysisAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> who) {
+	public LysisAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> who) {
 		super( GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp );
 		this.edges = edges;
         this.who = who;
@@ -62,7 +63,7 @@ public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< 
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getAssociatedHypothesis() {
+	public Hypothesis< AdvancedComponent<FloatType>> getAssociatedHypothesis() {
 		return who;
 	}
 

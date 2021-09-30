@@ -6,6 +6,7 @@ import java.util.List;
 import com.jug.config.ConfigurationManager;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBLinExpr;
@@ -17,11 +18,11 @@ import net.imglib2.type.numeric.real.FloatType;
  * @author jug
  */
 @SuppressWarnings( "restriction" )
-public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
+public class ExitAssignment extends AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > {
 
-	private final List< Hypothesis< Component< FloatType, ? >>> Hup;
-    private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> who;
+	private final List< Hypothesis< AdvancedComponent<FloatType>>> Hup;
+    private final HypothesisNeighborhoods< Hypothesis< AdvancedComponent<FloatType> >, AbstractAssignment< Hypothesis< AdvancedComponent<FloatType> > > > edges;
+	private final Hypothesis< AdvancedComponent<FloatType>> who;
 
 	private static int dcId = 0;
 
@@ -32,7 +33,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 * @param edges
 	 * @param who
      */
-	public ExitAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final List<Hypothesis<Component<FloatType, ?>>> Hup, final Hypothesis<Component<FloatType, ?>> who) {
+	public ExitAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> who) {
 		super( GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp );
 		this.Hup = Hup;
 		this.edges = edges;
@@ -49,9 +50,9 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		expr.addTerm( Hup.size(), this.getGRBVar() );
 
 		boolean add = false;
-		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
+		for ( final Hypothesis< AdvancedComponent<FloatType>> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
-				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
+				for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
 					add = true;
 					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
@@ -78,9 +79,9 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		StringBuilder constraint = new StringBuilder();
 		constraint.append(String.format("(%d,%d,1)", Hup.size(), this.getVarIdx()));
 
-		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
+		for ( final Hypothesis< AdvancedComponent<FloatType>> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
-				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
+				for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
 					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
 					}
@@ -109,9 +110,9 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 		coeffs.add(Hup.size());
 //		varIds.add( new Integer( this.getVarIdx() ) );
 
-		for ( final Hypothesis< Component< FloatType, ? >> upperHyp : Hup ) {
+		for ( final Hypothesis< AdvancedComponent<FloatType>> upperHyp : Hup ) {
 			if ( edges.getRightNeighborhood( upperHyp ) != null ) {
-				for ( final AbstractAssignment< Hypothesis< Component< FloatType, ? >>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
+				for ( final AbstractAssignment< Hypothesis< AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood( upperHyp ) ) {
 					if ( a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT ) {
 						continue;
 					}
@@ -134,7 +135,7 @@ public class ExitAssignment extends AbstractAssignment< Hypothesis< Component< F
 	 *
 	 * @return the associated segmentation-hypothesis.
 	 */
-	public Hypothesis< Component< FloatType, ? >> getAssociatedHypothesis() {
+	public Hypothesis<AdvancedComponent<FloatType>> getAssociatedHypothesis() {
 		return who;
 	}
 

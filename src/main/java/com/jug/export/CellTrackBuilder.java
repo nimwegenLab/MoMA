@@ -22,7 +22,7 @@ public class CellTrackBuilder {
 
         final LinkedList<SegmentRecord> queue = new LinkedList<>();
 
-        int nextCellId = 0;
+        int nextCellId = 1; /* start at 1 instead 0; we do this, because this value is used to write the cell mask to the exported TIFF-stack, where 0 is indicates the background value */
 
         startingPoints = new ArrayList<>();
 

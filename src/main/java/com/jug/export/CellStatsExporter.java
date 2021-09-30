@@ -63,11 +63,9 @@ public class CellStatsExporter {
         MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
 
         final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
-        final GrowthlaneTrackingILP ilp = firstGLF.getParent().getIlp();
         long avgXpos = firstGLF.getAvgXpos();
         exportCellStats(new File(outputFolder, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                 cellTrackStartingPoints,
-                ilp,
                 avgXpos);
         // always export mmproperties
         configurationManager.saveParams(new File(outputFolder, "mm.properties"), MoMA.getGuiFrame());
@@ -77,12 +75,12 @@ public class CellStatsExporter {
      * @param file
      * @throws GRBException
      */
-    private void exportCellStats(final File file, List<SegmentRecord> cellTrackStartingPoints, GrowthlaneTrackingILP ilp, long avgXpos) {
+    private void exportCellStats(final File file, List<SegmentRecord> cellTrackStartingPoints, long avgXpos) {
         System.out.println("Exporting collected cell-statistics...");
         Writer out;
         try {
             out = new OutputStreamWriter(new FileOutputStream(file));
-            writeCellStatsExportData(out, cellTrackStartingPoints, ilp, avgXpos);
+            writeCellStatsExportData(out, cellTrackStartingPoints, avgXpos);
         } catch (final FileNotFoundException e1) {
             JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             e1.printStackTrace();
@@ -93,7 +91,7 @@ public class CellStatsExporter {
         System.out.println("...done!");
     }
 
-    private void writeCellStatsExportData(Writer writer, List<SegmentRecord> cellTrackStartingPoints, GrowthlaneTrackingILP ilp, long avgXpos) throws IOException {
+    private void writeCellStatsExportData(Writer writer, List<SegmentRecord> cellTrackStartingPoints, long avgXpos) throws IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
         final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
@@ -219,7 +217,7 @@ public class CellStatsExporter {
                     columnIndex++;
                 }
 
-                segmentRecord = segmentRecord.nextSegmentInTime(ilp);
+                segmentRecord = segmentRecord.nextSegmentInTime();
 
                 typeOfEndCol.addValue(segmentRecord.getTerminationIdentifier());
             }

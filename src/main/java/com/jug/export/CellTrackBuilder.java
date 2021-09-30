@@ -30,10 +30,10 @@ public class CellTrackBuilder {
             final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
 
             final SegmentRecord point =
-                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank);
+                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank, ilp);
             startingPoints.add(point);
 
-            final SegmentRecord prepPoint = new SegmentRecord(point, 1);
+            final SegmentRecord prepPoint = new SegmentRecord(point, 1, ilp);
             prepPoint.hyp = point.hyp;
 
             if (!prepPoint.hyp.isPruned()) {
@@ -51,7 +51,7 @@ public class CellTrackBuilder {
             // MAPPING -- JUST DROP SEGMENT STATS
             if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                 final MappingAssignment ma = (MappingAssignment) rightAssmt;
-                final SegmentRecord next = new SegmentRecord(prepPoint, 1);
+                final SegmentRecord next = new SegmentRecord(prepPoint, 1, ilp);
                 next.hyp = ma.getDestinationHypothesis();
                 if (!prepPoint.hyp.isPruned()) {
                     queue.add(next);
@@ -68,7 +68,7 @@ public class CellTrackBuilder {
                 prepPoint.hyp = da.getLowerDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.LOWER);
                     startingPoints.add(newPoint.clone());
                     newPoint.timestep++;
@@ -80,7 +80,7 @@ public class CellTrackBuilder {
                 prepPoint.hyp = da.getUpperDesinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.UPPER);
                     startingPoints.add(newPoint.clone());
                     newPoint.timestep++;

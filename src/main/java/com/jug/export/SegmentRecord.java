@@ -27,6 +27,8 @@ final class SegmentRecord {
     static final int UPPER = -2;
     final List<Integer> genealogy;
     boolean exists = true;
+    private GrowthlaneTrackingILP ilp;
+
     /**
      * The ID of this cell.
      */
@@ -57,13 +59,15 @@ final class SegmentRecord {
             final int pid,
             final int tbirth,
             final int daughterTypeOrPosition,
-            final List<Integer> genealogy) {
+            final List<Integer> genealogy,
+            GrowthlaneTrackingILP ilp) {
         this.hyp = hyp;
         this.id = id;
         this.parentId = pid;
         this.timeOfBirth = tbirth;
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = genealogy;
+        this.ilp = ilp;
         this.timestep = 0;
     }
 
@@ -72,30 +76,33 @@ final class SegmentRecord {
             final int id,
             final int pid,
             final int tbirth,
-            final int daughterTypeOrPosition) {
+            final int daughterTypeOrPosition,
+            GrowthlaneTrackingILP ilp) {
         this.hyp = hyp;
         this.id = id;
         this.parentId = pid;
         this.timeOfBirth = tbirth;
         this.daughterTypeOrPosition = daughterTypeOrPosition;
+        this.ilp = ilp;
         this.genealogy = new ArrayList<>();
         genealogy.add(daughterTypeOrPosition);
         this.timestep = 0;
     }
 
-    SegmentRecord(final SegmentRecord point, final int frameOffset) {
+    SegmentRecord(final SegmentRecord point, final int frameOffset, GrowthlaneTrackingILP ilp) {
         this.hyp = point.hyp;
         this.id = point.id;
         this.parentId = point.parentId;
         this.timeOfBirth = point.timeOfBirth;
         this.daughterTypeOrPosition = point.daughterTypeOrPosition;
+        this.ilp = ilp;
         this.timestep = point.timestep + frameOffset;
         this.genealogy = new ArrayList<>(point.genealogy);
     }
 
     public SegmentRecord clone() {
         final SegmentRecord ret =
-                new SegmentRecord(this.hyp, this.id, this.parentId, this.timeOfBirth, this.daughterTypeOrPosition, this.genealogy);
+                new SegmentRecord(this.hyp, this.id, this.parentId, this.timeOfBirth, this.daughterTypeOrPosition, this.genealogy, ilp);
         ret.exists = this.exists;
         ret.timestep = this.timestep;
         ret.terminated_by = this.terminated_by;
@@ -137,7 +144,7 @@ final class SegmentRecord {
     /**
      * @return
      */
-    SegmentRecord nextSegmentInTime(final GrowthlaneTrackingILP ilp) {
+    SegmentRecord nextSegmentInTime() {
         SegmentRecord ret = this;
 
         exists = true;
@@ -149,7 +156,7 @@ final class SegmentRecord {
             } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                 final MappingAssignment ma = (MappingAssignment) rightAssmt;
                 if (!ma.isPruned()) {
-                    ret = new SegmentRecord(this, 1);
+                    ret = new SegmentRecord(this, 1, ilp);
                     ret.hyp = ma.getDestinationHypothesis();
                 } else {
                     terminated_by = SegmentRecord.USER_PRUNING;

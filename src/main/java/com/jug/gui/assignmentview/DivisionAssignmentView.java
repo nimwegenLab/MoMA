@@ -3,7 +3,6 @@ package com.jug.gui.assignmentview;
 import com.jug.lp.DivisionAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 

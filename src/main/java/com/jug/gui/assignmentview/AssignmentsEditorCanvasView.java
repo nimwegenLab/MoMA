@@ -7,7 +7,6 @@ import com.jug.gui.MoMAGui;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
 import javax.swing.*;
@@ -52,6 +51,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;
+    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
     protected EventListenerList listenerList = new EventListenerList();
     ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
     int selectedAssignmentIndex = 0;
@@ -72,12 +72,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private int dragInitiatingMouseButton = 0;
     private float dragStepWeight = 0;
     private MoMAGui gui;
-
     // -------------------------------------------------------------------------------------
     // getters and setters
     // -------------------------------------------------------------------------------------
     private Color strokeColor;
-    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
 
     // -------------------------------------------------------------------------------------
     // construction

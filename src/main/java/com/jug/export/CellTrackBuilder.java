@@ -4,7 +4,6 @@ import com.jug.GrowthlaneFrame;
 import com.jug.lp.*;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 

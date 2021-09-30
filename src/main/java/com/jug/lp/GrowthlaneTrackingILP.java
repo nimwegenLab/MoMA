@@ -28,8 +28,8 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagFilterAssignmentsByComponentSizeMatch;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
 /**
@@ -61,9 +61,9 @@ public class GrowthlaneTrackingILP {
             new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
-    private IImageProvider imageProvider;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
+    private final IImageProvider imageProvider;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
@@ -373,8 +373,8 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     public void addMappingAssignments(final int t,
-                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
-                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree) throws GRBException {
+                                      SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
+                                      SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree) throws GRBException {
         for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
             if (t > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -815,7 +815,7 @@ public class GrowthlaneTrackingILP {
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             model.optimize();
             long endTime = System.currentTimeMillis();
-            System.out.println("Optimization time: " + (endTime-startTime));
+            System.out.println("Optimization time: " + (endTime - startTime));
             System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
             dialog.notifyGurobiTermination();
 
@@ -949,15 +949,15 @@ public class GrowthlaneTrackingILP {
     /**
      * Returns the hypotheses with components/segements, which are children of
      */
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getConflictingChildSegments(final int t, final Hypothesis<AdvancedComponent<FloatType>> parentHypothesis){
-        AdvancedComponent<FloatType> parentComponent = (AdvancedComponent<FloatType>) parentHypothesis.getWrappedComponent();
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getConflictingChildSegments(final int t, final Hypothesis<AdvancedComponent<FloatType>> parentHypothesis) {
+        AdvancedComponent<FloatType> parentComponent = parentHypothesis.getWrappedComponent();
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         addListOfNodes(parentComponent, componentList);
         final List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getHypothesesAt(t);
         ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
-        for(Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses){
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
             AdvancedComponent<FloatType> wrappedComponent = hypothesis.getWrappedComponent();
-            if (componentList.contains(wrappedComponent)){
+            if (componentList.contains(wrappedComponent)) {
                 result.add(hypothesis);
             }
         }
@@ -968,7 +968,7 @@ public class GrowthlaneTrackingILP {
      * Returns all active segmentations at time t that conflict with the given
      * hypothesis.
      *
-     * @param t   the time-point at which to look for the optimal segmentation.
+     * @param t          the time-point at which to look for the optimal segmentation.
      * @param hypothesis another hypothesis conflicts have to be queried for.
      * @return a list of <code>Hypothesis< Component< FloatType, ? >></code>
      * that

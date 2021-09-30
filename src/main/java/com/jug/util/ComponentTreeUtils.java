@@ -25,6 +25,9 @@ import java.util.function.Consumer;
  */
 public class ComponentTreeUtils {
 
+    private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+    private static int currentTime = -1;
+
     /**
      * Get all leaf nodes under the specified component in component forest.
      *
@@ -79,20 +82,18 @@ public class ComponentTreeUtils {
         }
     }
 
-    private static ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
-
     /**
      * Checks if {@param candidate} is above {@param hyp} inside the image.
      *
      * @param candidate candidate that we are interested in
-     * @param hyp reference that we are testing against
+     * @param hyp       reference that we are testing against
      * @return boolean indicating if it is above or not
      */
     public static boolean isAbove(
             final Hypothesis<AdvancedComponent<FloatType>> candidate,
             final Hypothesis<AdvancedComponent<FloatType>> hyp) {
-        AdvancedComponent<FloatType> candidateComponent = (AdvancedComponent<FloatType>)candidate.getWrappedComponent();
-        AdvancedComponent<FloatType> referenceComponent = (AdvancedComponent<FloatType>)hyp.getWrappedComponent();
+        AdvancedComponent<FloatType> candidateComponent = candidate.getWrappedComponent();
+        AdvancedComponent<FloatType> referenceComponent = hyp.getWrappedComponent();
         return verticalComponentPositionComparator.compare(candidateComponent, referenceComponent) == -1; /* NOTE: since we are using image/matrix coordinates (e.g. origin at the top), the coordinate value for {@param candidate} will be lower than {@param hyp}, when it is above {@param hyp} */
     }
 
@@ -101,11 +102,11 @@ public class ComponentTreeUtils {
      * @return
      */
     public static boolean isBelowByMoreThen(
-            final Component< FloatType, ? > sourceComponent,
-            final Component< FloatType, ? > targetComponent,
+            final Component<FloatType, ?> sourceComponent,
+            final Component<FloatType, ?> targetComponent,
             final int maximumAllowedDownwardMovement) {
-        final ValuePair< Integer, Integer > sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
-        final ValuePair< Integer, Integer > targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
         final float targetUpperBoundary = targetComponentBoundaries.getA();
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
 
@@ -128,8 +129,6 @@ public class ComponentTreeUtils {
         }
         return result;
     }
-
-    private static int currentTime = -1;
 
     public static boolean isPlausibleTargetComponent(final AdvancedComponent<FloatType> sourceComponent,
                                                      final AdvancedComponent<FloatType> targetComponent,
@@ -160,21 +159,18 @@ public class ComponentTreeUtils {
 
 //        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
         int lowerTargetAreaLimit;
-        if (differenceOfTotalArea < 0){
+        if (differenceOfTotalArea < 0) {
             lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
-        }
-        else{
+        } else {
             lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME));
         }
 
         int upperTargetAreaLimit;
         if (differenceOfTotalArea > 0) {
             upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME));
+        } else {
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));
         }
-        else {
-            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));;
-        }
-
 
 
 //        double yCenterSource = sourceComponent.firstMomentPixelCoordinates()[1];
@@ -199,21 +195,16 @@ public class ComponentTreeUtils {
 //            System.out.println("");
 //        }
         boolean isValid;
-        if (totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit) {
-            isValid = true;
-        }
-        else{
-            isValid = false;
-        }
+        isValid = totalAreaBelowTargetComponent >= lowerTargetAreaLimit && totalAreaIncludingTargetComponent <= upperTargetAreaLimit;
 
         if (sourceTime == 16) {
-            if(sourceComponent.getRankRelativeToComponentsClosestToRoot() == 2) {
+            if (sourceComponent.getRankRelativeToComponentsClosestToRoot() == 2) {
                 if (targetComponent.getRankRelativeToComponentsClosestToRoot() == 0) {
                     System.out.println("sourceTime: " + sourceTime);
                     System.out.println("totalAreaSource: " + sourceComponent.getTotalAreaOfRootComponents());
                     System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
                     System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
-                    System.out.println("");
+                    System.out.println();
                     currentTime = sourceTime;
                 }
             }
@@ -236,11 +227,12 @@ public class ComponentTreeUtils {
 
     /**
      * Returns the pixel limits of the component along a given dimension.
+     *
      * @param component the component to process
-     * @param dim the dimension in which component limits are determined
+     * @param dim       the dimension in which component limits are determined
      * @return ValuePair<int min, int max> minimum and maximum pixel limits.
      */
-    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim){
+    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim) {
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
         for (Localizable localizable : component) {
@@ -256,26 +248,24 @@ public class ComponentTreeUtils {
      * bounding box of {@param component}.
      *
      * @param component component for which we test the bounding box
-     * @param position position to test
+     * @param position  position to test
      * @return true if y-position is in the bounding box
      */
     public static boolean componentContainsYPosition(final Component<?, ?> component, Point position) {
-        int pos[] = new int[2]; // this works only for 2D images
+        int[] pos = new int[2]; // this works only for 2D images
         position.localize(pos);
         ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        if (pos[1] < yLimits.getA() || pos[1] > yLimits.getB()) {
-            return false;
-        }
-        return true;
+        return pos[1] >= yLimits.getA() && pos[1] <= yLimits.getB();
     }
 
     /**
      * Returns the pixel size of the component along the given dimension.
+     *
      * @param component the component to process
-     * @param dim the dimension along which the size will be determined
+     * @param dim       the dimension along which the size will be determined
      * @return integer value, which is the difference between the starting and end pixel-positions of the component.
      */
-    public static int getComponentSize(final Component<?,?> component, int dim){
+    public static int getComponentSize(final Component<?, ?> component, int dim) {
         ValuePair<Integer, Integer> limits = getComponentPixelLimits(component, dim);
         return limits.b - limits.a;
     }
@@ -383,21 +373,22 @@ public class ComponentTreeUtils {
      * Works through the component tree and at each tree-level passes a list of all components in that tree level to
      * componentlevelListConsumer. componentlevelListConsumer takes Pair<List<C>, Integer>, where List<C> is the list of
      * components in the level and Integer is the number of the level with 0 being the root-level.
-     * @param componentForest componentForest being processed.
+     *
+     * @param componentForest            componentForest being processed.
      * @param componentlevelListConsumer consumer of the list of components in the level and corresponding level number.
-     * @param <C> type of component being processed.
+     * @param <C>                        type of component being processed.
      */
     public static <T extends Type<T>> void doForEachComponentInTreeLevel(final ComponentForest<AdvancedComponent<T>> componentForest,
-                                                                                                 Consumer<Pair<List<AdvancedComponent<T>>, Integer>> componentlevelListConsumer ){
+                                                                         Consumer<Pair<List<AdvancedComponent<T>>, Integer>> componentlevelListConsumer) {
         int level = 0;
         ArrayList<AdvancedComponent<T>> ctnLevel = new ArrayList<>();
-        for ( final AdvancedComponent<T> root : componentForest.roots() ) { // populate the root-level component list
+        for (final AdvancedComponent<T> root : componentForest.roots()) { // populate the root-level component list
             ctnLevel.add(root);
         }
 
-        while ( ctnLevel.size() > 0 ) {
+        while (ctnLevel.size() > 0) {
             componentlevelListConsumer.accept(new Pair<>(ctnLevel, level));
-            ctnLevel = ComponentTreeUtils.getAllChildren( ctnLevel );
+            ctnLevel = ComponentTreeUtils.getAllChildren(ctnLevel);
             level++;
         }
     }

@@ -1,10 +1,8 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.lp.ExitAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.LysisAssignment;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 

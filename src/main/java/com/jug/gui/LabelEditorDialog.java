@@ -2,7 +2,6 @@ package com.jug.gui;
 
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.miginfocom.swing.MigLayout;
 
@@ -47,14 +46,13 @@ public class LabelEditorDialog extends JDialog {
             String id = "key_" + keyNumber;
             JCheckBox checkbox = new JCheckBox();
             checkbox.setText(label + " (" + keyNumber + ")");
-            if (hyp.labels.contains(label)){
+            if (hyp.labels.contains(label)) {
                 checkbox.setSelected(true);
             }
             checkbox.addItemListener(e -> {
-                if(checkbox.isSelected()){
+                if (checkbox.isSelected()) {
                     hyp.labels.add(label);
-                }
-                else{
+                } else {
                     hyp.labels.remove(label);
                 }
             });

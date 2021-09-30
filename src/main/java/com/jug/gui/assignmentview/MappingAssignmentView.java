@@ -3,7 +3,6 @@ package com.jug.gui.assignmentview;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -11,7 +10,7 @@ import java.awt.*;
 import java.awt.geom.GeneralPath;
 
 public class MappingAssignmentView extends AssignmentView {
-    private int ASSIGNMENT_DISPLAY_OFFSET;
+    private final int ASSIGNMENT_DISPLAY_OFFSET;
 
     public MappingAssignmentView(final MappingAssignment ma, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.abstractAssignment = ma;

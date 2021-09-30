@@ -1,13 +1,11 @@
 package com.jug.lp;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
-import com.jug.util.ComponentTreeUtils;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jug

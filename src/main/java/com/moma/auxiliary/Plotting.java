@@ -28,7 +28,7 @@ import static com.jug.util.imglib2.Imglib2Utils.setImageToValue;
 
 public class Plotting {
     public static void drawComponentTree(ComponentForest<AdvancedComponent<FloatType>> ct,
-                                                                             List<AdvancedComponent<FloatType>> componentsInOptimalSolution, int timeStep) {
+                                         List<AdvancedComponent<FloatType>> componentsInOptimalSolution, int timeStep) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
@@ -42,12 +42,12 @@ public class Plotting {
 
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
-        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
+        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
             List<AdvancedComponent<FloatType>> componentOfLevel = levelComponentsListAndLevel.getValue0();
             {
                 final RandomAccessibleInterval<ARGBType> componentLevelImage = imageFactory.create(xDim, yDim);
                 setImageToValue(Views.iterable(componentLevelImage), new ARGBType(ARGBType.rgba(100, 0, 0, 0)));
-                for(AdvancedComponent<FloatType> ctn : componentOfLevel){
+                for (AdvancedComponent<FloatType> ctn : componentOfLevel) {
                     boolean val = componentsInOptimalSolution.contains(ctn);
                     drawComponentToImage(ctn, sourceImage, componentLevelImage, val);
                 }
@@ -85,7 +85,7 @@ public class Plotting {
 
 
     public static void drawComponentTree2(ComponentForest<AdvancedComponent<FloatType>> ct,
-                                                                              List<AdvancedComponent<FloatType>> componentsInOptimalSolution) {
+                                          List<AdvancedComponent<FloatType>> componentsInOptimalSolution) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
@@ -95,7 +95,7 @@ public class Plotting {
 
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
-        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel)-> {
+        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
             List<AdvancedComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {
                 RandomAccessibleInterval<ARGBType> componentLevelImage = createImageWithComponents(componentsOfLevel, componentsInOptimalSolution);

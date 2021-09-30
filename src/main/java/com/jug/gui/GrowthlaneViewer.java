@@ -7,7 +7,6 @@ import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
@@ -40,8 +39,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private final int w;
     private final int h;
     private final MoMAGui mmgui;
-    private LabelEditorDialog labelEditorDialog;
+    protected EventListenerList listenerList = new EventListenerList();
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
+    private final LabelEditorDialog labelEditorDialog;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -58,6 +58,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private String optionalSegmentInfoString = " ";
     private List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
+    private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
     public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int w, final int h) {
         super();
@@ -183,6 +184,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
     }
 
+    // -------------------------------------------------------------------------------------
+    // MouseInputListener related methods
+    // -------------------------------------------------------------------------------------
+
     private void drawHoveredOptionalHypothesis() {
         Hypothesis<AdvancedComponent<FloatType>> hoverOptionalHyp = getHoveredOptionalHypothesis();
         if (hoverOptionalHyp != null) {
@@ -198,10 +203,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY);
         }
     }
-
-    // -------------------------------------------------------------------------------------
-    // MouseInputListener related methods
-    // -------------------------------------------------------------------------------------
 
     private Hypothesis<AdvancedComponent<FloatType>> getHoveredOptimalHypothesis() {
         return hoveredOptimalHypothesis;
@@ -236,17 +237,15 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         repaint();
     }
 
-    protected EventListenerList listenerList = new EventListenerList();
-
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
         listenerList.add(IlpModelChangedEventListener.class, listener);
     }
 
     private void fireIlpModelChangedEvent(IlpModelChangedEvent evt) {
         Object[] listeners = listenerList.getListenerList();
-        for (int i = 0; i < listeners.length; i = i+2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
+        for (int i = 0; i < listeners.length; i = i + 2) { /* Do not understand why we need this weird indexing, but it is done here: http://www.java2s.com/Code/Java/Event/CreatingaCustomEvent.htm */
             if (listeners[i] == IlpModelChangedEventListener.class) {
-                ((IlpModelChangedEventListener) listeners[i+1]).IlpModelChangedEventOccurred(evt);
+                ((IlpModelChangedEventListener) listeners[i + 1]).IlpModelChangedEventOccurred(evt);
             }
         }
     }
@@ -290,8 +289,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                         }
                         ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
                     }
-                }
-                else {
+                } else {
                     for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
                         if (hyp2avoid.getSegmentSpecificConstraint() != null) {
                             ilp.removeSegmentConstraints(hyp2avoid);
@@ -322,10 +320,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
 
-        if(hyp2add.isForced){
+        if (hyp2add.isForced) {
             ilp.removeSegmentConstraints(hyp2add);
-        }
-        else{
+        } else {
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
 
             try {
@@ -354,8 +351,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         thread.start();
         mmgui.focusOnSliderTime();
     }
-
-    private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
     private Hypothesis<AdvancedComponent<FloatType>> getSelectedHypothesis() {
         return selectedHypothesis;
@@ -504,17 +499,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     }
 
     private boolean mouseIsOverDisplayPanel() {
-        if (MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
+        return MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
                 && MouseInfo.getPointerInfo().getLocation().x <= this.getLocationOnScreen().x + this.getWidth()
                 && MouseInfo.getPointerInfo().getLocation().y >= this.getLocationOnScreen().y
-                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight()) {
-            return true;
-        } else {
-            return false;
-        }
+                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight();
     }
 
-    public boolean isMouseOver(){
+    public boolean isMouseOver() {
         return mouseIsOverDisplayPanel();
     }
 }

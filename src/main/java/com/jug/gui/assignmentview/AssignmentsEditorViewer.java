@@ -7,7 +7,6 @@ import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.OSValidator;
 import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
 import javax.swing.*;
@@ -62,7 +61,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     // methods
     // -------------------------------------------------------------------------------------
 
-    public void switchToTab(int targetTab){
+    public void switchToTab(int targetTab) {
         if (targetTab >= tabsToRoll.length) targetTab = 0;
         this.add(namesToRoll[targetTab], tabsToRoll[targetTab]);
         this.remove(tabsToRoll[curTabIdx]);
@@ -172,17 +171,13 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     }
 
     private boolean mouseIsOverDisplayPanel() {
-        if (MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
+        return MouseInfo.getPointerInfo().getLocation().x >= this.getLocationOnScreen().x
                 && MouseInfo.getPointerInfo().getLocation().x <= this.getLocationOnScreen().x + this.getWidth()
                 && MouseInfo.getPointerInfo().getLocation().y >= this.getLocationOnScreen().y
-                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight()) {
-            return true;
-        } else {
-            return false;
-        }
+                && MouseInfo.getPointerInfo().getLocation().y <= this.getLocationOnScreen().y + this.getHeight();
     }
 
-    public boolean isMouseOver(){
+    public boolean isMouseOver() {
         return mouseIsOverDisplayPanel();
     }
 }

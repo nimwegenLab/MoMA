@@ -23,11 +23,12 @@ import java.util.List;
 
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
-    private IImageProvider imageProvider;
     private final int timeStepOffset;
+    public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelectedForSettingIlpConstraints;
     JCheckBox checkboxIsSelectedForGtExport;
+    private final IImageProvider imageProvider;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -42,7 +43,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
-        if(showGroundTruthExportFunctionality){
+        if (showGroundTruthExportFunctionality) {
             this.addCheckboxForSelectingGtExport(mmgui);
         }
         this.setAppearanceAndLayout();
@@ -54,7 +55,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         showSegmentsButton.addActionListener(e -> {
             ShowComponentsOfCurrentTimeStep();
         });
-        showSegmentsButton.setMargin(new Insets(0,0,0,0));
+        showSegmentsButton.setMargin(new Insets(0, 0, 0, 0));
         this.add(showSegmentsButton);
     }
 
@@ -223,9 +224,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         showSegmentsButton.setEnabled(currentTimeStepIsValid());
     }
 
-    public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
-
-    private IntervalView<FloatType> getImageToDisplay(GrowthlaneFrame glf){
+    private IntervalView<FloatType> getImageToDisplay(GrowthlaneFrame glf) {
         /**
          * The view onto <code>imgRaw</code> that is supposed to be shown on screen
          * (center one in active assignments view).

@@ -169,8 +169,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // --- Slider for time and GL -------------
 
-        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getCurrentGL().size() - 2, 0);
-        sliderTime.setValue(1);
+        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getCurrentGL().size() - 1, 0);
         model.setCurrentGLF(sliderTime.getValue());
         sliderTime.addChangeListener(this);
         if (sliderTime.getMaximum() < 200) {

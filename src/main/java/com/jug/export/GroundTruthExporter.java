@@ -12,21 +12,26 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
-import net.imglib2.view.Views;
-import org.jetbrains.annotations.NotNull;
-import org.scijava.Context;
 
 import java.io.File;
 import java.util.List;
 
 public class GroundTruthExporter {
+    private final Imglib2Utils imglib2Utils;
     Img<IntType> imgResult;
-    private Context context;
-    private Imglib2Utils imglib2Utils;
 
-    public GroundTruthExporter(Context context, Imglib2Utils imglib2Utils) {
-        this.context = context;
+    public GroundTruthExporter(Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
+    }
+
+    private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
+                                                               T value,
+                                                               RandomAccessibleInterval<T> targetImage) {
+        RandomAccess<T> out = targetImage.randomAccess();
+        for (Localizable location : component) {
+            out.setPosition(location);
+            out.get().set(value);
+        }
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
@@ -48,32 +53,6 @@ public class GroundTruthExporter {
     }
 
     private void saveResultImageToFile(File outputFile) {
-        /* ATTEMPT 1 TO SAVE IMG TO DISK */
-//        ImagePlus tmp_image = ImageJFunctions.wrap(Views.permute(imgResult, 2, 3 ), "imgResults");
-////        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
-//        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
-
-//        /* ATTEMPT 2 TO SAVE IMG TO DISK */
-//        ImgSaver saver = new ImgSaver(context);
-//        FileLocation imgName = new FileLocation(outputFile);
-//        try {
-//            saver.saveImg(imgName, imgResult);
-//        }
-//        catch (Exception exc) {
-//            exc.printStackTrace();
-//        }
-
-        /* ATTEMPT 3 */
-//        IOPlugin<Img<IntType>> saver = new DefaultIOService().getSaver(imgResult, outputFile.getAbsolutePath());
-//        try {
-//            saver.save(imgResult, outputFile.getAbsolutePath());
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-//        /* ATTEMPT 4 */
-//        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
-//        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
         imglib2Utils.saveImage(imgResult, outputFile.getAbsolutePath());
     }
 
@@ -92,16 +71,6 @@ public class GroundTruthExporter {
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
             }
-        }
-    }
-
-    private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
-                                                               T value,
-                                                               RandomAccessibleInterval<T> targetImage) {
-        RandomAccess<T> out = targetImage.randomAccess();
-        for (Localizable location : component) {
-            out.setPosition(location);
-            out.get().set(value);
         }
     }
 

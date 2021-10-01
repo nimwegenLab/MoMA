@@ -58,6 +58,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
     private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
+    private final boolean showGroundTruthExportFunctionality;
+    private final IImageProvider imageProvider;
+    private final MoMA momaInstance;
     public JSlider sliderGL;
     public JSlider sliderTime;
     // -------------------------------------------------------------------------------------
@@ -65,9 +68,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // -------------------------------------------------------------------------------------
     public GrowthlaneViewer growthLaneViewerCenter;
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
-    private final boolean showGroundTruthExportFunctionality;
-    private final IImageProvider imageProvider;
-    private final MoMA momaInstance;
     private SegmentationEditorPanel segmentationEditorPanelCenter;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
@@ -1086,7 +1086,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
-        final GroundTruthExporter groundTruthExporter = new GroundTruthExporter(MoMA.dic.getSciJavaContext(), MoMA.dic.getImglib2utils());
+        final GroundTruthExporter groundTruthExporter = new GroundTruthExporter(MoMA.dic.getImglib2utils());
         final ResultExporter resultExporter = new ResultExporter(cellStatsExporter, groundTruthExporter);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }

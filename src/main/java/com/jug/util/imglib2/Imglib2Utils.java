@@ -14,22 +14,22 @@ import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 
 public class Imglib2Utils {
-    private OpService ops;
+    private final OpService ops;
 
     public Imglib2Utils(OpService ops) {
         this.ops = ops;
     }
 
-    public static <T extends Type<T>> void setImageToValue(IterableInterval<T> image, T value){
+    public static <T extends Type<T>> void setImageToValue(IterableInterval<T> image, T value) {
         Cursor<T> cursor = image.cursor();
-        while(cursor.hasNext()){
+        while (cursor.hasNext()) {
             cursor.next();
             cursor.get().set(value.copy());
         }
     }
 
-    public double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img){
-        IterableInterval< FloatType > region = Views.interval( img, interval );
+    public double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img) {
+        IterableInterval<FloatType> region = Views.interval(img, interval);
         return ops.stats().sum(region).getRealDouble();
     }
 
@@ -67,4 +67,31 @@ public class Imglib2Utils {
         slice = Views.hyperSlice(slice, 2, channel);
         return slice;
     }
+
+    /* ATTEMPT 1 TO SAVE IMG TO DISK */
+//        ImagePlus tmp_image = ImageJFunctions.wrap(Views.permute(imgResult, 2, 3 ), "imgResults");
+////        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
+//        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+
+//        /* ATTEMPT 2 TO SAVE IMG TO DISK */
+//        ImgSaver saver = new ImgSaver(context);
+//        FileLocation imgName = new FileLocation(outputFile);
+//        try {
+//            saver.saveImg(imgName, imgResult);
+//        }
+//        catch (Exception exc) {
+//            exc.printStackTrace();
+//        }
+
+    /* ATTEMPT 3 */
+//        IOPlugin<Img<IntType>> saver = new DefaultIOService().getSaver(imgResult, outputFile.getAbsolutePath());
+//        try {
+//            saver.save(imgResult, outputFile.getAbsolutePath());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        /* ATTEMPT 4 */
+//        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
+//        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
 }

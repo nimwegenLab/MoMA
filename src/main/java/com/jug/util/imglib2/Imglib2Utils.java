@@ -1,10 +1,8 @@
 package com.jug.util.imglib2;
 
 import net.imagej.ops.OpService;
-import net.imglib2.Cursor;
-import net.imglib2.Interval;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessible;
+import net.imglib2.*;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -44,5 +42,10 @@ public class Imglib2Utils {
         double std = ops.stats().stdDev(region).getRealDouble();
         double mean = ops.stats().mean(region).getRealDouble();
         return std / mean;
+    }
+
+    public <T extends Type<T>> void copyImage(RandomAccessibleInterval<T> sourceImage,
+                                              RandomAccessibleInterval<T> targetImage) {
+        LoopBuilder.setImages(sourceImage, targetImage).forEachPixel((src, dest) -> dest.set(src));
     }
 }

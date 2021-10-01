@@ -2,6 +2,7 @@ package com.jug.export;
 
 import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.imglib2.Imglib2Utils;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imglib2.Localizable;
@@ -15,6 +16,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 
 import java.io.File;
@@ -23,9 +25,11 @@ import java.util.List;
 public class GroundTruthExporter {
     Img<IntType> imgResult;
     private Context context;
+    private Imglib2Utils imglib2Utils;
 
-    public GroundTruthExporter(Context context) {
+    public GroundTruthExporter(Context context, Imglib2Utils imglib2Utils) {
         this.context = context;
+        this.imglib2Utils = imglib2Utils;
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
@@ -33,7 +37,17 @@ public class GroundTruthExporter {
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
+        copySliceOfParentComponents();
         saveResultImageToFile(new File(outputFolder, "ExportedCellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
+    }
+
+    private void copySliceOfParentComponents() {
+        int timeMax = (int) imgResult.dimension(4);
+        for (int t = 1; t < timeMax; t++) {
+            IntervalView<IntType> sourceImage = getImageSlice(0, 0, t - 1);
+            IntervalView<IntType> targetImage = getImageSlice(0, 1, t);
+            imglib2Utils.copyImage(sourceImage, targetImage);
+        }
     }
 
     private void saveResultImageToFile(File outputFile) {
@@ -76,13 +90,19 @@ public class GroundTruthExporter {
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             while (segment.exists) {
-                IntervalView<IntType> slice = Views.hyperSlice(imgResult, 4, segment.timestep);
-                slice = Views.hyperSlice(slice, 3, 0);
-                slice = Views.hyperSlice(slice, 2, 0);
+                IntervalView<IntType> slice = getImageSlice(0, 0, segment.timestep);
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
             }
         }
+    }
+
+    @NotNull
+    private IntervalView<IntType> getImageSlice(int channel, int zSlice, int time) {
+        IntervalView<IntType> slice = Views.hyperSlice(imgResult, 4, time);
+        slice = Views.hyperSlice(slice, 3, zSlice);
+        slice = Views.hyperSlice(slice, 2, channel);
+        return slice;
     }
 
     private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,

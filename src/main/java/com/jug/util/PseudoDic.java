@@ -24,6 +24,7 @@ public class PseudoDic {
     private final MoMA momaInstance;
     private final MixtureModelFit mixtureModelFit;
     private final ComponentTreeGenerator componentTreeGenerator;
+    private final Imglib2Utils imglib2utils;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
@@ -32,7 +33,7 @@ public class PseudoDic {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES);
-        Imglib2Utils imglib2utils = new Imglib2Utils(ops);
+        imglib2utils = new Imglib2Utils(ops);
         componentProperties = new ComponentProperties(ops, imglib2utils);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
     }
@@ -66,4 +67,6 @@ public class PseudoDic {
     }
 
     public ComponentTreeGenerator getComponentTreeGenerator() { return componentTreeGenerator; }
+
+    public Imglib2Utils getImglib2utils() { return imglib2utils; }
 }

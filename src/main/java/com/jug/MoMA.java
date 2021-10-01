@@ -13,7 +13,6 @@ import gurobi.GRBException;
 import ij.IJ;
 import ij.ImageJ;
 import ij.ImagePlus;
-import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -25,7 +24,6 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.SystemUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -74,8 +72,6 @@ public class MoMA implements IImageProvider {
 	 */
 	static boolean showIJ = false;
 
-	public static Context context;
-	public static OpService ops;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
@@ -163,9 +159,6 @@ public class MoMA implements IImageProvider {
 	 */
 	public static void main( final String[] args ) {
 		System.out.println( "VERSION: " + VERSION_STRING );
-
-		context = new Context();
-		ops = context.service(OpService.class);
 
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
@@ -909,7 +902,7 @@ public class MoMA implements IImageProvider {
         getGrowthlanes().add( new Growthlane(imageProvider) );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx);
+            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, dic.getComponentTreeGenerator());
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthlanes().get(0).add(currentFrame);
@@ -934,7 +927,7 @@ public class MoMA implements IImageProvider {
 	}
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
-		UnetProcessor unetProcessor = new UnetProcessor();
+		UnetProcessor unetProcessor = new UnetProcessor(MoMA.dic.getSciJavaContext());
 		unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
 		String checksum = unetProcessor.getModelChecksum();
 

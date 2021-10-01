@@ -29,8 +29,8 @@ import java.util.function.Consumer;
 public class RecursiveComponentWatershedder<T extends Type<T>, C extends Component<T, C>> {
     private final OpService ops;
 
-    public RecursiveComponentWatershedder() {
-        ops = MoMA.ops;
+    public RecursiveComponentWatershedder(OpService ops) {
+        this.ops = ops;
     }
 
     /**

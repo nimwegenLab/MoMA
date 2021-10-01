@@ -47,7 +47,7 @@ public class ComponentPropertiesTest {
         assertEquals(2, currentImage.numDimensions());
 
         ImageJFunctions.show(currentImage);
-        ComponentForest<AdvancedComponent<FloatType>> tree = new ComponentTreeGenerator().buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = new ComponentTreeGenerator(ij.op()).buildIntensityTree(imageProviderMock, frameIndex);
 
         ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 

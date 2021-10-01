@@ -18,13 +18,15 @@ import net.imglib2.type.numeric.real.FloatType;
 public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<FloatType>> {
 
     private int frameIndex;
+    private ComponentTreeGenerator componentTreeGenerator;
 
     public int getFrameIndex() {
         return frameIndex;
     }
 
-    public GrowthlaneFrame(int frameIndex) {
+    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator) {
         this.frameIndex = frameIndex;
+        this.componentTreeGenerator = componentTreeGenerator;
     }
 
     /**
@@ -32,6 +34,6 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
      */
     @Override
     protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
-        return new ComponentTreeGenerator().buildIntensityTree(imageProvider, frameIndex);
+        return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex);
     }
 }

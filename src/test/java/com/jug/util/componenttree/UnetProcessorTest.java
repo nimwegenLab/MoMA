@@ -29,7 +29,7 @@ public class UnetProcessorTest {
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x531.tif"; // too thin, but high enough; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x444.tif"; // wide enough, but too low; UNet input-layer shape is: 32x512
         Img<FloatType> inputImage = readImageData(path);
-        Img<FloatType> processedImage = new UnetProcessor().process(inputImage);
+        Img<FloatType> processedImage = new UnetProcessor(ij.context()).process(inputImage);
         ImageJFunctions.show(inputImage, "Input image");
         ImageJFunctions.show(processedImage, "Processed image");
     }
@@ -42,7 +42,7 @@ public class UnetProcessorTest {
         String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
 //        String path = "/home/micha/Documents/01_work/git/MoMA/test_datasets/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         Img<FloatType> inputImage = readImageData(path);
-        Img<FloatType> processedImage = new UnetProcessor().process(inputImage);
+        Img<FloatType> processedImage = new UnetProcessor(ij.context()).process(inputImage);
         ImageJFunctions.show(inputImage, "Input image");
         ImageJFunctions.show(processedImage, "Processed image");
     }

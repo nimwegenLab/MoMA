@@ -243,9 +243,9 @@ public class GrowthlaneTrackingILP {
      */
     private void createHypsAndAssignments() throws GRBException {
 //		createSegmentationHypotheses( 0 );
-        for (int t = 1; t < gl.size(); t++) {
+        for (int t = 0; t < gl.size() - 1; t++) {
 //			createSegmentationHypotheses( t );
-            enumerateAndAddAssignments(t - 1);
+            enumerateAndAddAssignments(t);
         }
         // add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
         // in order have some right assignment for LP hypotheses variable substitution.

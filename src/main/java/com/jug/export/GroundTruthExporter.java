@@ -60,11 +60,8 @@ public class GroundTruthExporter {
 //            e.printStackTrace();
 //        }
 
-        /* ATTEMPT 4 */
-        RandomAccessibleInterval imgNew2 = Views.addDimension(imgResult, 0, 0 ); // XYTZ -> XYTZC
-        imgNew2 = Views.permute(imgNew2, 3, 4);
-        imgNew2 = Views.permute(imgNew2, 2, 3);
-        ImagePlus tmp_image = ImageJFunctions.wrap(imgNew2, "imgResults");
+//        /* ATTEMPT 4 */
+        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
         IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
     }
 
@@ -73,14 +70,15 @@ public class GroundTruthExporter {
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
         ArrayImgFactory<IntType> imgFactory = new ArrayImgFactory<>(new IntType());
-        return imgFactory.create(xDim, yDim, 2, nrOfFrames);
+        return imgFactory.create(xDim, yDim, 1, 2, nrOfFrames); /* channel order in an ImagePlus (which we use for storing), is: XYCZT; so those are the axes we generate here */
     }
 
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             while (segment.exists) {
-                IntervalView<IntType> channelSlice = Views.hyperSlice(imgResult, 2, 0);
-                IntervalView<IntType> slice = Views.hyperSlice(channelSlice, 2, segment.timestep);
+                IntervalView<IntType> slice = Views.hyperSlice(imgResult, 4, segment.timestep);
+                slice = Views.hyperSlice(slice, 3, 0);
+                slice = Views.hyperSlice(slice, 2, 0);
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
             }

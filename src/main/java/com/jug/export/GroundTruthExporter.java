@@ -4,9 +4,6 @@ import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
 import ij.IJ;
 import ij.ImagePlus;
-import io.scif.img.ImgSaver;
-import org.scijava.Context;
-import org.scijava.io.DefaultIOService;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -18,11 +15,9 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.scijava.io.IOPlugin;
-import org.scijava.io.location.FileLocation;
+import org.scijava.Context;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class GroundTruthExporter {
@@ -83,13 +78,12 @@ public class GroundTruthExporter {
 
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
-            do {
+            while (segment.exists) {
                 IntervalView<IntType> channelSlice = Views.hyperSlice(imgResult, 3, 0);
                 IntervalView<IntType> slice = Views.hyperSlice(channelSlice, 2, segment.timestep);
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
             }
-            while (segment.exists);
         }
     }
 

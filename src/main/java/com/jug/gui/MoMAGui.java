@@ -6,7 +6,7 @@ import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.CellStatsExporter;
-import com.jug.export.GroundTruthExporter;
+import com.jug.export.CellMaskExporter;
 import com.jug.export.HtmlOverviewExporter;
 import com.jug.export.ResultExporter;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
@@ -1086,7 +1086,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
-        final GroundTruthExporter groundTruthExporter = new GroundTruthExporter(MoMA.dic.getImglib2utils());
+        final CellMaskExporter groundTruthExporter = new CellMaskExporter(MoMA.dic.getImglib2utils());
         final ResultExporter resultExporter = new ResultExporter(cellStatsExporter, groundTruthExporter);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }

@@ -16,11 +16,16 @@ import net.imglib2.view.IntervalView;
 import java.io.File;
 import java.util.List;
 
-public class GroundTruthExporter {
+/**
+ * This class store the resulting cell masks to a TIFF stack with axes [XYZT]. The slices in Z are as follows:
+ * Z=0: cell masks at T in the intput image.
+ * Z=1: cell masks of the corresponding parents at T (which is a copy of the slice Z=0, T=T-1, for all T except T=0).
+ */
+public class CellMaskExporter {
     private final Imglib2Utils imglib2Utils;
     Img<IntType> imgResult;
 
-    public GroundTruthExporter(Imglib2Utils imglib2Utils) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
     }
 

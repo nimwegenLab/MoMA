@@ -8,9 +8,9 @@ import java.util.List;
 
 public class ResultExporter {
     private CellStatsExporter cellStatsExporter;
-    private GroundTruthExporter groundTruthExporter;
+    private CellMaskExporter groundTruthExporter;
 
-    public ResultExporter(CellStatsExporter cellStatsExporter, GroundTruthExporter groundTruthExporter) {
+    public ResultExporter(CellStatsExporter cellStatsExporter, CellMaskExporter groundTruthExporter) {
         this.cellStatsExporter = cellStatsExporter;
         this.groundTruthExporter = groundTruthExporter;
     }

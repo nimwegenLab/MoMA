@@ -300,16 +300,18 @@ public class GrowthlaneTrackingILP {
      *
      * @throws GRBException
      */
-    private void enumerateAndAddAssignments(final int timeStep) throws GRBException {
+    private void enumerateAndAddAssignments(final int sourcetimeStep) throws GRBException {
+        int targetTimeStep = sourcetimeStep + 1;
+        System.out.println("Creating mappings: " + sourcetimeStep + " -> " + targetTimeStep);
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(timeStep).getComponentTree();
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourcetimeStep).getComponentTree();
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(timeStep + 1).getComponentTree();
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentTree();
 
-        addMappingAssignments(timeStep, sourceComponentTree, targetComponentTree);
-        addDivisionAssignments(timeStep, sourceComponentTree, targetComponentTree);
-        addExitAssignments(timeStep, nodes.getHypothesesAt(timeStep));
-        addLysisAssignments(timeStep, nodes.getHypothesesAt(timeStep));
+        addMappingAssignments(sourcetimeStep, sourceComponentTree, targetComponentTree);
+        addDivisionAssignments(sourcetimeStep, sourceComponentTree, targetComponentTree);
+        addExitAssignments(sourcetimeStep, nodes.getHypothesesAt(sourcetimeStep));
+        addLysisAssignments(sourcetimeStep, nodes.getHypothesesAt(sourcetimeStep));
         this.reportProgress();
     }
 

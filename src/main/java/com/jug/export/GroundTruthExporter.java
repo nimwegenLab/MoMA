@@ -79,7 +79,7 @@ public class GroundTruthExporter {
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             while (segment.exists) {
-                IntervalView<IntType> channelSlice = Views.hyperSlice(imgResult, 3, 0);
+                IntervalView<IntType> channelSlice = Views.hyperSlice(imgResult, 2, 0);
                 IntervalView<IntType> slice = Views.hyperSlice(channelSlice, 2, segment.timestep);
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
@@ -108,7 +108,7 @@ public class GroundTruthExporter {
         int firstFrame = Integer.MAX_VALUE;
         int lastFrame = -1;
         for (SegmentRecord segment : cellTrackStartingPoints) {
-            do {
+            while (segment.exists) {
                 int timestep = segment.timestep;
                 if (timestep < firstFrame) {
                     firstFrame = timestep;
@@ -118,8 +118,7 @@ public class GroundTruthExporter {
                 }
                 segment = segment.nextSegmentInTime();
             }
-            while (segment.exists);
         }
-        return lastFrame - firstFrame;
+        return lastFrame + 1 - firstFrame;
     }
 }

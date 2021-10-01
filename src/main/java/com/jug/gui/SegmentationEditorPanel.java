@@ -24,11 +24,11 @@ import java.util.List;
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
     private final int timeStepOffset;
+    private final IImageProvider imageProvider;
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelectedForSettingIlpConstraints;
     JCheckBox checkboxIsSelectedForGtExport;
-    private final IImageProvider imageProvider;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -43,9 +43,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
-        if (showGroundTruthExportFunctionality) {
-            this.addCheckboxForSelectingGtExport(mmgui);
-        }
+        this.addCheckboxForSelectingGtExport(mmgui);
+        checkboxIsSelectedForGtExport.setVisible(showGroundTruthExportFunctionality);
         this.setAppearanceAndLayout();
     }
 

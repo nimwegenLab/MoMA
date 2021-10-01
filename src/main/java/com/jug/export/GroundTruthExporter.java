@@ -47,15 +47,15 @@ public class GroundTruthExporter {
 ////        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
 //        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
 
-        /* ATTEMPT 2 TO SAVE IMG TO DISK */
-        ImgSaver saver = new ImgSaver(context);
-        FileLocation imgName = new FileLocation(outputFile);
-        try {
-            saver.saveImg(imgName, imgResult);
-        }
-        catch (Exception exc) {
-            exc.printStackTrace();
-        }
+//        /* ATTEMPT 2 TO SAVE IMG TO DISK */
+//        ImgSaver saver = new ImgSaver(context);
+//        FileLocation imgName = new FileLocation(outputFile);
+//        try {
+//            saver.saveImg(imgName, imgResult);
+//        }
+//        catch (Exception exc) {
+//            exc.printStackTrace();
+//        }
 
         /* ATTEMPT 3 */
 //        IOPlugin<Img<IntType>> saver = new DefaultIOService().getSaver(imgResult, outputFile.getAbsolutePath());
@@ -64,6 +64,13 @@ public class GroundTruthExporter {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        /* ATTEMPT 4 */
+        RandomAccessibleInterval imgNew2 = Views.addDimension(imgResult, 0, 0 ); // XYTZ -> XYTZC
+        imgNew2 = Views.permute(imgNew2, 3, 4);
+        imgNew2 = Views.permute(imgNew2, 2, 3);
+        ImagePlus tmp_image = ImageJFunctions.wrap(imgNew2, "imgResults");
+        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {

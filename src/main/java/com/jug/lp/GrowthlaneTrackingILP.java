@@ -165,6 +165,8 @@ public class GrowthlaneTrackingILP {
             sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
             sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 
+            printIlpProperties();
+
             // UPDATE GUROBI-MODEL
             // - - - - - - - - - -
             model.update();
@@ -238,13 +240,19 @@ public class GrowthlaneTrackingILP {
 
     }
 
+    private void printIlpProperties() {
+        System.out.println("########### ILP PROPERTIES START ###########");
+        System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
+        System.out.println("########### ILP PROPERTIES END ###########");
+    }
+
     /**
      * @throws GRBException
      */
     private void createHypsAndAssignments() throws GRBException {
-        for (int t = 0; t < gl.size(); t++) {
-            createSegmentationHypotheses( t );
-        }
+//        for (int t = 0; t < gl.size(); t++) {
+//            createSegmentationHypotheses( t );
+//        }
 
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);
@@ -820,7 +828,6 @@ public class GrowthlaneTrackingILP {
             model.optimize();
             long endTime = System.currentTimeMillis();
             System.out.println("Optimization time: " + (endTime - startTime));
-            System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
             dialog.notifyGurobiTermination();
 
             // Relaxation run-test for Paul and Bogdan

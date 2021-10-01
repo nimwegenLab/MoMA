@@ -3,14 +3,11 @@ package com.jug.export;
 import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.imglib2.Imglib2Utils;
-import ij.IJ;
-import ij.ImagePlus;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -44,8 +41,8 @@ public class GroundTruthExporter {
     private void copySliceOfParentComponents() {
         int timeMax = (int) imgResult.dimension(4);
         for (int t = 1; t < timeMax; t++) {
-            IntervalView<IntType> sourceImage = getImageSlice(0, 0, t - 1);
-            IntervalView<IntType> targetImage = getImageSlice(0, 1, t);
+            IntervalView<IntType> sourceImage = imglib2Utils.getImageSlice(imgResult, 0, 0, t - 1);
+            IntervalView<IntType> targetImage = imglib2Utils.getImageSlice(imgResult, 0, 1, t);
             imglib2Utils.copyImage(sourceImage, targetImage);
         }
     }
@@ -75,8 +72,9 @@ public class GroundTruthExporter {
 //        }
 
 //        /* ATTEMPT 4 */
-        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
-        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+//        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
+//        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+        imglib2Utils.saveImage(imgResult, outputFile.getAbsolutePath());
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {
@@ -90,19 +88,11 @@ public class GroundTruthExporter {
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             while (segment.exists) {
-                IntervalView<IntType> slice = getImageSlice(0, 0, segment.timestep);
+                IntervalView<IntType> slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
                 drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
                 segment = segment.nextSegmentInTime();
             }
         }
-    }
-
-    @NotNull
-    private IntervalView<IntType> getImageSlice(int channel, int zSlice, int time) {
-        IntervalView<IntType> slice = Views.hyperSlice(imgResult, 4, time);
-        slice = Views.hyperSlice(slice, 3, zSlice);
-        slice = Views.hyperSlice(slice, 2, channel);
-        return slice;
     }
 
     private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,

@@ -260,7 +260,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private boolean currentTimeStepIsValid() {
-        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum() - 1; // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum();
         return !timeStepIsInvalid;
     }
 

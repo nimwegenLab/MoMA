@@ -14,7 +14,7 @@ public class MoMATest {
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
-        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
+//        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
 //        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
@@ -22,7 +22,7 @@ public class MoMATest {
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30(); /* nice example for lysing cells */
-//        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
+        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -163,8 +163,8 @@ public class MoMATest {
     public void _lysing_cell__thomas_20200922__Pos16_GL17() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL17.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
-        Integer tmin = 2;
-        Integer tmax = 20;
+        Integer tmin = 0;
+        Integer tmax = 480;
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }

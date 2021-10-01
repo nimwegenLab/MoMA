@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
@@ -25,6 +26,7 @@ public class PseudoDic {
     private final MixtureModelFit mixtureModelFit;
     private final ComponentTreeGenerator componentTreeGenerator;
     private final Imglib2Utils imglib2utils;
+    private final GroundTruthFramesExporter groundTruthFramesExporter;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
@@ -36,6 +38,7 @@ public class PseudoDic {
         imglib2utils = new Imglib2Utils(ops);
         componentProperties = new ComponentProperties(ops, imglib2utils);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
+        groundTruthFramesExporter = new GroundTruthFramesExporter();
     }
 
     public Context getSciJavaContext() { return context; }
@@ -69,4 +72,6 @@ public class PseudoDic {
     public ComponentTreeGenerator getComponentTreeGenerator() { return componentTreeGenerator; }
 
     public Imglib2Utils getImglib2utils() { return imglib2utils; }
+
+    public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
 }

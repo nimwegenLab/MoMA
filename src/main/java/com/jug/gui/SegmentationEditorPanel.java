@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.GroundTruthFramesExporter;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -24,6 +25,7 @@ import java.util.List;
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
     private final int timeStepOffset;
+    private GroundTruthFramesExporter groundTruthFramesExporter;
     private final IImageProvider imageProvider;
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
@@ -33,10 +35,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private JLabel labelTitle;
     private JButton showSegmentsButton;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter) {
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
+        this.groundTruthFramesExporter = groundTruthFramesExporter;
         growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
@@ -191,7 +194,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
         checkboxIsSelectedForGtExport = new JCheckBox();
-        checkboxIsSelectedForGtExport.addActionListener(mmgui);
+        checkboxIsSelectedForGtExport.addActionListener((x)->{
+            if(checkboxIsSelectedForGtExport.isSelected()){
+                groundTruthFramesExporter.addFrame(timeStepToDisplay());
+            }
+            else{
+                groundTruthFramesExporter.removeFrame(timeStepToDisplay());
+            }
+        });
         checkboxIsSelectedForGtExport.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedForGtExport);
     }

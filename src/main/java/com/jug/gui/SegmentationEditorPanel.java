@@ -30,7 +30,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
     JCheckBox checkboxIsSelectedForSettingIlpConstraints;
-    JCheckBox checkboxIsSelectedForGtExport;
+    JCheckBox checkboxIsSelectedAsGroundTruth;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -47,7 +47,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
         this.addCheckboxForSelectingGtExport(mmgui);
-        checkboxIsSelectedForGtExport.setVisible(showGroundTruthExportFunctionality);
+        checkboxIsSelectedAsGroundTruth.setVisible(showGroundTruthExportFunctionality);
         this.setAppearanceAndLayout();
     }
 
@@ -161,12 +161,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void updateGroundTruthSelectionCheckbox() {
-        checkboxIsSelectedForGtExport.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelectedAsGroundTruth.setEnabled(currentTimeStepIsValid());
         if (groundTruthFramesExporter.containsFrame(timeStepToDisplay())){
-            checkboxIsSelectedForGtExport.setSelected(true);
+            checkboxIsSelectedAsGroundTruth.setSelected(true);
         }
         else{
-            checkboxIsSelectedForGtExport.setSelected(false);
+            checkboxIsSelectedAsGroundTruth.setSelected(false);
         }
     }
 
@@ -202,9 +202,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
-        checkboxIsSelectedForGtExport = new JCheckBox();
-        checkboxIsSelectedForGtExport.addActionListener((x)->{
-            if(checkboxIsSelectedForGtExport.isSelected()){
+        checkboxIsSelectedAsGroundTruth = new JCheckBox();
+        checkboxIsSelectedAsGroundTruth.addActionListener((x)->{
+            if(checkboxIsSelectedAsGroundTruth.isSelected()){
                 groundTruthFramesExporter.addFrame(timeStepToDisplay());
             }
             else{
@@ -212,8 +212,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             }
             mmgui.sliderTime.requestFocus();
         });
-        checkboxIsSelectedForGtExport.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.add(checkboxIsSelectedForGtExport);
+        checkboxIsSelectedAsGroundTruth.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelectedAsGroundTruth);
     }
 
     public boolean isSelectedForSettingIlpConstraints() {

@@ -34,6 +34,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
+    private Color groundTruthCheckboxDefaultColor;
 
     public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter) {
         this.momaModel = momaModel;
@@ -117,7 +118,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         return "NA";
     }
 
-    private void updateTitleLable() {
+    private void updateTitleLabel() {
         labelTitle.setText(getTitleLabel());
     }
 
@@ -183,9 +184,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         checkboxIsSelectedAsGroundTruth.setEnabled(currentTimeStepIsValid());
         if (groundTruthFramesExporter.containsFrame(timeStepToDisplay())){
             checkboxIsSelectedAsGroundTruth.setSelected(true);
+            checkboxIsSelectedAsGroundTruth.setBackground(Color.GREEN);
         }
         else{
             checkboxIsSelectedAsGroundTruth.setSelected(false);
+            checkboxIsSelectedAsGroundTruth.setBackground(groundTruthCheckboxDefaultColor);
         }
     }
 
@@ -222,6 +225,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
         checkboxIsSelectedAsGroundTruth = new JCheckBox();
+        groundTruthCheckboxDefaultColor = checkboxIsSelectedAsGroundTruth.getBackground();
         checkboxIsSelectedAsGroundTruth.addActionListener((x)->{
             if(checkboxIsSelectedAsGroundTruth.isSelected()){
                 groundTruthFramesExporter.addFrame(timeStepToDisplay());
@@ -244,11 +248,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     public void display() {
-        updateTitleLable();
+        updateTitleLabel();
         updateCellNumberInputField();
         updateSelectionCheckboxes();
-        updateShowSegmentsButton();
         updateGroundTruthSelectionCheckbox();
+        updateShowSegmentsButton();
 
         if (!currentTimeStepIsValid()) {
             growthlaneViewer.setEmptyScreenImage();

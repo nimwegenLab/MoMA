@@ -5,10 +5,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
-import com.jug.export.CellMaskExporter;
-import com.jug.export.CellStatsExporter;
-import com.jug.export.HtmlOverviewExporter;
-import com.jug.export.ResultExporter;
+import com.jug.export.*;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
@@ -37,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -1115,7 +1113,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
         final CellMaskExporter groundTruthExporter = new CellMaskExporter(MoMA.dic.getImglib2utils());
-        final ResultExporter resultExporter = new ResultExporter(cellStatsExporter, groundTruthExporter, MoMA.dic.getGroundTruthFramesExporter());
+
+        List<ResultExporterInterface> exporters;
+        if (showGroundTruthExportFunctionality) {
+            exporters = Arrays.asList(cellStatsExporter, groundTruthExporter, MoMA.dic.getGroundTruthFramesExporter());
+        } else {
+            exporters = Arrays.asList(cellStatsExporter, groundTruthExporter);
+        }
+
+        final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }
 

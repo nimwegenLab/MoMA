@@ -6,7 +6,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GroundTruthFramesExporter {
+public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfTimeSteps;
 
     public GroundTruthFramesExporter() {

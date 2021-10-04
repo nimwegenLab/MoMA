@@ -10,8 +10,10 @@ public class ResultExporter {
     private CellStatsExporter cellStatsExporter;
     private CellMaskExporter groundTruthExporter;
     private GroundTruthFramesExporter groundTruthFramesExporter;
+    private List<ResultExporterInterface> exporters;
 
-    public ResultExporter(CellStatsExporter cellStatsExporter, CellMaskExporter groundTruthExporter, GroundTruthFramesExporter groundTruthFramesExporter) {
+    public ResultExporter(List<ResultExporterInterface> exporters) {
+        this.exporters = exporters;
         this.cellStatsExporter = cellStatsExporter;
         this.groundTruthExporter = groundTruthExporter;
         this.groundTruthFramesExporter = groundTruthFramesExporter;
@@ -20,9 +22,9 @@ public class ResultExporter {
     public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {
         try {
             List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
-            cellStatsExporter.export(outputFolder, cellTrackStartingPoints);
-            groundTruthExporter.export(outputFolder, cellTrackStartingPoints);
-            groundTruthFramesExporter.export(outputFolder, cellTrackStartingPoints);
+            for(ResultExporterInterface exporter: exporters){
+                exporter.export(outputFolder, cellTrackStartingPoints);
+            }
         } catch (GRBException e) {
             e.printStackTrace();
         }

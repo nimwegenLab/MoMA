@@ -21,7 +21,7 @@ import java.util.List;
  * Z=0: cell masks at T in the intput image.
  * Z=1: cell masks of the corresponding parents at T (which is a copy of the slice Z=0, T=T-1, for all T except T=0).
  */
-public class CellMaskExporter {
+public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
     Img<IntType> imgResult;
 

@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 /**
  * @author jug
  */
-public class CellStatsExporter {
+public class CellStatsExporter implements ResultExporterInterface {
 
     private final MoMAGui gui;
     private final IImageProvider imageProvider;

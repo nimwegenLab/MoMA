@@ -22,6 +22,10 @@ public class GroundTruthFramesExporter {
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) { /* Note: the unused argument cellTrackStartingPoints is to maintain signature compatibility with other exporters */
+        if (listOfTimeSteps.isEmpty()) {
+            return;
+        }
+
         listOfTimeSteps.sort((x, y) -> {
             if (x > y) {
                 return 1;

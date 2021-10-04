@@ -9,10 +9,12 @@ import java.util.List;
 public class ResultExporter {
     private CellStatsExporter cellStatsExporter;
     private CellMaskExporter groundTruthExporter;
+    private GroundTruthFramesExporter groundTruthFramesExporter;
 
-    public ResultExporter(CellStatsExporter cellStatsExporter, CellMaskExporter groundTruthExporter) {
+    public ResultExporter(CellStatsExporter cellStatsExporter, CellMaskExporter groundTruthExporter, GroundTruthFramesExporter groundTruthFramesExporter) {
         this.cellStatsExporter = cellStatsExporter;
         this.groundTruthExporter = groundTruthExporter;
+        this.groundTruthFramesExporter = groundTruthFramesExporter;
     }
 
     public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {
@@ -20,6 +22,7 @@ public class ResultExporter {
             List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
             cellStatsExporter.export(outputFolder, cellTrackStartingPoints);
             groundTruthExporter.export(outputFolder, cellTrackStartingPoints);
+            groundTruthFramesExporter.export(outputFolder, cellTrackStartingPoints);
         } catch (GRBException e) {
             e.printStackTrace();
         }

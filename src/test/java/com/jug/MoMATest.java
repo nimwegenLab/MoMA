@@ -165,7 +165,7 @@ public class MoMATest {
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
         Integer tmin = 0;
         Integer tmax = 480;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true);
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }
 

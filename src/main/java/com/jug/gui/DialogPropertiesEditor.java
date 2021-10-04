@@ -100,14 +100,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
-                    case "MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES": {
+                    case "MAXIMUM_GROWTH_RATE": {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES,
-                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES),
+                                () -> newValue != ConfigurationManager.MAXIMUM_GROWTH_RATE,
+                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_GROWTH_RATE),
                                 () -> {
-                                    ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES = newValue;
+                                    ConfigurationManager.MAXIMUM_GROWTH_RATE = newValue;
                                     assignmentPlausibilityTester.setMaximumRelativeSizeChangeBetweenFrames(newValue);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
@@ -204,7 +204,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setEditable(true);
                     break;
                 case "GL_OFFSET_TOP":
-                case "SHORTEST_DOUBLING_TIME_IN_FRAMES":
+                case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);
                     property.setEditable(true);

@@ -34,7 +34,7 @@ public class PseudoDic {
         componentTreeGenerator = new ComponentTreeGenerator(ops);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_RELATIVE_SIZE_CHANGE_BETWEEN_FRAMES);
+        assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_GROWTH_RATE);
         imglib2utils = new Imglib2Utils(ops);
         componentProperties = new ComponentProperties(ops, imglib2utils);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());

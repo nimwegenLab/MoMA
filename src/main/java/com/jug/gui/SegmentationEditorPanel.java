@@ -29,8 +29,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final IImageProvider imageProvider;
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
-    JCheckBox checkboxIsSelectedForSettingIlpConstraints;
-    JCheckBox checkboxIsSelectedAsGroundTruth;
+    private JCheckBox checkboxIsSelectedForSettingIlpConstraints;
+    private JCheckBox checkboxIsSelectedAsGroundTruth;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
@@ -158,6 +158,18 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void updateSelectionCheckboxes() {
         checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
+    }
+
+    public void toggleGroundTruthSelectionCheckbox() {
+        boolean isAlreadySelected = groundTruthFramesExporter.containsFrame(timeStepToDisplay());
+        if(isAlreadySelected){
+            checkboxIsSelectedAsGroundTruth.setSelected(false);
+            groundTruthFramesExporter.removeFrame(timeStepToDisplay());
+        }
+        else{
+            checkboxIsSelectedAsGroundTruth.setSelected(true);
+            groundTruthFramesExporter.addFrame(timeStepToDisplay());
+        }
     }
 
     private void updateGroundTruthSelectionCheckbox() {

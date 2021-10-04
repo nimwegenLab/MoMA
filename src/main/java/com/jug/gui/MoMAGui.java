@@ -5,8 +5,8 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
-import com.jug.export.CellStatsExporter;
 import com.jug.export.CellMaskExporter;
+import com.jug.export.CellStatsExporter;
 import com.jug.export.HtmlOverviewExporter;
 import com.jug.export.ResultExporter;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
@@ -287,6 +287,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         //  KEYSTROKE SETUP (usingInput- and ActionMaps)
         // - - - - - - - - - - - - - - - - - - - - - - - -
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
+        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0), "SPACE");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
@@ -317,6 +318,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             @Override
             public void actionPerformed(final ActionEvent e) {
                 sliderTime.requestFocus();
+            }
+        });
+
+        this.getActionMap().put("SPACE", new AbstractAction() {
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+                dataToDisplayChanged();
             }
         });
 
@@ -766,7 +777,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         if (e.getSource().equals(sliderTime)) {
-            updateCenteredTimeStep();
+             updateCenteredTimeStep();
         }
 
         if (e.getSource().equals(sliderTrackingRange)) {
@@ -777,6 +788,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         dataToDisplayChanged();
         this.repaint();
+
+//        if (e.getSource().equals(sliderTime)) {
+//            segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+//        }
+
         focusOnSliderTime();
     }
 

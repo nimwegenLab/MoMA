@@ -158,7 +158,16 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void updateSelectionCheckboxes() {
         checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
+    }
+
+    private void updateGroundTruthSelectionCheckbox() {
         checkboxIsSelectedForGtExport.setEnabled(currentTimeStepIsValid());
+        if (groundTruthFramesExporter.containsFrame(timeStepToDisplay())){
+            checkboxIsSelectedForGtExport.setSelected(true);
+        }
+        else{
+            checkboxIsSelectedForGtExport.setSelected(false);
+        }
     }
 
     private void updateCellNumberInputField() {
@@ -201,6 +210,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             else{
                 groundTruthFramesExporter.removeFrame(timeStepToDisplay());
             }
+            mmgui.sliderTime.requestFocus();
         });
         checkboxIsSelectedForGtExport.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedForGtExport);
@@ -219,6 +229,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         updateCellNumberInputField();
         updateSelectionCheckboxes();
         updateShowSegmentsButton();
+        updateGroundTruthSelectionCheckbox();
 
         if (!currentTimeStepIsValid()) {
             growthlaneViewer.setEmptyScreenImage();

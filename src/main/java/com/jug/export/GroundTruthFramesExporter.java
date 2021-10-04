@@ -22,6 +22,15 @@ public class GroundTruthFramesExporter {
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) { /* Note: the unused argument cellTrackStartingPoints is to maintain signature compatibility with other exporters */
+        listOfTimeSteps.sort((x, y) -> {
+            if (x > y) {
+                return 1;
+            } else if (x < y) {
+                return -1;
+            } else {
+                return 0;
+            }
+        });
         ResultTable resultTable = new ResultTable(",");
         ResultTableColumn<Integer> timeStepColumn = resultTable.addColumn(new ResultTableColumn<>("time_step"));
 
@@ -40,5 +49,9 @@ public class GroundTruthFramesExporter {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean containsFrame(int timeStepToDisplay) {
+        return listOfTimeSteps.contains(timeStepToDisplay);
     }
 }

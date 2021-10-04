@@ -34,7 +34,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private final RandomAccessibleInterval<T> sourceImage;
     private final Img<IntType> img;
     Integer label = 1;
-    private IComponentTester<T, C> tester;
+    private final IComponentTester<T, C> tester;
 
 
     public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
@@ -60,7 +60,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         }
     }
 
-    private void sortRootNodes(){
+    private void sortRootNodes() {
         ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
         roots.sort(positionComparator);
     }
@@ -132,6 +132,8 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         return roots;
     }
 
-    public List<AdvancedComponent<T>> getAllComponents(){ return nodes; }
+    public List<AdvancedComponent<T>> getAllComponents() {
+        return nodes;
+    }
 }
 

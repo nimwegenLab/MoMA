@@ -1,80 +1,74 @@
 package com.jug.lp;
 
-import com.jug.MoMA;
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
-import gurobi.GRB;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
-import gurobi.GRBLinExpr;
 import gurobi.GRBVar;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author jug
  */
-@SuppressWarnings( "restriction" )
-public class LysisAssignment extends AbstractAssignment< Hypothesis< Component< FloatType, ? > > > {
+@SuppressWarnings("restriction")
+public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
-    private final HypothesisNeighborhoods< Hypothesis< Component< FloatType, ? > >, AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > edges;
-	private final Hypothesis< Component< FloatType, ? >> who;
+    private static final int dcId = 0;
+    private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
+    private final Hypothesis<AdvancedComponent<FloatType>> who;
 
-	private static int dcId = 0;
-
-	/**
-	 * Creates an ExitAssignment.
-	 *
-	 * @param nodes
-	 * @param edges
-	 * @param who
+    /**
+     * Creates an ExitAssignment.
+     *
+     * @param nodes
+     * @param edges
+     * @param who
      */
-	public LysisAssignment(final GRBVar ilpVariable, final GrowthLineTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>, Hypothesis<Component<FloatType, ?>>> nodes, final HypothesisNeighborhoods<Hypothesis<Component<FloatType, ?>>, AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> edges, final Hypothesis<Component<FloatType, ?>> who) {
-		super( GrowthLineTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp );
-		this.edges = edges;
+    public LysisAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> who) {
+        super(GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp);
+        this.edges = edges;
         this.who = who;
-	}
+    }
 
-	/**
-	 * This method is void. Lysis assignments do not come with assignment
-	 * specific constrains...
-	 *
-	 */
-	@Override
-	public void addConstraintsToILP() throws GRBException { }
+    /**
+     * This method is void. Lysis assignments do not come with assignment
+     * specific constrains...
+     */
+    @Override
+    public void addConstraintsToILP() throws GRBException {
+    }
 
-	/**
-	 * @see AbstractAssignment#getConstraintsToSave_PASCAL()
-	 */
-	@Override
-	public List< String > getConstraintsToSave_PASCAL() {
-		return null;
-	}
+    /**
+     * @see AbstractAssignment#getConstraintsToSave_PASCAL()
+     */
+    @Override
+    public List<String> getConstraintsToSave_PASCAL() {
+        return null;
+    }
 
-	/**
-	 * Adds a list of constraints and factors as strings.
-	 *
-	 */
-	@Override
-	public void addFunctionsAndFactors( final FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds ) {
-	}
+    /**
+     * Adds a list of constraints and factors as strings.
+     */
+    @Override
+    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
+    }
 
-	/**
-	 * Returns the segmentation hypothesis this exit-assignment is associated
-	 * with.
-	 *
-	 * @return the associated segmentation-hypothesis.
-	 */
-	public Hypothesis< Component< FloatType, ? >> getAssociatedHypothesis() {
-		return who;
-	}
+    /**
+     * Returns the segmentation hypothesis this exit-assignment is associated
+     * with.
+     *
+     * @return the associated segmentation-hypothesis.
+     */
+    public Hypothesis<AdvancedComponent<FloatType>> getAssociatedHypothesis() {
+        return who;
+    }
 
-	/**
-	 * @see AbstractAssignment#getId()
-	 */
-	@Override
-	public int getId() {
-		return who.getId() + GrowthLineTrackingILP.ASSIGNMENT_LYSIS;
-	}
+    /**
+     * @see AbstractAssignment#getId()
+     */
+    @Override
+    public int getId() {
+        return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
+    }
 }

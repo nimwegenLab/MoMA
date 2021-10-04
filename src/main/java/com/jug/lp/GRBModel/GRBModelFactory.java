@@ -20,7 +20,7 @@ public class GRBModelFactory {
             try {
                 env = new GRBEnv("MotherMachineILPs.log");
             } catch (final GRBException e) {
-                System.out.println("GrowthLineTrackingILP::env could not be initialized!");
+                System.out.println("GrowthlaneTrackingILP::env could not be initialized!");
                 e.printStackTrace();
             }
         }
@@ -28,7 +28,7 @@ public class GRBModelFactory {
         try {
             model = new GRBModelAdapter(env);
         } catch (final GRBException e) {
-            System.out.println("GrowthLineTrackingILP::model could not be initialized!");
+            System.out.println("GrowthlaneTrackingILP::model could not be initialized!");
             e.printStackTrace();
         }
 

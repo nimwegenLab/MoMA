@@ -6,19 +6,19 @@ import java.util.List;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelFactory;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 
 /**
  * @author jug
  */
-public class GrowthLine {
+public class Growthlane {
 
 	// -------------------------------------------------------------------------------------
 	// fields
 	// -------------------------------------------------------------------------------------
-	private final List< GrowthLineFrame > frames;
-	private GrowthLineTrackingILP ilp; //<
+	private final List<GrowthlaneFrame> frames;
+	private GrowthlaneTrackingILP ilp; //<
 	private IImageProvider imageProvider;
 
 	// Hypothesis< Component< FloatType, ? > >,
@@ -30,21 +30,21 @@ public class GrowthLine {
 	/**
 	 * @return the frames
 	 */
-	public List< GrowthLineFrame > getFrames() {
+	public List<GrowthlaneFrame> getFrames() {
 		return frames;
 	}
 
 	/**
 	 * @return the ILP
 	 */
-	public GrowthLineTrackingILP getIlp() {
+	public GrowthlaneTrackingILP getIlp() {
 		return ilp;
 	}
 
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public GrowthLine(IImageProvider imageProvider) {
+	public Growthlane(IImageProvider imageProvider) {
 		this.imageProvider = imageProvider;
 		this.frames = new ArrayList<>();
 	}
@@ -53,7 +53,7 @@ public class GrowthLine {
 	// methods
 	// -------------------------------------------------------------------------------------
 	/**
-	 * @return the number of frames (time-steps) in this <code>GrowthLine</code>
+	 * @return the number of frames (time-steps) in this <code>Growthlane</code>
 	 */
 	public int size() {
 		return frames.size();
@@ -61,9 +61,9 @@ public class GrowthLine {
 
 	/**
 	 * @param frame
-	 *            the GrowthLineFrame to be appended as last frame
+	 *            the GrowthlaneFrame to be appended as last frame
      */
-	public void add(final GrowthLineFrame frame ) {
+	public void add(final GrowthlaneFrame frame ) {
 		frame.setParent( this );
         frames.add(frame);
     }
@@ -71,7 +71,7 @@ public class GrowthLine {
 	/**
 	 * @return
 	 */
-	public GrowthLineFrame get(final int i) {
+	public GrowthlaneFrame get(final int i) {
 		try {
 			return this.getFrames().get(i);
 		} catch (IndexOutOfBoundsException err) {
@@ -88,7 +88,7 @@ public class GrowthLine {
 		}
 
 		GRBModelAdapter model = GRBModelFactory.getModel();
-		ilp = new GrowthLineTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester() );
+		ilp = new GrowthlaneTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester() );
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

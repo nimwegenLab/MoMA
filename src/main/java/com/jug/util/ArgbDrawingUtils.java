@@ -1,16 +1,15 @@
 package com.jug.util;
 
 import com.jug.lp.Hypothesis;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -22,17 +21,17 @@ public class ArgbDrawingUtils {
      * Draws the optimal segmentation (determined by the solved ILP) into {@param imgSource}
      * using the pixel values in {@param imgDestination} as source.
      *
-     * @param imgDestination  image to draw calculated overlay pixel values to
-     * @param imgSource       pixel value source
-     * @param segments a <code>List</code> of the hypotheses containing
-     *                        component-tree-nodes that represent the optimal segmentation
-     *                        (the one returned by the solution to the ILP)
+     * @param imgDestination image to draw calculated overlay pixel values to
+     * @param imgSource      pixel value source
+     * @param segments       a <code>List</code> of the hypotheses containing
+     *                       component-tree-nodes that represent the optimal segmentation
+     *                       (the one returned by the solution to the ILP)
      */
-    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<Component<FloatType, ?>>> segments) {
+    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<AdvancedComponent<FloatType>>> segments) {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
-        for (final Hypothesis<Component<FloatType, ?>> hypothesis : segments) {
-            final Component<FloatType, ?> component = hypothesis.getWrappedComponent();
+        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
+            final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
@@ -44,7 +43,7 @@ public class ArgbDrawingUtils {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
             }
             drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
-            if(!hypothesis.labels.isEmpty()){
+            if (!hypothesis.labels.isEmpty()) {
                 drawLabelingMarker(component, targetImage, offsetX, offsetY);
             }
         }
@@ -60,7 +59,7 @@ public class ArgbDrawingUtils {
      *                        component-tree-nodes that represent the optimal segmentation
      *                        (the one returned by the solution to the ILP)
      */
-    public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Component<FloatType, ?> optionalSegment) {
+    public static void drawOptionalSegmentation(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final AdvancedComponent<FloatType> optionalSegment) {
         final RandomAccess<ARGBType> raAnnotationImg = imgDestination.randomAccess();
         final RandomAccess<ARGBType> raUnaltered = imgSource.randomAccess();
         Function<Integer, ARGBType> pixelColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight optional component in blue */
@@ -83,7 +82,7 @@ public class ArgbDrawingUtils {
      *                             grayscale value
      */
     @SuppressWarnings("unchecked")
-    private static void drawSegmentColorOverlay(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final RandomAccess<ARGBType> ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator) {
+    private static void drawSegmentColorOverlay(final AdvancedComponent<FloatType> component, final RandomAccess<ARGBType> ArgbImageTarget, final RandomAccess<ARGBType> ArgbImageSource, final long offsetX, final long offsetY, Function<Integer, ARGBType> pixelColorCalculator) {
         Iterator<Localizable> componentIterator = component.iterator();
         while (componentIterator.hasNext()) {
             Localizable position = componentIterator.next();
@@ -104,18 +103,18 @@ public class ArgbDrawingUtils {
      * component pixels in {@param ArgbImageTarget} is calculated by applying
      * {@param pixelColorCalculator} to the pixel values in {@param ArgbImageTarget}.
      *
-     * @param component            component to draw to image
-     * @param ArgbImageTarget      image to draw the overlay pixel values to
-     * @param offsetX              x-offset
-     * @param offsetY              y-offset
+     * @param component       component to draw to image
+     * @param ArgbImageTarget image to draw the overlay pixel values to
+     * @param offsetX         x-offset
+     * @param offsetY         y-offset
      */
     @SuppressWarnings("unchecked")
-    private static void drawLabelingMarker(final Component<FloatType, ?> component, final RandomAccess<ARGBType> ArgbImageTarget, final long offsetX, final long offsetY) {
+    private static void drawLabelingMarker(final AdvancedComponent<FloatType> component, final RandomAccess<ARGBType> ArgbImageTarget, final long offsetX, final long offsetY) {
         long[] centerPixelPos = calculateCenterOfMass(component.iterator());
 
-        for(long x=-2; x<3; x++){
-            for (long y=-2; y<3; y++){
-                long[] currentPos = new long[] {centerPixelPos[0]+x+offsetX, centerPixelPos[1]+y+offsetY};
+        for (long x = -2; x < 3; x++) {
+            for (long y = -2; y < 3; y++) {
+                long[] currentPos = new long[]{centerPixelPos[0] + x + offsetX, centerPixelPos[1] + y + offsetY};
                 ArgbImageTarget.setPosition(currentPos);
                 ArgbImageTarget.get().set(ARGBType.blue(255));
             }

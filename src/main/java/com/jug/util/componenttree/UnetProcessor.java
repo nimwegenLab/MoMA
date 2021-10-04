@@ -30,15 +30,11 @@ import java.util.concurrent.ExecutionException;
 public class UnetProcessor {
     private String modelFile = "";
     private long model_input_width;
-    private OpService ops;
-    private final Context context;
     private final CommandService commandService;
     private final DatasetService datasetService;
 
-    public UnetProcessor(){
+    public UnetProcessor(Context context){
         model_input_width = 32;  // TODO-MM-20210723: This should be a user-parameter under in the segmentation section of the config editor.
-        context = MoMA.context;
-        ops = MoMA.ops;
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
     }

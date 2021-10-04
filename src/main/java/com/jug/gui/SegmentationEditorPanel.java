@@ -1,11 +1,12 @@
 package com.jug.gui;
 
-import com.jug.GrowthLineFrame;
-import com.jug.MoMA;
+import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.export.GroundTruthFramesExporter;
+import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.converter.RealFloatNormalizeConverter;
 import com.moma.auxiliary.Plotting;
 import gurobi.GRBException;
@@ -23,24 +24,33 @@ import java.util.List;
 
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
-    private IImageProvider imageProvider;
     private final int timeStepOffset;
+    private GroundTruthFramesExporter groundTruthFramesExporter;
+    private final IImageProvider imageProvider;
+    public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
-    JCheckBox checkboxIsSelected;
+    private JCheckBox checkboxIsSelectedForSettingIlpConstraints;
+    private JCheckBox checkboxIsSelectedAsGroundTruth;
     private JTextField txtNumCells;
     private JLabel labelTitle;
     private JButton showSegmentsButton;
+    private Color groundTruthCheckboxDefaultColor;
+    private MoMAGui mmgui;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter) {
+        this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
+        this.groundTruthFramesExporter = groundTruthFramesExporter;
         growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
-        this.addSelectionCheckbox(mmgui);
+        this.addCheckboxForSettingIlpConstraints(mmgui);
         this.addCellNumberInputField(mmgui);
         this.addShowSegmentsButton();
+        this.addCheckboxForSelectingGtExport(mmgui);
+        checkboxIsSelectedAsGroundTruth.setVisible(showGroundTruthExportFunctionality);
         this.setAppearanceAndLayout();
     }
 
@@ -50,7 +60,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         showSegmentsButton.addActionListener(e -> {
             ShowComponentsOfCurrentTimeStep();
         });
-        showSegmentsButton.setMargin(new Insets(0,0,0,0));
+        showSegmentsButton.setMargin(new Insets(0, 0, 0, 0));
         this.add(showSegmentsButton);
     }
 
@@ -66,13 +76,13 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * Show a stack of the components of the current time step in a separate window.
      */
     private void ShowComponentsOfCurrentTimeStep() {
-        List<net.imglib2.algorithm.componenttree.Component<FloatType, ?>> optimalSegs = new ArrayList<>();
+        List<AdvancedComponent<FloatType>> optimalSegs = new ArrayList<>();
         int timeStep = timeStepToDisplay();
-        GrowthLineFrame glf = momaModel.getGlfAtTimeStep(timeStep);
+        GrowthlaneFrame glf = momaModel.getGlfAtTimeStep(timeStep);
         if (glf == null) {
             return; /* this method was called at an invalid time-step so there is no component-tree; do nothing */
         }
-        GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
@@ -110,7 +120,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         return "NA";
     }
 
-    private void updateTitleLable() {
+    private void updateTitleLabel() {
         labelTitle.setText(getTitleLabel());
     }
 
@@ -122,7 +132,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             momaModel.getCurrentGL().getIlp().autosave();
 
             int numCells;
-            final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+            final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
             try {
                 numCells = Integer.parseInt(txtNumCells.getText());
             } catch (final NumberFormatException nfe) {
@@ -149,8 +159,41 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.add(txtNumCells);
     }
 
-    private void updateSelectionCheckbox() {
-        checkboxIsSelected.setEnabled(currentTimeStepIsValid());
+    private void updateSelectionCheckboxes() {
+        checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
+    }
+
+    public void toggleGroundTruthSelectionCheckbox() {
+        boolean isAlreadySelected = groundTruthFramesExporter.containsFrame(timeStepToDisplay());
+        if (isAlreadySelected) {
+            unselectGroundTruthSelectionCheckbox();
+        } else {
+            selectGroundTruthSelectionCheckbox();
+        }
+    }
+
+    public void selectGroundTruthSelectionCheckbox() {
+        checkboxIsSelectedAsGroundTruth.setSelected(true);
+        groundTruthFramesExporter.addFrame(timeStepToDisplay());
+        mmgui.dataToDisplayChanged();
+    }
+
+    public void unselectGroundTruthSelectionCheckbox() {
+        checkboxIsSelectedAsGroundTruth.setSelected(false);
+        groundTruthFramesExporter.removeFrame(timeStepToDisplay());
+        mmgui.dataToDisplayChanged();
+    }
+
+    private void updateGroundTruthSelectionCheckbox() {
+        checkboxIsSelectedAsGroundTruth.setEnabled(currentTimeStepIsValid());
+        if (groundTruthFramesExporter.containsFrame(timeStepToDisplay())){
+            checkboxIsSelectedAsGroundTruth.setSelected(true);
+            checkboxIsSelectedAsGroundTruth.setBackground(Color.GREEN);
+        }
+        else{
+            checkboxIsSelectedAsGroundTruth.setSelected(false);
+            checkboxIsSelectedAsGroundTruth.setBackground(groundTruthCheckboxDefaultColor);
+        }
     }
 
     private void updateCellNumberInputField() {
@@ -177,15 +220,31 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         }
     }
 
-    private void addSelectionCheckbox(MoMAGui mmgui) {
-        checkboxIsSelected = new JCheckBox();
-        checkboxIsSelected.addActionListener(mmgui);
-        checkboxIsSelected.setAlignmentX(Component.CENTER_ALIGNMENT);
-        this.add(checkboxIsSelected);
+    private void addCheckboxForSettingIlpConstraints(MoMAGui mmgui) {
+        checkboxIsSelectedForSettingIlpConstraints = new JCheckBox();
+        checkboxIsSelectedForSettingIlpConstraints.addActionListener(mmgui);
+        checkboxIsSelectedForSettingIlpConstraints.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelectedForSettingIlpConstraints);
     }
 
-    public boolean isSelected() {
-        return checkboxIsSelected.isSelected();
+    private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
+        checkboxIsSelectedAsGroundTruth = new JCheckBox();
+        groundTruthCheckboxDefaultColor = checkboxIsSelectedAsGroundTruth.getBackground();
+        checkboxIsSelectedAsGroundTruth.addActionListener((x)->{
+            if(checkboxIsSelectedAsGroundTruth.isSelected()){
+                selectGroundTruthSelectionCheckbox();
+            }
+            else{
+                unselectGroundTruthSelectionCheckbox();
+            }
+            mmgui.sliderTime.requestFocus();
+        });
+        checkboxIsSelectedAsGroundTruth.setAlignmentX(Component.CENTER_ALIGNMENT);
+        this.add(checkboxIsSelectedAsGroundTruth);
+    }
+
+    public boolean isSelectedForSettingIlpConstraints() {
+        return checkboxIsSelectedForSettingIlpConstraints.isSelected();
     }
 
     private int timeStepToDisplay() {
@@ -193,16 +252,17 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     public void display() {
-        updateTitleLable();
+        updateTitleLabel();
         updateCellNumberInputField();
-        updateSelectionCheckbox();
+        updateSelectionCheckboxes();
+        updateGroundTruthSelectionCheckbox();
         updateShowSegmentsButton();
 
         if (!currentTimeStepIsValid()) {
             growthlaneViewer.setEmptyScreenImage();
             return;
         }
-        GrowthLineFrame glf = momaModel.getGrowthLineFrame(timeStepToDisplay());
+        GrowthlaneFrame glf = momaModel.getGrowthlaneFrame(timeStepToDisplay());
         IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
     }
@@ -211,9 +271,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         showSegmentsButton.setEnabled(currentTimeStepIsValid());
     }
 
-    public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
-
-    private IntervalView<FloatType> getImageToDisplay(GrowthLineFrame glf){
+    private IntervalView<FloatType> getImageToDisplay(GrowthlaneFrame glf) {
         /**
          * The view onto <code>imgRaw</code> that is supposed to be shown on screen
          * (center one in active assignments view).
@@ -232,7 +290,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     @NotNull
-    private IntervalView<FloatType> normalizeImage(GrowthLineFrame glf, IntervalView<FloatType> viewToShow) {
+    private IntervalView<FloatType> normalizeImage(GrowthlaneFrame glf, IntervalView<FloatType> viewToShow) {
         IntervalView<FloatType> viewImgCenterActive;
         final FloatType min = new FloatType();
         final FloatType max = new FloatType();
@@ -249,7 +307,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private boolean currentTimeStepIsValid() {
-        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum() - 1; // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 1` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum();
         return !timeStepIsInvalid;
     }
 
@@ -257,9 +315,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * This method set constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void setVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
-            if (this.isSelected()) {
+            if (this.isSelectedForSettingIlpConstraints()) {
                 ilp.fixSegmentationAsIs(timeStepToDisplay());
             }
         }
@@ -269,9 +327,9 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
      * This method unsets/removes constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void unsetVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
-            if (this.isSelected()) {
+            if (this.isSelectedForSettingIlpConstraints()) {
                 ilp.removeAllSegmentConstraints(timeStepToDisplay());
             }
         }

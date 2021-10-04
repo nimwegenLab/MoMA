@@ -1,13 +1,12 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEvent;
 import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.gui.MoMAGui;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
-import net.imglib2.algorithm.componenttree.Component;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 
 import javax.swing.*;
@@ -49,9 +48,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // fields
     // -------------------------------------------------------------------------------------
     private final int width;
-    private final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> filteredAssignments;
+    private final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;
+    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
     protected EventListenerList listenerList = new EventListenerList();
     ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
     int selectedAssignmentIndex = 0;
@@ -61,7 +61,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private float filterMaxCost = 100f;
     private boolean doFilterDataByIdentity = false;
     private boolean doAddToFilter = false; // if 'true' all assignments at the mouse location will be added to the filter next time repaint is called...
-    private HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data;
+    private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data;
     private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentsEditorCanvasView instance */
     private int mousePosX;
     private int mousePosY;
@@ -72,18 +72,16 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private int dragInitiatingMouseButton = 0;
     private float dragStepWeight = 0;
     private MoMAGui gui;
-
     // -------------------------------------------------------------------------------------
     // getters and setters
     // -------------------------------------------------------------------------------------
     private Color strokeColor;
-    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
     public AssignmentsEditorCanvasView(final int height, final MoMAGui callbackGui) {
-        this(height, -GrowthLineTrackingILP.CUTOFF_COST, GrowthLineTrackingILP.CUTOFF_COST);
+        this(height, -GrowthlaneTrackingILP.CUTOFF_COST, GrowthlaneTrackingILP.CUTOFF_COST);
         this.doFilterDataByCost = false;
         this.gui = callbackGui;
     }
@@ -162,7 +160,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      * @param data a <code>HashMap</code> containing pairs of segmentation
      *             hypothesis at some time-point t and assignments towards t+1.
      */
-    public void display(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
+    public void display(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
         doFilterDataByCost = false;
         setData(data);
 
@@ -263,7 +261,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      *
      * @param data: assignment data to display
      */
-    public void setData(final HashMap<Hypothesis<Component<FloatType, ?>>, Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>>> data) {
+    public void setData(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
         this.data = data;
         initializeAssignmentViews();
         this.repaint();
@@ -271,15 +269,15 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     private void initializeAssignmentViews() {
         assignmentViews.clear();
-        for (final Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> setOfAssignments : data.values()) {
-            for (final AbstractAssignment<Hypothesis<Component<FloatType, ?>>> assignment : setOfAssignments) {
-                if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_MAPPING) {
+        for (final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> setOfAssignments : data.values()) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : setOfAssignments) {
+                if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_DIVISION) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_EXIT) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
                     assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthLineTrackingILP.ASSIGNMENT_LYSIS) {
+                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS) {
                     assignmentViews.add(new LysisAssignmentView((LysisAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }

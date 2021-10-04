@@ -1,18 +1,21 @@
 package com.jug.gui;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IImageProvider;
+import com.jug.export.CellMaskExporter;
 import com.jug.export.CellStatsExporter;
 import com.jug.export.HtmlOverviewExporter;
+import com.jug.export.ResultExporter;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
-import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
+import com.jug.util.componenttree.AdvancedComponent;
 import ij.ImageJ;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
@@ -49,22 +52,23 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // -------------------------------------------------------------------------------------
     public final MoMAModel model;
     private final DialogPropertiesEditor propsEditor;
-    private IImageProvider imageProvider;
-    private MoMA momaInstance;
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
     private final List<IlpVariableEditorPanel> ilpVariableEditorPanels = new ArrayList<>();
     private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
+    private final boolean showGroundTruthExportFunctionality;
+    private final IImageProvider imageProvider;
+    private final MoMA momaInstance;
     public JSlider sliderGL;
     public JSlider sliderTime;
     // -------------------------------------------------------------------------------------
     // gui-fields
     // -------------------------------------------------------------------------------------
     public GrowthlaneViewer growthLaneViewerCenter;
-    private SegmentationEditorPanel segmentationEditorPanelCenter;
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
+    private SegmentationEditorPanel segmentationEditorPanelCenter;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
     private RangeSlider sliderTrackingRange;
@@ -105,14 +109,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      * @param mmm the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider, MoMA momaInstance) {
+    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider, MoMA momaInstance, boolean showGroundTruthExportFunctionality) {
         super(new BorderLayout());
 
         this.model = mmm;
         this.imageProvider = imageProvider;
         this.momaInstance = momaInstance;
+        this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
 
-        propsEditor = new DialogPropertiesEditor(this, momaInstance.props, momaInstance.dic.getAssignmentPlausibilityTester());
+        propsEditor = new DialogPropertiesEditor(this, MoMA.props, MoMA.dic.getAssignmentPlausibilityTester());
 
         buildGui();
         dataToDisplayChanged();
@@ -154,8 +159,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);
-        if (!momaInstance.HEADLESS) {
-            momaInstance.getGuiFrame().setMenuBar(menuBar);
+        if (!MoMA.HEADLESS) {
+            MoMA.getGuiFrame().setMenuBar(menuBar);
         }
 
         final JPanel panelContent = new JPanel(new BorderLayout());
@@ -164,8 +169,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // --- Slider for time and GL -------------
 
-        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getCurrentGL().size() - 2, 0);
-        sliderTime.setValue(1);
+        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getCurrentGL().size() - 1, 0);
         model.setCurrentGLF(sliderTime.getValue());
         sliderTime.addChangeListener(this);
         if (sliderTime.getMaximum() < 200) {
@@ -183,8 +187,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // --- Slider for TrackingRage ----------
 
         int max = model.getCurrentGL().size() - 2;
-        if (momaInstance.getInitialOptRange() != -1) {
-            max = Math.min(momaInstance.getInitialOptRange(), model.getCurrentGL().size() - 2);
+        if (MoMA.getInitialOptimizationRange() != -1) {
+            max = Math.min(MoMA.getInitialOptimizationRange(), model.getCurrentGL().size() - 2);
         }
         sliderTrackingRange =
                 new RangeSlider(0, model.getCurrentGL().size() - 2);
@@ -213,7 +217,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelContent.add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // Does not exist any more...
-        sliderGL = new JSlider(SwingConstants.VERTICAL, 0, model.mm.getGrowthLines().size() - 1, 0);
+        sliderGL = new JSlider(SwingConstants.VERTICAL, 0, model.mm.getGrowthlanes().size() - 1, 0);
         sliderGL.setValue(0);
         sliderGL.addChangeListener(this);
         sliderGL.setMajorTickSpacing(5);
@@ -254,7 +258,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
             ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
-                if (!momaInstance.GUI_OPTIMIZE_ON_ILP_CHANGE) {
+                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE) {
                     buttonOptimizeMore.setForeground(Color.RED);
                 }
             });
@@ -279,35 +283,42 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelContent.add(tabsViews, BorderLayout.CENTER);
         add(panelContent, BorderLayout.CENTER);
 
-        // - - - - - - - - - - - - - - - - - - - - - - - -
-        //  KEYSTROKE SETUP (usingInput- and ActionMaps)
-        // - - - - - - - - - - - - - - - - - - - - - - - -
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('s'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('d'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('r'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('o'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('e'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('v'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('b'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('p'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('n'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('0'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('1'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('2'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('3'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('4'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('5'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('6'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+        setupKeyMap();
+    }
 
-        this.getActionMap().put("ESCAPE", new AbstractAction() {
+    ActiveHighLatch spaceBarIsBeingHeld = new ActiveHighLatch();
+
+    private void setupKeyMap() {
+        InputMap inputMap = this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
+        inputMap.put(KeyStroke.getKeyStroke("pressed SPACE"), "pressed_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke("released SPACE"), "released_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('s'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('d'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('r'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('o'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('e'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('v'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('b'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('p'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('n'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('0'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('1'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('2'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('3'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('4'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('5'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('6'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+
+        ActionMap actionMap = this.getActionMap();
+        actionMap.put("ESCAPE", new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -316,7 +327,24 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         });
 
-        this.getActionMap().put("MMGUI_bindings", new AbstractAction() {
+        actionMap.put("pressed_SPACE", new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                if (!spaceBarIsBeingHeld.isActive()) { /* use spaceBarIsBeingHeld to call toggleGroundTruthSelectionCheckbox() only once */
+                    segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+                }
+                spaceBarIsBeingHeld.set();
+            }
+        });
+
+        actionMap.put("released_SPACE", new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                spaceBarIsBeingHeld.reset();
+            }
+        });
+
+        actionMap.put("MMGUI_bindings", new AbstractAction() {
 
             private static final long serialVersionUID = 1L;
 
@@ -487,7 +515,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -ConfigurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = ConfigurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter());
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -503,7 +531,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, max_time_offset);
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, max_time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter());
         panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);
@@ -525,15 +553,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panel3.add(comboboxWhichImgToShow, gridBagConstraintPanel3);
 
         JCheckBox checkboxOptimizeOnIlpChange = new JCheckBox();
-        checkboxOptimizeOnIlpChange.setSelected(momaInstance.GUI_OPTIMIZE_ON_ILP_CHANGE);
+        checkboxOptimizeOnIlpChange.setSelected(MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE);
         checkboxOptimizeOnIlpChange.setText("Run optimization on change");
         checkboxOptimizeOnIlpChange.addActionListener(e -> {
             if (checkboxOptimizeOnIlpChange.isSelected()) {
-                momaInstance.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+                MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
                 JOptionPane.showMessageDialog(this, "Optimization will now run automatically after each change. It is suggested to run optimization once now before continuing by pressing the button 'Optimize'.");
                 return;
             }
-            momaInstance.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
+            MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
             JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes.");
         });
         panel4.add(checkboxOptimizeOnIlpChange, gridBagConstraintPanel4);
@@ -591,7 +619,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     private void updatePlotPanels() {
 
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // Intensity plot
         // --------------
@@ -610,7 +638,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
     }
 
-    private <C extends Component<FloatType, C>> void printCosts(final ComponentForest<C> ct, final GrowthLineTrackingILP ilp, String costType) {
+    private <C extends Component<FloatType, C>> void printCosts(final ComponentForest<C> ct, final GrowthlaneTrackingILP ilp, String costType) {
         final int t = sliderTime.getValue();
         System.out.print("##################### PRINTING ALL COSTS AT TIME " + t + " FOR: " + costType + " #####################");
         for (final C root : ct.roots()) {
@@ -622,8 +650,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     if (costType.equals("Segment")) {
                         System.out.print(String.format("%8.4f;\t", ilp.getComponentCost(t, ctn)));
                     } else {
-                        List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
-                        for (AbstractAssignment<Hypothesis<Component<FloatType, ?>>> ass : assignments) {
+                        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = ilp.getNodes().getAssignmentsAt(t);
+                        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : assignments) {
                             if (costType.equals("ExitAssignment")) {
                                 if (ass instanceof ExitAssignment)
                                     System.out.print(String.format("%8.4f;\t", ass.getCost()));
@@ -645,7 +673,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         System.out.println();
     }
 
-    private <C extends Component<FloatType, C>> void dumpCosts(final ComponentForest<C> ct, final GrowthLineTrackingILP ilp) {
+    private <C extends Component<FloatType, C>> void dumpCosts(final ComponentForest<C> ct, final GrowthlaneTrackingILP ilp) {
         final int numCTNs = ComponentTreeUtils.countNodes(ct);
         final float[][] xydxdyCTNBorders = new float[numCTNs][4];
         final int t = sliderTime.getValue();
@@ -678,8 +706,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp.getOptimalSegmentation(t).size() > 0) {
                 final float[][] xydxdyCTNBordersActive = new float[ilp.getOptimalSegmentation(t).size()][4];
                 i = 0;
-                for (final Hypothesis<Component<FloatType, ?>> hyp : ilp.getOptimalSegmentation(t)) {
-                    final Component<FloatType, ?> ctn = hyp.getWrappedComponent();
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp : ilp.getOptimalSegmentation(t)) {
+                    final AdvancedComponent<FloatType> ctn = hyp.getWrappedComponent();
                     addBoxAtIndex(i, ctn, xydxdyCTNBordersActive, ComponentTreeUtils.getLevelInTree(ctn));
                     i++;
                 }
@@ -725,7 +753,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     @SuppressWarnings({"unchecked"})
     public void dataToDisplayChanged() {
 
-        final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // IF 'COUNTING VIEW' VIEW IS ACTIVE
         // =================================
@@ -762,7 +790,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         if (e.getSource().equals(sliderTime)) {
-            updateCenteredTimeStep();
+             updateCenteredTimeStep();
+             if(spaceBarIsBeingHeld.isActive()){
+                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+             }
         }
 
         if (e.getSource().equals(sliderTrackingRange)) {
@@ -773,6 +804,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         dataToDisplayChanged();
         this.repaint();
+
         focusOnSliderTime();
     }
 
@@ -798,11 +830,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final MoMAGui self = this;
 
             final Thread t = new Thread(() -> {
-                GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+                GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
                 final File file = OsDependentFileChooser.showLoadFileChooser(
                         self,
-                        momaInstance.STATS_OUTPUT_PATH,
+                        MoMA.STATS_OUTPUT_PATH,
                         "Choose tracking to load...",
                         new ExtensionFileFilter("moma", "Curated MoMA tracking"));
                 System.out.println("File to load tracking from: " + file.getAbsolutePath());
@@ -823,12 +855,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(menuSave)) {
 
-            final GrowthLineTrackingILP ilp = model.getCurrentGL().getIlp();
+            final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
-            if (ilp != null) { // && ilp.getStatus() != GrowthLineTrackingILP.OPTIMIZATION_NEVER_PERFORMED
+            if (ilp != null) { // && ilp.getStatus() != GrowthlaneTrackingILP.OPTIMIZATION_NEVER_PERFORMED
                 final File file = OsDependentFileChooser.showSaveFileChooser(
                         this,
-                        momaInstance.STATS_OUTPUT_PATH,
+                        MoMA.STATS_OUTPUT_PATH,
                         "Save current tracking to...",
                         new ExtensionFileFilter("moma", "Curated MOMA tracking"));
                 System.out.println("File to save tracking to: " + file.getAbsolutePath());
@@ -843,7 +875,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(menuViewShowConsole)) {
             momaInstance.showConsoleWindow(!momaInstance.isConsoleVisible());
-            momaInstance.getGuiFrame().setVisible(true);
+            MoMA.getGuiFrame().setVisible(true);
         }
         if (e.getSource().equals(menuShowImgRaw)) {
             new ImageJ();
@@ -852,12 +884,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(menuSaveFG)) {
             final File file = OsDependentFileChooser.showSaveFileChooser(
                     this,
-                    momaInstance.DEFAULT_PATH,
+                    MoMA.DEFAULT_PATH,
                     "Save Factor Graph...",
                     new ExtensionFileFilter(new String[]{"txt", "TXT"}, "TXT-file"));
 
             if (file != null) {
-                momaInstance.DEFAULT_PATH = file.getParent();
+                MoMA.DEFAULT_PATH = file.getParent();
 
                 if (model.getCurrentGL().getIlp() == null) {
                     System.out.println("Generating ILP...");
@@ -1018,7 +1050,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void prepareOptimization() {
         System.out.println("Filling in CT hypotheses where needed...");
         int frameIndex = 0;
-        for (final GrowthLineFrame glf : model.getCurrentGL().getFrames()) {
+        for (final GrowthlaneFrame glf : model.getCurrentGL().getFrames()) {
             if (glf.getComponentTree() == null) {
                 glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
                 frameIndex++;
@@ -1026,7 +1058,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Generating ILP...");
-        if (momaInstance.HEADLESS) {
+        if (MoMA.HEADLESS) {
             model.getCurrentGL().generateILP(null);
         } else {
             model.getCurrentGL().generateILP(
@@ -1065,10 +1097,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         File folderToUse;
-        if (!momaInstance.HEADLESS) {
+        if (!MoMA.HEADLESS) {
             if (!showFitRangeWarningDialogIfNeeded()) return;
 
-            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, momaInstance.STATS_OUTPUT_PATH, "Choose export folder...");
+            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
             if (folderToUse == null) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -1078,11 +1110,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 return;
             }
         } else { /* if running headless: use default output path */
-            folderToUse = new File(momaInstance.STATS_OUTPUT_PATH);
+            folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
         }
 
-        final CellStatsExporter exporter = new CellStatsExporter(this, momaInstance.dic.getConfigurationManager(), momaInstance.dic.getMixtureModelFit(), momaInstance.dic.getComponentProperties(), momaInstance.dic.getMomaInstance());
-        exporter.export(folderToUse);
+        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
+        final CellMaskExporter groundTruthExporter = new CellMaskExporter(MoMA.dic.getImglib2utils());
+        final ResultExporter resultExporter = new ResultExporter(cellStatsExporter, groundTruthExporter, MoMA.dic.getGroundTruthFramesExporter());
+        resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {
@@ -1113,9 +1147,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int startFrame = 1;
         int endFrame = sliderTime.getMaximum() + 1;
 
-        File file = new File(momaInstance.STATS_OUTPUT_PATH + "/index.html");
+        File file = new File(MoMA.STATS_OUTPUT_PATH + "/index.html");
 
-        if (!momaInstance.HEADLESS) {
+        if (!MoMA.HEADLESS) {
             final JFileChooser fc = new JFileChooser();
             fc.setSelectedFile(file);
             fc.addChoosableFileFilter(new ExtensionFileFilter(new String[]{"html"}, "HTML-file"));
@@ -1125,7 +1159,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 if (!file.getAbsolutePath().endsWith(".html") && !file.getAbsolutePath().endsWith(".htm")) {
                     file = new File(file.getAbsolutePath() + ".html");
                 }
-                momaInstance.STATS_OUTPUT_PATH = file.getParent();
+                MoMA.STATS_OUTPUT_PATH = file.getParent();
 
                 boolean done = false;
                 while (!done) {
@@ -1160,7 +1194,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         // ----------------------------------------------------------------------------------------------------
 
-        if (!momaInstance.HEADLESS) {
+        if (!MoMA.HEADLESS) {
             dataToDisplayChanged();
         }
     }
@@ -1173,9 +1207,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         activateSimpleHypothesesForGL(model.getCurrentGL());
     }
 
-    private void activateSimpleHypothesesForGL(final GrowthLine gl) {
+    private void activateSimpleHypothesesForGL(final Growthlane gl) {
         int frameIndex = 0;
-        for (final GrowthLineFrame glf : gl.getFrames()) {
+        for (final GrowthlaneFrame glf : gl.getFrames()) {
             System.out.print(".");
             glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
             frameIndex++;

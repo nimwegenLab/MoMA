@@ -1,7 +1,7 @@
 package com.jug.gui;
 
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
-import com.jug.lp.GrowthLineTrackingILP;
+import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 
@@ -49,7 +49,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     }
 
     public void display() {
-        GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         updateSelectionCheckbox();
 
         if (ilp == null) {
@@ -65,7 +65,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     private boolean currentTimeStepIsValid() {
         int timeStepToDisplay = getTimeStepToDisplay();
-        boolean timeStepIsInvalid = timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum() - 2;  // TODO-MM-20210729: We need to use `timeStepToDisplay > momaModel.getTimeStepMaximum() - 2` or else exit-assignments will be displayed in the view. I do not understand this 100%, but it likely has to do with the last frame that was hacked in at some point.
+        boolean timeStepIsInvalid = timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum();
         return !timeStepIsInvalid;
     }
 
@@ -73,7 +73,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
      * This method set constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void setVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
                 ilp.fixAssignmentsAsAre(getTimeStepToDisplay());
@@ -85,7 +85,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
      * This method unsets/removes constraints for all ILP variables of the current time-step that are in the solution.
      */
     public void unsetVariableConstraints() {
-        final GrowthLineTrackingILP ilp = momaModel.getCurrentGL().getIlp();
+        final GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         if (ilp != null) {
             if (this.isSelected()) {
                 ilp.removeAllAssignmentConstraints(getTimeStepToDisplay());

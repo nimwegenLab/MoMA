@@ -18,7 +18,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	private int type;
 
-	GrowthLineTrackingILP ilp;
+	GrowthlaneTrackingILP ilp;
 
 	private int exportVarIdx = -1;
 	private GRBVar ilpVar;
@@ -32,10 +32,10 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 * Creates an assignment...
 	 */
-	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthLineTrackingILP ilp) {
+	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp) {
 		this.setType( type );
 		setGRBVar( ilpVariable );
-		setGrowthLineTrackingILP( ilp );
+		setGrowthlaneTrackingILP( ilp );
 	}
 
 	abstract public int getId();
@@ -98,7 +98,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	/**
 	 */
-	private void setGrowthLineTrackingILP(final GrowthLineTrackingILP ilp) {
+	private void setGrowthlaneTrackingILP(final GrowthlaneTrackingILP ilp) {
 		this.ilp = ilp;
 	}
 

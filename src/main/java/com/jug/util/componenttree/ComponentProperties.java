@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
@@ -26,8 +25,8 @@ public class ComponentProperties {
     public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
+        regionToPolygonConverter.setContext(ops.context());
         this.ops = ops;
-        regionToPolygonConverter.setContext(MoMA.ops.context());
     }
 
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){

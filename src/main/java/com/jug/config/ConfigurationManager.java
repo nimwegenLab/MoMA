@@ -21,7 +21,7 @@ public class ConfigurationManager {
 
     /**
      * Parameter: how many pixels wide is the image containing the selected
-     * GrowthLine?
+     * Growthlane?
      */
     public static int GL_WIDTH_IN_PIXELS = 20;
 

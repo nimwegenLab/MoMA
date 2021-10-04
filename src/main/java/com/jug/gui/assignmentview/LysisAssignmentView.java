@@ -1,9 +1,8 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.lp.ExitAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.LysisAssignment;
-import net.imglib2.algorithm.componenttree.Component;
+import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
@@ -31,7 +30,7 @@ public class LysisAssignmentView extends AssignmentView {
     }
 
     private void setupPolygon() {
-        final Hypothesis<Component<FloatType, ?>> leftHyp = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> leftHyp = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
 
         final int x1 = 0;

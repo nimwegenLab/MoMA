@@ -6,6 +6,7 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class MoMATest {
     public static void main(String[] args){
@@ -13,7 +14,7 @@ public class MoMATest {
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
-        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
+//        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
 //        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
@@ -21,7 +22,7 @@ public class MoMATest {
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30(); /* nice example for lysing cells */
-//        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
+        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -84,10 +85,10 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/20210521_VNG1040_AB2h_2h_1_MMStack_Pos0_GL10.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/output/";
         Integer tmin = 0;
-        Integer tmax = 10;
+        Integer tmax = 5;
 //        Integer tmin = 0;
 //        Integer tmax = 480;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true);
+        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export"});
     }
 
     @Test
@@ -162,9 +163,9 @@ public class MoMATest {
     public void _lysing_cell__thomas_20200922__Pos16_GL17() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL17.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
-        Integer tmin = 2;
+        Integer tmin = 0;
         Integer tmax = 20;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true);
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }
 
@@ -386,6 +387,10 @@ public class MoMATest {
     }
 
     private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
+        startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
+    }
+
+    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
         if (deleteProbabilityMaps) {
             remove_probability_maps(inputPath);
         }
@@ -401,6 +406,9 @@ public class MoMATest {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
         } else { // both tmin and tmax are null
             args = new String[]{"-i", inputPath, "-o", outputPath};
+        }
+        if (additionalArgs != null) {
+            args = concatenateWithCollection(args, additionalArgs);
         }
         MoMA.HEADLESS = headless;
         MoMA.main(args);

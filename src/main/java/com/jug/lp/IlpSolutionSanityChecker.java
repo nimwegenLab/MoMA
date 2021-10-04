@@ -1,8 +1,8 @@
 package com.jug.lp;
 
-import com.jug.GrowthLine;
+import com.jug.Growthlane;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Set;
 
 public class IlpSolutionSanityChecker {
-    private GrowthLineTrackingILP ilp;
-    private GrowthLine gl;
+    private final GrowthlaneTrackingILP ilp;
+    private final Growthlane gl;
 
-    public IlpSolutionSanityChecker(GrowthLineTrackingILP ilp,
-                                    GrowthLine gl) {
+    public IlpSolutionSanityChecker(GrowthlaneTrackingILP ilp,
+                                    Growthlane gl) {
         this.ilp = ilp;
         this.gl = gl;
     }
@@ -33,9 +33,9 @@ public class IlpSolutionSanityChecker {
         System.out.println("--------- End: CheckContinuityConstraintForAllOptimalAssignments ---------");
     }
 
-    void CheckContinuityConstraintForAllOptimalAssignments(int t){
-        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> incomingAssignments = ilp.getOptimalAssignments(t - 1);
-        Set<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> outgoingAssignments = ilp.getOptimalAssignments(t);
+    void CheckContinuityConstraintForAllOptimalAssignments(int t) {
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = ilp.getOptimalAssignments(t - 1);
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> outgoingAssignments = ilp.getOptimalAssignments(t);
         Set<ExitAssignment> incomingExitAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, ExitAssignment.class);
         Set<LysisAssignment> incomingLysisAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, LysisAssignment.class);
         Set<DivisionAssignment> incomingDivisionAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, DivisionAssignment.class);
@@ -44,7 +44,7 @@ public class IlpSolutionSanityChecker {
         int incomingDivisionCount = incomingDivisionAssignments.size();
         int incomingTotalCount = incomingAssignments.size();
         int outgoingTotalCount = outgoingAssignments.size();
-        if (outgoingTotalCount - incomingDivisionCount != (incomingTotalCount - incomingExitCount - incomingLysisCount)){
+        if (outgoingTotalCount - incomingDivisionCount != (incomingTotalCount - incomingExitCount - incomingLysisCount)) {
             System.out.println(String.format("ERROR: Continuity constraint violation at t=%d", t));
             System.out.println(String.format("incoming total: %d", incomingTotalCount));
             System.out.println(String.format("outgoing total: %d", outgoingTotalCount));
@@ -55,7 +55,6 @@ public class IlpSolutionSanityChecker {
     }
 
 
-
     /**
      * This method checks the continuity constraint: outgoingAssignmentCount == incomingAssignmentsCount for each
      * time step {@param t}
@@ -63,11 +62,11 @@ public class IlpSolutionSanityChecker {
      * @param t time step at which the continuity constraint is checked
      */
     void CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t) {
-        try{
-            List<Hypothesis<Component<FloatType, ?>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> incomingAssignments = new ArrayList<>();
-            List<AbstractAssignment<Hypothesis<Component<FloatType, ?>>>> outgoingAssignments = new ArrayList<>();
-            for (Hypothesis<Component<FloatType, ?>> hyp : currentOptimalHypotheses) {
+        try {
+            List<Hypothesis<AdvancedComponent<FloatType>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = new ArrayList<>();
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> outgoingAssignments = new ArrayList<>();
+            for (Hypothesis<AdvancedComponent<FloatType>> hyp : currentOptimalHypotheses) {
                 incomingAssignments.add(ilp.getOptimalLeftAssignment(hyp));
                 outgoingAssignments.add(ilp.getOptimalRightAssignment(hyp));
             }
@@ -82,8 +81,7 @@ public class IlpSolutionSanityChecker {
                 System.out.println(String.format("incoming: %d", incomingAssignmentCount));
                 System.out.println(String.format("outgoing: %d", outgoingAssignmentCount));
             }
-        }
-        catch (GRBException e) {
+        } catch (GRBException e) {
             e.printStackTrace();
         }
     }

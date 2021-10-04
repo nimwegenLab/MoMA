@@ -1,7 +1,7 @@
 package com.jug.gui;
 
-import com.jug.GrowthLine;
-import com.jug.GrowthLineFrame;
+import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 
 
@@ -41,8 +41,8 @@ public class MoMAModel {
     // -------------------------------------------------------------------------------------
     // getters and setters
     // -------------------------------------------------------------------------------------
-    public GrowthLine getCurrentGL() {
-        return mm.getGrowthLines().get(currentGLidx);
+    public Growthlane getCurrentGL() {
+        return mm.getGrowthlanes().get(currentGLidx);
     }
 
     public void setCurrentGL(final int idx) {
@@ -51,20 +51,20 @@ public class MoMAModel {
 
     public void setCurrentGL(final int idx, final int glfIdx) {
         assert (idx >= 0);
-        assert (idx < mm.getGrowthLines().size());
+        assert (idx < mm.getGrowthlanes().size());
         currentGLidx = idx;
         currentGLFidx = glfIdx;
     }
 
-    public GrowthLineFrame getGrowthLineFrame(int index) {
+    public GrowthlaneFrame getGrowthlaneFrame(int index) {
         return getCurrentGL().get(index);
     }
 
-    public GrowthLineFrame getCurrentGLF() {
+    public GrowthlaneFrame getCurrentGLF() {
         return getCurrentGL().get(currentGLFidx);
     }
 
-    public GrowthLineFrame getGlfAtTimeStep(int timestep) {
+    public GrowthlaneFrame getGlfAtTimeStep(int timestep) {
         return getCurrentGL().get(timestep);
     }
 
@@ -77,23 +77,23 @@ public class MoMAModel {
     // -------------------------------------------------------------------------------------
     // methods
     // -------------------------------------------------------------------------------------
-    public GrowthLine switchToNextGL() {
+    public Growthlane switchToNextGL() {
         currentGLidx++;
-        if (currentGLidx >= mm.getGrowthLines().size()) {
+        if (currentGLidx >= mm.getGrowthlanes().size()) {
             currentGLidx = 0;
         }
         return getCurrentGL();
     }
 
-    public GrowthLine switchToPrevGL() {
+    public Growthlane switchToPrevGL() {
         currentGLidx--;
         if (currentGLidx < 0) {
-            currentGLidx = mm.getGrowthLines().size() - 1;
+            currentGLidx = mm.getGrowthlanes().size() - 1;
         }
         return getCurrentGL();
     }
 
-    public GrowthLineFrame switchToNextGLF() {
+    public GrowthlaneFrame switchToNextGLF() {
         currentGLFidx++;
         if (currentGLFidx >= getCurrentGL().size()) {
             currentGLidx = 0;
@@ -101,7 +101,7 @@ public class MoMAModel {
         return getCurrentGLF();
     }
 
-    public GrowthLineFrame switchToPrevGLF() {
+    public GrowthlaneFrame switchToPrevGLF() {
         currentGLFidx--;
         if (currentGLFidx < 0) {
             currentGLFidx = getCurrentGL().size() - 1;

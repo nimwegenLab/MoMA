@@ -11,9 +11,8 @@ import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.IJ;
-import ij.ImageJ; // TODO: I should be using net.imagej.ImageJ here
+import ij.ImageJ;
 import ij.ImagePlus;
-import net.imagej.ops.OpService;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
 import net.imglib2.img.Img;
@@ -25,7 +24,6 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.cli.*;
 import org.apache.commons.lang3.SystemUtils;
-import org.scijava.Context;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -50,6 +48,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 	private static ConfigurationManager configurationManager;
+	private static boolean showGroundTruthExportFunctionality;
 
 	static {
 		LegacyInjector.preinit();
@@ -73,8 +72,6 @@ public class MoMA implements IImageProvider {
 	 */
 	static boolean showIJ = false;
 
-	public static Context context;
-	public static OpService ops;
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
@@ -84,7 +81,7 @@ public class MoMA implements IImageProvider {
 	// - - - - - - - - - - - - - -
 	private static int minTime = -1;
 	private static int maxTime = -1;
-	private static int initOptRange = -1;
+	private static int initialOptimizationRange = -1;
 	private static int minChannelIdx = 1;
 	private static int numChannels = 1;
 
@@ -163,9 +160,6 @@ public class MoMA implements IImageProvider {
 	public static void main( final String[] args ) {
 		System.out.println( "VERSION: " + VERSION_STRING );
 
-		context = new Context();
-		ops = context.service(OpService.class);
-
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
@@ -184,15 +178,17 @@ public class MoMA implements IImageProvider {
 		final Option headless = new Option( "h", "headless", false, "start without user interface (note: input-folder must be given!)" );
 		headless.setRequired( false );
 
+		final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
+		groundTruthGeneration.setRequired( false );
+
 		final Option timeFirst = new Option( "tmin", "min_time", true, "first time-point to be processed" );
 		timeFirst.setRequired( false );
 
 		final Option timeLast = new Option( "tmax", "max_time", true, "last time-point to be processed" );
 		timeLast.setRequired( false );
 
-		final Option optRange = new Option( "orange", "opt_range", true, "initial optimization range" );
+		final Option optRange = new Option( "optrange", "optimization_range", true, "initial optimization range" );
 		optRange.setRequired( false );
-
 
 		final Option infolder = new Option( "i", "infolder", true, "folder to read data from" );
 		infolder.setRequired( false );
@@ -203,14 +199,15 @@ public class MoMA implements IImageProvider {
 		final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
 		userProps.setRequired( false );
 
-		options.addOption( help );
-		options.addOption( headless );
-		options.addOption( timeFirst );
-		options.addOption( timeLast );
-		options.addOption( optRange );
-		options.addOption( infolder );
-		options.addOption( outfolder );
-		options.addOption( userProps );
+		options.addOption(help);
+		options.addOption(headless);
+		options.addOption(groundTruthGeneration);
+		options.addOption(timeFirst);
+		options.addOption(timeLast);
+		options.addOption(optRange);
+		options.addOption(infolder);
+		options.addOption(outfolder);
+		options.addOption(userProps);
 		// get the commands parsed
 		CommandLine cmd = null;
 		try {
@@ -218,7 +215,7 @@ public class MoMA implements IImageProvider {
 		} catch ( final ParseException e1 ) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(
-					"... [-p props-file] -i in-folder [-o out-folder] -c <num-channels> [-cmin start-channel-ids] [-tmin idx] [-tmax idx] [-orange num-frames] [-headless]",
+					"... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
 					"",
 					options,
 					"Error: " + e1.getMessage() );
@@ -251,6 +248,10 @@ public class MoMA implements IImageProvider {
 					return;
 				}
 			}
+		}
+
+		if ( cmd.hasOption( "ground_truth_export" ) ) {
+			showGroundTruthExportFunctionality = true;
 		}
 
 		File inputFolder = null;
@@ -360,11 +361,11 @@ public class MoMA implements IImageProvider {
 			minChannelIdx = 1;
 			numChannels = imp.getNChannels();
 		}
-		System.out.println("Determined minTime" + minTime);
-		System.out.println("Determined maxTime" + maxTime);
+		System.out.println("Determined minTime: " + minTime);
+		System.out.println("Determined maxTime: " + maxTime);
 
-		System.out.println("Determined minChannelIdx" + minChannelIdx);
-		System.out.println("Determined numChannels" + numChannels);
+		System.out.println("Determined minChannelIdx: " + minChannelIdx);
+		System.out.println("Determined numChannels: " + numChannels);
 
 
 		if ( cmd.hasOption( "tmin" ) ) {
@@ -374,8 +375,8 @@ public class MoMA implements IImageProvider {
 			maxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) );
 		}
 
-		if ( cmd.hasOption( "orange" ) ) {
-			initOptRange = Integer.parseInt( cmd.getOptionValue( "orange" ) );
+		if ( cmd.hasOption( "optrange" ) ) {
+			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
 		}
 
 		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********
@@ -495,7 +496,8 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance() );
+		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance(), showGroundTruthExportFunctionality);
+
 
 		if ( !HEADLESS ) {
 			System.out.print( "Build GUI..." );
@@ -535,9 +537,9 @@ public class MoMA implements IImageProvider {
 	private Img< FloatType > imgProbs;
 
 	/**
-	 * Contains all GrowthLines found in the given data.
+	 * Contains all Growthlanes found in the given data.
 	 */
-	private List< GrowthLine > growthLines;
+	private List<Growthlane> growthlanes;
 
 	/**
 	 * Frame hosting the console output.
@@ -591,18 +593,18 @@ public class MoMA implements IImageProvider {
 	}
 
 	/**
-	 * @return the growthLines
+	 * @return the growthlanes
 	 */
-	public List< GrowthLine > getGrowthLines() {
-		return growthLines;
+	public List<Growthlane> getGrowthlanes() {
+		return growthlanes;
 	}
 
 	/**
-	 * @param growthLines
-	 *            the growthLines to set
+	 * @param growthlanes
+	 *            the growthlanes to set
 	 */
-	private void setGrowthLines(final List<GrowthLine> growthLines) {
-		this.growthLines = growthLines;
+	private void setGrowthlanes(final List<Growthlane> growthlanes) {
+		this.growthlanes = growthlanes;
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -895,27 +897,27 @@ public class MoMA implements IImageProvider {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-    private void findGrowthLines(IImageProvider imageProvider) {
-        this.setGrowthLines(new ArrayList<>() );
-        getGrowthLines().add( new GrowthLine(imageProvider) );
+    private void findGrowthlanes(IImageProvider imageProvider) {
+        this.setGrowthlanes(new ArrayList<>() );
+        getGrowthlanes().add( new Growthlane(imageProvider) );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
-            GrowthLineFrame currentFrame = new GrowthLineFrame((int) frameIdx);
+            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, dic.getComponentTreeGenerator());
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
-            getGrowthLines().get(0).add(currentFrame);
+            getGrowthlanes().get(0).add(currentFrame);
         }
     }
 
 
 	/**
-	 * Iterates over all found GrowthLines and evokes
-	 * GrowthLine.findGapHypotheses(Img). Note that this function always uses
+	 * Iterates over all found Growthlanes and evokes
+	 * Growthlane.findGapHypotheses(Img). Note that this function always uses
 	 * the image data in 'imgTemp'.
 	 */
 	private void generateAllSimpleSegmentationHypotheses() {
 		imgProbs = processImageOrLoadFromDisk();
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
 				glf.generateSimpleSegmentationHypotheses( this, glf.getFrameIndex() );
@@ -925,7 +927,7 @@ public class MoMA implements IImageProvider {
 	}
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
-		UnetProcessor unetProcessor = new UnetProcessor();
+		UnetProcessor unetProcessor = new UnetProcessor(MoMA.dic.getSciJavaContext());
 		unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
 		String checksum = unetProcessor.getModelChecksum();
 
@@ -961,7 +963,7 @@ public class MoMA implements IImageProvider {
 	 * optimization-related structures used to compute the optimal tracking.
 	 */
 	private void generateILPs() {
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			gl.generateILP( null );
 		}
 	}
@@ -971,7 +973,7 @@ public class MoMA implements IImageProvider {
 	 */
 	private void runILPs() {
 		int i = 0;
-		for ( final GrowthLine gl : getGrowthLines() ) {
+		for ( final Growthlane gl : getGrowthlanes() ) {
 			System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
 			gl.getIlp().run();
 			i++;
@@ -1024,8 +1026,8 @@ public class MoMA implements IImageProvider {
 	/**
 	 * @return the initial optimization range, -1 if it is infinity.
 	 */
-	public static int getInitialOptRange() {
-		return initOptRange;
+	public static int getInitialOptimizationRange() {
+		return initialOptimizationRange;
 	}
 
 	/**
@@ -1053,9 +1055,9 @@ public class MoMA implements IImageProvider {
 			hideConsoleLater = true;
 		}
 
-		System.out.print( "Searching for GrowthLines..." );
+		System.out.print( "Searching for Growthlanes..." );
 		resetImgTempToRaw();
-        findGrowthLines(imageProvider);
+        findGrowthlanes(imageProvider);
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );

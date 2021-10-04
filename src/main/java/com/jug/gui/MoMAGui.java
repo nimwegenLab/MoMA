@@ -286,10 +286,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         setupKeyMap();
     }
 
+    ActiveHighLatch spaceBarIsBeingHeld = new ActiveHighLatch();
+
     private void setupKeyMap() {
         InputMap inputMap = this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
-        inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0), "SPACE");
+        inputMap.put(KeyStroke.getKeyStroke("pressed SPACE"), "pressed_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke("released SPACE"), "released_SPACE");
         inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
@@ -324,13 +327,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         });
 
-        actionMap.put("SPACE", new AbstractAction() {
-            private static final long serialVersionUID = 1L;
-
+        actionMap.put("pressed_SPACE", new AbstractAction() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
-                dataToDisplayChanged();
+                if (!spaceBarIsBeingHeld.isActive()) { /* use spaceBarIsBeingHeld to call toggleGroundTruthSelectionCheckbox() only once */
+                    segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+                }
+                spaceBarIsBeingHeld.set();
+            }
+        });
+
+        actionMap.put("released_SPACE", new AbstractAction() {
+            @Override
+            public void actionPerformed(final ActionEvent e) {
+                spaceBarIsBeingHeld.reset();
             }
         });
 
@@ -781,6 +791,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         if (e.getSource().equals(sliderTime)) {
              updateCenteredTimeStep();
+             if(spaceBarIsBeingHeld.isActive()){
+                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+             }
         }
 
         if (e.getSource().equals(sliderTrackingRange)) {
@@ -791,10 +804,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         dataToDisplayChanged();
         this.repaint();
-
-//        if (e.getSource().equals(sliderTime)) {
-//            segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
-//        }
 
         focusOnSliderTime();
     }

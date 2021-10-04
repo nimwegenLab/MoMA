@@ -283,36 +283,39 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelContent.add(tabsViews, BorderLayout.CENTER);
         add(panelContent, BorderLayout.CENTER);
 
-        // - - - - - - - - - - - - - - - - - - - - - - - -
-        //  KEYSTROKE SETUP (usingInput- and ActionMaps)
-        // - - - - - - - - - - - - - - - - - - - - - - - -
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0), "SPACE");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('s'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('d'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('r'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('o'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('e'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('v'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('b'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('p'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('n'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('0'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('1'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('2'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('3'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('4'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('5'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('6'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
-        this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT).put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+        setupKeyMap();
+    }
 
-        this.getActionMap().put("ESCAPE", new AbstractAction() {
+    private void setupKeyMap() {
+        InputMap inputMap = this.getInputMap(WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
+        inputMap.put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_SPACE, 0), "SPACE");
+        inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('a'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('s'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('d'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('r'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('o'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('e'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('v'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('b'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('p'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('n'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('0'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('1'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('2'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('3'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('4'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('5'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('6'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('7'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('8'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
+
+        ActionMap actionMap = this.getActionMap();
+        actionMap.put("ESCAPE", new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -321,7 +324,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         });
 
-        this.getActionMap().put("SPACE", new AbstractAction() {
+        actionMap.put("SPACE", new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -331,7 +334,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         });
 
-        this.getActionMap().put("MMGUI_bindings", new AbstractAction() {
+        actionMap.put("MMGUI_bindings", new AbstractAction() {
 
             private static final long serialVersionUID = 1L;
 

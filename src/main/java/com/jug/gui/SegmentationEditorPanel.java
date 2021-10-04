@@ -162,14 +162,21 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     public void toggleGroundTruthSelectionCheckbox() {
         boolean isAlreadySelected = groundTruthFramesExporter.containsFrame(timeStepToDisplay());
-        if(isAlreadySelected){
-            checkboxIsSelectedAsGroundTruth.setSelected(false);
-            groundTruthFramesExporter.removeFrame(timeStepToDisplay());
+        if (isAlreadySelected) {
+            unselectGroundTruthSelectionCheckbox();
+        } else {
+            selectGroundTruthSelectionCheckbox();
         }
-        else{
-            checkboxIsSelectedAsGroundTruth.setSelected(true);
-            groundTruthFramesExporter.addFrame(timeStepToDisplay());
-        }
+    }
+
+    public void selectGroundTruthSelectionCheckbox() {
+        checkboxIsSelectedAsGroundTruth.setSelected(true);
+        groundTruthFramesExporter.addFrame(timeStepToDisplay());
+    }
+
+    public void unselectGroundTruthSelectionCheckbox() {
+        checkboxIsSelectedAsGroundTruth.setSelected(false);
+        groundTruthFramesExporter.removeFrame(timeStepToDisplay());
     }
 
     private void updateGroundTruthSelectionCheckbox() {

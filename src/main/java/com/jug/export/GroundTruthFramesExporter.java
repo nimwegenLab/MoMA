@@ -6,6 +6,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.jug.MoMA.IMAGE_PATH;
+
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfTimeSteps;
 
@@ -47,12 +49,20 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
+            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif").getAbsolutePath();
+            writeImagePaths(out, IMAGE_PATH, cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeImagePaths(OutputStreamWriter out, String inputImagePath, String cellMaskImagePath) throws IOException {
+        out.write("input_image=" + inputImagePath + "\n");
+        out.write("ground_truth_mask_image=" + cellMaskImagePath + "\n");
+        out.write("\n");
     }
 
     public boolean containsFrame(int timeStepToDisplay) {

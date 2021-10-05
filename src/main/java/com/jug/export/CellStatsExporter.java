@@ -153,12 +153,12 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
-        writer.write(String.format("image_folder=%s\n", loadedDataFolder));
+        writer.write(String.format("input_image=%s\n", loadedDataFolder));
         writer.write(String.format("segmentation_model=%s\n", configurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
-                AdvancedComponent<?> currentComponent = (AdvancedComponent<?>) segmentRecord.hyp.getWrappedComponent();
+                AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 

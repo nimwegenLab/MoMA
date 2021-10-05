@@ -14,26 +14,32 @@ import static com.jug.MoMA.IMAGE_PATH;
  * the image with the ground-truth masks.
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
-    private final List<Integer> listOfTimeSteps;
+    private final List<Integer> listOfFrameNumbers;
 
     public GroundTruthFramesExporter() {
-        listOfTimeSteps = new ArrayList<>();
+        listOfFrameNumbers = new ArrayList<>();
     }
 
     /**
      * Add frame to list of ground-truth frames.
-     * @param timeStepToDisplay
+     *
+     * @param frameNumber
      */
-    public void addFrame(Integer timeStepToDisplay) {
-        listOfTimeSteps.add(timeStepToDisplay);
+    public void addFrame(Integer frameNumber) {
+        if (!containsFrame(frameNumber)) {
+            listOfFrameNumbers.add(frameNumber);
+        }
     }
 
     /**
      * Remove frame from list of ground-truth frames.
-     * @param timeStepToDisplay
+     *
+     * @param frameNumber
      */
-    public void removeFrame(Integer timeStepToDisplay) {
-        listOfTimeSteps.remove(timeStepToDisplay);
+    public void removeFrame(Integer frameNumber) {
+        if (containsFrame(frameNumber)) {
+            listOfFrameNumbers.remove(frameNumber);
+        }
     }
 
     /**
@@ -44,7 +50,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * @param cellTrackStartingPoints
      */
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) { /* Note: the unused argument cellTrackStartingPoints is to maintain signature compatibility with other exporters */
-        listOfTimeSteps.sort((x, y) -> {
+        listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;
             } else if (x < y) {
@@ -56,8 +62,8 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         ResultTable resultTable = new ResultTable(",");
         ResultTableColumn<Integer> timeStepColumn = resultTable.addColumn(new ResultTableColumn<>("time_step"));
 
-        for (int frameNr : listOfTimeSteps) {
-            timeStepColumn.addValue(frameNr);
+        for (int frameNumber : listOfFrameNumbers) {
+            timeStepColumn.addValue(frameNumber);
         }
 
         File outputFile = new File(outputFolder, "GroundTruthFrames_" + MoMA.getDefaultFilenameDecoration() + ".csv");
@@ -75,13 +81,27 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         }
     }
 
+    /**
+     * Write paths to the input-image and the image containing the ground-truth cell-masks.
+     *
+     * @param out
+     * @param inputImagePath
+     * @param cellMaskImagePath
+     * @throws IOException
+     */
     private void writeImagePaths(OutputStreamWriter out, String inputImagePath, String cellMaskImagePath) throws IOException {
         out.write("input_image=" + inputImagePath + "\n");
         out.write("ground_truth_mask_image=" + cellMaskImagePath + "\n");
         out.write("\n");
     }
 
-    public boolean containsFrame(int timeStepToDisplay) {
-        return listOfTimeSteps.contains(timeStepToDisplay);
+    /**
+     * Return, whether the frame is already in the list.
+     *
+     * @param frameNumber
+     * @return
+     */
+    public boolean containsFrame(int frameNumber) {
+        return listOfFrameNumbers.contains(frameNumber);
     }
 }

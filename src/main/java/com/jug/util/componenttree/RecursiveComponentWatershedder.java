@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
@@ -26,7 +25,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 
-public class RecursiveComponentWatershedder<T extends Type<T>, C extends Component<T, C>> {
+public class RecursiveComponentWatershedder<T extends Type<T>> {
     private final OpService ops;
 
     public RecursiveComponentWatershedder(OpService ops) {

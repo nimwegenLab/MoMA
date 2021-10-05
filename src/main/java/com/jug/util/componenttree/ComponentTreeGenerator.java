@@ -1,7 +1,6 @@
 package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
-import net.imagej.ops.OpService;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -19,10 +18,10 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
-    private OpService ops;
+    private RecursiveComponentWatershedder recursiveComponentWatershedder;
 
-    public ComponentTreeGenerator(OpService ops) {
-        this.ops = ops;
+    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder) {
+        this.recursiveComponentWatershedder = recursiveComponentWatershedder;
     }
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
@@ -60,7 +59,7 @@ public class ComponentTreeGenerator {
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
 
         // watershed components into their parent-components
-        tree = new RecursiveComponentWatershedder(ops).recursivelyWatershedComponents(tree);
+        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
 
         return tree;
     }

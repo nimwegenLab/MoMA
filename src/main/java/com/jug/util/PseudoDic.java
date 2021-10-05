@@ -8,6 +8,7 @@ import com.jug.export.MixtureModelFit;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.ComponentTreeGenerator;
+import com.jug.util.componenttree.RecursiveComponentWatershedder;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
@@ -27,15 +28,17 @@ public class PseudoDic {
     private final ComponentTreeGenerator componentTreeGenerator;
     private final Imglib2Utils imglib2utils;
     private final GroundTruthFramesExporter groundTruthFramesExporter;
+    private final RecursiveComponentWatershedder recursiveComponentWatershedder;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
         ops = context.service(OpService.class);
-        componentTreeGenerator = new ComponentTreeGenerator(ops);
+        imglib2utils = new Imglib2Utils(ops);
+        recursiveComponentWatershedder = new RecursiveComponentWatershedder(ops);
+        componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_GROWTH_RATE);
-        imglib2utils = new Imglib2Utils(ops);
         componentProperties = new ComponentProperties(ops, imglib2utils);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter();

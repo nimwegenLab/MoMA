@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentTreeGenerator;
+import com.jug.util.componenttree.RecursiveComponentWatershedder;
 import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.GRBException;
 import net.imagej.ImageJ;
@@ -40,8 +41,8 @@ public class GrowthlaneTrackingIlpTest {
 
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(ij.op()).buildIntensityTree(imageProviderMock, frameIndex);
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(ij.op()).buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(new RecursiveComponentWatershedder(ij.op())).buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(new RecursiveComponentWatershedder(ij.op())).buildIntensityTree(imageProviderMock, frameIndex);
 
         Growthlane gl = new Growthlane(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();

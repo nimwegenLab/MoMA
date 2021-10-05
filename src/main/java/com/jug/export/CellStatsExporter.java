@@ -6,7 +6,6 @@ import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;

@@ -815,7 +815,7 @@ public class GrowthlaneTrackingILP {
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 
             final DialogGurobiProgress dialog = new DialogGurobiProgress(MoMA.getGuiFrame());
-            final GurobiCallback gcb = new GurobiCallback(dialog);
+            final GurobiCallback gcb = new GurobiCallback(dialog, MoMA.GUROBI_TIME_LIMIT, MoMA.GUROBI_MAX_OPTIMALITY_GAP);
             model.setCallback(gcb);
             if (!MoMA.HEADLESS) {
                 dialog.setVisible(true);

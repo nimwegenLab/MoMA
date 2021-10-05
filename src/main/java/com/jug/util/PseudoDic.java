@@ -41,7 +41,7 @@ public class PseudoDic {
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_GROWTH_RATE);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
-        groundTruthFramesExporter = new GroundTruthFramesExporter();
+        groundTruthFramesExporter = new GroundTruthFramesExporter(MoMA.getDefaultFilenameDecoration());
     }
 
     public Context getSciJavaContext() { return context; }

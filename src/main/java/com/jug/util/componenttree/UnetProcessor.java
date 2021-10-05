@@ -1,11 +1,9 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
 import net.imagej.DatasetService;
-import net.imagej.ops.OpService;
 import net.imglib2.FinalInterval;
 import net.imglib2.img.Img;
 import net.imglib2.loops.LoopBuilder;

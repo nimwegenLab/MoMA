@@ -1,6 +1,5 @@
 package com.jug.export;
 
-import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.Localizable;
@@ -24,9 +23,11 @@ import java.util.List;
 public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
     Img<IntType> imgResult;
+    private String defaultFileNameDecoration;
 
-    public CellMaskExporter(Imglib2Utils imglib2Utils) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils, String defaultFileNameDecoration) {
         this.imglib2Utils = imglib2Utils;
+        this.defaultFileNameDecoration = defaultFileNameDecoration;
     }
 
     private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
@@ -45,7 +46,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
         copySliceOfParentComponents();
-        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif"));
+        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks_" + defaultFileNameDecoration + ".tif"));
     }
 
     private void copySliceOfParentComponents() {

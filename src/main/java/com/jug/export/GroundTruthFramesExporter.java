@@ -1,7 +1,5 @@
 package com.jug.export;
 
-import com.jug.MoMA;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +13,10 @@ import static com.jug.MoMA.IMAGE_PATH;
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
+    private String defaultFilenameDecoration;
 
-    public GroundTruthFramesExporter() {
+    public GroundTruthFramesExporter(String defaultFilenameDecoration) {
+        this.defaultFilenameDecoration = defaultFilenameDecoration;
         listOfFrameNumbers = new ArrayList<>();
     }
 
@@ -66,12 +66,12 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
             timeStepColumn.addValue(frameNumber);
         }
 
-        File outputFile = new File(outputFolder, "GroundTruthFrames_" + MoMA.getDefaultFilenameDecoration() + ".csv");
+        File outputFile = new File(outputFolder, "GroundTruthFrames_" + defaultFilenameDecoration + ".csv");
         String path = outputFile.getAbsolutePath();
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + MoMA.getDefaultFilenameDecoration() + ".tif").getAbsolutePath();
+            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + defaultFilenameDecoration + ".tif").getAbsolutePath();
             writeImagePaths(out, IMAGE_PATH, cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {

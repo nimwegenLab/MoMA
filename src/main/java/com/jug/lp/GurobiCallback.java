@@ -4,7 +4,6 @@ import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBException;
 
-import com.jug.MoMA;
 import com.jug.gui.progress.DialogGurobiProgress;
 
 class GurobiCallback extends GRBCallback {
@@ -15,8 +14,12 @@ class GurobiCallback extends GRBCallback {
 
 	private final DialogGurobiProgress dialog;
 	private double latestGap;
+	private double gurobiTimeLimit;
+	private double gurobiMaxOptimalityGap;
 
-	public GurobiCallback( final DialogGurobiProgress dialog ) { // final GRBVar[] xvars, 
+	public GurobiCallback(final DialogGurobiProgress dialog, double gurobiTimeLimit, double gurobiMaxOptimalityGap) {
+		this.gurobiTimeLimit = gurobiTimeLimit; // final GRBVar[] xvars,
+		this.gurobiMaxOptimalityGap = gurobiMaxOptimalityGap;
 //		lastiter = -GRB.INFINITY;
 		lastnode = -GRB.INFINITY;
 //		vars = xvars;
@@ -73,8 +76,8 @@ class GurobiCallback extends GRBCallback {
 					final int cutcnt = getIntInfo( GRB.CB_MIP_CUTCNT );
 					System.out.println( nodecnt + " " + actnodes + " " + itcnt + " " + objbst + " " + objbnd + " " + solcnt + " " + cutcnt );
 				}
-				if ( runtime > MoMA.GUROBI_TIME_LIMIT ) {
-					if ( Math.abs( objbst - objbnd ) < MoMA.GUROBI_MAX_OPTIMALITY_GAP * ( 1.0 + Math.abs( objbst ) ) ) {
+				if ( runtime > gurobiTimeLimit ) {
+					if ( Math.abs( objbst - objbnd ) < gurobiMaxOptimalityGap * ( 1.0 + Math.abs( objbst ) ) ) {
 						abort();
 					}
 				}

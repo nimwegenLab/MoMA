@@ -61,8 +61,8 @@ public class Imglib2Utils {
     }
 
     @NotNull
-    public <T extends Type<T>> IntervalView<T> getImageSlice(RandomAccessibleInterval<T> imgResult, int channel, int zSlice, int time) {
-        IntervalView<T> slice = Views.hyperSlice(imgResult, 4, time);
+    public <T extends Type<T>> IntervalView<T> getImageSlice(RandomAccessibleInterval<T> rai, int channel, int zSlice, int time) {
+        IntervalView<T> slice = Views.hyperSlice(rai, 4, time);
         slice = Views.hyperSlice(slice, 3, zSlice);
         slice = Views.hyperSlice(slice, 2, channel);
         return slice;

@@ -19,9 +19,11 @@ import java.util.function.Predicate;
  */
 public class ComponentTreeGenerator {
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
+    private ComponentProperties componentPropertiesCalculator;
 
-    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder) {
+    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder, ComponentProperties componentPropertiesCalculator) {
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
+        this.componentPropertiesCalculator = componentPropertiesCalculator;
     }
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
@@ -54,9 +56,9 @@ public class ComponentTreeGenerator {
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         // filter components that do not have siblings
-        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester);
+        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester);
+        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
 
         // watershed components into their parent-components
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);

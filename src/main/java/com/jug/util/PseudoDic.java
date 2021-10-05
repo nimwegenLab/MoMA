@@ -35,11 +35,11 @@ public class PseudoDic {
         ops = context.service(OpService.class);
         imglib2utils = new Imglib2Utils(ops);
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(ops);
-        componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder);
+        componentProperties = new ComponentProperties(ops, imglib2utils);
+        componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_GROWTH_RATE);
-        componentProperties = new ComponentProperties(ops, imglib2utils);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter();
     }

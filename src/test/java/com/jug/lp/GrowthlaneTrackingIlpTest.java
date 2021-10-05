@@ -2,16 +2,16 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.datahandling.IImageProvider;
-import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentTreeGenerator;
-import com.jug.util.componenttree.RecursiveComponentWatershedder;
-import com.jug.util.componenttree.SimpleComponentTree;
+import com.jug.util.componenttree.*;
+import com.jug.util.imglib2.Imglib2Utils;
 import gurobi.GRBException;
 import net.imagej.ImageJ;
+import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
@@ -41,13 +41,26 @@ public class GrowthlaneTrackingIlpTest {
 
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(new RecursiveComponentWatershedder(ij.op())).buildIntensityTree(imageProviderMock, frameIndex);
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) new ComponentTreeGenerator(new RecursiveComponentWatershedder(ij.op())).buildIntensityTree(imageProviderMock, frameIndex);
+
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
 
         Growthlane gl = new Growthlane(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(0));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
+    }
+
+    @NotNull
+    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
+        OpService ops = ij.op();
+        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
+        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
+        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
+        return componentTreeGenerator;
     }
 }

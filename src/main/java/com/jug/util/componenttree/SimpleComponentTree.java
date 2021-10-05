@@ -1,6 +1,5 @@
 package com.jug.util.componenttree;
 
-import com.jug.MoMA;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -35,15 +34,17 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private final Img<IntType> img;
     Integer label = 1;
     private final IComponentTester<T, C> tester;
+    private ComponentProperties componentPropertiesCalculator;
 
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage) {
-        this(componentForest, sourceImage, new DummyComponentTester());
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentPropertiesCalculator) {
+        this(componentForest, sourceImage, new DummyComponentTester(), componentPropertiesCalculator);
     }
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester) {
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
         this.sourceImage = sourceImage;
         this.tester = tester;
+        this.componentPropertiesCalculator = componentPropertiesCalculator;
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         img = ArrayImgs.ints(dims);
@@ -93,7 +94,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, MoMA.dic.getComponentProperties());
+            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, componentPropertiesCalculator);
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -116,7 +117,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private AdvancedComponent<T> CreateTargetChild(AdvancedComponent<T> targetComponent, C sourceChild) {
-        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, MoMA.dic.getComponentProperties());
+        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, componentPropertiesCalculator);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

@@ -8,6 +8,11 @@ import java.util.List;
 
 import static com.jug.MoMA.IMAGE_PATH;
 
+/**
+ * Exporter for the list of frames that were selected as ground truth frames.
+ * This list is written as a CSV. It also contains paths to the input-image and
+ * the image with the ground-truth masks.
+ */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfTimeSteps;
 
@@ -15,19 +20,30 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         listOfTimeSteps = new ArrayList<>();
     }
 
+    /**
+     * Add frame to list of ground-truth frames.
+     * @param timeStepToDisplay
+     */
     public void addFrame(Integer timeStepToDisplay) {
         listOfTimeSteps.add(timeStepToDisplay);
     }
 
+    /**
+     * Remove frame from list of ground-truth frames.
+     * @param timeStepToDisplay
+     */
     public void removeFrame(Integer timeStepToDisplay) {
         listOfTimeSteps.remove(timeStepToDisplay);
     }
 
+    /**
+     * Write list of ground-truth frames to CSV file.
+     * The CSV file also contains the paths to the input-image and the image with ground-truth cell-masks.
+     *
+     * @param outputFolder
+     * @param cellTrackStartingPoints
+     */
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) { /* Note: the unused argument cellTrackStartingPoints is to maintain signature compatibility with other exporters */
-        if (listOfTimeSteps.isEmpty()) {
-            return;
-        }
-
         listOfTimeSteps.sort((x, y) -> {
             if (x > y) {
                 return 1;
@@ -40,7 +56,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         ResultTable resultTable = new ResultTable(",");
         ResultTableColumn<Integer> timeStepColumn = resultTable.addColumn(new ResultTableColumn<>("time_step"));
 
-        for (int frameNr : listOfTimeSteps){
+        for (int frameNr : listOfTimeSteps) {
             timeStepColumn.addValue(frameNr);
         }
 

@@ -6,10 +6,21 @@ import java.io.File;
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+
 import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class MoMATest {
-    public static void main(String[] args){
+    //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
+//    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__micha__Documents__01_work/MoMA/test_datasets";
+    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/";
+
+//-i
+///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
+//##########################################################
+//        -i
+///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
+
+    public static void main(String[] args) {
         MoMATest tests = new MoMATest();
         // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
@@ -50,17 +61,6 @@ public class MoMATest {
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
 //        tests._cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
     }
-
-//-i
-///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
-//##########################################################
-//        -i
-///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
-
-//    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
-//    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__micha__Documents__01_work/MoMA/test_datasets";
-    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/";
-
 
     @Test
     public void _cell_fragments__thomas_20200922__Pos16_GL19() {
@@ -276,7 +276,6 @@ public class MoMATest {
     }
 
 
-
     @Test
     public void _cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16() {
         String inputPath = datasets_base_path + "/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif";
@@ -353,7 +352,7 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
         MoMA moma = new MoMA();
-        moma.HEADLESS = true;
+        MoMA.HEADLESS = true;
         MoMA.main(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
@@ -423,6 +422,7 @@ public class MoMATest {
      * Delete preexisting probability maps. During testing, we often want to test the generation
      * of the probability maps, which are cached to disk and loaded, if they exist for a given model.
      * This function removes those cached files to always run the U-Net preprocessing.
+     *
      * @param path
      */
     private void remove_probability_maps(String path) {

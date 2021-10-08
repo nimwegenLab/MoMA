@@ -67,12 +67,12 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
             timeStepColumn.addValue(frameNumber);
         }
 
-        File outputFile = new File(outputFolder, "GroundTruthFrames_" + defaultFilenameDecorationSupplier.get() + ".csv");
+        File outputFile = new File(outputFolder, "GroundTruthFrames__" + defaultFilenameDecorationSupplier.get() + ".csv");
         String path = outputFile.getAbsolutePath();
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
+            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks__" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
             writeImagePaths(out, IMAGE_PATH, cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {

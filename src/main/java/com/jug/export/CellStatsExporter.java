@@ -48,14 +48,14 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
         /* Export cell tracks */
-        exportTracks(new File(outputFolder, "ExportedTracks_" + MoMA.getDefaultFilenameDecoration() + ".csv"));
+        exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 
         /* Export user inputs to the tracking algorithm */
         final int tmin = MoMA.getMinTime();
         final int tmax = MoMA.getMaxTime();
         final File file =
                 new File(outputFolder, String.format(
-                        "[%d-%d]_%s.moma",
+                        "[%d-%d]__%s.moma",
                         tmin,
                         tmax,
                         MoMA.getDefaultFilenameDecoration()));
@@ -63,7 +63,7 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
         long avgXpos = firstGLF.getAvgXpos();
-        exportCellStats(new File(outputFolder, "ExportedCellStats_" + MoMA.getDefaultFilenameDecoration() + ".csv"),
+        exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                 cellTrackStartingPoints,
                 avgXpos);
         // always export mmproperties

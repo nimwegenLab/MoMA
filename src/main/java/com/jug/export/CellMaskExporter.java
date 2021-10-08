@@ -46,7 +46,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
         copySliceOfParentComponents();
-        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks_" + defaultFileNameDecoration + ".tif"));
+        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks__" + defaultFileNameDecoration + ".tif"));
     }
 
     private void copySliceOfParentComponents() {

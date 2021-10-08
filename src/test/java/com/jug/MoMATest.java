@@ -22,7 +22,7 @@ public class MoMATest {
 
     public static void main(String[] args) {
         MoMATest tests = new MoMATest();
-        // TODO-MM-20191120: User tmin and tmax instead of having multiple duplicated datasets, with different frame-ranges.
+        tests._cell_fragments__lis_20201119_Pos6_GL6();
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
@@ -33,7 +33,7 @@ public class MoMATest {
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30(); /* nice example for lysing cells */
-        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
+//        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -60,6 +60,17 @@ public class MoMATest {
 //        tests._20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01();
 //        tests._20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
 //        tests._cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15();
+    }
+
+//    /media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6
+
+    @Test
+    public void _cell_fragments__lis_20201119_Pos6_GL6() {
+        String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6.tif";
+        String outputPath = datasets_base_path + "000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/output/";
+        Integer tmin = 0;
+        Integer tmax = 480;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
     @Test

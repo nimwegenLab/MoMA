@@ -3,6 +3,7 @@ package com.jug.export;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static com.jug.MoMA.IMAGE_PATH;
 
@@ -13,10 +14,10 @@ import static com.jug.MoMA.IMAGE_PATH;
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
-    private String defaultFilenameDecoration;
+    private Supplier<String> defaultFilenameDecorationSupplier;
 
-    public GroundTruthFramesExporter(String defaultFilenameDecoration) {
-        this.defaultFilenameDecoration = defaultFilenameDecoration;
+    public GroundTruthFramesExporter(Supplier<String> defaultFilenameDecorationSupplier) {
+        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         listOfFrameNumbers = new ArrayList<>();
     }
 
@@ -66,12 +67,12 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
             timeStepColumn.addValue(frameNumber);
         }
 
-        File outputFile = new File(outputFolder, "GroundTruthFrames_" + defaultFilenameDecoration + ".csv");
+        File outputFile = new File(outputFolder, "GroundTruthFrames_" + defaultFilenameDecorationSupplier.get() + ".csv");
         String path = outputFile.getAbsolutePath();
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + defaultFilenameDecoration + ".tif").getAbsolutePath();
+            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks_" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
             writeImagePaths(out, IMAGE_PATH, cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {

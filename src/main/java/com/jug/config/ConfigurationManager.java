@@ -112,6 +112,8 @@ public class ConfigurationManager {
      */
     public static double MAXIMUM_GROWTH_RATE = 1.5;
 
+    public static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = false;
+
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public static void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory){
@@ -124,6 +126,8 @@ public class ConfigurationManager {
         DEFAULT_PATH = props.getProperty( "DEFAULT_PATH", DEFAULT_PATH );
         CELL_LABELS = props.getProperty( "CELL_LABELS", CELL_LABELS);
         CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));
+
+        GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = parseBooleanFromIntegerValue("GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
 
         GUROBI_TIME_LIMIT = Double.parseDouble( props.getProperty( "GUROBI_TIME_LIMIT", Double.toString( GUROBI_TIME_LIMIT ) ) );
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble( props.getProperty( "GUROBI_MAX_OPTIMALITY_GAP", Double.toString( GUROBI_MAX_OPTIMALITY_GAP ) ) );
@@ -264,9 +268,20 @@ public class ConfigurationManager {
             props.setProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION));
             props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
+            setBooleanAsIntegerValue(props, "GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+
             props.store( out, "MotherMachine properties" );
         } catch ( final Exception e ) {
             e.printStackTrace();
         }
+    }
+
+    private static boolean parseBooleanFromIntegerValue(String key, boolean defaultValue) {
+        int defaultValueAsInt = defaultValue ? 1 : 0;
+        return Integer.parseInt( props.getProperty( key, Integer.toString(defaultValueAsInt) ) ) == 1;
+    }
+
+    private static void setBooleanAsIntegerValue(Properties props, String key, boolean value){
+        props.setProperty(key, Integer.toString(value ? 1 : 0));
     }
 }

@@ -22,7 +22,7 @@ public class MoMATest {
 
     public static void main(String[] args) {
         MoMATest tests = new MoMATest();
-        tests._cell_fragments__lis_20201119_Pos6_GL6();
+//        tests._cell_fragments__lis_20201119_Pos6_GL6();
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
@@ -33,7 +33,7 @@ public class MoMATest {
 //        tests._ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35();
 //        tests._export_failure__theo_20210517__Pos8_GL11();
 //        tests._lysing_cell__thomas_20200922__Pos0_GL30(); /* nice example for lysing cells */
-//        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
+        tests._lysing_cell__thomas_20200922__Pos16_GL17(); /* nice example for lysing cells */
 //        tests._lis_20210303__Pos0_GL14();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL15();
 //        tests._theo__20210126_glc_spcm_1__Pos1_GL14();
@@ -175,8 +175,8 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL17.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
         Integer tmin = 0;
-        Integer tmax = 5;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        Integer tmax = 20;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true);
 //        startMoma(false, inputPath, outputPath, tmin, tmax, true);
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }

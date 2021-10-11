@@ -48,7 +48,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 	private static ConfigurationManager configurationManager;
-	private static boolean showGroundTruthExportFunctionality;
+//	private static boolean showGroundTruthExportFunctionality;
 
 	static {
 		LegacyInjector.preinit();
@@ -251,7 +251,8 @@ public class MoMA implements IImageProvider {
 		}
 
 		if ( cmd.hasOption( "ground_truth_export" ) ) {
-			showGroundTruthExportFunctionality = true;
+//			showGroundTruthExportFunctionality = true;
+			configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
 		}
 
 		File inputFolder = null;
@@ -496,7 +497,7 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance(), showGroundTruthExportFunctionality);
+		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
 
 
 		if ( !HEADLESS ) {

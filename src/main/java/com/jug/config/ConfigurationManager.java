@@ -11,9 +11,10 @@ import java.util.Properties;
 
 import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
+import static com.jug.development.featureflags.FeatureFlags.featureFlagFilterAssignmentsByComponentSizeMatch;
 
 
-public class ConfigurationManager {
+public class ConfigurationManager implements ITrackingConfiguration {
     public static int DEFAULT_GUI_POS_X = 100;
     private static File currentPropertyFile;
 
@@ -110,7 +111,7 @@ public class ConfigurationManager {
     /**
      * Shortest time in which we can expect a cell-doubling provided as number of frames.
      */
-    public static double MAXIMUM_GROWTH_RATE = 1.5;
+    public static double MAXIMUM_GROWTH_RATE = 1.5; /* Note: This value is used through the interface ITrackingConfiguration. */
 
     public static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = false;
 
@@ -283,5 +284,19 @@ public class ConfigurationManager {
 
     private static void setBooleanAsIntegerValue(Properties props, String key, boolean value){
         props.setProperty(key, Integer.toString(value ? 1 : 0));
+    }
+
+    /************************ Config interfaces implementation **********************************/
+
+    /**
+     * Defines whether to use a limit for the maximum allowed growth rate.
+     * @return
+     */
+    public boolean filterAssignmentsByMaximalGrowthRate() {
+        return !GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY && featureFlagFilterAssignmentsByComponentSizeMatch; /* If we are using the GT export functionality, we do not want to filter by size difference, because this might remove relevant components. */
+    }
+
+    public double getMaximumGrowthRate(){
+        return MAXIMUM_GROWTH_RATE;
     }
 }

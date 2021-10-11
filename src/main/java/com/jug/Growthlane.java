@@ -88,7 +88,7 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = GRBModelFactory.getModel();
-		ilp = new GrowthlaneTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester() );
+		ilp = new GrowthlaneTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration() );
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

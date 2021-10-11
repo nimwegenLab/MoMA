@@ -108,7 +108,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_GROWTH_RATE),
                                 () -> {
                                     ConfigurationManager.MAXIMUM_GROWTH_RATE = newValue;
-                                    assignmentPlausibilityTester.setMaximumRelativeSizeChangeBetweenFrames(newValue);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;

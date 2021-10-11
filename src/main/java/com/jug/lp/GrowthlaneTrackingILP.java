@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -28,7 +29,6 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.development.featureflags.FeatureFlags.featureFlagFilterAssignmentsByComponentSizeMatch;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
@@ -64,17 +64,23 @@ public class GrowthlaneTrackingILP {
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
     private final IImageProvider imageProvider;
+    private ITrackingConfiguration trackingConfiguration;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthlaneTrackingILP(final Growthlane gl, IGRBModelAdapter grbModel, IImageProvider imageProvider, AssignmentPlausibilityTester assignmentPlausibilityTester) {
+    public GrowthlaneTrackingILP(final Growthlane gl,
+                                 IGRBModelAdapter grbModel,
+                                 IImageProvider imageProvider,
+                                 AssignmentPlausibilityTester assignmentPlausibilityTester,
+                                 ITrackingConfiguration trackingConfiguration) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
         this.imageProvider = imageProvider;
+        this.trackingConfiguration = trackingConfiguration;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -404,7 +410,7 @@ public class GrowthlaneTrackingILP {
 
             for (final AdvancedComponent<FloatType> targetComponent : targetComponents) {
 //            for (final AdvancedComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
-                if (featureFlagFilterAssignmentsByComponentSizeMatch) {
+                if (trackingConfiguration.filterAssignmentsByMaximalGrowthRate()) {
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
                         continue;
                     }
@@ -585,7 +591,7 @@ public class GrowthlaneTrackingILP {
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (featureFlagFilterAssignmentsByComponentSizeMatch) {
+                    if (trackingConfiguration.filterAssignmentsByMaximalGrowthRate()) {
                         if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                             continue;
                         }

@@ -26,7 +26,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private static final long serialVersionUID = -5529104109524798394L;
 	private final PropEditedListener propEditListener = new PropEditedListener();
     private static Component parent = null;
-    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final PropFactory propFactory;
     private PropertySheetPanel sheet;
 
@@ -236,11 +235,10 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor(final Component parent, final Properties props, AssignmentPlausibilityTester assignmentPlausibilityTester) {
+	public DialogPropertiesEditor(final Component parent, final Properties props) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
         propFactory = new PropFactory();
 		this.parent = parent;
-        this.assignmentPlausibilityTester = assignmentPlausibilityTester;
 		this.dialogInit();
 		this.setModal( true );
 

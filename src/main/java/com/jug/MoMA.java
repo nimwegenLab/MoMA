@@ -875,21 +875,6 @@ public class MoMA implements IImageProvider {
 	}
 
 	/**
-	 * Removes the value values[i] from all columns in row i of the given view.
-	 *
-	 * @param view
-	 * @param values
-	 */
-	private void removeValuesFromRows( final IntervalView< FloatType > view, final float[] values ) {
-		for ( int i = ( int ) view.min( 1 ); i <= view.max( 1 ); i++ ) {
-			final Cursor< FloatType > cursor = Views.iterable( Views.hyperSlice( view, 1, i ) ).cursor();
-			while ( cursor.hasNext() ) {
-				cursor.next().set( new FloatType( Math.max( 0, cursor.get().get() - values[ i - ( int ) view.min( 1 ) ] ) ) );
-			}
-		}
-	}
-
-	/**
      * NOTE: This method is kept to be compatible with down-stream code.
 	 * Write the centers of the growth line given in 'imgTemp'. Since it is centered
      * in the image, we set the coordinates to the center of the image. Note, that

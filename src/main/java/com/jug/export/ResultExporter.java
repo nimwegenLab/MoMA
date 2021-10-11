@@ -7,16 +7,10 @@ import java.io.File;
 import java.util.List;
 
 public class ResultExporter {
-    private CellStatsExporter cellStatsExporter;
-    private CellMaskExporter groundTruthExporter;
-    private GroundTruthFramesExporter groundTruthFramesExporter;
     private List<ResultExporterInterface> exporters;
 
     public ResultExporter(List<ResultExporterInterface> exporters) {
         this.exporters = exporters;
-        this.cellStatsExporter = cellStatsExporter;
-        this.groundTruthExporter = groundTruthExporter;
-        this.groundTruthFramesExporter = groundTruthFramesExporter;
     }
 
     public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {

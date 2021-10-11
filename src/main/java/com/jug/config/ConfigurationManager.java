@@ -11,7 +11,6 @@ import java.util.Properties;
 
 import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
-import static com.jug.development.featureflags.FeatureFlags.featureFlagFilterAssignmentsByComponentSizeMatch;
 
 
 public class ConfigurationManager implements ITrackingConfiguration {
@@ -293,7 +292,7 @@ public class ConfigurationManager implements ITrackingConfiguration {
      * @return
      */
     public boolean filterAssignmentsByMaximalGrowthRate() {
-        return !GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY && featureFlagFilterAssignmentsByComponentSizeMatch; /* If we are using the GT export functionality, we do not want to filter by size difference, because this might remove relevant components. */
+        return !GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* If we are using the GT export functionality, we do not want to filter by size difference, because this might remove relevant components. */
     }
 
     public double getMaximumGrowthRate(){

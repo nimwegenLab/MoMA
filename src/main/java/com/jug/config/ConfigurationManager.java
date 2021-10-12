@@ -13,7 +13,7 @@ import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
-public class ConfigurationManager implements ITrackingConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration {
     public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
     /**
      * One of the test for paper:
@@ -279,5 +279,9 @@ public class ConfigurationManager implements ITrackingConfiguration {
 
     public double getMaximumGrowthRate() {
         return MAXIMUM_GROWTH_RATE;
+    }
+
+    public int getCellDetectionRoiOffsetTop() {
+        return CELL_DETECTION_ROI_OFFSET_TOP;
     }
 }

@@ -10,6 +10,7 @@ import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.RecursiveComponentWatershedder;
+import com.jug.util.componenttree.UnetProcessor;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
@@ -30,6 +31,7 @@ public class PseudoDic {
     private final Imglib2Utils imglib2utils;
     private final GroundTruthFramesExporter groundTruthFramesExporter;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
+    private final UnetProcessor unetProcessor;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
@@ -43,6 +45,8 @@ public class PseudoDic {
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        unetProcessor = new UnetProcessor(getSciJavaContext());
+        unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
     }
 
     public Context getSciJavaContext() { return context; }
@@ -81,5 +85,9 @@ public class PseudoDic {
 
     public ITrackingConfiguration getTrackingConfiguration() {
         return configurationManager;
+    }
+
+    public UnetProcessor getUnetProcessor() {
+        return unetProcessor;
     }
 }

@@ -913,8 +913,7 @@ public class MoMA implements IImageProvider {
 	}
 
 	private Img<FloatType> processImageOrLoadFromDisk() {
-		UnetProcessor unetProcessor = new UnetProcessor(MoMA.dic.getSciJavaContext());
-		unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
+		UnetProcessor unetProcessor = dic.getUnetProcessor();
 		String checksum = unetProcessor.getModelChecksum();
 
 		/**

@@ -2,7 +2,6 @@ package com.jug.gui;
 
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
-import com.jug.lp.AssignmentPlausibilityTester;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -72,6 +71,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
                                         ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
+                                        MoMA.dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                         MoMA.props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
                                                 "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);

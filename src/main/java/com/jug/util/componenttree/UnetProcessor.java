@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.util.Hash;
 import de.csbdresden.csbdeep.commands.GenericNetwork;
 import net.imagej.Dataset;
@@ -30,8 +31,10 @@ public class UnetProcessor {
     private long model_input_width;
     private final CommandService commandService;
     private final DatasetService datasetService;
+    private IUnetProcessingConfiguration unetProcessingConfiguration;
 
-    public UnetProcessor(Context context){
+    public UnetProcessor(Context context, IUnetProcessingConfiguration unetProcessingConfiguration){
+        this.unetProcessingConfiguration = unetProcessingConfiguration;
         model_input_width = 32;  // TODO-MM-20210723: This should be a user-parameter under in the segmentation section of the config editor.
         commandService = context.service(CommandService.class);
         datasetService = context.service(DatasetService.class);
@@ -118,7 +121,7 @@ public class UnetProcessor {
         long start_index_horz = img.dimension(0)/2 - model_input_width/2;
         long end_index_horz = start_index_horz + model_input_width - 1;
         return new FinalInterval(
-                new long[]{start_index_horz, img.min(1), 0},
+                new long[]{start_index_horz, unetProcessingConfiguration.getCellDetectionRoiOffsetTop(), 0},
                 new long[]{end_index_horz, img.max(1), img.max(2)}
         );
     }

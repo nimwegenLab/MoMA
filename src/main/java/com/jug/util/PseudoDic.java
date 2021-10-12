@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
+import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
@@ -36,16 +37,16 @@ public class PseudoDic {
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
         ops = context.service(OpService.class);
-        imglib2utils = new Imglib2Utils(ops);
-        recursiveComponentWatershedder = new RecursiveComponentWatershedder(ops);
-        componentProperties = new ComponentProperties(ops, imglib2utils);
+        imglib2utils = new Imglib2Utils(getImageJOpService());
+        recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
+        componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
-        unetProcessor = new UnetProcessor(getSciJavaContext());
+        unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
         unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
     }
 
@@ -89,5 +90,9 @@ public class PseudoDic {
 
     public UnetProcessor getUnetProcessor() {
         return unetProcessor;
+    }
+
+    public IUnetProcessingConfiguration getUnetProcessorConfiguration(){
+        return configurationManager;
     }
 }

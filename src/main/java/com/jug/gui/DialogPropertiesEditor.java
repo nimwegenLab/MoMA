@@ -110,7 +110,11 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     MoMA.props.setProperty(
                                             "CELL_DETECTION_ROI_OFFSET_TOP",
                                             "" + ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
-                                    ((MoMAGui) parent).restartTrackingAsync();
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
                                 });
                         break;
                     }

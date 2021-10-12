@@ -1,15 +1,17 @@
 package com.jug.lp;
 
+import com.jug.config.ITrackingConfiguration;
+
 /**
  * Methods in this class are used to test whether the combination of components in assignments are physically plausible.
  * They are used to determine whether an assignment should be added to the optimizer.
  */
 public class AssignmentPlausibilityTester {
 
-    private double maximumRelativeSizeChangeBetweenFrames;
+    private ITrackingConfiguration trackingConfiguration;
 
-    public AssignmentPlausibilityTester(double maximumRelativeSizeChangeBetweenFrames) {
-        setMaximumRelativeSizeChangeBetweenFrames(maximumRelativeSizeChangeBetweenFrames);
+    public AssignmentPlausibilityTester(ITrackingConfiguration trackingConfiguration) {
+        this.trackingConfiguration = trackingConfiguration;
     }
 
     /**
@@ -21,15 +23,7 @@ public class AssignmentPlausibilityTester {
      */
     public boolean sizeDifferenceIsPlausible(double sourceComponentSize, double totalTargetComponentSize) {
         double foldChange = totalTargetComponentSize / sourceComponentSize;
-        boolean res = foldChange <= maximumRelativeSizeChangeBetweenFrames;
+        boolean res = foldChange <= trackingConfiguration.getMaximumGrowthRate();
         return res;
-    }
-
-    public double getMaximumRelativeSizeChangeBetweenFrames() {
-        return this.maximumRelativeSizeChangeBetweenFrames;
-    }
-
-    public void setMaximumRelativeSizeChangeBetweenFrames(double maximumRelativeSizeChangeBetweenFrames) {
-        this.maximumRelativeSizeChangeBetweenFrames = maximumRelativeSizeChangeBetweenFrames;
     }
 }

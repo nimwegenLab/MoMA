@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
+import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -49,7 +50,7 @@ public class GrowthlaneTrackingIlpTest {
 
         Growthlane gl = new Growthlane(imageProviderMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(0));
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock());
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }
@@ -62,5 +63,18 @@ public class GrowthlaneTrackingIlpTest {
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
         return componentTreeGenerator;
+    }
+
+    class TrackingConfigMock implements ITrackingConfiguration {
+
+        @Override
+        public boolean filterAssignmentsByMaximalGrowthRate() {
+            return false;
+        }
+
+        @Override
+        public double getMaximumGrowthRate() {
+            return 0;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.jug.util;
 
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
@@ -39,7 +40,7 @@ public class PseudoDic {
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester(ConfigurationManager.MAXIMUM_GROWTH_RATE);
+        assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
     }
@@ -77,4 +78,8 @@ public class PseudoDic {
     public Imglib2Utils getImglib2utils() { return imglib2utils; }
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
+
+    public ITrackingConfiguration getTrackingConfiguration() {
+        return configurationManager;
+    }
 }

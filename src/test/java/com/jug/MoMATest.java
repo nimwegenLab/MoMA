@@ -69,7 +69,7 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6.tif";
         String outputPath = datasets_base_path + "000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/output/";
         Integer tmin = 0;
-        Integer tmax = 480;
+        Integer tmax = 200;
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
@@ -175,8 +175,9 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL17.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
         Integer tmin = 0;
-        Integer tmax = 5;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        Integer tmax = 20;
+//        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true);
 //        startMoma(false, inputPath, outputPath, tmin, tmax, true);
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }

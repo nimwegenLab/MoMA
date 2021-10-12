@@ -115,7 +115,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.momaInstance = momaInstance;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
 
-        propsEditor = new DialogPropertiesEditor(this, MoMA.props, MoMA.dic.getAssignmentPlausibilityTester());
+        propsEditor = new DialogPropertiesEditor(this, MoMA.props);
 
         buildGui();
         dataToDisplayChanged();

@@ -99,6 +99,21 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
+                    case "CELL_DETECTION_ROI_OFFSET_TOP": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP,
+                                () -> sourceProperty.setValue(ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP),
+                                () -> {
+                                    ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP = newValue;
+                                    MoMA.props.setProperty(
+                                            "CELL_DETECTION_ROI_OFFSET_TOP",
+                                            "" + ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
                     case "MAXIMUM_GROWTH_RATE": {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -202,6 +217,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setEditable(true);
                     break;
                 case "GL_OFFSET_TOP":
+                case "CELL_DETECTION_ROI_OFFSET_TOP":
                 case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);

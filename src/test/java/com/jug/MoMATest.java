@@ -70,7 +70,7 @@ public class MoMATest {
         String outputPath = datasets_base_path + "000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/output/";
         Integer tmin = 120;
         Integer tmax = 200;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true);
+        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     @Test

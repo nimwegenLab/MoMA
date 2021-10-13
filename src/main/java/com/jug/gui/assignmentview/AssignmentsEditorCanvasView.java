@@ -236,6 +236,15 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
+
+        polygon = new GeneralPath();
+        polygon.moveTo(x1, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.lineTo(this.width, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.closePath();
+        g.setPaint(Color.BLUE.darker());
+        g.setStroke(solidStroke);
+        g.draw(polygon);
+
     }
 
     private void drawCostTooltip(Graphics2D g2) {

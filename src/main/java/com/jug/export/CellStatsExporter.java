@@ -110,15 +110,16 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
         ResultTableColumn<Integer> parentIdCol = resultTable.addColumn(new ResultTableColumn<>("parent_ID"));
         ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("cells_in_lane"));
-        ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top px"));
-        ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom px"));
-        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x px", "%.5f"));
-        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y px", "%.5f"));
-        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width px", "%.5f"));
-        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length px", "%.5f"));
-        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt rad", "%.5f"));
-        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area px"));
-        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area px"));
+        ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top_px"));
+        ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom_px"));
+        ResultTableColumn<Integer> touchesCellDetectionRoiTopCol = resultTable.addColumn(new ResultTableColumn<>("touches_detection_roi_top"));
+        ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x_px", "%.5f"));
+        ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y_px", "%.5f"));
+        ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
+        ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
+        ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
+        ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area_px"));
+        ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
         ResultTableColumn<Double> phaseContrastCoefficientOfVariation = resultTable.addColumn(new ResultTableColumn<>("phc_intensity_coefficient_of_variation", "%.5f"));
 
@@ -177,8 +178,17 @@ public class CellStatsExporter implements ResultExporterInterface {
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);
                 numberOfCellsInLaneCol.addValue(numCells);
-                boundingBoxTopCol.addValue(limits.getA());
+                Integer cellBboxTop = limits.getA();
+                boundingBoxTopCol.addValue(cellBboxTop);
                 boundingBoxBottomCol.addValue(limits.getB());
+
+                if (cellBboxTop <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP){
+                    touchesCellDetectionRoiTopCol.addValue(1);
+                }
+                else{
+                    touchesCellDetectionRoiTopCol.addValue(0);
+                }
+
                 ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
                 cellCenterXCol.addValue(center.getA());
                 cellCenterYCol.addValue(center.getB());

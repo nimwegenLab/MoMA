@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
+import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
@@ -10,6 +11,7 @@ import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.ComponentProperties;
 import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.RecursiveComponentWatershedder;
+import com.jug.util.componenttree.UnetProcessor;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
@@ -30,19 +32,22 @@ public class PseudoDic {
     private final Imglib2Utils imglib2utils;
     private final GroundTruthFramesExporter groundTruthFramesExporter;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
+    private final UnetProcessor unetProcessor;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         context = new Context();
         ops = context.service(OpService.class);
-        imglib2utils = new Imglib2Utils(ops);
-        recursiveComponentWatershedder = new RecursiveComponentWatershedder(ops);
-        componentProperties = new ComponentProperties(ops, imglib2utils);
+        imglib2utils = new Imglib2Utils(getImageJOpService());
+        recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
+        componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
+        unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
     }
 
     public Context getSciJavaContext() { return context; }
@@ -80,6 +85,14 @@ public class PseudoDic {
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
 
     public ITrackingConfiguration getTrackingConfiguration() {
+        return configurationManager;
+    }
+
+    public UnetProcessor getUnetProcessor() {
+        return unetProcessor;
+    }
+
+    public IUnetProcessingConfiguration getUnetProcessorConfiguration(){
         return configurationManager;
     }
 }

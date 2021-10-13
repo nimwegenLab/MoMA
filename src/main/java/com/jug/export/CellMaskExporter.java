@@ -1,7 +1,9 @@
 package com.jug.export;
 
+import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.imglib2.Imglib2Utils;
+import net.imglib2.FinalInterval;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -11,6 +13,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 
 import java.io.File;
 import java.util.List;
@@ -58,8 +61,19 @@ public class CellMaskExporter implements ResultExporterInterface {
         }
     }
 
+    private FinalInterval getRoiForSaving(Img<?> img) {
+        long start_index_horz = 0;
+        long end_index_horz = img.max(0);
+        return new FinalInterval(
+                new long[]{start_index_horz, MoMA.dic.getConfigurationManager().CELL_DETECTION_ROI_OFFSET_TOP, 0, 0, 0},
+                new long[]{end_index_horz, img.max(1), 0, 0, img.max(4)}
+        );
+    }
+
     private void saveResultImageToFile(File outputFile) {
-        imglib2Utils.saveImage(imgResult, outputFile.getAbsolutePath());
+        FinalInterval roiForNetworkProcessing = getRoiForSaving(imgResult);
+        IntervalView<IntType> toSave = Views.interval(imgResult, roiForNetworkProcessing);
+        imglib2Utils.saveImage(toSave, outputFile.getAbsolutePath());
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {

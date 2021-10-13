@@ -2,7 +2,6 @@ package com.jug.gui;
 
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
-import com.jug.lp.AssignmentPlausibilityTester;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -72,6 +71,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
                                         ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
+                                        MoMA.dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                         MoMA.props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
                                                 "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
@@ -96,6 +96,25 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.GL_OFFSET_TOP);
                                     ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
+                    case "CELL_DETECTION_ROI_OFFSET_TOP": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP,
+                                () -> sourceProperty.setValue(ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP),
+                                () -> {
+                                    ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP = newValue;
+                                    MoMA.props.setProperty(
+                                            "CELL_DETECTION_ROI_OFFSET_TOP",
+                                            "" + ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
                                 });
                         break;
                     }
@@ -202,6 +221,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setEditable(true);
                     break;
                 case "GL_OFFSET_TOP":
+                case "CELL_DETECTION_ROI_OFFSET_TOP":
                 case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);

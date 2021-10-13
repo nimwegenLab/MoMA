@@ -13,7 +13,7 @@ import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
-public class ConfigurationManager implements ITrackingConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration {
     public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
     /**
      * One of the test for paper:
@@ -37,6 +37,10 @@ public class ConfigurationManager implements ITrackingConfiguration {
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
     public static int GL_OFFSET_TOP = 65;
+    /**
+     * Sets the vertical position at the top of the image up to where U-Net will process the image.
+     */
+    public static int CELL_DETECTION_ROI_OFFSET_TOP = 0;
     /**
      * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
      * at the vertical position defined by GL_OFFSET_TOP.
@@ -101,6 +105,7 @@ public class ConfigurationManager implements ITrackingConfiguration {
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt(props.getProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS)));
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
+        CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         MAXIMUM_GROWTH_RATE = Double.parseDouble(props.getProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE)));
         SEGMENTATION_MODEL_PATH = props.getProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
         DEFAULT_PATH = props.getProperty("DEFAULT_PATH", DEFAULT_PATH);
@@ -217,6 +222,7 @@ public class ConfigurationManager implements ITrackingConfiguration {
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
             props.setProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS));
             props.setProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP));
+            props.setProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
             props.setProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
             props.setProperty("DEFAULT_PATH", DEFAULT_PATH);
@@ -273,5 +279,9 @@ public class ConfigurationManager implements ITrackingConfiguration {
 
     public double getMaximumGrowthRate() {
         return MAXIMUM_GROWTH_RATE;
+    }
+
+    public int getCellDetectionRoiOffsetTop() {
+        return CELL_DETECTION_ROI_OFFSET_TOP;
     }
 }

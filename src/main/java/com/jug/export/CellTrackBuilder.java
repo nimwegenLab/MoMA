@@ -62,6 +62,7 @@ public class CellTrackBuilder {
                 final DivisionAssignment da = (DivisionAssignment) rightAssmt;
 
                 prepPoint.parentId = prepPoint.id;
+//                prepPoint.setParentId(prepPoint.id);
                 prepPoint.timeOfBirth = prepPoint.timestep;
 
                 prepPoint.id = nextCellId;

@@ -48,7 +48,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
-        copySliceOfParentComponents();
+//        copySliceOfParentComponents();
         saveResultImageToFile(new File(outputFolder, "ExportedCellMasks__" + defaultFileNameDecoration + ".tif"));
     }
 
@@ -66,7 +66,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         long end_index_horz = img.max(0);
         return new FinalInterval(
                 new long[]{start_index_horz, MoMA.dic.getConfigurationManager().CELL_DETECTION_ROI_OFFSET_TOP, 0, 0, 0},
-                new long[]{end_index_horz, img.max(1), 0, 0, img.max(4)}
+                new long[]{end_index_horz, img.max(1), 0, img.max(3), img.max(4)}
         );
     }
 
@@ -86,10 +86,20 @@ public class CellMaskExporter implements ResultExporterInterface {
 
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
+            int segmentCounter = 0;
             while (segment.exists) {
-                IntervalView<IntType> slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
-                drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.id), slice);
+                IntervalView<IntType> z0slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
+                drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.getId()), z0slice);
+                int sourceSegmentId;
+                if (segmentCounter == 0) { /* I use the cell counter to check, if this is the first segment in the track of the cell. If so we use the cell-ID of the parent-cell because it was a . Else use the ID of the previous instance of this cell, because it was a mapping-assignment in this case. This hack is needed, because I do not have a reference to the source-component from a given target-component. */
+                    sourceSegmentId = segment.getParentId();
+                } else {
+                    sourceSegmentId = segment.getId();
+                }
+                IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 0, 1, segment.timestep);
+                drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
                 segment = segment.nextSegmentInTime();
+                segmentCounter++;
             }
         }
     }

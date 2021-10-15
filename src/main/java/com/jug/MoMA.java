@@ -916,6 +916,23 @@ public class MoMA implements IImageProvider {
 		UnetProcessor unetProcessor = dic.getUnetProcessor();
 
 		Img<FloatType> probabilityMap = unetProcessor.process(imgTemp);
+
+		String checksum = unetProcessor.getModelChecksum();
+		/**
+		 *  generate probability filename
+		 */
+		File file = new File(IMAGE_PATH);
+		if(file.isDirectory()){
+			File[] list = file.listFiles();
+			file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
+		}
+		String outputFolderPath = file.getParent();
+		String filename = removeExtension(file.getName());
+		String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
+
+		ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
+		IJ.saveAsTiff(tmp_image, processedImageFileName);
+
 		return probabilityMap;
 
 //		String checksum = unetProcessor.getModelChecksum();

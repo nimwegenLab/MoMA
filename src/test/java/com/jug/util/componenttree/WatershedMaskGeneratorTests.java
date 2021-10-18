@@ -26,14 +26,16 @@ public class WatershedMaskGeneratorTests {
         String relativeImagePath = "/src/test/resources/test_data/ComponentTreeGeneratorTestsData/lis_20201119__Pos6_GL6/frame_133__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         Img<FloatType> image = readImage(getFullPath(relativeImagePath));
         WatershedMaskGenerator componentMerger = getComponentMerger();
-        Img<BitType> mask = componentMerger.generateMask(image, threshold);
+        Img<BitType> mergedMask = componentMerger.generateMask(image, threshold);
         Imglib2Utils utils = new Imglib2Utils(ij.op());
-        Img<FloatType> maskedImage = utils.maskImage(image, mask, new FloatType(.0f));
+        Img<FloatType> maskedImage = utils.maskImage(image, mergedMask, new FloatType(.0f));
 
         ij.ui().showUI();
-        ij.ui().show(image);
-        ij.ui().show(mask);
-        ij.ui().show(maskedImage);
+//        ij.ui().show("image", image);
+        ij.ui().show("componentMerger.mask:", componentMerger.mask);
+        ij.ui().show("mergedMask", mergedMask);
+//        ij.ui().show("maskedImage", maskedImage);
+//        ij.ui().show("labeling image", componentMerger.labelingImage);
     }
 
     private Img readImage(String imagePath) throws IOException {

@@ -68,8 +68,8 @@ public class MoMATest {
     public void _cell_fragments__lis_20201119_Pos6_GL6() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6.tif";
         String outputPath = datasets_base_path + "000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/output/";
-        Integer tmin = 0;
-        Integer tmax = 200;
+        Integer tmin = 80;
+        Integer tmax = 120;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

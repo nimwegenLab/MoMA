@@ -1,12 +1,15 @@
 package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
+import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
@@ -20,22 +23,26 @@ import java.util.function.Predicate;
 public class ComponentTreeGenerator {
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
+    private WatershedMaskGenerator watershedMaskGenerator;
+    private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder, ComponentProperties componentPropertiesCalculator) {
+    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder,
+                                  ComponentProperties componentPropertiesCalculator,
+                                  WatershedMaskGenerator watershedMaskGenerator,
+                                  Imglib2Utils imglib2Utils) {
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
+        this.watershedMaskGenerator = watershedMaskGenerator;
+        this.imglib2Utils = imglib2Utils;
     }
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
         Img<FloatType> img = imageProvider.getImgProbs();
-        IntervalView<FloatType> raiFkt = Views.hyperSlice(img, 2, frameIndex);
+        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
         float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
-////        Img<FloatType> raiFkt = ((Img<FloatType>) raiFktOrig).copy();
-//        Img<FloatType> raiFkt = new ArrayImgFactory(new FloatType()).create(raiFktOrig.numDimensions());
-//        DataMover.copy(raiFktOrig, (RandomAccessibleInterval<FloatType>) raiFkt);
-////        Img<FloatType> raiFkt = ImgView.wrap(raiFktOrig, new ArrayImgFactory(new FloatType())).copy();
-        setPixelBelowThresholdsToZero(raiFkt, threshold);
+        Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt), threshold);
+        raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
 		final double delta = 0.0001;
 //        final double delta = 0.02;

@@ -4,13 +4,20 @@ import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.ops.OpService;
 import net.imglib2.*;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 public class Imglib2Utils {
@@ -66,6 +73,27 @@ public class Imglib2Utils {
         slice = Views.hyperSlice(slice, 3, zSlice);
         slice = Views.hyperSlice(slice, 2, channel);
         return slice;
+    }
+
+    public <T extends Type<T>> Img<T> maskImage(RandomAccessibleInterval<T> source, RandomAccessibleInterval<BitType> mask, T maskedValue) {
+//        long[] dimensions = new long[source.numDimensions()];
+//        source.dimensions(dimensions);
+//        T type = Util.getTypeFromInterval(source);
+//        Img<T> target = new ArrayImgFactory(type).create(dimensions);
+//        target.factory().imgFactory(source);
+
+        Img<T> sourceImg = ImgView.wrap(source);
+        Img<T> target = sourceImg.copy();
+//        Mask res = Masks.allMask(3);
+//        Masks.masktoMask(mask)
+//        ArrayImgFactory<IntType> imgFactory = new ArrayImgFactory<>(new IntType());
+        LoopBuilder.setImages(target, mask).forEachPixel((dest, msk) -> {
+            if (!msk.get()) {
+                dest.set(maskedValue);
+            }
+        });
+        return target;
+//        throw new NotImplementedException();
     }
 
     /* ATTEMPT 1 TO SAVE IMG TO DISK */

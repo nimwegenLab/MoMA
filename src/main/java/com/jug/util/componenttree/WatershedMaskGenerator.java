@@ -23,15 +23,22 @@ public class WatershedMaskGenerator {
      */
     private int maximumDistanceBetweenComponents;
 
+    float threshold;
+
     public void setMaximumDistanceBetweenComponents(int maximumDistanceBetweenComponents) {
         this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
     }
 
-    public WatershedMaskGenerator(int maximumDistanceBetweenComponents) {
-        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+    public void setThreshold(float threshold) {
+        this.threshold = threshold;
     }
 
-    public Img<BitType> generateMask(Img<FloatType> image, float threshold) {
+    public WatershedMaskGenerator(int maximumDistanceBetweenComponents, float threshold) {
+        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+        this.threshold = threshold;
+    }
+
+    public Img<BitType> generateMask(Img<FloatType> image) {
         Img<BitType> mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
         Img<IntType> labelingImage = createLabelingImage(mask);
         ConnectedComponentAnalysis.connectedComponents(mask, labelingImage);

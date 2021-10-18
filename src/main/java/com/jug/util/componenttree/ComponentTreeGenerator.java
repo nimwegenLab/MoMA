@@ -40,8 +40,7 @@ public class ComponentTreeGenerator {
         Img<FloatType> img = imageProvider.getImgProbs();
         Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
-        float threshold = 0.5f; // TODO-PARAMETRIZE: this should probably become a parameter at some point!
-        Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt), threshold);
+        Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
 		final double delta = 0.0001;

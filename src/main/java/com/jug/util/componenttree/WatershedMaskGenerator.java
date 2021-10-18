@@ -28,7 +28,7 @@ public class WatershedMaskGenerator {
     }
 
     private void mergeDifferingConnectedComponentsInMask(Img<BitType> mergedMask, Img<IntType> labelingImage) {
-        int nrOfNeighbors = 1;
+        int lookAhead = 3;
 //        mergedMask = inputMask.copy();
         ExtendedRandomAccessibleInterval<IntType, Img<IntType>> labelingImageExtended = Views.extendZero(labelingImage); /* extend to avoid running out of bounds */
         ExtendedRandomAccessibleInterval<BitType, Img<BitType>> mergedMaskExtended = Views.extendZero(mergedMask); /* extend to avoid running out of bounds */
@@ -40,47 +40,36 @@ public class WatershedMaskGenerator {
         while (labelingCursor.hasNext()) {
             labelingCursor.next();
             labelingCursor.localize(labelPosition);
-//            int currentLabelValue = labelingCursor.get().getInteger();
-//
-//            if (currentLabelValue == 0) {
-//                continue; /* pixel value is background, so nothing to do */
-//            }
+            int currentLabelValue = labelingCursor.get().getInteger();
+
+            if (currentLabelValue == 0) {
+                continue; /* pixel value is background, so nothing to do */
+            }
 
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
-            int firstComponentValue = -1;
-            for (int i = -nrOfNeighbors; i <= nrOfNeighbors; i++) {
-//                System.out.println("i: " + i);
+            for (int i = 1; i < lookAhead; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
 //                System.out.println("labelPosition: " + labelPosition[0] + "," + labelPosition[1]);
 //                System.out.println("nextPosition: " + nextPosition[0] + "," + nextPosition[1]);
                 labelRandomAccess.setPosition(nextPosition);
-                int pixelValue = labelRandomAccess.get().get();
-                if (pixelValue != 0) {
-                    if(firstComponentValue == -1){
-                        firstComponentValue = pixelValue;
-                    }
-                    else if (pixelValue != firstComponentValue) {
-                        performMergeForThisPixel = true;
-                    }
+                int nextPixelValue = labelRandomAccess.get().get();
+                if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
+                    performMergeForThisPixel = true;
                 }
-//                if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
-//                    performMergeForThisPixel = true;
-//                }
             }
-            int bla = 0;
-//            System.out.println();
+
             if (!performMergeForThisPixel) {
                 continue;
             }
 
-            for (int i = -nrOfNeighbors; i <= nrOfNeighbors; i++) {
+            for (int i = 1; i < lookAhead; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 maskRandomAccess.setPosition(nextPosition);
-//                boolean previousValue = maskRandomAccess.get().get();
+                boolean previousValue = maskRandomAccess.get().get();
 //                System.out.println("position: " + nextPosition[0] + "," + nextPosition[1]);
 //                System.out.println("previousValue 1: " + previousValue);
                 maskRandomAccess.get().setOne();
-//                boolean newValue = maskRandomAccess.get().get();
+                boolean newValue = maskRandomAccess.get().get();
 //                System.out.println("previousValue 2: " + previousValue);
 //                System.out.println("newValue: " + newValue);
 //                System.out.println();

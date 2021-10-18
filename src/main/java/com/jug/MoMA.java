@@ -501,17 +501,19 @@ public class MoMA implements IImageProvider {
 
 
 		if ( !HEADLESS ) {
-			System.out.print( "Build GUI..." );
-			main.showConsoleWindow( false );
+			SwingUtilities.invokeLater(() -> {
+				System.out.print( "Build GUI..." );
+				main.showConsoleWindow(false);
 
-			gui.setVisible( true );
-			guiFrame.add( gui );
-			guiFrame.setSize( configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT );
-			guiFrame.setLocation( configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y );
-			guiFrame.setVisible( true );
-			guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
+				guiFrame.add(gui);
+				guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
+				guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
+				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
-			System.out.println( " done!" );
+				gui.setVisible(true);
+				guiFrame.setVisible(true);
+				System.out.println( " done!" );
+			});
 		} else {
 			gui.exportHtmlOverview();
 			gui.exportDataFiles();

@@ -13,7 +13,20 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 
+/**
+ * This class generates the mask that is used to mask the image before running the component generation.
+ */
 public class WatershedMaskGenerator {
+    /**
+     * The maximum allowed number of pixels between two distinct components in order for the two components to still be
+     * merged connected.
+     */
+    int maximumDistanceBetweenComponents = 0;
+
+    public WatershedMaskGenerator(int maximumDistanceBetweenComponents) {
+        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+    }
+
     public Img<BitType> generateMask(Img<FloatType> image, float threshold) {
         Img<BitType> mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
         Img<IntType> labelingImage = createLabelingImage(mask);
@@ -24,8 +37,7 @@ public class WatershedMaskGenerator {
     }
 
     private void mergeDifferingConnectedComponentsInMask(Img<BitType> mergedMask, Img<IntType> labelingImage) {
-        int lookAhead = 3;
-//        mergedMask = inputMask.copy();
+        int lookAheadDistance = maximumDistanceBetweenComponents + 2; /* +2 because the lookAheadDistance has to include one pixel for each component; whereas maximumDistanceBetweenComponents is the number of pixels between the two components */
         ExtendedRandomAccessibleInterval<IntType, Img<IntType>> labelingImageExtended = Views.extendZero(labelingImage); /* extend to avoid running out of bounds */
         ExtendedRandomAccessibleInterval<BitType, Img<BitType>> mergedMaskExtended = Views.extendZero(mergedMask); /* extend to avoid running out of bounds */
         Cursor<IntType> labelingCursor = labelingImage.localizingCursor();
@@ -43,10 +55,8 @@ public class WatershedMaskGenerator {
             }
 
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
-            for (int i = 1; i < lookAhead; i++) {
+            for (int i = 1; i < lookAheadDistance; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
-//                System.out.println("labelPosition: " + labelPosition[0] + "," + labelPosition[1]);
-//                System.out.println("nextPosition: " + nextPosition[0] + "," + nextPosition[1]);
                 labelRandomAccess.setPosition(nextPosition);
                 int nextPixelValue = labelRandomAccess.get().get();
                 if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
@@ -58,20 +68,12 @@ public class WatershedMaskGenerator {
                 continue;
             }
 
-            for (int i = 1; i < lookAhead; i++) {
+            for (int i = 1; i < lookAheadDistance; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 maskRandomAccess.setPosition(nextPosition);
-//                boolean previousValue = maskRandomAccess.get().get();
-//                System.out.println("position: " + nextPosition[0] + "," + nextPosition[1]);
-//                System.out.println("previousValue 1: " + previousValue);
                 maskRandomAccess.get().setOne();
-//                boolean newValue = maskRandomAccess.get().get();
-//                System.out.println("previousValue 2: " + previousValue);
-//                System.out.println("newValue: " + newValue);
-//                System.out.println();
             }
         }
-//        return this.mergedMask;
     }
 
     /**

@@ -37,7 +37,7 @@ public class PseudoDic {
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator();
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(1);
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
         this.configurationManager = configurationManager;
         this.momaInstance = main;

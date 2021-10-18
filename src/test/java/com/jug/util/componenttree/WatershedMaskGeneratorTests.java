@@ -46,6 +46,6 @@ public class WatershedMaskGeneratorTests {
     }
 
     private WatershedMaskGenerator getComponentMerger() {
-        return new WatershedMaskGenerator();
+        return new WatershedMaskGenerator(0);
     }
 }

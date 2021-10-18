@@ -14,15 +14,11 @@ import net.imglib2.view.ExtendedRandomAccessibleInterval;
 import net.imglib2.view.Views;
 
 public class WatershedMaskGenerator {
-    public Img<IntType> labelingImage;
-    public Img<BitType> mask;
-    public Img<BitType> mergedMask;
-
     public Img<BitType> generateMask(Img<FloatType> image, float threshold) {
-        mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
-        labelingImage = createLabelingImage(mask);
+        Img<BitType> mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
+        Img<IntType> labelingImage = createLabelingImage(mask);
         ConnectedComponentAnalysis.connectedComponents(mask, labelingImage);
-        mergedMask = mask.copy();
+        Img<BitType> mergedMask = mask.copy();
         mergeDifferingConnectedComponentsInMask(mergedMask, labelingImage);
         return mergedMask;
     }
@@ -65,11 +61,11 @@ public class WatershedMaskGenerator {
             for (int i = 1; i < lookAhead; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 maskRandomAccess.setPosition(nextPosition);
-                boolean previousValue = maskRandomAccess.get().get();
+//                boolean previousValue = maskRandomAccess.get().get();
 //                System.out.println("position: " + nextPosition[0] + "," + nextPosition[1]);
 //                System.out.println("previousValue 1: " + previousValue);
                 maskRandomAccess.get().setOne();
-                boolean newValue = maskRandomAccess.get().get();
+//                boolean newValue = maskRandomAccess.get().get();
 //                System.out.println("previousValue 2: " + previousValue);
 //                System.out.println("newValue: " + newValue);
 //                System.out.println();

@@ -32,7 +32,6 @@ public class WatershedMaskGeneratorTests {
 
         ij.ui().showUI();
 //        ij.ui().show("image", image);
-        ij.ui().show("componentMerger.mask:", componentMerger.mask);
         ij.ui().show("mergedMask", mergedMask);
 //        ij.ui().show("maskedImage", maskedImage);
 //        ij.ui().show("labeling image", componentMerger.labelingImage);

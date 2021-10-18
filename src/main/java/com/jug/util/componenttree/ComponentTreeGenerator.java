@@ -72,23 +72,4 @@ public class ComponentTreeGenerator {
 
         return tree;
     }
-
-    /**
-     * Set all pixels to 0 that are below {@param threshold} value in {@param image}.
-     *
-     * @param image
-     * @param threshold
-     */
-    private static void setPixelBelowThresholdsToZero(final RandomAccessibleInterval<FloatType> image, float threshold) {
-        IterableInterval<FloatType> iterableSource = Views.iterable(image);
-        Cursor<FloatType> cursor = iterableSource.cursor();
-        while (cursor.hasNext()) {
-            cursor.next();
-            float val = cursor.get().getRealFloat();
-            if (val > 0.0f && val < threshold) {
-                cursor.get().set(0);
-            }
-        }
-    }
-
 }

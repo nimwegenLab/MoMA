@@ -118,6 +118,46 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
+                    case "MAXIMUM_COMPONENT_MERGING_DISTANCE": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE,
+                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE),
+                                () -> {
+                                    ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE = newValue;
+                                    MoMA.props.setProperty(
+                                            "GL_OFFSET_TOP",
+                                            "" + ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
+                                    MoMA.dic.getWatershedMaskGenerator().setMaximumDistanceBetweenComponents(ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
+                                });
+                        break;
+                    }
+                    case "PROBABILITY_MAP_THRESHOLD": {
+                        float newValue = Float.parseFloat(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.PROBABILITY_MAP_THRESHOLD,
+                                () -> sourceProperty.setValue(ConfigurationManager.PROBABILITY_MAP_THRESHOLD),
+                                () -> {
+                                    ConfigurationManager.PROBABILITY_MAP_THRESHOLD = newValue;
+                                    MoMA.props.setProperty(
+                                            "GL_OFFSET_TOP",
+                                            "" + ConfigurationManager.PROBABILITY_MAP_THRESHOLD);
+                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.PROBABILITY_MAP_THRESHOLD);
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
+                                });
+                        break;
+                    }
                     case "MAXIMUM_GROWTH_RATE": {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -216,12 +256,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
             switch (key) {
                 case "GL_WIDTH_IN_PIXELS":
                 case "SEGMENTATION_MODEL_PATH":
+                case "CELL_DETECTION_ROI_OFFSET_TOP":
+                case "MAXIMUM_COMPONENT_MERGING_DISTANCE":
+                case "PROBABILITY_MAP_THRESHOLD":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);
                     break;
                 case "GL_OFFSET_TOP":
-                case "CELL_DETECTION_ROI_OFFSET_TOP":
                 case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);

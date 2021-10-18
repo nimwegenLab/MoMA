@@ -28,7 +28,6 @@ import static org.junit.Assert.*;
 
 public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
-        ImageJ ij = new ImageJ();
 //        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
         new ComponentTreeGeneratorTests().testPrintRankOfSegment();
@@ -62,16 +61,6 @@ public class ComponentTreeGeneratorTests {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
-    }
-
-    @NotNull
-    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
-        OpService ops = ij.op();
-        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties);
-        return componentTreeGenerator;
     }
 
     /**
@@ -190,5 +179,15 @@ public class ComponentTreeGeneratorTests {
             imp.setOverlay(text, Color.white, 0, Color.black);
         }
     }
-}
 
+    @NotNull
+    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
+        OpService ops = ij.op();
+        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
+        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
+        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        return componentTreeGenerator;
+    }
+}

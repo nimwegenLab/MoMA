@@ -10,6 +10,8 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.ExtendedRandomAccessibleInterval;
+import net.imglib2.view.Views;
 
 public class WatershedMaskGenerator {
     public Img<IntType> labelingImage;
@@ -20,16 +22,19 @@ public class WatershedMaskGenerator {
         mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
         labelingImage = createLabelingImage(mask);
         ConnectedComponentAnalysis.connectedComponents(mask, labelingImage);
-        mergedMask = mergeDifferingConnectedComponents(mask, labelingImage);
+        mergedMask = mask.copy();
+        mergeDifferingConnectedComponentsInMask(mergedMask, labelingImage);
         return mergedMask;
     }
 
-    private Img<BitType> mergeDifferingConnectedComponents(Img<BitType> inputMask, Img<IntType> labelingImage) {
+    private void mergeDifferingConnectedComponentsInMask(Img<BitType> mergedMask, Img<IntType> labelingImage) {
         int lookAhead = 3;
-        Img<BitType> mergedMask = inputMask.copy();
+//        mergedMask = inputMask.copy();
+        ExtendedRandomAccessibleInterval<IntType, Img<IntType>> labelingImageExtended = Views.extendZero(labelingImage); /* extend to avoid running out of bounds */
+        ExtendedRandomAccessibleInterval<BitType, Img<BitType>> mergedMaskExtended = Views.extendZero(mergedMask); /* extend to avoid running out of bounds */
         Cursor<IntType> labelingCursor = labelingImage.localizingCursor();
-        RandomAccess<IntType> labelRandomAccess = labelingImage.randomAccess();
-        RandomAccess<BitType> maskRandomAccess = mergedMask.randomAccess();
+        RandomAccess<IntType> labelRandomAccess = labelingImageExtended.randomAccess();
+        RandomAccess<BitType> maskRandomAccess = mergedMaskExtended.randomAccess();
 
         long[] labelPosition = new long[labelingImage.numDimensions()];
         while (labelingCursor.hasNext()) {
@@ -44,8 +49,8 @@ public class WatershedMaskGenerator {
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
             for (int i = 1; i < lookAhead; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
-                System.out.println("labelPosition: " + labelPosition[0] + "," + labelPosition[1]);
-                System.out.println("nextPosition: " + nextPosition[0] + "," + nextPosition[1]);
+//                System.out.println("labelPosition: " + labelPosition[0] + "," + labelPosition[1]);
+//                System.out.println("nextPosition: " + nextPosition[0] + "," + nextPosition[1]);
                 labelRandomAccess.setPosition(nextPosition);
                 int nextPixelValue = labelRandomAccess.get().get();
                 if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
@@ -61,16 +66,16 @@ public class WatershedMaskGenerator {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 maskRandomAccess.setPosition(nextPosition);
                 boolean previousValue = maskRandomAccess.get().get();
-                System.out.println("position: " + nextPosition[0] + "," + nextPosition[1]);
-                System.out.println("previousValue 1: " + previousValue);
+//                System.out.println("position: " + nextPosition[0] + "," + nextPosition[1]);
+//                System.out.println("previousValue 1: " + previousValue);
                 maskRandomAccess.get().setOne();
                 boolean newValue = maskRandomAccess.get().get();
-                System.out.println("previousValue 2: " + previousValue);
-                System.out.println("newValue: " + newValue);
-                System.out.println();
+//                System.out.println("previousValue 2: " + previousValue);
+//                System.out.println("newValue: " + newValue);
+//                System.out.println();
             }
         }
-        return mergedMask;
+//        return this.mergedMask;
     }
 
     /**

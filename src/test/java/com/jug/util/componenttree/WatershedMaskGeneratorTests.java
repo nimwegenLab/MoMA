@@ -28,7 +28,7 @@ public class WatershedMaskGeneratorTests {
         WatershedMaskGenerator componentMerger = getComponentMerger();
         Img<BitType> mergedMask = componentMerger.generateMask(image, threshold);
         Imglib2Utils utils = new Imglib2Utils(ij.op());
-        Img<FloatType> maskedImage = utils.maskImage(image, mergedMask, new FloatType(.0f));
+//        Img<FloatType> maskedImage = utils.maskImage(image, mergedMask, new FloatType(.0f));
 
         ij.ui().showUI();
 //        ij.ui().show("image", image);

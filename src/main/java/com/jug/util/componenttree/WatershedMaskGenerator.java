@@ -32,11 +32,9 @@ public class WatershedMaskGenerator {
         RandomAccess<BitType> maskRandomAccess = mergedMask.randomAccess();
 
         long[] labelPosition = new long[labelingImage.numDimensions()];
-        long[] labelPositionLookAhead = new long[labelingImage.numDimensions()];
         while (labelingCursor.hasNext()) {
             labelingCursor.next();
             labelingCursor.localize(labelPosition);
-//            labelingCursor.localize(labelPositionLookAhead);
             int currentLabelValue = labelingCursor.get().getInteger();
 
             if (currentLabelValue == 0) {
@@ -45,7 +43,6 @@ public class WatershedMaskGenerator {
 
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
             for (int i = 1; i < lookAhead; i++) {
-//                labelPositionLookAhead[1] += i;
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 System.out.println("labelPosition: " + labelPosition[0] + "," + labelPosition[1]);
                 System.out.println("nextPosition: " + nextPosition[0] + "," + nextPosition[1]);
@@ -60,9 +57,7 @@ public class WatershedMaskGenerator {
                 continue;
             }
 
-//            labelPositionLookAhead = labelPosition.clone();
             for (int i = 1; i < lookAhead; i++) {
-//                labelPositionLookAhead[1] += i;
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
                 maskRandomAccess.setPosition(nextPosition);
                 boolean previousValue = maskRandomAccess.get().get();
@@ -76,16 +71,6 @@ public class WatershedMaskGenerator {
             }
         }
         return mergedMask;
-
-//        LoopBuilder.setImages(labelingImage, inputMask).forEachPixel((dest, msk) -> {
-//            if (!msk.get()) {
-////                dest.set(maskedValue);
-//            }
-//        });
-
-//        return inputMask;
-//        throw new NotImplementedException();
-//        return outputMask
     }
 
     /**

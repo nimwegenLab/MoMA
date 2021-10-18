@@ -30,17 +30,18 @@ public class PseudoDic {
     private final GroundTruthFramesExporter groundTruthFramesExporter;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
     private final UnetProcessor unetProcessor;
+    private final WatershedMaskGenerator watershedMaskGenerator;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
+        this.configurationManager = configurationManager;
+        this.momaInstance = main;
         context = new Context();
         ops = context.service(OpService.class);
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(1);
+        watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
-        this.configurationManager = configurationManager;
-        this.momaInstance = main;
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
@@ -93,4 +94,6 @@ public class PseudoDic {
     public IUnetProcessingConfiguration getUnetProcessorConfiguration(){
         return configurationManager;
     }
+
+    public WatershedMaskGenerator getWatershedMaskGenerator() { return watershedMaskGenerator; }
 }

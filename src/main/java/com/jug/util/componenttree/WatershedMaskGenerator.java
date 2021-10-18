@@ -21,7 +21,11 @@ public class WatershedMaskGenerator {
      * The maximum allowed number of pixels between two distinct components in order for the two components to still be
      * merged connected.
      */
-    int maximumDistanceBetweenComponents = 0;
+    private int maximumDistanceBetweenComponents;
+
+    public void setMaximumDistanceBetweenComponents(int maximumDistanceBetweenComponents) {
+        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+    }
 
     public WatershedMaskGenerator(int maximumDistanceBetweenComponents) {
         this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;

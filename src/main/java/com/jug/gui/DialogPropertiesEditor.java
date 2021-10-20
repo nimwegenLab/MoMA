@@ -129,7 +129,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     MoMA.props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
-                                    MoMA.dic.getWatershedMaskGenerator().setMaximumDistanceBetweenComponents(ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
+                                    MoMA.dic.getWatershedMaskGenerator().setThresholdForComponentMerging(ConfigurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();

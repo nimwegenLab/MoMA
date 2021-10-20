@@ -21,39 +21,60 @@ public class WatershedMaskGenerator {
      * The maximum allowed number of pixels between two distinct components in order for the two components to still be
      * merged connected.
      */
-    private int maximumDistanceBetweenComponents;
+    private float thresholdForComponentMerging;
 
     float threshold;
 
-    public void setMaximumDistanceBetweenComponents(int maximumDistanceBetweenComponents) {
-        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+    public void setThresholdForComponentMerging(int thresholdForComponentMerging) {
+        this.thresholdForComponentMerging = thresholdForComponentMerging;
     }
 
     public void setThreshold(float threshold) {
         this.threshold = threshold;
     }
 
-    public WatershedMaskGenerator(int maximumDistanceBetweenComponents, float threshold) {
-        this.maximumDistanceBetweenComponents = maximumDistanceBetweenComponents;
+    public WatershedMaskGenerator(float thresholdForComponentMerging, float threshold) {
+        this.thresholdForComponentMerging = thresholdForComponentMerging;
         this.threshold = threshold;
     }
 
     public Img<BitType> generateMask(Img<FloatType> image) {
-        Img<BitType> mask = Thresholder.threshold(image, new FloatType(threshold), true, 1);
-        Img<IntType> labelingImage = createLabelingImage(mask);
-        ConnectedComponentAnalysis.connectedComponents(mask, labelingImage);
-        Img<BitType> mergedMask = mask.copy();
-        mergeDifferingConnectedComponentsInMask(mergedMask, labelingImage);
-        return mergedMask;
+        Img<BitType> maskForComponentGeneration = Thresholder.threshold(image, new FloatType(threshold), true, 1);
+        Img<BitType> maskForComponentMerging = Thresholder.threshold(image, new FloatType(thresholdForComponentMerging), true, 1);
+        Img<IntType> labelingImage = createLabelingImage(maskForComponentGeneration);
+        ConnectedComponentAnalysis.connectedComponents(maskForComponentGeneration, labelingImage);
+        mergeDifferingConnectedComponentsInMask(maskForComponentGeneration, maskForComponentMerging, labelingImage);
+        return maskForComponentGeneration;
     }
 
-    private void mergeDifferingConnectedComponentsInMask(Img<BitType> mergedMask, Img<IntType> labelingImage) {
-        int lookAheadDistance = maximumDistanceBetweenComponents + 2; /* +2 because the lookAheadDistance has to include one pixel for each component; whereas maximumDistanceBetweenComponents is the number of pixels between the two components */
+    /**
+     * This method merges two connected components in componentMask _along pixel columns_ in the following way:
+     * The algorithm consist of two steps:
+     * 1.Check if a pixel has a pixel with different label value below it (along the pixel column) and get the range
+     * along the pixel column (the range is the pixels below the current pixel position and pixelColumnEndPosition).
+     * 2.Use the identified column range to set all pixels below these pixels to foreground.
+     *
+     * In more detail the merging algorithm works as follows:
+     * - We iterate over each pixel in the image; its value is currentLabelValue:
+     *      - if currentLabelValue is background we abort, because we only want to merge foreground components.
+     *      - if currentLabelValue is foreground, we iterate over the pixel column below that pixel; the position inside
+     *      the column is given by nextPosition:
+     *          - if nextPosition in maskForComponentMerging is 0, we abort, because we do not want to merge columns which (partially) lie outside maskForComponentMerging
+     *          - else if: nextPosition in labelingImage is equal to currentLabelValue, then we abort, because we are inside the current component
+     *          - else if: nextPosition in labelingImage has a non-zero label value that is different from currentLabelValue, we encountered a pixel from a differing component. We store the value of verticalPixelOffset (to use for the actual merging) and use performMergeForThisPixel to signal the need for merging. Then break the loop.
+     *      - Merging is done for the current pixel, if performMergeForThisPixel==true, so that all value between the current pixel position in labelPosition and labelPosition[1]+verticalPixelOffset are set to 1,
+     * @param componentMask
+     * @param maskForComponentMerging
+     * @param labelingImage
+     */
+    private void mergeDifferingConnectedComponentsInMask(Img<BitType> componentMask, Img<BitType> maskForComponentMerging, Img<IntType> labelingImage) {
         ExtendedRandomAccessibleInterval<IntType, Img<IntType>> labelingImageExtended = Views.extendZero(labelingImage); /* extend to avoid running out of bounds */
-        ExtendedRandomAccessibleInterval<BitType, Img<BitType>> mergedMaskExtended = Views.extendZero(mergedMask); /* extend to avoid running out of bounds */
+        ExtendedRandomAccessibleInterval<BitType, Img<BitType>> componentMaskExtended = Views.extendZero(componentMask); /* extend to avoid running out of bounds */
+        ExtendedRandomAccessibleInterval<BitType, Img<BitType>> maskForComponentMergingExtended = Views.extendZero(maskForComponentMerging); /* extend to avoid running out of bounds */
         Cursor<IntType> labelingCursor = labelingImage.localizingCursor();
         RandomAccess<IntType> labelRandomAccess = labelingImageExtended.randomAccess();
-        RandomAccess<BitType> maskRandomAccess = mergedMaskExtended.randomAccess();
+        RandomAccess<BitType> componentMaskRandomAccess = componentMaskExtended.randomAccess();
+        RandomAccess<BitType> mergingMaskRandomAccess = maskForComponentMergingExtended.randomAccess();
 
         long[] labelPosition = new long[labelingImage.numDimensions()];
         while (labelingCursor.hasNext()) {
@@ -66,12 +87,25 @@ public class WatershedMaskGenerator {
             }
 
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
-            for (int i = 1; i < lookAheadDistance; i++) {
-                long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
+            int pixelColumnEndPosition = 0;
+            for (int verticalPixelOffset = 1; ; verticalPixelOffset++) { /* we increase verticalPixelOffset until we encounter a background pixel in maskForComponentMerging or until we encounter pixel with a different (non-zero) label from the current component in componentMaskExtended; this means we have encountered a new component */
+                long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + verticalPixelOffset};
+
+                mergingMaskRandomAccess.setPosition(nextPosition);
+                boolean mergingMaskPixelValue = mergingMaskRandomAccess.get().get();
+                if (!mergingMaskPixelValue) {
+                    break;  /* pixel column lies outside of parent component in the merging mask; abort because we do not want to merge in this case */
+                }
+
                 labelRandomAccess.setPosition(nextPosition);
                 int nextPixelValue = labelRandomAccess.get().get();
+                if (nextPixelValue == currentLabelValue) {
+                    break; /* we encountered a pixel with the same value to the current one; this means we are inside the current component and can therefore abort */
+                }
                 if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
                     performMergeForThisPixel = true;
+                    pixelColumnEndPosition = verticalPixelOffset;
+                    break; /*  */
                 }
             }
 
@@ -79,10 +113,10 @@ public class WatershedMaskGenerator {
                 continue;
             }
 
-            for (int i = 1; i < lookAheadDistance; i++) {
+            for (int i = 1; i <= pixelColumnEndPosition; i++) {
                 long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
-                maskRandomAccess.setPosition(nextPosition);
-                maskRandomAccess.get().setOne();
+                componentMaskRandomAccess.setPosition(nextPosition);
+                componentMaskRandomAccess.get().setOne();
             }
         }
     }

@@ -25,7 +25,7 @@ public class WatershedMaskGenerator {
 
     float threshold;
 
-    public void setThresholdForComponentMerging(int thresholdForComponentMerging) {
+    public void setThresholdForComponentMerging(float thresholdForComponentMerging) {
         this.thresholdForComponentMerging = thresholdForComponentMerging;
     }
 

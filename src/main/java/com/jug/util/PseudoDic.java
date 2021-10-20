@@ -40,7 +40,7 @@ public class PseudoDic {
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.MAXIMUM_COMPONENT_MERGING_DISTANCE, configurationManager.PROBABILITY_MAP_THRESHOLD);
+        watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING, configurationManager.PROBABILITY_MAP_THRESHOLD);
         componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());

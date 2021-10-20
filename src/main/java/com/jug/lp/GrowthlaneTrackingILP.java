@@ -318,7 +318,6 @@ public class GrowthlaneTrackingILP {
      */
     private void enumerateAndAddAssignments(final int sourcetimeStep) throws GRBException {
         int targetTimeStep = sourcetimeStep + 1;
-        System.out.println("Creating mappings: " + sourcetimeStep + " -> " + targetTimeStep);
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
                 (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourcetimeStep).getComponentTree();
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =

@@ -138,18 +138,18 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
-                    case "PROBABILITY_MAP_THRESHOLD": {
+                    case "THRESHOLD_FOR_COMPONENT_GENERATION": {
                         float newValue = Float.parseFloat(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.PROBABILITY_MAP_THRESHOLD,
-                                () -> sourceProperty.setValue(ConfigurationManager.PROBABILITY_MAP_THRESHOLD),
+                                () -> newValue != ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION,
+                                () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION),
                                 () -> {
-                                    ConfigurationManager.PROBABILITY_MAP_THRESHOLD = newValue;
+                                    ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION = newValue;
                                     MoMA.props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + ConfigurationManager.PROBABILITY_MAP_THRESHOLD);
-                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.PROBABILITY_MAP_THRESHOLD);
+                                            "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
+                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -258,7 +258,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "SEGMENTATION_MODEL_PATH":
                 case "CELL_DETECTION_ROI_OFFSET_TOP":
                 case "THRESHOLD_FOR_COMPONENT_MERGING":
-                case "PROBABILITY_MAP_THRESHOLD":
+                case "THRESHOLD_FOR_COMPONENT_GENERATION":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);

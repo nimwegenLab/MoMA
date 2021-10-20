@@ -45,7 +45,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Global threshold value for creating the mask for component generation from the probability mask.
      */
-    public static float PROBABILITY_MAP_THRESHOLD = 0.5f;
+    public static float THRESHOLD_FOR_COMPONENT_GENERATION = 0.5f;
     /**
      * Sets the vertical position at the top of the image up to where U-Net will process the image.
      */
@@ -117,7 +117,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
-        PROBABILITY_MAP_THRESHOLD = Float.parseFloat(props.getProperty("PROBABILITY_MAP_THRESHOLD", Float.toString(PROBABILITY_MAP_THRESHOLD)));
+        THRESHOLD_FOR_COMPONENT_GENERATION = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Float.toString(THRESHOLD_FOR_COMPONENT_GENERATION)));
         MAXIMUM_GROWTH_RATE = Double.parseDouble(props.getProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE)));
         SEGMENTATION_MODEL_PATH = props.getProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
         DEFAULT_PATH = props.getProperty("DEFAULT_PATH", DEFAULT_PATH);
@@ -237,7 +237,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP));
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
-            props.setProperty("PROBABILITY_MAP_THRESHOLD", Double.toString(PROBABILITY_MAP_THRESHOLD));
+            props.setProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Double.toString(THRESHOLD_FOR_COMPONENT_GENERATION));
             props.setProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
             props.setProperty("DEFAULT_PATH", DEFAULT_PATH);
 

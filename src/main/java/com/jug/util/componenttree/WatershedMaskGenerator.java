@@ -58,11 +58,11 @@ public class WatershedMaskGenerator {
      * - We iterate over each pixel in the image; its value is currentLabelValue:
      *      - if currentLabelValue is background we abort, because we only want to merge foreground components.
      *      - if currentLabelValue is foreground, we iterate over the pixel column below that pixel; the position inside
-     *      the column is given by nextPosition:
-     *          - if nextPosition in maskForComponentMerging is 0, we abort, because we do not want to merge columns which (partially) lie outside maskForComponentMerging
-     *          - else if: nextPosition in labelingImage is equal to currentLabelValue, then we abort, because we are inside the current component
-     *          - else if: nextPosition in labelingImage has a non-zero label value that is different from currentLabelValue, we encountered a pixel from a differing component. We store the value of verticalPixelOffset (to use for the actual merging) and use performMergeForThisPixel to signal the need for merging. Then break the loop.
-     *      - Merging is done for the current pixel, if performMergeForThisPixel==true, so that all value between the current pixel position in labelPosition and labelPosition[1]+verticalPixelOffset are set to 1,
+     *      the column is given by nextColumnPosition:
+     *          - if nextColumnPosition in maskForComponentMerging is 0, we abort, because we do not want to merge columns which (partially) lie outside maskForComponentMerging
+     *          - else if: nextColumnPosition in labelingImage is equal to currentLabelValue, then we abort, because we are inside the current component
+     *          - else if: nextColumnPosition in labelingImage has a non-zero label value that is different from currentLabelValue, we encountered a pixel from a differing component. We store the value of verticalPixelOffset (to use for the actual merging) and use performMergeForThisPixel to signal the need for merging. Then break the loop.
+     *      - Merging is done for the current pixel, if performMergeForThisPixel==true, so that all value between the current pixel position in currentPixelPosition and currentPixelPosition[1]+verticalPixelOffset are set to 1,
      * @param componentMask
      * @param maskForComponentMerging
      * @param labelingImage
@@ -76,10 +76,10 @@ public class WatershedMaskGenerator {
         RandomAccess<BitType> componentMaskRandomAccess = componentMaskExtended.randomAccess();
         RandomAccess<BitType> mergingMaskRandomAccess = maskForComponentMergingExtended.randomAccess();
 
-        long[] labelPosition = new long[labelingImage.numDimensions()];
+        long[] currentPixelPosition = new long[labelingImage.numDimensions()];
         while (labelingCursor.hasNext()) {
             labelingCursor.next();
-            labelingCursor.localize(labelPosition);
+            labelingCursor.localize(currentPixelPosition);
             int currentLabelValue = labelingCursor.get().getInteger();
 
             if (currentLabelValue == 0) {
@@ -89,23 +89,23 @@ public class WatershedMaskGenerator {
             boolean performMergeForThisPixel = false; /* boolean which tells if the current pixel has a component below, which should be merged */
             int pixelColumnEndPosition = 0;
             for (int verticalPixelOffset = 1; ; verticalPixelOffset++) { /* we increase verticalPixelOffset until we encounter a background pixel in maskForComponentMerging or until we encounter pixel with a different (non-zero) label from the current component in componentMaskExtended; this means we have encountered a new component */
-                long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + verticalPixelOffset};
+                long[] nextColumnPosition = new long[]{currentPixelPosition[0], currentPixelPosition[1] + verticalPixelOffset};
 
-                mergingMaskRandomAccess.setPosition(nextPosition);
+                mergingMaskRandomAccess.setPosition(nextColumnPosition);
                 boolean mergingMaskPixelValue = mergingMaskRandomAccess.get().get();
+                labelRandomAccess.setPosition(nextColumnPosition);
+                int nextPixelValue = labelRandomAccess.get().get();
+
                 if (!mergingMaskPixelValue) {
                     break;  /* pixel column lies outside of parent component in the merging mask; abort because we do not want to merge in this case */
                 }
-
-                labelRandomAccess.setPosition(nextPosition);
-                int nextPixelValue = labelRandomAccess.get().get();
-                if (nextPixelValue == currentLabelValue) {
+                else if (nextPixelValue == currentLabelValue) {
                     break; /* we encountered a pixel with the same value to the current one; this means we are inside the current component and can therefore abort */
                 }
-                if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
+                else if (nextPixelValue != 0 && nextPixelValue != currentLabelValue) {
                     performMergeForThisPixel = true;
                     pixelColumnEndPosition = verticalPixelOffset;
-                    break; /*  */
+                    break; /* merge needed; break and continue with merging the pixel column */
                 }
             }
 
@@ -114,7 +114,7 @@ public class WatershedMaskGenerator {
             }
 
             for (int i = 1; i <= pixelColumnEndPosition; i++) {
-                long[] nextPosition = new long[]{labelPosition[0], labelPosition[1] + i};
+                long[] nextPosition = new long[]{currentPixelPosition[0], currentPixelPosition[1] + i};
                 componentMaskRandomAccess.setPosition(nextPosition);
                 componentMaskRandomAccess.get().setOne();
             }

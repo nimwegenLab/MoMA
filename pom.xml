@@ -13,8 +13,8 @@
 	</parent>
 
 	<groupId>com.jug</groupId>
-	<artifactId>MotherMachine_</artifactId>
-	<version>1.0.1-SNAPSHOT</version>
+	<artifactId>MotherMachine</artifactId>
+	<version>${version.number}</version>
 
 	<name>MotherMachine_</name>
 	<description>The Mother Machine Analyzer.</description>
@@ -80,6 +80,7 @@
 	</ciManagement>
 
 	<properties>
+		<version.number>${git.closest.tag.name}.${git.commit.time}.${git.commit.id.abbrev}</version.number>
         <license.licenseName>BSD_3</license.licenseName>
 		<license.copyrightOwners>Max-Plack Institute of Molecular Cell Biology and Genetics, Dresden</license.copyrightOwners>
 		<main-class>com.jug.MoMA</main-class>
@@ -186,7 +187,36 @@
 	</dependencies>
 
 	<build>
+		<finalName>${project.artifactId}-${project.version}</finalName>
 		<plugins>
+			<plugin>
+				<groupId>pl.project13.maven</groupId>
+				<artifactId>git-commit-id-plugin</artifactId>
+				<version>4.9.10</version>
+				<executions>
+					<execution>
+						<id>get-the-git-infos</id>
+						<goals>
+							<goal>revision</goal>
+						</goals>
+						<phase>validate</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+					<prefix>git</prefix>
+					<verbose>false</verbose>
+					<dateFormat>yyyyMMdd-HHmmss</dateFormat><!--  human-readable part of the version number -->
+					<generateGitPropertiesFile>true</generateGitPropertiesFile>
+					<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+					<format>json</format>
+					<gitDescribe>
+						<skip>false</skip>
+						<always>false</always>
+						<dirty>-dirty</dirty>
+					</gitDescribe>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>

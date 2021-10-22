@@ -201,6 +201,13 @@
 						</goals>
 						<phase>validate</phase>
 					</execution>
+					<execution>
+						<id>validate-the-git-infos</id>
+						<goals>
+							<goal>validateRevision</goal>
+						</goals>
+						<phase>package</phase>
+					</execution>
 				</executions>
 				<configuration>
 					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
@@ -215,6 +222,14 @@
 						<always>false</always>
 						<dirty>-dirty</dirty>
 					</gitDescribe>
+					<validationProperties>
+						<!-- verify that the current repository is not dirty -->
+						<validationProperty>
+							<name>git is dirty</name>
+							<value>${git.dirty}</value>
+							<shouldMatchTo>false</shouldMatchTo>
+						</validationProperty>
+					</validationProperties>
 				</configuration>
 			</plugin>
 			<plugin>

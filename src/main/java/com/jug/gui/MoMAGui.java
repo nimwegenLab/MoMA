@@ -1111,7 +1111,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
         }
 
-        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance());
+        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance(), MoMA.dic.getGitVersionProvider().getVersionString());
         final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
 
         List<ResultExporterInterface> exporters;

@@ -1660,8 +1660,7 @@ public class GrowthlaneTrackingILP {
         BufferedWriter out;
         try {
             out = new BufferedWriter(new FileWriter(file));
-            out.write("# MoMa version: " + versionString);
-            out.newLine();
+            out.write(String.format("# moma_version: \"%s\"\n", versionString));
             out.newLine();
 
             // Write characteristics of dataset

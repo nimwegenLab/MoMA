@@ -65,6 +65,7 @@ public class GrowthlaneTrackingILP {
     public IGRBModelAdapter model;
     private final IImageProvider imageProvider;
     private ITrackingConfiguration trackingConfiguration;
+    private String versionString;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
 
@@ -75,12 +76,14 @@ public class GrowthlaneTrackingILP {
                                  IGRBModelAdapter grbModel,
                                  IImageProvider imageProvider,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
-                                 ITrackingConfiguration trackingConfiguration) {
+                                 ITrackingConfiguration trackingConfiguration,
+                                 String versionString) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
         this.imageProvider = imageProvider;
         this.trackingConfiguration = trackingConfiguration;
+        this.versionString = versionString;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -1657,7 +1660,7 @@ public class GrowthlaneTrackingILP {
         BufferedWriter out;
         try {
             out = new BufferedWriter(new FileWriter(file));
-            out.write("# " + MoMA.VERSION_STRING);
+            out.write("# MoMa version: " + versionString);
             out.newLine();
             out.newLine();
 

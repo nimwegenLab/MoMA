@@ -1,13 +1,13 @@
 package com.jug;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
-import com.jug.lp.GRBModel.GRBModelAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jug
@@ -88,7 +88,7 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = GRBModelFactory.getModel();
-		ilp = new GrowthlaneTrackingILP( this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration() );
+		ilp = new GrowthlaneTrackingILP(this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getGitVersionProvider().getVersionString());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

@@ -48,16 +48,10 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 	private static ConfigurationManager configurationManager;
-//	private static boolean showGroundTruthExportFunctionality;
 
 	static {
 		LegacyInjector.preinit();
 	}
-
-	/**
-	 * Identifier of current version
-	 */
-	public static final String VERSION_STRING = "MoMA_1.0.0";
 
 	/**
 	 * This is the pseudo dependency injection container, which we use to clean-up and initialize our instances.
@@ -165,7 +159,6 @@ public class MoMA implements IImageProvider {
 
 		dic = new PseudoDic(configurationManager, main);
 
-//		System.out.println( "VERSION: " + VERSION_STRING );
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		// ===== command line parsing ======================================================================
@@ -252,7 +245,6 @@ public class MoMA implements IImageProvider {
 		}
 
 		if ( cmd.hasOption( "ground_truth_export" ) ) {
-//			showGroundTruthExportFunctionality = true;
 			configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
 		}
 
@@ -620,7 +612,7 @@ public class MoMA implements IImageProvider {
 	 * System.err to it.
 	 */
 	private void initConsoleWindow() {
-		frameConsoleWindow = new JFrame( String.format( "%s Console Window", MoMA.VERSION_STRING ) );
+		frameConsoleWindow = new JFrame( String.format( "%s Console Window", dic.getGitVersionProvider().getVersionString() ) );
 		// frameConsoleWindow.setResizable( false );
 		consoleWindowTextArea = new JTextArea();
 		consoleWindowTextArea.setLineWrap( true );
@@ -1085,7 +1077,7 @@ public class MoMA implements IImageProvider {
 	private void setDatasetName(final String datasetName) {
 		this.datasetName = datasetName;
 		if ( MoMA.getGuiFrame() != null ) {
-			MoMA.getGuiFrame().setTitle( String.format( "%s -- %s", MoMA.VERSION_STRING, this.datasetName ) );
+			MoMA.getGuiFrame().setTitle( String.format( "MoMA %s -- %s", dic.getGitVersionProvider().getVersionString(), this.datasetName ) );
 		}
 	}
 }

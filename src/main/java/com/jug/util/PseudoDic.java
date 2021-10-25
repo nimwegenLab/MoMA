@@ -31,6 +31,7 @@ public class PseudoDic {
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
     private final UnetProcessor unetProcessor;
     private final WatershedMaskGenerator watershedMaskGenerator;
+    private final GitVersionProvider gitVersionProvider;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
@@ -47,6 +48,7 @@ public class PseudoDic {
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
         unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
         unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+        gitVersionProvider = new GitVersionProvider();
     }
 
     public Context getSciJavaContext() { return context; }
@@ -96,4 +98,6 @@ public class PseudoDic {
     }
 
     public WatershedMaskGenerator getWatershedMaskGenerator() { return watershedMaskGenerator; }
+
+    public GitVersionProvider getGitVersionProvider() { return gitVersionProvider; }
 }

@@ -158,14 +158,15 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		System.out.println( "VERSION: " + VERSION_STRING );
-
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
 		final MoMA main = new MoMA();
 
 		dic = new PseudoDic(configurationManager, main);
+
+//		System.out.println( "VERSION: " + VERSION_STRING );
+		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		// ===== command line parsing ======================================================================
 

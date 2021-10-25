@@ -91,8 +91,8 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * @throws IOException
      */
     private void writeImagePaths(OutputStreamWriter out, String inputImagePath, String cellMaskImagePath) throws IOException {
-        out.write("input_image=" + inputImagePath + "\n");
-        out.write("ground_truth_mask_image=" + cellMaskImagePath + "\n");
+        out.write(String.format("input_image=\"%s\"\n", inputImagePath));
+        out.write(String.format("ground_truth_mask_image=\"%s\"\n", cellMaskImagePath));
         out.write("\n");
     }
 

@@ -30,6 +30,8 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     private final MoMAGui gui;
     private final IImageProvider imageProvider;
+    private final String loadedDataFolder;
+    private String versionString;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
@@ -38,12 +40,15 @@ public class CellStatsExporter implements ResultExporterInterface {
                              final ConfigurationManager configurationManager,
                              MixtureModelFit mixtureModelFit,
                              ComponentProperties componentProperties,
-                             IImageProvider imageProvider) {
+                             IImageProvider imageProvider,
+                             String versionString) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
         this.componentProperties = componentProperties;
         this.imageProvider = imageProvider;
+        this.versionString = versionString;
+        loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
@@ -92,8 +97,6 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     private void writeCellStatsExportData(Writer writer, List<SegmentRecord> cellTrackStartingPoints, long avgXpos) throws IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
-
-        final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
 
         // INITIALIZE PROGRESS-BAR if not run headless
         final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
@@ -153,8 +156,9 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
-        writer.write(String.format("input_image=%s\n", loadedDataFolder));
-        writer.write(String.format("segmentation_model=%s\n", configurationManager.SEGMENTATION_MODEL_PATH));
+        writer.write(String.format("moma_version=\"%s\"\n", versionString));
+        writer.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+        writer.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
@@ -257,6 +261,11 @@ public class CellStatsExporter implements ResultExporterInterface {
         try {
             out = new OutputStreamWriter(new FileOutputStream(file));
 
+            out.write(String.format("moma_version=\"%s\"\n", versionString));
+            out.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+            out.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
+            out.write("\n");
+
             for (final Vector<String> rowInData : dataToExport) {
                 for (final String datum : rowInData) {
                     out.write(datum + ",\t ");
@@ -283,14 +292,14 @@ public class CellStatsExporter implements ResultExporterInterface {
         // use US-style number formats! (e.g. '.' as decimal point)
         Locale.setDefault(new Locale("en", "US"));
 
-        final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting tracks...");
+//        final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting tracks...");
         final int numCurrGL = gui.sliderGL.getValue();
         final int numGLFs = gui.model.getCurrentGL().getFrames().size();
         final Vector<Vector<String>> dataToExport = new Vector<>();
 
-        final Vector<String> firstLine = new Vector<>();
-        firstLine.add(loadedDataFolder);
-        dataToExport.add(firstLine);
+//        final Vector<String> firstLine = new Vector<>();
+//        firstLine.add(loadedDataFolder);
+//        dataToExport.add(firstLine);
         final Vector<String> secondLine = new Vector<>();
         secondLine.add("" + numCurrGL);
         secondLine.add("" + numGLFs);

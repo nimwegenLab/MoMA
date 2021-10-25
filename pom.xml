@@ -80,6 +80,7 @@
 	</ciManagement>
 
 	<properties>
+		<!--suppress UnresolvedMavenProperty -->
 		<version.number>${git.closest.tag.name}.${git.commit.time}.${git.commit.id.abbrev}</version.number>
         <license.licenseName>BSD_3</license.licenseName>
 		<license.copyrightOwners>Max-Plack Institute of Molecular Cell Biology and Genetics, Dresden</license.copyrightOwners>
@@ -162,11 +163,11 @@
 			<version>0.3.4</version>
 		</dependency>
 		
-		<dependency>
-			<groupId>org.nd4j</groupId>
-			<artifactId>nd4j-native-platform</artifactId>
-			<version>1.0.0-beta4</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.nd4j</groupId>-->
+<!--			<artifactId>nd4j-native-platform</artifactId>-->
+<!--			<version>1.0.0-beta4</version>-->
+<!--		</dependency>-->
         <dependency>
             <groupId>org.deeplearning4j</groupId>
             <artifactId>deeplearning4j-ui_2.10</artifactId>
@@ -183,6 +184,27 @@
 			<groupId>org.javatuples</groupId>
 			<artifactId>javatuples</artifactId>
 			<version>1.2</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>2.13.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.13.0</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.13.0</version>
 		</dependency>
 	</dependencies>
 
@@ -226,6 +248,7 @@
 						<!-- verify that the current repository is not dirty -->
 						<validationProperty>
 							<name>git is dirty</name>
+							<!--suppress UnresolvedMavenProperty -->
 							<value>${git.dirty}</value>
 							<shouldMatchTo>false</shouldMatchTo>
 						</validationProperty>

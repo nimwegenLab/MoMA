@@ -57,7 +57,7 @@ public class ComponentTreeGenerator {
         Img<FloatType> img = imageProvider.getImgProbs();
         Img<FloatType> raiFktOld = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
-        double scaleFactor = 1.;
+        double scaleFactor = 2.;
 
 //        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
         Img<FloatType> raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));

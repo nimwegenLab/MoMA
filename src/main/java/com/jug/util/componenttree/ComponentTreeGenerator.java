@@ -4,31 +4,19 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import net.imglib2.FinalInterval;
-import net.imglib2.RealRandomAccessible;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.interpolation.InterpolatorFactory;
-import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
-import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
-import net.imglib2.realtransform.RealTransformRandomAccessible;
-import net.imglib2.realtransform.RealViews;
-import net.imglib2.realtransform.Scale2D;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Intervals;
-import net.imglib2.view.IntervalView;
-import net.imglib2.view.RandomAccessibleOnRealRandomAccessible;
 import net.imglib2.view.Views;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.function.Predicate;
 
 /**
@@ -48,24 +36,6 @@ public class ComponentTreeGenerator {
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         this.watershedMaskGenerator = watershedMaskGenerator;
         this.imglib2Utils = imglib2Utils;
-    }
-
-    public <T extends NumericType<T> & NativeType<T>> Img<T> scaleImageV002(Img<T> img, int scaleFactor){
-        Scale2D scalingTransform = new Scale2D(scaleFactor, scaleFactor);
-        FinalInterval biggerInterval = new FinalInterval( Arrays.stream( Intervals.dimensionsAsLongArray(img)).map(x -> x * 4 ).toArray());
-
-//        BSplineCoefficientsInterpolatorFactory<T,DoubleType> interp = new BSplineCoefficientsInterpolatorFactory<>(img);
-//        InterpolatorFactory interp = new NearestNeighborInterpolatorFactory();
-        InterpolatorFactory interp = new NLinearInterpolatorFactory();
-
-        RealRandomAccessible interpolated = Views.interpolate(Views.extendZero(img), interp); // you have this already
-        RealTransformRandomAccessible scaledUp = RealViews.transform(interpolated, scalingTransform);
-        RandomAccessibleOnRealRandomAccessible rasterized = Views.raster(scaledUp);
-        IntervalView resultWithAnInterval = Views.interval(rasterized, biggerInterval);
-//        Img<T> res = ImageJFunctions.wrap(resultWithAnInterval);
-//        RandomAccessibleInterval<T> accessible = ...;
-        Img<T> wrappedImage = ImgView.wrap(resultWithAnInterval);
-        return wrappedImage;
     }
 
     public <T extends NumericType<T> & NativeType<T>> Img<T> scaleImageV001(Img<T> inputImage, int scaleFactor){
@@ -90,11 +60,7 @@ public class ComponentTreeGenerator {
         int scaleFactor = 4;
 
 //        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
-        Img<FloatType> raiFkt = scaleImageV002(raiFktOld, scaleFactor);
-
-//        if (true) {
-//            return null;
-//        }
+        Img<FloatType> raiFkt = imglib2Utils.scaleImage(raiFktOld, scaleFactor);
 
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));

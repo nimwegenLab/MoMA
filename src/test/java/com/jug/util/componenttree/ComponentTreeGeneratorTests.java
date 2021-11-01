@@ -153,9 +153,9 @@ public class ComponentTreeGeneratorTests {
 
     @Test
     public void testPrintRankOfSegment() throws IOException {
-//        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
+        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
 //        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__scaled_factor_4__20211101.tif";
-        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__scaled_factor_8__20211101.tif";
+//        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__scaled_factor_8__20211101.tif";
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/" + fileName;
         assertTrue(new File(imageFile).exists());
 
@@ -171,16 +171,16 @@ public class ComponentTreeGeneratorTests {
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
 
-        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
-
-        for (AdvancedComponent<FloatType> root : roots) {
-            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
-            componentsToDraw.add(root);
-            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
-            int rank = root.getRankRelativeToComponentsClosestToRoot();
-            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
-            imp.setOverlay(text, Color.white, 0, Color.black);
-        }
+//        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+//
+//        for (AdvancedComponent<FloatType> root : roots) {
+//            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
+//            componentsToDraw.add(root);
+//            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
+//            int rank = root.getRankRelativeToComponentsClosestToRoot();
+//            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
+//            imp.setOverlay(text, Color.white, 0, Color.black);
+//        }
     }
 
     @NotNull

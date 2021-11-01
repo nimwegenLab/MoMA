@@ -5,7 +5,6 @@ import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.RealRandomAccessible;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
@@ -14,8 +13,6 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-//import net.imglib2.algorithm.edge.SubpixelEdgelDetection
-import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -41,25 +38,12 @@ public class ComponentTreeGenerator {
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
         Img<FloatType> img = imageProvider.getImgProbs();
-//        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
-//        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
-
-//        RealRandomAccessible ImgInterpolated = Views.interpolate(img, new NearestNeighborInterpolatorFactory());
-        import net.imglib2.interpolation.randomaccess.NearestNeighborInterpolatorFactory;
-
-        Img<FloatType> img = imageProvider.getImgProbs();
-        IntervalView<FloatType> slice = Views.hyperSlice(img, 2, frameIndex);
-        RealRandomAccessible raiFkt = Views.interpolate(slice, new NearestNeighborInterpolatorFactory());
+        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
-        ....
-
-        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
-
-
-        final double delta = 0.0001;
+		final double delta = 0.0001;
 //        final double delta = 0.02;
         final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
         final long maxSize = Long.MAX_VALUE;

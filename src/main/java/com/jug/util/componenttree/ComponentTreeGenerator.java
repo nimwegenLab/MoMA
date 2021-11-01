@@ -50,12 +50,13 @@ public class ComponentTreeGenerator {
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
         final boolean darkToBright = false;
+        final int maxWidth = 160;
 
         // generate MSER tree
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
         // filter components by width
-        Predicate<Integer> widthCondition = (width) -> (width <= 20);
+        Predicate<Integer> widthCondition = (width) -> (width <= maxWidth);
         ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
         ArrayList<ILocationTester> testers = new ArrayList<>();
         testers.add(widthLimit);

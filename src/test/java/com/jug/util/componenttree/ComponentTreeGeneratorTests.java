@@ -171,16 +171,16 @@ public class ComponentTreeGeneratorTests {
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
 
-//        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
-//
-//        for (AdvancedComponent<FloatType> root : roots) {
-//            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
-//            componentsToDraw.add(root);
-//            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
-//            int rank = root.getRankRelativeToComponentsClosestToRoot();
-//            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
-//            imp.setOverlay(text, Color.white, 0, Color.black);
-//        }
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+
+        for (AdvancedComponent<FloatType> root : roots) {
+            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
+            componentsToDraw.add(root);
+            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
+            int rank = root.getRankRelativeToComponentsClosestToRoot();
+            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
+            imp.setOverlay(text, Color.white, 0, Color.black);
+        }
     }
 
     @NotNull

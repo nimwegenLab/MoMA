@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import ij.ImagePlus;
@@ -57,7 +58,7 @@ public class ComponentTreeGenerator {
         Img<FloatType> img = imageProvider.getImgProbs();
         Img<FloatType> raiFktOld = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
-        double scaleFactor = 2.;
+        double scaleFactor = MoMA.SCALE_FACTOR;
 
 //        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
         Img<FloatType> raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));

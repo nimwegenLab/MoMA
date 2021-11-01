@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -240,6 +241,8 @@ public class ComponentTreeUtils {
             min = Math.min(min, pos);
             max = Math.max(max, pos);
         }
+        min = min / MoMA.SCALE_FACTOR;
+        max = max / MoMA.SCALE_FACTOR;
         return new ValuePair<>(min, max);
     }
 

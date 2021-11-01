@@ -47,7 +47,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  * @author jug
  */
 public class MoMA implements IImageProvider {
-	public static final int SCALE_FACTOR = 2;
+	public static final int SCALE_FACTOR = 4;
 	private static ConfigurationManager configurationManager;
 
 	static {

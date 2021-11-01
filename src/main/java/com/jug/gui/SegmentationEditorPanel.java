@@ -8,6 +8,7 @@ import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.converter.RealFloatNormalizeConverter;
+import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import gurobi.GRBException;
 import net.imglib2.RandomAccessibleInterval;
@@ -263,7 +264,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
         GrowthlaneFrame glf = momaModel.getGrowthlaneFrame(timeStepToDisplay());
-        IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
+        Imglib2Utils scaler = new Imglib2Utils(null);
+        RandomAccessibleInterval<FloatType> viewImgRightActive = scaler.scaleImage(getImageToDisplay(glf), 4.);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
     }
 

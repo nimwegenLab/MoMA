@@ -132,7 +132,7 @@ public class Imglib2Utils {
 //        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
 //        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
 
-    public <T extends NumericType<T> & NativeType<T>> Img<T> scaleImage(Img<T> img, double scaleFactor){
+    public <T extends NumericType<T> & NativeType<T>> RandomAccessibleInterval<T> scaleImage(RandomAccessibleInterval<T> img, double scaleFactor){
         Scale2D scalingTransform = new Scale2D(scaleFactor, scaleFactor);
         FinalInterval biggerInterval = new FinalInterval( Arrays.stream( Intervals.dimensionsAsLongArray(img)).map(x -> (long)(x * scaleFactor) ).toArray());
 

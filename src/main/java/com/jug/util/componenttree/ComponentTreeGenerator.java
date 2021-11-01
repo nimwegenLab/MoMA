@@ -60,7 +60,7 @@ public class ComponentTreeGenerator {
         double scaleFactor = 4;
 
 //        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
-        Img<FloatType> raiFkt = imglib2Utils.scaleImage(raiFktOld, scaleFactor);
+        Img<FloatType> raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));
 
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));

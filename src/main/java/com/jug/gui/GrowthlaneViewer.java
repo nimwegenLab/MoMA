@@ -7,6 +7,7 @@ import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import ij.IJ;
 import ij.ImagePlus;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.converter.RealARGBConverter;
 import net.imglib2.display.projector.IterableIntervalProjector2D;
 import net.imglib2.display.screenimage.awt.ARGBScreenImage;
@@ -45,7 +46,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
-    private IntervalView<FloatType> view;
+    private RandomAccessibleInterval<FloatType> view;
     private GrowthlaneFrame glf;
     private boolean showSegmentationAnnotations = true;
     // tracking the mouse (when over)
@@ -86,7 +87,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      * @param viewImg an IntervalView<FloatType> containing the desired view
      *                onto the raw image data
      */
-    public void setScreenImage(final GrowthlaneFrame glf, final IntervalView<FloatType> viewImg) {
+    public void setScreenImage(final GrowthlaneFrame glf, final RandomAccessibleInterval<FloatType> viewImg) {
         setEmptyScreenImage();
         this.projector = new IterableIntervalProjector2D<>(0, 1, viewImg, screenImage, new RealARGBConverter<>(0, 1));
         this.view = viewImg;

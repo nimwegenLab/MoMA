@@ -467,22 +467,22 @@ public class GrowthlaneTrackingILP {
     public Float compatibilityCostOfMapping(
             final AdvancedComponent<FloatType> sourceComponent,
             final AdvancedComponent<FloatType> targetComponent) {
-        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
-        final long targetComponentSize = getComponentSize(targetComponent, 1);
+        final double sourceComponentSize = getComponentSize(sourceComponent, 1);
+        final double targetComponentSize = getComponentSize(targetComponent, 1);
 
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair<Double, Double> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final ValuePair<Double, Double> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
 
-        final float sourceUpperBoundary = sourceComponentBoundaries.getA();
-        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
-        final float targetUpperBoundary = targetComponentBoundaries.getA();
-        final float targetLowerBoundary = targetComponentBoundaries.getB();
+        final float sourceUpperBoundary = sourceComponentBoundaries.getA().floatValue();
+        final float sourceLowerBoundary = sourceComponentBoundaries.getB().floatValue();
+        final float targetUpperBoundary = targetComponentBoundaries.getA().floatValue();
+        final float targetLowerBoundary = targetComponentBoundaries.getB().floatValue();
 
         final Pair<Float, float[]> migrationCostOfUpperBoundary = CostFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceComponentSize, targetComponentSize);
+        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost((float) sourceComponentSize, (float) targetComponentSize);
 
         return growthCost.getA() + averageMigrationCost;
     }
@@ -647,25 +647,25 @@ public class GrowthlaneTrackingILP {
             final AdvancedComponent<FloatType> lowerTargetComponent) {
 
 
-        final ValuePair<Integer, Integer> sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
-        final ValuePair<Integer, Integer> lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
+        final ValuePair<Double, Double> sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final ValuePair<Double, Double> upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
+        final ValuePair<Double, Double> lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
 
-        final long sourceSize = getComponentSize(sourceComponent, 1);
-        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
-        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
-        final long summedTargetSize = upperTargetSize + lowerTargetSize;
+        final double sourceSize = getComponentSize(sourceComponent, 1);
+        final double upperTargetSize = getComponentSize(upperTargetComponent, 1);
+        final double lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
+        final double summedTargetSize = upperTargetSize + lowerTargetSize;
 
-        final float sourceUpperBoundary = sourceBoundaries.getA();
-        final float sourceLowerBoundary = sourceBoundaries.getB();
-        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
-        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
+        final float sourceUpperBoundary = sourceBoundaries.getA().floatValue();
+        final float sourceLowerBoundary = sourceBoundaries.getB().floatValue();
+        final float upperTargetUpperBoundary = upperTargetBoundaries.getA().floatValue();
+        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB().floatValue();
 
         final Pair<Float, float[]> migrationCostOfUpperBoundary = CostFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize);
+        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost((float) sourceSize, (float) summedTargetSize);
         final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
 
         return growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
@@ -956,7 +956,7 @@ public class GrowthlaneTrackingILP {
     public Hypothesis<AdvancedComponent<FloatType>> getOptimalSegmentationAtLocation(final int t, final int gapSepYPos) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
         for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
-            final ValuePair<Integer, Integer> ctnLimits =
+            final ValuePair<Double, Double> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos) {
                 return h;
@@ -996,14 +996,14 @@ public class GrowthlaneTrackingILP {
     public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> ret = new ArrayList<>();
 
-        final ValuePair<Integer, Integer> interval =
+        final ValuePair<Double, Double> interval =
                 ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
-        final int startpos = interval.getA();
-        final int endpos = interval.getB();
+        final double startpos = interval.getA();
+        final double endpos = interval.getB();
 
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
         for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
-            final ValuePair<Integer, Integer> ctnLimits =
+            final ValuePair<Double, Double> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if ((ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos) || // overlap at top
                     (ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos) ||    // overlap at bottom
@@ -1024,7 +1024,7 @@ public class GrowthlaneTrackingILP {
 
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
         for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
-            final ValuePair<Integer, Integer> ctnLimits =
+            final ValuePair<Double, Double> ctnLimits =
                     ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
             if (ctnLimits.getA() <= gapSepYPos && ctnLimits.getB() >= gapSepYPos) {  // fully contained inside
                 ret.add(h);
@@ -1535,11 +1535,11 @@ public class GrowthlaneTrackingILP {
      */
     public Hypothesis<AdvancedComponent<FloatType>> getLowestInTreeHypAt(final int t, final Point testPosition) {
         Hypothesis<AdvancedComponent<FloatType>> ret = null;
-        long min = Long.MAX_VALUE;
+        double min = Double.MAX_VALUE;
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             final AdvancedComponent<FloatType> comp = hyp.getWrappedComponent();
-            int componentSize = ComponentTreeUtils.getComponentSize(comp, 1);
+            double componentSize = ComponentTreeUtils.getComponentSize(comp, 1);
             if (ComponentTreeUtils.componentContainsYPosition(comp, testPosition)) {
                 if (componentSize < min) {
                     min = componentSize;

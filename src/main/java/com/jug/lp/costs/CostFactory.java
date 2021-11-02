@@ -169,13 +169,13 @@ if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; }
 
 // if two children, eveluate likelihood of being pre-division
 final List< Component< FloatType, ? > > listOfChildren = ( List< Component< FloatType, ? >> ) sourceComponent.getChildren();
-final long sizeChild1 = getComponentSize(listOfChildren.get( 0 ), 1);
-final long sizeChild2 = getComponentSize(listOfChildren.get( 1 ), 1);
+final double sizeChild1 = getComponentSize(listOfChildren.get( 0 ), 1);
+final double sizeChild2 = getComponentSize(listOfChildren.get( 1 ), 1);
 
-final long sizeSourceComponent = getComponentSize(sourceComponent, 1);
+final double sizeSourceComponent = getComponentSize(sourceComponent, 1);
 
-final long deltaSizeBetweenChildren = Math.abs( sizeChild1 - sizeChild2 ) / Math.min( sizeChild1, sizeChild2 ); // in multiples of smaller one
-final long deltaSizeChildrenToSourceComponent = Math.abs( sizeChild1 + sizeChild2 - sizeSourceComponent ) / ( sizeChild1 + sizeChild2 ); // in multiples of A+B
+final long deltaSizeBetweenChildren = (long) (Math.abs( sizeChild1 - sizeChild2 ) / Math.min( sizeChild1, sizeChild2 )); // in multiples of smaller one
+final long deltaSizeChildrenToSourceComponent = (long) (Math.abs( sizeChild1 + sizeChild2 - sizeSourceComponent ) / ( sizeChild1 + sizeChild2 )); // in multiples of A+B
 
 return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceComponent;
 	}

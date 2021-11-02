@@ -113,8 +113,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<String> typeOfEndCol = resultTable.addColumn(new ResultTableColumn<>("type_of_end"));
         ResultTableColumn<Integer> parentIdCol = resultTable.addColumn(new ResultTableColumn<>("parent_ID"));
         ResultTableColumn<Integer> numberOfCellsInLaneCol = resultTable.addColumn(new ResultTableColumn<>("cells_in_lane"));
-        ResultTableColumn<Integer> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top_px"));
-        ResultTableColumn<Integer> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom_px"));
+        ResultTableColumn<Double> boundingBoxTopCol = resultTable.addColumn(new ResultTableColumn<>("bbox_top_px"));
+        ResultTableColumn<Double> boundingBoxBottomCol = resultTable.addColumn(new ResultTableColumn<>("bbox_bottom_px"));
         ResultTableColumn<Integer> touchesCellDetectionRoiTopCol = resultTable.addColumn(new ResultTableColumn<>("touches_detection_roi_top"));
         ResultTableColumn<Double> cellCenterXCol = resultTable.addColumn(new ResultTableColumn<>("center_x_px", "%.5f"));
         ResultTableColumn<Double> cellCenterYCol = resultTable.addColumn(new ResultTableColumn<>("center_y_px", "%.5f"));
@@ -163,7 +163,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
                 AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
-                ValuePair<Integer, Integer> limits =
+                ValuePair<Double, Double> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
                 final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
@@ -180,7 +180,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);
                 numberOfCellsInLaneCol.addValue(numCells);
-                Integer cellBboxTop = limits.getA();
+                Double cellBboxTop = limits.getA();
                 boundingBoxTopCol.addValue(cellBboxTop);
                 boundingBoxBottomCol.addValue(limits.getB());
 

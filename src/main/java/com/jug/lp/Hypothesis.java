@@ -177,7 +177,8 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
         HypLoc(final int t, final T segment) {
             this.t = t;
-            this.limits = ComponentTreeUtils.getTreeNodeInterval(segment);
+            ValuePair<Double, Double> tmp = ComponentTreeUtils.getTreeNodeInterval(segment);
+            this.limits = new ValuePair<>(tmp.getA().intValue(), tmp.getB().intValue());
         }
     }
 }

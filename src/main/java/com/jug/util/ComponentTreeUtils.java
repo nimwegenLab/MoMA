@@ -106,10 +106,10 @@ public class ComponentTreeUtils {
             final Component<FloatType, ?> sourceComponent,
             final Component<FloatType, ?> targetComponent,
             final int maximumAllowedDownwardMovement) {
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
-        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final float targetUpperBoundary = targetComponentBoundaries.getA();
-        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
+        final ValuePair<Double, Double> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair<Double, Double> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final float targetUpperBoundary = targetComponentBoundaries.getA().floatValue();
+        final float sourceLowerBoundary = sourceComponentBoundaries.getB().floatValue();
 
         return (targetUpperBoundary - sourceLowerBoundary) > maximumAllowedDownwardMovement;
     }
@@ -222,7 +222,7 @@ public class ComponentTreeUtils {
      * leftmost and rightmost point on the x-axis that is covered by
      * this component-tree-node respectively.
      */
-    public static ValuePair<Integer, Integer> getTreeNodeInterval(final Component<?, ?> node) {
+    public static ValuePair<Double, Double> getTreeNodeInterval(final Component<?, ?> node) {
         return getComponentPixelLimits(node, 1);
     }
 
@@ -233,9 +233,9 @@ public class ComponentTreeUtils {
      * @param dim       the dimension in which component limits are determined
      * @return ValuePair<int min, int max> minimum and maximum pixel limits.
      */
-    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim) {
-        int min = Integer.MAX_VALUE;
-        int max = Integer.MIN_VALUE;
+    public static ValuePair<Double, Double> getComponentPixelLimits(final Component<?, ?> component, int dim) {
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
         for (Localizable localizable : component) {
             final int pos = localizable.getIntPosition(dim);
             min = Math.min(min, pos);
@@ -257,7 +257,7 @@ public class ComponentTreeUtils {
     public static boolean componentContainsYPosition(final Component<?, ?> component, Point position) {
         int[] pos = new int[2]; // this works only for 2D images
         position.localize(pos);
-        ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Double, Double> yLimits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
         return pos[1] >= yLimits.getA() && pos[1] <= yLimits.getB();
     }
 
@@ -268,8 +268,8 @@ public class ComponentTreeUtils {
      * @param dim       the dimension along which the size will be determined
      * @return integer value, which is the difference between the starting and end pixel-positions of the component.
      */
-    public static int getComponentSize(final Component<?, ?> component, int dim) {
-        ValuePair<Integer, Integer> limits = getComponentPixelLimits(component, dim);
+    public static double getComponentSize(final Component<?, ?> component, int dim) {
+        ValuePair<Double, Double> limits = getComponentPixelLimits(component, dim);
         return limits.b - limits.a;
     }
 

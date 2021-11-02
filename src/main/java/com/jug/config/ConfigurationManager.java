@@ -31,6 +31,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      */
     public static int GL_WIDTH_IN_PIXELS = 20;
     public static int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
+    public static int PIXEL_UPSCALING_FACTOR = 1;
     public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
     public static String CELL_LABELS = "dead;dying;fading";
     /**
@@ -114,6 +115,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt(props.getProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS)));
+        PIXEL_UPSCALING_FACTOR = Integer.parseInt(props.getProperty("PIXEL_UPSCALING_FACTOR", Integer.toString(PIXEL_UPSCALING_FACTOR)));
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
@@ -233,6 +235,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
             props.setProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS));
+            props.setProperty("PIXEL_UPSCALING_FACTOR", Integer.toString(PIXEL_UPSCALING_FACTOR));
             props.setProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP));
             props.setProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP));
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));

@@ -59,7 +59,7 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -85,7 +85,7 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -132,7 +132,7 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -153,7 +153,10 @@ public class ComponentTreeGeneratorTests {
 
     @Test
     public void testPrintRankOfSegment() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
+        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
+//        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__scaled_factor_4__20211101.tif";
+//        String fileName = "cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__scaled_factor_8__20211101.tif";
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/" + fileName;
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
@@ -166,7 +169,7 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -186,7 +189,7 @@ public class ComponentTreeGeneratorTests {
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
         ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
     }

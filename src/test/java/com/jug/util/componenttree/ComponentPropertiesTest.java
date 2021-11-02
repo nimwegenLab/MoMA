@@ -52,7 +52,7 @@ public class ComponentPropertiesTest {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
 
         ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 
@@ -69,7 +69,7 @@ public class ComponentPropertiesTest {
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
-            int area = props.getArea(component);
+            double area = props.getArea(component);
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 

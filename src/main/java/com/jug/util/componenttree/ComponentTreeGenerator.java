@@ -1,19 +1,22 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.function.Predicate;
 
@@ -36,9 +39,27 @@ public class ComponentTreeGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
+    public <T extends NumericType<T> & NativeType<T>> Img<T> scaleImageV001(Img<T> inputImage, int scaleFactor){
+        ImagePlus raiFktImp = ImageJFunctions.wrap(inputImage, "tmp_image");
+        raiFktImp.show();
+        int targetWidth = scaleFactor * raiFktImp.getWidth();
+        int targetHeight = scaleFactor * raiFktImp.getHeight();
+        ImageProcessor ip = raiFktImp.getProcessor();
+        ip.setInterpolationMethod(ImageProcessor.BICUBIC);
+        ip = ip.resize(targetWidth, targetHeight);
+        BufferedImage bufferedImage = ip.getBufferedImage();
+        ImagePlus scaledImp = new ImagePlus("bufferedImage", bufferedImage);
+        scaledImp.show();
+        Img<T> res = ImageJFunctions.wrap(scaledImp);
+        return res;
+    }
+
+    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, double scaleFactor) {
         Img<FloatType> img = imageProvider.getImgProbs();
-        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
+        Img<FloatType> raiFktOld = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
+
+//        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
+        Img<FloatType> raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));
 
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
@@ -50,12 +71,13 @@ public class ComponentTreeGenerator {
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
         final boolean darkToBright = false;
+        final int maxWidth = 160;
 
         // generate MSER tree
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
         // filter components by width
-        Predicate<Integer> widthCondition = (width) -> (width <= 20);
+        Predicate<Integer> widthCondition = (width) -> (width <= maxWidth);
         ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
         ArrayList<ILocationTester> testers = new ArrayList<>();
         testers.add(widthLimit);

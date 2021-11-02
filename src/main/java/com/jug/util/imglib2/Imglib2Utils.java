@@ -8,17 +8,26 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.interpolation.InterpolatorFactory;
+import net.imglib2.interpolation.randomaccess.NLinearInterpolatorFactory;
 import net.imglib2.loops.LoopBuilder;
+import net.imglib2.realtransform.RealTransformRandomAccessible;
+import net.imglib2.realtransform.RealViews;
+import net.imglib2.realtransform.Scale2D;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Intervals;
 import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
+import net.imglib2.view.RandomAccessibleOnRealRandomAccessible;
 import net.imglib2.view.Views;
 import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
 
 public class Imglib2Utils {
     private final OpService ops;
@@ -122,4 +131,23 @@ public class Imglib2Utils {
 //        /* ATTEMPT 4 */
 //        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
 //        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+
+    public <T extends NumericType<T> & NativeType<T>> RandomAccessibleInterval<T> scaleImage(RandomAccessibleInterval<T> img, double scaleFactor){
+        Scale2D scalingTransform = new Scale2D(scaleFactor, scaleFactor);
+        FinalInterval biggerInterval = new FinalInterval( Arrays.stream( Intervals.dimensionsAsLongArray(img)).map(x -> (long)(x * scaleFactor) ).toArray());
+
+    //        BSplineCoefficientsInterpolatorFactory<T,DoubleType> interp = new BSplineCoefficientsInterpolatorFactory<>(img);
+    //        InterpolatorFactory interp = new NearestNeighborInterpolatorFactory();
+        InterpolatorFactory interp = new NLinearInterpolatorFactory();
+
+        RealRandomAccessible interpolated = Views.interpolate(Views.extendZero(img), interp); // you have this already
+        RealTransformRandomAccessible scaledUp = RealViews.transform(interpolated, scalingTransform);
+        RandomAccessibleOnRealRandomAccessible rasterized = Views.raster(scaledUp);
+        IntervalView resultWithAnInterval = Views.interval(rasterized, biggerInterval);
+    //        Img<T> res = ImageJFunctions.wrap(resultWithAnInterval);
+    //        RandomAccessibleInterval<T> accessible = ...;
+        Img<T> wrappedImage = ImgView.wrap(resultWithAnInterval);
+        return wrappedImage;
+    }
+
 }

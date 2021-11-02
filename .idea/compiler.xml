@@ -9,5 +9,8 @@
         <module name="MotherMachine" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="MotherMachine_" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

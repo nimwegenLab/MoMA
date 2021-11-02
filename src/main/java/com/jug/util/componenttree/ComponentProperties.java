@@ -1,5 +1,7 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
@@ -32,7 +34,7 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
-        return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+        return new ValuePair<>(minorMajorAxis.getA().get() / ConfigurationManager.PIXEL_UPSCALING_FACTOR, minorMajorAxis.getB().get() / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
     }
 
     /***
@@ -51,8 +53,8 @@ public class ComponentProperties {
         return 2 * Math.PI * angleInRadians / 360.0f;
     }
 
-    public int getArea(AdvancedComponent<?> component){
-        return (int) component.getRegion().size();
+    public double getArea(AdvancedComponent<?> component){
+        return component.getRegion().size() / Math.pow(ConfigurationManager.PIXEL_UPSCALING_FACTOR, 2.);
     }
 
 //    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
@@ -69,30 +71,30 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
-        return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
+        return new ValuePair<>(tmp.getDoublePosition(0) / ConfigurationManager.PIXEL_UPSCALING_FACTOR, tmp.getDoublePosition(1) / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
     }
 
     public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getTotalIntensity(component.getRegion(), img);
+        return imglib2Utils.getTotalIntensity(component.getRegion(), imglib2Utils.scaleImage(img, ConfigurationManager.PIXEL_UPSCALING_FACTOR)) / Math.pow(ConfigurationManager.PIXEL_UPSCALING_FACTOR , 2.);
     }
 
     public double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
+        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), imglib2Utils.scaleImage(img, ConfigurationManager.PIXEL_UPSCALING_FACTOR));
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
+        ValuePair<Double, Double> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, Math.round(limits.getA()), Math.round(limits.getB()));
         double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
-        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, Math.round(limits.getA()), Math.round(limits.getB()));
         double intensity2 = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
         return intensity1 + intensity2;
     }
 
     public int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
-        FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
-        FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());
+        ValuePair<Double, Double> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        FinalInterval roi1 = getLeftBackgroundRoi(img, Math.round(limits.getA()), Math.round(limits.getB()));
+        FinalInterval roi2 = getRightBackgroundRoi(img, Math.round(limits.getA()), Math.round(limits.getB()));
         return (int) (roi1.dimension(0) * roi1.dimension(1) + roi2.dimension(0) * roi2.dimension(1));
     }
 

@@ -55,7 +55,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         this.label = label;
         RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
         for (Localizable val : wrappedComponent) {
-            pixelList.add(new Point(val));
+//            Point point = new Point(val.getIntPosition(0) / 2, val.getIntPosition(1) / 2);
+            Point point = new Point(val);
+            pixelList.add(point);
             accessor.setPosition(val);
             accessor.get().add(label);
         }

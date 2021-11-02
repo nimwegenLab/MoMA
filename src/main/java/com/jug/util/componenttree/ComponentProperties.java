@@ -52,8 +52,8 @@ public class ComponentProperties {
         return 2 * Math.PI * angleInRadians / 360.0f;
     }
 
-    public int getArea(AdvancedComponent<?> component){
-        return (int) component.getRegion().size();
+    public double getArea(AdvancedComponent<?> component){
+        return component.getRegion().size() / Math.pow(MoMA.SCALE_FACTOR, 2.);
     }
 
 //    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();

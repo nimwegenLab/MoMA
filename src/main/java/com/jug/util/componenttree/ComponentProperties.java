@@ -70,7 +70,7 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
-        return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
+        return new ValuePair<>(tmp.getDoublePosition(0) / MoMA.SCALE_FACTOR, tmp.getDoublePosition(1) / MoMA.SCALE_FACTOR);
     }
 
     public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){

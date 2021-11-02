@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.MoMA;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
@@ -73,11 +74,11 @@ public class ComponentProperties {
     }
 
     public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getTotalIntensity(component.getRegion(), img);
+        return imglib2Utils.getTotalIntensity(component.getRegion(), imglib2Utils.scaleImage(img, MoMA.SCALE_FACTOR)) / Math.pow(MoMA.SCALE_FACTOR , 2.);
     }
 
     public double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
+        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), imglib2Utils.scaleImage(img, MoMA.SCALE_FACTOR));
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){

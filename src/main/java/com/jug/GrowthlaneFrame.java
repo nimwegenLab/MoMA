@@ -1,5 +1,6 @@
 package com.jug;
 
+import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentTreeGenerator;
@@ -34,6 +35,6 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
      */
     @Override
     protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
-        return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex);
+        return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex, ConfigurationManager.PIXEL_UPSCALING_FACTOR);
     }
 }

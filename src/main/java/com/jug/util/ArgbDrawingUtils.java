@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.Localizable;
@@ -87,8 +88,8 @@ public class ArgbDrawingUtils {
         Iterator<Localizable> componentIterator = component.iterator();
         while (componentIterator.hasNext()) {
             Localizable position = componentIterator.next();
-            final int xpos = Math.round(position.getIntPosition(0) / MoMA.SCALE_FACTOR);
-            final int ypos = Math.round(position.getIntPosition(1) / MoMA.SCALE_FACTOR);
+            final int xpos = Math.round(position.getIntPosition(0) / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
+            final int ypos = Math.round(position.getIntPosition(1) / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
 //            final int xpos = position.getIntPosition(0);
 //            final int ypos = position.getIntPosition(1);
             final Point p = new Point(xpos + offsetX, offsetY + ypos);

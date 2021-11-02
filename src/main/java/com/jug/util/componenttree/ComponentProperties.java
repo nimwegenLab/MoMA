@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.MoMA;
+import com.jug.config.ConfigurationManager;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
@@ -33,7 +34,7 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
-        return new ValuePair<>(minorMajorAxis.getA().get() / MoMA.SCALE_FACTOR, minorMajorAxis.getB().get() / MoMA.SCALE_FACTOR);
+        return new ValuePair<>(minorMajorAxis.getA().get() / ConfigurationManager.PIXEL_UPSCALING_FACTOR, minorMajorAxis.getB().get() / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
     }
 
     /***
@@ -53,7 +54,7 @@ public class ComponentProperties {
     }
 
     public double getArea(AdvancedComponent<?> component){
-        return component.getRegion().size() / Math.pow(MoMA.SCALE_FACTOR, 2.);
+        return component.getRegion().size() / Math.pow(ConfigurationManager.PIXEL_UPSCALING_FACTOR, 2.);
     }
 
 //    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
@@ -70,15 +71,15 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
-        return new ValuePair<>(tmp.getDoublePosition(0) / MoMA.SCALE_FACTOR, tmp.getDoublePosition(1) / MoMA.SCALE_FACTOR);
+        return new ValuePair<>(tmp.getDoublePosition(0) / ConfigurationManager.PIXEL_UPSCALING_FACTOR, tmp.getDoublePosition(1) / ConfigurationManager.PIXEL_UPSCALING_FACTOR);
     }
 
     public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getTotalIntensity(component.getRegion(), imglib2Utils.scaleImage(img, MoMA.SCALE_FACTOR)) / Math.pow(MoMA.SCALE_FACTOR , 2.);
+        return imglib2Utils.getTotalIntensity(component.getRegion(), imglib2Utils.scaleImage(img, ConfigurationManager.PIXEL_UPSCALING_FACTOR)) / Math.pow(ConfigurationManager.PIXEL_UPSCALING_FACTOR , 2.);
     }
 
     public double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), imglib2Utils.scaleImage(img, MoMA.SCALE_FACTOR));
+        return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), imglib2Utils.scaleImage(img, ConfigurationManager.PIXEL_UPSCALING_FACTOR));
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){

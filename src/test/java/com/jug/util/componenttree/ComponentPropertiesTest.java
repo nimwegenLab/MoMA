@@ -52,7 +52,7 @@ public class ComponentPropertiesTest {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.);
 
         ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 

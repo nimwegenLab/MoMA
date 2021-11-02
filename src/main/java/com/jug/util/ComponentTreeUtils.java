@@ -241,8 +241,8 @@ public class ComponentTreeUtils {
             min = Math.min(min, pos);
             max = Math.max(max, pos);
         }
-        min = min / MoMA.SCALE_FACTOR;
-        max = max / MoMA.SCALE_FACTOR;
+        min = min / ConfigurationManager.PIXEL_UPSCALING_FACTOR;
+        max = max / ConfigurationManager.PIXEL_UPSCALING_FACTOR;
         return new ValuePair<>(min, max);
     }
 

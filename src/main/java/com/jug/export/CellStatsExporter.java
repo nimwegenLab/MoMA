@@ -177,8 +177,6 @@ public class CellStatsExporter implements ResultExporterInterface {
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
                 frameCol.addValue(segmentRecord.timestep);
 
-                ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
-
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);
                 numberOfCellsInLaneCol.addValue(numCells);
@@ -196,6 +194,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
                 cellCenterXCol.addValue(center.getA());
                 cellCenterYCol.addValue(center.getB());
+                ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
                 cellWidthCol.addValue(minorAndMajorAxis.getA());
                 cellLengthCol.addValue(minorAndMajorAxis.getB());
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));

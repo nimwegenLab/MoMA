@@ -33,7 +33,7 @@ public class ComponentProperties {
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
-        return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+        return new ValuePair<>(minorMajorAxis.getA().get() / MoMA.SCALE_FACTOR, minorMajorAxis.getB().get() / MoMA.SCALE_FACTOR);
     }
 
     /***

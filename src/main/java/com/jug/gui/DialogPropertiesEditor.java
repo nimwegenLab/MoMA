@@ -158,6 +158,26 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
+                    case "THRESHOLD_FOR_COMPONENT_SPLITTING": {
+                        float newValue = Float.parseFloat(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING,
+                                () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING),
+                                () -> {
+                                    ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING = newValue;
+                                    MoMA.props.setProperty(
+                                            "GL_OFFSET_TOP",
+                                            "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+                                    final Thread t = new Thread(() -> {
+                                        ((MoMAGui) parent).restartFromGLSegmentation();
+                                        ((MoMAGui) parent).restartTracking();
+                                    });
+                                    t.start();
+                                });
+                        break;
+                    }
                     case "MAXIMUM_GROWTH_RATE": {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -259,6 +279,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "CELL_DETECTION_ROI_OFFSET_TOP":
                 case "THRESHOLD_FOR_COMPONENT_MERGING":
                 case "THRESHOLD_FOR_COMPONENT_GENERATION":
+                case "THRESHOLD_FOR_COMPONENT_SPLITTING":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);

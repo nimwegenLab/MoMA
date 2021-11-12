@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
+import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
@@ -32,7 +33,7 @@ public class ComponentTreeGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, double scaleFactor) {
+    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, double scaleFactor, float componentSplittingThreshold) {
         Img<FloatType> img = imageProvider.getImgProbs();
         Img<FloatType> raiFktOld = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
@@ -47,7 +48,11 @@ public class ComponentTreeGenerator {
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
-		final double delta = 0.0001;
+        Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
+        raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
+
+
+        final double delta = 0.0001;
 //        final double delta = 0.02;
         final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
         final long maxSize = Long.MAX_VALUE;

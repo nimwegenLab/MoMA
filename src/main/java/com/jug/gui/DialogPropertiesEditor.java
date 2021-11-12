@@ -158,25 +158,6 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
-                    case "PIXEL_UPSCALING_FACTOR": {
-                        int newValue = Integer.parseInt(evt.getNewValue().toString());
-                        showPropertyEditedNeedsRerunDialog("Continue?",
-                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.PIXEL_UPSCALING_FACTOR,
-                                () -> sourceProperty.setValue(ConfigurationManager.PIXEL_UPSCALING_FACTOR),
-                                () -> {
-                                    ConfigurationManager.PIXEL_UPSCALING_FACTOR = newValue;
-                                    MoMA.props.setProperty(
-                                            "PIXEL_UPSCALING_FACTOR",
-                                            "" + ConfigurationManager.PIXEL_UPSCALING_FACTOR);
-                                    final Thread t = new Thread(() -> {
-                                        ((MoMAGui) parent).restartFromGLSegmentation();
-                                        ((MoMAGui) parent).restartTracking();
-                                    });
-                                    t.start();
-                                });
-                        break;
-                    }
                     case "MAXIMUM_GROWTH_RATE": {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -276,12 +257,16 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                 case "GL_WIDTH_IN_PIXELS":
                 case "SEGMENTATION_MODEL_PATH":
                 case "CELL_DETECTION_ROI_OFFSET_TOP":
-                case "PIXEL_UPSCALING_FACTOR":
                 case "THRESHOLD_FOR_COMPONENT_MERGING":
                 case "THRESHOLD_FOR_COMPONENT_GENERATION":
                     property.setCategory(SEG);
                     property.setShortDescription(key);
                     property.setEditable(true);
+                    break;
+                case "PIXEL_UPSCALING_FACTOR":
+                    property.setEditable(false);
+                    property.setCategory(SEG);
+                    property.setShortDescription(key);
                     break;
                 case "GL_OFFSET_TOP":
                 case "MAXIMUM_GROWTH_RATE":

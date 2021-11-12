@@ -40,9 +40,9 @@ public class ComponentTreeGenerator {
 //        Img<FloatType> raiFkt = scaleImageV001(raiFktOld, scaleFactor);
         Img<FloatType> raiFkt;
         if (((int) scaleFactor) == 1) { /* this is possible, because scaleFactor can only be set as an integer value by the user */
-            raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));
-        } else {
             raiFkt = raiFktOld;
+        } else {
+            raiFkt = ImgView.wrap(imglib2Utils.scaleImage(raiFktOld, scaleFactor));
         }
 
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));

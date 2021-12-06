@@ -884,7 +884,7 @@ public class GrowthlaneTrackingILP {
             System.out.println(solutionSanityChecker.getErrorMessage());
             if (solutionSanityChecker.continuityConstraintFound()) {
                 if (dialogManager != null) {
-                    dialogManager.showErrorDialog("ERROR: Missing assignments found!", solutionSanityChecker.getErrorMessage());
+                    dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }
         } catch (final GRBException e) {

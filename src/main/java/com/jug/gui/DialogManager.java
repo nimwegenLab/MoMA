@@ -18,8 +18,15 @@ public class DialogManager implements IDialogManager {
      * Show error dialog.
      */
     @Override
-    public void showErrorDialog(String title, String message) {
+    public void showErrorDialogWithTextArea(String title, String message) {
         MoMAGui gui = guiSupplier.get();
-        JOptionPane.showMessageDialog(gui, message, title, JOptionPane.ERROR_MESSAGE);
+
+        SwingUtilities.invokeLater(() -> {
+            JTextArea textArea = new JTextArea(12, 55);
+            textArea.setText(message);
+            textArea.setEditable(false);
+            JScrollPane scrollPane = new JScrollPane(textArea);
+            JOptionPane.showMessageDialog(gui, scrollPane, title, JOptionPane.ERROR_MESSAGE);
+        });
     }
 }

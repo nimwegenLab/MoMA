@@ -19,26 +19,42 @@ public class IlpSolutionSanityChecker {
         this.gl = gl;
     }
 
+    /**
+     * Return error message listing, where continuity constraints were found.
+     * @return
+     */
+    public String getErrorMessage() {
+        return finalErrorMessage.toString();
+    }
     private StringBuilder finalErrorMessage;
-    private boolean optimizationFailedFlag;
+
+    /**
+     * Return if continuity constraint was found.
+     * @return
+     */
+    public boolean getContinuityConstraintFound() {
+        return continuityConstraintViolationFound;
+    }
+    private boolean continuityConstraintViolationFound;
 
     void CheckSolutionContinuityConstraintForAllTimesteps() {
         finalErrorMessage = new StringBuilder();
-        optimizationFailedFlag = false;
+        continuityConstraintViolationFound = false;
         finalErrorMessage.append("--------- Start: CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses ---------\n");
         for (int t = 1; t < gl.size(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
-            CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(t, finalErrorMessage);
+            continuityConstraintViolationFound = continuityConstraintViolationFound | CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(t, finalErrorMessage);
         }
         finalErrorMessage.append("--------- End: CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses ---------\n");
 
         finalErrorMessage.append("--------- Start: CheckContinuityConstraintForAllOptimalAssignments ---------\n");
         for (int t = 1; t < gl.size(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
-            CheckContinuityConstraintForAllOptimalAssignments(t, finalErrorMessage);
+            continuityConstraintViolationFound = continuityConstraintViolationFound | CheckContinuityConstraintForAllOptimalAssignments(t, finalErrorMessage);
         }
         finalErrorMessage.append("--------- End: CheckContinuityConstraintForAllOptimalAssignments ---------\n");
     }
 
-    void CheckContinuityConstraintForAllOptimalAssignments(int t, StringBuilder errorMessageToAppendTo) {
+    boolean CheckContinuityConstraintForAllOptimalAssignments(int t, StringBuilder errorMessageToAppendTo) {
+        boolean myOptimizationFailedFlag = false;
         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = ilp.getOptimalAssignments(t - 1);
         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> outgoingAssignments = ilp.getOptimalAssignments(t);
         Set<ExitAssignment> incomingExitAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, ExitAssignment.class);
@@ -56,7 +72,9 @@ public class IlpSolutionSanityChecker {
             errorMessageToAppendTo.append(String.format("incoming exit: %d\n", incomingExitCount));
             errorMessageToAppendTo.append(String.format("incoming lysis: %d\n", incomingLysisCount));
             errorMessageToAppendTo.append(String.format("incoming division: %d\n", incomingDivisionCount));
+            myOptimizationFailedFlag = true;
         }
+        return myOptimizationFailedFlag;
     }
 
 
@@ -66,7 +84,8 @@ public class IlpSolutionSanityChecker {
      *
      * @param t time step at which the continuity constraint is checked
      */
-    void CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t, StringBuilder errorMessageToAppendTo) {
+    boolean CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(int t, StringBuilder errorMessageToAppendTo) {
+        boolean myOptimizationFailedFlag = false;
         try {
             List<Hypothesis<AdvancedComponent<FloatType>>> currentOptimalHypotheses = ilp.getOptimalSegmentation(t);
             List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> incomingAssignments = new ArrayList<>();
@@ -86,13 +105,12 @@ public class IlpSolutionSanityChecker {
                 errorMessageToAppendTo.append(String.format("incoming: %d\n", incomingAssignmentCount));
                 errorMessageToAppendTo.append(String.format("outgoing: %d\n", outgoingAssignmentCount));
                 errorMessageToAppendTo.append("There was an error ...!\n");
+                myOptimizationFailedFlag = true;
             }
+            return myOptimizationFailedFlag;
         } catch (GRBException e) {
             e.printStackTrace();
+            return myOptimizationFailedFlag;
         }
-    }
-
-    public String getFinalErrorMessage() {
-        return finalErrorMessage.toString();
     }
 }

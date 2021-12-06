@@ -879,7 +879,10 @@ public class GrowthlaneTrackingILP {
 
             IlpSolutionSanityChecker solutionSanityChecker = new IlpSolutionSanityChecker(this, gl);
             solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
-            System.out.println(solutionSanityChecker.getFinalErrorMessage());
+            System.out.println(solutionSanityChecker.getErrorMessage());
+//            if (solutionSanityChecker.getContinuityConstraintFound()) {
+//                JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
+//            }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");

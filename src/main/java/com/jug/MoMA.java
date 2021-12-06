@@ -2,6 +2,7 @@ package com.jug;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.MoMAModel;
 import com.jug.gui.WindowFocusListenerImplementation;
@@ -878,7 +879,7 @@ public class MoMA implements IImageProvider {
 	 */
     private void findGrowthlanes(IImageProvider imageProvider) {
         this.setGrowthlanes(new ArrayList<>() );
-        getGrowthlanes().add( new Growthlane(imageProvider) );
+		getGrowthlanes().add( new Growthlane(imageProvider, this.dic.getDialogManager()) );
 
         for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, dic.getComponentTreeGenerator());

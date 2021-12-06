@@ -1,6 +1,7 @@
 package com.jug;
 
 import com.jug.datahandling.IImageProvider;
+import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
@@ -20,6 +21,7 @@ public class Growthlane {
 	private final List<GrowthlaneFrame> frames;
 	private GrowthlaneTrackingILP ilp; //<
 	private IImageProvider imageProvider;
+	private IDialogManager dialogManager;
 
 	// Hypothesis< Component< FloatType, ? > >,
 	// AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > ilp;
@@ -44,8 +46,9 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IImageProvider imageProvider) {
+	public Growthlane(IImageProvider imageProvider, IDialogManager dialogManager) {
 		this.imageProvider = imageProvider;
+		this.dialogManager = dialogManager;
 		this.frames = new ArrayList<>();
 	}
 
@@ -92,6 +95,7 @@ public class Growthlane {
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}
+		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();
 
 		if ( guiProgressReceiver != null ) {

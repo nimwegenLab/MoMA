@@ -6,6 +6,7 @@ import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
+import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
@@ -68,6 +69,7 @@ public class GrowthlaneTrackingILP {
     private String versionString;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
+    private IDialogManager dialogManager;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -883,6 +885,10 @@ public class GrowthlaneTrackingILP {
 //            if (solutionSanityChecker.getContinuityConstraintFound()) {
 //                JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
 //            }
+            if(dialogManager != null) {
+                dialogManager.showErrorDialog("ERROR: Missing assignments found!", solutionSanityChecker.getErrorMessage());
+            }
+
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
@@ -2108,4 +2114,7 @@ public class GrowthlaneTrackingILP {
     }
 
 
+    public void addDialogManger(IDialogManager dialogManager) {
+        this.dialogManager = dialogManager;
+    }
 }

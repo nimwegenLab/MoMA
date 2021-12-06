@@ -464,7 +464,6 @@ public class MoMA implements IImageProvider {
 
 		// ------------------------------------------------------------------------------------------------------
 		// ------------------------------------------------------------------------------------------------------
-		final MoMAModel mmm = new MoMAModel( main );
 		try {
 			main.processDataFromFolder(IMAGE_PATH, minTime, maxTime, minChannelIdx, numChannels );
 		} catch ( final Exception e ) {
@@ -490,8 +489,7 @@ public class MoMA implements IImageProvider {
 			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
-		gui = new MoMAGui( mmm, dic.getMomaInstance(), dic.getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
-
+		gui = dic.getMomaGui();
 
 		if ( !HEADLESS ) {
 			SwingUtilities.invokeLater(() -> {

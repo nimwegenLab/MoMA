@@ -19,7 +19,7 @@ public class GitVersionProvider {
         try {
             versionString = getGitVersionInfo();
         } catch (IOException e) {
-            return "Error: Json Git Version could not be parsed";
+            return "Error: Git version could not be parsed";
         }
         return versionString;
 //        throw new NotImplementedException();
@@ -43,7 +43,9 @@ public class GitVersionProvider {
             return readFromInputStream(intputStream);
         } catch (IOException e) {
             e.printStackTrace();
-            return "Version information could not be retrieved";
+            return "VERSION COULD NOT BE RETRIEVED";
+        } catch (NullPointerException e){
+            return "VERSION COULD NOT BE RETRIEVED";
         }
     }
 

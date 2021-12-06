@@ -7,6 +7,10 @@ import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
+import com.jug.gui.DialogManager;
+import com.jug.gui.IDialogManager;
+import com.jug.gui.MoMAGui;
+import com.jug.gui.MoMAModel;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -100,4 +104,23 @@ public class PseudoDic {
     public WatershedMaskGenerator getWatershedMaskGenerator() { return watershedMaskGenerator; }
 
     public GitVersionProvider getGitVersionProvider() { return gitVersionProvider; }
+
+    MoMAGui gui;
+    public MoMAGui getMomaGui() {
+        if (gui == null) {
+            final MoMAModel mmm = new MoMAModel(this.momaInstance);
+            gui = new MoMAGui(mmm, getMomaInstance(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+        }
+        return gui;
+    }
+
+    IDialogManager dialogManager;
+    public IDialogManager getDialogManager(){
+        if(dialogManager == null){
+            dialogManager = new DialogManager(() -> {
+                return getMomaGui();
+            });
+        }
+        return dialogManager;
+    }
 }

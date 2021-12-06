@@ -882,13 +882,11 @@ public class GrowthlaneTrackingILP {
             IlpSolutionSanityChecker solutionSanityChecker = new IlpSolutionSanityChecker(this, gl);
             solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
             System.out.println(solutionSanityChecker.getErrorMessage());
-//            if (solutionSanityChecker.getContinuityConstraintFound()) {
-//                JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
-//            }
-            if(dialogManager != null) {
-                dialogManager.showErrorDialog("ERROR: Missing assignments found!", solutionSanityChecker.getErrorMessage());
+            if (solutionSanityChecker.continuityConstraintFound()) {
+                if (dialogManager != null) {
+                    dialogManager.showErrorDialog("ERROR: Missing assignments found!", solutionSanityChecker.getErrorMessage());
+                }
             }
-
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");

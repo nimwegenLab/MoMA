@@ -838,27 +838,6 @@ public class GrowthlaneTrackingILP {
             System.out.println("Optimization time: " + (endTime - startTime));
             dialog.notifyGurobiTermination();
 
-            // Relaxation run-test for Paul and Bogdan
-            // - - - - - - - - - - - - - - - - - - - -
-//			System.out.println( ">> Relaxing problem..." );
-//			final GRBModel r = model.relax();
-//			System.out.println( ">> Solving relaxed problem..." );
-//			r.optimize();
-//			System.out.println( ">> Counting integral variables..." );
-//			int integral = 0;
-//			int matching = 0;
-//			int numvars = 0;
-//			for ( int idx = 0; idx < r.getVars().length; idx++ ) {
-//				final GRBVar var = model.getVars()[ idx ];
-//				final GRBVar varRelaxed = r.getVars()[ idx ];
-//				final double x = var.get( GRB.DoubleAttr.X );
-//				final double xRelaxed = varRelaxed.get( GRB.DoubleAttr.X );
-//				if ( xRelaxed == 0.0 || xRelaxed == 1.0 ) integral++;
-//				if ( x == xRelaxed ) matching++;
-//				numvars++;
-//			}
-//			System.out.println( String.format( ">> %d, %d, %d", numvars, integral, matching ) );
-
             // Read solution and extract interpretation
             // - - - - - - - - - - - - - - - - - - - - -
             if (model.get(GRB.IntAttr.Status) == GRB.Status.OPTIMAL) {
@@ -898,7 +877,9 @@ public class GrowthlaneTrackingILP {
                 status = IlpStatus.UNDEFINED; /* something went wrong and `this.status` was not set to something different than OPTIMIZATION_RUNNING; so set it to UNDEFINED */
             }
 
-            new IlpSolutionSanityChecker(this, gl).CheckSolutionContinuityConstraintForAllTimesteps();
+            IlpSolutionSanityChecker solutionSanityChecker = new IlpSolutionSanityChecker(this, gl);
+            solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
+            System.out.println(solutionSanityChecker.getFinalErrorMessage());
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");

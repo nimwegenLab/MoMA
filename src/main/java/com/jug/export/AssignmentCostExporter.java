@@ -23,8 +23,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTable resultTable;
     private final ResultTableColumn<Integer> frameCol;
     private final ResultTableColumn<Integer> cellIdCol;
-    private final ResultTableColumn<Integer> assignmentTypeCol;
-    private final ResultTableColumn<Boolean> assignmentInIlpSolutionCol;
+    private final ResultTableColumn<String> assignmentTypeCol;
+    private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
     private final ResultTableColumn<Integer> cellRankCol;
     private final ResultTableColumn<Float> assignmentCostCol;
     private GrowthlaneTrackingILP ilp;
@@ -92,9 +92,12 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private void outputAssignmentInformationToTable(int frame, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment, boolean assignmentInIlpSolution, int cellRank, int segmentId) {
         cellIdCol.addValue(segmentId);
         cellRankCol.addValue(cellRank);
-        assignmentInIlpSolutionCol.addValue(assignmentInIlpSolution);
+        assignmentInIlpSolutionCol.addValue(assignmentInIlpSolution ? 1 : 0);
         frameCol.addValue(frame);
-        assignmentTypeCol.addValue(assignment.getType());
+        if(assignment.getType() == ilp.ASSIGNMENT_EXIT) assignmentTypeCol.addValue("exit");
+        if(assignment.getType() == ilp.ASSIGNMENT_MAPPING) assignmentTypeCol.addValue("map");
+        if(assignment.getType() == ilp.ASSIGNMENT_DIVISION) assignmentTypeCol.addValue("div");
+        if(assignment.getType() == ilp.ASSIGNMENT_LYSIS) assignmentTypeCol.addValue("lys");
         this.assignmentCostCol.addValue(assignment.getCost());
     }
 }

@@ -1245,6 +1245,18 @@ public class GrowthlaneTrackingILP {
         return findActiveAssignment(edgeSets.getRightNeighborhood(hypothesis));
     }
 
+
+    /**
+     * Return set of all right-assignments that are outgoing from a given hypothesis.
+     *
+     * @param hypothesis
+     * @return
+     * @throws GRBException
+     */
+    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllRightAssignmentsForHypothesis(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
+        return edgeSets.getRightNeighborhood(hypothesis);
+    }
+
     /**
      * Finds the active assignment in a set of assignments.
      * This method is thought to be called given a set that can only contain at

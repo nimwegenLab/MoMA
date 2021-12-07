@@ -12,6 +12,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.io.File;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * This class exports the cost values for all assignments that belong to the segments that were selected as part of the
@@ -27,10 +28,12 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Float> assignmentCostCol;
     private GrowthlaneTrackingILP ilp;
     private Growthlane growthlane;
+    private Supplier<String> defaultFilenameDecorationSupplier;
 
-    public AssignmentCostExporter(Growthlane growthlane) {
+    public AssignmentCostExporter(Growthlane growthlane, Supplier<String> defaultFilenameDecorationSupplier) {
         this.ilp = growthlane.getIlp();
         this.growthlane = growthlane;
+        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         this.resultTable = new ResultTable(",");
         this.frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
         this.cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));

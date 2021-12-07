@@ -9,7 +9,8 @@ import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.io.File;
+import javax.security.sasl.SaslServer;
+import java.io.*;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -35,30 +36,43 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         this.growthlane = growthlane;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         this.resultTable = new ResultTable(",");
-        this.frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
         this.cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
+        this.frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
+        this.cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
         this.assignmentTypeCol = resultTable.addColumn(new ResultTableColumn<>("assignment_type"));
         this.assignmentInIlpSolutionCol = resultTable.addColumn(new ResultTableColumn<>("assignment_in_ilp_solution"));
-        this.cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
         this.assignmentCostCol = resultTable.addColumn(new ResultTableColumn<>("assignment_cost"));
     }
 
     @Override
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
+            System.out.println("PROCESSING NEXT CELL...");
             do {
                 int frame = segmentRecord.timestep;
-                System.out.println("frame: " + frame);
                 final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
 
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
                 final int segmentId = segmentRecord.getId();
                 exportAllAssignmentInformationForHypothesis(frame, segmentRecord.hyp, cellRank, segmentId);
+
                 segmentRecord = segmentRecord.nextSegmentInTime();
+                System.out.println("frame: " + frame);
+                System.out.println("segmentRecord.exists(): " + segmentRecord.exists());
             }
             while (segmentRecord.exists());
         }
-        System.out.println("bla");
+        File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
+        try {
+            OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
+            try {
+                resultTable.writeTable(out);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private void exportAllAssignmentInformationForHypothesis(int frame, Hypothesis<AdvancedComponent<FloatType>> hypothesis, int cellRank, int segmentId){
@@ -68,7 +82,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             if(!allAssignments.contains(activeAssignment)){
                 throw new RuntimeException("There is no active assignment for the selected hypothesis. This is not allowed to happen.");
             }
-            allAssignments.remove(activeAssignment);
+            System.out.println("allAssignments.size before: " + allAssignments.size());
+            allAssignments.remove(activeAssignment); // PROBLEMATIC LINE OF CODE
+            System.out.println("allAssignments.size after: " + allAssignments.size());
             outputAssignmentInformationToTable(frame, activeAssignment, true, cellRank, segmentId);
             for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
                 outputAssignmentInformationToTable(frame, assignment, false, cellRank, segmentId);
@@ -76,8 +92,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         } catch (GRBException e) {
             e.printStackTrace();
         }
-
-        System.out.println("bla");
     }
 
     private void outputAssignmentInformationToTable(int frame, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment, boolean assignmentInIlpSolution, int cellRank, int segmentId) {

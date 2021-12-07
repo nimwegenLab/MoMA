@@ -84,6 +84,21 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                         }
                         break;
                     }
+                    case "ASSIGNMENT_COST_CUTOFF": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.ASSIGNMENT_COST_CUTOFF,
+                                () -> sourceProperty.setValue(ConfigurationManager.ASSIGNMENT_COST_CUTOFF),
+                                () -> {
+                                    ConfigurationManager.ASSIGNMENT_COST_CUTOFF = newValue;
+                                    MoMA.props.setProperty(
+                                            "ASSIGNMENT_COST_CUTOFF",
+                                            "" + ConfigurationManager.ASSIGNMENT_COST_CUTOFF);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
                     case "GL_OFFSET_TOP": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -285,6 +300,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     property.setEditable(true);
                     break;
                 case "GL_OFFSET_TOP":
+                case "ASSIGNMENT_COST_CUTOFF":
                 case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);

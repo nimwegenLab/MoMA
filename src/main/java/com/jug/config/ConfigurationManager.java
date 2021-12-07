@@ -34,6 +34,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
     public static String CELL_LABELS = "dead;dying;fading";
     /**
+     * This value is critical(!): Assignments with costs higher than this value will be ignored.
+     */
+    public static float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
+    /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
     public static int GL_OFFSET_TOP = 65;
@@ -119,6 +123,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt(props.getProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS)));
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
+        ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
         THRESHOLD_FOR_COMPONENT_GENERATION = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Float.toString(THRESHOLD_FOR_COMPONENT_GENERATION)));
@@ -241,6 +246,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP));
             props.setProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP));
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));
+            props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
             props.setProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Double.toString(THRESHOLD_FOR_COMPONENT_GENERATION));
             props.setProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Double.toString(THRESHOLD_FOR_COMPONENT_SPLITTING));

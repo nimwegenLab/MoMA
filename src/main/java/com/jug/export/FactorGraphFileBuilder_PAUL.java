@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.jug.config.ConfigurationManager.ASSIGNMENT_COST_CUTOFF;
+
 /**
  * @author jug
  */
@@ -131,7 +133,7 @@ public class FactorGraphFileBuilder_PAUL {
         final Hypothesis<AdvancedComponent<FloatType>> destinationHypothesis = assmnt.getDestinationHypothesis();
         final float mappingCost = ilp.compatibilityCostOfMapping(sourceHypothesis.getWrappedComponent(), destinationHypothesis.getWrappedComponent());
         final double cost = ilp.costModulationForSubstitutedILP(sourceHypothesis.getCost(), destinationHypothesis.getCost(), mappingCost);
-        if (cost <= GrowthlaneTrackingILP.CUTOFF_COST) {
+        if (cost <= ASSIGNMENT_COST_CUTOFF) {
             lines.add(
                     String.format(
                             "MOVE %d %d %d %d %.16f",
@@ -159,7 +161,7 @@ public class FactorGraphFileBuilder_PAUL {
                 destinationHypothesisUpper.getCost(),
                 destinationHypothesisLower.getCost(),
                 divisionCost);
-        if (cost <= GrowthlaneTrackingILP.CUTOFF_COST) {
+        if (cost <= ASSIGNMENT_COST_CUTOFF) {
             lines.add(
                     String.format(
                             "DIV %d %d %d %d %d %d %.16f",

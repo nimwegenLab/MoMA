@@ -47,7 +47,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     @Override
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
-            System.out.println("PROCESSING NEXT CELL...");
             do {
                 int frame = segmentRecord.timestep;
                 final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
@@ -57,8 +56,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
                 exportAllAssignmentInformationForHypothesis(frame, segmentRecord.hyp, cellRank, segmentId);
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
-                System.out.println("frame: " + frame);
-                System.out.println("segmentRecord.exists(): " + segmentRecord.exists());
             }
             while (segmentRecord.exists());
         }
@@ -82,9 +79,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             if(!allAssignments.contains(activeAssignment)){
                 throw new RuntimeException("There is no active assignment for the selected hypothesis. This is not allowed to happen.");
             }
-            System.out.println("allAssignments.size before: " + allAssignments.size());
-            allAssignments.remove(activeAssignment); // PROBLEMATIC LINE OF CODE
-            System.out.println("allAssignments.size after: " + allAssignments.size());
+            allAssignments.remove(activeAssignment);
             outputAssignmentInformationToTable(frame, activeAssignment, true, cellRank, segmentId);
             for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
                 outputAssignmentInformationToTable(frame, assignment, false, cellRank, segmentId);

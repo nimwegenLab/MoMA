@@ -1254,7 +1254,7 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllRightAssignmentsForHypothesis(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
-        return new HashSet<>(edgeSets.getRightNeighborhood(hypothesis));
+        return new HashSet<>(edgeSets.getRightNeighborhood(hypothesis)); /* return a new set of assignment references, so that caller cannot modify the underlying set of the ILP */
     }
 
     /**

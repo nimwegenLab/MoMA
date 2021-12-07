@@ -231,7 +231,8 @@ public class CellStatsExporter implements ResultExporterInterface {
                 }
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
-
+//                System.out.println("segmentRecord.getId(): " + segmentRecord.getId());
+//                System.out.println("segmentRecord.exists(): " + segmentRecord.exists());
                 typeOfEndCol.addValue(segmentRecord.getTerminationIdentifier());
             }
             while (segmentRecord.exists());

@@ -5,6 +5,7 @@ import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.AssignmentCostExporter;
 import com.jug.export.GroundTruthFramesExporter;
 import com.jug.export.MixtureModelFit;
 import com.jug.gui.DialogManager;
@@ -89,6 +90,14 @@ public class PseudoDic {
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
 
+    AssignmentCostExporter assignmentCostExporter;
+    public AssignmentCostExporter getAssignmentCostExporter() {
+        if (assignmentCostExporter == null) {
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration());
+        }
+        return assignmentCostExporter;
+    }
+
     public ITrackingConfiguration getTrackingConfiguration() {
         return configurationManager;
     }
@@ -108,18 +117,23 @@ public class PseudoDic {
     MoMAGui gui;
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            final MoMAModel mmm = new MoMAModel(this.momaInstance);
-            gui = new MoMAGui(mmm, getMomaInstance(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+            gui = new MoMAGui(getMomaModel(), getMomaInstance(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
         }
         return gui;
+    }
+
+    private MoMAModel momaModel;
+    public MoMAModel getMomaModel() {
+        if(momaModel == null){
+            momaModel = new MoMAModel(this.momaInstance);
+        }
+        return momaModel;
     }
 
     IDialogManager dialogManager;
     public IDialogManager getDialogManager(){
         if(dialogManager == null){
-            dialogManager = new DialogManager(() -> {
-                return getMomaGui();
-            });
+            dialogManager = new DialogManager(() -> getMomaGui());
         }
         return dialogManager;
     }

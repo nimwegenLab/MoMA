@@ -31,6 +31,7 @@ import java.util.*;
 import java.util.function.Function;
 
 import static com.jug.config.ConfigurationManager.ASSIGNMENT_COST_CUTOFF;
+import static com.jug.config.ConfigurationManager.LYSIS_ASSIGNMENT_COST;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
@@ -46,7 +47,6 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_MAPPING = 1;
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
-    public static final float LYSIS_ASSIGNMENT_COST = 10; // NOTE: This value is set so high, that it will not be considered for assignment during optimization. However, it can be forced during curation.
 
     // -------------------------------------------------------------------------------------
     // fields

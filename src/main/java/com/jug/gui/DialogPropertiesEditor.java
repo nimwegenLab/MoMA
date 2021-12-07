@@ -99,6 +99,21 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
+                    case "LYSIS_ASSIGNMENT_COST": {
+                        int newValue = Integer.parseInt(evt.getNewValue().toString());
+                        showPropertyEditedNeedsRerunDialog("Continue?",
+                                "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
+                                () -> newValue != ConfigurationManager.LYSIS_ASSIGNMENT_COST,
+                                () -> sourceProperty.setValue(ConfigurationManager.LYSIS_ASSIGNMENT_COST),
+                                () -> {
+                                    ConfigurationManager.LYSIS_ASSIGNMENT_COST = newValue;
+                                    MoMA.props.setProperty(
+                                            "LYSIS_ASSIGNMENT_COST",
+                                            "" + ConfigurationManager.LYSIS_ASSIGNMENT_COST);
+                                    ((MoMAGui) parent).restartTrackingAsync();
+                                });
+                        break;
+                    }
                     case "GL_OFFSET_TOP": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
@@ -301,6 +316,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     break;
                 case "GL_OFFSET_TOP":
                 case "ASSIGNMENT_COST_CUTOFF":
+                case "LYSIS_ASSIGNMENT_COST":
                 case "MAXIMUM_GROWTH_RATE":
                     property.setCategory(TRACK);
                     property.setShortDescription(key);

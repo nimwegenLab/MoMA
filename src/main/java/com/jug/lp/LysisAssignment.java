@@ -32,6 +32,17 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     /**
+     * Returns the segmentation hypothesis this assignment comes from
+     * (the one at the earlier time-point t).
+     *
+     * @return the associated segmentation-hypothesis.
+     */
+    @Override
+    public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
+        return who;
+    }
+
+    /**
      * This method is void. Lysis assignments do not come with assignment
      * specific constrains...
      */

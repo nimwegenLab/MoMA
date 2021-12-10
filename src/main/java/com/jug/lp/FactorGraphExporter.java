@@ -123,8 +123,8 @@ public class FactorGraphExporter {
                     fgFile.addVarComment("- - DIVISION (var: " + var_id + ") - - - - - ");
                     fgFile.addFktComment("- - DIVISION (var: " + var_id + ") - - - - - ");
                     final DivisionAssignment da = (DivisionAssignment) assmt;
-                    cost = da.getSourceHypothesis().getCost() + da.getUpperDesinationHypothesis().getCost() + da
-                            .getLowerDesinationHypothesis()
+                    cost = da.getSourceHypothesis().getCost() + da.getUpperDestinationHypothesis().getCost() + da
+                            .getLowerDestinationHypothesis()
                             .getCost();
                 } else if (assmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
                     fgFile.addVarComment("- - EXIT (var: " + var_id + ") - - - - - ");

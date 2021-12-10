@@ -129,11 +129,11 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
                     switch (assmnt.getType()) {
                         case GrowthlaneTrackingILP.ASSIGNMENT_DIVISION:
-                            if (!((DivisionAssignment) assmnt).getUpperDesinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getUpperDesinationHypothesis());
+                            if (!((DivisionAssignment) assmnt).getUpperDestinationHypothesis().isPruneRoot()) {
+                                queue.add(((DivisionAssignment) assmnt).getUpperDestinationHypothesis());
                             }
-                            if (!((DivisionAssignment) assmnt).getLowerDesinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getLowerDesinationHypothesis());
+                            if (!((DivisionAssignment) assmnt).getLowerDestinationHypothesis().isPruneRoot()) {
+                                queue.add(((DivisionAssignment) assmnt).getLowerDestinationHypothesis());
                             }
                             break;
                         case GrowthlaneTrackingILP.ASSIGNMENT_MAPPING:

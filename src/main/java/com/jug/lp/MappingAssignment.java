@@ -51,6 +51,7 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      *
      * @return the associated segmentation-hypothesis.
      */
+    @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         return from;
     }

@@ -341,13 +341,11 @@ public class MoMA implements IImageProvider {
 			minChannelIdx = min_c;
 			numChannels = max_c - min_c + 1;
 		} else {
-
+			System.out.println("Loading images ...");
 			ImagePlus imp;
 			if (inputFolder.isDirectory() && inputFolder.listFiles(FloatTypeImgLoader.tifFilter).length == 1) {
-				System.out.println("reading a folder with a single image");
 				imp = IJ.openImage(inputFolder.listFiles(FloatTypeImgLoader.tifFilter)[0].getAbsolutePath());
 			} else {
-				System.out.println("reading a file");
 				imp = IJ.openImage(inputFolder.getAbsolutePath());
 			}
 

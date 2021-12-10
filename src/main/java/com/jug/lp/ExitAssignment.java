@@ -38,6 +38,17 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     }
 
     /**
+     * Returns the segmentation hypothesis this assignment comes from
+     * (the one at the earlier time-point t).
+     *
+     * @return the associated segmentation-hypothesis.
+     */
+    @Override
+    public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
+        return who;
+    }
+
+    /**
      * @throws GRBException
      */
     @Override

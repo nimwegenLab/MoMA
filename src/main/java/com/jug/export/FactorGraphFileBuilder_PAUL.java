@@ -152,8 +152,8 @@ public class FactorGraphFileBuilder_PAUL {
      */
     public void addDivision(final GrowthlaneTrackingILP ilp, final int t, final DivisionAssignment assmnt) {
         final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assmnt.getSourceHypothesis();
-        final Hypothesis<AdvancedComponent<FloatType>> destinationHypothesisUpper = assmnt.getUpperDesinationHypothesis();
-        final Hypothesis<AdvancedComponent<FloatType>> destinationHypothesisLower = assmnt.getLowerDesinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> destinationHypothesisUpper = assmnt.getUpperDestinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> destinationHypothesisLower = assmnt.getLowerDestinationHypothesis();
         final float divisionCost = ilp.compatibilityCostOfDivision(sourceHypothesis.getWrappedComponent(),
                 destinationHypothesisUpper.getWrappedComponent(), destinationHypothesisLower.getWrappedComponent());
         final double cost = ilp.costModulationForSubstitutedILP(

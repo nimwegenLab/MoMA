@@ -1,7 +1,9 @@
 package com.jug.lp;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.*;
+import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
 
@@ -55,7 +57,10 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		this.type = type;
 	}
 
-//	/**
+//	public H getSourceHypothesis(){
+	abstract public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis();
+
+	//	/**
 //	 * This function is for example used when exporting a FactorGraph
 //	 * that describes the entire optimization problem at hand.
 //	 *
@@ -127,7 +132,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 			return previousIsChoosen;
 		}
 		try {
-			previousIsChoosen = (getGRBVar().get(GRB.DoubleAttr.X) == 1.0);
+			previousIsChoosen = (getGRBVar().get(GRB.DoubleAttr.X) == 1.0); /* TODO: IS THIS RELATED TO THE MISSING ASSIGNMENT BUG? WE ARE CHECKING FOR EQUALITY ON A DOUBLE, WHICH CAN ALWAYS CAUSE ISSUES */
 			return previousIsChoosen;
 		} catch (GRBException err) {
 			return previousIsChoosen; /* This will be returned in case the ILP optimization fails. In that case GRBException will be thrown. We then return the previous state of all assignments, so that the user can correct any mistakes she mad. */

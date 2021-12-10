@@ -54,6 +54,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
+    @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         return from;
     }
@@ -65,7 +66,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
-    public Hypothesis<AdvancedComponent<FloatType>> getUpperDesinationHypothesis() {
+    public Hypothesis<AdvancedComponent<FloatType>> getUpperDestinationHypothesis() {
         return toUpper;
     }
 
@@ -76,7 +77,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
-    public Hypothesis<AdvancedComponent<FloatType>> getLowerDesinationHypothesis() {
+    public Hypothesis<AdvancedComponent<FloatType>> getLowerDestinationHypothesis() {
         return toLower;
     }
 

@@ -9,7 +9,6 @@ import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 
-import javax.security.sasl.SaslServer;
 import java.io.*;
 import java.util.List;
 import java.util.Set;
@@ -22,7 +21,7 @@ import java.util.function.Supplier;
 public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTable resultTable;
     private final ResultTableColumn<Integer> frameCol;
-    private final ResultTableColumn<Integer> cellIdCol;
+//    private final ResultTableColumn<Integer> cellIdCol;
     private final ResultTableColumn<String> assignmentTypeCol;
     private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
     private final ResultTableColumn<Integer> cellRankCol;
@@ -36,7 +35,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         this.growthlane = growthlane;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         this.resultTable = new ResultTable(",");
-        this.cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
+//        this.cellIdCol = resultTable.addColumn(new ResultTableColumn<>("cell_ID"));
         this.frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
         this.cellRankCol = resultTable.addColumn(new ResultTableColumn<>("cell_rank"));
         this.assignmentTypeCol = resultTable.addColumn(new ResultTableColumn<>("assignment_type"));
@@ -46,18 +45,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
     @Override
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
-        for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
-            do {
-                int frame = segmentRecord.timestep;
-                final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
-
-                final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
-                final int segmentId = segmentRecord.getId();
-                exportAllAssignmentInformationForHypothesis(frame, segmentRecord.hyp, cellRank, segmentId);
-
-                segmentRecord = segmentRecord.nextSegmentInTime();
-            }
-            while (segmentRecord.exists());
+        int tmax = growthlane.getFrames().size();
+        for (int t = 0; t < tmax; t++) {
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
+            exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
         }
         File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
         try {
@@ -72,25 +63,26 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         }
     }
 
-    private void exportAllAssignmentInformationForHypothesis(int frame, Hypothesis<AdvancedComponent<FloatType>> hypothesis, int cellRank, int segmentId){
-        try {
-            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> activeAssignment = ilp.getOptimalRightAssignment(hypothesis);
-            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAllRightAssignmentsForHypothesis(hypothesis);
-            if(!allAssignments.contains(activeAssignment)){
-                throw new RuntimeException("There is no active assignment for the selected hypothesis. This is not allowed to happen.");
+    private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
+        final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
+            boolean assignmentInSolution;
+            try {
+                assignmentInSolution = assignment.isChoosen();
+            } catch (GRBException err) {
+                assignmentInSolution = false;
             }
-            allAssignments.remove(activeAssignment);
-            outputAssignmentInformationToTable(frame, activeAssignment, true, cellRank, segmentId);
-            for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
-                outputAssignmentInformationToTable(frame, assignment, false, cellRank, segmentId);
+            int cellRank;
+            if (assignmentInSolution) {
+                cellRank = glf.getSolutionStats_cellRank(assignment.getSourceHypothesis()); /* output the cell-rank, if assignment is part of the ILP solution */
+            } else {
+                cellRank = -1;
             }
-        } catch (GRBException e) {
-            e.printStackTrace();
+            outputAssignmentInformationToTableNew(frame, assignment, assignmentInSolution, cellRank);
         }
     }
 
-    private void outputAssignmentInformationToTable(int frame, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment, boolean assignmentInIlpSolution, int cellRank, int segmentId) {
-        cellIdCol.addValue(segmentId);
+    private void outputAssignmentInformationToTableNew(int frame, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment, boolean assignmentInIlpSolution, int cellRank) {
         cellRankCol.addValue(cellRank);
         assignmentInIlpSolutionCol.addValue(assignmentInIlpSolution ? 1 : 0);
         frameCol.addValue(frame);

@@ -10,7 +10,9 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jug
@@ -46,6 +48,15 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         return who;
+    }
+
+    /**
+     * Return list of target hypotheses.
+     * @return
+     */
+    @Override
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
+        return new ArrayList<>(); /* Lysis assignment has no target hypothesis. */
     }
 
     /**

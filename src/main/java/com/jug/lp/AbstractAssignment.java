@@ -6,6 +6,7 @@ import gurobi.*;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -57,8 +58,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		this.type = type;
 	}
 
-//	public H getSourceHypothesis(){
-	abstract public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis();
+	abstract public H getSourceHypothesis();
+
+	abstract public List<H> getTargetHypotheses();
 
 	//	/**
 //	 * This function is for example used when exporting a FactorGraph

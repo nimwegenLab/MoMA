@@ -80,10 +80,13 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
     @Override
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
+        System.out.println("Exporting assignment costs...");
+
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
+            System.out.println("tmax: " + tmax);
         }
         File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
         try {

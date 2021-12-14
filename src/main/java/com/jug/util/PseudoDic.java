@@ -93,7 +93,7 @@ public class PseudoDic {
     AssignmentCostExporter assignmentCostExporter;
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
-            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration());
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties());
         }
         return assignmentCostExporter;
     }

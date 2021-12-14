@@ -6,7 +6,9 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jug
@@ -51,8 +53,20 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      *
      * @return the associated segmentation-hypothesis.
      */
+    @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         return from;
+    }
+
+    /**
+     * Return list of target hypotheses.
+     * @return
+     */
+    @Override
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
+        List<Hypothesis<AdvancedComponent<FloatType>>> outputSet = new ArrayList<>();
+        outputSet.add(getDestinationHypothesis());
+        return outputSet;
     }
 
     /**

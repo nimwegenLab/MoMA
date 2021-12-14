@@ -6,7 +6,10 @@ import gurobi.GRBException;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jug
@@ -29,6 +32,26 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
         super(GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp);
         this.edges = edges;
         this.who = who;
+    }
+
+    /**
+     * Returns the segmentation hypothesis this assignment comes from
+     * (the one at the earlier time-point t).
+     *
+     * @return the associated segmentation-hypothesis.
+     */
+    @Override
+    public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
+        return who;
+    }
+
+    /**
+     * Return list of target hypotheses.
+     * @return
+     */
+    @Override
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
+        return new ArrayList<>(); /* Lysis assignment has no target hypothesis. */
     }
 
     /**

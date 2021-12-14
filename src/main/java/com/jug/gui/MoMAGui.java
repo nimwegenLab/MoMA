@@ -22,6 +22,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
 
@@ -34,9 +35,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.jug.config.ConfigurationManager.EXPORT_ASSIGNMENT_COSTS;
 
 /**
  * @author jug
@@ -991,7 +993,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonExportData)) {
-            final Thread t = new Thread(this::exportDataFiles);
+            File folderToUse = queryUserForFolderToUse();
+            final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
             t.start();
         }
         setFocusToTimeSlider();
@@ -1086,17 +1089,46 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     /**
-     *
+     * Export data to specified folder.
      */
-    public void exportDataFiles() {
+    public void exportDataFiles(File folderToUse) {
+        if (folderToUse == null) return;
+
+
+        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance(), MoMA.dic.getGitVersionProvider().getVersionString());
+        final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
+
+        List<ResultExporterInterface> exporters;
+
+        exporters = new ArrayList<>();
+        exporters.add(cellStatsExporter);
+        exporters.add(cellMaskExporter);
+        if (showGroundTruthExportFunctionality) {
+            exporters.add(MoMA.dic.getGroundTruthFramesExporter());
+        }
+        if (EXPORT_ASSIGNMENT_COSTS) {
+            exporters.add(MoMA.dic.getAssignmentCostExporter());
+        }
+
+        final ResultExporter resultExporter = new ResultExporter(exporters);
+        resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+    }
+
+    /**
+     * Show file-selection dialog for user to pick the output directory.
+     *
+     * @return File folder that the user selected.
+     */
+    @Nullable
+    private File queryUserForFolderToUse() {
         if (model.getCurrentGL().getIlp() == null) {
             JOptionPane.showMessageDialog(this, "The current GL can only be exported after being tracked (optimized)!");
-            return;
+            return null;
         }
 
         File folderToUse;
         if (!MoMA.HEADLESS) {
-            if (!showFitRangeWarningDialogIfNeeded()) return;
+            if (!showFitRangeWarningDialogIfNeeded()) return null;
 
             folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
             if (folderToUse == null) {
@@ -1105,24 +1137,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                         "Illegal save location chosen!",
                         "Error",
                         JOptionPane.ERROR_MESSAGE);
-                return;
+                return null;
             }
         } else { /* if running headless: use default output path */
             folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
         }
-
-        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance(), MoMA.dic.getGitVersionProvider().getVersionString());
-        final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
-
-        List<ResultExporterInterface> exporters;
-        if (showGroundTruthExportFunctionality) {
-            exporters = Arrays.asList(cellStatsExporter, cellMaskExporter, MoMA.dic.getAssignmentCostExporter(), MoMA.dic.getGroundTruthFramesExporter());
-        } else {
-            exporters = Arrays.asList(cellStatsExporter, cellMaskExporter, MoMA.dic.getAssignmentCostExporter());
-        }
-
-        final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+        return folderToUse;
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {

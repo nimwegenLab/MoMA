@@ -6,7 +6,9 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author jug
@@ -54,8 +56,21 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
+    @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         return from;
+    }
+
+    /**
+     * Return list of target hypotheses.
+     * @return
+     */
+    @Override
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
+        List<Hypothesis<AdvancedComponent<FloatType>>> outputSet = new ArrayList<>();
+        outputSet.add(getLowerDestinationHypothesis());
+        outputSet.add(getUpperDestinationHypothesis());
+        return outputSet;
     }
 
     /**
@@ -65,7 +80,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
-    public Hypothesis<AdvancedComponent<FloatType>> getUpperDesinationHypothesis() {
+    public Hypothesis<AdvancedComponent<FloatType>> getUpperDestinationHypothesis() {
         return toUpper;
     }
 
@@ -76,7 +91,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      *
      * @return the associated segmentation-hypothesis.
      */
-    public Hypothesis<AdvancedComponent<FloatType>> getLowerDesinationHypothesis() {
+    public Hypothesis<AdvancedComponent<FloatType>> getLowerDestinationHypothesis() {
         return toLower;
     }
 

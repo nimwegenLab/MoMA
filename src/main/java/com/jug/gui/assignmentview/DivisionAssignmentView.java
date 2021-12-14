@@ -32,8 +32,8 @@ public class DivisionAssignmentView extends AssignmentView {
     void setupPolygon() {
         DivisionAssignment da = (DivisionAssignment) abstractAssignment;
         final Hypothesis<AdvancedComponent<FloatType>> leftHyp = da.getSourceHypothesis();
-        final Hypothesis<AdvancedComponent<FloatType>> rightHypUpper = da.getUpperDesinationHypothesis();
-        final Hypothesis<AdvancedComponent<FloatType>> rightHypLower = da.getLowerDesinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> rightHypUpper = da.getUpperDestinationHypothesis();
+        final Hypothesis<AdvancedComponent<FloatType>> rightHypLower = da.getLowerDestinationHypothesis();
 
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
         final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();

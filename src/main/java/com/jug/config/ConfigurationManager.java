@@ -120,6 +120,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = false;
     private static File currentPropertyFile;
 
+    /**
+     * Determine if assignment costs should be exported.
+     */
+    public static boolean EXPORT_ASSIGNMENT_COSTS = false;
+
+    /**
+     * One of the test for paper:
+     * What happens if exit constraints are NOT part of the model?
+     */
+
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public static void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
@@ -141,6 +151,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));
 
         GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = parseBooleanFromIntegerValue("GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+        EXPORT_ASSIGNMENT_COSTS = parseBooleanFromIntegerValue("EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
         GUROBI_TIME_LIMIT = Double.parseDouble(props.getProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT)));
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble(props.getProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP)));
@@ -283,6 +294,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
             setBooleanAsIntegerValue(props, "GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+
+            setBooleanAsIntegerValue(props, "EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
+
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {

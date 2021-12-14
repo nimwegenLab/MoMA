@@ -1163,7 +1163,16 @@ public class GrowthlaneTrackingILP {
      * @return set of optimal assignments
      */
     public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getOptimalAssignments(final int t) {
-        return getOptimalAssignments(nodes.getAssignmentsAt(t));
+        return new HashSet<>(getOptimalAssignments(nodes.getAssignmentsAt(t))); /* return new HashSet to make sure the caller cannot modify underlying data-structures*/
+    }
+
+    /**
+     * Return all assignments at t.
+     * @param t
+     * @return
+     */
+    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAssignmentsAt(final int t) {
+        return new HashSet<>(nodes.getAssignmentsAt(t));
     }
 
     /**

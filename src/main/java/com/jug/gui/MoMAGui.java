@@ -22,6 +22,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
 
@@ -992,7 +993,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonExportData)) {
-            final Thread t = new Thread(this::exportDataFiles);
+            File folderToUse = queryUserForFolderToUse();
+            final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
             t.start();
         }
         setFocusToTimeSlider();
@@ -1087,30 +1089,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     /**
-     *
+     * Export data to specified folder.
      */
-    public void exportDataFiles() {
-        if (model.getCurrentGL().getIlp() == null) {
-            JOptionPane.showMessageDialog(this, "The current GL can only be exported after being tracked (optimized)!");
-            return;
-        }
+    public void exportDataFiles(File folderToUse) {
+        if (folderToUse == null) return;
 
-        File folderToUse;
-        if (!MoMA.HEADLESS) {
-            if (!showFitRangeWarningDialogIfNeeded()) return;
-
-            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
-            if (folderToUse == null) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Illegal save location chosen!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } else { /* if running headless: use default output path */
-            folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
-        }
 
         final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance(), MoMA.dic.getGitVersionProvider().getVersionString());
         final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
@@ -1129,6 +1112,37 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+    }
+
+    /**
+     * Show file-selection dialog for user to pick the output directory.
+     *
+     * @return File folder that the user selected.
+     */
+    @Nullable
+    private File queryUserForFolderToUse() {
+        if (model.getCurrentGL().getIlp() == null) {
+            JOptionPane.showMessageDialog(this, "The current GL can only be exported after being tracked (optimized)!");
+            return null;
+        }
+
+        File folderToUse;
+        if (!MoMA.HEADLESS) {
+            if (!showFitRangeWarningDialogIfNeeded()) return null;
+
+            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
+            if (folderToUse == null) {
+                JOptionPane.showMessageDialog(
+                        this,
+                        "Illegal save location chosen!",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+        } else { /* if running headless: use default output path */
+            folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
+        }
+        return folderToUse;
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {

@@ -506,7 +506,7 @@ public class MoMA implements IImageProvider {
 			});
 		} else {
 			gui.exportHtmlOverview();
-			gui.exportDataFiles();
+			gui.exportDataFiles(new File(MoMA.STATS_OUTPUT_PATH));
 
 			configurationManager.saveParams(getGuiFrame());
 

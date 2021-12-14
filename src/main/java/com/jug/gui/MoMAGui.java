@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.jug.development.featureflags.FeatureFlags.featureFlagExportAssignmentCost;
+import static com.jug.config.ConfigurationManager.EXPORT_ASSIGNMENT_COSTS;
 
 /**
  * @author jug
@@ -1106,7 +1106,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
-        if (featureFlagExportAssignmentCost) {
+        if (EXPORT_ASSIGNMENT_COSTS) {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
 

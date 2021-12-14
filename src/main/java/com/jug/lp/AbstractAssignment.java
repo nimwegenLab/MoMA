@@ -134,7 +134,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 			return previousIsChoosen;
 		}
 		try {
-			previousIsChoosen = (getGRBVar().get(GRB.DoubleAttr.X) == 1.0); /* TODO: IS THIS RELATED TO THE MISSING ASSIGNMENT BUG? WE ARE CHECKING FOR EQUALITY ON A DOUBLE, WHICH CAN ALWAYS CAUSE ISSUES */
+			long binary_selection_variable_value_rounded = Math.round(getGRBVar().get(GRB.DoubleAttr.X));
+			previousIsChoosen = (binary_selection_variable_value_rounded == 1);
 			return previousIsChoosen;
 		} catch (GRBException err) {
 			return previousIsChoosen; /* This will be returned in case the ILP optimization fails. In that case GRBException will be thrown. We then return the previous state of all assignments, so that the user can correct any mistakes she mad. */

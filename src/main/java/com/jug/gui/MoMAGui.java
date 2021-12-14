@@ -34,9 +34,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import static com.jug.development.featureflags.FeatureFlags.featureFlagExportAssignmentCost;
 
 /**
  * @author jug
@@ -1115,10 +1116,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
 
         List<ResultExporterInterface> exporters;
+
+        exporters = new ArrayList<>();
+        exporters.add(cellStatsExporter);
+        exporters.add(cellMaskExporter);
         if (showGroundTruthExportFunctionality) {
-            exporters = Arrays.asList(cellStatsExporter, cellMaskExporter, MoMA.dic.getAssignmentCostExporter(), MoMA.dic.getGroundTruthFramesExporter());
-        } else {
-            exporters = Arrays.asList(cellStatsExporter, cellMaskExporter, MoMA.dic.getAssignmentCostExporter());
+            exporters.add(MoMA.dic.getGroundTruthFramesExporter());
+        }
+        if (featureFlagExportAssignmentCost) {
+            exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
 
         final ResultExporter resultExporter = new ResultExporter(exporters);

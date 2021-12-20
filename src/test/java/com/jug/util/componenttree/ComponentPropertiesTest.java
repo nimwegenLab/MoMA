@@ -141,8 +141,8 @@ public class ComponentPropertiesTest {
         componentList.add(component);
         RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
         List<MaskPredicate< ? >> rois = Arrays.asList(
-                poly,
-                polyHull
+//                poly,
+//                polyHull
         );
         ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);

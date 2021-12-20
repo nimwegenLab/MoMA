@@ -62,48 +62,50 @@ public class OrientedBoundingBoxCalculator {
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
         poly.vertices().get(0);
 //        poly.vertices().stream().
-        List<Double> x = poly.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
-        List<Double> y = poly.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
+        List<Double> xList = poly.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
+        List<Double> yList = poly.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
+        double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));
+        double[] y = ArrayUtils.toPrimitive(yList.toArray(new Double[0]));
 //        List<String> names = cars.stream().map( car -> car.getName() ).collect( Collectors.toList() );
 //        Double[] xNew = x.toArray(new Double[0]);
 //        Double[] yNew = y.toArray(new Double[0]);
-        ValuePair<Double[], Double[]> res = GetOrientedBoundingBoxCoordinates(x.toArray(new Double[0]), y.toArray(new Double[0]));
+        ValuePair<double[], double[]> res = GetOrientedBoundingBoxCoordinates(x, y);
 //        Polygon2D orientedBoundingBoxPoly1 = GeomMasks.polygon2D(new double[]{10, 80, 80, 20, 20, 10}, new double[]{10, 10, 20, 20, 80, 80});
 //        Double[] var = res.getA();
 //        double[] d = ArrayUtils.toPrimitive(doubles);
-        Polygon2D orientedBoundingBoxPoly = GeomMasks.polygon2D(ArrayUtils.toPrimitive(res.getA()), ArrayUtils.toPrimitive(res.getB()));
+        Polygon2D orientedBoundingBoxPoly = GeomMasks.polygon2D(res.getA(), res.getB());
         return orientedBoundingBoxPoly;
 //        throw new NotImplementedException();
     }
 
-    public ValuePair<Double[], Double[]> GetOrientedBoundingBoxCoordinates(Double[] xp, Double[] yp){
+    public ValuePair<double[], double[]> GetOrientedBoundingBoxCoordinates(double[] xp, double[] yp){
 //        run("Convex Hull");
 //        getSelectionCoordinates(xp, yp);
 //        run("Undo"); // until run("Restore Selection"); for convex hull gets into production (ver >= 1.52u18)
 
-        Integer np = xp.length;
+        int np = xp.length;
 
         // Double minArea = 2 * getValue("Width") * getValue("Height"): width and height ob bounding box
-        Double minArea = Double.MAX_VALUE;
+        double minArea = Double.MAX_VALUE;
 //        Double minFD = getValue("Width") + getValue("Height"); // FD now stands for first diameter :)
-        Double minFD = Double.MAX_VALUE; // FD now stands for first diameter :)
-        Integer imin = -1;
-        Integer i2min = -1;
-        Integer jmin = -1;
+        double minFD = Double.MAX_VALUE; // FD now stands for first diameter :)
+        int imin = -1;
+        int i2min = -1;
+        int jmin = -1;
 
-        Double min_hmin = 0.0;
-        Double min_hmax = 0.0;
+        double min_hmin = 0.0;
+        double min_hmax = 0.0;
 
-        for (Integer i = 0; i < np; i++) {
-            Double maxLD = 0.0;
-            Integer imax = -1;
-            Integer i2max = -1;
-            Integer jmax = -1;
-            Integer i2;
+        for (int i = 0; i < np; i++) {
+            double maxLD = 0.0;
+            int imax = -1;
+            int i2max = -1;
+            int jmax = -1;
+            int i2;
             if(i<np-1) i2 = i + 1; else i2 = 0;
 
-            for (Integer j = 0; j < np; j++) {
-                Double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
+            for (int j = 0; j < np; j++) {
+                double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
                 if (maxLD < d) {
                     maxLD = d;
                     imax = i;
@@ -112,18 +114,18 @@ public class OrientedBoundingBoxCalculator {
                 }
             }
 
-            Double hmin = 0.0;
-            Double hmax = 0.0;
+            double hmin = 0.0;
+            double hmax = 0.0;
 
-            for (Integer k = 0; k < np; k++) { // rotating calipers
-                Double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
+            for (int k = 0; k < np; k++) { // rotating calipers
+                double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
 //                hmin = minOf(hmin, hd);
                 hmin = (hmin < hd) ? hmin : hd;
 //                hmax = maxOf(hmax, hd);
                 hmax = (hmax > hd) ? hmax : hd;
             }
 
-            Double area = maxLD * (hmax - hmin);
+            double area = maxLD * (hmax - hmin);
 
             if (minArea > area){
 
@@ -138,16 +140,16 @@ public class OrientedBoundingBoxCalculator {
             }
         }
 
-        Double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
-        Double pairAngle = Math.atan2( yp[i2min]- yp[imin], xp[i2min]- xp[imin]);
-        Double minAngle = pairAngle + Math.PI/2;
+        double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
+        double pairAngle = Math.atan2( yp[i2min]- yp[imin], xp[i2min]- xp[imin]);
+        double minAngle = pairAngle + Math.PI/2;
 
 
 
 //        nxp=newArray(4);
 //        nyp=newArray(4);
-        Double[] nxp= new Double[4];
-        Double[] nyp= new Double[4];
+        double[] nxp= new double[4];
+        double[] nyp= new double[4];
 
         nxp[0] = xp[imin] + Math.cos(pairAngle) * min_hmax;
         nyp[0] = yp[imin] + Math.sin(pairAngle) * min_hmax;
@@ -162,7 +164,7 @@ public class OrientedBoundingBoxCalculator {
         nyp[3] = nyp[2] + Math.sin(minAngle) * - pd;
 
 //        makeSelection("polygon", nxp, nyp);
-        return new ValuePair<Double[], Double[]>(nxp, nyp);
+        return new ValuePair<>(nxp, nyp);
     }
 
     private Double dist2(Double x1, Double y1, Double x2, Double y2) {

@@ -3,10 +3,17 @@ package com.jug.util.componenttree;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
+import net.imglib2.roi.geom.real.WritablePolygon2D;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 
 /*	Fits a minimum area rectangle into a ROI.
  *
@@ -53,12 +60,23 @@ public class OrientedBoundingBoxCalculator {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
-
-//        GetOrientedBoundingBoxCoordinates(Integer[] xp, Integer[] yp);
-        throw new NotImplementedException();
+        poly.vertices().get(0);
+//        poly.vertices().stream().
+        List<Double> x = poly.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
+        List<Double> y = poly.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
+//        List<String> names = cars.stream().map( car -> car.getName() ).collect( Collectors.toList() );
+//        Double[] xNew = x.toArray(new Double[0]);
+//        Double[] yNew = y.toArray(new Double[0]);
+        ValuePair<Double[], Double[]> res = GetOrientedBoundingBoxCoordinates(x.toArray(new Double[0]), y.toArray(new Double[0]));
+//        Polygon2D orientedBoundingBoxPoly1 = GeomMasks.polygon2D(new double[]{10, 80, 80, 20, 20, 10}, new double[]{10, 10, 20, 20, 80, 80});
+//        Double[] var = res.getA();
+//        double[] d = ArrayUtils.toPrimitive(doubles);
+        Polygon2D orientedBoundingBoxPoly = GeomMasks.polygon2D(ArrayUtils.toPrimitive(res.getA()), ArrayUtils.toPrimitive(res.getB()));
+        return orientedBoundingBoxPoly;
+//        throw new NotImplementedException();
     }
 
-    public ValuePair<Double[], Double[]> GetOrientedBoundingBoxCoordinates(Integer[] xp, Integer[] yp){
+    public ValuePair<Double[], Double[]> GetOrientedBoundingBoxCoordinates(Double[] xp, Double[] yp){
 //        run("Convex Hull");
 //        getSelectionCoordinates(xp, yp);
 //        run("Undo"); // until run("Restore Selection"); for convex hull gets into production (ver >= 1.52u18)
@@ -147,16 +165,16 @@ public class OrientedBoundingBoxCalculator {
         return new ValuePair<Double[], Double[]>(nxp, nyp);
     }
 
-    private Double dist2(Integer x1, Integer y1, Integer x2, Integer y2) {
+    private Double dist2(Double x1, Double y1, Double x2, Double y2) {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
     }
 
-    private Double perpDist(Integer p1x, Integer p1y, Integer p2x, Integer p2y, Integer x, Integer y){
+    private Double perpDist(Double p1x, Double p1y, Double p2x, Double p2y, Double x, Double y){
         // signed distance from a point (x,y) to a line passing through p1 and p2
         return ((p2x - p1x)*(y - p1y) - (x - p1x)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }
 
-    private Double parDist(Integer p1x, Integer p1y, Integer p2x, Integer p2y, Integer x, Integer y){
+    private Double parDist(Double p1x, Double p1y, Double p2x, Double p2y, Double x, Double y){
         // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
         return ((p2x - p1x)*(x - p1x) + (y - p1y)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }

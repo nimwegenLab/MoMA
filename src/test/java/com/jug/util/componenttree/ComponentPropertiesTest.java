@@ -8,6 +8,7 @@ import ij.ImagePlus;
 import ij.gui.Overlay;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imagej.roi.DefaultROITree;
 import net.imagej.roi.ROITree;
@@ -133,25 +134,21 @@ public class ComponentPropertiesTest {
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
+        Polygon2D polyHull = convexHullCalculator.calculate(poly);
 
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
         RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
-        ImagePlus imagePlus = ImageJFunctions.wrap((Img) image, "image");
-        ROITree roiTree = new DefaultROITree();
-
-//        List<MaskPredicate< ? >> rois = Arrays.asList(
-//                GeomMasks.polygon2D( new double[]{10, 80, 80, 20, 20, 10}, new double[]{10, 10, 20, 20, 80, 80} ),
-//                GeomMasks.closedBox( new double[]{30, 30}, new double[]{40, 60} ),
-//                GeomMasks.polygon2D( new double[]{50, 60, 60, 30, 30, 50}, new double[]{30, 30, 80, 80, 70, 70} ),
-//                GeomMasks.closedBox( new double[]{70, 30}, new double[]{80, 60} )
-//        );
         List<MaskPredicate< ? >> rois = Arrays.asList(
-                poly
+                poly,
+                polyHull
         );
+        ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);
-
         Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap((Img) image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
     }

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -59,7 +60,9 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 0.5f);
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        AdvancedComponent<FloatType> res = roots.get(0);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 

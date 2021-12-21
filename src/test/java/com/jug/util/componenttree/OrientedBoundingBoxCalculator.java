@@ -67,8 +67,6 @@ public class OrientedBoundingBoxCalculator {
 
         for (int indEdgeSource = 0; indEdgeSource < numberOfCoords; indEdgeSource++) {
             double distanceOfPerpendicularPointMax = 0.0;
-            int indEdgeSourceMax = -1;
-            int indEdgeTargetMax = -1;
             int indOfCoordWithMaxDistanceToEdge = -1;
             int indEdgeTarget;
             if (indEdgeSource < numberOfCoords - 1) indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
@@ -79,8 +77,6 @@ public class OrientedBoundingBoxCalculator {
                 if (distanceOfPerpendicularPointMax < distanceOfCoordToEdge) {
                     distanceOfPerpendicularPointMax = distanceOfCoordToEdge;
                     indOfCoordWithMaxDistanceToEdge = coordIndex; /* coordinate index of the coordinate with smallest perpendicular distance from the edge (xp[i], yp[i]) -> (xp[i2], yp[i2]) */
-                    indEdgeSourceMax = indEdgeSource;
-                    indEdgeTargetMax = indEdgeTarget;
                 }
             }
 
@@ -88,7 +84,7 @@ public class OrientedBoundingBoxCalculator {
             double hmax = 0.0;
 
             for (int k = 0; k < numberOfCoords; k++) { /* perform rotating calipers */
-                double hd = parDist(x[indEdgeSourceMax], y[indEdgeSourceMax], x[indEdgeTargetMax], y[indEdgeTargetMax], x[k], y[k]);
+                double hd = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
                 hmin = Math.min(hmin, hd);
                 hmax = Math.max(hmax, hd);
             }
@@ -100,8 +96,8 @@ public class OrientedBoundingBoxCalculator {
                 min_hmin = hmin;
                 min_hmax = hmax;
 
-                indEdgeSourceMin = indEdgeSourceMax;
-                indEdgeTargetMin = indEdgeTargetMax;
+                indEdgeSourceMin = indEdgeSource;
+                indEdgeTargetMin = indEdgeTarget;
                 indPerpendicularPointMin = indOfCoordWithMaxDistanceToEdge;
             }
         }

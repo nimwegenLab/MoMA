@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import static org.junit.Assert.*;
 
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
@@ -54,30 +55,22 @@ public class OrientedBoundingBoxCalculatorTest {
     }
 
     @Test
-    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value() throws IOException {
+    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value() {
         double[] xp = new double[]{53, 50, 49, 48, 47, 46, 46, 47, 49, 54, 56, 57, 58, 60, 60, 59, 56};
         double[] yp = new double[]{311, 314, 316, 323, 331, 341, 342, 346, 348, 348, 347, 345, 338, 320, 316, 314, 311};
 
-        int componentIndex = 2;
-        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
         ValuePair<double[], double[]> res = boundingBoxCalculator.GetOrientedBoundingBoxCoordinates(xp, yp);
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
         List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
-//        RealLocalizable pos = vertices.get(0);
-        double[] xCoordsExpected = new double[] {60.939026, 49.30488, 45.158535, 56.792683};
-        double[] yCoordsExpected = new double[] {311.54877, 310.2561, 347.57318, 348.86584};
+        double[] xCoordsExpected = new double[]{60.939026, 49.30488, 45.158535, 56.792683};
+        double[] yCoordsExpected = new double[]{311.54877, 310.2561, 347.57318, 348.86584};
         int index = 0;
-        for(RealLocalizable pos : vertices){
-            System.out.println(pos.getFloatPosition(0) + "," + pos.getFloatPosition(1));
-            assertEquals(xCoordsExpected[index], pos.getFloatPosition(0), 1e-3);
-            assertEquals(yCoordsExpected[index], pos.getFloatPosition(1), 1e-3);
+        for (RealLocalizable pos : vertices) {
+            assertEquals(xCoordsExpected[index], pos.getFloatPosition(0), 1e-4);
+            assertEquals(yCoordsExpected[index], pos.getFloatPosition(1), 1e-4);
             index++;
         }
-        List<MaskPredicate< ? >> rois = Arrays.asList(
-                orientedBoundingBoxPolygon
-        );
-        showImageWithOverlays(componentWithImage.getB(), rois);
     }
 
     /**

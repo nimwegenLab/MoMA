@@ -58,15 +58,15 @@ public class OrientedBoundingBoxCalculator {
         int numberOfCoords = x.length;
 
         double minimalArea = Double.MAX_VALUE;
-        int indEdgeSourceMin = -1;
-        int indEdgeTargetMin = -1;
-        int indPerpendicularPointMin = -1;
+        int IndEdgeSourceFinal = -1;
+        int indEdgeTargetFinal = -1;
+        int indOfCoordWithMaxDistanceToEdgeFinal = -1;
 
-        double min_hmin = 0.0;
-        double min_hmax = 0.0;
+        double minBboxExtentInEdgeDirectionFinal = 0.0;
+        double maxBboxExtentInEdgeDirectionFinal = 0.0;
 
         for (int indEdgeSource = 0; indEdgeSource < numberOfCoords; indEdgeSource++) {
-            double distanceOfPerpendicularPointMax = 0.0;
+            double distanceOfCoordWithMaxDistanceToEdge = 0.0;
             int indOfCoordWithMaxDistanceToEdge = -1;
             int indEdgeTarget;
             if (indEdgeSource < numberOfCoords - 1) indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
@@ -74,52 +74,55 @@ public class OrientedBoundingBoxCalculator {
 
             for (int coordIndex = 0; coordIndex < numberOfCoords; coordIndex++) {
                 double distanceOfCoordToEdge = Math.abs(perpDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[coordIndex], y[coordIndex]));
-                if (distanceOfPerpendicularPointMax < distanceOfCoordToEdge) {
-                    distanceOfPerpendicularPointMax = distanceOfCoordToEdge;
-                    indOfCoordWithMaxDistanceToEdge = coordIndex; /* coordinate index of the coordinate with smallest perpendicular distance from the edge (xp[i], yp[i]) -> (xp[i2], yp[i2]) */
+                if (distanceOfCoordWithMaxDistanceToEdge < distanceOfCoordToEdge) {
+                    distanceOfCoordWithMaxDistanceToEdge = distanceOfCoordToEdge;
+                    indOfCoordWithMaxDistanceToEdge = coordIndex; /* coordinate index of the coordinate with largest perpendicular distance from the edge-line being considered: (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget]) */
                 }
             }
 
-            double hmin = 0.0;
-            double hmax = 0.0;
-
+            /* This for-loop calculates the projections of extremal coordinates in direction of polygon edge-line being
+             * considered: (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget])
+             * From this we can calculate the size of the oriented bounding box in direction of this edge.
+             */
+            double minBboxExtentInEdgeDirection = 0.0;
+            double maxBboxExtentInEdgeDirection = 0.0;
             for (int k = 0; k < numberOfCoords; k++) { /* perform rotating calipers */
-                double hd = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
-                hmin = Math.min(hmin, hd);
-                hmax = Math.max(hmax, hd);
+                double bboxExtent = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
+                minBboxExtentInEdgeDirection = Math.min(minBboxExtentInEdgeDirection, bboxExtent);
+                maxBboxExtentInEdgeDirection = Math.max(maxBboxExtentInEdgeDirection, bboxExtent);
             }
 
-            double area = distanceOfPerpendicularPointMax * (hmax - hmin);
+            double area = distanceOfCoordWithMaxDistanceToEdge * (maxBboxExtentInEdgeDirection - minBboxExtentInEdgeDirection);
 
             if (minimalArea > area) {
                 minimalArea = area;
-                min_hmin = hmin;
-                min_hmax = hmax;
-
-                indEdgeSourceMin = indEdgeSource;
-                indEdgeTargetMin = indEdgeTarget;
-                indPerpendicularPointMin = indOfCoordWithMaxDistanceToEdge;
+                minBboxExtentInEdgeDirectionFinal = minBboxExtentInEdgeDirection;
+                maxBboxExtentInEdgeDirectionFinal = maxBboxExtentInEdgeDirection;
+                IndEdgeSourceFinal = indEdgeSource;
+                indEdgeTargetFinal = indEdgeTarget;
+                indOfCoordWithMaxDistanceToEdgeFinal = indOfCoordWithMaxDistanceToEdge;
             }
         }
 
-        double pd = perpDist(x[indEdgeSourceMin], y[indEdgeSourceMin], x[indEdgeTargetMin], y[indEdgeTargetMin], x[indPerpendicularPointMin], y[indPerpendicularPointMin]); // signed feret diameter
-        double pairAngle = Math.atan2(y[indEdgeTargetMin] - y[indEdgeSourceMin], x[indEdgeTargetMin] - x[indEdgeSourceMin]);
-        double minAngle = pairAngle + Math.PI / 2;
+        double sizePerpendicularToEdge = perpDist(x[IndEdgeSourceFinal], y[IndEdgeSourceFinal], x[indEdgeTargetFinal], y[indEdgeTargetFinal], x[indOfCoordWithMaxDistanceToEdgeFinal], y[indOfCoordWithMaxDistanceToEdgeFinal]); // signed feret diameter
+        double edgeAngle = Math.atan2(y[indEdgeTargetFinal] - y[IndEdgeSourceFinal], x[indEdgeTargetFinal] - x[IndEdgeSourceFinal]);
+        double minAngle = edgeAngle + Math.PI / 2;
+        double sizeInDirectionOfEdge = minBboxExtentInEdgeDirectionFinal - maxBboxExtentInEdgeDirectionFinal;
 
         double[] nxp = new double[4];
         double[] nyp = new double[4];
 
-        nxp[0] = x[indEdgeSourceMin] + Math.cos(pairAngle) * min_hmax;
-        nyp[0] = y[indEdgeSourceMin] + Math.sin(pairAngle) * min_hmax;
+        nxp[0] = x[IndEdgeSourceFinal] + Math.cos(edgeAngle) * maxBboxExtentInEdgeDirectionFinal;
+        nyp[0] = y[IndEdgeSourceFinal] + Math.sin(edgeAngle) * maxBboxExtentInEdgeDirectionFinal;
 
-        nxp[1] = nxp[0] + Math.cos(minAngle) * pd;
-        nyp[1] = nyp[0] + Math.sin(minAngle) * pd;
+        nxp[1] = nxp[0] + Math.cos(minAngle) * sizePerpendicularToEdge;
+        nyp[1] = nyp[0] + Math.sin(minAngle) * sizePerpendicularToEdge;
 
-        nxp[2] = nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax);
-        nyp[2] = nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax);
+        nxp[2] = nxp[1] + Math.cos(edgeAngle) * sizeInDirectionOfEdge;
+        nyp[2] = nyp[1] + Math.sin(edgeAngle) * sizeInDirectionOfEdge;
 
-        nxp[3] = nxp[2] + Math.cos(minAngle) * -pd;
-        nyp[3] = nyp[2] + Math.sin(minAngle) * -pd;
+        nxp[3] = nxp[2] + Math.cos(minAngle) * -sizePerpendicularToEdge;
+        nyp[3] = nyp[2] + Math.sin(minAngle) * -sizePerpendicularToEdge;
 
         return new ValuePair<>(nxp, nyp);
     }

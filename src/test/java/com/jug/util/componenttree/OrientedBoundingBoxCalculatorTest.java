@@ -59,7 +59,7 @@ public class OrientedBoundingBoxCalculatorTest {
         double[] xp = new double[]{53, 50, 49, 48, 47, 46, 46, 47, 49, 54, 56, 57, 58, 60, 60, 59, 56};
         double[] yp = new double[]{311, 314, 316, 323, 331, 341, 342, 346, 348, 348, 347, 345, 338, 320, 316, 314, 311};
 
-        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator();
         ValuePair<double[], double[]> res = boundingBoxCalculator.getOrientedBoundingBoxCoordinatesOfConvexHull(xp, yp);
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
         List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
@@ -78,7 +78,7 @@ public class OrientedBoundingBoxCalculatorTest {
         double[] xp = new double[]{49, 47, 47, 50, 52, 53, 54, 56, 60, 61, 61, 59, 58, 56, 54};
         double[] yp = new double[]{352, 354, 361, 375, 381, 383, 384, 385, 385, 384, 376, 362, 357, 353, 352};
 
-        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator();
         ValuePair<double[], double[]> res = boundingBoxCalculator.getOrientedBoundingBoxCoordinatesOfConvexHull(xp, yp);
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
         List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
@@ -105,12 +105,13 @@ public class OrientedBoundingBoxCalculatorTest {
         AdvancedComponent<FloatType> component = componentWithImage.getA();
         RandomAccessibleInterval<ARGBType> image = componentWithImage.getB();
 
-        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
-        Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(component);
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator();
 
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
+
         DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
 

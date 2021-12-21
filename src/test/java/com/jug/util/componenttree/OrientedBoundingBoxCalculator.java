@@ -1,18 +1,16 @@
 package com.jug.util.componenttree;
 
-import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
-import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.ArrayUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-/*	Fits a minimum area rectangle into a ROI.
+/**
+ *  Fits a rectangle minimum area to a polygon.
  *
  * 	It searches the for the minimum area bounding rectangles among the ones that have a side
  * 	which is collinear with an edge of the convex hull.
@@ -28,28 +26,26 @@ import java.util.stream.Collectors;
  */
 
 public class OrientedBoundingBoxCalculator {
-    private final OpService ops;
     private final DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
 
-    public OrientedBoundingBoxCalculator(OpService ops) {
-        this.ops = ops;
-    }
-
-    public Polygon2D calculate(AdvancedComponent<FloatType> component) {
-        return getOrientedRectangleWithMinimalArea(component);
+    /**
+     * This function calculates the convex hull of a polygon and returns its oriented bounding box as a polygon.
+     *
+     * @param polygon polygon for which the oriented bounding box will be calculated
+     * @return oriented bounding box as a polygon
+     */
+    public Polygon2D calculate(Polygon2D polygon) {
+        return getOrientedRectangleWithMinimalArea(polygon);
     }
 
     /**
-     * This function calculates the convex hull of the component and returns its oriented bounding box as a polynom.
+     * This function calculates the convex hull of a polygon and returns its oriented bounding box as a polygon.
      *
-     * @param component
-     * @return
+     * @param polygon polygon for which the oriented bounding box will be calculated
+     * @return oriented bounding box as a polygon
      */
-    public Polygon2D getOrientedRectangleWithMinimalArea(AdvancedComponent<FloatType> component) {
-        LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        regionToPolygonConverter.setContext(ops.context());
-        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        Polygon2D polyHull = convexHullCalculator.calculate(poly);
+    public Polygon2D getOrientedRectangleWithMinimalArea(Polygon2D polygon) {
+        Polygon2D polyHull = convexHullCalculator.calculate(polygon);
         List<Double> xList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
         List<Double> yList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
         double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));
@@ -60,7 +56,7 @@ public class OrientedBoundingBoxCalculator {
     }
 
     /**
-     * Determine the index of the coordinate with largest perpendicular distance from the edge-line being considered:
+     * Determine the index of the coordinate with maximal perpendicular distance from the edge-line being considered:
      * (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget])
      * Return both its index and distance from the edge.
      *
@@ -68,7 +64,7 @@ public class OrientedBoundingBoxCalculator {
      * @param y
      * @param indEdgeSource
      * @param indEdgeTarget
-     * @return index and distance of the coordinate that has largest distance from the considered edge.
+     * @return index and distance of the coordinate that has maximal distance from the considered edge.
      */
     public ValuePair<Integer, Double> calculateDistanceAndIndexOfCoordWithMaximalPerpendicularDistance(double[] x, double[] y, int indEdgeSource, int indEdgeTarget) {
         int indOfCoordWithMaxDistanceToEdge = -1;
@@ -95,7 +91,7 @@ public class OrientedBoundingBoxCalculator {
      * @param indEdgeTarget
      * @return minimal and maximal bounding-box extent in direction of the considered edge.
      */
-    public ValuePair<Double, Double> calculateExtentsInDirectionOfEdge(double[] x, double[] y, int indEdgeSource, int indEdgeTarget){
+    public ValuePair<Double, Double> calculateExtentsInDirectionOfEdge(double[] x, double[] y, int indEdgeSource, int indEdgeTarget) {
         int numberOfCoords = x.length;
         double minBboxExtentInEdgeDirection = 0.0;
         double maxBboxExtentInEdgeDirection = 0.0;
@@ -110,7 +106,7 @@ public class OrientedBoundingBoxCalculator {
     /**
      * Calculate the vertices of the oriented bounding box with minimal area. The algorithm for doing this is the
      * following:
-     *
+     * <p>
      * We iterate through all edges of the convex hull and calculate the area of the bounding rectangle whose side
      * coincides with the edge. This is done by:
      * 1. Determining the vertex of the convex hull with maximal distance from the edge. This gives the extent of the
@@ -137,7 +133,8 @@ public class OrientedBoundingBoxCalculator {
 
         for (int indEdgeSource = 0; indEdgeSource < numberOfCoords; indEdgeSource++) {
             int indEdgeTarget;
-            if (indEdgeSource < numberOfCoords - 1) indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
+            if (indEdgeSource < numberOfCoords - 1)
+                indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
             else indEdgeTarget = 0;
 
             ValuePair<Integer, Double> coordIndexAndDistance = calculateDistanceAndIndexOfCoordWithMaximalPerpendicularDistance(x, y, indEdgeSource, indEdgeTarget);

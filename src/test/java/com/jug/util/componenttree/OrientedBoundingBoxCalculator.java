@@ -71,7 +71,7 @@ public class OrientedBoundingBoxCalculator {
             int i2max = -1;
             int jmax = -1;
             int i2;
-            if (i < np - 1) i2 = i + 1;
+            if (i < np - 1) i2 = i + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
             else i2 = 0;
 
             for (int j = 0; j < np; j++) {
@@ -79,7 +79,7 @@ public class OrientedBoundingBoxCalculator {
                 if (maxLD < d) {
                     maxLD = d;
                     imax = i;
-                    jmax = j;
+                    jmax = j; /* coordinate index of the coordinate with smallest perpendicular distance from the edge (xp[i], yp[i]) -> (xp[i2], yp[i2]) */
                     i2max = i2;
                 }
             }
@@ -87,17 +87,15 @@ public class OrientedBoundingBoxCalculator {
             double hmin = 0.0;
             double hmax = 0.0;
 
-            for (int k = 0; k < np; k++) { // rotating calipers
+            for (int k = 0; k < np; k++) { /* perform rotating calipers */
                 double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
                 hmin = (hmin <= hd) ? hmin : hd;
                 hmax = (hmax >= hd) ? hmax : hd;
             }
 
-
             double area = maxLD * (hmax - hmin);
 
             if (minArea > area) {
-
                 minArea = area;
                 min_hmin = hmin;
                 min_hmax = hmax;

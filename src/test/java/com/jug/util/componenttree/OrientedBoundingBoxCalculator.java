@@ -5,15 +5,14 @@ import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.roi.geom.real.WritablePolygon2D;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.DoubleStream;
 
 /*	Fits a minimum area rectangle into a ROI.
  *
@@ -64,8 +63,15 @@ public class OrientedBoundingBoxCalculator {
 //        poly.vertices().stream().
         List<Double> xList = poly.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
         List<Double> yList = poly.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
+//        Collections.reverse(xList);
+//        Collections.reverse(yList);
         double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));
         double[] y = ArrayUtils.toPrimitive(yList.toArray(new Double[0]));
+
+        System.out.println("xList: " + xList);
+        System.out.println("yList: " + yList);
+//        if(true) throw new NotImplementedException();
+
 //        List<String> names = cars.stream().map( car -> car.getName() ).collect( Collectors.toList() );
 //        Double[] xNew = x.toArray(new Double[0]);
 //        Double[] yNew = y.toArray(new Double[0]);
@@ -97,6 +103,7 @@ public class OrientedBoundingBoxCalculator {
         double min_hmax = 0.0;
 
         for (int i = 0; i < np; i++) {
+            System.out.println("i: " + i);
             double maxLD = 0.0;
             int imax = -1;
             int i2max = -1;
@@ -117,15 +124,22 @@ public class OrientedBoundingBoxCalculator {
             double hmin = 0.0;
             double hmax = 0.0;
 
+            System.out.println("hmin: " + hmin);
+            System.out.println("hmax: " + hmax);
+
             for (int k = 0; k < np; k++) { // rotating calipers
                 double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
 //                hmin = minOf(hmin, hd);
-                hmin = (hmin < hd) ? hmin : hd;
+                hmin = (hmin <= hd) ? hmin : hd;
 //                hmax = maxOf(hmax, hd);
-                hmax = (hmax > hd) ? hmax : hd;
+                hmax = (hmax >= hd) ? hmax : hd;
+                System.out.println("hd: " + hd);
             }
 
+
             double area = maxLD * (hmax - hmin);
+
+            System.out.println("area: " + area);
 
             if (minArea > area){
 
@@ -138,18 +152,19 @@ public class OrientedBoundingBoxCalculator {
                 i2min = i2max;
                 jmin = jmax;
             }
+            System.out.println("minArea: " + minArea);
         }
 
         double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
-        double pairAngle = Math.atan2( yp[i2min]- yp[imin], xp[i2min]- xp[imin]);
-        double minAngle = pairAngle + Math.PI/2;
+        double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
+        double minAngle = pairAngle + Math.PI / 2;
 
-
+        System.out.println("pairAngle: " + pairAngle);
 
 //        nxp=newArray(4);
 //        nyp=newArray(4);
-        double[] nxp= new double[4];
-        double[] nyp= new double[4];
+        double[] nxp = new double[4];
+        double[] nyp = new double[4];
 
         nxp[0] = xp[imin] + Math.cos(pairAngle) * min_hmax;
         nyp[0] = yp[imin] + Math.sin(pairAngle) * min_hmax;
@@ -167,16 +182,16 @@ public class OrientedBoundingBoxCalculator {
         return new ValuePair<>(nxp, nyp);
     }
 
-    private Double dist2(Double x1, Double y1, Double x2, Double y2) {
+    private double dist2(double x1, double y1, double x2, double y2) {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
     }
 
-    private Double perpDist(Double p1x, Double p1y, Double p2x, Double p2y, Double x, Double y){
+    private double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
         // signed distance from a point (x,y) to a line passing through p1 and p2
         return ((p2x - p1x)*(y - p1y) - (x - p1x)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }
 
-    private Double parDist(Double p1x, Double p1y, Double p2x, Double p2y, Double x, Double y){
+    private double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
         // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
         return ((p2x - p1x)*(x - p1x) + (y - p1y)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }

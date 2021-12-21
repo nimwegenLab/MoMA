@@ -17,9 +17,11 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
+import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -36,15 +38,34 @@ import static org.junit.Assert.*;
 
 public class OrientedBoundingBoxCalculatorTest {
     private final ImageJ ij;
+    private final OpService ops;
 
     public static void main(String... args) throws IOException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
+//        new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
+        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
     }
 
     public OrientedBoundingBoxCalculatorTest() {
         ij = new ImageJ();
+        ops = ij.op();
+    }
+
+    @Test
+    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value() throws IOException {
+        double[] xp = new double[]{53, 50, 49, 48, 47, 46, 46, 47, 49, 54, 56, 57, 58, 60, 60, 59, 56};
+        double[] yp = new double[]{311, 314, 316, 323, 331, 341, 342, 346, 348, 348, 347, 345, 338, 320, 316, 314, 311};
+
+        int componentIndex = 2;
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
+        ValuePair<double[], double[]> res = boundingBoxCalculator.GetOrientedBoundingBoxCoordinates(xp, yp);
+        Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
+        List<MaskPredicate< ? >> rois = Arrays.asList(
+                orientedBoundingBoxPolygon
+        );
+        showImageWithOverlays(componentWithImage.getB(), rois);
     }
 
     /**
@@ -54,44 +75,54 @@ public class OrientedBoundingBoxCalculatorTest {
      */
     @Test
     public void testOrientedBoundingBox() throws IOException {
-        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree();
-
-        ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
-        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        roots.sort(verticalComponentPositionComparator);
-
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
-
         int componentIndex = 2;
-        AdvancedComponent<FloatType> component = roots.get(componentIndex);
-//        Plotting.drawComponentTree2(tree, new ArrayList<>());
-        OpService ops = ij.op();
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
+
+        AdvancedComponent<FloatType> component = componentWithImage.getA();
+        RandomAccessibleInterval<ARGBType> image = componentWithImage.getB();
 
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(component);
         
-//        double minorAxis = props.getMinorMajorAxis(component).getA();
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
 
-        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
-        componentList.add(component);
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
         List<MaskPredicate< ? >> rois = Arrays.asList(
                 poly,
                 polyHull,
                 orientedBoundingBoxPolygon
         );
+        showImageWithOverlays(image, rois);
+    }
+
+    private void showImageWithOverlays(RandomAccessibleInterval<ARGBType> image, List<MaskPredicate<?>> rois) {
         ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);
         Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
 
-        ImagePlus imagePlus = ImageJFunctions.wrap((Img) image, "image");
+        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
+    }
+
+    private ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> getComponentWithImage(int componentIndex) throws IOException {
+        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree();
+
+        ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        roots.sort(verticalComponentPositionComparator);
+
+        AdvancedComponent<FloatType> component = roots.get(componentIndex);
+//        Plotting.drawComponentTree2(tree, new ArrayList<>());
+
+        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
+        componentList.add(component);
+        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
+
+        return new ValuePair<>(component, image);
     }
 
     private ComponentForest<AdvancedComponent<FloatType>> getComponentTree() throws IOException {

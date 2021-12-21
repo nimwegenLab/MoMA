@@ -38,6 +38,12 @@ public class OrientedBoundingBoxCalculator {
         return getOrientedRectangleWithMinimalArea(component);
     }
 
+    /**
+     * This function calculates the convex hull of the component and returns its oriented bounding box as a polynom.
+     *
+     * @param component
+     * @return
+     */
     public Polygon2D getOrientedRectangleWithMinimalArea(AdvancedComponent<FloatType> component) {
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
@@ -48,13 +54,67 @@ public class OrientedBoundingBoxCalculator {
         List<Double> yList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
         double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));
         double[] y = ArrayUtils.toPrimitive(yList.toArray(new Double[0]));
-
-        ValuePair<double[], double[]> res = getOrientedBoundingBoxCoordinates(x, y);
+        ValuePair<double[], double[]> res = getOrientedBoundingBoxCoordinatesOfConvexHull(x, y);
         Polygon2D orientedBoundingBoxPoly = GeomMasks.polygon2D(res.getA(), res.getB());
         return orientedBoundingBoxPoly;
     }
 
-    public ValuePair<double[], double[]> getOrientedBoundingBoxCoordinates(double[] x, double[] y) {
+    /**
+     * Determine the index of the coordinate with largest perpendicular distance from the edge-line being considered:
+     * (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget])
+     * Return both its index and distance from the edge.
+     *
+     * @param x
+     * @param y
+     * @param indEdgeSource
+     * @param indEdgeTarget
+     * @return index and distance of the coordinate that has largest distance from the considered edge.
+     */
+    public ValuePair<Integer, Double> calculateDistanceAndIndexOfCoordWithMaximalPerpendicularDistance(double[] x, double[] y, int indEdgeSource, int indEdgeTarget) {
+        int indOfCoordWithMaxDistanceToEdge = -1;
+        int numberOfCoords = x.length;
+        double distanceOfCoordWithMaxDistanceToEdge = 0.0;
+        for (int coordIndex = 0; coordIndex < numberOfCoords; coordIndex++) {
+            double distanceOfCoordToEdge = Math.abs(perpDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[coordIndex], y[coordIndex]));
+            if (distanceOfCoordWithMaxDistanceToEdge < distanceOfCoordToEdge) {
+                distanceOfCoordWithMaxDistanceToEdge = distanceOfCoordToEdge;
+                indOfCoordWithMaxDistanceToEdge = coordIndex;
+            }
+        }
+        return new ValuePair<>(indOfCoordWithMaxDistanceToEdge, distanceOfCoordWithMaxDistanceToEdge);
+    }
+
+    /**
+     * Calculate the projections of extremal coordinates in direction of polygon edge being considered:
+     * (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget])
+     * From this we can calculate the size of the oriented bounding box in direction of this edge.
+     *
+     * @param x
+     * @param y
+     * @param indEdgeSource
+     * @param indEdgeTarget
+     * @return minimal and maximal bounding-box extent in direction of the considered edge.
+     */
+    public ValuePair<Double, Double> calculateExtentsInDirectionOfEdge(double[] x, double[] y, int indEdgeSource, int indEdgeTarget){
+        int numberOfCoords = x.length;
+        double minBboxExtentInEdgeDirection = 0.0;
+        double maxBboxExtentInEdgeDirection = 0.0;
+        for (int k = 0; k < numberOfCoords; k++) { /* perform rotating calipers */
+            double bboxExtent = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
+            minBboxExtentInEdgeDirection = Math.min(minBboxExtentInEdgeDirection, bboxExtent);
+            maxBboxExtentInEdgeDirection = Math.max(maxBboxExtentInEdgeDirection, bboxExtent);
+        }
+        return new ValuePair<>(minBboxExtentInEdgeDirection, maxBboxExtentInEdgeDirection);
+    }
+
+    /**
+     * Calculate the vertices of the oriented bounding box.
+     *
+     * @param x x coordinates of the convex hull
+     * @param y y coordinates fo the convex hull
+     * @return ValuePair of lists containing the x- and y-values of vertices of the oriented bounding box
+     */
+    public ValuePair<double[], double[]> getOrientedBoundingBoxCoordinatesOfConvexHull(double[] x, double[] y) {
         int numberOfCoords = x.length;
 
         double minimalArea = Double.MAX_VALUE;
@@ -66,31 +126,17 @@ public class OrientedBoundingBoxCalculator {
         double maxBboxExtentInEdgeDirectionFinal = 0.0;
 
         for (int indEdgeSource = 0; indEdgeSource < numberOfCoords; indEdgeSource++) {
-            double distanceOfCoordWithMaxDistanceToEdge = 0.0;
-            int indOfCoordWithMaxDistanceToEdge = -1;
             int indEdgeTarget;
             if (indEdgeSource < numberOfCoords - 1) indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
             else indEdgeTarget = 0;
 
-            for (int coordIndex = 0; coordIndex < numberOfCoords; coordIndex++) {
-                double distanceOfCoordToEdge = Math.abs(perpDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[coordIndex], y[coordIndex]));
-                if (distanceOfCoordWithMaxDistanceToEdge < distanceOfCoordToEdge) {
-                    distanceOfCoordWithMaxDistanceToEdge = distanceOfCoordToEdge;
-                    indOfCoordWithMaxDistanceToEdge = coordIndex; /* coordinate index of the coordinate with largest perpendicular distance from the edge-line being considered: (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget]) */
-                }
-            }
+            ValuePair<Integer, Double> coordIndexAndDistance = calculateDistanceAndIndexOfCoordWithMaximalPerpendicularDistance(x, y, indEdgeSource, indEdgeTarget);
+            int indOfCoordWithMaxDistanceToEdge = coordIndexAndDistance.getA();
+            double distanceOfCoordWithMaxDistanceToEdge = coordIndexAndDistance.getB();
 
-            /* This for-loop calculates the projections of extremal coordinates in direction of polygon edge-line being
-             * considered: (x[indEdgeSource], y[indEdgeSource]) -> (x[indEdgeTarget], y[indEdgeTarget])
-             * From this we can calculate the size of the oriented bounding box in direction of this edge.
-             */
-            double minBboxExtentInEdgeDirection = 0.0;
-            double maxBboxExtentInEdgeDirection = 0.0;
-            for (int k = 0; k < numberOfCoords; k++) { /* perform rotating calipers */
-                double bboxExtent = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
-                minBboxExtentInEdgeDirection = Math.min(minBboxExtentInEdgeDirection, bboxExtent);
-                maxBboxExtentInEdgeDirection = Math.max(maxBboxExtentInEdgeDirection, bboxExtent);
-            }
+            ValuePair<Double, Double> extentsInDirectionOfEdge = calculateExtentsInDirectionOfEdge(x, y, indEdgeSource, indEdgeTarget);
+            double minBboxExtentInEdgeDirection = extentsInDirectionOfEdge.getA();
+            double maxBboxExtentInEdgeDirection = extentsInDirectionOfEdge.getB();
 
             double area = distanceOfCoordWithMaxDistanceToEdge * (maxBboxExtentInEdgeDirection - minBboxExtentInEdgeDirection);
 

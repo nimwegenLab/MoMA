@@ -28,17 +28,17 @@ import java.util.stream.Collectors;
  */
 
 public class OrientedBoundingBoxCalculator {
-    private OpService ops;
+    private final OpService ops;
 
     public OrientedBoundingBoxCalculator(OpService ops) {
         this.ops = ops;
     }
 
-    public Polygon2D calculate(AdvancedComponent<FloatType> component){
+    public Polygon2D calculate(AdvancedComponent<FloatType> component) {
         return getOrientedRectangleWithMinimalArea(component);
     }
 
-    public Polygon2D getOrientedRectangleWithMinimalArea(AdvancedComponent<FloatType> component){
+    public Polygon2D getOrientedRectangleWithMinimalArea(AdvancedComponent<FloatType> component) {
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
@@ -54,7 +54,7 @@ public class OrientedBoundingBoxCalculator {
         return orientedBoundingBoxPoly;
     }
 
-    public ValuePair<double[], double[]> getOrientedBoundingBoxCoordinates(double[] xp, double[] yp){
+    public ValuePair<double[], double[]> getOrientedBoundingBoxCoordinates(double[] xp, double[] yp) {
         int np = xp.length;
 
         double minArea = Double.MAX_VALUE;
@@ -71,7 +71,8 @@ public class OrientedBoundingBoxCalculator {
             int i2max = -1;
             int jmax = -1;
             int i2;
-            if(i<np-1) i2 = i + 1; else i2 = 0;
+            if (i < np - 1) i2 = i + 1;
+            else i2 = 0;
 
             for (int j = 0; j < np; j++) {
                 double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
@@ -95,7 +96,7 @@ public class OrientedBoundingBoxCalculator {
 
             double area = maxLD * (hmax - hmin);
 
-            if (minArea > area){
+            if (minArea > area) {
 
                 minArea = area;
                 min_hmin = hmin;
@@ -123,8 +124,8 @@ public class OrientedBoundingBoxCalculator {
         nxp[2] = nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax);
         nyp[2] = nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax);
 
-        nxp[3] = nxp[2] + Math.cos(minAngle) * - pd;
-        nyp[3] = nyp[2] + Math.sin(minAngle) * - pd;
+        nxp[3] = nxp[2] + Math.cos(minAngle) * -pd;
+        nyp[3] = nyp[2] + Math.sin(minAngle) * -pd;
 
         return new ValuePair<>(nxp, nyp);
     }
@@ -133,14 +134,14 @@ public class OrientedBoundingBoxCalculator {
         return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
     }
 
-    private double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
+    private double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
         // signed distance from a point (x,y) to a line passing through p1 and p2
-        return ((p2x - p1x)*(y - p1y) - (x - p1x)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }
 
-    private double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
+    private double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
         // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
-        return ((p2x - p1x)*(x - p1x) + (y - p1y)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
     }
 }
 

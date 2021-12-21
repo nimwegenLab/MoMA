@@ -55,7 +55,7 @@ public class OrientedBoundingBoxCalculatorTest {
     }
 
     @Test
-    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value() {
+    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value_1() {
         double[] xp = new double[]{53, 50, 49, 48, 47, 46, 46, 47, 49, 54, 56, 57, 58, 60, 60, 59, 56};
         double[] yp = new double[]{311, 314, 316, 323, 331, 341, 342, 346, 348, 348, 347, 345, 338, 320, 316, 314, 311};
 
@@ -73,6 +73,25 @@ public class OrientedBoundingBoxCalculatorTest {
         }
     }
 
+    @Test
+    public void test_GetOrientedBoundingBoxCoordinates_returns_correct_value_2() {
+        double[] xp = new double[]{49, 47, 47, 50, 52, 53, 54, 56, 60, 61, 61, 59, 58, 56, 54};
+        double[] yp = new double[]{352, 354, 361, 375, 381, 383, 384, 385, 385, 384, 376, 362, 357, 353, 352};
+
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
+        ValuePair<double[], double[]> res = boundingBoxCalculator.getOrientedBoundingBoxCoordinates(xp, yp);
+        Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
+        List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
+        double[] xCoordsExpected = new double[]{56.692307, 45.346153, 52.115383, 63.46154};
+        double[] yCoordsExpected = new double[]{350.46155, 352.73077, 386.57693, 384.30768};
+        int index = 0;
+        for (RealLocalizable pos : vertices) {
+            assertEquals(xCoordsExpected[index], pos.getFloatPosition(0), 1e-4);
+            assertEquals(yCoordsExpected[index], pos.getFloatPosition(1), 1e-4);
+            index++;
+        }
+    }
+
     /**
      * Add test for gerating the component tree on a sample image and displaying it.
      *
@@ -80,7 +99,7 @@ public class OrientedBoundingBoxCalculatorTest {
      * @throws InterruptedException
      */
     public void exploreOrientedBoundingBox() throws IOException {
-        int componentIndex = 2;
+        int componentIndex = 3;
         ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
 
         AdvancedComponent<FloatType> component = componentWithImage.getA();
@@ -96,9 +115,9 @@ public class OrientedBoundingBoxCalculatorTest {
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
 
         List<MaskPredicate<?>> rois = Arrays.asList(
-                poly,
-                polyHull,
-                orientedBoundingBoxPolygon
+//                poly,
+//                polyHull,
+//                orientedBoundingBoxPolygon
         );
         showImageWithOverlays(image, rois);
     }

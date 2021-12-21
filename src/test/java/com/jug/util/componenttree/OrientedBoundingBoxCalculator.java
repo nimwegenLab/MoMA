@@ -68,8 +68,8 @@ public class OrientedBoundingBoxCalculator {
         double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));
         double[] y = ArrayUtils.toPrimitive(yList.toArray(new Double[0]));
 
-        System.out.println("xList: " + xList);
-        System.out.println("yList: " + yList);
+//        System.out.println("xList: " + xList);
+//        System.out.println("yList: " + yList);
 //        if(true) throw new NotImplementedException();
 
 //        List<String> names = cars.stream().map( car -> car.getName() ).collect( Collectors.toList() );
@@ -94,7 +94,7 @@ public class OrientedBoundingBoxCalculator {
         // Double minArea = 2 * getValue("Width") * getValue("Height"): width and height ob bounding box
         double minArea = Double.MAX_VALUE;
 //        Double minFD = getValue("Width") + getValue("Height"); // FD now stands for first diameter :)
-        double minFD = Double.MAX_VALUE; // FD now stands for first diameter :)
+//        double minFD = Double.MAX_VALUE; // FD now stands for first diameter :)
         int imin = -1;
         int i2min = -1;
         int jmin = -1;
@@ -103,7 +103,7 @@ public class OrientedBoundingBoxCalculator {
         double min_hmax = 0.0;
 
         for (int i = 0; i < np; i++) {
-            System.out.println("i: " + i);
+//            System.out.println("i: " + i);
             double maxLD = 0.0;
             int imax = -1;
             int i2max = -1;
@@ -124,8 +124,8 @@ public class OrientedBoundingBoxCalculator {
             double hmin = 0.0;
             double hmax = 0.0;
 
-            System.out.println("hmin: " + hmin);
-            System.out.println("hmax: " + hmax);
+//            System.out.println("hmin: " + hmin);
+//            System.out.println("hmax: " + hmax);
 
             for (int k = 0; k < np; k++) { // rotating calipers
                 double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
@@ -133,18 +133,18 @@ public class OrientedBoundingBoxCalculator {
                 hmin = (hmin <= hd) ? hmin : hd;
 //                hmax = maxOf(hmax, hd);
                 hmax = (hmax >= hd) ? hmax : hd;
-                System.out.println("hd: " + hd);
+//                System.out.println("hd: " + hd);
             }
 
 
             double area = maxLD * (hmax - hmin);
 
-            System.out.println("area: " + area);
+//            System.out.println("area: " + area);
 
             if (minArea > area){
 
                 minArea = area;
-                minFD = maxLD;
+//                minFD = maxLD;
                 min_hmin = hmin;
                 min_hmax = hmax;
 
@@ -152,14 +152,14 @@ public class OrientedBoundingBoxCalculator {
                 i2min = i2max;
                 jmin = jmax;
             }
-            System.out.println("minArea: " + minArea);
+//            System.out.println("minArea: " + minArea);
         }
 
         double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
         double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
         double minAngle = pairAngle + Math.PI / 2;
 
-        System.out.println("pairAngle: " + pairAngle);
+//        System.out.println("pairAngle: " + pairAngle);
 
 //        nxp=newArray(4);
 //        nyp=newArray(4);

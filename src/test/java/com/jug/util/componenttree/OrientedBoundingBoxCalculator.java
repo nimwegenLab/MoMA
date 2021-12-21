@@ -89,8 +89,8 @@ public class OrientedBoundingBoxCalculator {
 
             for (int k = 0; k < np; k++) { /* perform rotating calipers */
                 double hd = parDist(xp[indEdgeSourceMax], yp[indEdgeSourceMax], xp[indEdgeTargetMax], yp[indEdgeTargetMax], xp[k], yp[k]);
-                hmin = (hmin <= hd) ? hmin : hd;
-                hmax = (hmax >= hd) ? hmax : hd;
+                hmin = Math.min(hmin, hd);
+                hmax = Math.max(hmax, hd);
             }
 
             double area = distanceOfPerpendicularPointMax * (hmax - hmin);
@@ -128,18 +128,18 @@ public class OrientedBoundingBoxCalculator {
         return new ValuePair<>(nxp, nyp);
     }
 
-    private double dist2(double x1, double y1, double x2, double y2) {
-        return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
+    private double distance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
     }
 
     private double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
         // signed distance from a point (x,y) to a line passing through p1 and p2
-        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
     }
 
     private double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
         // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
-        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
     }
 }
 

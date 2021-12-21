@@ -13,6 +13,7 @@ import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imagej.roi.DefaultROITree;
 import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.RealLocalizable;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -31,8 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import static org.junit.Assert.*;
+
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
 
 
@@ -62,6 +63,17 @@ public class OrientedBoundingBoxCalculatorTest {
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
         ValuePair<double[], double[]> res = boundingBoxCalculator.GetOrientedBoundingBoxCoordinates(xp, yp);
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
+        List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
+//        RealLocalizable pos = vertices.get(0);
+        double[] xCoordsExpected = new double[] {60.939026, 49.30488, 45.158535, 56.792683};
+        double[] yCoordsExpected = new double[] {311.54877, 310.2561, 347.57318, 348.86584};
+        int index = 0;
+        for(RealLocalizable pos : vertices){
+            System.out.println(pos.getFloatPosition(0) + "," + pos.getFloatPosition(1));
+            assertEquals(xCoordsExpected[index], pos.getFloatPosition(0), 1e-3);
+            assertEquals(yCoordsExpected[index], pos.getFloatPosition(1), 1e-3);
+            index++;
+        }
         List<MaskPredicate< ? >> rois = Arrays.asList(
                 orientedBoundingBoxPolygon
         );

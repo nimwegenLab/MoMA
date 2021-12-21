@@ -115,9 +115,9 @@ public class OrientedBoundingBoxCalculatorTest {
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
 
         List<MaskPredicate<?>> rois = Arrays.asList(
-//                poly,
-//                polyHull,
-//                orientedBoundingBoxPolygon
+                poly,
+                polyHull,
+                orientedBoundingBoxPolygon
         );
         showImageWithOverlays(image, rois);
     }

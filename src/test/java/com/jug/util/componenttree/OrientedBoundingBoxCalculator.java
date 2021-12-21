@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 public class OrientedBoundingBoxCalculator {
     private final OpService ops;
+    private final DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
 
     public OrientedBoundingBoxCalculator(OpService ops) {
         this.ops = ops;
@@ -48,7 +49,6 @@ public class OrientedBoundingBoxCalculator {
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
         List<Double> xList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
         List<Double> yList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());

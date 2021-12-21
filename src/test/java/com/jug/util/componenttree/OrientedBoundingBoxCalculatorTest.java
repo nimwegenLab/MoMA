@@ -60,7 +60,7 @@ public class OrientedBoundingBoxCalculatorTest {
         double[] yp = new double[]{311, 314, 316, 323, 331, 341, 342, 346, 348, 348, 347, 345, 338, 320, 316, 314, 311};
 
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
-        ValuePair<double[], double[]> res = boundingBoxCalculator.GetOrientedBoundingBoxCoordinates(xp, yp);
+        ValuePair<double[], double[]> res = boundingBoxCalculator.getOrientedBoundingBoxCoordinates(xp, yp);
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(res.getA(), res.getB());
         List<RealLocalizable> vertices = orientedBoundingBoxPolygon.vertices();
         double[] xCoordsExpected = new double[]{60.939026, 49.30488, 45.158535, 56.792683};

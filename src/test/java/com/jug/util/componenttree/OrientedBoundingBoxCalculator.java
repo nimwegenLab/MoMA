@@ -108,7 +108,17 @@ public class OrientedBoundingBoxCalculator {
     }
 
     /**
-     * Calculate the vertices of the oriented bounding box.
+     * Calculate the vertices of the oriented bounding box with minimal area. The algorithm for doing this is the
+     * following:
+     *
+     * We iterate through all edges of the convex hull and calculate the area of the bounding rectangle whose side
+     * coincides with the edge. This is done by:
+     * 1. Determining the vertex of the convex hull with maximal distance from the edge. This gives the extent of the
+     * bounding box in one direction.
+     * 2. Calculating the extent of the bounding box in direction of the considered edge. This gives the extent in the
+     * second dimension.
+     * We keep index of the edge and perpendicular vertex that yield the minimal area as well as its extents. This is
+     * the oriented bounding box that we are looking for. From this, the bounding box coordinates are calculated.
      *
      * @param x x coordinates of the convex hull
      * @param y y coordinates fo the convex hull

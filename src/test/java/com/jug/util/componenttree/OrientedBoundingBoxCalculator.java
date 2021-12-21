@@ -59,10 +59,10 @@ public class OrientedBoundingBoxCalculator {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
-        poly.vertices().get(0);
+//        poly.vertices().get(0);
 //        poly.vertices().stream().
-        List<Double> xList = poly.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
-        List<Double> yList = poly.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
+        List<Double> xList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(0)).collect(Collectors.toList());
+        List<Double> yList = polyHull.vertices().stream().map(entry -> entry.getDoublePosition(1)).collect(Collectors.toList());
 //        Collections.reverse(xList);
 //        Collections.reverse(yList);
         double[] x = ArrayUtils.toPrimitive(xList.toArray(new Double[0]));

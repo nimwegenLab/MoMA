@@ -43,8 +43,8 @@ public class OrientedBoundingBoxCalculatorTest {
     public static void main(String... args) throws IOException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-//        new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
-        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
+        new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
+//        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
     }
 
     public OrientedBoundingBoxCalculatorTest() {

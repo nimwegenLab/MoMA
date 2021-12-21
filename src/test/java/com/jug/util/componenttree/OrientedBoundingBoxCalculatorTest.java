@@ -42,16 +42,16 @@ public class OrientedBoundingBoxCalculatorTest {
     private final ImageJ ij;
     private final OpService ops;
 
+    public OrientedBoundingBoxCalculatorTest() {
+        ij = new ImageJ();
+        ops = ij.op();
+    }
+
     public static void main(String... args) throws IOException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
         new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
 //        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
-    }
-
-    public OrientedBoundingBoxCalculatorTest() {
-        ij = new ImageJ();
-        ops = ij.op();
     }
 
     @Test
@@ -75,6 +75,7 @@ public class OrientedBoundingBoxCalculatorTest {
 
     /**
      * Add test for gerating the component tree on a sample image and displaying it.
+     *
      * @throws IOException
      * @throws InterruptedException
      */
@@ -88,14 +89,14 @@ public class OrientedBoundingBoxCalculatorTest {
 
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator(ops);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(component);
-        
+
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
         Polygon2D polyHull = convexHullCalculator.calculate(poly);
 
-        List<MaskPredicate< ? >> rois = Arrays.asList(
+        List<MaskPredicate<?>> rois = Arrays.asList(
                 poly,
                 polyHull,
                 orientedBoundingBoxPolygon
@@ -107,7 +108,6 @@ public class OrientedBoundingBoxCalculatorTest {
         ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);
         Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
-
         ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
@@ -115,37 +115,26 @@ public class OrientedBoundingBoxCalculatorTest {
 
     private ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> getComponentWithImage(int componentIndex) throws IOException {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree();
-
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
-
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
-//        Plotting.drawComponentTree2(tree, new ArrayList<>());
-
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
         RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
-
         return new ValuePair<>(component, image);
     }
 
     private ComponentForest<AdvancedComponent<FloatType>> getComponentTree() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
-
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
-
         int frameIndex = 10;
         IImageProvider imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
-
-//        ImageJFunctions.show(currentImage);
-
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
         ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }

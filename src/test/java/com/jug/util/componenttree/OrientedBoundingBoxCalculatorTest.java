@@ -50,7 +50,7 @@ public class OrientedBoundingBoxCalculatorTest {
     public static void main(String... args) throws IOException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        new OrientedBoundingBoxCalculatorTest().testOrientedBoundingBox();
+        new OrientedBoundingBoxCalculatorTest().exploreOrientedBoundingBox();
 //        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
     }
 
@@ -79,8 +79,7 @@ public class OrientedBoundingBoxCalculatorTest {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Test
-    public void testOrientedBoundingBox() throws IOException {
+    public void exploreOrientedBoundingBox() throws IOException {
         int componentIndex = 2;
         ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
 

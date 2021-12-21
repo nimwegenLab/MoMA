@@ -57,30 +57,30 @@ public class OrientedBoundingBoxCalculator {
     public ValuePair<double[], double[]> getOrientedBoundingBoxCoordinates(double[] xp, double[] yp) {
         int np = xp.length;
 
-        double minArea = Double.MAX_VALUE;
-        int imin = -1;
-        int i2min = -1;
-        int jmin = -1;
+        double minimalArea = Double.MAX_VALUE;
+        int indEdgeSourceMin = -1;
+        int indEdgeTargetMin = -1;
+        int indPerpendicularPointMin = -1;
 
         double min_hmin = 0.0;
         double min_hmax = 0.0;
 
-        for (int i = 0; i < np; i++) {
-            double maxLD = 0.0;
-            int imax = -1;
-            int i2max = -1;
-            int jmax = -1;
-            int i2;
-            if (i < np - 1) i2 = i + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
-            else i2 = 0;
+        for (int indEdgeSource = 0; indEdgeSource < np; indEdgeSource++) {
+            double distanceOfPerpendicularPointMax = 0.0;
+            int indEdgeSourceMax = -1;
+            int indEdgeTargetMax = -1;
+            int indPerpendicularPointMax = -1;
+            int indEdgeTarget;
+            if (indEdgeSource < np - 1) indEdgeTarget = indEdgeSource + 1; /* handle last coordinate pair in (xp[np-1], yp[np-1]) */
+            else indEdgeTarget = 0;
 
-            for (int j = 0; j < np; j++) {
-                double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
-                if (maxLD < d) {
-                    maxLD = d;
-                    imax = i;
-                    jmax = j; /* coordinate index of the coordinate with smallest perpendicular distance from the edge (xp[i], yp[i]) -> (xp[i2], yp[i2]) */
-                    i2max = i2;
+            for (int indPerpendicularPoint = 0; indPerpendicularPoint < np; indPerpendicularPoint++) {
+                double distanceOfPerpendicularPoint = Math.abs(perpDist(xp[indEdgeSource], yp[indEdgeSource], xp[indEdgeTarget], yp[indEdgeTarget], xp[indPerpendicularPoint], yp[indPerpendicularPoint]));
+                if (distanceOfPerpendicularPointMax < distanceOfPerpendicularPoint) {
+                    distanceOfPerpendicularPointMax = distanceOfPerpendicularPoint;
+                    indEdgeSourceMax = indEdgeSource;
+                    indPerpendicularPointMax = indPerpendicularPoint; /* coordinate index of the coordinate with smallest perpendicular distance from the edge (xp[i], yp[i]) -> (xp[i2], yp[i2]) */
+                    indEdgeTargetMax = indEdgeTarget;
                 }
             }
 
@@ -88,33 +88,33 @@ public class OrientedBoundingBoxCalculator {
             double hmax = 0.0;
 
             for (int k = 0; k < np; k++) { /* perform rotating calipers */
-                double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
+                double hd = parDist(xp[indEdgeSourceMax], yp[indEdgeSourceMax], xp[indEdgeTargetMax], yp[indEdgeTargetMax], xp[k], yp[k]);
                 hmin = (hmin <= hd) ? hmin : hd;
                 hmax = (hmax >= hd) ? hmax : hd;
             }
 
-            double area = maxLD * (hmax - hmin);
+            double area = distanceOfPerpendicularPointMax * (hmax - hmin);
 
-            if (minArea > area) {
-                minArea = area;
+            if (minimalArea > area) {
+                minimalArea = area;
                 min_hmin = hmin;
                 min_hmax = hmax;
 
-                imin = imax;
-                i2min = i2max;
-                jmin = jmax;
+                indEdgeSourceMin = indEdgeSourceMax;
+                indEdgeTargetMin = indEdgeTargetMax;
+                indPerpendicularPointMin = indPerpendicularPointMax;
             }
         }
 
-        double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
-        double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
+        double pd = perpDist(xp[indEdgeSourceMin], yp[indEdgeSourceMin], xp[indEdgeTargetMin], yp[indEdgeTargetMin], xp[indPerpendicularPointMin], yp[indPerpendicularPointMin]); // signed feret diameter
+        double pairAngle = Math.atan2(yp[indEdgeTargetMin] - yp[indEdgeSourceMin], xp[indEdgeTargetMin] - xp[indEdgeSourceMin]);
         double minAngle = pairAngle + Math.PI / 2;
 
         double[] nxp = new double[4];
         double[] nyp = new double[4];
 
-        nxp[0] = xp[imin] + Math.cos(pairAngle) * min_hmax;
-        nyp[0] = yp[imin] + Math.sin(pairAngle) * min_hmax;
+        nxp[0] = xp[indEdgeSourceMin] + Math.cos(pairAngle) * min_hmax;
+        nyp[0] = yp[indEdgeSourceMin] + Math.sin(pairAngle) * min_hmax;
 
         nxp[1] = nxp[0] + Math.cos(minAngle) * pd;
         nyp[1] = nyp[0] + Math.sin(minAngle) * pd;

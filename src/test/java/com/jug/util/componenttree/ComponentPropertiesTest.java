@@ -18,10 +18,7 @@ import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.roi.geom.real.ClosedWritablePolygon2D;
 //import net.imglib2.roi.geom.real.closedPolygon2D;
-import net.imglib2.roi.geom.GeomMasks;
-import net.imglib2.roi.geom.real.WritablePolygon2D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -35,7 +32,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import ij.gui.PolygonRoi;
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
 
 
@@ -45,7 +41,7 @@ public class ComponentPropertiesTest {
     public static void main(String... args) throws IOException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        new ComponentPropertiesTest().testOrientedBoundingBox();
+        new ComponentPropertiesTest().testGettingComponentProperties();
     }
 
     public ComponentPropertiesTest() {
@@ -83,17 +79,19 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
+        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight");
         for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double majorAxisTiltAngle = props.getTiltAngle(component);
+            double orientedBboxWidth = props.getOrientedBoundingBoxWidthAndHeight(component).getA();
+            double orientedBboxHeight = props.getOrientedBoundingBoxWidthAndHeight(component).getB();
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
-            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
+            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f, %f, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());

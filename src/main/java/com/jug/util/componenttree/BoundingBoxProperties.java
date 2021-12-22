@@ -1,6 +1,6 @@
 package com.jug.util.componenttree;
 
-import com.jug.util.Vector2D;
+import com.jug.util.math.Vector2D;
 import net.imglib2.roi.geom.real.Polygon2D;
 
 public class BoundingBoxProperties {

@@ -1,4 +1,4 @@
-package com.jug.util;
+package com.jug.util.math;
 
 import net.imglib2.RealLocalizable;
 

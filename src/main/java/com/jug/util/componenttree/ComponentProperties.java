@@ -1,7 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.Vector2D;
+import com.jug.util.math.Vector2D;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;

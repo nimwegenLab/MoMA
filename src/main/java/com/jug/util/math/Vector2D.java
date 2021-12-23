@@ -50,4 +50,8 @@ public class Vector2D {
         }
         return (Math.abs(getX() - operand.getX()) < tolerance) && (Math.abs(getY() - operand.getY()) < tolerance);
     }
+
+    public double angleWith(Vector2D operand) {
+        return Math.acos(this.scalarProduct(operand) / (this.length() * operand.length()));
+    }
 }

@@ -22,9 +22,9 @@ public class MoMATest {
 
     public static void main(String[] args) {
         MoMATest tests = new MoMATest();
-//        tests._theo_20210923_glu_batch_1_MMStack_Pos0_GL38();
+        tests._theo_20210923_glu_batch_1_MMStack_Pos0_GL38();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
 //        tests._cell_fragments__lis_20201119_Pos6_GL6();
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
@@ -72,9 +72,9 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/20210923_glu_batch_1_MMStack_Pos0_GL38.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/output/";
         Integer tmin = 0;
-        Integer tmax = 100;
+        Integer tmax = 10;
 //        Integer tmax = null;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     @Test

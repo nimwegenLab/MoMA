@@ -22,6 +22,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
@@ -1094,15 +1095,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public void exportDataFiles(File folderToUse) {
         if (folderToUse == null) return;
 
-
-        final CellStatsExporter cellStatsExporter = new CellStatsExporter(this, MoMA.dic.getConfigurationManager(), MoMA.dic.getMixtureModelFit(), MoMA.dic.getComponentProperties(), MoMA.dic.getMomaInstance(), MoMA.dic.getGitVersionProvider().getVersionString());
-        final CellMaskExporter cellMaskExporter = new CellMaskExporter(MoMA.dic.getImglib2utils(), MoMA.getDefaultFilenameDecoration());
-
-        List<ResultExporterInterface> exporters;
-
-        exporters = new ArrayList<>();
-        exporters.add(cellStatsExporter);
-        exporters.add(cellMaskExporter);
+        List<ResultExporterInterface> exporters = new ArrayList<>();
+        exporters.add(MoMA.dic.getCellStatsExporter());
+        exporters.add(MoMA.dic.getCellMaskExporter());
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }

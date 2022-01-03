@@ -40,6 +40,10 @@ public class Vector2D {
         return Math.sqrt(Math.pow(getX(), 2.0) + Math.pow(getY(), 2.0));
     }
 
+    public double getPolarAngle() {
+        return Math.atan2(getY(), getX());
+    }
+
     public Vector2D multiply(double factor) {
         return new Vector2D(factor * getX(), factor * getY());
     }

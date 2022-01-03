@@ -7,6 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class BoundingBoxPropertiesTest {
+    double delta = 0.01;
     @Test
     public void test_returned_properties_for_vertically_aligned_bbox(){
         double expectedArea = 5000.0;
@@ -17,11 +18,11 @@ public class BoundingBoxPropertiesTest {
         double[] yCoordsExpected = new double[]{0, 0, 100, 100};
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(xCoordsExpected, yCoordsExpected);
         BoundingBoxProperties bboxProps = new BoundingBoxProperties(orientedBoundingBoxPolygon);
-        assertEquals(expectedArea, bboxProps.getArea(), 0.01);
-        assertEquals(expectedHeight, bboxProps.getHeight(), 0.01);
-        assertEquals(expectedWidth, bboxProps.getWidth(), 0.01);
-        assertEquals(expectedWidth, bboxProps.getWidth(), 0.01);
-        assertTrue("bbox center is incorrect", bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, 0.01));
+        assertEquals(expectedArea, bboxProps.getArea(), delta);
+        assertEquals(expectedHeight, bboxProps.getHeight(), delta);
+        assertEquals(expectedWidth, bboxProps.getWidth(), delta);
+        assertEquals(expectedWidth, bboxProps.getWidth(), delta);
+        assertTrue("bbox center is incorrect", bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta));
     }
 
     @Test
@@ -34,10 +35,10 @@ public class BoundingBoxPropertiesTest {
         double[] yCoordsExpected = new double[]{0, 0, 50, 50};
         Polygon2D orientedBoundingBoxPolygon = GeomMasks.polygon2D(xCoordsExpected, yCoordsExpected);
         BoundingBoxProperties bboxProps = new BoundingBoxProperties(orientedBoundingBoxPolygon);
-        assertEquals(expectedArea, bboxProps.getArea(), 0.01);
-        assertEquals(expectedHeight, bboxProps.getHeight(), 0.01);
-        assertEquals(expectedWidth, bboxProps.getWidth(), 0.01);
-        assertEquals(expectedWidth, bboxProps.getWidth(), 0.01);
-        assertTrue("bbox center is incorrect", bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, 0.01));
+        assertEquals(expectedArea, bboxProps.getArea(), delta);
+        assertEquals(expectedHeight, bboxProps.getHeight(), delta);
+        assertEquals(expectedWidth, bboxProps.getWidth(), delta);
+        assertEquals(expectedWidth, bboxProps.getWidth(), delta);
+        assertTrue("bbox center is incorrect", bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta));
     }
 }

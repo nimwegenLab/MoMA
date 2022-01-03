@@ -58,7 +58,7 @@ public class ComponentProperties {
         Vector2D shortEdge = vertex1vec.minus(vertex0vec);
         Vector2D longEdge = vertex2vec.minus(vertex1vec);
 
-        if(shortEdge.length() > longEdge.length()) { /* switch edges according to length */
+        if(shortEdge.getLength() > longEdge.getLength()) { /* switch edges according to length */
             Vector2D tmp = longEdge;
             longEdge = shortEdge;
             shortEdge = tmp;

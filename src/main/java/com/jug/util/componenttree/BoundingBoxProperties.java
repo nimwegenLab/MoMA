@@ -17,13 +17,13 @@ public class BoundingBoxProperties {
         Vector2D shortEdge = vertex1vec.minus(vertex0vec);
         Vector2D longEdge = vertex2vec.minus(vertex1vec);
 
-        if(shortEdge.length() > longEdge.length()) { /* switch edges according to length */
+        if(shortEdge.getLength() > longEdge.getLength()) { /* switch edges according to length */
             Vector2D tmp = longEdge;
             longEdge = shortEdge;
             shortEdge = tmp;
         }
-        height = longEdge.length();
-        width = shortEdge.length();
+        height = longEdge.getLength();
+        width = shortEdge.getLength();
         area = width * height;
         Vector2D halfDiagonal = vertex2vec.minus(vertex0vec).multiply(0.5);
         centerCoordinate = vertex0vec.plus(halfDiagonal);
@@ -44,4 +44,6 @@ public class BoundingBoxProperties {
     public Vector2D getCenterCoordinate() {
         return centerCoordinate;
     }
+
+//    public double getRotationAngle (){}
 }

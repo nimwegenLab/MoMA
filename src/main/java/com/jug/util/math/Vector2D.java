@@ -36,7 +36,7 @@ public class Vector2D {
         return new Vector2D(x - operand.getX(), y - operand.getY());
     }
 
-    public double length(){
+    public double getLength(){
         return Math.sqrt(Math.pow(getX(), 2.0) + Math.pow(getY(), 2.0));
     }
 
@@ -56,6 +56,6 @@ public class Vector2D {
     }
 
     public double angleWith(Vector2D operand) {
-        return Math.acos(this.scalarProduct(operand) / (this.length() * operand.length()));
+        return Math.acos(this.scalarProduct(operand) / (this.getLength() * operand.getLength()));
     }
 }

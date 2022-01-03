@@ -12,26 +12,27 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.scijava.Context;
 
 public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterface {
-    private final ResultTableColumn<Double> center_x_col;
-    private final ResultTableColumn<Double> center_y_col;
-    private final ResultTableColumn<Double> rotation_angle_col;
-    private final ResultTableColumn<Double> width_col;
-    private final ResultTableColumn<Double> height_col;
-    private final ResultTable outputTable;
+    private ResultTableColumn<Double> center_x_col;
+    private ResultTableColumn<Double> center_y_col;
+    private ResultTableColumn<Double> rotation_angle_col;
+    private ResultTableColumn<Double> width_col;
+    private ResultTableColumn<Double> height_col;
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OrientedBoundingBoxCalculator boundingBoxCalculator;
 
-    public OrientedBoundingBoxMeasurement(ResultTable outputTable, Context context) {
-        this.outputTable = outputTable;
+    public OrientedBoundingBoxMeasurement(Context context) {
+        regionToPolygonConverter = new LabelRegionToPolygonConverter();
+        regionToPolygonConverter.setContext(context);
+        boundingBoxCalculator = new OrientedBoundingBoxCalculator();
+    }
+
+    @Override
+    public void setOutputTable(ResultTable outputTable) {
         center_x_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_center_x_px", "%.2f"));
         center_y_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_center_y_px", "%.2f"));
         width_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_width", "%.2f"));
         height_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_length", "%.2f"));
         rotation_angle_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_orientation_angle", "%.2f"));
-
-        regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        regionToPolygonConverter.setContext(context);
-        boundingBoxCalculator = new OrientedBoundingBoxCalculator();
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.util.ComponentTreeUtils;
@@ -32,6 +33,7 @@ public class CellStatsExporter implements ResultExporterInterface {
     private final IImageProvider imageProvider;
     private final String loadedDataFolder;
     private String versionString;
+    private List<SegmentMeasurementInterface> measurements;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
@@ -41,13 +43,15 @@ public class CellStatsExporter implements ResultExporterInterface {
                              MixtureModelFit mixtureModelFit,
                              ComponentProperties componentProperties,
                              IImageProvider imageProvider,
-                             String versionString) {
+                             String versionString,
+                             List<SegmentMeasurementInterface> measurements) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
         this.componentProperties = componentProperties;
         this.imageProvider = imageProvider;
         this.versionString = versionString;
+        this.measurements = measurements;
         loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
@@ -125,6 +129,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
         ResultTableColumn<Double> phaseContrastCoefficientOfVariation = resultTable.addColumn(new ResultTableColumn<>("phc_intensity_coefficient_of_variation", "%.5f"));
+
+        measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
         HashMap<String, ResultTableColumn<Integer>> labelColumns = new HashMap<>();
         for (String label : configurationManager.CELL_LABEL_LIST) {
@@ -229,6 +235,9 @@ public class CellStatsExporter implements ResultExporterInterface {
 
                     columnIndex++;
                 }
+
+                SegmentRecord finalSegmentRecord = segmentRecord;
+                measurements.forEach((measurement) -> measurement.measure(finalSegmentRecord));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
 //                System.out.println("segmentRecord.getId(): " + segmentRecord.getId());

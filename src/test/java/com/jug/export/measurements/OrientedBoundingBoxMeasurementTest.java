@@ -10,6 +10,6 @@ public class OrientedBoundingBoxMeasurementTest {
         ImageJ ij = new ImageJ();
 
         ResultTable outputTable = new ResultTable(",");
-        OrientedBoundingBoxMeasurement measurement = new OrientedBoundingBoxMeasurement(outputTable, ij.context());
+        OrientedBoundingBoxMeasurement measurement = new OrientedBoundingBoxMeasurement(ij.context());
     }
 }

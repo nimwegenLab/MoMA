@@ -12,13 +12,13 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.scijava.Context;
 
 public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterface {
+    private final LabelRegionToPolygonConverter regionToPolygonConverter;
+    private final OrientedBoundingBoxCalculator boundingBoxCalculator;
     private ResultTableColumn<Double> center_x_col;
     private ResultTableColumn<Double> center_y_col;
     private ResultTableColumn<Double> rotation_angle_col;
     private ResultTableColumn<Double> width_col;
     private ResultTableColumn<Double> height_col;
-    private final LabelRegionToPolygonConverter regionToPolygonConverter;
-    private final OrientedBoundingBoxCalculator boundingBoxCalculator;
 
     public OrientedBoundingBoxMeasurement(Context context) {
         regionToPolygonConverter = new LabelRegionToPolygonConverter();

@@ -6,9 +6,9 @@ import net.imglib2.roi.geom.real.Polygon2D;
 public class BoundingBoxProperties {
     private final Vector2D centerCoordinate;
     private double rotationAngle;
-    private double area;
-    private double height;
-    private double width;
+    private final double area;
+    private final double height;
+    private final double width;
 
     public BoundingBoxProperties(Polygon2D orientedBoundingBoxPolygon) {
         Vector2D vertex0vec = new Vector2D(orientedBoundingBoxPolygon.vertices().get(0));
@@ -18,7 +18,7 @@ public class BoundingBoxProperties {
         Vector2D shortEdge = vertex1vec.minus(vertex0vec);
         Vector2D longEdge = vertex2vec.minus(vertex1vec);
 
-        if(shortEdge.getLength() > longEdge.getLength()) { /* switch edges according to length */
+        if (shortEdge.getLength() > longEdge.getLength()) { /* switch edges according to length */
             Vector2D tmp = longEdge;
             longEdge = shortEdge;
             shortEdge = tmp;
@@ -30,7 +30,7 @@ public class BoundingBoxProperties {
         centerCoordinate = vertex0vec.plus(halfDiagonal);
 
         rotationAngle = longEdge.getPolarAngle();
-        if (rotationAngle == Math.PI){
+        if (rotationAngle == Math.PI) {
             rotationAngle = 0; /* a vertically aligned, rectangular bbox that is wider than tall, will always return the length-angle in positive x-direction giving thus an angle 0 */
         }
         if (rotationAngle < 0) {

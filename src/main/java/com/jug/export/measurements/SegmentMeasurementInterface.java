@@ -5,5 +5,6 @@ import com.jug.export.SegmentRecord;
 
 public interface SegmentMeasurementInterface {
     void setOutputTable(ResultTable outputTable);
+
     void measure(SegmentRecord segmentRecord);
 }

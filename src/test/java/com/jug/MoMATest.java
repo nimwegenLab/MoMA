@@ -72,7 +72,7 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/20210923_glu_batch_1_MMStack_Pos0_GL38.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/output/";
         Integer tmin = 0;
-        Integer tmax = 10;
+        Integer tmax = 100;
 //        Integer tmax = null;
         startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }

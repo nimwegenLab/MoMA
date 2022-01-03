@@ -58,4 +58,12 @@ public class Vector2D {
     public double angleWith(Vector2D operand) {
         return Math.acos(this.scalarProduct(operand) / (this.getLength() * operand.getLength()));
     }
+
+    @Override
+    public String toString() {
+        return "Vector2D{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
 }

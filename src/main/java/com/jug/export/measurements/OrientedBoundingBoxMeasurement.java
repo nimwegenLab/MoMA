@@ -32,7 +32,7 @@ public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterfa
         center_y_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_center_y_px", "%.2f"));
         width_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_width", "%.2f"));
         height_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_length", "%.2f"));
-        rotation_angle_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_orientation_angle", "%.2f"));
+        rotation_angle_col = outputTable.addColumn(new ResultTableColumn<>("oriented_bbox_orientation_angle", "%.4f"));
     }
 
     @Override

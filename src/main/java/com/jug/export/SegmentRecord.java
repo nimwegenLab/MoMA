@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-final class SegmentRecord {
+public final class SegmentRecord {
 
     static final int ENDOFTRACKING = 1234;
     static final int USER_PRUNING = 4321;
@@ -50,7 +50,7 @@ final class SegmentRecord {
      * The frame that this segments belongs to.
      */
     int timestep;
-    Hypothesis<AdvancedComponent<FloatType>> hyp;
+    public Hypothesis<AdvancedComponent<FloatType>> hyp;
     int terminated_by = Integer.MIN_VALUE;
 
     SegmentRecord(

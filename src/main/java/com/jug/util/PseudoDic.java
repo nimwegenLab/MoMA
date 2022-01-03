@@ -5,9 +5,9 @@ import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
-import com.jug.export.AssignmentCostExporter;
-import com.jug.export.GroundTruthFramesExporter;
-import com.jug.export.MixtureModelFit;
+import com.jug.export.*;
+import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
+import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.gui.DialogManager;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
@@ -17,6 +17,9 @@ import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is pseudo dependency injection container, which I use to work on getting my class dependencies and initialization
@@ -87,6 +90,20 @@ public class PseudoDic {
     public ComponentTreeGenerator getComponentTreeGenerator() { return componentTreeGenerator; }
 
     public Imglib2Utils getImglib2utils() { return imglib2utils; }
+
+    public CellStatsExporter getCellStatsExporter() {
+        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getMomaInstance(), getGitVersionProvider().getVersionString(), getMeasurements());
+    }
+
+    private List<SegmentMeasurementInterface> getMeasurements() {
+        List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
+        listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        return listOfMeasurements;
+    }
+
+    public CellMaskExporter getCellMaskExporter(){
+        return new CellMaskExporter(getImglib2utils(), () -> MoMA.getDefaultFilenameDecoration());
+    }
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
 

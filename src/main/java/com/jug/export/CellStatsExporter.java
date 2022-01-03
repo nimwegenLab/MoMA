@@ -4,6 +4,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.util.ComponentTreeUtils;
@@ -32,6 +33,7 @@ public class CellStatsExporter implements ResultExporterInterface {
     private final IImageProvider imageProvider;
     private final String loadedDataFolder;
     private String versionString;
+    private List<SegmentMeasurementInterface> measurements;
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
@@ -41,13 +43,15 @@ public class CellStatsExporter implements ResultExporterInterface {
                              MixtureModelFit mixtureModelFit,
                              ComponentProperties componentProperties,
                              IImageProvider imageProvider,
-                             String versionString) {
+                             String versionString,
+                             List<SegmentMeasurementInterface> measurements) {
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
         this.componentProperties = componentProperties;
         this.imageProvider = imageProvider;
         this.versionString = versionString;
+        this.measurements = measurements;
         loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
@@ -121,6 +125,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
+        measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area_px"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
@@ -229,6 +234,9 @@ public class CellStatsExporter implements ResultExporterInterface {
 
                     columnIndex++;
                 }
+
+                SegmentRecord finalSegmentRecord = segmentRecord;
+                measurements.forEach((measurement) -> measurement.measure(finalSegmentRecord.hyp.getWrappedComponent()));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
 //                System.out.println("segmentRecord.getId(): " + segmentRecord.getId());

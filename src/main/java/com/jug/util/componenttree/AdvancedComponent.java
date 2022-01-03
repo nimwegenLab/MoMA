@@ -183,6 +183,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return pixelList.iterator();
     }
 
+    @Override
     public LabelRegion<Integer> getRegion() {
         return region;
     }

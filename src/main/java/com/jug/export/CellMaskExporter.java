@@ -17,6 +17,7 @@ import net.imglib2.view.Views;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * This class store the resulting cell masks to a TIFF stack with axes [XYZT]. The slices in Z are as follows:
@@ -25,12 +26,12 @@ import java.util.List;
  */
 public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
+    private Supplier<String> defaultFilenameDecorationSupplier;
     Img<IntType> imgResult;
-    private String defaultFileNameDecoration;
 
-    public CellMaskExporter(Imglib2Utils imglib2Utils, String defaultFileNameDecoration) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils, Supplier<String> defaultFilenameDecorationSupplier) {
         this.imglib2Utils = imglib2Utils;
-        this.defaultFileNameDecoration = defaultFileNameDecoration;
+        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
     }
 
     private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
@@ -49,6 +50,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
 //        copySliceOfParentComponents();
+        String defaultFileNameDecoration = defaultFilenameDecorationSupplier.get();
         saveResultImageToFile(new File(outputFolder, "ExportedCellMasks__" + defaultFileNameDecoration + ".tif"));
     }
 

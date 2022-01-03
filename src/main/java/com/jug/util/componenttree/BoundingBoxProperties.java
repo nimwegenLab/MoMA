@@ -5,6 +5,7 @@ import net.imglib2.roi.geom.real.Polygon2D;
 
 public class BoundingBoxProperties {
     private final Vector2D centerCoordinate;
+    private double rotationAngle;
     private double area;
     private double height;
     private double width;
@@ -27,6 +28,14 @@ public class BoundingBoxProperties {
         area = width * height;
         Vector2D halfDiagonal = vertex2vec.minus(vertex0vec).multiply(0.5);
         centerCoordinate = vertex0vec.plus(halfDiagonal);
+
+        rotationAngle = longEdge.getPolarAngle();
+        if (rotationAngle == Math.PI){
+            rotationAngle = 0; /* a vertically aligned, rectangular bbox that is wider than tall, will always return the length-angle in positive x-direction giving thus an angle 0 */
+        }
+        if (rotationAngle < 0) {
+            rotationAngle = rotationAngle + 2 * Math.PI; /* the orientation angle of the bounding box to always be positive; i.e. in positive y-direction */
+        }
     }
 
     public double getArea() {
@@ -45,5 +54,7 @@ public class BoundingBoxProperties {
         return centerCoordinate;
     }
 
-//    public double getRotationAngle (){}
+    public double getRotationAngle() {
+        return rotationAngle;
+    }
 }

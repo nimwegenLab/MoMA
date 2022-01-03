@@ -5,6 +5,7 @@ import com.jug.export.ResultTableColumn;
 import com.jug.export.SegmentRecord;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.BoundingBoxProperties;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.OrientedBoundingBoxCalculator;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.roi.geom.real.Polygon2D;
@@ -36,8 +37,7 @@ public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterfa
     }
 
     @Override
-    public void measure(SegmentRecord segmentRecord) {
-        AdvancedComponent<FloatType> component = segmentRecord.hyp.getWrappedComponent();
+    public void measure(ComponentInterface component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
         BoundingBoxProperties result = new BoundingBoxProperties(orientedBoundingBoxPolygon);

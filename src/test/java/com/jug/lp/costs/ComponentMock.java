@@ -2,6 +2,7 @@ package com.jug.lp.costs;
 
 import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.roi.labeling.LabelRegion;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -20,6 +21,11 @@ public class ComponentMock implements ComponentInterface {
 
     @Override
     public Double getWatershedLinePixelValueAverage() {
+        return null;
+    }
+
+    @Override
+    public LabelRegion<Integer> getRegion() {
         return null;
     }
 

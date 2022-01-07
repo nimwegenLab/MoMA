@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
@@ -41,10 +42,12 @@ import static org.junit.Assert.*;
 public class OrientedBoundingBoxCalculatorTest {
     private final ImageJ ij;
     private final OpService ops;
+    private final TestUtils testUtils;
 
     public OrientedBoundingBoxCalculatorTest() {
         ij = new ImageJ();
         ops = ij.op();
+        testUtils = new TestUtils(ij);
     }
 
     public static void main(String... args) throws IOException {
@@ -99,8 +102,10 @@ public class OrientedBoundingBoxCalculatorTest {
      * @throws InterruptedException
      */
     public void exploreOrientedBoundingBox() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int componentIndex = 3;
-        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = getComponentWithImage(componentIndex);
+
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = testUtils.getComponentWithImage(imageFile, componentIndex);
 
         AdvancedComponent<FloatType> component = componentWithImage.getA();
         RandomAccessibleInterval<ARGBType> image = componentWithImage.getB();
@@ -130,42 +135,5 @@ public class OrientedBoundingBoxCalculatorTest {
         ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
-    }
-
-    private ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> getComponentWithImage(int componentIndex) throws IOException {
-        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree();
-        ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
-        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        roots.sort(verticalComponentPositionComparator);
-        AdvancedComponent<FloatType> component = roots.get(componentIndex);
-        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
-        componentList.add(component);
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
-        return new ValuePair<>(component, image);
-    }
-
-    private ComponentForest<AdvancedComponent<FloatType>> getComponentTree() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
-        assertTrue(new File(imageFile).exists());
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
-        int frameIndex = 10;
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
-        return tree;
-    }
-
-    @NotNull
-    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
-        OpService ops = ij.op();
-        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentTreeGenerator;
     }
 }

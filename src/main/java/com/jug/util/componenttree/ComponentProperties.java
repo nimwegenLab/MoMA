@@ -38,54 +38,6 @@ public class ComponentProperties {
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
     }
 
-    public ValuePair<Double, Double> getOrientedBoundingBoxWidthAndHeight(AdvancedComponent<?> component){
-        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
-//        ValuePair<double[], double[]>
-        getWidthAndHeightRelativeToCoordinateSystem(orientedBoundingBoxPolygon);
-        return new ValuePair<>(1.0, 1.0);
-//        throw new NotImplementedException();
-//        ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
-
-//        return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
-    }
-
-    public ValuePair<Double, Double> getWidthAndHeightRelativeToCoordinateSystem(Polygon2D orientedBoundingBoxPolygon) {
-        Vector2D vertex0vec = new Vector2D(orientedBoundingBoxPolygon.vertices().get(0));
-        Vector2D vertex1vec = new Vector2D(orientedBoundingBoxPolygon.vertices().get(1));
-        Vector2D vertex2vec = new Vector2D(orientedBoundingBoxPolygon.vertices().get(2));
-
-        Vector2D shortEdge = vertex1vec.minus(vertex0vec);
-        Vector2D longEdge = vertex2vec.minus(vertex1vec);
-
-        if(shortEdge.getLength() > longEdge.getLength()) { /* switch edges according to length */
-            Vector2D tmp = longEdge;
-            longEdge = shortEdge;
-            shortEdge = tmp;
-        }
-
-
-
-//        RealLocalizable vertex0 = orientedBoundingBoxPolygon.vertices().get(0);
-//        RealLocalizable vertex1 = orientedBoundingBoxPolygon.vertices().get(1);
-//        RealLocalizable vertex2 = orientedBoundingBoxPolygon.vertices().get(2);
-
-//        double edge1lengthAlongY = Math.abs(vertex0.getDoublePosition(1) - vertex1.getDoublePosition(1));
-//        double edge1lengthX = Math.abs(vertex0.getDoublePosition(0) - vertex1.getDoublePosition(0));
-//        double edge1length = eucledianDistance(vertex0.getDoublePosition(0), vertex0.getDoublePosition(1), vertex1.getDoublePosition(0), vertex1.getDoublePosition(1));
-//
-//        double edge2lengthY = Math.abs(vertex1.getDoublePosition(1) - vertex2.getDoublePosition(1));
-//        double edge2lengthX = Math.abs(vertex1.getDoublePosition(0) - vertex2.getDoublePosition(0));
-//        double edge2length = eucledianDistance(vertex0.getDoublePosition(0), vertex0.getDoublePosition(1), vertex1.getDoublePosition(0), vertex1.getDoublePosition(1));
-
-        throw new NotImplementedException();
-//        ValuePair<double[], double[]>
-    }
-
-//    private double eucledianDistance(double x1, double y1, double x2, double y2) {
-//        return Math.sqrt(Math.pow(x2 - x1, 2.0) + Math.pow(y2 - y1, 2.0));
-//    }
-
     /***
      * Return tilt angle against the vertical axis in radians. We use mathematical rotation direction, where positive
      * values indicate tilt to the left and negative values indicate tilt to the right.

@@ -23,6 +23,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -79,22 +80,21 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight");
+        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
         for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double majorAxisTiltAngle = props.getTiltAngle(component);
-            double orientedBboxWidth = props.getOrientedBoundingBoxWidthAndHeight(component).getA();
-            double orientedBboxHeight = props.getOrientedBoundingBoxWidthAndHeight(component).getB();
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
-            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f, %f, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight));
+            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());
+        assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
     }
 
     @NotNull

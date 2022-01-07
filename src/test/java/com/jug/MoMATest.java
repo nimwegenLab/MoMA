@@ -67,7 +67,7 @@ public class MoMATest {
 
 //    /media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6
 
-    @Test
+    
     public void _theo_20210923_glu_batch_1_MMStack_Pos0_GL38() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/20210923_glu_batch_1_MMStack_Pos0_GL38.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/output/";
@@ -77,7 +77,7 @@ public class MoMATest {
         startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
-    @Test
+    
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/";
@@ -86,7 +86,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
-    @Test
+    
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CEF/lis_20211026/Pos7_GL12/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/CEF/lis_20211026/Pos7_GL12/output/";
@@ -95,7 +95,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
-    @Test
+    
     public void _cell_fragments__lis_20201119_Pos6_GL6() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6.tif";
         String outputPath = datasets_base_path + "000_moma_benchmarking/CIP/lis_20201119/Pos6_GL6/output/";
@@ -104,7 +104,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
-    @Test
+    
     public void _cell_fragments__thomas_20200922__Pos16_GL19() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CEF/thomas_20200922/Pos16_GL19/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL19.tiff";
         String outputPath = datasets_base_path + "000_moma_benchmarking/CEF/thomas_20200922/Pos16_GL19/output/";
@@ -113,7 +113,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
-    @Test
+    
     public void _cell_fragments__lis_20210521__Pos0_Gl12() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL12/20210521_VNG1040_AB2h_2h_1_MMStack_Pos0_GL12.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/output/";
@@ -122,7 +122,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
-    @Test
+    
     public void _cell_fragments__lis_20210521__Pos0_Gl10() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/20210521_VNG1040_AB2h_2h_1_MMStack_Pos0_GL10.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/CIP/lis_20210521/Pos0_GL10/output/";
@@ -133,7 +133,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export"});
     }
 
-    @Test
+    
     public void _filamenting_cell__lis_20201119__Pos5_GL17() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/output/";
@@ -146,7 +146,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
-    @Test
+    
     public void _debug_mapping_assignment_issue_when_using_only_plausible_assignments() {
         String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/001_bugfixing/20210812__issue_with_generating_plausible_assignments";
         String inputPath = datasetPath + "/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__frame_126__6_repeats_of_same_frame__20210812.tif";
@@ -154,7 +154,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _missing_mapping_assignment__lis_20201119__Pos14_GL30() {
         String datasetPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CEF/lis_20201119/Pos14_GL30";
         String inputPath = datasetPath + "/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos14_GL30.tif";
@@ -162,7 +162,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, 261, 264, true);
     }
 
-    @Test
+    
     public void _exception_when_loading_gl__thomas_20200910__Pos3_GL33() {
         String datasetPath = datasets_base_path + "/001_bugfixing/20210726__exception_on_loading_gl/thomas_20200910/Pos3_GL33";
         String inputPath = datasetPath + "/20200910_M9glc_VNG1040-hi2_AB_2_MMStack_Pos3_GL33.tif";
@@ -170,7 +170,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _ilp_infeasible_crashes_moma__theo_20210517__Pos18_GL35() {
         String datasetPath = datasets_base_path + "/001_bugfixing/20210722__ilp_infeasible_crashes_moma/thomas_20200922/Pos18_GL35/";
 //        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
@@ -179,7 +179,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, 112, 116, true);
     }
 
-    @Test
+    
     public void _export_failure__theo_20210517__Pos8_GL11() {
         String datasetPath = datasets_base_path + "/001_bugfixing/20210722__exception_during_export/theo_20210517/Pos8_GL11/";
 //        String inputPath = datasetPath + "20210517_X_spm_1_MMStack_Pos8_GL11.tif";
@@ -188,7 +188,7 @@ public class MoMATest {
         startMoma(true, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _lysing_cell__thomas_20200922__Pos0_GL30() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos0_GL30/output/";
@@ -201,7 +201,7 @@ public class MoMATest {
     }
 
     // GOOD FOR DEMO PURPOSES
-    @Test
+    
     public void _lysing_cell__thomas_20200922__Pos16_GL17() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos16_GL17.tiff";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/thomas_20200922/Pos16_GL17/output/";
@@ -213,7 +213,7 @@ public class MoMATest {
 //        startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _lis_20210303__Pos0_GL14() {
 //        String inputPath = datasets_base_path + "/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14.tiff";
         String inputPath = datasets_base_path + "/lis_20210303/Pos0_GL14/20210303_VNG40_12h_2hAB_10h_1_MMStack_Pos0_GL14__cropped.tiff";
@@ -224,21 +224,21 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
-    @Test
+    
     public void _theo__20210126_glc_spcm_1__Pos1_GL15() {
         String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL15/20210126_glc_spcm_1_MMStack_Pos1_GL15.tiff";
         String outputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL15/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _theo__20210126_glc_spcm_1__Pos1_GL14() {
         String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL14/20210126_glc_spcm_1_MMStack_Pos1_GL14.tiff";
         String outputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/theo__20210126_glc_spcm_1/Pos1_GL14/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL06() {
         // NOTES: * cropped image performs slightly better, but not good
 //        String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/01_dany_datasets/20200516_bottom_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa/20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL06/20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL06.tif";
@@ -252,7 +252,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02() {
         // NOTES: * cropped image performs slightly better, but not good
 //        String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/01_dany_datasets/20200516_bottom_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa/20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02/20200516_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_gluaa_glyaa_2_MMStack_Pos3_preproc_GL02.tif";
@@ -261,7 +261,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20191112_glc_spcm_1_MMStack_Pos7_preproc_GL15() {
 //        String inputPath = datasets_base_path + "/20191112_H07_bolA/20191112_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191112_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
 //        String inputPath = datasets_base_path + "/20191112_H07_bolA/20191112_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191112_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
@@ -272,7 +272,7 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20200528_glcIPTG_spcm_1_MMStack_Pos15_preproc_GL01() {
 //        String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/20200528_glcIPTG_spcm_1_MMStack_Pos15_preproc_GL01/20200528_glcIPTG_spcm_1_MMStack_Pos15_preproc_GL01.tif";
         String inputPath = datasets_base_path + "/20200626__datasets_for_work_on_ticket_021-improve-image-normalization/00_datasets_from_theo/01_bad_datasets/20200528_glcIPTG_spcm_1_MMStack_Pos15_preproc_GL01/cropped_20200528_glcIPTG_spcm_1_MMStack_Pos15_preproc_GL01.tif";
@@ -283,21 +283,21 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07() {
         String inputPath = datasets_base_path + "/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07.tif";
         String outputPath = datasets_base_path + "/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos1_preproc_GL07/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16() {
         String inputPath = datasets_base_path + "/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16.tif";
         String outputPath = datasets_base_path + "/20200618_deepmoma_testing/20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _lugange_001() {
 //        String inputPath = datasets_base_path + "/20200422_test_lugange_dataset/series_01_crop_with_filamenting_cell.tif";
         String inputPath = datasets_base_path + "/20200422_test_lugange_dataset/cropped_series_01_crop_with_filamenting_cell.tif";
@@ -305,14 +305,14 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04() {
         String inputPath = datasets_base_path + "/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2019-10-12_1d98d2f6/FAILED_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04_deepmoma/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04.tif";
         String outputPath = datasets_base_path + "/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2019-10-12_1d98d2f6/FAILED_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL04_deepmoma/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1() {
         String inputPath = datasets_base_path + "/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2019-10-12_1d98d2f6/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1/images_phase_contrast_01_dany_20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1__reshaped.tiff";
         String outputPath = datasets_base_path + "/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2019-10-12_1d98d2f6/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_rpmB_curated__dataset__Pos25_GL1/";
@@ -320,63 +320,63 @@ public class MoMATest {
     }
 
 
-    @Test
+    
     public void _cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16() {
         String inputPath = datasets_base_path + "/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif";
         String outputPath = datasets_base_path + "/Dany_synthetic_rich_media/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL15() {
         String inputPath = datasets_base_path + "/05_inhomogeneous_phase_contrast_intensity/00_dany_20200417_top_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium/Pos14_GL15/20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL15.tif";
         String outputPath = datasets_base_path + "/05_inhomogeneous_phase_contrast_intensity/00_dany_20200417_top_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium/Pos14_GL15/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14() {
         String inputPath = datasets_base_path + "/05_inhomogeneous_phase_contrast_intensity/00_dany_20200417_top_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium/Pos14_GL14/20200417_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium_8_MMStack_Pos14_preproc_GL14.tif";
         String outputPath = datasets_base_path + "/05_inhomogeneous_phase_contrast_intensity/00_dany_20200417_top_rpmB_rplN_rpsB_rrnB_hi1_hi3_med2_med3_richdefinedmedium/Pos14_GL14/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03() {
         String inputPath = datasets_base_path + "/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03.tif";
         String outputPath = datasets_base_path + "/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL03/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02() {
         String inputPath = datasets_base_path + "/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02__frames_220-250.tif";
         String outputPath = datasets_base_path + "/20190614_glu_lowLac_1_MMStack_Pos0_preproc_GL02/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
         String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tif";
         String outputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
         String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/50frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
         String outputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
         String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/450frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tif";
         String outputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
         String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
 //        String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
@@ -384,14 +384,14 @@ public class MoMATest {
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3() {
         String inputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/cropped_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3.tiff";
         String outputPath = datasets_base_path + "/20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
@@ -400,7 +400,7 @@ public class MoMATest {
         MoMA.main(new String[]{"-i", inputPath, "-o", outputPath});
     }
 
-    @Test
+    
     public void _20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output/";
@@ -408,21 +408,21 @@ public class MoMATest {
 //        startMoma(new String[]{"-i", inputPath, "-o", outputPath, "-p", "/home/micha/Documents/01_work/git/MoMA/mm.properties"});
     }
 
-    @Test
+    
     public void _20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01() {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15() {
         String inputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
     }
 
-    @Test
+    
     public void _cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15() {
         String inputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";

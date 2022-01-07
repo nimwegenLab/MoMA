@@ -41,12 +41,10 @@ import static org.junit.Assert.*;
 
 public class OrientedBoundingBoxCalculatorTest {
     private final ImageJ ij;
-    private final OpService ops;
     private final TestUtils testUtils;
 
     public OrientedBoundingBoxCalculatorTest() {
         ij = new ImageJ();
-        ops = ij.op();
         testUtils = new TestUtils(ij);
     }
 
@@ -113,7 +111,7 @@ public class OrientedBoundingBoxCalculatorTest {
         OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator();
 
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
-        regionToPolygonConverter.setContext(ops.context());
+        regionToPolygonConverter.setContext(ij.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
 

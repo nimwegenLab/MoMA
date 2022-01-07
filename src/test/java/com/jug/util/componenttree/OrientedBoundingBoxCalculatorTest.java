@@ -125,15 +125,6 @@ public class OrientedBoundingBoxCalculatorTest {
                 polyHull,
                 orientedBoundingBoxPolygon
         );
-        showImageWithOverlays(image, rois);
-    }
-
-    private void showImageWithOverlays(RandomAccessibleInterval<ARGBType> image, List<MaskPredicate<?>> rois) {
-        ROITree roiTree = new DefaultROITree();
-        roiTree.addROIs(rois);
-        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
-        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
-        imagePlus.setOverlay(overlay);
-        ij.ui().show(imagePlus);
+        testUtils.showImageWithOverlays(image, rois);
     }
 }

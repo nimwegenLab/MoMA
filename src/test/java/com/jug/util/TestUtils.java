@@ -5,11 +5,17 @@ import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
+import ij.ImagePlus;
+import ij.gui.Overlay;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
+import net.imagej.roi.DefaultROITree;
+import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -63,5 +69,14 @@ public class TestUtils {
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
+    }
+
+    public void showImageWithOverlays(RandomAccessibleInterval<ARGBType> image, List<MaskPredicate<?>> rois) {
+        ROITree roiTree = new DefaultROITree();
+        roiTree.addROIs(rois);
+        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
+        imagePlus.setOverlay(overlay);
+        ij.ui().show(imagePlus);
     }
 }

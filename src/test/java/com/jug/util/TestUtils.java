@@ -49,6 +49,13 @@ public class TestUtils {
 //        return new ValuePair<>(component, image);
 //    }
 
+    public void drawComponentTree(String imageFile) throws IOException {
+        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        AdvancedComponent<FloatType> res = roots.get(0);
+        Plotting.drawComponentTree2(tree, new ArrayList<>());
+    }
+
     public <T extends NativeType> ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<T>> getComponentWithImage(String imageFile,
                                                                                                                              int componentIndex,
                                                                                                                              T pixelValue) throws IOException {
@@ -67,12 +74,12 @@ public class TestUtils {
         assertTrue(new File(imageFile).exists());
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
-        int frameIndex = 10;
+        int frameIndex = 0;
         IImageProvider imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, .5f);
         return tree;
     }
 
@@ -82,7 +89,7 @@ public class TestUtils {
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
         ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
     }

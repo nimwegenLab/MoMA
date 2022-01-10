@@ -18,6 +18,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
@@ -86,7 +87,7 @@ public class TestUtils {
         return componentTreeGenerator;
     }
 
-    public void showImageWithOverlays(RandomAccessibleInterval<ARGBType> image, List<MaskPredicate<?>> rois) {
+    public <T extends NumericType<T>> void showImageWithOverlays(RandomAccessibleInterval<T> image, List<MaskPredicate<?>> rois) {
         ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);
         Overlay overlay = ij.convert().convert(roiTree, Overlay.class);

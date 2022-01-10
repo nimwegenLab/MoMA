@@ -110,8 +110,8 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(componentLevelImageStack));
     }
 
-    public static <C extends Component<FloatType, C>> RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
-                                                                                                                   List<AdvancedComponent<FloatType>> optimalComponents) {
+    public static RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
+                                                                               List<AdvancedComponent<FloatType>> optimalComponents) {
         AdvancedComponent<FloatType> first = components.get(0);
         RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
@@ -144,6 +144,30 @@ public class Plotting {
         }
     }
 
+    public static RandomAccessibleInterval<FloatType> createImageWithComponentsNew(List<AdvancedComponent<FloatType>> components,
+                                                                                   FloatType val) {
+        AdvancedComponent<FloatType> first = components.get(0);
+        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
+        long xDim = sourceImage.dimension(0);
+        long yDim = sourceImage.dimension(1);
+        ArrayImgFactory<FloatType> imageFactory = new ArrayImgFactory<>();
+
+        final RandomAccessibleInterval<FloatType> resultImage = imageFactory.create(xDim, yDim);
+        for (AdvancedComponent<FloatType> ctn : components) {
+            drawComponentToImage3(ctn, resultImage, val);
+        }
+        return resultImage;
+    }
+
+    private static void drawComponentToImage3(final Component<?, ?> ctn,
+                                              RandomAccessibleInterval<FloatType> targetImage,
+                                              FloatType val) {
+        RandomAccess<FloatType> out = targetImage.randomAccess();
+        for (Localizable location : ctn) {
+            out.setPosition(location);
+            out.get().set(val);
+        }
+    }
 
     public static void surfacePlot(final RandomAccessibleInterval<FloatType> img, final int dimension, final long position) {
         ImagePlus imp = ImageJFunctions.wrap(Views.hyperSlice(img, dimension, position), "my image");

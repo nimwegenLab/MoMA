@@ -35,6 +35,18 @@ public class TestUtils {
         this.ij = ij;
     }
 
+//    public ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<FloatType>> getComponentWithImageNew(String imageFile, int componentIndex) throws IOException {
+//        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
+//        ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
+//        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+//        roots.sort(verticalComponentPositionComparator);
+//        AdvancedComponent<FloatType> component = roots.get(componentIndex);
+//        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
+//        componentList.add(component);
+//        RandomAccessibleInterval<FloatType> image = Plotting.createImageWithComponentsNew(componentList, new ArrayList<>());
+//        return new ValuePair<>(component, image);
+//    }
+
     public ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> getComponentWithImage(String imageFile, int componentIndex) throws IOException {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
@@ -43,7 +55,8 @@ public class TestUtils {
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
+//        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
+        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponentsNew(componentList, new ARGBType(255));
         return new ValuePair<>(component, image);
     }
 

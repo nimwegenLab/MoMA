@@ -12,8 +12,12 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.exception.IncompatibleTypeException;
+import net.imglib2.img.ImgFactory;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
@@ -144,25 +148,25 @@ public class Plotting {
         }
     }
 
-    public static RandomAccessibleInterval<FloatType> createImageWithComponentsNew(List<AdvancedComponent<FloatType>> components,
-                                                                                   FloatType val) {
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> createImageWithComponentsNew(List<AdvancedComponent<FloatType>> components,
+                                                                                                  T val) {
         AdvancedComponent<FloatType> first = components.get(0);
         RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
-        ArrayImgFactory<FloatType> imageFactory = new ArrayImgFactory<>();
+        ArrayImgFactory<T> imageFactory= new ArrayImgFactory(val);
 
-        final RandomAccessibleInterval<FloatType> resultImage = imageFactory.create(xDim, yDim);
+        final RandomAccessibleInterval<T> resultImage = imageFactory.create(xDim, yDim);
         for (AdvancedComponent<FloatType> ctn : components) {
             drawComponentToImage3(ctn, resultImage, val);
         }
         return resultImage;
     }
 
-    private static void drawComponentToImage3(final Component<?, ?> ctn,
-                                              RandomAccessibleInterval<FloatType> targetImage,
-                                              FloatType val) {
-        RandomAccess<FloatType> out = targetImage.randomAccess();
+    private static <T extends NativeType> void drawComponentToImage3(final Component<?, ?> ctn,
+                                                               RandomAccessibleInterval<T> targetImage,
+                                                               T val) {
+        RandomAccess<T> out = targetImage.randomAccess();
         for (Localizable location : ctn) {
             out.setPosition(location);
             out.get().set(val);

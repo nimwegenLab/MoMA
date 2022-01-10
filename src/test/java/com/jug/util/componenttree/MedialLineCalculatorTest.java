@@ -3,34 +3,16 @@ package com.jug.util.componenttree;
 import com.jug.util.TestUtils;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
-import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
-import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.roi.MaskPredicate;
-import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
-
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import sc.fiji.skeletonize3D.Skeletonize3D_;
 
-//import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
-import net.imglib2.converter.RealARGBConverter;
-import net.imglib2.converter.ARGBARGBDoubleConverter;
-import net.imglib2.converter.RealUnsignedByteConverter;
-import net.imglib2.converter.ComplexPhaseFloatConverter;
+import java.io.File;
+import java.io.IOException;
 
 public class MedialLineCalculatorTest {
     private final ImageJ ij;
@@ -57,7 +39,9 @@ public class MedialLineCalculatorTest {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int componentIndex = 3;
 
-        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentAndImage = testUtils.getComponentWithImage(imageFile, componentIndex);
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentAndImage = testUtils.getComponentWithImage(imageFile,
+                componentIndex,
+                new ARGBType(ARGBType.rgba(255, 255, 255, 255)));
 
         AdvancedComponent<FloatType> component = componentAndImage.getA();
         RandomAccessibleInterval<ARGBType> image = componentAndImage.getB();

@@ -16,6 +16,7 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -47,7 +48,9 @@ public class TestUtils {
 //        return new ValuePair<>(component, image);
 //    }
 
-    public ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> getComponentWithImage(String imageFile, int componentIndex) throws IOException {
+    public <T extends NativeType> ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<T>> getComponentWithImage(String imageFile,
+                                                                                                                             int componentIndex,
+                                                                                                                             T pixelValue) throws IOException {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
@@ -55,8 +58,7 @@ public class TestUtils {
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
-//        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponentsNew(componentList, new ARGBType(255));
+        RandomAccessibleInterval<T> image = Plotting.createImageWithComponentsNew(componentList, pixelValue);
         return new ValuePair<>(component, image);
     }
 

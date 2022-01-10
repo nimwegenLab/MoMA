@@ -1,40 +1,25 @@
 package com.jug.util.componenttree;
 
-import com.jug.datahandling.IImageProvider;
-import com.jug.lp.ImageProviderMock;
 import com.jug.util.TestUtils;
-import com.jug.util.imglib2.Imglib2Utils;
-import com.moma.auxiliary.Plotting;
-import ij.ImagePlus;
-import ij.gui.Overlay;
 import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
-import net.imagej.roi.DefaultROITree;
-import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
-import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import net.imglib2.view.Views;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
 
@@ -103,7 +88,10 @@ public class OrientedBoundingBoxCalculatorTest {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int componentIndex = 3;
 
-        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage = testUtils.getComponentWithImage(imageFile, componentIndex);
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage =
+                testUtils.getComponentWithImage(imageFile,
+                        componentIndex,
+                        new ARGBType(ARGBType.rgba(255, 255, 255, 255)));
 
         AdvancedComponent<FloatType> component = componentWithImage.getA();
         RandomAccessibleInterval<ARGBType> image = componentWithImage.getB();

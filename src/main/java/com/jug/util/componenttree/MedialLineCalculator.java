@@ -26,35 +26,10 @@ public class MedialLineCalculator {
 
     public Vector2DPolyline calculate(RandomAccessibleInterval<BitType> image) {
         RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
-//        result = ArrayImgFactory.imgFactory(new IntType());
-//        new ArrayImgFactory(new IntType());
-
         ImgLabeling labeling = ops.labeling().cca(raiThinned, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
         LabelRegions regions = new LabelRegions(labeling);
         LabelRegion skeletonRegion = regions.getLabelRegion(0);
-//        Polygon2D poly = imglib2Utils.convertRegionToVector2DPolygon(skeletonRegion);
         Vector2DPolyline polygon = Vector2DPolyline.createFromCursor(skeletonRegion.cursor());
         return polygon;
-//        Img<IntType> labeling = utils.createImageWithSameDimension(raiThinned, new IntType());
-//        ImgLabeling<Integer, IntType> imglabeling = createLabelingImage(raiThinned);
-//
-////        labelAllConnectedComponents(RandomAccessible<T> input, ImgLabeling<L, I> labeling, Iterator<L> labelGenerator, ConnectedComponents.StructuringElement se)
-//
-//        Iterator<L> labelGenerator
-//        ConnectedComponents.labelAllConnectedComponents(raiThinned, imglabeling, labelGenerator, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
-////        FloatType res = new FloatType(1.0f);
-////        ImgLabeling labeling2 = new ImgLabeling<>(labeling);
-//        ConnectedComponents.labelAllConnectedComponents(raiThinned, labeling, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
-////        LabelRegions<Integer> regions = new LabelRegions<>(labeling2);
-//        res = regions.getLabelRegion(0);
-//        ConnectedComponentAnalysis.connectedComponents(raiThinned);
-//        System.out.println("stop");
-    }
-
-    private ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval sourceImage) {
-        long[] dims = new long[sourceImage.numDimensions()];
-        sourceImage.dimensions(dims);
-        Img<IntType> img = ArrayImgs.ints(dims);
-        return new ImgLabeling<>(img);
     }
 }

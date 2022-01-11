@@ -37,4 +37,8 @@ public class Vector2DPolyline {
     public void add(Vector2D vector){
         vectors.add(vector);
     }
+
+    public LinkedItem<Vector2D> asCircularLinkedPolygon(){
+
+    }
 }

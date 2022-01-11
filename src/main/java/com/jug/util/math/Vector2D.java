@@ -3,8 +3,8 @@ package com.jug.util.math;
 import net.imglib2.RealLocalizable;
 
 public class Vector2D implements RealLocalizable {
-    private final double x;
-    private final double y;
+    private double x;
+    private double y;
 
     public Vector2D(double x, double y) {
         this.x = x;
@@ -30,6 +30,11 @@ public class Vector2D implements RealLocalizable {
 
     public Vector2D plus(Vector2D operand) {
         return new Vector2D(x + operand.getX(), y + operand.getY());
+    }
+
+    public void plusMutate(Vector2D operand) {
+        x = x + operand.getX();
+        y = y + operand.getY();
     }
 
     public Vector2D minus(Vector2D operand) {

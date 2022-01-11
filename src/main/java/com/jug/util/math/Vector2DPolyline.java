@@ -14,7 +14,15 @@ public class Vector2DPolyline {
 
     public Vector2DPolyline() {}
 
-    List<Vector2D> getVectorList() {
+    public int size(){
+        return vectors.size();
+    }
+
+    public Vector2D get(int ind){
+        return vectors.get(0);
+    }
+
+    public List<Vector2D> getVectorList() {
         return vectors; // this should return a clone
     }
 

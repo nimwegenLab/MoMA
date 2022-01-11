@@ -80,7 +80,8 @@ public class MedialLineCalculatorTest {
         ContourCalculator contourCalculator = new ContourCalculator(ij.op());
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
         SpineCalculator sut = new SpineCalculator();
-//        sut.calculate(medialLine, contour);
+
+        sut.calculate(medialLine, contour, 3);
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolyline(),

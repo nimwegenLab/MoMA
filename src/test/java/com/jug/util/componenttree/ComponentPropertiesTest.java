@@ -15,11 +15,14 @@ import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.geom.real.Polygon2D;
 //import net.imglib2.roi.geom.real.closedPolygon2D;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
@@ -169,5 +172,18 @@ public class ComponentPropertiesTest {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
         return tree;
+    }
+
+    /**
+     * Convenience method for creating a labeling image with same dimensions as the source image.
+     *
+     * @param sourceImage
+     * @return
+     */
+    public ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval sourceImage) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<IntType> img = ArrayImgs.ints(dims);
+        return new ImgLabeling<>(img);
     }
 }

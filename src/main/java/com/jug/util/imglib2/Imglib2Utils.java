@@ -9,12 +9,14 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
+import net.imglib2.roi.geom.real.Polygon2D;
+import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.roi.labeling.LabelRegionCursor;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.lang.NotImplementedException;
@@ -122,4 +124,18 @@ public class Imglib2Utils {
 //        /* ATTEMPT 4 */
 //        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
 //        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+
+    /**
+     * Convenience method for creating a labeling image with same dimensions as the source image.
+     *
+     * @param sourceImage
+     * @return
+     */
+    public <T extends NativeType<T>> Img<T> createImageWithSameDimension(RandomAccessibleInterval sourceImage,
+                                                                          T type) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<T> img = new ArrayImgFactory(type).create(dims);
+        return img;
+    }
 }

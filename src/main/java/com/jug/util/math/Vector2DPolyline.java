@@ -1,6 +1,7 @@
 package com.jug.util.math;
 
 import net.imglib2.RealCursor;
+import net.imglib2.RealLocalizable;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.geom.real.Polyline;
@@ -10,6 +11,8 @@ import java.util.List;
 
 public class Vector2DPolyline {
     List<Vector2D> vectors = new ArrayList<>();
+
+    public Vector2DPolyline() {}
 
     List<Vector2D> getVectorList() {
         return vectors; // this should return a clone
@@ -34,11 +37,24 @@ public class Vector2DPolyline {
         return result;
     }
 
+    public static Vector2DPolyline createFromVertexList(List<RealLocalizable> vertices) {
+        Vector2DPolyline result = new Vector2DPolyline();
+        float[] res = new float[2];
+        for (RealLocalizable vertex: vertices){
+            result.add(new Vector2D(vertex));
+        }
+        return result;
+    }
+
     public void add(Vector2D vector){
         vectors.add(vector);
     }
 
-    public LinkedItem<Vector2D> asCircularLinkedPolygon(){
+    public LinkedItem<Vector2D> toCircularLinkedList() {
+        return LinkedItem.toCircularLinkedList(this.getVectorList());
+    }
 
+    public LinkedItem<Vector2D> toLinkedList() {
+        return LinkedItem.toLinkedList(this.getVectorList());
     }
 }

@@ -22,14 +22,12 @@ public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
     private Imglib2Utils imglib2Utils;
-    private final OrientedBoundingBoxCalculator boundingBoxCalculator;
 
     public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         this.ops = ops;
-        boundingBoxCalculator = new OrientedBoundingBoxCalculator();
     }
 
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){

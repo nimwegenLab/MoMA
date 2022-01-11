@@ -1,12 +1,11 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.imglib2.Imglib2Utils;
-import com.jug.util.math.Vector2DPolygon;
+import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
@@ -25,7 +24,7 @@ public class MedialLineCalculator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public Vector2DPolygon calculate(RandomAccessibleInterval<BitType> image) {
+    public Vector2DPolyline calculate(RandomAccessibleInterval<BitType> image) {
         RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
 //        result = ArrayImgFactory.imgFactory(new IntType());
 //        new ArrayImgFactory(new IntType());
@@ -34,7 +33,7 @@ public class MedialLineCalculator {
         LabelRegions regions = new LabelRegions(labeling);
         LabelRegion skeletonRegion = regions.getLabelRegion(0);
 //        Polygon2D poly = imglib2Utils.convertRegionToVector2DPolygon(skeletonRegion);
-        Vector2DPolygon polygon = Vector2DPolygon.createFromCursor(skeletonRegion.cursor());
+        Vector2DPolyline polygon = Vector2DPolyline.createFromCursor(skeletonRegion.cursor());
         return polygon;
 //        Img<IntType> labeling = utils.createImageWithSameDimension(raiThinned, new IntType());
 //        ImgLabeling<Integer, IntType> imglabeling = createLabelingImage(raiThinned);

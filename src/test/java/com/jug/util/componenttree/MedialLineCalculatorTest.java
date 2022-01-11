@@ -2,17 +2,14 @@ package com.jug.util.componenttree;
 
 import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
-import com.jug.util.math.Vector2DPolygon;
+import com.jug.util.math.Vector2DPolyline;
 import ij.ImagePlus;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
-import ij.process.FloatPolygon;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
-import net.imglib2.roi.geom.GeomMasks;
-import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
@@ -146,7 +143,7 @@ public class MedialLineCalculatorTest {
         RandomAccessibleInterval<BitType> image = componentAndImage.getB();
 
         MedialLineCalculator sut = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
-        Vector2DPolygon res = sut.calculate(image);
+        Vector2DPolyline res = sut.calculate(image);
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 res.getPolyline()

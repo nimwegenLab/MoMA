@@ -19,7 +19,7 @@ public class Vector2DPolyline {
     }
 
     public Vector2D get(int ind){
-        return vectors.get(0);
+        return vectors.get(ind);
     }
 
     public List<Vector2D> getVectorList() {

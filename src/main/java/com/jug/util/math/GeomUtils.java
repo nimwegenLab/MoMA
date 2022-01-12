@@ -74,6 +74,12 @@ public class GeomUtils {
      * \v1  -v2/ \b/   \ y2 - x2/    \b2/
      */
     public static Vector2D calculateLineLineIntercept(Vector2D basePointLine1, Vector2D orientationLine1, Vector2D basePointLine2, Vector2D orientationLine2) {
+        double tol = 1E-5;
+        boolean vectorsAreCollinear = Math.abs(orientationLine1.getX() / orientationLine1.getY() - orientationLine2.getX() / orientationLine2.getY()) < tol;
+        if (vectorsAreCollinear) {
+            throw new RuntimeException("cannot calculate intercept for collinear vectors");
+        }
+
         double b1 = basePointLine2.getX() - basePointLine1.getX();
         double b2 = basePointLine2.getY() - basePointLine1.getY();
         double u1 = orientationLine1.getX();

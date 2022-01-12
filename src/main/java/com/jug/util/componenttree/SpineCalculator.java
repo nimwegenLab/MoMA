@@ -23,17 +23,20 @@ public class SpineCalculator {
 
 //        medialLine.getVectorList().stream()
 //        List<Vector2D> res = medialLine.getVectorList().stream().skip(0).limit(pointsToAverage).collect(Collectors.toList());
-        Vector2D avgDirectionAtStart = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0);
+        Vector2D avgDirectionAtStart = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0); /* multiply(-1.0): we invert direction because diffs will point towards the center of the medial line */
+        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegment(medialLine.get(0), avgDirectionAtStart, linkedContour);
 
-        ValuePair<Vector2D, Vector2D> interceptLinePoints = GeomUtils.getPointsOfInterceptingContourSegment(medialLine.get(0), avgDirectionAtStart, linkedContour);
-
-//        medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage) // do this at end of contour
+//             medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage) // do this at end of contour
+//        List<Vector2D> vectorsAtEnd = medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage).collect(Collectors.toList());
+        List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage).collect(Collectors.toList());
+        Vector2D avgDirectionAtEnd = GeomUtils.averageVectors(diffsAtEnd);
+        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegmentAtEnd = GeomUtils.getPointsOfInterceptingContourSegment(medialLine.get(medialLine.size()-1), avgDirectionAtEnd, linkedContour);
 
         throw new NotImplementedException();
     }
 
-    Vector2D calculateInterceptWithCounter(Vector2D startingPoint, Vector2D direction, LinkedItem<Vector2D> linkedContour) {
 
+    Vector2D calculateInterceptWithLineSegment(Vector2D segmentPoint1, Vector2D segmentPoint2, Vector2D startingPoint, Vector2D direction) {
         throw new NotImplementedException();
     }
 

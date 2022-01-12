@@ -43,9 +43,8 @@ public class GeomUtils {
         Vector2D secondContourPoint = null;
         double angleCurr;
         double angleNext;
-        int counter= 0;
         boolean successFlag = false;
-        while(counter < maxSearchIterations) {
+        for (int counter = 0; counter < maxSearchIterations; counter++) {
             firstContourPoint = currentLinkedItem.getElement();
             Vector2D currentRadialVector = firstContourPoint.minus(startingPoint);
             angleCurr = currentRadialVector.getPolarAngle();
@@ -58,7 +57,6 @@ public class GeomUtils {
                 successFlag = true;
                 break;
             }
-            counter++;
         }
         if(!successFlag) {throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");}
         return new ValuePair<>(firstContourPoint, secondContourPoint);

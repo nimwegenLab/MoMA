@@ -14,6 +14,14 @@ public class Vector2DPolyline {
 
     public Vector2DPolyline() {}
 
+    public Vector2DPolyline(List<Vector2D> vectors) {
+        this.vectors = vectors;
+    }
+
+    public Vector2DPolyline copy(){
+        return new Vector2DPolyline(this.vectors);
+    }
+
     public int size(){
         return vectors.size();
     }
@@ -56,6 +64,10 @@ public class Vector2DPolyline {
 
     public void add(Vector2D vector){
         vectors.add(vector);
+    }
+
+    public void add(int index, Vector2D vector){
+        vectors.add(index, vector);
     }
 
     public LinkedItem<Vector2D> toCircularLinkedList() {

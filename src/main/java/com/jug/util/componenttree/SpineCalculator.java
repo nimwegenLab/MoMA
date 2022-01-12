@@ -39,7 +39,10 @@ public class SpineCalculator {
         Vector2D orientationVector2 = GeomUtils.averageVectors(diffsAtEnd);
         Vector2D result2 = calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
 
-        throw new NotImplementedException();
+        Vector2DPolyline spine = medialLine.copy();
+        spine.add(0, result1);
+        spine.add(result2);
+        return spine;
     }
 
     private Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {

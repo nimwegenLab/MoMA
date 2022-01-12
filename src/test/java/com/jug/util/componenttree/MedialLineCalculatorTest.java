@@ -67,7 +67,7 @@ public class MedialLineCalculatorTest {
     public void exploreSpineCalculator() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6/frame90_repeated__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
 
-        int componentIndex = 4;
+        int componentIndex = 2;
 
         ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<BitType>> componentAndImage = testUtils.getComponentWithImage(imageFile,
                 componentIndex,
@@ -81,11 +81,12 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
         SpineCalculator sut = new SpineCalculator();
 
-        sut.calculate(medialLine, contour, 3);
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, 10);
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolyline(),
-                medialLine.getPolyline()
+//                medialLine.getPolyline()
+                spine.getPolyline()
         );
         testUtils.showImageWithOverlays(image, rois);
     }

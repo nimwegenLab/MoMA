@@ -34,7 +34,7 @@ public class GeomUtils {
      * @param linkedContour
      * @return
      */
-    public static ValuePair<Vector2D, Vector2D> getPointsOfContourLineToIntercept(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
+    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
         double targetAngle = orientationVector.getPolarAngle();
 
         LinkedItem<Vector2D> currentLinkedItem = linkedContour;
@@ -64,7 +64,7 @@ public class GeomUtils {
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
-    public static ValuePair<Vector2D, Vector2D> getPointsOfContourLineToIntercept(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour) {
-        return getPointsOfContourLineToIntercept(startingPoint, orientationVector, linkedContour, 10000);
+    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour) {
+        return getPointsOfInterceptingContourSegment(startingPoint, orientationVector, linkedContour, 10000);
     }
 }

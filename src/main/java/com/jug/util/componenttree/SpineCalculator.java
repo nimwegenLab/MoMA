@@ -25,7 +25,7 @@ public class SpineCalculator {
 //        List<Vector2D> res = medialLine.getVectorList().stream().skip(0).limit(pointsToAverage).collect(Collectors.toList());
         Vector2D avgDirectionAtStart = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0);
 
-        ValuePair<Vector2D, Vector2D> interceptLinePoints = GeomUtils.getPointsOfContourLineToIntercept(medialLine.get(0), avgDirectionAtStart, linkedContour);
+        ValuePair<Vector2D, Vector2D> interceptLinePoints = GeomUtils.getPointsOfInterceptingContourSegment(medialLine.get(0), avgDirectionAtStart, linkedContour);
 
 //        medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage) // do this at end of contour
 
@@ -37,7 +37,7 @@ public class SpineCalculator {
         throw new NotImplementedException();
     }
 
-//    List<Vector2D> getPointsOfContourLineToIntercept(Vector2D startingPoint, Vector2D direction, Vector2DPolyline contour){
+//    List<Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D direction, Vector2DPolyline contour){
 //        double targetAngle = direction.getPolarAngle();
 //
 ////        List<Double> angles = new ArrayList();

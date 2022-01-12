@@ -25,7 +25,7 @@ public class SpineCalculator {
 //        List<Vector2D> res = medialLine.getVectorList().stream().skip(0).limit(pointsToAverage).collect(Collectors.toList());
         Vector2D avgDirectionAtStart = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0);
 
-        ValuePair<Vector2D, Vector2D> interceptLinePoints = getPointsOfContourLineToIntercept(medialLine.get(0), avgDirectionAtStart, linkedContour);
+        ValuePair<Vector2D, Vector2D> interceptLinePoints = GeomUtils.getPointsOfContourLineToIntercept(medialLine.get(0), avgDirectionAtStart, linkedContour);
 
 //        medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage) // do this at end of contour
 
@@ -35,48 +35,6 @@ public class SpineCalculator {
     Vector2D calculateInterceptWithCounter(Vector2D startingPoint, Vector2D direction, LinkedItem<Vector2D> linkedContour) {
 
         throw new NotImplementedException();
-    }
-
-    /**
-     * Returns the two contour points firstContourPoint and secondContourPoint, which span the contour segment through
-     * which the line startingPoint+t*orientationVector passes.
-     * The function uses the fact that we have a radially closed contour. It calculates pairs of vectors
-     * startingPoint->firstContourPoint and startingPoint->secondContourPoint and finds the vector pair whose angle
-     * encloses the angle of the line startingPoint+t*orientationVector ('targetAngle').
-     *
-     * @param startingPoint
-     * @param orientationVector
-     * @param linkedContour
-     * @return
-     */
-    ValuePair<Vector2D, Vector2D> getPointsOfContourLineToIntercept(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour){
-        double targetAngle = orientationVector.getPolarAngle();
-
-        LinkedItem<Vector2D> currentLinkedItem = linkedContour;
-        LinkedItem<Vector2D> nextLinkedItem;
-        Vector2D firstContourPoint = null;
-        Vector2D secondContourPoint = null;
-        double angleCurr;
-        double angleNext;
-        int counter= 0;
-        boolean successFlag = false;
-        while(counter < 100) {
-            firstContourPoint = currentLinkedItem.getElement();
-            Vector2D currentRadialVector = firstContourPoint.minus(startingPoint);
-            angleCurr = currentRadialVector.getPolarAngle();
-            nextLinkedItem = currentLinkedItem.next();
-            secondContourPoint = nextLinkedItem.getElement();
-            Vector2D nextRadialVector = secondContourPoint.minus(startingPoint);
-            angleNext = nextRadialVector.getPolarAngle();
-            currentLinkedItem = nextLinkedItem;
-            if(angleNext >= targetAngle && angleCurr <= targetAngle ){
-                successFlag = true;
-                break;
-            }
-            counter++;
-        }
-        if(!successFlag) {throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");}
-        return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
 //    List<Vector2D> getPointsOfContourLineToIntercept(Vector2D startingPoint, Vector2D direction, Vector2DPolyline contour){

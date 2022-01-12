@@ -65,4 +65,25 @@ public class GeomUtils {
     public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour) {
         return getPointsOfInterceptingContourSegment(startingPoint, orientationVector, linkedContour, 10000);
     }
+
+    /** Solve intersect of two lines:
+     * l_i = /x_i\ + a * /u_i\
+     *       \y_i/       \v_i/
+     * setting up linear equation system and solving using Cramers rule:
+     * /u1  -u2\ /a\ = / x2 - x1\ := /b1\
+     * \v1  -v2/ \b/   \ y2 - x2/    \b2/
+     */
+    public static Vector2D calculateLineLineIntercept(Vector2D basePointLine1, Vector2D orientationLine1, Vector2D basePointLine2, Vector2D orientationLine2) {
+        double b1 = basePointLine2.getX() - basePointLine1.getX();
+        double b2 = basePointLine2.getY() - basePointLine1.getY();
+        double u1 = orientationLine1.getX();
+        double v1 = orientationLine1.getY();
+        double u2 = orientationLine2.getX();
+        double v2 = orientationLine2.getY();
+
+        double a = (-b1 * v2 + u2 * b2) / (-u1 * v2 + u2 * v1); /* use Cramers rule to determine factor for rescaling orientationLine1 */
+
+        orientationLine1.multiplyMutate(a);
+        return basePointLine1.plus(orientationLine1);
+    }
 }

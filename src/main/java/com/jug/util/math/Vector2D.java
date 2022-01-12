@@ -53,6 +53,10 @@ public class Vector2D implements RealLocalizable {
         return new Vector2D(factor * getX(), factor * getY());
     }
 
+    public void multiplyMutate(double factor) {
+        x = factor * x; y = factor * y;
+    }
+
     public Boolean equals(Vector2D operand, double tolerance) {
         if (operand == null) {
             return false;

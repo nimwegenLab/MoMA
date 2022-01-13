@@ -64,9 +64,7 @@ public class TestUtils {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
-        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
-        componentList.add(component);
-        RandomAccessibleInterval<T> image = Plotting.createImageWithComponentsNew(componentList, pixelValue);
+        RandomAccessibleInterval<T> image = component.getComponentImage(pixelValue);
         return new ValuePair<>(component, image);
     }
 

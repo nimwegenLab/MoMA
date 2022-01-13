@@ -71,12 +71,14 @@ public class MedialLineCalculatorTest {
         ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<BitType>> componentAndImage = testUtils.getComponentWithImage(imageFile,
                 componentIndex,
                 new BitType(true));
-        RandomAccessibleInterval<BitType> image = componentAndImage.getB();
-        LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
+        AdvancedComponent<FloatType> component = componentAndImage.getA();
+        RandomAccessibleInterval<BitType> image = component.getComponentImage(new BitType(true));
 
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(image);
         ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+
+        LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
         SpineCalculator sut = new SpineCalculator();
 

@@ -20,12 +20,10 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     private MedialLineCalculator medialLineCalculator;
     private ContourCalculator contourCalculator;
 
-    public SpineLengthMeasurement(OpService ops, Imglib2Utils imglib2Utils) {
-        this.ops = ops;
-        this.imglib2Utils = imglib2Utils;
-        medialLineCalculator = new MedialLineCalculator(ops, imglib2Utils);
-        spineCalculator = new SpineCalculator();
-        contourCalculator = new ContourCalculator(ops);
+    public SpineLengthMeasurement(MedialLineCalculator medialLineCalculator, SpineCalculator spineCalculator, ContourCalculator contourCalculator) {
+        this.medialLineCalculator = medialLineCalculator;
+        this.spineCalculator = spineCalculator;
+        this.contourCalculator = contourCalculator;
     }
 
     @Override

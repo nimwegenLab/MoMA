@@ -64,7 +64,7 @@ public class ResultTableColumn<T> {
      * @param ind index of value to return
      * @return value of {@link values} at {@param ind}.
      */
-    private T getValue(int ind){
+    public T getValue(int ind){
         return values.get(ind);
     }
 

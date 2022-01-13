@@ -30,8 +30,8 @@ import static org.junit.Assert.*;
 public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
-//        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
-        new AdvancedComponentTests().testGetParentWatershedLineCoordinates();
+        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().testGetParentWatershedLineCoordinates();
     }
 
     @Test
@@ -52,8 +52,12 @@ public class AdvancedComponentTests {
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
-        for (AdvancedComponent<FloatType> root: roots) {
-            List<FloatType> watershedProbabilityValues = root.getWatershedLinePixelValues();
+        float[] expectedWatershedProbabilityValues = new float[]{0.7120329141616821F,0.7112422585487366F, 0.5284326672554016F};
+        AdvancedComponent<FloatType> root = roots.get(0);
+        List<FloatType> actualWatershedProbabilityValues = root.getWatershedLinePixelValues();
+
+        for(int counter = 0; counter<actualWatershedProbabilityValues.size(); counter++){
+            assertEquals(expectedWatershedProbabilityValues[counter], actualWatershedProbabilityValues.get(counter).getRealFloat(), 0.0001);
         }
     }
 

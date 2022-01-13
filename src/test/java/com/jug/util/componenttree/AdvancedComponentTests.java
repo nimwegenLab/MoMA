@@ -31,11 +31,11 @@ public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
         new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
-//        new AdvancedComponentTests().testGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
     }
 
     @Test
-    public void testGetParentWatershedLineValues() throws IOException {
+    public void test__getWatershedLinePixelValues() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
@@ -73,7 +73,7 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void testGetParentWatershedLineCoordinates() throws IOException {
+    public void test__getWatershedLinePixelPositions() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 

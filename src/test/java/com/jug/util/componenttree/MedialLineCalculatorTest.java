@@ -6,7 +6,6 @@ import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.roi.MaskPredicate;
-import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -81,7 +80,7 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
         SpineCalculator sut = new SpineCalculator();
 
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 11, 11);
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, 0, 2, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolyline(),

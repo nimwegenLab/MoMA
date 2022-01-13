@@ -13,7 +13,11 @@ import java.util.stream.Collectors;
 import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
 
 public class SpineCalculator {
-    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize) {
+    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, ValuePair<Integer, Integer> imageLimitsYdirection) {
+        if(orientationVectorAveragingWindowSize<2){
+            throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
+        }
+
         if (medialLine.size() < orientationVectorAveragingWindowSize) {
             orientationVectorAveragingWindowSize = 1;
         }
@@ -23,20 +27,25 @@ public class SpineCalculator {
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
 
         List<Vector2D> diffs = GeomUtils.differences(medialLine.getVectorList());
-        List<Vector2D> diffsAtStart = diffs.stream().skip(0).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
-
-        Vector2D orientationVector1 = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0); /* multiply(-1.0): we invert direction because diffs will point towards the center of the medial line */
-        Vector2D basePoint1 = medialLine.get(0);
-        Vector2D result1 = calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
-
-        List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size()-orientationVectorAveragingWindowSize).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
-        Vector2D basePoint2 = medialLine.get(medialLine.size() - 1);
-        Vector2D orientationVector2 = GeomUtils.averageVectors(diffsAtEnd);
-        Vector2D result2 = calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
 
         Vector2DPolyline spine = medialLine.copy();
-        spine.add(0, result1);
-        spine.add(result2);
+
+        Vector2D basePoint1 = medialLine.get(0);
+        if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
+            List<Vector2D> diffsAtStart = diffs.stream().skip(0).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
+            Vector2D orientationVector1 = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0); /* multiply(-1.0): we invert direction because diffs will point towards the center of the medial line */
+            Vector2D result1 = calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
+            spine.add(0, result1);
+        }
+
+        Vector2D basePoint2 = medialLine.get(medialLine.size() - 1);
+        if(Math.round(basePoint2.getY()) != imageLimitsYdirection.getB()) { /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
+            List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size() - orientationVectorAveragingWindowSize).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
+            Vector2D orientationVector2 = GeomUtils.averageVectors(diffsAtEnd);
+            Vector2D result2 = calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
+            spine.add(result2);
+        }
+
         return spine;
     }
 

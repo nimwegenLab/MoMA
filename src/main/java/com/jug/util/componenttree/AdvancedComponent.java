@@ -7,6 +7,7 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.*;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
@@ -571,6 +572,11 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     List<Localizable> watershedLinePixelPositions = null;
 
+    /**
+     * Returns the pixels of the watershed-line that splits this component into its children.
+     *
+     * @return
+     */
     public List<Localizable> getWatershedLinePixelPositions(){
         List<AdvancedComponent<T>> children = this.getChildren();
         if (children.size() <= 1) {
@@ -587,6 +593,13 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return watershedLinePixelPositions;
     }
 
+    /**
+     * Calculate the pixels in the parent component, which are *not* in the child-components.
+     *
+     * @param parent
+     * @param children
+     * @return
+     */
     private List<Localizable> getWatershedLineInternal(AdvancedComponent<T> parent, List<AdvancedComponent<T>> children) {
         List<Localizable> watershedLinePositions = new ArrayList<>();
         Img<NativeBoolType> tmpImage = createImage(this.getSourceImage());
@@ -601,7 +614,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             Localizable loc = it.next();
             rndAccess.setPosition(loc);
             if (!rndAccess.get().get()) {
-                watershedLinePositions.add(loc);
+                watershedLinePositions.add(loc); /* add pixels that are in parent component but not in child components; this could be much more easily be done with a set-operation */
             }
         }
         return watershedLinePositions;
@@ -611,6 +624,19 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         Img<NativeBoolType> img = ArrayImgs.booleans(dims);
+        return img;
+    }
+
+    public <T extends NativeType<T>> Img<T> getComponentImage(T pixelValue) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        ArrayImgFactory<T> imageFactory = new ArrayImgFactory(pixelValue);
+        Img<T> img = imageFactory.create(dims);
+        RandomAccess<T> rndAccess = img.randomAccess();
+        for (Iterator<Localizable> it = this.iterator(); it.hasNext(); ) {
+            rndAccess.setPosition(it.next());
+            rndAccess.get().set(pixelValue);
+        }
         return img;
     }
 

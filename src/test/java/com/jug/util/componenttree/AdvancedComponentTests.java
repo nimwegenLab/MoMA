@@ -134,19 +134,18 @@ public class AdvancedComponentTests {
             }
             ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
             componentsToDraw.add(root);
-            RandomAccessibleInterval<ARGBType> parentComponentImage = Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>());
-            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
             List<Localizable> watershedProbabilityPositions = root.getWatershedLinePixelPositions();
-            Img<NativeBoolType> img = root.createImage(root.getSourceImage());
-            RandomAccess<NativeBoolType> rndAcc = img.randomAccess();
+            Img<NativeBoolType> imgOfWatershedLine = root.createImage(root.getSourceImage());
+            RandomAccess<NativeBoolType> rndAcc = imgOfWatershedLine.randomAccess();
             for (Localizable loc : watershedProbabilityPositions) {
                 rndAcc.setPosition(loc);
                 rndAcc.get().set(true);
             }
-            List<FloatType> pixelValues = root.getWatershedLinePixelValues();
-            ImagePlus impParent = ImageJFunctions.show(parentComponentImage);
-            ImagePlus impChildren = ImageJFunctions.show(childComponentsImage);
-            ImagePlus imp = ImageJFunctions.show(img);
+            RandomAccessibleInterval<ARGBType> parentComponentImage = root.getComponentImage(new ARGBType(ARGBType.rgba(255,255,255,255)));
+            ImageJFunctions.show(parentComponentImage);
+            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
+            ImageJFunctions.show(childComponentsImage);
+            ImageJFunctions.show(imgOfWatershedLine);
             break;
         }
     }

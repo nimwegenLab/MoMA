@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
@@ -18,6 +19,8 @@ public class ContourCalculator {
 
     public Vector2DPolyline calculate(LabelRegion<?> region){
         Polygon2D tmp = regionToPolygonConverter.convert(region, Polygon2D.class);
-        return Vector2DPolyline.createFromVertexList(tmp.vertices());
+        Vector2DPolyline result = Vector2DPolyline.createFromVertexList(tmp.vertices());
+//        result.shiftMutate(new Vector2D(.5, .5));
+        return result;
     }
 }

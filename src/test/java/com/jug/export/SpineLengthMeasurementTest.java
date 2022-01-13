@@ -41,8 +41,7 @@ public class SpineLengthMeasurementTest {
         ResultTable resultTable = new ResultTable(",");
         sut.setOutputTable(resultTable);
 
-        for (int componentIndex = 0; componentIndex < 1; componentIndex++) {
-            System.out.println("componentIndex: " + componentIndex);
+        for (int componentIndex = 0; componentIndex < 5; componentIndex++) {
             ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<BitType>> componentAndImage = testUtils.getComponentWithImage(imageFile,
                     componentIndex,
                     new BitType(true));
@@ -50,8 +49,17 @@ public class SpineLengthMeasurementTest {
             sut.measure(component);
         }
         ResultTableColumn<Double> column = resultTable.columnList.get(0);
-        Double res = column.getValue(0);
-        assertEquals(42.65685424949238D, res, 0.0001);
-//        System.out.println();
+
+        double[] expected = new double[]{
+                42.65685424949238D,
+                42.65685424949238D,
+                42.65685424949238D,
+                42.65685424949238D,
+                42.65685424949238D,
+        };
+        for (int componentIndex = 0; componentIndex < 5; componentIndex++) {
+            System.out.println("componentIndex: " + componentIndex);
+            assertEquals(expected[componentIndex], column.getValue(componentIndex), 0.0001);
+        }
     }
 }

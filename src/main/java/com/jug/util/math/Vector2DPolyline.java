@@ -1,5 +1,6 @@
 package com.jug.util.math;
 
+import edu.mines.jtk.opt.Vect;
 import net.imglib2.RealCursor;
 import net.imglib2.RealLocalizable;
 import net.imglib2.roi.geom.GeomMasks;
@@ -7,7 +8,6 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.geom.real.Polyline;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Vector2DPolyline {
@@ -86,5 +86,11 @@ public class Vector2DPolyline {
 
     public List<Vector2D> asVectorTrain(){
         return GeomUtils.differences(this.getVectorList());
+    }
+
+    public void shiftMutate(Vector2D shiftVector) {
+        for(Vector2D vect : this.getVectorList()) {
+            vect.plusMutate(shiftVector);
+        }
     }
 }

@@ -17,25 +17,18 @@ public class SpineCalculator {
         if (medialLine.size() < orientationVectorAveragingWindowSize) {
             orientationVectorAveragingWindowSize = 1;
         }
-
-        medialLine = GeomUtils.smooth(medialLine, positionAveragingWindowSize);
-//        if(true){return medialLine; }
+        if (positionAveragingWindowSize > 0) {
+            medialLine = GeomUtils.smooth(medialLine, positionAveragingWindowSize);
+        }
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
 
         List<Vector2D> diffs = GeomUtils.differences(medialLine.getVectorList());
         List<Vector2D> diffsAtStart = diffs.stream().skip(0).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
 
-//        medialLine.getVectorList().stream()
-//        List<Vector2D> res = medialLine.getVectorList().stream().skip(0).limit(pointsToAverage).collect(Collectors.toList());
         Vector2D orientationVector1 = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0); /* multiply(-1.0): we invert direction because diffs will point towards the center of the medial line */
         Vector2D basePoint1 = medialLine.get(0);
         Vector2D result1 = calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
 
-//             medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage) // do this at end of contour
-//        List<Vector2D> vectorsAtEnd = medialLine.getVectorList().stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage).collect(Collectors.toList());
-//        List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size()-pointsToAverage).limit(pointsToAverage).collect(Collectors.toList());
-//        Vector2D avgDirectionAtEnd = GeomUtils.averageVectors(diffsAtEnd);
-//        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegmentAtEnd = GeomUtils.getPointsOfInterceptingContourSegment(medialLine.get(medialLine.size()-1), avgDirectionAtEnd, linkedContour);
         List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size()-orientationVectorAveragingWindowSize).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
         Vector2D basePoint2 = medialLine.get(medialLine.size() - 1);
         Vector2D orientationVector2 = GeomUtils.averageVectors(diffsAtEnd);

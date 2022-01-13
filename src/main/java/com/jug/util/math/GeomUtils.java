@@ -52,31 +52,31 @@ public class GeomUtils {
      * startingPoint->firstContourPoint and startingPoint->secondContourPoint and finds the vector pair whose angle
      * encloses the angle of the line startingPoint+t*orientationVector ('targetAngle').
      *
-     * @param startingPoint
-     * @param orientationVector
+     * @param pointOnLine
+     * @param lineOrientationVector
      * @param linkedContour
      * @return
      */
-    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
-        double targetAngle = orientationVector.getPolarAngle();
+    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D pointOnLine, Vector2D lineOrientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
+        double targetAngle = lineOrientationVector.getPolarAngle();
 
         LinkedItem<Vector2D> currentLinkedItem = linkedContour;
         LinkedItem<Vector2D> nextLinkedItem;
         Vector2D firstContourPoint = null;
         Vector2D secondContourPoint = null;
-        double angleCurr;
-        double angleNext;
+        double firstAngle;
+        double secondAngle;
         boolean successFlag = false;
         for (int counter = 0; counter < maxSearchIterations; counter++) {
             firstContourPoint = currentLinkedItem.getElement();
-            Vector2D currentRadialVector = firstContourPoint.minus(startingPoint);
-            angleCurr = currentRadialVector.getPolarAngle();
+            Vector2D firstRadialVector = firstContourPoint.minus(pointOnLine);
+            firstAngle = firstRadialVector.getPolarAngle();
             nextLinkedItem = currentLinkedItem.next();
             secondContourPoint = nextLinkedItem.getElement();
-            Vector2D nextRadialVector = secondContourPoint.minus(startingPoint);
-            angleNext = nextRadialVector.getPolarAngle();
+            Vector2D secondRadialVector = secondContourPoint.minus(pointOnLine);
+            secondAngle = secondRadialVector.getPolarAngle();
             currentLinkedItem = nextLinkedItem;
-            if(angleNext >= targetAngle && angleCurr <= targetAngle ){
+            if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
                 successFlag = true;
                 break;
             }

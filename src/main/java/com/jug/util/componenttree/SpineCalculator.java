@@ -8,7 +8,6 @@ import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
 
@@ -32,7 +31,7 @@ public class SpineCalculator {
 
         Vector2D basePoint1 = medialLine.get(0);
         if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
-            List<Vector2D> diffsAtStart = diffs.stream().skip(0).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
+            List<Vector2D> diffsAtStart = diffs.subList(0, orientationVectorAveragingWindowSize);
             Vector2D orientationVector1 = GeomUtils.averageVectors(diffsAtStart).multiply(-1.0); /* multiply(-1.0): we invert direction because diffs will point towards the center of the medial line */
             Vector2D result1 = calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
             spine.add(0, result1);
@@ -40,7 +39,7 @@ public class SpineCalculator {
 
         Vector2D basePoint2 = medialLine.get(medialLine.size() - 1);
         if(Math.round(basePoint2.getY()) != imageLimitsYdirection.getB()) { /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
-            List<Vector2D> diffsAtEnd = diffs.stream().skip(medialLine.size() - orientationVectorAveragingWindowSize).limit(orientationVectorAveragingWindowSize).collect(Collectors.toList());
+            List<Vector2D> diffsAtEnd = diffs.subList(diffs.size() - 1 - orientationVectorAveragingWindowSize, diffs.size() - 1);
             Vector2D orientationVector2 = GeomUtils.averageVectors(diffsAtEnd);
             Vector2D result2 = calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
             spine.add(result2);

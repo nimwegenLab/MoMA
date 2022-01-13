@@ -7,6 +7,7 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.geom.real.Polyline;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Vector2DPolyline {
@@ -76,5 +77,14 @@ public class Vector2DPolyline {
 
     public LinkedItem<Vector2D> toLinkedList() {
         return LinkedItem.toLinkedList(this.getVectorList());
+    }
+
+    public double length(){
+        double result = this.asVectorTrain().stream().mapToDouble(vector2D -> vector2D.getLength()).sum();
+        return result;
+    }
+
+    public List<Vector2D> asVectorTrain(){
+        return GeomUtils.differences(this.getVectorList());
     }
 }

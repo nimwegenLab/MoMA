@@ -17,8 +17,10 @@ public class SpineCalculator {
         if (medialLine.size() < pointsToAverage) {
             pointsToAverage = 1;
         }
+
+        medialLine = GeomUtils.smooth(medialLine, 11);
+//        if(true){return medialLine; }
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
-        LinkedItem<Vector2D> linkedMedialLine = medialLine.toCircularLinkedList();
 
         List<Vector2D> diffs = GeomUtils.differences(medialLine.getVectorList());
         List<Vector2D> diffsAtStart = diffs.stream().skip(0).limit(pointsToAverage).collect(Collectors.toList());

@@ -23,6 +23,29 @@ public class GeomUtils {
     }
 
     /**
+     * Smooth the `vectors` by performing a moving average with user-defined 'windowSize'.
+     * @param vectors
+     * @param windowSize
+     * @return
+     */
+    public static Vector2DPolyline smooth(Vector2DPolyline vectors, int windowSize) {
+        if (windowSize % 2 == 0) {
+            throw new RuntimeException("windowSize needs to be uneven integer");
+        }
+        int halfWindow = windowSize / 2;
+        Vector2DPolyline smoothedVectors = new Vector2DPolyline();
+        for (int i = halfWindow; i < vectors.size() - 1 - halfWindow; i++) {
+            double x = 0, y = 0;
+            for (int j = i - halfWindow; j < i + halfWindow + 1; j++) {
+                x += vectors.get(j).getX();
+                y += vectors.get(j).getY();
+            }
+            smoothedVectors.add(new Vector2D(x / windowSize, y / windowSize));
+        }
+        return smoothedVectors;
+    }
+
+    /**
      * Returns the two contour points firstContourPoint and secondContourPoint, which span the contour segment through
      * which the line startingPoint+t*orientationVector passes.
      * The function uses the fact that we have a radially closed contour. It calculates pairs of vectors

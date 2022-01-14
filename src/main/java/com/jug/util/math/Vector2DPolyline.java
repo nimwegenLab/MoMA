@@ -93,4 +93,8 @@ public class Vector2DPolyline {
             vect.plusMutate(shiftVector);
         }
     }
+
+    public boolean isClosedPolygon(){
+        return (vectors.get(0).getX() == vectors.get(size()-1).getX()) && (vectors.get(0).getY() == vectors.get(size()-1).getY());
+    }
 }

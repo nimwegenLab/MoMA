@@ -117,4 +117,44 @@ public class GeomUtils {
         orientationLine1.multiplyMutate(a);
         return basePointLine1.plus(orientationLine1);
     }
+
+    /**
+     * Checks if {point} lies inside {polygon} using ray-casting.
+     * This code was adapted from here: https://stackoverflow.com/a/16391873/653770
+     *
+     * @param point
+     * @param polygon
+     * @return
+     */
+    public boolean IsPointInPolygon(Vector2D point, Vector2DPolyline polygon, boolean checkBoundingBoxFirst) {
+        if (checkBoundingBoxFirst) {
+            /* First check if point is inside bounding-box of polygon */
+            double minX = polygon.get(0).getX();
+            double maxX = polygon.get(0).getX();
+            double minY = polygon.get(0).getY();
+            double maxY = polygon.get(0).getY();
+            for (int i = 1; i < polygon.size(); i++) {
+                Vector2D q = polygon.get(i);
+                minX = Math.min(q.getX(), minX);
+                maxX = Math.max(q.getX(), maxX);
+                minY = Math.min(q.getY(), minY);
+                maxY = Math.max(q.getY(), maxY);
+            }
+            if (point.getX() < minX || point.getX() > maxX || point.getY() < minY || point.getY() > maxY) {
+                return false;
+            }
+        }
+
+        /* now check, if point is actually inside the polygon using ray-casting */
+        // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+        boolean inside = false;
+        for (int i = 0, j = polygon.size() - 1; i < polygon.size(); j = i++) {
+            if ((polygon.get(i).getY() > point.getY()) != (polygon.get(j).getY() > point.getY()) &&
+                    point.getX() < (polygon.get(j).getX() - polygon.get(i).getX()) * (point.getY() - polygon.get(i).getY()) / (polygon.get(j).getY() - polygon.get(i).getY()) + polygon.get(i).getX()) {
+                inside = !inside;
+            }
+        }
+
+        return inside;
+    }
 }

@@ -1,8 +1,17 @@
 package com.jug.lp.costs;
 
 import com.jug.util.componenttree.ComponentInterface;
+import net.imagej.ImageJ;
+import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.labeling.ConnectedComponents;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
+import net.imglib2.roi.labeling.LabelRegions;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.logic.BitType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -10,9 +19,16 @@ import java.util.List;
 
 public class ComponentMock implements ComponentInterface {
     private final double[] firstMomentPixelCoordinates;
+    private RandomAccessibleInterval<BitType> componentImage;
+    private ImageJ ij = new ImageJ();
 
     public ComponentMock(double[] firstMomentPixelCoordinates) {
         this.firstMomentPixelCoordinates = firstMomentPixelCoordinates;
+    }
+
+    public ComponentMock(RandomAccessibleInterval<BitType> componentImage) {
+        this.componentImage = componentImage;
+        firstMomentPixelCoordinates = new double[0];
     }
 
     public double[] firstMomentPixelCoordinates() {
@@ -26,7 +42,17 @@ public class ComponentMock implements ComponentInterface {
 
     @Override
     public LabelRegion<Integer> getRegion() {
-        return null;
+        if (componentImage == null) {
+            return null;
+        }
+        ImgLabeling labeling = ij.op().labeling().cca(this.componentImage, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
+        LabelRegions regions = new LabelRegions(labeling);
+        return regions.getLabelRegion(0);
+    }
+
+    @Override
+    public Img getComponentImage(NativeType pixelValue) {
+        return ImgView.wrap(componentImage);
     }
 
     @Override

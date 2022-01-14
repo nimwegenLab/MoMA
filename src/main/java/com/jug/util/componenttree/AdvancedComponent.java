@@ -627,6 +627,13 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return img;
     }
 
+    /**
+     * Returns an image of the component with values set to {@param pixelValue}.
+     *
+     * @param pixelValue
+     * @param <T>
+     * @return
+     */
     public <T extends NativeType<T>> Img<T> getComponentImage(T pixelValue) {
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);

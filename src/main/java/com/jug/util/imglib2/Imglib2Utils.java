@@ -21,6 +21,10 @@ import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
+import net.imagej.ops.Ops;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
+import net.imagej.ops.convert.normalizeScale.NormalizeScaleRealTypes;
+
 
 public class Imglib2Utils {
     private final OpService ops;
@@ -138,4 +142,18 @@ public class Imglib2Utils {
         Img<T> img = new ArrayImgFactory(type).create(dims);
         return img;
     }
+
+//    public Img<UnsignedByteType> convert(Img input){
+////        Img converted = ops.convert().float32(input);
+//        Img<BitType> converted = ops.convert().bit(input);
+//
+////        NormalizeScaleRealTypes converter = new NormalizeScaleRealTypes();
+////        converter.setEnvironment(ops);
+////        converter.initialize();
+////        converter.checkInput(input);
+////
+////        Img<UnsignedByteType> out = ops.create().img(input, new UnsignedByteType());
+////        ops.run(Ops.Convert.ImageType.class, out, input, converter);
+////        return out;
+//    }
 }

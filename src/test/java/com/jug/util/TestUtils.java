@@ -12,13 +12,16 @@ import net.imagej.ops.OpService;
 import net.imagej.roi.DefaultROITree;
 import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
+import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
@@ -99,5 +102,11 @@ public class TestUtils {
         ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
+    }
+
+    public Img<BitType> readComponentMask(String imageFile) throws IOException {
+        Img<UnsignedByteType> input = (Img) ij.io().open(imageFile);
+        Img<BitType> componentMask = Thresholder.threshold(input, new UnsignedByteType(128), true, 1); /* BitType images */
+        return componentMask;
     }
 }

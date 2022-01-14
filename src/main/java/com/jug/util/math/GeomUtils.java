@@ -70,7 +70,6 @@ public class GeomUtils {
             firstContourPoint = currentLinkedItem.getElement();
             Vector2D firstRadialVector = firstContourPoint.minus(pointOnMedialLine);
             firstAngle = firstRadialVector.getPolarAngle();
-            System.out.println("firstAngle: " + firstAngle);
             nextLinkedItem = currentLinkedItem.next();
             secondContourPoint = nextLinkedItem.getElement();
             Vector2D secondRadialVector = secondContourPoint.minus(pointOnMedialLine);

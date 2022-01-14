@@ -13,6 +13,8 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.type.numeric.integer.IntType;
 //import net.imglib2.algorithm.interpolation.randomaccess.BSplineInterpolator;
+import sc.fiji.skeletonize3D.Skeletonize3D_;
+//import sc.fiji.skeletonize3D.AnalyzeSkeleton_;
 
 
 public class MedialLineCalculator {
@@ -25,7 +27,10 @@ public class MedialLineCalculator {
     }
 
     public Vector2DPolyline calculate(RandomAccessibleInterval<BitType> image) {
-        RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
+//        RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
+        RandomAccessibleInterval raiThinned = ops.morphology().thinMorphological(image);
+//        RandomAccessibleInterval raiThinned = ops.morphology().thinHilditch(image);
+//        RandomAccessibleInterval raiThinned = ops.morphology().thinZhangSuen(image);
         ImgLabeling labeling = ops.labeling().cca(raiThinned, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
         LabelRegions regions = new LabelRegions(labeling);
         LabelRegion skeletonRegion = regions.getLabelRegion(0);

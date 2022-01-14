@@ -8,6 +8,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
 import com.jug.export.measurements.SegmentMeasurementInterface;
+import com.jug.export.measurements.SpineLengthMeasurement;
 import com.jug.gui.DialogManager;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
@@ -40,6 +41,7 @@ public class PseudoDic {
     private final UnetProcessor unetProcessor;
     private final WatershedMaskGenerator watershedMaskGenerator;
     private final GitVersionProvider gitVersionProvider;
+    private SpineLengthMeasurement spineLengthMeasurement;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
@@ -98,7 +100,19 @@ public class PseudoDic {
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
         listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        listOfMeasurements.add(getSpineLengthMeasurement());
         return listOfMeasurements;
+    }
+
+    private SpineLengthMeasurement getSpineLengthMeasurement() {
+        if (spineLengthMeasurement != null) {
+            return spineLengthMeasurement;
+        }
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(getImageJOpService(), getImglib2utils());
+        SpineCalculator spineCalculator = new SpineCalculator();
+        ContourCalculator contourCalculator = new ContourCalculator(getImageJOpService());
+        spineLengthMeasurement = new SpineLengthMeasurement(medialLineCalculator, spineCalculator, contourCalculator);
+        return spineLengthMeasurement;
     }
 
     public CellMaskExporter getCellMaskExporter(){

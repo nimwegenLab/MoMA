@@ -85,7 +85,7 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
-                contour.getPolyline(),
+                contour.getPolygon2D(),
 //                medialLine.getPolyline()
                 spine.getPolyline()
         );

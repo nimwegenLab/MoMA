@@ -52,14 +52,13 @@ public class GeomUtils {
      * startingPoint->firstContourPoint and startingPoint->secondContourPoint and finds the vector pair whose angle
      * encloses the angle of the line startingPoint+t*orientationVector ('targetAngle').
      *
-     * @param pointOnLine
+     * @param pointOnMedialLine
      * @param lineOrientationVector
      * @param linkedContour
      * @return
      */
-    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D pointOnLine, Vector2D lineOrientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
+    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, LinkedItem<Vector2D> linkedContour, int maxSearchIterations){
         double targetAngle = lineOrientationVector.getPolarAngle();
-
         LinkedItem<Vector2D> currentLinkedItem = linkedContour;
         LinkedItem<Vector2D> nextLinkedItem;
         Vector2D firstContourPoint = null;
@@ -69,11 +68,12 @@ public class GeomUtils {
         boolean successFlag = false;
         for (int counter = 0; counter < maxSearchIterations; counter++) {
             firstContourPoint = currentLinkedItem.getElement();
-            Vector2D firstRadialVector = firstContourPoint.minus(pointOnLine);
+            Vector2D firstRadialVector = firstContourPoint.minus(pointOnMedialLine);
             firstAngle = firstRadialVector.getPolarAngle();
+            System.out.println("firstAngle: " + firstAngle);
             nextLinkedItem = currentLinkedItem.next();
             secondContourPoint = nextLinkedItem.getElement();
-            Vector2D secondRadialVector = secondContourPoint.minus(pointOnLine);
+            Vector2D secondRadialVector = secondContourPoint.minus(pointOnMedialLine);
             secondAngle = secondRadialVector.getPolarAngle();
             currentLinkedItem = nextLinkedItem;
             if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
@@ -81,7 +81,9 @@ public class GeomUtils {
                 break;
             }
         }
-        if(!successFlag) {throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");}
+        if(!successFlag) {
+            throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");
+        }
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 

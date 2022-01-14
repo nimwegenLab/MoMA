@@ -4,9 +4,13 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Overlay;
 import ij.gui.Plot;
 import ij.gui.TextRoi;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
+import net.imagej.ImageJ;
+import net.imagej.roi.DefaultROITree;
+import net.imagej.roi.ROITree;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -14,8 +18,10 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.javatuples.Pair;
@@ -195,5 +201,16 @@ public class Plotting {
 
         Plot plot = new Plot(title, xLabel, yLabel, xvals_new, y);
         plot.show();
+    }
+
+    public static <T extends NumericType<T>> void showImageWithOverlays(RandomAccessibleInterval<T> image, List<MaskPredicate<?>> rois) {
+        ImageJ ij = new ImageJ();
+        ROITree roiTree = new DefaultROITree();
+        roiTree.addROIs(rois);
+        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
+        imagePlus.setOverlay(overlay);
+//        imagePlus.show();
+        ij.ui().show(imagePlus);
     }
 }

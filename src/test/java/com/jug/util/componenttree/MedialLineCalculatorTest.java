@@ -4,16 +4,18 @@ import com.jug.lp.costs.ComponentMock;
 import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2DPolyline;
+import ij.IJ;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 
 import java.io.File;
 import java.io.IOException;
@@ -106,6 +108,10 @@ public class MedialLineCalculatorTest {
     public void exploreSpineCalculator2() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/component_2.tiff";
         Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+//        componentMask = ImgView.wrap(Views.zeroMin(Views.interval(componentMask, new long[]{40, 171}, new long[]{67, 244})));
+//        ImageJFunctions.show(componentMask);
+
         ComponentMock component = new ComponentMock(componentMask);
 
         LabelRegion<Integer> componentRegion = component.getRegion();
@@ -116,13 +122,14 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
         SpineCalculator sut = new SpineCalculator();
 
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+//        Vector2DPolyline spine = sut.calculate(medialLine, contour, 0, 2, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolygon2D(),
-//                medialLine.getPolyline()
-                spine.getPolyline()
+                medialLine.getPolyline()
+//                spine.getPolyline()
         );
         testUtils.showImageWithOverlays(componentMask, rois);
+//        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
     }
 }

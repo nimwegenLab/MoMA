@@ -5,6 +5,7 @@ import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import net.imagej.ImageJ;

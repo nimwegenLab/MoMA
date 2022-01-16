@@ -8,6 +8,7 @@ import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealCursor;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
@@ -43,8 +44,14 @@ public class MedialLineCalculator {
         cursor.next();
         Vector2D lastAdded = new Vector2D(cursor); /* always add first point */
         result.add(lastAdded);
+        boolean onFirstPixelRow = true;
         while (cursor.hasNext()) {
             cursor.next();
+            if (((int) cursor.getDoublePosition(1)) == ((int) lastAdded.getY()) && onFirstPixelRow) { /* Skip pixels on the first row after first pixel, until we hit the next pixel-row. We do this to make sure that we are moving in the correct direction, when adding skeleton pixels. */
+                continue;
+            } else {
+                onFirstPixelRow = false;
+            }
             if (GeomUtils.distance(cursor, lastAdded) < 2) {
                 lastAdded = new Vector2D(cursor); /* only add new point, if its distance from the last contour position is less than 2 pixels; i.e. we accept the diagonal pixel distance */
                 result.add(lastAdded);

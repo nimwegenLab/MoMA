@@ -36,8 +36,9 @@ public class MedialLineCalculatorTest {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 //        new MedialLineCalculatorTest().exploreMedialLineCalculator();
-        new MedialLineCalculatorTest().exploreSpineCalculator();
+//        new MedialLineCalculatorTest().exploreSpineCalculator();
 //        new MedialLineCalculatorTest().exploreSpineCalculator2();
+        new MedialLineCalculatorTest().exploreSpineCalculator3();
     }
 
     /**
@@ -115,6 +116,47 @@ public class MedialLineCalculatorTest {
      */
     public void exploreSpineCalculator2() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/component_2.tiff";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+//        componentMask = ImgView.wrap(Views.zeroMin(Views.interval(componentMask, new long[]{40, 171}, new long[]{67, 244})));
+//        ImageJFunctions.show(componentMask);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        double maxVerticalDistanceFromStartAndEnd = 3.5;
+        SpineCalculator sut = new SpineCalculator(7, 7, maxVerticalDistanceFromStartAndEnd);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        List<MaskPredicate<?>> rois = Arrays.asList(
+                contour.getPolygon2D(),
+//                medialLine.getPolyline()
+                spine.getPolyline()
+        );
+        testUtils.showImageWithOverlays(componentMask, rois);
+//        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
+//        ij.op().
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void exploreSpineCalculator3() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/component_3.tiff";
         Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
 
 //        componentMask = ImgView.wrap(Views.zeroMin(Views.interval(componentMask, new long[]{40, 171}, new long[]{67, 244})));

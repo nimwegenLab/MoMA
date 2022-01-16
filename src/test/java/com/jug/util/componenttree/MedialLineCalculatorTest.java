@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.lp.costs.ComponentMock;
 import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import ij.IJ;
 import net.imagej.ImageJ;
@@ -89,7 +90,8 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
         SpineCalculator sut = new SpineCalculator();
 
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+        double maxVerticalDistanceFromStartAndEnd = 3.5;
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, maxVerticalDistanceFromStartAndEnd, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolygon2D(),
@@ -122,7 +124,11 @@ public class MedialLineCalculatorTest {
         Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
         SpineCalculator sut = new SpineCalculator();
 
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 0, 2, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+        double maxVerticalDistanceFromStartAndEnd = 3.5;
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, maxVerticalDistanceFromStartAndEnd, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolygon2D(),

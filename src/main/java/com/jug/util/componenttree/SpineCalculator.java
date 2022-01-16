@@ -20,12 +20,11 @@ public class SpineCalculator {
         boundingBoxCalculator = new DefaultBoundingBox();
     }
 
-    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, ValuePair<Integer, Integer> imageLimitsYdirection) {
+    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double maxVerticalDistanceFromStartAndEnd, ValuePair<Integer, Integer> imageLimitsYdirection) {
         if(orientationVectorAveragingWindowSize<2){
             throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
         }
 
-        double maxVerticalDistanceFromStartAndEnd = 4.5;
         removeMedialLinePointsAtStartAndEnd(medialLine, contour, maxVerticalDistanceFromStartAndEnd);
 
         if (medialLine.size() < orientationVectorAveragingWindowSize) {

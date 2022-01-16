@@ -4,18 +4,29 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.LinkedItem;
 import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
+import net.imagej.ops.geom.geom2d.DefaultBoundingBox;
+import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
 
 public class SpineCalculator {
+    private DefaultBoundingBox boundingBoxCalculator;
+
+    public SpineCalculator() {
+        boundingBoxCalculator = new DefaultBoundingBox();
+    }
+
     public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, ValuePair<Integer, Integer> imageLimitsYdirection) {
         if(orientationVectorAveragingWindowSize<2){
             throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
         }
+
+        double maxVerticalDistanceFromStartAndEnd = 4.5;
+        removeMedialLinePointsAtStartAndEnd(medialLine, contour, maxVerticalDistanceFromStartAndEnd);
 
         if (medialLine.size() < orientationVectorAveragingWindowSize) {
             orientationVectorAveragingWindowSize = 1;
@@ -46,6 +57,24 @@ public class SpineCalculator {
         }
 
         return spine;
+    }
+
+    private void removeMedialLinePointsAtStartAndEnd(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance){
+        Polygon2D bbox = boundingBoxCalculator.calculate(contour.getPolygon2D());
+        double min_y = bbox.vertices().get(0).getDoublePosition(1);
+        double max_y = bbox.vertices().get(1).getDoublePosition(1);
+        ArrayList<Vector2D> pointsToRemove = new ArrayList<>();
+        for (Vector2D vect : medialLine.getVectorList()) {
+            double distanceFromTop = Math.abs(vect.getY() - min_y);
+            double distanceFromBottom = Math.abs(max_y - vect.getY());
+            if ((distanceFromTop < maxAllowedVerticalDistance) ||
+                (distanceFromBottom < maxAllowedVerticalDistance)) {
+                pointsToRemove.add(vect);
+            }
+        }
+        for (Vector2D vect : pointsToRemove) {
+            medialLine.remove(vect);
+        }
     }
 
     private Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {

@@ -32,14 +32,14 @@ public class SpineCalculator {
             throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
         }
 
-        System.out.println("medialLine.size: " + medialLine.size());
+//        System.out.println("medialLine.size: " + medialLine.size());
 
         Vector2DPolyline spine = medialLine.copy();
 
         removeMedialLinePointsAtStartAndEnd(spine, contour, maxVerticalDistanceFromStartAndEnd);
 
-        System.out.println("spine.size after removal: " + spine.size());
-        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
+//        System.out.println("spine.size after removal: " + spine.size());
+//        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
 
         int positionAveragingWindowSizeCurrent = positionAveragingWindowSize;
         if (spine.size() - positionAveragingWindowSize < 10) {
@@ -50,16 +50,16 @@ public class SpineCalculator {
             spine = GeomUtils.smooth(spine, positionAveragingWindowSizeCurrent);
         }
 
-        System.out.println("spine.size after smoothing: " + spine.size());
+//        System.out.println("spine.size after smoothing: " + spine.size());
 
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
 
         List<Vector2D> diffs = GeomUtils.differences(spine.getVectorList());
 
-        System.out.println("diffs.size: " + diffs.size());
-        if(spine.size() == 0){
-            System.out.println("stop");
-        }
+//        System.out.println("diffs.size: " + diffs.size());
+//        if(spine.size() == 0){
+//            System.out.println("stop");
+//        }
 
         int orientationVectorAveragingWindowSizeCurrent = orientationVectorAveragingWindowSize;
         if (spine.size() - orientationVectorAveragingWindowSize < 10) {

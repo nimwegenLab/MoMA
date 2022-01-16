@@ -1,5 +1,6 @@
 package com.jug.util.math;
 
+import net.imglib2.RealLocalizable;
 import net.imglib2.util.ValuePair;
 
 import java.util.ArrayList;
@@ -155,5 +156,51 @@ public class GeomUtils {
         }
 
         return inside;
+    }
+
+    public static double distance(RealLocalizable point1, RealLocalizable point2) {
+        return distance(point1.getDoublePosition(0), point1.getDoublePosition(1), point2.getDoublePosition(0), point2.getDoublePosition(1));
+    }
+
+    public static double distance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
+    }
+
+    public static double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
+        // signed distance from a point (x,y) to a line passing through p1 and p2
+        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
+    }
+
+    public static double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
+        // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
+        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
+    }
+
+    public static void cleanPolyline(Vector2DPolyline polyline) {
+        boolean pointWasRemoved = true;
+        while (pointWasRemoved) {
+            pointWasRemoved = removeVerticesWithStrongAngles(polyline);
+        }
+    }
+
+    public static boolean removeVerticesWithStrongAngles(Vector2DPolyline polyline) {
+        boolean pointWasRemoved = false;
+        double minAllowAngle = Math.PI / 2 + 0.01; /* we do not allow angles <=90degrees */
+        for (int ind = 1; ind < polyline.size() - 2; ind++) {
+            Vector2D pointBefore = polyline.get(ind - 1);
+            Vector2D pointCurrent = polyline.get(ind);
+            Vector2D pointNext = polyline.get(ind + 1);
+            Vector2D firstVector = pointBefore.minus(pointCurrent);
+            Vector2D secondVector = pointNext.minus(pointCurrent);
+            double currentAngle = firstVector.angleWith(secondVector);
+//            System.out.println("currentAngle: " + currentAngle);
+            if (currentAngle <= minAllowAngle) {
+                polyline.remove(pointCurrent);
+                pointWasRemoved = true;
+            }
+//              System.out.println("----");
+        }
+//        System.out.println("stop");
+        return pointWasRemoved;
     }
 }

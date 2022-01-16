@@ -131,5 +131,6 @@ public class MedialLineCalculatorTest {
         );
         testUtils.showImageWithOverlays(componentMask, rois);
 //        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
+//        ij.op().
     }
 }

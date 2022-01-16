@@ -7,6 +7,8 @@ import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.ImageCanvas;
+import ij.gui.ImageWindow;
 import ij.gui.Overlay;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
@@ -103,6 +105,16 @@ public class TestUtils {
         ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
+//
+//        double mag = 5.; // between 0 and 1
+//        int newWidth = (int) (imagePlus.getWidth() * mag);
+//        int newHeight = (int) ( imagePlus.getHeight() * mag);
+//
+//        ImageCanvas canvas = imagePlus.getCanvas();
+//        canvas.setMagnification(mag);
+//
+//        ImageWindow win = imagePlus.getWindow();
+//        win.setSize(newWidth, newHeight);
     }
 
     public Img<BitType> readComponentMask(String imageFile) throws IOException {

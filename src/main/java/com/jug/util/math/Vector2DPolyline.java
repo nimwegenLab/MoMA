@@ -1,6 +1,5 @@
 package com.jug.util.math;
 
-import edu.mines.jtk.opt.Vect;
 import net.imglib2.RealCursor;
 import net.imglib2.RealLocalizable;
 import net.imglib2.roi.geom.GeomMasks;
@@ -25,6 +24,10 @@ public class Vector2DPolyline {
 
     public int size(){
         return vectors.size();
+    }
+
+    public void remove(Vector2D toRemove) {
+        this.vectors.remove(toRemove);
     }
 
     public Vector2D get(int ind){

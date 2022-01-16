@@ -236,6 +236,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 }
 
                 SegmentRecord finalSegmentRecord = segmentRecord;
+//                System.out.println("timestep: " + finalSegmentRecord.timestep);
                 measurements.forEach((measurement) -> measurement.measure(finalSegmentRecord.hyp.getWrappedComponent()));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();

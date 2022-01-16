@@ -7,6 +7,7 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.geom.real.Polyline;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Vector2DPolyline {
@@ -32,6 +33,14 @@ public class Vector2DPolyline {
 
     public Vector2D get(int ind){
         return vectors.get(ind);
+    }
+
+    public Vector2D getFirst(){
+        return vectors.get(0);
+    }
+
+    public Vector2D getLast(){
+        return get(this.size() - 1);
     }
 
     public List<Vector2D> getVectorList() {
@@ -74,6 +83,14 @@ public class Vector2DPolyline {
         vectors.add(index, vector);
     }
 
+    public void addAtStart(Vector2D vector) {
+        vectors.add(0, vector);
+    }
+
+    public void addAtEnd(Vector2D vector) {
+        vectors.add(vector);
+    }
+
     public LinkedItem<Vector2D> toCircularLinkedList() {
         return LinkedItem.toCircularLinkedList(this.getVectorList());
     }
@@ -99,5 +116,9 @@ public class Vector2DPolyline {
 
     public boolean isClosedPolygon(){
         return (vectors.get(0).getX() == vectors.get(size()-1).getX()) && (vectors.get(0).getY() == vectors.get(size()-1).getY());
+    }
+
+    public void reverse() {
+        Collections.reverse(this.vectors);
     }
 }

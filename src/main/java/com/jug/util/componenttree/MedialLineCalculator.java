@@ -33,10 +33,8 @@ public class MedialLineCalculator {
         ImgLabeling labeling = ops.labeling().cca(raiThinned, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
         LabelRegions regions = new LabelRegions(labeling);
         LabelRegion skeletonRegion = regions.getLabelRegion(0);
-//        Vector2DPolyline polygon = Vector2DPolyline.createFromCursor(skeletonRegion.cursor());
         Vector2DPolyline polygon = createMedialLineFromCursor(skeletonRegion.cursor());
-//        GeomUtils.removeVerticesWithStrongAngles(polygon);
-        GeomUtils.cleanPolyline(polygon);
+        GeomUtils.filterPolylineAngles(polygon, Math.PI / 2 + 0.01);
         return polygon;
     }
 

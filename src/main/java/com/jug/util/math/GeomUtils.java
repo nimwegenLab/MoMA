@@ -176,16 +176,15 @@ public class GeomUtils {
         return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
     }
 
-    public static void cleanPolyline(Vector2DPolyline polyline) {
+    public static void filterPolylineAngles(Vector2DPolyline polyline, double minAllowedAngle) {
         boolean pointWasRemoved = true;
         while (pointWasRemoved) {
-            pointWasRemoved = removeVerticesWithStrongAngles(polyline);
+            pointWasRemoved = removeVerticesWithStrongAngles(polyline, minAllowedAngle); /* when we remove a point, the resulting polyline could then contain angles, which are not allowed. We repeat the process in this case. */
         }
     }
 
-    public static boolean removeVerticesWithStrongAngles(Vector2DPolyline polyline) {
+    public static boolean removeVerticesWithStrongAngles(Vector2DPolyline polyline, double minAllowedAngle) {
         boolean pointWasRemoved = false;
-        double minAllowAngle = Math.PI / 2 + 0.01; /* we do not allow angles <=90degrees */
         for (int ind = 1; ind < polyline.size() - 2; ind++) {
             Vector2D pointBefore = polyline.get(ind - 1);
             Vector2D pointCurrent = polyline.get(ind);
@@ -194,7 +193,7 @@ public class GeomUtils {
             Vector2D secondVector = pointNext.minus(pointCurrent);
             double currentAngle = firstVector.angleWith(secondVector);
 //            System.out.println("currentAngle: " + currentAngle);
-            if (currentAngle <= minAllowAngle) {
+            if (currentAngle <= minAllowedAngle) {
                 polyline.remove(pointCurrent);
                 pointWasRemoved = true;
             }

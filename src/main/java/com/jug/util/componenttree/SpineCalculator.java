@@ -32,21 +32,25 @@ public class SpineCalculator {
             throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
         }
 
-        removeMedialLinePointsAtStartAndEnd(medialLine, contour, maxVerticalDistanceFromStartAndEnd);
+        Vector2DPolyline spine = medialLine.copy();
 
-        if (medialLine.size() < orientationVectorAveragingWindowSize) {
+        removeMedialLinePointsAtStartAndEnd(spine, contour, maxVerticalDistanceFromStartAndEnd);
+
+        if (spine.size() < orientationVectorAveragingWindowSize) {
             orientationVectorAveragingWindowSize = 1;
         }
         if (positionAveragingWindowSize > 0) {
-            medialLine = GeomUtils.smooth(medialLine, positionAveragingWindowSize);
+            spine = GeomUtils.smooth(spine, positionAveragingWindowSize);
         }
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
 
-        List<Vector2D> diffs = GeomUtils.differences(medialLine.getVectorList());
+        List<Vector2D> diffs = GeomUtils.differences(spine.getVectorList());
 
-        Vector2DPolyline spine = medialLine.copy();
+        if(spine.size() == 0){
+            System.out.println("stop");
+        }
 
-        Vector2D basePoint1 = medialLine.get(0);
+        Vector2D basePoint1 = spine.get(0);
         if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtStart = diffs.subList(0, orientationVectorAveragingWindowSize);
             Vector2D orientationVector1 = diffsAtStart.size() > 1 ? GeomUtils.averageVectors(diffsAtStart).multiply(-1.0) : diffsAtStart.get(0); /* average only, if the window-size permits it */
@@ -54,7 +58,7 @@ public class SpineCalculator {
             spine.add(0, result1);
         }
 
-        Vector2D basePoint2 = medialLine.get(medialLine.size() - 1);
+        Vector2D basePoint2 = spine.get(spine.size() - 1);
         if(Math.round(basePoint2.getY()) != imageLimitsYdirection.getB()) { /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtEnd = diffs.subList(diffs.size() - 1 - orientationVectorAveragingWindowSize, diffs.size() - 1);
             Vector2D orientationVector2 = diffsAtEnd.size() > 1 ? GeomUtils.averageVectors(diffsAtEnd) : diffsAtEnd.get(diffsAtEnd.size() - 1); /* average only, if the window-size permits it */

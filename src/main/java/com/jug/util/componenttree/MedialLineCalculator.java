@@ -26,8 +26,8 @@ public class MedialLineCalculator {
     }
 
     public Vector2DPolyline calculate(RandomAccessibleInterval<BitType> image) {
-//        RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
-        RandomAccessibleInterval raiThinned = ops.morphology().thinMorphological(image);
+        RandomAccessibleInterval raiThinned = ops.morphology().thinGuoHall(image);
+//        RandomAccessibleInterval raiThinned = ops.morphology().thinMorphological(image);
 //        RandomAccessibleInterval raiThinned = ops.morphology().thinHilditch(image);
 //        RandomAccessibleInterval raiThinned = ops.morphology().thinZhangSuen(image);
         ImgLabeling labeling = ops.labeling().cca(raiThinned, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);

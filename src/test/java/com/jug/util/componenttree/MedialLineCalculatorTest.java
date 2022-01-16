@@ -174,16 +174,16 @@ public class MedialLineCalculatorTest {
         double maxVerticalDistanceFromStartAndEnd = 3.5;
         SpineCalculator sut = new SpineCalculator(7, 7, maxVerticalDistanceFromStartAndEnd);
 
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+//        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
 
         contour.shiftMutate(new Vector2D(0.5, 0.5));
         medialLine.shiftMutate(new Vector2D(0.5, 0.5));
-        spine.shiftMutate(new Vector2D(0.5, 0.5));
+//        spine.shiftMutate(new Vector2D(0.5, 0.5));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolygon2D(),
-//                medialLine.getPolyline()
-                spine.getPolyline()
+                medialLine.getPolyline()
+//                spine.getPolyline()
         );
         testUtils.showImageWithOverlays(componentMask, rois);
 //        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862

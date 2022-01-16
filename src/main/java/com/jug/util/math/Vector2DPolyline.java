@@ -19,7 +19,7 @@ public class Vector2DPolyline {
     }
 
     public Vector2DPolyline copy(){
-        return new Vector2DPolyline(this.vectors);
+        return new Vector2DPolyline(new ArrayList<>(this.vectors));
     }
 
     public int size(){

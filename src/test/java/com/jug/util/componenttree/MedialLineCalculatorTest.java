@@ -36,8 +36,8 @@ public class MedialLineCalculatorTest {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 //        new MedialLineCalculatorTest().exploreMedialLineCalculator();
-//        new MedialLineCalculatorTest().exploreSpineCalculator();
-        new MedialLineCalculatorTest().exploreSpineCalculator2();
+        new MedialLineCalculatorTest().exploreSpineCalculator();
+//        new MedialLineCalculatorTest().exploreSpineCalculator2();
     }
 
     /**
@@ -88,10 +88,10 @@ public class MedialLineCalculatorTest {
 
         LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
-        SpineCalculator sut = new SpineCalculator();
 
-        double maxVerticalDistanceFromStartAndEnd = 3.5;
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, maxVerticalDistanceFromStartAndEnd, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+        SpineCalculator sut = new SpineCalculator(7, 7, 3.5);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
         List<MaskPredicate<?>> rois = Arrays.asList(
                 contour.getPolygon2D(),
@@ -122,10 +122,11 @@ public class MedialLineCalculatorTest {
 
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
-        SpineCalculator sut = new SpineCalculator();
 
         double maxVerticalDistanceFromStartAndEnd = 3.5;
-        Vector2DPolyline spine = sut.calculate(medialLine, contour, 7, 7, maxVerticalDistanceFromStartAndEnd, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+        SpineCalculator sut = new SpineCalculator(7, 7, maxVerticalDistanceFromStartAndEnd);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
 
         contour.shiftMutate(new Vector2D(0.5, 0.5));
         spine.shiftMutate(new Vector2D(0.5, 0.5));

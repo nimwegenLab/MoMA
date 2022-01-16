@@ -109,7 +109,7 @@ public class PseudoDic {
             return spineLengthMeasurement;
         }
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(getImageJOpService(), getImglib2utils());
-        SpineCalculator spineCalculator = new SpineCalculator();
+        SpineCalculator spineCalculator = new SpineCalculator(7, 7, 3.5);
         ContourCalculator contourCalculator = new ContourCalculator(getImageJOpService());
         spineLengthMeasurement = new SpineLengthMeasurement(medialLineCalculator, spineCalculator, contourCalculator);
         return spineLengthMeasurement;

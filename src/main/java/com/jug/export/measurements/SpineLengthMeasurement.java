@@ -55,8 +55,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             Plotting.showImageWithOverlays(image, rois);
         }
 
-        double maxVerticalDistanceFromStartAndEnd = 3.5;
-        Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, 0, 2, maxVerticalDistanceFromStartAndEnd, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+        Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
         spineLength.addValue(spine.length());
     }

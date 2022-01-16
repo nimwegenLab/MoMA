@@ -16,11 +16,18 @@ import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
 public class SpineCalculator {
     private DefaultBoundingBox boundingBoxCalculator;
 
-    public SpineCalculator() {
+    int positionAveragingWindowSize;
+    int orientationVectorAveragingWindowSize;
+    double maxVerticalDistanceFromStartAndEnd;
+
+    public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double maxVerticalDistanceFromStartAndEnd) {
         boundingBoxCalculator = new DefaultBoundingBox();
+        this.positionAveragingWindowSize = positionAveragingWindowSize;
+        this.orientationVectorAveragingWindowSize = orientationVectorAveragingWindowSize;
+        this.maxVerticalDistanceFromStartAndEnd = maxVerticalDistanceFromStartAndEnd;
     }
 
-    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double maxVerticalDistanceFromStartAndEnd, ValuePair<Integer, Integer> imageLimitsYdirection) {
+    public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, ValuePair<Integer, Integer> imageLimitsYdirection) {
         if(orientationVectorAveragingWindowSize<2){
             throw new IllegalArgumentException("orientationVectorAveragingWindowSize must be >2");
         }

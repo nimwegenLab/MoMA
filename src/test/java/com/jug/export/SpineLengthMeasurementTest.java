@@ -29,7 +29,7 @@ public class SpineLengthMeasurementTest {
         testUtils = new TestUtils(ij);
         Imglib2Utils imglib2Utils = new Imglib2Utils(ij.op());
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), imglib2Utils);
-        SpineCalculator spineCalculator = new SpineCalculator();
+        SpineCalculator spineCalculator = new SpineCalculator(7, 7, 3.5);
         ContourCalculator contourCalculator = new ContourCalculator(ij.op());
         sut = new SpineLengthMeasurement(medialLineCalculator, spineCalculator, contourCalculator);
     }

@@ -100,7 +100,9 @@ public class PseudoDic {
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
         listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
-        listOfMeasurements.add(getSpineLengthMeasurement());
+        if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
+            listOfMeasurements.add(getSpineLengthMeasurement());
+        }
         return listOfMeasurements;
     }
 

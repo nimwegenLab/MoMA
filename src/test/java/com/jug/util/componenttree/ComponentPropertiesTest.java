@@ -15,14 +15,18 @@ import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.geom.real.Polygon2D;
 //import net.imglib2.roi.geom.real.closedPolygon2D;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -79,22 +83,21 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight");
+        System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
         for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double majorAxisTiltAngle = props.getTiltAngle(component);
-            double orientedBboxWidth = props.getOrientedBoundingBoxWidthAndHeight(component).getA();
-            double orientedBboxHeight = props.getOrientedBoundingBoxWidthAndHeight(component).getB();
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
-            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f, %f, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity, orientedBboxWidth, orientedBboxHeight));
+            System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>());
+        assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
     }
 
     @NotNull
@@ -169,5 +172,18 @@ public class ComponentPropertiesTest {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
         return tree;
+    }
+
+    /**
+     * Convenience method for creating a labeling image with same dimensions as the source image.
+     *
+     * @param sourceImage
+     * @return
+     */
+    public ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval sourceImage) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<IntType> img = ArrayImgs.ints(dims);
+        return new ImgLabeling<>(img);
     }
 }

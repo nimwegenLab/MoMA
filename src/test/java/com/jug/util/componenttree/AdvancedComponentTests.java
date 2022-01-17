@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
@@ -29,11 +30,12 @@ import static org.junit.Assert.*;
 public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
-        new AdvancedComponentTests().testGetParentWatershedLineCoordinates();
+        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
     }
 
     @Test
-    public void testGetParentWatershedLineValues() throws IOException {
+    public void test__getWatershedLinePixelValues() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
@@ -50,8 +52,12 @@ public class AdvancedComponentTests {
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
-        for (AdvancedComponent<FloatType> root: roots) {
-            List<FloatType> watershedProbabilityValues = root.getWatershedLinePixelValues();
+        float[] expectedWatershedProbabilityValues = new float[]{0.7120329141616821F,0.7112422585487366F, 0.5284326672554016F};
+        AdvancedComponent<FloatType> root = roots.get(0);
+        List<FloatType> actualWatershedProbabilityValues = root.getWatershedLinePixelValues();
+
+        for(int counter = 0; counter<actualWatershedProbabilityValues.size(); counter++){
+            assertEquals(expectedWatershedProbabilityValues[counter], actualWatershedProbabilityValues.get(counter).getRealFloat(), 0.0001);
         }
     }
 
@@ -67,7 +73,45 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void testGetParentWatershedLineCoordinates() throws IOException {
+    public void test__getWatershedLinePixelPositions() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+        int frameIndex = 10;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
+        assertEquals(2, currentImage.numDimensions());
+
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+        AdvancedComponent<FloatType> root = roots.get(0);
+        if (root.getChildren().size() == 0) {
+            return;
+        }
+        ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
+        componentsToDraw.add(root);
+        List<Localizable> watershedProbabilityPositions = root.getWatershedLinePixelPositions();
+
+        /* test result */
+        ArrayList<Vector2D> list = new ArrayList<>();
+        list.add(new Vector2D(54, 177));
+        list.add(new Vector2D(55, 176));
+        list.add(new Vector2D(53, 178));
+        int counter = 0;
+        for (Localizable entry : watershedProbabilityPositions) {
+            assertEquals(list.get(counter).getX(), entry.getDoublePosition(0), 0.001);
+            assertEquals(list.get(counter).getY(), entry.getDoublePosition(1), 0.001);
+            counter++;
+        }
+    }
+
+    public void exploreGetParentWatershedLineCoordinates() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
@@ -90,19 +134,19 @@ public class AdvancedComponentTests {
             }
             ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
             componentsToDraw.add(root);
-            RandomAccessibleInterval<ARGBType> parentComponentImage = Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>());
-            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
-            ImagePlus impParent = ImageJFunctions.show(parentComponentImage);
-            ImagePlus impChildren = ImageJFunctions.show(childComponentsImage);
             List<Localizable> watershedProbabilityPositions = root.getWatershedLinePixelPositions();
-            Img<NativeBoolType> img = root.createImage(root.getSourceImage());
-            RandomAccess<NativeBoolType> rndAcc = img.randomAccess();
+            Img<NativeBoolType> imgOfWatershedLine = root.createImage(root.getSourceImage());
+            RandomAccess<NativeBoolType> rndAcc = imgOfWatershedLine.randomAccess();
             for (Localizable loc : watershedProbabilityPositions) {
                 rndAcc.setPosition(loc);
                 rndAcc.get().set(true);
             }
-            List<FloatType> pixelValues = root.getWatershedLinePixelValues();
-            ImagePlus imp = ImageJFunctions.show(img);
+            RandomAccessibleInterval<ARGBType> parentComponentImage = root.getComponentImage(new ARGBType(ARGBType.rgba(255,255,255,255)));
+            ImageJFunctions.show(parentComponentImage);
+            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
+            ImageJFunctions.show(childComponentsImage);
+            ImageJFunctions.show(imgOfWatershedLine);
+            break;
         }
     }
 }

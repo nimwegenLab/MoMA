@@ -37,7 +37,7 @@ public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterfa
     }
 
     @Override
-    public void measure(ComponentInterface component) {
+    public void measure(AdvancedComponent<FloatType> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
         BoundingBoxProperties result = new BoundingBoxProperties(orientedBoundingBoxPolygon);

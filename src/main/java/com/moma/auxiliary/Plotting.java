@@ -4,9 +4,13 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Overlay;
 import ij.gui.Plot;
 import ij.gui.TextRoi;
 import jdk.nashorn.internal.runtime.regexp.joni.exception.ValueException;
+import net.imagej.ImageJ;
+import net.imagej.roi.DefaultROITree;
+import net.imagej.roi.ROITree;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -14,7 +18,10 @@ import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.MaskPredicate;
+import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.ARGBType;
+import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.javatuples.Pair;
@@ -110,8 +117,8 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(componentLevelImageStack));
     }
 
-    public static <C extends Component<FloatType, C>> RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
-                                                                                                                   List<AdvancedComponent<FloatType>> optimalComponents) {
+    public static RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
+                                                                               List<AdvancedComponent<FloatType>> optimalComponents) {
         AdvancedComponent<FloatType> first = components.get(0);
         RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
@@ -144,6 +151,30 @@ public class Plotting {
         }
     }
 
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> createImageWithComponentsNew(List<AdvancedComponent<FloatType>> components,
+                                                                                                     T val) {
+        AdvancedComponent<FloatType> first = components.get(0);
+        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
+        long xDim = sourceImage.dimension(0);
+        long yDim = sourceImage.dimension(1);
+        ArrayImgFactory<T> imageFactory = new ArrayImgFactory(val);
+
+        final RandomAccessibleInterval<T> resultImage = imageFactory.create(xDim, yDim);
+        for (AdvancedComponent<FloatType> ctn : components) {
+            drawComponentToImage3(ctn, resultImage, val);
+        }
+        return resultImage;
+    }
+
+    private static <T extends NativeType> void drawComponentToImage3(final Component<?, ?> ctn,
+                                                               RandomAccessibleInterval<T> targetImage,
+                                                               T val) {
+        RandomAccess<T> out = targetImage.randomAccess();
+        for (Localizable location : ctn) {
+            out.setPosition(location);
+            out.get().set(val);
+        }
+    }
 
     public static void surfacePlot(final RandomAccessibleInterval<FloatType> img, final int dimension, final long position) {
         ImagePlus imp = ImageJFunctions.wrap(Views.hyperSlice(img, dimension, position), "my image");
@@ -170,5 +201,16 @@ public class Plotting {
 
         Plot plot = new Plot(title, xLabel, yLabel, xvals_new, y);
         plot.show();
+    }
+
+    public static <T extends NumericType<T>> void showImageWithOverlays(RandomAccessibleInterval<T> image, List<MaskPredicate<?>> rois) {
+        ImageJ ij = new ImageJ();
+        ROITree roiTree = new DefaultROITree();
+        roiTree.addROIs(rois);
+        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
+        imagePlus.setOverlay(overlay);
+//        imagePlus.show();
+        ij.ui().show(imagePlus);
     }
 }

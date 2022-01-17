@@ -2,7 +2,7 @@ package com.jug.util.math;
 
 import net.imglib2.RealLocalizable;
 
-public class Vector2D {
+public class Vector2D implements RealLocalizable {
     private double x;
     private double y;
 
@@ -32,11 +32,16 @@ public class Vector2D {
         return new Vector2D(x + operand.getX(), y + operand.getY());
     }
 
+    public void plusMutate(Vector2D operand) {
+        x = x + operand.getX();
+        y = y + operand.getY();
+    }
+
     public Vector2D minus(Vector2D operand) {
         return new Vector2D(x - operand.getX(), y - operand.getY());
     }
 
-    public double getLength(){
+    public double getLength() {
         return Math.sqrt(Math.pow(getX(), 2.0) + Math.pow(getY(), 2.0));
     }
 
@@ -46,6 +51,10 @@ public class Vector2D {
 
     public Vector2D multiply(double factor) {
         return new Vector2D(factor * getX(), factor * getY());
+    }
+
+    public void multiplyMutate(double factor) {
+        x = factor * x; y = factor * y;
     }
 
     public Boolean equals(Vector2D operand, double tolerance) {
@@ -65,5 +74,43 @@ public class Vector2D {
                 "x=" + x +
                 ", y=" + y +
                 '}';
+    }
+
+    @Override // RealLocalizable
+    public void localize(float[] position) {
+        if (position.length == 2) {
+            position[0] = (float) getX();
+            position[1] = (float) getY();
+        }
+        throw new RuntimeException("requested dimension out of bounds for Vector2D");
+//        RealLocalizable.super.localize(position);
+    }
+
+    @Override // RealLocalizable
+    public void localize(double[] position) {
+        if (position.length == 2) {
+            position[0] = getX();
+            position[1] = getY();
+        }
+        throw new RuntimeException("requested dimension out of bounds for Vector2D");
+//        RealLocalizable.super.localize(position);
+    }
+
+    @Override // RealLocalizable
+    public float getFloatPosition(int d) {
+//        return RealLocalizable.super.getFloatPosition(d);
+        return (float) getDoublePosition(d);
+    }
+
+    @Override // RealLocalizable
+    public double getDoublePosition(int i) {
+        if (i == 0) return this.getX();
+        if (i == 1) return this.getY();
+        throw new RuntimeException("requested dimension out of bounds for Vector2D");
+    }
+
+    @Override // RealLocalizable
+    public int numDimensions() {
+        return 2;
     }
 }

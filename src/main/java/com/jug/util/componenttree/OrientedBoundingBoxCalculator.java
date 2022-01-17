@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.math.GeomUtils;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
@@ -71,7 +72,7 @@ public class OrientedBoundingBoxCalculator {
         int numberOfCoords = x.length;
         double distanceOfCoordWithMaxDistanceToEdge = 0.0;
         for (int coordIndex = 0; coordIndex < numberOfCoords; coordIndex++) {
-            double distanceOfCoordToEdge = Math.abs(perpDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[coordIndex], y[coordIndex]));
+            double distanceOfCoordToEdge = Math.abs(GeomUtils.perpDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[coordIndex], y[coordIndex]));
             if (distanceOfCoordWithMaxDistanceToEdge < distanceOfCoordToEdge) {
                 distanceOfCoordWithMaxDistanceToEdge = distanceOfCoordToEdge;
                 indOfCoordWithMaxDistanceToEdge = coordIndex;
@@ -96,7 +97,7 @@ public class OrientedBoundingBoxCalculator {
         double minBboxExtentInEdgeDirection = 0.0;
         double maxBboxExtentInEdgeDirection = 0.0;
         for (int k = 0; k < numberOfCoords; k++) { /* perform rotating calipers */
-            double bboxExtent = parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
+            double bboxExtent = GeomUtils.parDist(x[indEdgeSource], y[indEdgeSource], x[indEdgeTarget], y[indEdgeTarget], x[k], y[k]);
             minBboxExtentInEdgeDirection = Math.min(minBboxExtentInEdgeDirection, bboxExtent);
             maxBboxExtentInEdgeDirection = Math.max(maxBboxExtentInEdgeDirection, bboxExtent);
         }
@@ -157,7 +158,7 @@ public class OrientedBoundingBoxCalculator {
             }
         }
 
-        double sizePerpendicularToEdge = perpDist(x[IndEdgeSourceFinal], y[IndEdgeSourceFinal], x[indEdgeTargetFinal], y[indEdgeTargetFinal], x[indOfCoordWithMaxDistanceToEdgeFinal], y[indOfCoordWithMaxDistanceToEdgeFinal]); // signed feret diameter
+        double sizePerpendicularToEdge = GeomUtils.perpDist(x[IndEdgeSourceFinal], y[IndEdgeSourceFinal], x[indEdgeTargetFinal], y[indEdgeTargetFinal], x[indOfCoordWithMaxDistanceToEdgeFinal], y[indOfCoordWithMaxDistanceToEdgeFinal]); // signed feret diameter
         double edgeAngle = Math.atan2(y[indEdgeTargetFinal] - y[IndEdgeSourceFinal], x[indEdgeTargetFinal] - x[IndEdgeSourceFinal]);
         double minAngle = edgeAngle + Math.PI / 2;
         double sizeInDirectionOfEdge = minBboxExtentInEdgeDirectionFinal - maxBboxExtentInEdgeDirectionFinal;
@@ -178,20 +179,6 @@ public class OrientedBoundingBoxCalculator {
         nyp[3] = nyp[2] + Math.sin(minAngle) * -sizePerpendicularToEdge;
 
         return new ValuePair<>(nxp, nyp);
-    }
-
-    private double distance(double x1, double y1, double x2, double y2) {
-        return Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-    }
-
-    private double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
-        // signed distance from a point (x,y) to a line passing through p1 and p2
-        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
-    }
-
-    private double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
-        // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
-        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / distance(p1x, p1y, p2x, p2y);
     }
 }
 

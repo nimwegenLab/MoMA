@@ -23,6 +23,8 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     private ResultTableColumn<Double> spineStartToEndPointAngleCol;
     private ResultTableColumn<String> spineXcoordsCol;
     private ResultTableColumn<String> spineYcoordsCol;
+    private ResultTableColumn<String> medialLineXcoordsCol;
+    private ResultTableColumn<String> medialLineYcoordsCol;
     private final SpineCalculator spineCalculator;
     private final MedialLineCalculator medialLineCalculator;
     private final ContourCalculator contourCalculator;
@@ -38,11 +40,13 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
         spineLengthCalculationSuccessCol = outputTable.addColumn(new ResultTableColumn<>("spine_length_calculation_successful__boolean"));
         spineLengthCol = outputTable.addColumn(new ResultTableColumn<>("spine_length__px", "%.2f"));
         spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spine_array_size__integer"));
-        spineStartToEndPointAngleCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
+        spineStartToEndPointAngleCol = outputTable.addColumn(new ResultTableColumn<>("spine_start_to_end_point_angle__rad", "%.4f"));
         medialLineSizeCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_array_size__integer"));
         medialLineLengthCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
         spineXcoordsCol = outputTable.addColumn(new ResultTableColumn<>("spine_x_coordinates__px"));
         spineYcoordsCol = outputTable.addColumn(new ResultTableColumn<>("spine_y_coordinates__px"));
+        medialLineXcoordsCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_x_coordinates__px"));
+        medialLineYcoordsCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_y_coordinates__px"));
     }
 
     @Override
@@ -86,6 +90,10 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 
         medialLineSizeCol.addValue(medialLine.size());
         medialLineLengthCol.addValue(medialLine.length());
+        String medialLineXcoordsString = medialLine.getCoordinatePositionAsString(0, ";", "%.2f");
+        medialLineXcoordsCol.addValue(medialLineXcoordsString);
+        String medialLineYcoordsString = medialLine.getCoordinatePositionAsString(1, ";", "%.2f");
+        medialLineYcoordsCol.addValue(medialLineYcoordsString);
 
         try {
             Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
@@ -95,9 +103,9 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             Vector2D orientationVector = spine.getLast().minus(spine.getFirst());
             double orientationAngle = orientationVector.getPolarAngle();
             spineStartToEndPointAngleCol.addValue(orientationAngle);
-            String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.1f");
+            String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.2f");
             spineXcoordsCol.addValue(xCoordsString);
-            String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.1f");
+            String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.2f");
             spineYcoordsCol.addValue(yCoordsString);
             spineStartToEndPointAngleCol.addValue(orientationAngle);
         } catch (java.lang.IndexOutOfBoundsException err) {

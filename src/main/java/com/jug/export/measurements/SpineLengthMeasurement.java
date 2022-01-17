@@ -37,7 +37,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     public void setOutputTable(ResultTable outputTable) {
         spineLengthCalculationSuccessCol = outputTable.addColumn(new ResultTableColumn<>("spine_length_calculation_successful__boolean"));
         spineLengthCol = outputTable.addColumn(new ResultTableColumn<>("spine_length__px", "%.2f"));
-        spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spispineXcoordsColne_array_size__integer"));
+        spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spine_array_size__integer"));
         spineStartToEndPointAngleCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
         medialLineSizeCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_array_size__integer"));
         medialLineLengthCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
@@ -95,9 +95,9 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             Vector2D orientationVector = spine.getLast().minus(spine.getFirst());
             double orientationAngle = orientationVector.getPolarAngle();
             spineStartToEndPointAngleCol.addValue(orientationAngle);
-            String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.2f");
+            String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.1f");
             spineXcoordsCol.addValue(xCoordsString);
-            String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.2f");
+            String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.1f");
             spineYcoordsCol.addValue(yCoordsString);
             spineStartToEndPointAngleCol.addValue(orientationAngle);
         } catch (java.lang.IndexOutOfBoundsException err) {

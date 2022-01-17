@@ -125,7 +125,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
-        measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area_px"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
@@ -148,6 +147,8 @@ public class CellStatsExporter implements ResultExporterInterface {
             intensityFitCellIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_ampl_ch_%d", c), "%.5f")));
             intensityFitBackgroundIntensityCols.add(resultTable.addColumn(new ResultTableColumn<>(String.format("fluo_bg_ch_%d", c), "%.5f")));
         }
+
+        measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
         Pattern positionPattern = Pattern.compile("Pos(\\d+)");
         Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);

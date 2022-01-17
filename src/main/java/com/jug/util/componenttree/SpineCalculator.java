@@ -42,9 +42,9 @@ public class SpineCalculator {
 //        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
 
         int positionAveragingWindowSizeCurrent = positionAveragingWindowSize;
-        if (spine.size() - positionAveragingWindowSize < 10) {
-            positionAveragingWindowSizeCurrent = 0;
-        }
+//        if (spine.size() - positionAveragingWindowSize < 10) {
+//            positionAveragingWindowSizeCurrent = 0;
+//        }
 
         if (positionAveragingWindowSizeCurrent > 0) {
             spine = GeomUtils.smooth(spine, positionAveragingWindowSizeCurrent);
@@ -62,9 +62,9 @@ public class SpineCalculator {
 //        }
 
         int orientationVectorAveragingWindowSizeCurrent = orientationVectorAveragingWindowSize;
-        if (spine.size() - orientationVectorAveragingWindowSize < 10) {
-            orientationVectorAveragingWindowSizeCurrent = 1;
-        }
+//        if (spine.size() - orientationVectorAveragingWindowSize < 10) {
+//            orientationVectorAveragingWindowSizeCurrent = 1;
+//        }
 
         Vector2D basePoint1 = spine.get(0);
         if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */

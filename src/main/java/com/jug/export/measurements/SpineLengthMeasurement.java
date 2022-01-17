@@ -14,10 +14,14 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 public class SpineLengthMeasurement implements SegmentMeasurementInterface {
-    private ResultTableColumn<Double> spineLength;
-    private SpineCalculator spineCalculator;
-    private MedialLineCalculator medialLineCalculator;
-    private ContourCalculator contourCalculator;
+    private ResultTableColumn<Double> spineLengthCol;
+    private ResultTableColumn<Integer> spineLengthCalculationSuccessCol;
+    private ResultTableColumn<Integer> spineSizeCol;
+    private ResultTableColumn<Integer> medialLineSizeCol;
+    private ResultTableColumn<Double> medialLineLengthCol;
+    private final SpineCalculator spineCalculator;
+    private final MedialLineCalculator medialLineCalculator;
+    private final ContourCalculator contourCalculator;
 
     public SpineLengthMeasurement(MedialLineCalculator medialLineCalculator, SpineCalculator spineCalculator, ContourCalculator contourCalculator) {
         this.medialLineCalculator = medialLineCalculator;
@@ -27,7 +31,11 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 
     @Override
     public void setOutputTable(ResultTable outputTable) {
-        spineLength = outputTable.addColumn(new ResultTableColumn<>("spine_length_px", "%.2f"));
+        spineLengthCol = outputTable.addColumn(new ResultTableColumn<>("spine_length__px", "%.2f"));
+        spineLengthCalculationSuccessCol = outputTable.addColumn(new ResultTableColumn<>("spine_length_calculation_successful__boolean"));
+        spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spine_array_size__integer"));
+        medialLineSizeCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_array_size__integer"));
+        medialLineLengthCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
     }
 
     @Override
@@ -63,13 +71,25 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 //            Plotting.showImageWithOverlays(image, rois);
 //        }
 
-        if(medialLine.size() < 20){ /* method for calculating spine will fail for less than 20 pixels */
-            spineLength.addValue(-1.0);
-            return;
+//        if(medialLine.size() < 20){ /* method for calculating spine will fail for less than 20 pixels */
+////            System.out.println("Skipped spine-length measurement.");
+//            spineLength.addValue(-1.0);
+//            return;
+//        }
+
+        medialLineSizeCol.addValue(medialLine.size());
+        medialLineLengthCol.addValue(medialLine.length());
+
+        try {
+            Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+            spineLengthCol.addValue(spine.length());
+            spineSizeCol.addValue(spine.size());
+            spineLengthCalculationSuccessCol.addValue(1);
+        } catch (java.lang.IndexOutOfBoundsException err) {
+//            System.out.println("Spine-length measurement FAILED.");
+            spineLengthCol.addValue(-1.0); /* if calculation fails, set value to -1 */
+            spineSizeCol.addValue(-1);
+            spineLengthCalculationSuccessCol.addValue(0);
         }
-
-        Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
-
-        spineLength.addValue(spine.length());
     }
 }

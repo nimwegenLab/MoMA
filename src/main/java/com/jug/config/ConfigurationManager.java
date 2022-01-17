@@ -132,6 +132,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /************************************/
     public static boolean EXPORT_SPINE_MEASUREMENT = false;
+    public static int SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE = 7;
+    public static int SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE = 7;
+    public static double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
@@ -160,6 +163,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble(props.getProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP)));
 
         EXPORT_SPINE_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+        SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE)));
+        SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE)));
+        SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = Double.parseDouble(props.getProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS)));
 
 		/*
 		  Default x-position of the main GUI-window. This value will be used if the
@@ -303,6 +309,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
             setBooleanAsIntegerValue(props, "EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+            props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE));
+            props.setProperty("SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE));
+            props.setProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS));
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {

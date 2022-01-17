@@ -6,6 +6,7 @@ import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ContourCalculator;
 import com.jug.util.componenttree.MedialLineCalculator;
 import com.jug.util.componenttree.SpineCalculator;
+import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.roi.labeling.LabelRegion;
@@ -19,6 +20,9 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     private ResultTableColumn<Integer> spineSizeCol;
     private ResultTableColumn<Integer> medialLineSizeCol;
     private ResultTableColumn<Double> medialLineLengthCol;
+    private ResultTableColumn<Double> spineStartToEndPointAngleCol;
+    private ResultTableColumn<String> spineXcoordsCol;
+    private ResultTableColumn<String> spineYcoordsCol;
     private final SpineCalculator spineCalculator;
     private final MedialLineCalculator medialLineCalculator;
     private final ContourCalculator contourCalculator;
@@ -31,11 +35,14 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 
     @Override
     public void setOutputTable(ResultTable outputTable) {
-        spineLengthCol = outputTable.addColumn(new ResultTableColumn<>("spine_length__px", "%.2f"));
         spineLengthCalculationSuccessCol = outputTable.addColumn(new ResultTableColumn<>("spine_length_calculation_successful__boolean"));
-        spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spine_array_size__integer"));
+        spineLengthCol = outputTable.addColumn(new ResultTableColumn<>("spine_length__px", "%.2f"));
+        spineSizeCol = outputTable.addColumn(new ResultTableColumn<>("spispineXcoordsColne_array_size__integer"));
+        spineStartToEndPointAngleCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
         medialLineSizeCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_array_size__integer"));
         medialLineLengthCol = outputTable.addColumn(new ResultTableColumn<>("medial_line_length__px", "%.2f"));
+        spineXcoordsCol = outputTable.addColumn(new ResultTableColumn<>("spine_x_coordinates__px"));
+        spineYcoordsCol = outputTable.addColumn(new ResultTableColumn<>("spine_y_coordinates__px"));
     }
 
     @Override
@@ -82,14 +89,25 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 
         try {
             Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+            spineLengthCalculationSuccessCol.addValue(1);
             spineLengthCol.addValue(spine.length());
             spineSizeCol.addValue(spine.size());
-            spineLengthCalculationSuccessCol.addValue(1);
+            Vector2D orientationVector = spine.getLast().minus(spine.getFirst());
+            double orientationAngle = orientationVector.getPolarAngle();
+            spineStartToEndPointAngleCol.addValue(orientationAngle);
+            String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.2f");
+            spineXcoordsCol.addValue(xCoordsString);
+            String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.2f");
+            spineYcoordsCol.addValue(yCoordsString);
+            spineStartToEndPointAngleCol.addValue(orientationAngle);
         } catch (java.lang.IndexOutOfBoundsException err) {
 //            System.out.println("Spine-length measurement FAILED.");
+            spineLengthCalculationSuccessCol.addValue(0);
             spineLengthCol.addValue(-1.0); /* if calculation fails, set value to -1 */
             spineSizeCol.addValue(-1);
-            spineLengthCalculationSuccessCol.addValue(0);
+            spineStartToEndPointAngleCol.addValue(-1.0);
+            spineXcoordsCol.addValue("NA");
+            spineYcoordsCol.addValue("NA");
         }
     }
 }

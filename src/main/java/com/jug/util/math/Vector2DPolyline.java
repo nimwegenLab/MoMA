@@ -1,5 +1,7 @@
 package com.jug.util.math;
 
+import org.apache.commons.lang3.StringUtils;
+
 import net.imglib2.RealCursor;
 import net.imglib2.RealLocalizable;
 import net.imglib2.roi.geom.GeomMasks;
@@ -9,6 +11,7 @@ import net.imglib2.roi.geom.real.Polyline;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Vector2DPolyline {
     List<Vector2D> vectors = new ArrayList<>();
@@ -120,5 +123,11 @@ public class Vector2DPolyline {
 
     public void reverse() {
         Collections.reverse(this.vectors);
+    }
+
+    public String getCoordinatePositionAsString(int positionIndex, String separator, String valueFormat) {
+        String str = this.vectors.stream().map(vect -> String.format(valueFormat, vect.getDoublePosition(positionIndex)) + separator).collect(Collectors.joining());
+        str = StringUtils.chop(str);
+        return str;
     }
 }

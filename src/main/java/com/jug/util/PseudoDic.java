@@ -16,11 +16,14 @@ import com.jug.gui.MoMAModel;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.math.GeomUtils;
+import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * This is pseudo dependency injection container, which I use to work on getting my class dependencies and initialization
@@ -111,10 +114,22 @@ public class PseudoDic {
             return spineLengthMeasurement;
         }
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(getImageJOpService(), getImglib2utils());
+//        SpineCalculator spineCalculator = new SpineCalculator(
+//                configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE,
+//                configurationManager.SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE,
+//                configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS);
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,
+                        configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE,
+                        configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE);
+//        SpineCalculator spineCalculator = new SpineCalculator(
+//                5,
+//                3.5,
+//                medialLineProcessor);
         SpineCalculator spineCalculator = new SpineCalculator(
-                configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE,
                 configurationManager.SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE,
-                configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS);
+                configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS,
+                medialLineProcessor);
         ContourCalculator contourCalculator = new ContourCalculator(getImageJOpService());
         spineLengthMeasurement = new SpineLengthMeasurement(medialLineCalculator, spineCalculator, contourCalculator);
         return spineLengthMeasurement;

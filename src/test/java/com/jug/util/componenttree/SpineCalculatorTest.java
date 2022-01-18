@@ -207,7 +207,7 @@ public class SpineCalculatorTest {
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
 
         Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor = (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input, 5, 21);
-        SpineCalculator sut = new SpineCalculator(5, 0, medialLineProcessor);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
 
         Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 

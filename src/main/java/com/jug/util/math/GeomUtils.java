@@ -122,6 +122,14 @@ public class GeomUtils {
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
+    public static Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {
+        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegment(basePoint1, orientationVector1, linkedContour);
+        Vector2D basePoint2 = pointsOfInterceptingContourSegment.getA();
+        Vector2D tmp = pointsOfInterceptingContourSegment.getB();
+        Vector2D orientationVector2 = tmp.minus(basePoint2);
+        return calculateLineLineIntercept(basePoint1, orientationVector1, basePoint2, orientationVector2);
+    }
+
     public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegment(Vector2D startingPoint, Vector2D orientationVector, LinkedItem<Vector2D> linkedContour) {
         return getPointsOfInterceptingContourSegment(startingPoint, orientationVector, linkedContour, 10000);
     }

@@ -4,11 +4,9 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
-import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.ImageCanvas;
-import ij.gui.ImageWindow;
 import ij.gui.Overlay;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
@@ -22,7 +20,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -121,5 +118,21 @@ public class TestUtils {
         Img<UnsignedByteType> input = (Img) ij.io().open(imageFile);
         Img<BitType> componentMask = Thresholder.threshold(input, new UnsignedByteType(128), true, 1); /* BitType images */
         return componentMask;
+    }
+
+    public static void assertEqual(Vector2D expected, Vector2D actual, double delta){
+        for (int posInd = 0; posInd < 2; posInd++) {
+            if (doubleIsDifferent(expected.getDoublePosition(posInd), actual.getDoublePosition(posInd), delta)) {
+                throw new AssertionError("Vectors not equal:\nexpected: " + expected + "\nactual: " + actual);
+            }
+        }
+    }
+
+    private static boolean doubleIsDifferent(double d1, double d2, double delta) {
+        if (Double.compare(d1, d2) == 0) {
+            return false;
+        } else {
+            return !(Math.abs(d1 - d2) <= delta);
+        }
     }
 }

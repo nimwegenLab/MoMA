@@ -36,12 +36,47 @@ public class GeomUtils {
         int halfWindow = windowSize / 2;
         Vector2DPolyline smoothedVectors = new Vector2DPolyline();
         for (int i = halfWindow; i < vectors.size() - 1 - halfWindow; i++) {
-            double x = 0, y = 0;
-            for (int j = i - halfWindow; j < i + halfWindow + 1; j++) {
-                x += vectors.get(j).getX();
-                y += vectors.get(j).getY();
+            Vector2D averageOfWindow = GeomUtils.averageVectors(vectors.getVectorList().subList(i - halfWindow, i + halfWindow + 1));
+            smoothedVectors.add(averageOfWindow);
+        }
+        return smoothedVectors;
+    }
+
+    /**
+     * Symetrically smooth Vector2DPolyline vectors with windows sizes between minWindowSize/2 and maxWindowSize/2.
+     * The smoothing will be performed using maxWindowSize, wherever there are enough points to average around the
+     * current position. When there are not enough points, the number of averaged points will be reduced.
+     * We stop averaging, when the number of points is below minWindowSize/2.
+     * Points at the start and end with less neighbors than minWindowSize/2 will not be considered.
+     *
+     * @param vectors
+     * @param minWindowSize
+     * @return
+     */
+    public static Vector2DPolyline smoothWithAdaptiveWindowSize(Vector2DPolyline vectors, int minWindowSize, int maxWindowSize) {
+        if (minWindowSize % 2 == 0) {
+            throw new RuntimeException("minWindowSize needs to be uneven integer");
+        }
+        if (maxWindowSize % 2 == 0) {
+            throw new RuntimeException("maxWindowSize needs to be uneven integer");
+        }
+        int minWindowSizeHalfed = minWindowSize / 2;
+        int maxWindowSizeHalfed = maxWindowSize / 2;
+        Vector2DPolyline smoothedVectors = new Vector2DPolyline();
+        for (int i = minWindowSizeHalfed; i < vectors.size() - 1 - minWindowSizeHalfed; i++) {
+            int currentWindowSizeHalfed = maxWindowSizeHalfed;
+            if(i < currentWindowSizeHalfed || (vectors.size() - 1 - i) < currentWindowSizeHalfed){
+                currentWindowSizeHalfed = Math.min(i, vectors.size() - 1 - i);
+//                if (currentWindowSizeHalfed % 2 == 0) {
+//                    currentWindowSizeHalfed -= 1;
+//                }
             }
-            smoothedVectors.add(new Vector2D(x / windowSize, y / windowSize));
+            System.out.println("----");
+            System.out.println("i: " + i);
+            System.out.println("(vectors.size() - 1 - i): " + (vectors.size() - 1 - i));
+            System.out.println("currentWindowSizeHalfed: " + currentWindowSizeHalfed);
+            Vector2D averageOfWindow = GeomUtils.averageVectors(vectors.getVectorList().subList(i - currentWindowSizeHalfed, i + currentWindowSizeHalfed + 1));
+            smoothedVectors.add(averageOfWindow);
         }
         return smoothedVectors;
     }

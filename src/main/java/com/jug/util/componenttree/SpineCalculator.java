@@ -18,13 +18,13 @@ public class SpineCalculator {
 
     int positionAveragingWindowSize;
     int orientationVectorAveragingWindowSize;
-    double maxVerticalDistanceFromStartAndEnd;
+    double minimalVerticalDistanceFromStartAndEnd;
 
-    public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double maxVerticalDistanceFromStartAndEnd) {
+    public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double minimalVerticalDistanceFromStartAndEnd) {
         boundingBoxCalculator = new DefaultBoundingBox();
         this.positionAveragingWindowSize = positionAveragingWindowSize;
         this.orientationVectorAveragingWindowSize = orientationVectorAveragingWindowSize;
-        this.maxVerticalDistanceFromStartAndEnd = maxVerticalDistanceFromStartAndEnd;
+        this.minimalVerticalDistanceFromStartAndEnd = minimalVerticalDistanceFromStartAndEnd;
     }
 
     public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, ValuePair<Integer, Integer> imageLimitsYdirection) {
@@ -36,7 +36,7 @@ public class SpineCalculator {
 
         Vector2DPolyline spine = medialLine.copy();
 
-        removeMedialLinePointsAtStartAndEnd(spine, contour, maxVerticalDistanceFromStartAndEnd);
+        removeMedialLinePointsAtStartAndEnd(spine, contour, minimalVerticalDistanceFromStartAndEnd);
 
 //        System.out.println("spine.size after removal: " + spine.size());
 //        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
@@ -47,7 +47,8 @@ public class SpineCalculator {
 //        }
 
         if (positionAveragingWindowSizeCurrent > 0) {
-            spine = GeomUtils.smooth(spine, positionAveragingWindowSizeCurrent);
+//            spine = GeomUtils.smooth(spine, positionAveragingWindowSizeCurrent);
+            spine = GeomUtils.smoothWithAdaptiveWindowSize(spine, positionAveragingWindowSizeCurrent, positionAveragingWindowSizeCurrent);
         }
 
 //        System.out.println("spine.size after smoothing: " + spine.size());

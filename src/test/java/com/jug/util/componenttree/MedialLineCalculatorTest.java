@@ -41,9 +41,10 @@ public class MedialLineCalculatorTest {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
 //        new MedialLineCalculatorTest().exploreMedialLineCalculator();
-        new MedialLineCalculatorTest().exploreSpineCalculator();
+//        new MedialLineCalculatorTest().exploreSpineCalculator();
 //        new MedialLineCalculatorTest().exploreSpineCalculator2();
 //        new MedialLineCalculatorTest().exploreSpineCalculator3();
+        new MedialLineCalculatorTest().exploreSpineCalculator5();
     }
 
     /**
@@ -154,10 +155,10 @@ public class MedialLineCalculatorTest {
         );
 
         Vector2D first = spine.getFirst();
-        Vector2D centerPoint = spine.get(54);
-        Vector2D last = spine.getLast();
         TestUtils.assertEqual(new Vector2D(51.73809523809524, 95.5), first, delta);
+        Vector2D centerPoint = spine.get(54);
         TestUtils.assertEqual(new Vector2D(54.785714285714285, 162.5), centerPoint, delta);
+        Vector2D last = spine.getLast();
         TestUtils.assertEqual(new Vector2D(52.597995545657014, 232.5), last, delta);
 
 //        testUtils.showImageWithOverlays(image, rois);
@@ -188,7 +189,7 @@ public class MedialLineCalculatorTest {
         LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
 
-        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor = (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input, 21, 21);
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor = (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input, 7, 21);
         SpineCalculator sut = new SpineCalculator(21, 3.5, medialLineProcessor);
 
         Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
@@ -204,14 +205,13 @@ public class MedialLineCalculatorTest {
         );
 
         Vector2D first = spine.getFirst();
-        int centerInd = spine.size() / 2;
-        Vector2D centerPoint = spine.get(centerInd);
-        Vector2D last = spine.getLast();
-        TestUtils.assertEqual(new Vector2D(51.73809523809524, 95.5), first, delta);
+        TestUtils.assertEqual(new Vector2D(51.92857142857142, 95.5), first, delta);
+        Vector2D centerPoint = spine.get(61);
         TestUtils.assertEqual(new Vector2D(54.785714285714285, 162.5), centerPoint, delta);
-        TestUtils.assertEqual(new Vector2D(52.46888888888889, 232.5), last, delta);
+        Vector2D last = spine.getLast();
+        TestUtils.assertEqual(new Vector2D(53.26470588235294, 232.5), last, delta);
 
-//        testUtils.showImageWithOverlays(image, rois);
+        testUtils.showImageWithOverlays(image, rois);
     }
 
     /**

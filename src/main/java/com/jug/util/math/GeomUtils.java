@@ -63,7 +63,7 @@ public class GeomUtils {
         int minWindowSizeHalfed = minWindowSize / 2;
         int maxWindowSizeHalfed = maxWindowSize / 2;
         Vector2DPolyline smoothedVectors = new Vector2DPolyline();
-        for (int i = minWindowSizeHalfed; i < vectors.size() - 1 - minWindowSizeHalfed; i++) {
+        for (int i = minWindowSizeHalfed; i < vectors.size() - minWindowSizeHalfed; i++) {
             int currentWindowSizeHalfed = maxWindowSizeHalfed;
             if(i < currentWindowSizeHalfed || (vectors.size() - 1 - i) < currentWindowSizeHalfed){
                 currentWindowSizeHalfed = Math.min(i, vectors.size() - 1 - i);

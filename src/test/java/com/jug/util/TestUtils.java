@@ -5,6 +5,7 @@ import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2D;
+import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
 import ij.gui.Overlay;
@@ -27,9 +28,11 @@ import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -95,11 +98,19 @@ public class TestUtils {
         return componentTreeGenerator;
     }
 
+    public <T extends NumericType<T>> void showImageWithOverlays2(RandomAccessibleInterval<T> image, List<Vector2DPolyline> polylines) {
+        List<MaskPredicate<?>> rois = new ArrayList<>();
+        polylines.forEach(polyline -> rois.add(polyline.getPolyline()));
+        showImageWithOverlays(image, rois);
+    }
+
     public <T extends NumericType<T>> void showImageWithOverlays(RandomAccessibleInterval<T> image, List<MaskPredicate<?>> rois) {
         ROITree roiTree = new DefaultROITree();
         roiTree.addROIs(rois);
         Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
         ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
+        overlay.setStrokeColor(Color.RED);
+        overlay.setStrokeWidth(.2);
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
 //

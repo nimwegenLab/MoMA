@@ -154,12 +154,11 @@ public class MedialLineCalculatorTest {
         );
 
         Vector2D first = spine.getFirst();
-        int centerInd = spine.size() / 2;
-        Vector2D centerPoint = spine.get(centerInd);
+        Vector2D centerPoint = spine.get(54);
         Vector2D last = spine.getLast();
         TestUtils.assertEqual(new Vector2D(51.73809523809524, 95.5), first, delta);
         TestUtils.assertEqual(new Vector2D(54.785714285714285, 162.5), centerPoint, delta);
-        TestUtils.assertEqual(new Vector2D(52.46888888888889, 232.5), last, delta);
+        TestUtils.assertEqual(new Vector2D(52.597995545657014, 232.5), last, delta);
 
 //        testUtils.showImageWithOverlays(image, rois);
     }

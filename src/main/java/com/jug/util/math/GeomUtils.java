@@ -35,7 +35,7 @@ public class GeomUtils {
         }
         int halfWindow = windowSize / 2;
         Vector2DPolyline smoothedVectors = new Vector2DPolyline();
-        for (int i = halfWindow; i < vectors.size() - 1 - halfWindow; i++) {
+        for (int i = halfWindow; i < vectors.size() - halfWindow; i++) {
             Vector2D averageOfWindow = GeomUtils.averageVectors(vectors.getVectorList().subList(i - halfWindow, i + halfWindow + 1));
             smoothedVectors.add(averageOfWindow);
         }

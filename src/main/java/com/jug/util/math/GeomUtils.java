@@ -67,14 +67,7 @@ public class GeomUtils {
             int currentWindowSizeHalfed = maxWindowSizeHalfed;
             if(i < currentWindowSizeHalfed || (vectors.size() - 1 - i) < currentWindowSizeHalfed){
                 currentWindowSizeHalfed = Math.min(i, vectors.size() - 1 - i);
-//                if (currentWindowSizeHalfed % 2 == 0) {
-//                    currentWindowSizeHalfed -= 1;
-//                }
             }
-            System.out.println("----");
-            System.out.println("i: " + i);
-            System.out.println("(vectors.size() - 1 - i): " + (vectors.size() - 1 - i));
-            System.out.println("currentWindowSizeHalfed: " + currentWindowSizeHalfed);
             Vector2D averageOfWindow = GeomUtils.averageVectors(vectors.getVectorList().subList(i - currentWindowSizeHalfed, i + currentWindowSizeHalfed + 1));
             smoothedVectors.add(averageOfWindow);
         }

@@ -1,11 +1,19 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.TestUtils;
+import com.jug.util.math.Vector2D;
+import com.jug.util.math.Vector2DPolyline;
+import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.plugin.HyperStackMaker;
 import net.imagej.ImageJ;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import net.imagej.roi.DefaultROITree;
+import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.RealLocalizable;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
@@ -14,6 +22,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.junit.Test;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,6 +46,7 @@ public class OrientedBoundingBoxCalculatorTest {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
         new OrientedBoundingBoxCalculatorTest().exploreOrientedBoundingBox();
+        new OrientedBoundingBoxCalculatorTest().exploreOrientedBoundingBox2();
 //        new OrientedBoundingBoxCalculatorTest().test_GetOrientedBoundingBoxCoordinates_returns_correct_value();
     }
 
@@ -112,5 +122,74 @@ public class OrientedBoundingBoxCalculatorTest {
                 orientedBoundingBoxPolygon
         );
         testUtils.showImageWithOverlays(image, rois);
+    }
+
+    /**
+     * Add test for gerating the component tree on a sample image and displaying it.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void exploreOrientedBoundingBox2() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        int componentIndex = 3;
+
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<ARGBType>> componentWithImage =
+                testUtils.getComponentWithImage(imageFile,
+                        componentIndex,
+                        new ARGBType(ARGBType.rgba(255, 255, 255, 255)));
+
+        AdvancedComponent<FloatType> component = componentWithImage.getA();
+        RandomAccessibleInterval<ARGBType> image = componentWithImage.getB();
+
+        OrientedBoundingBoxCalculator boundingBoxCalculator = new OrientedBoundingBoxCalculator();
+
+        LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
+        regionToPolygonConverter.setContext(ij.context());
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
+
+        DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
+        Polygon2D polyHull = convexHullCalculator.calculate(poly);
+
+
+        Vector2DPolyline polygon = Vector2DPolyline.createFromVertexList(poly.vertices());
+        polygon.shiftMutate(new Vector2D(.5, .5));
+        Vector2DPolyline convexHull = Vector2DPolyline.createFromVertexList(polyHull.vertices());
+        convexHull.shiftMutate(new Vector2D(.5, .5));
+        Vector2DPolyline oriented_bbox = Vector2DPolyline.createFromVertexList(orientedBoundingBoxPolygon.vertices());
+        oriented_bbox.shiftMutate(new Vector2D(.5, .5));
+
+        List<MaskPredicate<?>> rois = Arrays.asList(
+                polygon.getPolygon2D(),
+                convexHull.getPolygon2D(),
+                oriented_bbox.getPolygon2D()
+        );
+//        testUtils.showImageWithOverlays(image, rois);
+        ImagePlus imagePlus = ImageJFunctions.wrap(image, "image");
+        ROITree roiTree = new DefaultROITree();
+        roiTree.addROIs(rois);
+        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+        overlay.setStrokeColor(Color.RED);
+        overlay.setStrokeWidth(.2);
+        imagePlus.setOverlay(overlay);
+//        drawOverlay(imagePlus, polygon, .2, Color.RED);
+//        drawOverlay(imagePlus, convexHull, .2, Color.GREEN);
+//        drawOverlay(imagePlus, oriented_bbox, .2, Color.BLUE);
+        ij.ui().show(imagePlus);
+    }
+
+    private void drawOverlay(ImagePlus imageToDrawIn, Vector2DPolyline polyline, double lineWidth, Color strokeColor){
+        List<MaskPredicate<?>> rois = Arrays.asList(
+                polyline.getPolygon2D()
+//                convexHull.getPolygon2D(),
+//                oriented_bbox.getPolygon2D()
+        );
+        ROITree roiTree = new DefaultROITree();
+        roiTree.addROIs(rois);
+        Overlay overlay = ij.convert().convert(roiTree, Overlay.class);
+        overlay.setStrokeColor(strokeColor);
+        overlay.setStrokeWidth(lineWidth);
+        imageToDrawIn.setOverlay(overlay);
     }
 }

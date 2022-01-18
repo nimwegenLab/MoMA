@@ -17,21 +17,19 @@ import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
 public class SpineCalculator {
     private DefaultBoundingBox boundingBoxCalculator;
 
-    int positionAveragingWindowSize;
     int orientationVectorAveragingWindowSize;
     double minimalVerticalDistanceFromStartAndEnd;
     private Function<Vector2DPolyline, Vector2DPolyline> medialLinePreprocesser;
 
-    public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double minimalVerticalDistanceFromStartAndEnd, Function<Vector2DPolyline, Vector2DPolyline> medialLinePreprocesser) {
+    public SpineCalculator(int orientationVectorAveragingWindowSize, double minimalVerticalDistanceFromStartAndEnd, Function<Vector2DPolyline, Vector2DPolyline> medialLinePreprocesser) {
         this.medialLinePreprocesser = medialLinePreprocesser;
         boundingBoxCalculator = new DefaultBoundingBox();
-        this.positionAveragingWindowSize = positionAveragingWindowSize;
         this.orientationVectorAveragingWindowSize = orientationVectorAveragingWindowSize;
         this.minimalVerticalDistanceFromStartAndEnd = minimalVerticalDistanceFromStartAndEnd;
     }
 
     public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double minimalVerticalDistanceFromStartAndEnd) {
-        this(positionAveragingWindowSize, orientationVectorAveragingWindowSize, minimalVerticalDistanceFromStartAndEnd, (medialLine) -> GeomUtils.smooth(medialLine, positionAveragingWindowSize));
+        this(orientationVectorAveragingWindowSize, minimalVerticalDistanceFromStartAndEnd, (medialLine) -> GeomUtils.smooth(medialLine, positionAveragingWindowSize));
     }
 
     public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, ValuePair<Integer, Integer> imageLimitsYdirection) {
@@ -48,16 +46,13 @@ public class SpineCalculator {
 //        System.out.println("spine.size after removal: " + spine.size());
 //        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
 
-        int positionAveragingWindowSizeCurrent = positionAveragingWindowSize;
 //        if (spine.size() - positionAveragingWindowSize < 10) {
 //            positionAveragingWindowSizeCurrent = 0;
 //        }
 
-        if (positionAveragingWindowSizeCurrent > 0) {
 //            spine = GeomUtils.smooth(spine, positionAveragingWindowSizeCurrent);
 //            spine = GeomUtils.smoothWithAdaptiveWindowSize(spine, positionAveragingWindowSizeCurrent, positionAveragingWindowSizeCurrent);
-            spine = medialLinePreprocesser.apply(spine);
-        }
+        spine = medialLinePreprocesser.apply(spine);
 
 //        System.out.println("spine.size after smoothing: " + spine.size());
 

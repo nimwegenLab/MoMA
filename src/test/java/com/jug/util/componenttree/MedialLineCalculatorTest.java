@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.lp.costs.ComponentMock;
 import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import ij.IJ;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 public class MedialLineCalculatorTest {
     private final ImageJ ij;
@@ -136,7 +138,8 @@ public class MedialLineCalculatorTest {
         LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
 
-        SpineCalculator sut = new SpineCalculator(21, 21, 3.5);
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor = (input) -> GeomUtils.smooth(input, 21);
+        SpineCalculator sut = new SpineCalculator(21, 3.5, medialLineProcessor);
 
         Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 
@@ -186,7 +189,8 @@ public class MedialLineCalculatorTest {
         LabelRegion<Integer> componentRegion = componentAndImage.getA().getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
 
-        SpineCalculator sut = new SpineCalculator(21, 21, 3.5);
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor = (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input, 21, 21);
+        SpineCalculator sut = new SpineCalculator(21, 3.5, medialLineProcessor);
 
         Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
 

@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
-import static com.jug.util.math.GeomUtils.calculateLineLineIntercept;
-
 public class SpineCalculator {
     private DefaultBoundingBox boundingBoxCalculator;
 
@@ -29,7 +27,11 @@ public class SpineCalculator {
     }
 
     public SpineCalculator(int positionAveragingWindowSize, int orientationVectorAveragingWindowSize, double minimalVerticalDistanceFromStartAndEnd) {
-        this(orientationVectorAveragingWindowSize, minimalVerticalDistanceFromStartAndEnd, (medialLine) -> GeomUtils.smooth(medialLine, positionAveragingWindowSize));
+        this(orientationVectorAveragingWindowSize, minimalVerticalDistanceFromStartAndEnd, getDefaultMedialLinePreprocessor(positionAveragingWindowSize));
+    }
+
+    public static Function<Vector2DPolyline, Vector2DPolyline> getDefaultMedialLinePreprocessor(int positionAveragingWindowSize) {
+        return (medialLine) -> GeomUtils.smooth(medialLine, positionAveragingWindowSize);
     }
 
     public Vector2DPolyline calculate(Vector2DPolyline medialLine, Vector2DPolyline contour, ValuePair<Integer, Integer> imageLimitsYdirection) {

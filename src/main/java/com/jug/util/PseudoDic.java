@@ -114,18 +114,10 @@ public class PseudoDic {
             return spineLengthMeasurement;
         }
         MedialLineCalculator medialLineCalculator = new MedialLineCalculator(getImageJOpService(), getImglib2utils());
-//        SpineCalculator spineCalculator = new SpineCalculator(
-//                configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_WINDOWSIZE,
-//                configurationManager.SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE,
-//                configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS);
         Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
                 (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,
                         configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE,
                         configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE);
-//        SpineCalculator spineCalculator = new SpineCalculator(
-//                5,
-//                3.5,
-//                medialLineProcessor);
         SpineCalculator spineCalculator = new SpineCalculator(
                 configurationManager.SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE,
                 configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS,

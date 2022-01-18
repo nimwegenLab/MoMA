@@ -119,7 +119,7 @@ public class PseudoDic {
                         configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE,
                         configurationManager.SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE);
         SpineCalculator spineCalculator = new SpineCalculator(
-                configurationManager.SPINE_MEASUREMENT_DIRECTION_AVERAGING_WINDOWSIZE,
+                configurationManager.SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE,
                 configurationManager.SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS,
                 medialLineProcessor);
         ContourCalculator contourCalculator = new ContourCalculator(getImageJOpService());

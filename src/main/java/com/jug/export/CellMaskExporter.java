@@ -3,6 +3,7 @@ package com.jug.export;
 import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.moma.auxiliary.Plotting;
 import net.imglib2.FinalInterval;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
@@ -32,16 +33,6 @@ public class CellMaskExporter implements ResultExporterInterface {
     public CellMaskExporter(Imglib2Utils imglib2Utils, Supplier<String> defaultFilenameDecorationSupplier) {
         this.imglib2Utils = imglib2Utils;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
-    }
-
-    private static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
-                                                               T value,
-                                                               RandomAccessibleInterval<T> targetImage) {
-        RandomAccess<T> out = targetImage.randomAccess();
-        for (Localizable location : component) {
-            out.setPosition(location);
-            out.get().set(value);
-        }
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
@@ -91,7 +82,7 @@ public class CellMaskExporter implements ResultExporterInterface {
             int segmentCounter = 0;
             while (segment.exists) {
                 IntervalView<IntType> z0slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
-                drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.getId()), z0slice);
+                Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.getId()), z0slice);
                 int sourceSegmentId;
                 if (segmentCounter == 0) { /* I use the cell counter to check, if this is the first segment in the track of the cell. If so we use the cell-ID of the parent-cell because it was a . Else use the ID of the previous instance of this cell, because it was a mapping-assignment in this case. This hack is needed, because I do not have a reference to the source-component from a given target-component. */
                     sourceSegmentId = segment.getParentId();
@@ -99,7 +90,7 @@ public class CellMaskExporter implements ResultExporterInterface {
                     sourceSegmentId = segment.getId();
                 }
                 IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 0, 1, segment.timestep);
-                drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
+                Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
                 segment = segment.nextSegmentInTime();
                 segmentCounter++;
             }

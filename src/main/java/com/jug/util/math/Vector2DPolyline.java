@@ -111,10 +111,11 @@ public class Vector2DPolyline {
         return GeomUtils.differences(this.getVectorList());
     }
 
-    public void shiftMutate(Vector2D shiftVector) {
+    public Vector2DPolyline shiftMutate(Vector2D shiftVector) {
         for(Vector2D vect : this.getVectorList()) {
             vect.plusMutate(shiftVector);
         }
+        return this;
     }
 
     public boolean isClosedPolygon(){

@@ -59,7 +59,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         long end_index_horz = img.max(0);
         return new FinalInterval(
                 new long[]{start_index_horz, MoMA.dic.getConfigurationManager().CELL_DETECTION_ROI_OFFSET_TOP, 0, 0, 0},
-                new long[]{end_index_horz, img.max(1), 0, img.max(3), img.max(4)}
+                new long[]{end_index_horz, img.max(1), img.max(2), img.max(3), img.max(4)}
         );
     }
 

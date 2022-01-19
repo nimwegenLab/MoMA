@@ -73,8 +73,8 @@ public class CellMaskExporter implements ResultExporterInterface {
         RandomAccessibleInterval sourceImage = component.getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
-        long nrofChannels = 1;
-        long nrOfSlices = 2;
+        long nrofChannels = 2;
+        long nrOfSlices = 1;
         ArrayImgFactory<IntType> imgFactory = new ArrayImgFactory<>(new IntType());
         Img<IntType> img = imgFactory.create(xDim, yDim, nrofChannels, nrOfSlices, nrOfFrames);
         return img; /* channel order in an ImagePlus (which we use for storing), is: XYCZT; so those are the axes we generate here */
@@ -93,7 +93,7 @@ public class CellMaskExporter implements ResultExporterInterface {
                 } else {
                     sourceSegmentId = segment.getId();
                 }
-                IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 0, 1, segment.timestep);
+                IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 1, 0, segment.timestep);
                 Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
                 segment = segment.nextSegmentInTime();
                 segmentCounter++;

@@ -73,8 +73,12 @@ public class CellMaskExporter implements ResultExporterInterface {
         RandomAccessibleInterval sourceImage = component.getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
+        long nrofChannels = 1;
+        long nrOfSlices = 2;
         ArrayImgFactory<IntType> imgFactory = new ArrayImgFactory<>(new IntType());
-        return imgFactory.create(xDim, yDim, 1, 2, nrOfFrames); /* channel order in an ImagePlus (which we use for storing), is: XYCZT; so those are the axes we generate here */
+        Img<IntType> img = imgFactory.create(xDim, yDim, nrofChannels, nrOfSlices, nrOfFrames);
+        return img; /* channel order in an ImagePlus (which we use for storing), is: XYCZT; so those are the axes we generate here */
+//        return imgFactory.create(xDim, yDim, 1, 2, nrOfFrames); /* channel order in an ImagePlus (which we use for storing), is: XYCZT; so those are the axes we generate here */
     }
 
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {

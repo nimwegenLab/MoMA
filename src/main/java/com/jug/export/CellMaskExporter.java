@@ -7,19 +7,22 @@ import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
 import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
+import java.awt.*;
 import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -72,7 +75,11 @@ public class CellMaskExporter implements ResultExporterInterface {
     private void saveResultImageToFile(File outputFile) {
         FinalInterval roiForNetworkProcessing = getRoiForSaving(imgResult);
         IntervalView<IntType> toSave = Views.interval(imgResult, roiForNetworkProcessing);
-        imglib2Utils.saveImage(toSave, outputFile.getAbsolutePath());
+//        imglib2Utils.saveImage(toSave, outputFile.getAbsolutePath());
+        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
+        tmp_image.setOverlay(overlay);
+        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+//        overlay
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {
@@ -108,22 +115,25 @@ public class CellMaskExporter implements ResultExporterInterface {
         }
     }
 
-    private HashMap<Integer,Overlay> overlays = new HashMap<>();
+//    private HashMap<Integer,Overlay> overlays = new HashMap<>();
+    private Overlay overlay = new Overlay();
     private void addComponentFeaturesToOverlay(SegmentRecord segment) {
         int timestep = segment.timestep;
-        Overlay currentOverlay;
-        if(!overlays.keySet().contains(timestep)){
-            currentOverlay = overlays.put(timestep, new Overlay());
-        } else{
-            currentOverlay = overlays.get(timestep);
-        }
+//        Overlay currentOverlay;
+//        if(!overlays.keySet().contains(timestep)){
+//            currentOverlay = overlays.put(timestep, new Overlay());
+//        } else{
+//            currentOverlay = overlays.get(timestep);
+//        }
         ComponentInterface component = segment.hyp.getWrappedComponent();
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
             Vector2DPolyline feature = component.getComponentFeature(featureName);
             Roi roi = overlayUtils.convertToRoi(feature.getPolygon2D());
-            roi.setName(featureName);
-            currentOverlay.add(roi);
+            roi.setStrokeColor(Color.BLUE);
+//            roi.setName(featureName);
+            roi.setPosition(0, 0, timestep);
+            overlay.add(roi);
         }
     }
 

@@ -64,7 +64,7 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
-    public Set<String> getComponentFeatureNames(String featureName) {
+    public Set<String> getComponentFeatureNames() {
         throw new NotImplementedException();
     }
 

@@ -659,7 +659,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     @Override
-    public Set<String> getComponentFeatureNames(String featureName) {
+    public Set<String> getComponentFeatureNames() {
         return componentFeatures.keySet();
     }
 

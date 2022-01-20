@@ -2,22 +2,26 @@ package com.jug.export;
 
 import com.jug.MoMA;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.imglib2.OverlayUtils;
+import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import net.imglib2.FinalInterval;
-import net.imglib2.Localizable;
-import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgFactory;
-import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -27,11 +31,13 @@ import java.util.function.Supplier;
  */
 public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
+    private OverlayUtils overlayUtils;
     private Supplier<String> defaultFilenameDecorationSupplier;
     Img<IntType> imgResult;
 
-    public CellMaskExporter(Imglib2Utils imglib2Utils, Supplier<String> defaultFilenameDecorationSupplier) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils, Supplier<String> defaultFilenameDecorationSupplier) {
         this.imglib2Utils = imglib2Utils;
+        this.overlayUtils = overlayUtils;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
     }
 
@@ -95,9 +101,29 @@ public class CellMaskExporter implements ResultExporterInterface {
                 }
                 IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 1, 0, segment.timestep);
                 Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
+                addComponentFeaturesToOverlay(segment);
                 segment = segment.nextSegmentInTime();
                 segmentCounter++;
             }
+        }
+    }
+
+    private HashMap<Integer,Overlay> overlays = new HashMap<>();
+    private void addComponentFeaturesToOverlay(SegmentRecord segment) {
+        int timestep = segment.timestep;
+        Overlay currentOverlay;
+        if(!overlays.keySet().contains(timestep)){
+            currentOverlay = overlays.put(timestep, new Overlay());
+        } else{
+            currentOverlay = overlays.get(timestep);
+        }
+        ComponentInterface component = segment.hyp.getWrappedComponent();
+        Set<String> featureNames = component.getComponentFeatureNames();
+        for (String featureName : featureNames){
+            Vector2DPolyline feature = component.getComponentFeature(featureName);
+            Roi roi = overlayUtils.convertToRoi(feature.getPolygon2D());
+            roi.setName(featureName);
+            currentOverlay.add(roi);
         }
     }
 

@@ -22,5 +22,5 @@ public interface ComponentInterface<T extends Type<T>, C extends Component<T, C>
 
     Vector2DPolyline getComponentFeature(String featureName);
 
-    Set<String> getComponentFeatureNames(String featureName);
+    Set<String> getComponentFeatureNames();
 }

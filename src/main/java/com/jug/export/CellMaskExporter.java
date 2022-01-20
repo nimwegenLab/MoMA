@@ -25,6 +25,7 @@ import net.imglib2.view.Views;
 
 import java.awt.*;
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -39,11 +40,16 @@ public class CellMaskExporter implements ResultExporterInterface {
     private OverlayUtils overlayUtils;
     private Supplier<String> defaultFilenameDecorationSupplier;
     Img<IntType> imgResult;
+    private HashMap<String, Color> featureColors;
 
     public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils, Supplier<String> defaultFilenameDecorationSupplier) {
         this.imglib2Utils = imglib2Utils;
         this.overlayUtils = overlayUtils;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
+        featureColors = new HashMap<>();
+        featureColors.put("contour", Color.BLUE);
+        featureColors.put("spine", Color.RED);
+        featureColors.put("medialline", Color.YELLOW);
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
@@ -132,9 +138,9 @@ public class CellMaskExporter implements ResultExporterInterface {
             Vector2DPolyline feature = component.getComponentFeature(featureName);
 //            feature.shiftMutate(new Vector2D(0.5, 0.5));
             String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
-            System.out.println("roiName: " + roiName);
+//            System.out.println("roiName: " + roiName);
             if(feature.isEmpty()){
-                System.out.println("isEmpty");
+//                System.out.println("isEmpty");
                 continue;
             }
             Roi roi;
@@ -143,7 +149,7 @@ public class CellMaskExporter implements ResultExporterInterface {
             } else{
                 roi = overlayUtils.convertToRoi(feature.getPolyline());
             }
-            roi.setStrokeColor(Color.BLUE);
+            roi.setStrokeColor(featureColors.get(featureName));
             roi.setName(roiName);
             roi.setPosition(0, 0, timestep + 1);  /* indexing in ImageJ is 1-based, so I need to add +1 here to the 0-based time steps. */
             overlay.add(roi);

@@ -5,12 +5,14 @@ import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
+import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
+import ij.process.LUT;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -73,13 +75,12 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     private void saveResultImageToFile(File outputFile) {
-        FinalInterval roiForNetworkProcessing = getRoiForSaving(imgResult);
-        IntervalView<IntType> toSave = Views.interval(imgResult, roiForNetworkProcessing);
-//        imglib2Utils.saveImage(toSave, outputFile.getAbsolutePath());
         ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
         tmp_image.setOverlay(overlay);
+//        tmp_image.setLut(new LUT());
+//        tmp_image.setCha
+//        IJ.run(tmp_image, "Grays", "");
         IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
-//        overlay
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {
@@ -129,6 +130,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
             Vector2DPolyline feature = component.getComponentFeature(featureName);
+//            feature.shiftMutate(new Vector2D(0.5, 0.5));
             String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
             System.out.println("roiName: " + roiName);
             if(feature.isEmpty()){

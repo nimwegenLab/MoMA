@@ -1,6 +1,8 @@
 package com.jug.exploration;
 
 import ij.IJ;
+//import ij.ImageJ;
+import net.imagej.ImageJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
@@ -44,25 +46,28 @@ public class ExploreRoiOverlays {
 
     private static void explorationTest3() {
 //        ImagePlus imp = IJ.createImage("HyperStack", "8-bit grayscale-mode label", 400, 300, 3, 4, 5);
-        ImagePlus imp = IJ.createHyperStack("HyperStack", 400, 300, 2, 1, 5, 8);
-        int nChannels = imp.getNChannels();
-        System.out.println("nChannels: " + nChannels);
-        IJ.run(imp, "Add Slice", "add=channel");
-        nChannels = imp.getNChannels();
-        imp.updateImage();
-        System.out.println("nChannels: " + nChannels);
+        ImageJ ij = new ImageJ();
+        ij.ui().showUI();
+        ImagePlus imp = IJ.createHyperStack("HyperStack", 400, 300, 3, 1, 5, 8);
+//        int nChannels = imp.getNChannels();
+//        System.out.println("nChannels: " + nChannels);
+//        IJ.run(imp, "Add Slice", "add=channel");
+//        nChannels = imp.getNChannels();
+//        imp.updateImage();
         Overlay overlay = new Overlay();
         Roi roi = new Roi(116, 168, 124, 62);
-        roi.setPosition(1,1,1);
+        roi.setPosition(2,1,1);
         roi.setStrokeColor(Color.RED);
+        roi.setName("roi_1");
         overlay.add(roi);
         Roi roi2 = new Roi(50, 50, 60, 30);
-        roi2.setPosition(2,1,1);
+        roi2.setPosition(3,1,1);
         roi2.setStrokeColor(Color.BLUE);
+        roi2.setName("roi_2");
         overlay.add(roi2);
         imp.setOverlay(overlay);
         imp.show();
-//        IJ.save(imp, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image.tif");
+        IJ.save(imp, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image.tif");
 
 //        imagePlus.getRoi();
 //        imagePlus.setRoi(roi);

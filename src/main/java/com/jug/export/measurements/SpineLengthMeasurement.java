@@ -50,9 +50,11 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     public void measure(ComponentInterface component) {
         RandomAccessibleInterval<BitType> image = component.getComponentImage(new BitType(true));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(image);
+        component.addComponentFeature("medialline", medialLine);
 
         LabelRegion<Integer> componentRegion = component.getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+        component.addComponentFeature("contour", contour);
 
 //        if(component.firstMomentPixelCoordinates()[0] == 53.71328671328671){
 //        if(component.firstMomentPixelCoordinates()[0] == 53.30769230769231){
@@ -92,8 +94,9 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
         String medialLineYcoordsString = medialLine.getCoordinatePositionAsString(1, ";", "%.2f");
         medialLineYcoordsCol.addValue(medialLineYcoordsString);
 
+        Vector2DPolyline spine;
         try {
-            Vector2DPolyline spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
+            spine = spineCalculator.calculate(medialLine, contour, new ValuePair<>((int) image.min(1), (int) image.max(1)));
             spineLengthCalculationSuccessCol.addValue(1);
             spineLengthCol.addValue(spine.length());
             spineSizeCol.addValue(spine.size());
@@ -114,5 +117,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             spineXcoordsCol.addValue("NA");
             spineYcoordsCol.addValue("NA");
         }
+        spine = new Vector2DPolyline();
+        component.addComponentFeature("spine", spine);
     }
 }

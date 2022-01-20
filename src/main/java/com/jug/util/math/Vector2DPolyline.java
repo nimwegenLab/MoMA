@@ -131,4 +131,8 @@ public class Vector2DPolyline {
         str = StringUtils.chop(str);
         return str;
     }
+
+    public boolean isEmpty() {
+        return vectors.isEmpty();
+    }
 }

@@ -129,9 +129,16 @@ public class CellMaskExporter implements ResultExporterInterface {
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
             Vector2DPolyline feature = component.getComponentFeature(featureName);
+            String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
+            System.out.println("roiName: " + roiName);
+            if(feature.isEmpty()){
+                System.out.println("isEmpty");
+                continue;
+            }
             Roi roi = overlayUtils.convertToRoi(feature.getPolygon2D());
+//            Roi roi = overlayUtils.convertToRoi(feature.getPolyline());
             roi.setStrokeColor(Color.BLUE);
-//            roi.setName(featureName);
+            roi.setName(roiName);
             roi.setPosition(0, 0, timestep);
             overlay.add(roi);
         }

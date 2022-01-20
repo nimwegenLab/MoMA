@@ -50,6 +50,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         featureColors.put("contour", Color.BLUE);
         featureColors.put("spine", Color.RED);
         featureColors.put("medialline", Color.YELLOW);
+        featureColors.put("orientedbbox", Color.GREEN);
     }
 
     public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {

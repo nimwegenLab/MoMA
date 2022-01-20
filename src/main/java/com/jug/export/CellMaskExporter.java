@@ -123,25 +123,16 @@ public class CellMaskExporter implements ResultExporterInterface {
         }
     }
 
-//    private HashMap<Integer,Overlay> overlays = new HashMap<>();
     private Overlay overlay = new Overlay();
     private void addComponentFeaturesToOverlay(SegmentRecord segment) {
         int timestep = segment.timestep;
-//        Overlay currentOverlay;
-//        if(!overlays.keySet().contains(timestep)){
-//            currentOverlay = overlays.put(timestep, new Overlay());
-//        } else{
-//            currentOverlay = overlays.get(timestep);
-//        }
         ComponentInterface component = segment.hyp.getWrappedComponent();
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
             Vector2DPolyline feature = component.getComponentFeature(featureName);
 //            feature.shiftMutate(new Vector2D(0.5, 0.5));
             String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
-//            System.out.println("roiName: " + roiName);
             if(feature.isEmpty()){
-//                System.out.println("isEmpty");
                 continue;
             }
             Roi roi;

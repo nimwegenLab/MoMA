@@ -2,10 +2,7 @@ package com.jug.export.measurements;
 
 import com.jug.export.ResultTable;
 import com.jug.export.ResultTableColumn;
-import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ContourCalculator;
-import com.jug.util.componenttree.MedialLineCalculator;
-import com.jug.util.componenttree.SpineCalculator;
+import com.jug.util.componenttree.*;
 import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccessibleInterval;
@@ -50,7 +47,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     }
 
     @Override
-    public void measure(AdvancedComponent<FloatType> component) {
+    public void measure(ComponentInterface component) {
         RandomAccessibleInterval<BitType> image = component.getComponentImage(new BitType(true));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(image);
 

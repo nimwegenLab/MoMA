@@ -9,5 +9,5 @@ import net.imglib2.type.numeric.real.FloatType;
 public interface SegmentMeasurementInterface {
     void setOutputTable(ResultTable outputTable);
 
-    void measure(AdvancedComponent<FloatType> component);
+    void measure(ComponentInterface component);
 }

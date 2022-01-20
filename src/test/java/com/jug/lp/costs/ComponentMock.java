@@ -1,6 +1,7 @@
 package com.jug.lp.costs;
 
 import com.jug.util.componenttree.ComponentInterface;
+import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
@@ -12,10 +13,12 @@ import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 public class ComponentMock implements ComponentInterface {
     private final double[] firstMomentPixelCoordinates;
@@ -48,6 +51,21 @@ public class ComponentMock implements ComponentInterface {
         ImgLabeling labeling = ij.op().labeling().cca(this.componentImage, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
         LabelRegions regions = new LabelRegions(labeling);
         return regions.getLabelRegion(0);
+    }
+
+    @Override
+    public void addComponentFeature(String featureName, Vector2DPolyline feature) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Vector2DPolyline getComponentFeature(String featureName) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Set<String> getComponentFeatureNames(String featureName) {
+        throw new NotImplementedException();
     }
 
     @Override

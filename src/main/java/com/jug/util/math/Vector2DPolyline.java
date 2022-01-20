@@ -14,7 +14,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Vector2DPolyline {
+    public enum PolyshapeType {
+        UNDEFINED,
+        POLYGON,
+        POLYLINE
+    }
+
     List<Vector2D> vectors = new ArrayList<>();
+
+    private PolyshapeType type = PolyshapeType.UNDEFINED;
+    public void setType(PolyshapeType type){
+        this.type = type;
+    }
+
+    public PolyshapeType getType(){
+        return type;
+    }
 
     public Vector2DPolyline() {}
 

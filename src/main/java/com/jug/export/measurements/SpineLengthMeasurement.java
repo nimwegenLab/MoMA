@@ -50,10 +50,12 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     public void measure(ComponentInterface component) {
         RandomAccessibleInterval<BitType> image = component.getComponentImage(new BitType(true));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(image);
+        medialLine.setType(Vector2DPolyline.PolyshapeType.POLYLINE);
         component.addComponentFeature("medialline", medialLine);
 
         LabelRegion<Integer> componentRegion = component.getRegion();
         Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+        contour.setType(Vector2DPolyline.PolyshapeType.POLYGON);
         component.addComponentFeature("contour", contour);
 
 //        if(component.firstMomentPixelCoordinates()[0] == 53.71328671328671){
@@ -110,6 +112,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             spineStartToEndPointAngleCol.addValue(orientationAngle);
         } catch (java.lang.IndexOutOfBoundsException err) {
 //            System.out.println("Spine-length measurement FAILED.");
+            spine = new Vector2DPolyline();
             spineLengthCalculationSuccessCol.addValue(0);
             spineLengthCol.addValue(-1.0); /* if calculation fails, set value to -1 */
             spineSizeCol.addValue(-1);
@@ -117,7 +120,7 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             spineXcoordsCol.addValue("NA");
             spineYcoordsCol.addValue("NA");
         }
-        spine = new Vector2DPolyline();
+        spine.setType(Vector2DPolyline.PolyshapeType.POLYLINE);
         component.addComponentFeature("spine", spine);
     }
 }

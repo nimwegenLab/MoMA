@@ -135,7 +135,12 @@ public class CellMaskExporter implements ResultExporterInterface {
                 System.out.println("isEmpty");
                 continue;
             }
-            Roi roi = overlayUtils.convertToRoi(feature.getPolygon2D());
+            Roi roi;
+            if(feature.getType() == Vector2DPolyline.PolyshapeType.POLYGON){
+                roi = overlayUtils.convertToRoi(feature.getPolygon2D());
+            } else{
+                roi = overlayUtils.convertToRoi(feature.getPolyline());
+            }
 //            Roi roi = overlayUtils.convertToRoi(feature.getPolyline());
             roi.setStrokeColor(Color.BLUE);
             roi.setName(roiName);

@@ -16,6 +16,25 @@ public class CustomDefaultMinorMajorAxisCustom {
     public CustomDefaultMinorMajorAxisCustom() {
     }
 
+    	/*
+    	comments from here: https://github.com/imagej/ImageJ/blob/master/ij/process/EllipseFitter.java
+	basic equations:
+		a: major axis
+		b: minor axis
+		t: theta, angle of major axis, clockwise with respect to x axis.
+		g11*x^2 + 2*g12*x*y + g22*y^2 = 1       -- equation of ellipse
+		g11:= ([cos(t)]/a)^2 + ([sin(t)]/b)^2
+		g12:= (1/a^2 - 1/b^2) * sin(t) * cos(t)
+		g22:= ([sin(t)]/a)^2 + ([cos(t)]/b)^2
+		solving for x:      x:= k1*y  sqrt( k2*y^2 + k3 )
+		where:  k1:= -g12/g11
+		k2:= (g12^2 - g11*g22)/g11^2
+		k3:= 1/g11
+		ymax or ymin occur when there is a single value for x, that is when:
+		k2*y^2 + k3 = 0
+	*/
+
+
     private double[] getMinorMajorAxis(Polygon2D input, List<RealLocalizable> points) {
         double[] moments = this.getMoments(input, points);
         double m00 = moments[0];
@@ -35,7 +54,7 @@ public class CustomDefaultMinorMajorAxisCustom {
             tmp = 1.0E-6D;
         }
 
-        double ta = 0.5D * Math.atan(2.0D * a12 / tmp);
+        double ta = 0.5D * Math.atan(2.0D * a12 / tmp); /* corresponds to line 157 here: https://github.com/imagej/ImageJ/blob/master/ij/process/EllipseFitter.java */
         if (ta < 0.0D) {
             ++ta;
         }

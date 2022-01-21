@@ -31,19 +31,24 @@ public class BestFitEllipseMeasurement implements SegmentMeasurementInterface {
         double angle = minorAndMajorAxis.getValue2().get();
         double[] componentCenter = component.firstMomentPixelCoordinates();
 
-        Vector2DPolyline ellipse = calculateEllipseContour(componentCenter[0], componentCenter[1], minorAxisLength, majorAxisLength, angle);
+        Vector2DPolyline ellipse = calculateEllipseContour(componentCenter[0], componentCenter[1], majorAxisLength, minorAxisLength, angle);
 
         component.addComponentFeature("ellipse", ellipse);
     }
 
+    /**
+     * WARNING: THIS DOES NOT WORK YET!!!
+     */
     private Vector2DPolyline calculateEllipseContour(double x, double y, double a, double b, double angle){
+        /*angle: angle of */
         a = a / 2;
         b = b / 2;
         Vector2DPolyline result = new Vector2DPolyline();
         result.setType(Vector2DPolyline.PolyshapeType.POLYGON);
-        double beta = -angle * (Math.PI / 180);
+//        double beta = -angle * (Math.PI / 180);
+        double beta = -angle;
             for (int i=0; i<=360; i+=2) {
-                double alpha = i * (Math.PI / 180);
+                double alpha = i * (Math.PI / 180) - Math.PI;
                 double X = x + a * Math.cos(alpha) * Math.cos(beta) - b * Math.sin(alpha) * Math.sin(beta);
                 double Y = y + a * Math.cos(alpha) * Math.sin(beta) + b * Math.sin(alpha) * Math.cos(beta);
                 result.add(new Vector2D(X,Y));
@@ -59,10 +64,10 @@ public class BestFitEllipseMeasurement implements SegmentMeasurementInterface {
         return result;
     }
 
-    private double sqr(double x) {
-        return x*x;
-    }
-
+//    private double sqr(double x) {
+//        return x*x;
+//    }
+//
 //    public Vector2DPolyline drawEllipse(double xCenter, double yCenter, double minor, double major, double theta) {
 ////        /** X centroid */
 ////        double xCenter;

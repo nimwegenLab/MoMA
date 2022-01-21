@@ -13,10 +13,12 @@ import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.img.Img;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.javatuples.Triplet;
 
 import javax.swing.*;
 import java.io.*;
@@ -183,7 +185,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
                 frameCol.addValue(segmentRecord.timestep);
 
-                ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
+                Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
                 // WARNING -- if you change substring 'frame' you need also to change the last-row-deletion procedure below for the ENDOFTRACKING case... yes, this is not clean... ;)
                 cellRankCol.addValue(cellRank);
@@ -202,8 +204,8 @@ public class CellStatsExporter implements ResultExporterInterface {
                 ValuePair<Double, Double> center = componentProperties.getCentroid(currentComponent);
                 cellCenterXCol.addValue(center.getA());
                 cellCenterYCol.addValue(center.getB());
-                cellWidthCol.addValue(minorAndMajorAxis.getA());
-                cellLengthCol.addValue(minorAndMajorAxis.getB());
+                cellWidthCol.addValue(minorAndMajorAxis.getValue0().get());
+                cellLengthCol.addValue(minorAndMajorAxis.getValue1().get());
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));

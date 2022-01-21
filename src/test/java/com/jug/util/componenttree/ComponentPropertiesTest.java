@@ -86,8 +86,8 @@ public class ComponentPropertiesTest {
         System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
         for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
-            double minorAxis = props.getMinorMajorAxis(component).getA();
-            double majorAxis = props.getMinorMajorAxis(component).getB();
+            double minorAxis = props.getMinorMajorAxis(component).getValue0().get();
+            double majorAxis = props.getMinorMajorAxis(component).getValue1().get();
             double majorAxisTiltAngle = props.getTiltAngle(component);
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);

@@ -6,18 +6,13 @@ import java.util.Comparator;
 import java.util.List;
 import net.imagej.ops.Ops.Geometric.SecondMoment;
 import net.imagej.ops.geom.GeomUtils;
-import net.imagej.ops.special.function.AbstractUnaryFunctionOp;
 import net.imglib2.RealLocalizable;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
-import net.imglib2.util.Pair;
-import net.imglib2.util.ValuePair;
 import org.scijava.plugin.Plugin;
+import org.javatuples.Triplet;
 
-@Plugin(
-        type = SecondMoment.class
-)
-public class CustomDefaultMinorMajorAxisCustom extends AbstractUnaryFunctionOp<Polygon2D, Pair<DoubleType, DoubleType>> implements SecondMoment {
+public class CustomDefaultMinorMajorAxisCustom {
     public CustomDefaultMinorMajorAxisCustom() {
     }
 
@@ -80,7 +75,7 @@ public class CustomDefaultMinorMajorAxisCustom extends AbstractUnaryFunctionOp<P
             minor = tmp;
         }
 
-        return new double[]{minor, major};
+        return new double[]{minor, major, angle};
     }
 
     private double[] getMoments(Polygon2D input, List<RealLocalizable> points) {
@@ -131,7 +126,7 @@ public class CustomDefaultMinorMajorAxisCustom extends AbstractUnaryFunctionOp<P
         return input.vertex(i).getDoublePosition(0);
     }
 
-    public Pair<DoubleType, DoubleType> calculate(Polygon2D input) {
+    public Triplet<DoubleType, DoubleType, DoubleType> calculate(Polygon2D input) {
         List<RealLocalizable> points = new ArrayList(GeomUtils.vertices(input));
         Collections.sort(points, new Comparator<RealLocalizable>() {
             public int compare(RealLocalizable o1, RealLocalizable o2) {
@@ -143,6 +138,7 @@ public class CustomDefaultMinorMajorAxisCustom extends AbstractUnaryFunctionOp<P
         });
         points.add(points.get(0));
         double[] minorMajorAxis = this.getMinorMajorAxis(input, points);
-        return new ValuePair(new DoubleType(minorMajorAxis[0]), new DoubleType(minorMajorAxis[1]));
+//        return new ValuePair(new DoubleType(minorMajorAxis[0]), new DoubleType(minorMajorAxis[1]));
+        return new Triplet(new DoubleType(minorMajorAxis[0]), new DoubleType(minorMajorAxis[1]), new DoubleType(minorMajorAxis[2]));
     }
 }

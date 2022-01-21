@@ -13,8 +13,10 @@ import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.javatuples.Triplet;
 
 import java.util.*;
 import java.util.Iterator;
@@ -206,9 +208,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         if (majorAxisLength > 0) {
             return majorAxisLength;
         }
-        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
-        minorAxisLength = minorAndMajorAxis.getA();
-        majorAxisLength = minorAndMajorAxis.getB();
+        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getValue0().get();
+        majorAxisLength = minorAndMajorAxis.getValue1().get();
         return majorAxisLength;
     }
 
@@ -216,9 +218,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         if (minorAxisLength > 0) {
             return minorAxisLength;
         }
-        ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
-        minorAxisLength = minorAndMajorAxis.getA();
-        majorAxisLength = minorAndMajorAxis.getB();
+        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        minorAxisLength = minorAndMajorAxis.getValue0().get();
+        majorAxisLength = minorAndMajorAxis.getValue1().get();
         return minorAxisLength;
     }
 

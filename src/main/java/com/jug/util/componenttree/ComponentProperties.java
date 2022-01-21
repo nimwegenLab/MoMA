@@ -14,6 +14,7 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.javatuples.Triplet;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentProperties {
@@ -28,11 +29,10 @@ public class ComponentProperties {
         this.ops = ops;
     }
 
-    public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
+    public Triplet<DoubleType, DoubleType, DoubleType> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         CustomDefaultMinorMajorAxisCustom ellipsePropertiesCalculator = new CustomDefaultMinorMajorAxisCustom();
-        ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ellipsePropertiesCalculator.calculate(poly);
-        return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+        return ellipsePropertiesCalculator.calculate(poly);
     }
 
     /***

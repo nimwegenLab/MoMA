@@ -87,6 +87,7 @@ public class CellMaskExporter implements ResultExporterInterface {
 //        tmp_image.setLut(new LUT());
 //        tmp_image.setCha
 //        IJ.run(tmp_image, "Grays", "");
+        tmp_image.show();
         IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
     }
 
@@ -130,11 +131,18 @@ public class CellMaskExporter implements ResultExporterInterface {
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
             Vector2DPolyline feature = component.getComponentFeature(featureName);
-//            feature.shiftMutate(new Vector2D(0.5, 0.5));
-            String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
             if(feature.isEmpty()){
                 continue;
             }
+//            feature.shiftMutate(new Vector2D(0.5, 0.5));
+            if(featureName == "contour"){
+                System.out.println("break at contour");
+            }
+            if(featureName == "spine"){
+                System.out.println("break at spine");
+                System.out.println("first spine point: " + feature.getFirst());
+            }
+            String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
             Roi roi;
             if(feature.getType() == Vector2DPolyline.PolyshapeType.POLYGON){
                 roi = overlayUtils.convertToRoi(feature.getPolygon2D());

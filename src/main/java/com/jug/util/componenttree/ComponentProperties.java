@@ -29,7 +29,12 @@ public class ComponentProperties {
         this.ops = ops;
     }
 
-    public Triplet<DoubleType, DoubleType, DoubleType> getMinorMajorAxis(AdvancedComponent<?> component){
+    /**
+     * Returns major and minor axis length and orientation angle.
+     * @param component
+     * @return
+     */
+    public Triplet<DoubleType, DoubleType, DoubleType> getEllipseProperties(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         CustomDefaultMinorMajorAxisCustom ellipsePropertiesCalculator = new CustomDefaultMinorMajorAxisCustom();
         return ellipsePropertiesCalculator.calculate(poly);

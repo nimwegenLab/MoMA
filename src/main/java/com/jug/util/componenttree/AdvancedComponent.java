@@ -15,7 +15,6 @@ import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 import org.javatuples.Triplet;
 
 import java.util.*;
@@ -208,7 +207,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         if (majorAxisLength > 0) {
             return majorAxisLength;
         }
-        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getEllipseProperties(this);
         minorAxisLength = minorAndMajorAxis.getValue0().get();
         majorAxisLength = minorAndMajorAxis.getValue1().get();
         return majorAxisLength;
@@ -218,7 +217,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         if (minorAxisLength > 0) {
             return minorAxisLength;
         }
-        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getMinorMajorAxis(this);
+        Triplet<DoubleType, DoubleType, DoubleType> minorAndMajorAxis = componentProperties.getEllipseProperties(this);
         minorAxisLength = minorAndMajorAxis.getValue0().get();
         majorAxisLength = minorAndMajorAxis.getValue1().get();
         return minorAxisLength;

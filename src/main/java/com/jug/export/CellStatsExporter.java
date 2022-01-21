@@ -127,7 +127,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         ResultTableColumn<Double> cellWidthCol = resultTable.addColumn(new ResultTableColumn<>("width_px", "%.5f"));
         ResultTableColumn<Double> cellLengthCol = resultTable.addColumn(new ResultTableColumn<>("length_px", "%.5f"));
         ResultTableColumn<Double> cellTiltAngleCol = resultTable.addColumn(new ResultTableColumn<>("tilt_rad", "%.5f"));
-        ResultTableColumn<Double> cellTiltAngleEllipseCol = resultTable.addColumn(new ResultTableColumn<>("ellipse_angle_rad", "%.5f"));
+//        ResultTableColumn<Double> cellTiltAngleEllipseCol = resultTable.addColumn(new ResultTableColumn<>("ellipse_angle_rad", "%.5f"));
         ResultTableColumn<Integer> cellAreaCol = resultTable.addColumn(new ResultTableColumn<>("area_px"));
         ResultTableColumn<Integer> backgroundRoiAreaTotalCol = resultTable.addColumn(new ResultTableColumn<>("bgmask_area_px"));
         ResultTableColumn<Double> phaseContrastTotalIntensity = resultTable.addColumn(new ResultTableColumn<>("phc_total_intensity_au", "%.5f"));
@@ -207,7 +207,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 cellCenterYCol.addValue(center.getB());
                 cellWidthCol.addValue(minorMajorAxisLengthAndAngle.getValue0().get());
                 cellLengthCol.addValue(minorMajorAxisLengthAndAngle.getValue1().get());
-                cellTiltAngleEllipseCol.addValue(minorMajorAxisLengthAndAngle.getValue2().get());
+//                cellTiltAngleEllipseCol.addValue(minorMajorAxisLengthAndAngle.getValue2().get());
                 cellTiltAngleCol.addValue(componentProperties.getTiltAngle(currentComponent));
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));

@@ -34,7 +34,7 @@ public class ComponentProperties {
      * @param component
      * @return
      */
-    public Triplet<DoubleType, DoubleType, DoubleType> getEllipseProperties(AdvancedComponent<?> component){
+    public Triplet<DoubleType, DoubleType, DoubleType> getEllipseProperties(ComponentInterface component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         CustomDefaultMinorMajorAxisCustom ellipsePropertiesCalculator = new CustomDefaultMinorMajorAxisCustom();
         return ellipsePropertiesCalculator.calculate(poly);

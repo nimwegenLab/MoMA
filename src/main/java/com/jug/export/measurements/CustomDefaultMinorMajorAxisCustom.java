@@ -64,10 +64,11 @@ public class CustomDefaultMinorMajorAxisCustom {
         double scale = Math.sqrt(m00 / (3.141592653589793D * major * minor));
         major = major * scale * 2.0D;
         minor = minor * scale * 2.0D;
-        double angle = 180.0D * ta / 3.141592653589793D;
-        if (angle == 180.0D) {
-            angle = 0.0D;
-        }
+        double angle = ta; /* return angle in radians */
+//        double angle = 180.0D * ta / 3.141592653589793D;
+//        if (angle == 180.0D) {
+//            angle = 0.0D;
+//        }
 
         if (major < minor) {
             tmp = major;

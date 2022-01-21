@@ -134,14 +134,6 @@ public class CellMaskExporter implements ResultExporterInterface {
             if(feature.isEmpty()){
                 continue;
             }
-//            feature.shiftMutate(new Vector2D(0.5, 0.5));
-            if(featureName == "contour"){
-                System.out.println("break at contour");
-            }
-            if(featureName == "spine"){
-                System.out.println("break at spine");
-                System.out.println("first spine point: " + feature.getFirst());
-            }
             String roiName = featureName + "__timestep_" + timestep + "__segId_" + segment.id;
             Roi roi;
             if(feature.getType() == Vector2DPolyline.PolyshapeType.POLYGON){

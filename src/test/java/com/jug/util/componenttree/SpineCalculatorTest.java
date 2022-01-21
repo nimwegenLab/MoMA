@@ -6,16 +6,26 @@ import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.junit.Test;
+import org.python.indexer.ast.NImport;
+import org.scijava.convert.ConvertService;
+import org.scijava.convert.DefaultConvertService;
+//import org.scijava.convert.CastingConverter;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +49,8 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator();
 //        new SpineCalculatorTest().exploreSpineCalculator2();
 //        new SpineCalculatorTest().exploreSpineCalculator3();
-        new SpineCalculatorTest().exploreSpineCalculator4();
+//        new SpineCalculatorTest().exploreSpineCalculator4();
+        new SpineCalculatorTest().exploreSpineCalculator5();
     }
 
     /**
@@ -260,6 +271,65 @@ public class SpineCalculatorTest {
                 spine.getPolyline()
         );
         testUtils.showImageWithOverlays(componentMask, rois);
+//        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
+//        ij.op().
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void exploreSpineCalculator5() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/component_2.tiff";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+//        componentMask = ImgView.wrap(Views.zeroMin(Views.interval(componentMask, new long[]{40, 171}, new long[]{67, 244})));
+//        ImageJFunctions.show(componentMask);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        double maxVerticalDistanceFromStartAndEnd = 3.5;
+        SpineCalculator sut = new SpineCalculator(7, 7, maxVerticalDistanceFromStartAndEnd);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+//        ConvertService convertService = new DefaultConvertService();
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+
+//        ImagePlus imp = IJ.createHyperStack("HyperStack", (int) componentMask.dimension(0), (int) componentMask.dimension(1), 2, 1, 5, 8);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+//        List<MaskPredicate<?>> rois = Arrays.asList(
+//                contour.getPolygon2D(),
+//                medialLine.getPolyline(),
+//                spine.getPolyline()
+//        );
+//        testUtils.showImageWithOverlays(componentMask, rois);
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+        ij.ui().show(imagePlus);
+        IJ.save(imagePlus, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image_2.tif");
 //        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
 //        ij.op().
     }

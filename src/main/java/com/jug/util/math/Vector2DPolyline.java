@@ -14,7 +14,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Vector2DPolyline {
+    public enum PolyshapeType {
+        UNDEFINED,
+        POLYGON,
+        POLYLINE
+    }
+
     List<Vector2D> vectors = new ArrayList<>();
+
+    private PolyshapeType type = PolyshapeType.UNDEFINED;
+    public void setType(PolyshapeType type){
+        this.type = type;
+    }
+
+    public PolyshapeType getType(){
+        return type;
+    }
 
     public Vector2DPolyline() {}
 
@@ -130,5 +145,9 @@ public class Vector2DPolyline {
         String str = this.vectors.stream().map(vect -> String.format(valueFormat, vect.getDoublePosition(positionIndex)) + separator).collect(Collectors.joining());
         str = StringUtils.chop(str);
         return str;
+    }
+
+    public boolean isEmpty() {
+        return vectors.isEmpty();
     }
 }

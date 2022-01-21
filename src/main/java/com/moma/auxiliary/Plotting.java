@@ -20,6 +20,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -164,6 +165,16 @@ public class Plotting {
             drawComponentToImage3(ctn, resultImage, val);
         }
         return resultImage;
+    }
+
+    public static <T extends Type<T>> void drawSegmentToImage(Iterable<Localizable> component,
+                                                              T value,
+                                                              RandomAccessibleInterval<T> targetImage) {
+        RandomAccess<T> out = targetImage.randomAccess();
+        for (Localizable location : component) {
+            out.setPosition(location);
+            out.get().set(value);
+        }
     }
 
     private static <T extends NativeType> void drawComponentToImage3(final Component<?, ?> ctn,

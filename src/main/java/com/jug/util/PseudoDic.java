@@ -6,6 +6,7 @@ import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
+import com.jug.export.measurements.BestFitEllipseMeasurement;
 import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
 import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.export.measurements.SpineLengthMeasurement;
@@ -16,10 +17,12 @@ import com.jug.gui.MoMAModel;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.imglib2.OverlayUtils;
 import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import org.scijava.Context;
+import org.scijava.convert.ConvertService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,11 +48,13 @@ public class PseudoDic {
     private final WatershedMaskGenerator watershedMaskGenerator;
     private final GitVersionProvider gitVersionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
+    private final ConvertService convertService;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         context = new Context();
+        convertService = context.service(ConvertService.class);
         ops = context.service(OpService.class);
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
@@ -106,7 +111,16 @@ public class PseudoDic {
         if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());
         }
+//        listOfMeasurements.add(getEllipseMeasurement());
         return listOfMeasurements;
+    }
+
+    BestFitEllipseMeasurement bestFitEllipseMeasurement;
+    private BestFitEllipseMeasurement getEllipseMeasurement() {
+        if (bestFitEllipseMeasurement == null) {
+            return new BestFitEllipseMeasurement(getComponentProperties());
+        }
+        return bestFitEllipseMeasurement;
     }
 
     private SpineLengthMeasurement getSpineLengthMeasurement() {
@@ -127,8 +141,17 @@ public class PseudoDic {
         return spineLengthMeasurement;
     }
 
+    OverlayUtils overlayUtils;
+
+    public OverlayUtils getOverlayUtils() {
+        if (overlayUtils == null) {
+            overlayUtils = new OverlayUtils(convertService);
+        }
+        return overlayUtils;
+    }
+
     public CellMaskExporter getCellMaskExporter(){
-        return new CellMaskExporter(getImglib2utils(), () -> MoMA.getDefaultFilenameDecoration());
+        return new CellMaskExporter(getImglib2utils(), getOverlayUtils(), () -> MoMA.getDefaultFilenameDecoration());
     }
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }

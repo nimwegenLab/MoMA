@@ -26,7 +26,6 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -86,8 +85,8 @@ public class ComponentPropertiesTest {
         System.out.println("verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity");
         for(AdvancedComponent component : roots){
             double verticalPosition = props.getCentroid(component).getB();
-            double minorAxis = props.getMinorMajorAxis(component).getA();
-            double majorAxis = props.getMinorMajorAxis(component).getB();
+            double minorAxis = props.getEllipseProperties(component).getValue0().get();
+            double majorAxis = props.getEllipseProperties(component).getValue1().get();
             double majorAxisTiltAngle = props.getTiltAngle(component);
             double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
             double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
@@ -131,7 +130,7 @@ public class ComponentPropertiesTest {
 //        Plotting.drawComponentTree2(tree, new ArrayList<>());
         OpService ops = ij.op();
 
-//        double minorAxis = props.getMinorMajorAxis(component).getA();
+//        double minorAxis = props.getEllipseProperties(component).getA();
         LabelRegionToPolygonConverter regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);

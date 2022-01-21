@@ -1,12 +1,11 @@
 package com.jug.util.componenttree;
 
+import com.jug.export.measurements.CustomDefaultMinorMajorAxisCustom;
 import com.jug.util.ComponentTreeUtils;
-import com.jug.util.math.Vector2D;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
 import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
-import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
@@ -15,7 +14,6 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentProperties {
@@ -32,7 +30,8 @@ public class ComponentProperties {
 
     public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
-        ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
+        CustomDefaultMinorMajorAxisCustom ellipsePropertiesCalculator = new CustomDefaultMinorMajorAxisCustom();
+        ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ellipsePropertiesCalculator.calculate(poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
     }
 

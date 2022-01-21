@@ -311,7 +311,7 @@ public class SpineCalculatorTest {
         Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
         Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
 
-        ImagePlus imp = IJ.createHyperStack("HyperStack", (int) componentMask.dimension(0), (int) componentMask.dimension(1), 2, 1, 5, 8);
+//        ImagePlus imp = IJ.createHyperStack("HyperStack", (int) componentMask.dimension(0), (int) componentMask.dimension(1), 2, 1, 5, 8);
 
         ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
 //        List<MaskPredicate<?>> rois = Arrays.asList(
@@ -329,6 +329,7 @@ public class SpineCalculatorTest {
         overlay.add(spineRoi);
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
+        IJ.save(imagePlus, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image_2.tif");
 //        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
 //        ij.op().
     }

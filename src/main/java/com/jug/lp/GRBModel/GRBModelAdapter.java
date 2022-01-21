@@ -4,6 +4,11 @@ import gurobi.*;
 
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
+
+    public GRBVar getVarByName(String name) throws GRBException {
+        return this.model.getVarByName(name);
+    }
+
     public GRBModelAdapter(GRBEnv env) throws GRBException {
         this.model = new gurobi.GRBModel(env);
     }

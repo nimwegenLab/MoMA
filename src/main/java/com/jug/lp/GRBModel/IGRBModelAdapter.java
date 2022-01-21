@@ -3,6 +3,8 @@ package com.jug.lp.GRBModel;
 import gurobi.*;
 
 public interface IGRBModelAdapter {
+    GRBVar getVarByName(String name) throws GRBException;
+
     void update() throws GRBException;
 
     void remove(GRBConstr var) throws GRBException;
@@ -17,7 +19,7 @@ public interface IGRBModelAdapter {
 
     void set(GRB.IntParam param, int newval) throws GRBException;
 
-    GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException;
+    GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException; /* here I could make a method addOrGetVar, which first tries to get the variable and if not existent, adds the variable  */
 
     GRBEnv getEnv() throws GRBException;
 

@@ -84,6 +84,10 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return ilpVar;
 	}
 
+	public String getGrbVarName() throws GRBException {
+		return getGRBVar().get(GRB.StringAttr.VarName);
+	}
+
 	/**
 	 * @param ilpVar
 	 *            the ilpVar to set
@@ -201,7 +205,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 				exprGroundTruth.addTerm(1.0, getGRBVar());
-				String name = getGRBVar().toString();
+				String name = getGrbVarName();
 				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "GroundTruthConstraint_" + name);
 			} else {
 				if (constrGroundTruth != null) {

@@ -1097,7 +1097,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getCellStatsExporter());
-        exporters.add(MoMA.dic.getCellMaskExporter());
+        exporters.add(MoMA.dic.getIlpModelExporter());
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }

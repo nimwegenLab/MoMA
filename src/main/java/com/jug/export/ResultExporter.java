@@ -16,8 +16,9 @@ public class ResultExporter {
     public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {
         try {
             List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
+            ResultExporterData resultData = new ResultExporterData(outputFolder, cellTrackStartingPoints);
             for(ResultExporterInterface exporter: exporters){
-                exporter.export(outputFolder, cellTrackStartingPoints);
+                exporter.export(resultData);
             }
         } catch (GRBException e) {
             e.printStackTrace();

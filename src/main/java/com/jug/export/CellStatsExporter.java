@@ -57,7 +57,10 @@ public class CellStatsExporter implements ResultExporterInterface {
         loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
-    public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
+    @Override
+    public void export(ResultExporterData resultData) {
+        File outputFolder = resultData.getOutputFolder();
+        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
         /* Export cell tracks */
         exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 

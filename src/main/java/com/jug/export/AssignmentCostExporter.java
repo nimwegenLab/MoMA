@@ -79,7 +79,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
+    public void export(ResultExporterData resultData) {
+        File outputFolder = resultData.getOutputFolder();
+        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
+
         System.out.println("Exporting assignment costs...");
 
         int tmax = growthlane.getFrames().size();

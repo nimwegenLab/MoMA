@@ -10,6 +10,10 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         return this.model.getVarByName(name);
     }
 
+    public GRBModelAdapter(gurobi.GRBModel model) {
+        this.model = model;
+    }
+
     public GRBModelAdapter(GRBEnv env) throws GRBException {
         this.model = new gurobi.GRBModel(env);
     }

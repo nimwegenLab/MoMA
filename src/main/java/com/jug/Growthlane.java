@@ -6,7 +6,9 @@ import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
+import gurobi.GRBEnv;
 import gurobi.GRBException;
+import gurobi.GRBModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -91,12 +93,30 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( true );
 		}
 
-		GRBModelAdapter model = GRBModelFactory.getModel();
-		try {
-			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp");
-		} catch (GRBException e) {
-			e.printStackTrace();
+		boolean loadModelFromDisk = true;
+		GRBModelAdapter model = null;
+//		modelGurobi = null;
+		if (loadModelFromDisk)
+			try {
+//			String modelPath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp";
+				String modelPath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps";
+
+				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+				GRBModel grbModel = new GRBModel(env, modelPath);
+				model = new GRBModelAdapter(grbModel);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+		else {
+			model = GRBModelFactory.getModel();
 		}
+
+//		try {
+////			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp");
+//			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps");
+//		} catch (GRBException e) {
+//			e.printStackTrace();
+//		}
 		ilp = new GrowthlaneTrackingILP(this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getGitVersionProvider().getVersionString());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );

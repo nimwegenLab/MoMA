@@ -11,7 +11,11 @@ public interface IGRBModelAdapter {
 
     GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException;
 
+//    GRBConstr getConstrByName(String name);
+
     void write(String filename) throws GRBException;
+
+    void read(String filename) throws GRBException;
 
     double get(GRB.DoubleAttr attr) throws GRBException;
 

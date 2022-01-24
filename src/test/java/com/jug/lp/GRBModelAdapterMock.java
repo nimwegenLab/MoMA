@@ -30,6 +30,11 @@ public class GRBModelAdapterMock implements IGRBModelAdapter {
     }
 
     @Override
+    public void read(String filename) throws GRBException {
+
+    }
+
+    @Override
     public double get(GRB.DoubleAttr attr) throws GRBException {
         return 0;
     }

@@ -5,6 +5,7 @@ import gurobi.*;
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
 
+    @Override
     public GRBVar getVarByName(String name) throws GRBException {
         return this.model.getVarByName(name);
     }
@@ -29,6 +30,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     }
 
     @Override
+    public void read(String filename) throws GRBException {
+        model.read(filename);
+    }
+
+    @Override
     public void write(String filename) throws GRBException {
         model.write(filename);
     }
@@ -50,6 +56,12 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
+        try {
+            GRBVar res = model.getVarByName(name);
+            return res;
+        } catch (GRBException err) {
+            System.out.println("Error reading requested variable.");
+        }
         return model.addVar(lb, ub, obj, type, name);
     }
 

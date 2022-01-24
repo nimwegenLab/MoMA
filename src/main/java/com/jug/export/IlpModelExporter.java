@@ -22,6 +22,8 @@ public class IlpModelExporter implements ResultExporterInterface {
         IGRBModelAdapter tmp = resultData.getIlpModel();
         String outputPath = outputFolder.getAbsolutePath() + "/ilpModel.lp";
         tmp.write(outputPath);
+        String outputPath2 = outputFolder.getAbsolutePath() + "/ilpModel.mps";
+        tmp.write(outputPath2);
 //        System.out.println("stop");
     }
 }

@@ -1,11 +1,8 @@
 package com.jug.lp;
 
 //import com.jug.lp.GRBModel.GRBModelAdapter;
+
 import gurobi.*;
-import gurobi.GRB;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
-import gurobi.GRBVar;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,7 +32,7 @@ public class TestGurobiVariableSettingAndRetrieval {
         Assert.assertTrue(var2.sameAs(var2_retrieved));
 
         Assert.assertFalse(var1.sameAs(var2_retrieved));
-        System.out.println("stop");
+//        System.out.println("stop");
 //        String.format("a_%d^LYSIS--%d", t, hyp.getId())
     }
 
@@ -52,8 +49,8 @@ public class TestGurobiVariableSettingAndRetrieval {
         String name = "some_variable_name";
         String var1name = name + "1";
         String var2name = name + "2";
-        model.addVar(0.0, 1.0, 1.0, GRB.BINARY, var1name);
-        model.addVar(0.0, 1.0, 1.0, GRB.BINARY, var2name);
+        GRBVar var1 = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, var1name);
+        GRBVar var2 = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, var2name);
         model.update();
         model.write(modelFilePath);
 
@@ -70,11 +67,19 @@ public class TestGurobiVariableSettingAndRetrieval {
 
         GRBVar var1_retrieved = modelLoaded.getVarByName(var1name);
         String var1name_retrieved = var1_retrieved.get(GRB.StringAttr.VarName);
-        Assert.assertTrue(var1name.contentEquals(var1name_retrieved));
+        Assert.assertTrue(var1name.contentEquals(var1name_retrieved)); /* assert names are equal */
+        Assert.assertFalse(var1.sameAs(var1_retrieved)); /* assert we are not testing the same variable */
 
         GRBVar var2_retrieved = modelLoaded.getVarByName(var2name);
         String var2name_retrieved = var2_retrieved.get(GRB.StringAttr.VarName);
-        Assert.assertTrue(var2name.contentEquals(var2name_retrieved));
+        Assert.assertTrue(var2name.contentEquals(var2name_retrieved)); /* assert names are equal */
+        Assert.assertFalse(var2.sameAs(var2_retrieved)); /* assert we are not testing the same variable */
+
+        GRBVar[] vars = model.getVars();
+        for (int ind = 0; ind < vars.length; ind++) {
+            GRBVar var = vars[ind];
+            System.out.println("VarName: " + var.get(GRB.StringAttr.VarName));
+        }
 
 //        Assert.assertFalse(var1.sameAs(var2_retrieved));
 //        System.out.println("stop");

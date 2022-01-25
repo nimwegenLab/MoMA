@@ -741,8 +741,7 @@ public class GrowthlaneTrackingILP {
                 runnerNode = runnerNode.getParent();
             }
             pbcId++;
-            final String name = "pbc_r_t_" + t + "_" + pbcId;
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, name);
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockingConstraintAtTime" + t + "_Id" + pbcId);
         } else {
             // if ctNode is a inner node -> recursion
             for (final C ctChild : ctNode.getChildren()) {
@@ -790,7 +789,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ecc_" + eccId);
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContinuityConstraint_" + eccId);
                 eccId++;
             }
         }
@@ -1496,7 +1495,7 @@ public class GrowthlaneTrackingILP {
             }
         }
 
-        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "sifcc_" + t);
+        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "CellCountConstraint_" + t);
     }
 
     /**
@@ -1600,7 +1599,7 @@ public class GrowthlaneTrackingILP {
         }
 
         // Store the newly created constraint in hyp2add
-        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.getStringId()));
+        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "SegmentInSolutionConstraint_" + hyp2add.getStringId()));
         hyp2add.isForced = true;
     }
 
@@ -1649,7 +1648,7 @@ public class GrowthlaneTrackingILP {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
-        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.getStringId()));
+        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "SegmentNotInSolutionConstraint_" + hyp2avoid.getStringId()));
         hyp2avoid.isIgnored = true;
     }
 
@@ -2061,7 +2060,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.getStringId());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "IgnoreSegmentConstraintAtTime" + t + "_" + hyp.getStringId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {
@@ -2108,7 +2107,7 @@ public class GrowthlaneTrackingILP {
                             }
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, rhs, "freeze_" + hyp.hashCode());
+                                model.addConstr(expr, GRB.EQUAL, rhs, "FreezeAssignmentConstraintAtTime" + t + "_" + hyp.getStringId());
                         freezeSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

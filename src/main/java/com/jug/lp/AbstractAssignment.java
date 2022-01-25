@@ -210,8 +210,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 				exprGroundTruth.addTerm(1.0, getGRBVar());
-				String name = getGrbVarName();
-				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "GroundTruthConstraint_" + name);
+				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "AssignmentGroundTruthConstraint_" + getGrbVarName());
 			} else {
 				if (constrGroundTruth != null) {
 					ilp.model.remove(constrGroundTruth);

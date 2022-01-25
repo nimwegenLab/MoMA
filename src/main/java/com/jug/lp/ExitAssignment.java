@@ -166,6 +166,6 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "ExitAssignmentAtTime" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+        return "ExitAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

@@ -90,7 +90,7 @@ public class CellMaskExporter implements ResultExporterInterface {
 //        tmp_image.setLut(new LUT());
 //        tmp_image.setCha
 //        IJ.run(tmp_image, "Grays", "");
-        tmp_image.show();
+//        tmp_image.show();
         IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
     }
 

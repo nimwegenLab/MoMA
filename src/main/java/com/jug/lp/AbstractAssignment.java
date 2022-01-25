@@ -44,7 +44,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		try {
 			return getGrbVarName();
 		} catch (GRBException err) {
-			return "NameUndefined";
+			return "AssignmentNameUndefined";
 		}
 	}
 
@@ -210,7 +210,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 				exprGroundTruth.addTerm(1.0, getGRBVar());
-				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "AssignmentGroundTruthConstraint_" + getGrbVarName());
+				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "AssignmentGtConstraint_" + getGrbVarName());
 			} else {
 				if (constrGroundTruth != null) {
 					ilp.model.remove(constrGroundTruth);

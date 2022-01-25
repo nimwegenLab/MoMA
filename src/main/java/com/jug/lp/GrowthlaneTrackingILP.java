@@ -441,10 +441,8 @@ public class GrowthlaneTrackingILP {
                 final Hypothesis<AdvancedComponent<FloatType>> from =
                         nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost));
 
-                final String name = MappingAssignment.buildStringId(sourceTimeStep, from, to);
 //                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
-                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
-
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);
@@ -624,9 +622,8 @@ public class GrowthlaneTrackingILP {
                     final Hypothesis<AdvancedComponent<FloatType>> from =
                             nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost));
 
-                    final String name = DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor);
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
-                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
                     nodes.addAssignment(sourceTimeStep, da);

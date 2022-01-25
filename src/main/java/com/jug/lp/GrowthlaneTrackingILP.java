@@ -622,7 +622,7 @@ public class GrowthlaneTrackingILP {
                     final Hypothesis<AdvancedComponent<FloatType>> from =
                             nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
 
-                    final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
+                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", timeStep, from.getId(), to.getId(), lowerNeighbor.getId());
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
@@ -1597,7 +1597,7 @@ public class GrowthlaneTrackingILP {
         }
 
         // Store the newly created constraint in hyp2add
-        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.hashCode()));
+        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.getId()));
         hyp2add.isForced = true;
     }
 
@@ -1646,7 +1646,7 @@ public class GrowthlaneTrackingILP {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
-        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.hashCode()));
+        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.getId()));
         hyp2avoid.isIgnored = true;
     }
 
@@ -2056,7 +2056,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.hashCode());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.getId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

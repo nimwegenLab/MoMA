@@ -50,6 +50,10 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return location.limits.getA() * 1000 + location.limits.getB();  // TODO-MM20210721: Why the factor 1000?! This would better be a hash-value based on (multiple) hypothesis properties (e.g. max. segment probability, segment limits, etc.).
     }
 
+    public String getStringId() {
+        return "HypAtT" + location.t + "Top" + location.limits.getA() + "Bottom" + location.limits.getB();
+    }
+
     /**
      * @return the wrapped segmentHypothesis
      */

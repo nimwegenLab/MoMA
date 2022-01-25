@@ -7,9 +7,7 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug
@@ -18,6 +16,7 @@ import java.util.Set;
 public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
     private static final int dcId = 0;
+    private int sourceTimeStep;
     private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
     private final Hypothesis<AdvancedComponent<FloatType>> who;
 
@@ -28,8 +27,9 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
      * @param edges
      * @param who
      */
-    public LysisAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> who) {
+    public LysisAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> who) {
         super(GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp);
+        this.sourceTimeStep = sourceTimeStep;
         this.edges = edges;
         this.who = who;
     }
@@ -93,5 +93,9 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     @Override
     public int getId() {
         return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
+    }
+
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
+        return "LysisAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

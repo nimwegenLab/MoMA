@@ -47,10 +47,11 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * Write list of ground-truth frames to CSV file.
      * The CSV file also contains the paths to the input-image and the image with ground-truth cell-masks.
      *
-     * @param outputFolder
-     * @param cellTrackStartingPoints
+     * @param resultData
      */
-    public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) { /* Note: the unused argument cellTrackStartingPoints is to maintain signature compatibility with other exporters */
+    @Override
+    public void export(ResultExporterData resultData) {
+        File outputFolder = resultData.getOutputFolder();
         listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;

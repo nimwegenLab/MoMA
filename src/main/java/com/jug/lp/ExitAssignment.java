@@ -21,6 +21,7 @@ import java.util.Set;
 public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
     private static int dcId = 0;
+    private int sourceTimeStep;
     private final List<Hypothesis<AdvancedComponent<FloatType>>> Hup;
     private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
     private final Hypothesis<AdvancedComponent<FloatType>> who;
@@ -32,8 +33,9 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      * @param edges
      * @param who
      */
-    public ExitAssignment(final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> who) {
+    public ExitAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> who) {
         super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp);
+        this.sourceTimeStep = sourceTimeStep;
         this.Hup = Hup;
         this.edges = edges;
         this.who = who;
@@ -83,7 +85,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         }
 
         if (add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS) {
-            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId);
+            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstraintAtT" + sourceTimeStep + "_" + this.getId() + "_Id" + dcId);
         }
         dcId++;
     }
@@ -163,5 +165,9 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     @Override
     public int getId() {
         return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
+    }
+
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
+        return "ExitAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

@@ -1,12 +1,9 @@
 package com.jug.lp;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
-import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.*;
-import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -42,6 +39,14 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	abstract public int getId();
+
+	public String getStringId() {
+		try {
+			return getGrbVarName();
+		} catch (GRBException err) {
+			return "AssignmentNameUndefined";
+		}
+	}
 
 	/**
 	 * @return the type
@@ -82,6 +87,10 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public GRBVar getGRBVar() {
 		return ilpVar;
+	}
+
+	public String getGrbVarName() throws GRBException {
+		return getGRBVar().get(GRB.StringAttr.VarName);
 	}
 
 	/**
@@ -201,7 +210,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 				exprGroundTruth.addTerm(1.0, getGRBVar());
-				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "GroundTruthConstraint_" + getGRBVar().toString());
+				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "AssignmentGtConstraint_" + getGrbVarName());
 			} else {
 				if (constrGroundTruth != null) {
 					ilp.model.remove(constrGroundTruth);

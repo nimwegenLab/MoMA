@@ -5,6 +5,11 @@ import gurobi.*;
 
 public class GRBModelAdapterMock implements IGRBModelAdapter {
     @Override
+    public GRBVar getVarByName(String name) throws GRBException {
+        return null;
+    }
+
+    @Override
     public void update() throws GRBException {
 
     }
@@ -21,6 +26,11 @@ public class GRBModelAdapterMock implements IGRBModelAdapter {
 
     @Override
     public void write(String filename) throws GRBException {
+
+    }
+
+    @Override
+    public void read(String filename) throws GRBException {
 
     }
 

@@ -17,13 +17,11 @@ import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.*;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import net.imglib2.view.Views;
 
 import javax.swing.*;
 import java.io.*;
@@ -310,7 +308,7 @@ public class GrowthlaneTrackingILP {
      * @return
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
-        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
+//        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
         return CostFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
     }
 
@@ -321,38 +319,39 @@ public class GrowthlaneTrackingILP {
      *
      * @throws GRBException
      */
-    private void enumerateAndAddAssignments(final int sourcetimeStep) throws GRBException {
-        int targetTimeStep = sourcetimeStep + 1;
+    private void enumerateAndAddAssignments(final int sourceTimeStep) throws GRBException {
+        int targetTimeStep = sourceTimeStep + 1;
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourcetimeStep).getComponentTree();
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentTree();
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =
                 (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentTree();
 
-        addMappingAssignments(sourcetimeStep, sourceComponentTree, targetComponentTree);
-        addDivisionAssignments(sourcetimeStep, sourceComponentTree, targetComponentTree);
-        addExitAssignments(sourcetimeStep, nodes.getHypothesesAt(sourcetimeStep));
-        addLysisAssignments(sourcetimeStep, nodes.getHypothesesAt(sourcetimeStep));
+        addMappingAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
+        addDivisionAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
+        addExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+        addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
     }
 
     /**
      * Add an lysis-assignment at time t to a bunch of segmentation hypotheses.
      *
-     * @param t    the time-point.
+     * @param sourceTimeStep    the time-point.
      * @param hyps a list of hypothesis for which an <code>ExitAssignment</code>
      *             should be added.
      * @throws GRBException
      */
-    private void addLysisAssignments(final int t, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+    private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         if (hyps == null) return; // edge case?!
 
         float cost;
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = LYSIS_ASSIGNMENT_COST;
 
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", t, hyp.getId()));
-            final LysisAssignment ea = new LysisAssignment(newLPVar, this, nodes, edgeSets, hyp);
-            nodes.addAssignment(t, ea);
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp));
+//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", sourceTimeStep, hyp.getStringId()));
+            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
         }
     }
@@ -365,22 +364,23 @@ public class GrowthlaneTrackingILP {
      * that has an active exit-assignment are also assigned with an
      * exit-assignment.
      *
-     * @param t    the time-point.
+     * @param sourceTimeStep    the time-point.
      * @param hyps a list of hypothesis for which an <code>ExitAssignment</code>
      *             should be added.
      * @throws GRBException
      */
-    private void addExitAssignments(final int t, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+    private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         if (hyps == null) return; // edge case?!
 
         float cost;
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = costModulationForSubstitutedILP(hyp.getCost());
 
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", t, hyp.getId()));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp));
+//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", sourceTimeStep, hyp.getStringId()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
-            final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp);
-            nodes.addAssignment(t, ea);
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
         }
     }
@@ -389,25 +389,25 @@ public class GrowthlaneTrackingILP {
      * Add mapping-assignments between source components in {@param sourceComponentTree} and target components in
      * {@param targetComponentTree}.
      *
-     * @param t                   the time-point from which the <code>curHyps</code> originate.
+     * @param sourceTimeStep                   the time-point from which the <code>curHyps</code> originate.
      * @param sourceComponentTree the component tree containing source components of the mapping-assignments.
      * @param targetComponentTree the component tree containing target components of the mapping-assignments.
      * @throws GRBException
      */
-    public void addMappingAssignments(final int t,
+    public void addMappingAssignments(final int sourceTimeStep,
                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
                                       SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree) throws GRBException {
         for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
-            if (t > 0) {
+            if (sourceTimeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(t, sourceComponent);
+            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
             List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
-                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), t);
+                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), sourceTimeStep);
             } else {
                 targetComponents = targetComponentTree.getAllComponents();
             }
@@ -420,7 +420,7 @@ public class GrowthlaneTrackingILP {
                     }
                 }
 
-                float targetComponentCost = getComponentCost(t + 1, targetComponent);
+                float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
 
                 if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP)) {
                     continue;
@@ -437,15 +437,15 @@ public class GrowthlaneTrackingILP {
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
                 final Hypothesis<AdvancedComponent<FloatType>> to =
-                        nodes.getOrAddHypothesis(t + 1, new Hypothesis<>(t + 1, targetComponent, targetComponentCost));
+                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, targetComponentCost));
                 final Hypothesis<AdvancedComponent<FloatType>> from =
-                        nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
+                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost));
 
-                final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
-                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+//                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));
 
-                final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
-                nodes.addAssignment(t, ma);
+                final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
+                nodes.addAssignment(sourceTimeStep, ma);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
                     System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
                 }
@@ -567,31 +567,31 @@ public class GrowthlaneTrackingILP {
      * {@param targetComponentTree}, since division-assignments need two target component. The hypotheses of the
      * components, which are needed for the assignments, are created on the fly as needed.
      *
-     * @param timeStep            the time-point from which the <code>curHyps</code> originate.
+     * @param sourceTimeStep            the time-point from which the <code>curHyps</code> originate.
      * @param sourceComponentTree the component tree containing source components of the division assignments.
      * @param targetComponentTree the component tree containing target components at the next time-point of the division assignments.
      * @throws GRBException
      */
-    private void addDivisionAssignments(final int timeStep,
+    private void addDivisionAssignments(final int sourceTimeStep,
                                         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
                                         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree)
             throws GRBException {
 
         for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
 
-            if (timeStep > 0) {
+            if (sourceTimeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(timeStep, sourceComponent);
+            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
                 if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP)) {
                     continue;
                 }
 
-                float upperTargetComponentCost = getComponentCost(timeStep + 1, upperTargetComponent);
+                float upperTargetComponentCost = getComponentCost(sourceTimeStep + 1, upperTargetComponent);
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
@@ -602,7 +602,7 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    float lowerTargetComponentCost = getComponentCost(timeStep + 1, lowerTargetComponent);
+                    float lowerTargetComponentCost = getComponentCost(sourceTimeStep + 1, lowerTargetComponent);
                     final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
                             upperTargetComponent, lowerTargetComponent);
 
@@ -616,17 +616,17 @@ public class GrowthlaneTrackingILP {
                         continue;
                     }
                     final Hypothesis<AdvancedComponent<FloatType>> to =
-                            nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, upperTargetComponent, upperTargetComponentCost));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, upperTargetComponentCost));
                     final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
-                            nodes.getOrAddHypothesis(timeStep + 1, new Hypothesis<>(timeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, lowerTargetComponentCost));
                     final Hypothesis<AdvancedComponent<FloatType>> from =
-                            nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
+                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost));
 
-                    final String name = String.format("a_%d^DIVISION--(%d,%d)", timeStep, from.getId(), to.getId());
-                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
+//                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
+                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
-                    nodes.addAssignment(timeStep, da);
+                    nodes.addAssignment(sourceTimeStep, da);
                     edgeSets.addToRightNeighborhood(from, da);
                     edgeSets.addToLeftNeighborhood(to, da);
                     edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
@@ -738,8 +738,7 @@ public class GrowthlaneTrackingILP {
                 runnerNode = runnerNode.getParent();
             }
             pbcId++;
-            final String name = "pbc_r_t_" + t + "_" + pbcId;
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, name);
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockingConstraintAtT" + t + "_Id" + pbcId);
         } else {
             // if ctNode is a inner node -> recursion
             for (final C ctChild : ctNode.getChildren()) {
@@ -787,7 +786,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ecc_" + eccId);
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContinuityConstraintAtT" + t + "_Id" + eccId);
                 eccId++;
             }
         }
@@ -1493,7 +1492,7 @@ public class GrowthlaneTrackingILP {
             }
         }
 
-        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "sifcc_" + t);
+        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "CellCountConstraintAtT_" + t);
     }
 
     /**
@@ -1597,7 +1596,7 @@ public class GrowthlaneTrackingILP {
         }
 
         // Store the newly created constraint in hyp2add
-        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.hashCode()));
+        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "SegmentInSolutionConstraint_" + hyp2add.getStringId()));
         hyp2add.isForced = true;
     }
 
@@ -1646,7 +1645,7 @@ public class GrowthlaneTrackingILP {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
-        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.hashCode()));
+        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "SegmentNotInSolutionConstraint_" + hyp2avoid.getStringId()));
         hyp2avoid.isIgnored = true;
     }
 
@@ -1716,10 +1715,11 @@ public class GrowthlaneTrackingILP {
                         try {
                             rhs = hyp.getSegmentSpecificConstraint().get(GRB.DoubleAttr.RHS);
                             out.write(String.format(
-                                    "\tSSC, %d, %d, %s\n",
+                                    "\tSSC, %d, %d, %s, %s\n",
                                     t + timeOffset,
                                     hyp.getId(),
-                                    rhs));
+                                    rhs,
+                                    hyp.getStringId()));
                         } catch (final GRBException e) {
 //							out.write( String.format( "\tSSC, %d, %d, GUROBI_ERROR\n", t + timeOffset, hyp.getId() ) );
                         }
@@ -1739,10 +1739,11 @@ public class GrowthlaneTrackingILP {
                         try {
                             rhs = assmnt.getGroundTruthConstraint().get(GRB.DoubleAttr.RHS);
                             out.write(String.format(
-                                    "\tASC, %d, %d, %s\n",
+                                    "\tASC, %d, %d, %s, %s\n",
                                     t + timeOffset,
                                     assmnt.getId(),
-                                    rhs));
+                                    rhs,
+                                    assmnt.getStringId()));
                         } catch (final GRBException e) {
 //							out.write( String.format("\tASC, %d, %d, GUROBI_ERROR\n", t + timeOffset, assmnt.getId() ) );
                         }
@@ -1758,7 +1759,7 @@ public class GrowthlaneTrackingILP {
                         nodes.getHypothesesAt(t);
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                     if (hyp.isPruneRoot()) {
-                        out.write(String.format("\tPR, %d, %d\n", t + timeOffset, hyp.getId()));
+                        out.write(String.format("\tPR, %d, %d, %s\n", t + timeOffset, hyp.getId(), hyp.getStringId()));
                     }
                 }
             }
@@ -2056,7 +2057,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.hashCode());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "IgnoreSegmentConstraintAtT" + t + "_" + hyp.getStringId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {
@@ -2103,7 +2104,7 @@ public class GrowthlaneTrackingILP {
                             }
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, rhs, "freeze_" + hyp.hashCode());
+                                model.addConstr(expr, GRB.EQUAL, rhs, "FreezeAssignmentConstraintAtT" + t + "_" + hyp.getStringId());
                         freezeSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

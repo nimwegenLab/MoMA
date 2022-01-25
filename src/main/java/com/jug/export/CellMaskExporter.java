@@ -53,7 +53,10 @@ public class CellMaskExporter implements ResultExporterInterface {
         featureColors.put("orientedbbox", Color.GREEN);
     }
 
-    public void export(File outputFolder, List<SegmentRecord> cellTrackStartingPoints) {
+    @Override
+    public void export(ResultExporterData resultData) {
+        File outputFolder = resultData.getOutputFolder();
+        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
         SegmentRecord firstEntry = cellTrackStartingPoints.get(0);
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());

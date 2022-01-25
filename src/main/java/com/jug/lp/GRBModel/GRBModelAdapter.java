@@ -4,6 +4,16 @@ import gurobi.*;
 
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
+
+    @Override
+    public GRBVar getVarByName(String name) throws GRBException {
+        return this.model.getVarByName(name);
+    }
+
+    public GRBModelAdapter(gurobi.GRBModel model) {
+        this.model = model;
+    }
+
     public GRBModelAdapter(GRBEnv env) throws GRBException {
         this.model = new gurobi.GRBModel(env);
     }
@@ -21,6 +31,21 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
         return model.addConstr(lhsExpr, sense, rhs, name);
+//        GRBConstr res = null;
+//        try {
+//            res = model.getConstrByName(name);
+//        } catch (GRBException err) {
+//            System.out.println("Error reading requested variable.");
+//        }
+//        if(res == null){
+//            res = model.addConstr(lhsExpr, sense, rhs, name);
+//        }
+//        return res;
+    }
+
+    @Override
+    public void read(String filename) throws GRBException {
+        model.read(filename);
     }
 
     @Override
@@ -45,6 +70,12 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
+//        try {
+//            GRBVar res = model.getVarByName(name);
+//            return res;
+//        } catch (GRBException err) {
+//            System.out.println("Error reading requested variable.");
+//        }
         return model.addVar(lb, ub, obj, type, name);
     }
 

@@ -150,8 +150,12 @@ public class PseudoDic {
         return overlayUtils;
     }
 
-    public CellMaskExporter getCellMaskExporter(){
+    public CellMaskExporter getCellMaskExporter() {
         return new CellMaskExporter(getImglib2utils(), getOverlayUtils(), () -> MoMA.getDefaultFilenameDecoration());
+    }
+
+    public IlpModelExporter getIlpModelExporter() {
+        return new IlpModelExporter(() -> MoMA.getDefaultFilenameDecoration());
     }
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }

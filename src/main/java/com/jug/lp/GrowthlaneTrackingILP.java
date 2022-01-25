@@ -738,7 +738,7 @@ public class GrowthlaneTrackingILP {
                 runnerNode = runnerNode.getParent();
             }
             pbcId++;
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockingConstraintAtTime" + t + "_Id" + pbcId);
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockingConstraintAtT" + t + "_Id" + pbcId);
         } else {
             // if ctNode is a inner node -> recursion
             for (final C ctChild : ctNode.getChildren()) {
@@ -786,7 +786,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ContinuityConstraint_" + eccId);
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContinuityConstraintAtT" + t + "_Id" + eccId);
                 eccId++;
             }
         }
@@ -1492,7 +1492,7 @@ public class GrowthlaneTrackingILP {
             }
         }
 
-        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "CellCountConstraint_" + t);
+        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "CellCountConstraintAtT_" + t);
     }
 
     /**
@@ -2057,7 +2057,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "IgnoreSegmentConstraintAtTime" + t + "_" + hyp.getStringId());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "IgnoreSegmentConstraintAtT" + t + "_" + hyp.getStringId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {
@@ -2104,7 +2104,7 @@ public class GrowthlaneTrackingILP {
                             }
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, rhs, "FreezeAssignmentConstraintAtTime" + t + "_" + hyp.getStringId());
+                                model.addConstr(expr, GRB.EQUAL, rhs, "FreezeAssignmentConstraintAtT" + t + "_" + hyp.getStringId());
                         freezeSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

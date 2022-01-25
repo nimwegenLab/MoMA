@@ -85,7 +85,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         }
 
         if (add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS) {
-            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstraintAtT" + sourceTimeStep + "_" + this.getId() + "_" + dcId);
+            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstraintAtT" + sourceTimeStep + "_" + this.getId() + "_Id" + dcId);
         }
         dcId++;
     }

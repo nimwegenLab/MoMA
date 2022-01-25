@@ -103,6 +103,10 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
         return from.getId() + toUpper.getId() + toLower.getId() + GrowthlaneTrackingILP.ASSIGNMENT_DIVISION;
     }
 
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis upperTarget, Hypothesis lowerTarget) {
+        return "DivisionAssignmentAtTime" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
+    }
+
     /**
      * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
      */

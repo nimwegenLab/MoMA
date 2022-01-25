@@ -7,9 +7,7 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug
@@ -93,5 +91,9 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     @Override
     public int getId() {
         return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
+    }
+
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
+        return "LysisAssignmentAtTime" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

@@ -1,12 +1,9 @@
 package com.jug.lp;
 
 import com.jug.export.FactorGraphFileBuilder_SCALAR;
-import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.*;
-import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
-import java.util.Set;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -42,6 +39,14 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	abstract public int getId();
+
+	public String getStringId() {
+		try {
+			return getGrbVarName();
+		} catch (GRBException err) {
+			return "NameUndefined";
+		}
+	}
 
 	/**
 	 * @return the type

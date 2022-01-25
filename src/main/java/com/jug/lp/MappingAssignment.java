@@ -6,15 +6,14 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug
  */
 public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
+    private int sourceTimeStep;
     private final Hypothesis<AdvancedComponent<FloatType>> from;
     private final Hypothesis<AdvancedComponent<FloatType>> to;
 
@@ -26,8 +25,9 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      * @param from
      * @param to
      */
-    public MappingAssignment(final int t, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> from, final Hypothesis<AdvancedComponent<FloatType>> to) {
+    public MappingAssignment(final int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> from, final Hypothesis<AdvancedComponent<FloatType>> to) {
         super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp);
+        this.sourceTimeStep = sourceTimeStep;
         this.from = from;
         this.to = to;
     }
@@ -85,6 +85,10 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
     @Override
     public int getId() {
         return from.getId() + to.getId() + GrowthlaneTrackingILP.ASSIGNMENT_MAPPING;
+    }
+
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis target) {
+        return "MappingAssignmentAtTime" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
     }
 
     /**

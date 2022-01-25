@@ -164,4 +164,8 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     public int getId() {
         return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
     }
+
+    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
+        return "ExitAssignmentAtTime" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+    }
 }

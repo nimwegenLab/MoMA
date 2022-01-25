@@ -350,7 +350,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = LYSIS_ASSIGNMENT_COST;
 
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", t, hyp.getId()));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", t, hyp.getStringId()));
             final LysisAssignment ea = new LysisAssignment(newLPVar, this, nodes, edgeSets, hyp);
             nodes.addAssignment(t, ea);
             edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
@@ -377,7 +377,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = costModulationForSubstitutedILP(hyp.getCost());
 
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", t, hyp.getId()));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", t, hyp.getStringId()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
             final ExitAssignment ea = new ExitAssignment(newLPVar, this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(t, ea);
@@ -441,7 +441,7 @@ public class GrowthlaneTrackingILP {
                 final Hypothesis<AdvancedComponent<FloatType>> from =
                         nodes.getOrAddHypothesis(t, new Hypothesis<>(t, sourceComponent, sourceComponentCost));
 
-                final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getId(), to.getId());
+                final String name = String.format("a_%d^MAPPING--(%d,%d)", t, from.getStringId(), to.getStringId());
                 final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
                 final MappingAssignment ma = new MappingAssignment(t, newLPVar, this, nodes, edgeSets, from, to);
@@ -622,7 +622,7 @@ public class GrowthlaneTrackingILP {
                     final Hypothesis<AdvancedComponent<FloatType>> from =
                             nodes.getOrAddHypothesis(timeStep, new Hypothesis<>(timeStep, sourceComponent, sourceComponentCost));
 
-                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", timeStep, from.getId(), to.getId(), lowerNeighbor.getId());
+                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", timeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, name);
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
@@ -1597,7 +1597,7 @@ public class GrowthlaneTrackingILP {
         }
 
         // Store the newly created constraint in hyp2add
-        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.getId()));
+        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "sisc_" + hyp2add.getStringId()));
         hyp2add.isForced = true;
     }
 
@@ -1646,7 +1646,7 @@ public class GrowthlaneTrackingILP {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
 
-        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.getId()));
+        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "snisc_" + hyp2avoid.getStringId()));
         hyp2avoid.isIgnored = true;
     }
 
@@ -2056,7 +2056,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.getId());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "ignore_" + hyp.getStringId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

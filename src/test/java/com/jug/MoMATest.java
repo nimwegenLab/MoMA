@@ -83,7 +83,7 @@ public class MoMATest {
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/";
         Integer tmin = 0;
         Integer tmax = 100;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
 

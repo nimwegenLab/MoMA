@@ -85,13 +85,18 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     private void saveResultImageToFile(File outputFile) {
-        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
-        tmp_image.setOverlay(overlay);
+        ImagePlus imp = ImageJFunctions.wrap(imgResult, "imgResults");
+        imp.setOverlay(overlay);
 //        tmp_image.setLut(new LUT());
 //        tmp_image.setCha
 //        IJ.run(tmp_image, "Grays", "");
 //        tmp_image.show();
-        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+//        for(int chInd=0; chInd< imp.getNChannels(); chInd++){
+//            imp.setC(chInd);
+//            IJ.run(imp, "Grays", "");
+//        }
+//        imp.show();
+        IJ.saveAsTiff(imp, outputFile.getAbsolutePath());
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {

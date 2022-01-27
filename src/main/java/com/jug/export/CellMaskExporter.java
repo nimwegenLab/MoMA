@@ -142,7 +142,7 @@ public class CellMaskExporter implements ResultExporterInterface {
             }
             roi.setStrokeColor(featureColors.get(featureName));
             roi.setName(roiName);
-            roi.setPosition(0, 0, timestep + 1);  /* indexing in ImageJ is 1-based, so I need to add +1 here to the 0-based time steps. */
+            roi.setPosition(1, 1, timestep + 1);  /* indexing in ImageJ is 1-based, so I need to add +1 here to the 0-based time steps. */
             overlay.add(roi);
         }
     }

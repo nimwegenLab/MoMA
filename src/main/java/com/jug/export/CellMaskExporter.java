@@ -96,7 +96,8 @@ public class CellMaskExporter implements ResultExporterInterface {
 //            IJ.run(imp, "Grays", "");
 //        }
 //        imp.show();
-        imp.setDisplayMode(IJ.GRAYSCALE);
+//        imp.setDisplayMode(IJ.GRAYSCALE);
+        IJ.run(imp, "Grays", "");
         IJ.saveAsTiff(imp, outputFile.getAbsolutePath());
 //        IJ.saveAs(imp, "Tiff", outputFile.getAbsolutePath()); /* this calls the same underlying function as the previous line */
     }

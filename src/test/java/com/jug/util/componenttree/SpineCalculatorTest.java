@@ -48,7 +48,8 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator3();
 //        new SpineCalculatorTest().exploreSpineCalculator4();
 //        new SpineCalculatorTest().exploreSpineCalculator5();
-        new SpineCalculatorTest().exploreSpineCalculator6();
+//        new SpineCalculatorTest().exploreSpineCalculator6();
+        new SpineCalculatorTest().debug_failing_component_1();
     }
 
     /**
@@ -430,6 +431,68 @@ public class SpineCalculatorTest {
         overlay2.add(contourRoi);
         imagePlus4.setOverlay(overlay2);
         showCroppedImage(imagePlus4, x, y, width, height);
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void debug_failing_component_1() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/20200812_8proms_ace_1_MMStack_Pos25_GL18/mother_cell_component__8bit__frame_84__20200812_8proms_ace_1_MMStack_Pos25_GL18.tif";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+//        componentMask = ImgView.wrap(Views.zeroMin(Views.interval(componentMask, new long[]{40, 171}, new long[]{67, 244})));
+//        ImageJFunctions.show(componentMask);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+
+//        spine.remove(spine.getFirst());
+
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+
+//        ImagePlus imp = IJ.createHyperStack("HyperStack", (int) componentMask.dimension(0), (int) componentMask.dimension(1), 2, 1, 5, 8);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+//        List<MaskPredicate<?>> rois = Arrays.asList(
+//                contour.getPolygon2D(),
+//                medialLine.getPolyline(),
+//                spine.getPolyline()
+//        );
+//        testUtils.showImageWithOverlays(componentMask, rois);
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+        ij.ui().show(imagePlus);
+//        IJ.save(imagePlus, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image_2.tif");
+//        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
+//        ij.op().
     }
 
     /**

@@ -88,6 +88,10 @@ public class SpineCalculator {
             spine.add(result2);
         }
 
+        if (spine.getVectorList().stream().anyMatch(vector2D -> Double.isNaN(vector2D.getX()) || Double.isNaN(vector2D.getY()))) {
+            throw new RuntimeException("spine contains NaN value");
+        }
+
         return spine;
     }
 

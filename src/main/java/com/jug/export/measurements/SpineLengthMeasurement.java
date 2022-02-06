@@ -104,12 +104,11 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
             spineSizeCol.addValue(spine.size());
             Vector2D orientationVector = spine.getLast().minus(spine.getFirst());
             double orientationAngle = orientationVector.getPolarAngle();
-            spineStartToEndPointAngleCol.addValue(orientationAngle);
+            spineStartToEndPointAngleCol.addValue(orientationAngle); /* do we need to transform this? */
             String xCoordsString = spine.getCoordinatePositionAsString(0, ";", "%.2f");
             spineXcoordsCol.addValue(xCoordsString);
             String yCoordsString = spine.getCoordinatePositionAsString(1, ";", "%.2f");
             spineYcoordsCol.addValue(yCoordsString);
-            spineStartToEndPointAngleCol.addValue(orientationAngle);
         } catch (java.lang.IndexOutOfBoundsException err) {
 //            System.out.println("Spine-length measurement FAILED.");
             spine = new Vector2DPolyline();

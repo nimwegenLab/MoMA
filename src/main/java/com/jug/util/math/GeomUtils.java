@@ -2,6 +2,7 @@ package com.jug.util.math;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.math3.util.FastMath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,6 +128,18 @@ public class GeomUtils {
         return getPointsOfInterceptingContourSegment(startingPoint, orientationVector, linkedContour, 10000);
     }
 
+    /**
+     * Check that the determinant of the two vectors vec1 and vec2 is zero to within tolerance.
+     * @param vec1
+     * @param vec2
+     * @param tolerance
+     * @return
+     */
+    public static boolean vectorsAreColinear(Vector2D vec1, Vector2D vec2, double tolerance){
+        double determinant = Math.abs(vec1.getX() * vec2.getY() - vec1.getY() * vec2.getX());
+        return determinant < tolerance;
+    }
+
     /** Solve intersect of two lines:
      * l_i = /x_i\ + a * /u_i\
      *       \y_i/       \v_i/
@@ -137,6 +150,7 @@ public class GeomUtils {
     public static Vector2D calculateLineLineIntercept(Vector2D basePointLine1, Vector2D orientationLine1, Vector2D basePointLine2, Vector2D orientationLine2) {
         double tol = 1E-5;
         boolean vectorsAreCollinear = Math.abs(orientationLine1.getX() / orientationLine1.getY() - orientationLine2.getX() / orientationLine2.getY()) < tol;
+//        boolean vectorsAreCollinear2 = vectorsAreColinear(orientationLine1, orientationLine2, tol);
         if (vectorsAreCollinear) {
             throw new RuntimeException("cannot calculate intercept for collinear vectors");
         }

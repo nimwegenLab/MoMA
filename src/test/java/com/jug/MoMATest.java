@@ -92,8 +92,8 @@ public class MoMATest {
     public void _dany_20200812_8proms_ace_1_MMStack_Pos25_GL5() {
         String inputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL5/20200812_8proms_ace_1_MMStack_Pos25_GL5.tif";
         String outputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL5/output/";
-        Integer tmin = 0;
-        Integer tmax = null;
+        Integer tmin = 28;
+        Integer tmax = 29;
         startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

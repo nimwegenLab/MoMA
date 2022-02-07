@@ -572,7 +572,7 @@ public class SpineCalculatorTest {
         contourRoi.setStrokeColor(Color.RED);
         contourRoi.setStrokeWidth(.2);
         overlay.add(contourRoi);
-        medialLineRoi.setStrokeColor(Color.BLUE);
+        medialLineRoi.setStrokeColor(Color.CYAN);
         medialLineRoi.setStrokeWidth(.2);
         overlay.add(medialLineRoi);
         spineRoi.setStrokeColor(Color.BLUE);

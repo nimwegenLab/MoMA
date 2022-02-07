@@ -119,14 +119,17 @@ public class GeomUtils {
 //        return GeomUtils.calculateInterceptWithContourNewSubfunction(pointOnMedialLine, lineOrientationVector, contour);
 //    }
 
-    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour){
+    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour) {
         int maxSearchIterations = contour.size() + 1; /* number of iterations is increased by +1, because we iterate over the closed contour, so we need to extend the iteration to include the segment between the last and first points in the contour */
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
         double targetAngle = lineOrientationVector.getPolarAngle();
         LinkedItem<Vector2D> currentLinkedItem = linkedContour;
         LinkedItem<Vector2D> nextLinkedItem;
-        Vector2D firstContourPoint = null;
-        Vector2D secondContourPoint = null;
+        Vector2D firstContourPoint;
+        Vector2D secondContourPoint;
+        Vector2D result = null;
+        Vector2D resultCandidate;
+        double distanceToResult = -1;
         double firstAngle;
         double secondAngle;
         for (int counter = 0; counter < maxSearchIterations; counter++) {
@@ -138,25 +141,31 @@ public class GeomUtils {
             Vector2D secondRadialVector = secondContourPoint.minus(pointOnMedialLine);
             secondAngle = secondRadialVector.getPolarAngle();
             currentLinkedItem = nextLinkedItem;
-            if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
-                if(firstAngle != secondAngle){
+            if (secondAngle >= targetAngle && firstAngle <= targetAngle) {
+                if (firstAngle != secondAngle) {
                     Vector2D basePoint2 = firstContourPoint;
                     Vector2D orientationVector2 = secondContourPoint.minus(basePoint2);
-                    return calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
-                }
-                else{
+                    resultCandidate = calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
+                } else {
                     double distanceToFirstContourPoint = pointOnMedialLine.minus(firstContourPoint).getNorm();
                     double distanceToSecondContourPoint = pointOnMedialLine.minus(secondContourPoint).getNorm();
                     if (distanceToFirstContourPoint >= distanceToSecondContourPoint) {
-                        return firstContourPoint;
+                        resultCandidate = firstContourPoint;
+                    } else {
+                        resultCandidate = secondContourPoint;
                     }
-                    else{
-                        return secondContourPoint;
-                    }
+                }
+                double distanceToResultCandidate = pointOnMedialLine.minus(resultCandidate).getNorm();
+                if (distanceToResultCandidate > distanceToResult) {
+                    result = resultCandidate;
                 }
             }
         }
-        throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");
+        if (result == null) {
+            throw new RuntimeException("failed to calculate the intercept point with the contour");
+        } else {
+            return result;
+        }
     }
 
     public static Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {

@@ -51,8 +51,8 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator6();
 //        new SpineCalculatorTest().debug_failing_component_1();
 //        new SpineCalculatorTest().debug_failing_component_2();
-        new SpineCalculatorTest().debug_failing_component_3();
-//        new SpineCalculatorTest().debug_failing_component_4();
+//        new SpineCalculatorTest().debug_failing_component_3();
+        new SpineCalculatorTest().debug_failing_component_4();
     }
 
     /**

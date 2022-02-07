@@ -139,9 +139,21 @@ public class GeomUtils {
             secondAngle = secondRadialVector.getPolarAngle();
             currentLinkedItem = nextLinkedItem;
             if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
-                Vector2D basePoint2 = firstContourPoint;
-                Vector2D orientationVector2 = secondContourPoint.minus(basePoint2);
-                return calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
+                if(firstAngle != secondAngle){
+                    Vector2D basePoint2 = firstContourPoint;
+                    Vector2D orientationVector2 = secondContourPoint.minus(basePoint2);
+                    return calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
+                }
+                else{
+                    double distanceToFirstContourPoint = pointOnMedialLine.minus(firstContourPoint).getNorm();
+                    double distanceToSecondContourPoint = pointOnMedialLine.minus(secondContourPoint).getNorm();
+                    if (distanceToFirstContourPoint >= distanceToSecondContourPoint) {
+                        return firstContourPoint;
+                    }
+                    else{
+                        return secondContourPoint;
+                    }
+                }
             }
         }
         throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");

@@ -49,9 +49,9 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator4();
 //        new SpineCalculatorTest().exploreSpineCalculator5();
 //        new SpineCalculatorTest().exploreSpineCalculator6();
-        new SpineCalculatorTest().debug_failing_component_1();
+//        new SpineCalculatorTest().debug_failing_component_1();
 //        new SpineCalculatorTest().debug_failing_component_2();
-//        new SpineCalculatorTest().debug_failing_component_3();
+        new SpineCalculatorTest().debug_failing_component_3();
 //        new SpineCalculatorTest().debug_failing_component_4();
     }
 
@@ -558,7 +558,7 @@ public class SpineCalculatorTest {
 
         contour.shiftMutate(new Vector2D(0.5, 0.5));
         medialLine.shiftMutate(new Vector2D(0.5, 0.5));
-//        spine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
 
         ConvertService convertService = ij.convert();
 
@@ -572,9 +572,9 @@ public class SpineCalculatorTest {
         contourRoi.setStrokeColor(Color.RED);
         contourRoi.setStrokeWidth(.2);
         overlay.add(contourRoi);
-//        medialLineRoi.setStrokeColor(Color.BLUE);
-//        medialLineRoi.setStrokeWidth(.2);
-//        overlay.add(medialLineRoi);
+        medialLineRoi.setStrokeColor(Color.BLUE);
+        medialLineRoi.setStrokeWidth(.2);
+        overlay.add(medialLineRoi);
         spineRoi.setStrokeColor(Color.BLUE);
         spineRoi.setStrokeWidth(.2);
         overlay.add(spineRoi);
@@ -602,16 +602,16 @@ public class SpineCalculatorTest {
                 (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
         SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
 
-//        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
 
         contour.shiftMutate(new Vector2D(0.5, 0.5));
         medialLine.shiftMutate(new Vector2D(0.5, 0.5));
-//        spine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
 
         ConvertService convertService = ij.convert();
 
         Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
-//        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
         Roi medialLineRoi = convertService.convert(medialLine.getPolyline(), Roi.class);
 
         ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
@@ -623,9 +623,9 @@ public class SpineCalculatorTest {
         medialLineRoi.setStrokeColor(Color.BLUE);
         medialLineRoi.setStrokeWidth(.2);
         overlay.add(medialLineRoi);
-//        spineRoi.setStrokeColor(Color.BLUE);
-//        spineRoi.setStrokeWidth(.2);
-//        overlay.add(spineRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
         imagePlus.setOverlay(overlay);
         ij.ui().show(imagePlus);
     }

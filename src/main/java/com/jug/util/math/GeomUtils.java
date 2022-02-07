@@ -2,7 +2,6 @@ package com.jug.util.math;
 
 import net.imglib2.RealLocalizable;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.math3.util.FastMath;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -116,15 +115,11 @@ public class GeomUtils {
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
-    public static Vector2D calculateInterceptWithContourNew(Vector2DPolyline contour, Vector2D orientationVector1, Vector2D basePoint1) {
-        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegmentNew(basePoint1, orientationVector1, contour);
-        Vector2D basePoint2 = pointsOfInterceptingContourSegment.getA();
-        Vector2D tmp = pointsOfInterceptingContourSegment.getB();
-        Vector2D orientationVector2 = tmp.minus(basePoint2);
-        return calculateLineLineIntercept(basePoint1, orientationVector1, basePoint2, orientationVector2);
-    }
+//    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour) {
+//        return GeomUtils.calculateInterceptWithContourNewSubfunction(pointOnMedialLine, lineOrientationVector, contour);
+//    }
 
-    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegmentNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour){
+    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour){
         int maxSearchIterations = contour.size() + 1; /* number of iterations is increased by +1, because we iterate over the closed contour, so we need to extend the iteration to include the segment between the last and first points in the contour */
         LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
         double targetAngle = lineOrientationVector.getPolarAngle();
@@ -134,7 +129,6 @@ public class GeomUtils {
         Vector2D secondContourPoint = null;
         double firstAngle;
         double secondAngle;
-        boolean successFlag = false;
         for (int counter = 0; counter < maxSearchIterations; counter++) {
             firstContourPoint = currentLinkedItem.getElement();
             Vector2D firstRadialVector = firstContourPoint.minus(pointOnMedialLine);
@@ -145,14 +139,12 @@ public class GeomUtils {
             secondAngle = secondRadialVector.getPolarAngle();
             currentLinkedItem = nextLinkedItem;
             if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
-                successFlag = true;
-                break;
+                Vector2D basePoint2 = firstContourPoint;
+                Vector2D orientationVector2 = secondContourPoint.minus(basePoint2);
+                return calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
             }
         }
-        if(!successFlag) {
-            throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");
-        }
-        return new ValuePair<>(firstContourPoint, secondContourPoint);
+        throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");
     }
 
     public static Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {

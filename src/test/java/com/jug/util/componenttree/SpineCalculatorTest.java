@@ -49,9 +49,9 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator4();
 //        new SpineCalculatorTest().exploreSpineCalculator5();
 //        new SpineCalculatorTest().exploreSpineCalculator6();
-//        new SpineCalculatorTest().debug_failing_component_1();
+        new SpineCalculatorTest().debug_failing_component_1();
 //        new SpineCalculatorTest().debug_failing_component_2();
-        new SpineCalculatorTest().debug_failing_component_3();
+//        new SpineCalculatorTest().debug_failing_component_3();
 //        new SpineCalculatorTest().debug_failing_component_4();
     }
 
@@ -480,7 +480,8 @@ public class SpineCalculatorTest {
         spineRoi.setStrokeWidth(.2);
         overlay.add(spineRoi);
         imagePlus.setOverlay(overlay);
-        ij.ui().show(imagePlus);
+//        ij.ui().show(imagePlus);
+        showCroppedImage(imagePlus, 26, 232, 53, 80);
     }
 
     /**

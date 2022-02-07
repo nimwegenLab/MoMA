@@ -43,7 +43,8 @@ public class SpineCalculator {
 
         Vector2DPolyline spine = medialLine.copy();
 
-        removeMedialLinePointsAtStartAndEnd(spine, contour, minimalVerticalDistanceFromStartAndEnd);
+        removeMedialLinePointsAtStart(spine, contour, minimalVerticalDistanceFromStartAndEnd);
+        removeMedialLinePointsAtEnd(spine, contour, minimalVerticalDistanceFromStartAndEnd);
 
 //        System.out.println("spine.size after removal: " + spine.size());
 //        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
@@ -95,16 +96,28 @@ public class SpineCalculator {
         return spine;
     }
 
-    private void removeMedialLinePointsAtStartAndEnd(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance){
+    private void removeMedialLinePointsAtStart(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance) {
         Polygon2D bbox = boundingBoxCalculator.calculate(contour.getPolygon2D());
         double min_y = bbox.vertices().get(0).getDoublePosition(1);
-        double max_y = bbox.vertices().get(1).getDoublePosition(1);
         ArrayList<Vector2D> pointsToRemove = new ArrayList<>();
         for (Vector2D vect : medialLine.getVectorList()) {
             double distanceFromTop = Math.abs(vect.getY() - min_y);
+            if ((distanceFromTop < maxAllowedVerticalDistance)) {
+                pointsToRemove.add(vect);
+            }
+        }
+        for (Vector2D vect : pointsToRemove) {
+            medialLine.remove(vect);
+        }
+    }
+
+    private void removeMedialLinePointsAtEnd(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance){
+        Polygon2D bbox = boundingBoxCalculator.calculate(contour.getPolygon2D());
+        double max_y = bbox.vertices().get(1).getDoublePosition(1);
+        ArrayList<Vector2D> pointsToRemove = new ArrayList<>();
+        for (Vector2D vect : medialLine.getVectorList()) {
             double distanceFromBottom = Math.abs(max_y - vect.getY());
-            if ((distanceFromTop < maxAllowedVerticalDistance) ||
-                (distanceFromBottom < maxAllowedVerticalDistance)) {
+            if (distanceFromBottom < maxAllowedVerticalDistance) {
                 pointsToRemove.add(vect);
             }
         }
@@ -113,3 +126,4 @@ public class SpineCalculator {
         }
     }
 }
+

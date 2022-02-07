@@ -1,6 +1,8 @@
 package com.jug.util.math;
 
 import net.imglib2.RealLocalizable;
+import org.apache.commons.math3.exception.MathArithmeticException;
+import org.apache.commons.math3.exception.util.LocalizedFormats;
 
 public class Vector2D implements RealLocalizable {
     private double x;
@@ -112,5 +114,22 @@ public class Vector2D implements RealLocalizable {
     @Override // RealLocalizable
     public int numDimensions() {
         return 2;
+    }
+
+    public Vector2D normalize() throws MathArithmeticException { /* taken from: org.apache.commons.math3.geometry.euclidean.twod.Vector2D */
+        double s = this.getNorm();
+        if (s == 0.0D) {
+            throw new MathArithmeticException(LocalizedFormats.CANNOT_NORMALIZE_A_ZERO_NORM_VECTOR, new Object[0]);
+        } else {
+            return this.multiply(1.0D / s);
+        }
+    }
+
+    public double getNorm() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    public double dotProduct(Vector2D vector) {
+        return this.getX() * vector.getX() + this.getY() * vector.getY();
     }
 }

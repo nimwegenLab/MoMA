@@ -2,9 +2,6 @@ package com.jug.util.componenttree;
 
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
-import net.imglib2.Cursor;
-import net.imglib2.IterableInterval;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
@@ -12,7 +9,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
 import java.util.ArrayList;
@@ -41,9 +37,15 @@ public class ComponentTreeGenerator {
         Img<FloatType> img = imageProvider.getImgProbs();
         Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
 
+        /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
+
+        /* fill holes in water shedding mask to avoid components from having holes */
+        mask = ImgView.wrap(imglib2Utils.fillHoles(mask));
+
         raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
+        /* set values >componentSplittingThreshold to 1; this avoids over segmentation during component generation */
         Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
         raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
 

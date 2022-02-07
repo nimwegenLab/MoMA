@@ -6,7 +6,6 @@ import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
-import com.jug.export.measurements.BestFitEllipseMeasurement;
 import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
 import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.export.measurements.SpineLengthMeasurement;
@@ -113,14 +112,6 @@ public class PseudoDic {
         }
 //        listOfMeasurements.add(getEllipseMeasurement());
         return listOfMeasurements;
-    }
-
-    BestFitEllipseMeasurement bestFitEllipseMeasurement;
-    private BestFitEllipseMeasurement getEllipseMeasurement() {
-        if (bestFitEllipseMeasurement == null) {
-            return new BestFitEllipseMeasurement(getComponentProperties());
-        }
-        return bestFitEllipseMeasurement;
     }
 
     private SpineLengthMeasurement getSpineLengthMeasurement() {

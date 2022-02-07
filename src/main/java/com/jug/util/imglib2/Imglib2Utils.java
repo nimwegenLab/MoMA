@@ -9,9 +9,6 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
-import net.imglib2.roi.geom.real.Polygon2D;
-import net.imglib2.roi.labeling.LabelRegion;
-import net.imglib2.roi.labeling.LabelRegionCursor;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.logic.BitType;
@@ -19,11 +16,7 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
-import net.imagej.ops.Ops;
-import net.imglib2.type.numeric.integer.UnsignedByteType;
-import net.imagej.ops.convert.normalizeScale.NormalizeScaleRealTypes;
 
 
 public class Imglib2Utils {
@@ -141,6 +134,10 @@ public class Imglib2Utils {
         sourceImage.dimensions(dims);
         Img<T> img = new ArrayImgFactory(type).create(dims);
         return img;
+    }
+
+    public RandomAccessibleInterval<BitType> fillHoles(RandomAccessibleInterval<BitType> mask) {
+        return ops.morphology().fillHoles(mask);
     }
 
 //    public Img<UnsignedByteType> convert(Img input){

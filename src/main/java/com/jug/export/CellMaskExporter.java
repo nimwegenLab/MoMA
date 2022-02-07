@@ -85,13 +85,21 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     private void saveResultImageToFile(File outputFile) {
-        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
-        tmp_image.setOverlay(overlay);
+        ImagePlus imp = ImageJFunctions.wrap(imgResult, "cell_masks");
+        imp.setOverlay(overlay);
 //        tmp_image.setLut(new LUT());
 //        tmp_image.setCha
 //        IJ.run(tmp_image, "Grays", "");
-        tmp_image.show();
-        IJ.saveAsTiff(tmp_image, outputFile.getAbsolutePath());
+//        tmp_image.show();
+//        for(int chInd=0; chInd< imp.getNChannels(); chInd++){
+//            imp.setC(chInd);
+//            IJ.run(imp, "Grays", "");
+//        }
+//        imp.show();
+//        imp.setDisplayMode(IJ.GRAYSCALE);
+        IJ.run(imp, "Grays", "");
+        IJ.saveAsTiff(imp, outputFile.getAbsolutePath());
+//        IJ.saveAs(imp, "Tiff", outputFile.getAbsolutePath()); /* this calls the same underlying function as the previous line */
     }
 
     private Img<IntType> createGroundTruthTiffStacks(int nrOfFrames, AdvancedComponent<FloatType> component) {
@@ -146,7 +154,7 @@ public class CellMaskExporter implements ResultExporterInterface {
             }
             roi.setStrokeColor(featureColors.get(featureName));
             roi.setName(roiName);
-            roi.setPosition(0, 0, timestep + 1);  /* indexing in ImageJ is 1-based, so I need to add +1 here to the 0-based time steps. */
+            roi.setPosition(1, 1, timestep + 1);  /* indexing in ImageJ is 1-based, so I need to add +1 here to the 0-based time steps. */
             overlay.add(roi);
         }
     }

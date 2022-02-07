@@ -1,7 +1,6 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.math.GeomUtils;
-import com.jug.util.math.LinkedItem;
 import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.geom.geom2d.DefaultBoundingBox;
@@ -43,7 +42,8 @@ public class SpineCalculator {
 
         Vector2DPolyline spine = medialLine.copy();
 
-        removeMedialLinePointsAtStartAndEnd(spine, contour, minimalVerticalDistanceFromStartAndEnd);
+        removeMedialLinePointsAtStart(spine, contour, minimalVerticalDistanceFromStartAndEnd);
+        removeMedialLinePointsAtEnd(spine, contour, minimalVerticalDistanceFromStartAndEnd);
 
 //        System.out.println("spine.size after removal: " + spine.size());
 //        System.out.println("orientationVectorAveragingWindowSize: " + orientationVectorAveragingWindowSize);
@@ -57,8 +57,6 @@ public class SpineCalculator {
         spine = medialLinePreprocesser.apply(spine);
 
 //        System.out.println("spine.size after smoothing: " + spine.size());
-
-        LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
 
         List<Vector2D> diffs = GeomUtils.differences(spine.getVectorList());
 
@@ -76,7 +74,8 @@ public class SpineCalculator {
         if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtStart = diffs.subList(0, orientationVectorAveragingWindowSizeCurrent);
             Vector2D orientationVector1 = diffsAtStart.size() > 1 ? GeomUtils.averageVectors(diffsAtStart).multiply(-1.0) : diffsAtStart.get(0); /* average only, if the window-size permits it */
-            Vector2D result1 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
+            Vector2D result1 = GeomUtils.calculateInterceptWithContourNew(basePoint1, orientationVector1, contour);
+//            Vector2D result1 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
             spine.add(0, result1);
         }
 
@@ -84,23 +83,40 @@ public class SpineCalculator {
         if(Math.round(basePoint2.getY()) != imageLimitsYdirection.getB()) { /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtEnd = diffs.subList(diffs.size() - 1 - orientationVectorAveragingWindowSizeCurrent, diffs.size() - 1);
             Vector2D orientationVector2 = diffsAtEnd.size() > 1 ? GeomUtils.averageVectors(diffsAtEnd) : diffsAtEnd.get(diffsAtEnd.size() - 1); /* average only, if the window-size permits it */
-            Vector2D result2 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
+            Vector2D result2 = GeomUtils.calculateInterceptWithContourNew(basePoint2, orientationVector2, contour);
+//            Vector2D result2 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
             spine.add(result2);
+        }
+
+        if (spine.getVectorList().stream().anyMatch(vector2D -> Double.isNaN(vector2D.getX()) || Double.isNaN(vector2D.getY()))) {
+            throw new RuntimeException("spine contains NaN value");
         }
 
         return spine;
     }
 
-    private void removeMedialLinePointsAtStartAndEnd(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance){
+    private void removeMedialLinePointsAtStart(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance) {
         Polygon2D bbox = boundingBoxCalculator.calculate(contour.getPolygon2D());
         double min_y = bbox.vertices().get(0).getDoublePosition(1);
-        double max_y = bbox.vertices().get(1).getDoublePosition(1);
         ArrayList<Vector2D> pointsToRemove = new ArrayList<>();
         for (Vector2D vect : medialLine.getVectorList()) {
             double distanceFromTop = Math.abs(vect.getY() - min_y);
+            if ((distanceFromTop < maxAllowedVerticalDistance)) {
+                pointsToRemove.add(vect);
+            }
+        }
+        for (Vector2D vect : pointsToRemove) {
+            medialLine.remove(vect);
+        }
+    }
+
+    private void removeMedialLinePointsAtEnd(Vector2DPolyline medialLine, Vector2DPolyline contour, double maxAllowedVerticalDistance){
+        Polygon2D bbox = boundingBoxCalculator.calculate(contour.getPolygon2D());
+        double max_y = bbox.vertices().get(1).getDoublePosition(1);
+        ArrayList<Vector2D> pointsToRemove = new ArrayList<>();
+        for (Vector2D vect : medialLine.getVectorList()) {
             double distanceFromBottom = Math.abs(max_y - vect.getY());
-            if ((distanceFromTop < maxAllowedVerticalDistance) ||
-                (distanceFromBottom < maxAllowedVerticalDistance)) {
+            if (distanceFromBottom < maxAllowedVerticalDistance) {
                 pointsToRemove.add(vect);
             }
         }
@@ -109,3 +125,4 @@ public class SpineCalculator {
         }
     }
 }
+

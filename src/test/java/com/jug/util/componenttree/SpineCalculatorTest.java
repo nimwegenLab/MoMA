@@ -553,7 +553,7 @@ public class SpineCalculatorTest {
                 (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
         SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
 
-//        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
 
         contour.shiftMutate(new Vector2D(0.5, 0.5));
         medialLine.shiftMutate(new Vector2D(0.5, 0.5));
@@ -562,7 +562,7 @@ public class SpineCalculatorTest {
         ConvertService convertService = ij.convert();
 
         Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
-//        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
         Roi medialLineRoi = convertService.convert(medialLine.getPolyline(), Roi.class);
 
         ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
@@ -571,14 +571,15 @@ public class SpineCalculatorTest {
         contourRoi.setStrokeColor(Color.RED);
         contourRoi.setStrokeWidth(.2);
         overlay.add(contourRoi);
-        medialLineRoi.setStrokeColor(Color.BLUE);
-        medialLineRoi.setStrokeWidth(.2);
-        overlay.add(medialLineRoi);
-//        spineRoi.setStrokeColor(Color.BLUE);
-//        spineRoi.setStrokeWidth(.2);
-//        overlay.add(spineRoi);
+//        medialLineRoi.setStrokeColor(Color.BLUE);
+//        medialLineRoi.setStrokeWidth(.2);
+//        overlay.add(medialLineRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
         imagePlus.setOverlay(overlay);
-        ij.ui().show(imagePlus);
+//        ij.ui().show(imagePlus);
+        showCroppedImage(imagePlus, 44, 95, 35, 53);
     }
 
     public void debug_failing_component_4() throws IOException {

@@ -59,8 +59,6 @@ public class SpineCalculator {
 
 //        System.out.println("spine.size after smoothing: " + spine.size());
 
-        LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
-
         List<Vector2D> diffs = GeomUtils.differences(spine.getVectorList());
 
 //        System.out.println("diffs.size: " + diffs.size());
@@ -77,7 +75,8 @@ public class SpineCalculator {
         if(Math.round(basePoint1.getY()) != imageLimitsYdirection.getA()){ /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtStart = diffs.subList(0, orientationVectorAveragingWindowSizeCurrent);
             Vector2D orientationVector1 = diffsAtStart.size() > 1 ? GeomUtils.averageVectors(diffsAtStart).multiply(-1.0) : diffsAtStart.get(0); /* average only, if the window-size permits it */
-            Vector2D result1 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
+            Vector2D result1 = GeomUtils.calculateInterceptWithContourNew(contour, orientationVector1, basePoint1);
+//            Vector2D result1 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector1, basePoint1);
             spine.add(0, result1);
         }
 
@@ -85,7 +84,8 @@ public class SpineCalculator {
         if(Math.round(basePoint2.getY()) != imageLimitsYdirection.getB()) { /* this is catches the situation, where the medial line starts on the image-boundary; this happens for components that sit on the image-boundary */
             List<Vector2D> diffsAtEnd = diffs.subList(diffs.size() - 1 - orientationVectorAveragingWindowSizeCurrent, diffs.size() - 1);
             Vector2D orientationVector2 = diffsAtEnd.size() > 1 ? GeomUtils.averageVectors(diffsAtEnd) : diffsAtEnd.get(diffsAtEnd.size() - 1); /* average only, if the window-size permits it */
-            Vector2D result2 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
+            Vector2D result2 = GeomUtils.calculateInterceptWithContourNew(contour, orientationVector2, basePoint2);
+//            Vector2D result2 = GeomUtils.calculateInterceptWithContour(linkedContour, orientationVector2, basePoint2);
             spine.add(result2);
         }
 

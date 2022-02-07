@@ -116,6 +116,45 @@ public class GeomUtils {
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
+    public static Vector2D calculateInterceptWithContourNew(Vector2DPolyline contour, Vector2D orientationVector1, Vector2D basePoint1) {
+        ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegmentNew(basePoint1, orientationVector1, contour);
+        Vector2D basePoint2 = pointsOfInterceptingContourSegment.getA();
+        Vector2D tmp = pointsOfInterceptingContourSegment.getB();
+        Vector2D orientationVector2 = tmp.minus(basePoint2);
+        return calculateLineLineIntercept(basePoint1, orientationVector1, basePoint2, orientationVector2);
+    }
+
+    public static ValuePair<Vector2D, Vector2D> getPointsOfInterceptingContourSegmentNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour){
+        int maxSearchIterations = contour.size() + 1; /* number of iterations is increased by +1, because we iterate over the closed contour, so we need to extend the iteration to include the segment between the last and first points in the contour */
+        LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
+        double targetAngle = lineOrientationVector.getPolarAngle();
+        LinkedItem<Vector2D> currentLinkedItem = linkedContour;
+        LinkedItem<Vector2D> nextLinkedItem;
+        Vector2D firstContourPoint = null;
+        Vector2D secondContourPoint = null;
+        double firstAngle;
+        double secondAngle;
+        boolean successFlag = false;
+        for (int counter = 0; counter < maxSearchIterations; counter++) {
+            firstContourPoint = currentLinkedItem.getElement();
+            Vector2D firstRadialVector = firstContourPoint.minus(pointOnMedialLine);
+            firstAngle = firstRadialVector.getPolarAngle();
+            nextLinkedItem = currentLinkedItem.next();
+            secondContourPoint = nextLinkedItem.getElement();
+            Vector2D secondRadialVector = secondContourPoint.minus(pointOnMedialLine);
+            secondAngle = secondRadialVector.getPolarAngle();
+            currentLinkedItem = nextLinkedItem;
+            if(secondAngle >= targetAngle && firstAngle <= targetAngle ){
+                successFlag = true;
+                break;
+            }
+        }
+        if(!successFlag) {
+            throw new RuntimeException("no point pair was found that enclose the target vector 'targetVector'");
+        }
+        return new ValuePair<>(firstContourPoint, secondContourPoint);
+    }
+
     public static Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {
         ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegment(basePoint1, orientationVector1, linkedContour);
         Vector2D basePoint2 = pointsOfInterceptingContourSegment.getA();

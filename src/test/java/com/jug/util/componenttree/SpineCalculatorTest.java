@@ -20,10 +20,7 @@ import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.junit.Test;
-import org.python.indexer.ast.NImport;
 import org.scijava.convert.ConvertService;
-import org.scijava.convert.DefaultConvertService;
-//import org.scijava.convert.CastingConverter;
 
 import java.awt.*;
 import java.io.File;
@@ -50,7 +47,12 @@ public class SpineCalculatorTest {
 //        new SpineCalculatorTest().exploreSpineCalculator2();
 //        new SpineCalculatorTest().exploreSpineCalculator3();
 //        new SpineCalculatorTest().exploreSpineCalculator4();
-        new SpineCalculatorTest().exploreSpineCalculator5();
+//        new SpineCalculatorTest().exploreSpineCalculator5();
+//        new SpineCalculatorTest().exploreSpineCalculator6();
+//        new SpineCalculatorTest().debug_failing_component_1();
+//        new SpineCalculatorTest().debug_failing_component_2();
+//        new SpineCalculatorTest().debug_failing_component_3();
+        new SpineCalculatorTest().debug_failing_component_4();
     }
 
     /**
@@ -332,6 +334,300 @@ public class SpineCalculatorTest {
         IJ.save(imagePlus, "/home/micha/TemporaryFiles/20220119_imagej_overlays/overlay_test_image_2.tif");
 //        IJ.run("Set... ", "zoom=400 x=12 y=39"); // does not work, but see here if interested to get it working: https://forum.image.sc/t/programmatically-set-display-zoom-level-in-imagej-fiji/49862
 //        ij.op().
+    }
+
+    static void showCroppedImage(ImagePlus imp, int x, int y, int width, int height) {
+        imp.setRoi(x, y, width, height);
+        ImagePlus impCropped = imp.crop();
+        impCropped.show();
+
+    }
+
+    static ImagePlus addRoiOverlay(ImagePlus imagePlus1, Roi roi, Color color) {
+        Overlay overlay1 = new Overlay();
+        roi.setStrokeColor(color);
+        roi.setStrokeWidth(.4);
+        overlay1.add(roi);
+        imagePlus1.setOverlay(overlay1);
+        return imagePlus1;
+    }
+
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void exploreSpineCalculator6() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6/frame90_repeated__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos6_GL6__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+
+        int componentIndex = 4;
+
+        ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<BitType>> componentAndImage = testUtils.getComponentWithImage(imageFile,
+                componentIndex,
+                new BitType(true));
+        AdvancedComponent<FloatType> component = componentAndImage.getA();
+        RandomAccessibleInterval<BitType> componentMask = component.getComponentImage(new BitType(true));
+
+
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        RandomAccessibleInterval componentMaskThinned = ij.op().morphology().thinGuoHall(componentMask);
+
+        double maxVerticalDistanceFromStartAndEnd = 3.5;
+//        SpineCalculator sut = new SpineCalculator(7, 7, maxVerticalDistanceFromStartAndEnd);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5,3.5,medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+//        ConvertService convertService = new DefaultConvertService();
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+        Roi medialLineRoi = convertService.convert(medialLine.getPolyline(), Roi.class);
+
+        Vector2DPolyline smoothedMedialLine = GeomUtils.smoothWithAdaptiveWindowSize(medialLine, 5, 21);
+        Roi smoothedMedialLineRoi = convertService.convert(smoothedMedialLine.getPolyline(), Roi.class);
+
+//        ImagePlus imp = IJ.createHyperStack("HyperStack", (int) componentMask.dimension(0), (int) componentMask.dimension(1), 2, 1, 5, 8);
+
+        int x = 35, y = 274, width = 36, height = 97;
+
+        showCroppedImage(ImageJFunctions.wrap(componentMask, "componentMaskThinned"), x, y, width, height);
+
+        ImagePlus componentMaskThinnedImagePlus = ImageJFunctions.wrap(componentMaskThinned, "componentMaskThinned");
+        showCroppedImage(componentMaskThinnedImagePlus, x, y, width, height);
+
+        ImagePlus imagePlus1 = ImageJFunctions.wrap(componentMask, "image");
+        imagePlus1 = addRoiOverlay(imagePlus1, medialLineRoi, Color.RED);
+        showCroppedImage(imagePlus1, x, y, width, height);
+
+        ImagePlus imagePlus2 = ImageJFunctions.wrap(componentMask, "image");
+        imagePlus2 = addRoiOverlay(imagePlus2, smoothedMedialLineRoi, Color.RED);
+        showCroppedImage(imagePlus2, x, y, width, height);
+
+        ImagePlus imagePlus3 = ImageJFunctions.wrap(componentMask, "image");
+        imagePlus3 = addRoiOverlay(imagePlus3, spineRoi, Color.RED);
+        showCroppedImage(imagePlus3, x, y, width, height);
+
+        ImagePlus imagePlus4 = ImageJFunctions.wrap(componentMask, "image");
+        Overlay overlay2 = new Overlay();
+        spineRoi.setStrokeColor(Color.RED);
+        spineRoi.setStrokeWidth(.4);
+        overlay2.add(spineRoi);
+        contourRoi.setStrokeColor(Color.BLUE);
+        contourRoi.setStrokeWidth(.4);
+        overlay2.add(contourRoi);
+        imagePlus4.setOverlay(overlay2);
+        showCroppedImage(imagePlus4, x, y, width, height);
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void debug_failing_component_1() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/20200812_8proms_ace_1_MMStack_Pos25_GL18/mother_cell_component__8bit__frame_84__20200812_8proms_ace_1_MMStack_Pos25_GL18.tif";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+//        ij.ui().show(imagePlus);
+        showCroppedImage(imagePlus, 26, 232, 53, 80);
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void debug_failing_component_2() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/20200812_8proms_ace_1_MMStack_Pos25_GL18/mother_cell_component__8bit__frame_85__20200812_8proms_ace_1_MMStack_Pos25_GL18.tif";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+        ij.ui().show(imagePlus);
+    }
+
+    /**
+     * Add test for calculating the medial line.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void debug_failing_component_3() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/20200812_8proms_ace_1_MMStack_Pos25_GL5/offending_component__8bit__frame_28__ExportedCellMasks__20200812_8proms_ace_1_MMStack_Pos25_GL5.tif.tif";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+        Roi medialLineRoi = convertService.convert(medialLine.getPolyline(), Roi.class);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        medialLineRoi.setStrokeColor(Color.CYAN);
+        medialLineRoi.setStrokeWidth(.2);
+        overlay.add(medialLineRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+//        ij.ui().show(imagePlus);
+        showCroppedImage(imagePlus, 44, 95, 35, 53);
+    }
+
+    public void debug_failing_component_4() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/ComponentMasks/20200812_8proms_ace_1_MMStack_Pos25_GL22/new_offending_component__8bit__frame30__ExportedCellMasks__20200812_8proms_ace_1_MMStack_Pos25_GL22.tif";
+        Img<BitType> componentMask = testUtils.readComponentMask(imageFile);
+
+        ImageJFunctions.show(componentMask);
+
+        ComponentMock component = new ComponentMock(componentMask);
+
+        LabelRegion<Integer> componentRegion = component.getRegion();
+        ContourCalculator contourCalculator = new ContourCalculator(ij.op());
+        Vector2DPolyline contour = contourCalculator.calculate(componentRegion);
+
+        MedialLineCalculator medialLineCalculator = new MedialLineCalculator(ij.op(), new Imglib2Utils(ij.op()));
+        Vector2DPolyline medialLine = medialLineCalculator.calculate(componentMask);
+
+        Function<Vector2DPolyline, Vector2DPolyline> medialLineProcessor =
+                (input) -> GeomUtils.smoothWithAdaptiveWindowSize(input,5,21);
+        SpineCalculator sut = new SpineCalculator(5, 3.5, medialLineProcessor);
+
+        Vector2DPolyline spine = sut.calculate(medialLine, contour, new ValuePair<>((int) componentMask.min(1), (int) componentMask.max(1)));
+
+        contour.shiftMutate(new Vector2D(0.5, 0.5));
+        medialLine.shiftMutate(new Vector2D(0.5, 0.5));
+        spine.shiftMutate(new Vector2D(0.5, 0.5));
+
+        ConvertService convertService = ij.convert();
+
+        Roi contourRoi = convertService.convert(contour.getPolygon2D(), Roi.class);
+        Roi spineRoi = convertService.convert(spine.getPolyline(), Roi.class);
+        Roi medialLineRoi = convertService.convert(medialLine.getPolyline(), Roi.class);
+
+        ImagePlus imagePlus = ImageJFunctions.wrap(componentMask, "image");
+
+        Overlay overlay = new Overlay();
+        contourRoi.setStrokeColor(Color.RED);
+        contourRoi.setStrokeWidth(.2);
+        overlay.add(contourRoi);
+        medialLineRoi.setStrokeColor(Color.BLUE);
+        medialLineRoi.setStrokeWidth(.2);
+        overlay.add(medialLineRoi);
+        spineRoi.setStrokeColor(Color.BLUE);
+        spineRoi.setStrokeWidth(.2);
+        overlay.add(spineRoi);
+        imagePlus.setOverlay(overlay);
+        ij.ui().show(imagePlus);
     }
 
     /**

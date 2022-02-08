@@ -184,7 +184,7 @@ public class LinkedItem<T> implements Comparable<LinkedItem> {
     public static <T> LinkedItem<T> toCircularLinkedList(List<T> orderedList) {
         LinkedItem<T> first = new LinkedItem(orderedList.get(0));
         LinkedItem<T> previous = first;
-        for (int i = 0; i < orderedList.size(); ++i) previous = previous.setNext(orderedList.get(i));
+        for (int i = 1; i < orderedList.size(); ++i) previous = previous.setNext(orderedList.get(i));
         previous.setNext(first); // closes contour
         return first;
     }

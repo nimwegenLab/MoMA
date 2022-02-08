@@ -115,6 +115,59 @@ public class GeomUtils {
         return new ValuePair<>(firstContourPoint, secondContourPoint);
     }
 
+//    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour) {
+//        return GeomUtils.calculateInterceptWithContourNewSubfunction(pointOnMedialLine, lineOrientationVector, contour);
+//    }
+
+    public static Vector2D calculateInterceptWithContourNew(Vector2D pointOnMedialLine, Vector2D lineOrientationVector, Vector2DPolyline contour) {
+        int maxSearchIterations = contour.size() + 1; /* number of iterations is increased by +1, because we iterate over the closed contour, so we need to extend the iteration to include the segment between the last and first points in the contour */
+        LinkedItem<Vector2D> linkedContour = contour.toCircularLinkedList();
+        double targetAngle = lineOrientationVector.getPolarAngle();
+        LinkedItem<Vector2D> currentLinkedItem = linkedContour;
+        LinkedItem<Vector2D> nextLinkedItem;
+        Vector2D firstContourPoint;
+        Vector2D secondContourPoint;
+        Vector2D result = null;
+        Vector2D resultCandidate;
+        double distanceToResult = -1;
+        double firstAngle;
+        double secondAngle;
+        for (int counter = 0; counter < maxSearchIterations; counter++) {
+            firstContourPoint = currentLinkedItem.getElement();
+            Vector2D firstRadialVector = firstContourPoint.minus(pointOnMedialLine);
+            firstAngle = firstRadialVector.getPolarAngle();
+            nextLinkedItem = currentLinkedItem.next();
+            secondContourPoint = nextLinkedItem.getElement();
+            Vector2D secondRadialVector = secondContourPoint.minus(pointOnMedialLine);
+            secondAngle = secondRadialVector.getPolarAngle();
+            currentLinkedItem = nextLinkedItem;
+            if (secondAngle >= targetAngle && firstAngle <= targetAngle) {
+                if (firstAngle != secondAngle) {
+                    Vector2D basePoint2 = firstContourPoint;
+                    Vector2D orientationVector2 = secondContourPoint.minus(basePoint2);
+                    resultCandidate = calculateLineLineIntercept(pointOnMedialLine, lineOrientationVector, basePoint2, orientationVector2);
+                } else {
+                    double distanceToFirstContourPoint = pointOnMedialLine.minus(firstContourPoint).getNorm();
+                    double distanceToSecondContourPoint = pointOnMedialLine.minus(secondContourPoint).getNorm();
+                    if (distanceToFirstContourPoint >= distanceToSecondContourPoint) {
+                        resultCandidate = firstContourPoint;
+                    } else {
+                        resultCandidate = secondContourPoint;
+                    }
+                }
+                double distanceToResultCandidate = pointOnMedialLine.minus(resultCandidate).getNorm();
+                if (distanceToResultCandidate > distanceToResult) {
+                    result = resultCandidate;
+                }
+            }
+        }
+        if (result == null) {
+            throw new RuntimeException("failed to calculate the intercept point with the contour");
+        } else {
+            return result;
+        }
+    }
+
     public static Vector2D calculateInterceptWithContour(LinkedItem<Vector2D> linkedContour, Vector2D orientationVector1, Vector2D basePoint1) {
         ValuePair<Vector2D, Vector2D> pointsOfInterceptingContourSegment = GeomUtils.getPointsOfInterceptingContourSegment(basePoint1, orientationVector1, linkedContour);
         Vector2D basePoint2 = pointsOfInterceptingContourSegment.getA();
@@ -127,6 +180,18 @@ public class GeomUtils {
         return getPointsOfInterceptingContourSegment(startingPoint, orientationVector, linkedContour, 10000);
     }
 
+    /**
+     * Check that the determinant of the two vectors vec1 and vec2 is zero to within tolerance.
+     * @param vec1
+     * @param vec2
+     * @param tolerance
+     * @return
+     */
+    public static boolean vectorsAreColinear(Vector2D vec1, Vector2D vec2, double tolerance){
+        double determinant = Math.abs(vec1.getX() * vec2.getY() - vec1.getY() * vec2.getX());
+        return determinant < tolerance;
+    }
+
     /** Solve intersect of two lines:
      * l_i = /x_i\ + a * /u_i\
      *       \y_i/       \v_i/
@@ -137,6 +202,7 @@ public class GeomUtils {
     public static Vector2D calculateLineLineIntercept(Vector2D basePointLine1, Vector2D orientationLine1, Vector2D basePointLine2, Vector2D orientationLine2) {
         double tol = 1E-5;
         boolean vectorsAreCollinear = Math.abs(orientationLine1.getX() / orientationLine1.getY() - orientationLine2.getX() / orientationLine2.getY()) < tol;
+//        boolean vectorsAreCollinear2 = vectorsAreColinear(orientationLine1, orientationLine2, tol);
         if (vectorsAreCollinear) {
             throw new RuntimeException("cannot calculate intercept for collinear vectors");
         }

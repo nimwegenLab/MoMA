@@ -178,7 +178,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     void addComponentLengthToTable(AdvancedComponent<FloatType> component, ResultTableColumn<Double> column) {
         Double value = -1.0;
         if (component != null){
-            value = componentProperties.getEllipseProperties(component).getValue1().get();
+            value = componentProperties.getMinorMajorAxis(component).getB();
         }
         column.addValue(value);
     }

@@ -19,11 +19,17 @@ public class IlpModelExporter implements ResultExporterInterface {
         File outputFolder = resultData.getOutputFolder();
         List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
         String filename = defaultFilenameDecorationSupplier.get();
-        IGRBModelAdapter tmp = resultData.getIlpModel();
+        IGRBModelAdapter model = resultData.getIlpModel();
         String outputPath = outputFolder.getAbsolutePath() + "/ilpModel.lp";
-        tmp.write(outputPath);
+        model.write(outputPath);
         String outputPath2 = outputFolder.getAbsolutePath() + "/ilpModel.mps";
-        tmp.write(outputPath2);
+        model.write(outputPath2);
+        String outputPath3 = outputFolder.getAbsolutePath() + "/ilpModel.sol";
+        model.write(outputPath3);
+        String outputPath4 = outputFolder.getAbsolutePath() + "/ilpModel.json";
+        model.write(outputPath4);
+        String outputPath5 = outputFolder.getAbsolutePath() + "/ilpModel.mst";
+        model.write(outputPath5);
 //        System.out.println("stop");
     }
 }

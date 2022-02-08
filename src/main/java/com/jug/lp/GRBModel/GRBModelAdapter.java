@@ -30,17 +30,17 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
-        return model.addConstr(lhsExpr, sense, rhs, name);
-//        GRBConstr res = null;
-//        try {
-//            res = model.getConstrByName(name);
-//        } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
-//        }
-//        if(res == null){
-//            res = model.addConstr(lhsExpr, sense, rhs, name);
-//        }
-//        return res;
+//        return model.addConstr(lhsExpr, sense, rhs, name);
+        GRBConstr res = null;
+        try {
+            res = model.getConstrByName(name);
+        } catch (GRBException err) {
+            System.out.println("Error reading requested variable.");
+        }
+        if(res == null){
+            res = model.addConstr(lhsExpr, sense, rhs, name);
+        }
+        return res;
     }
 
     @Override
@@ -70,13 +70,17 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
-//        try {
-//            GRBVar res = model.getVarByName(name);
+        GRBVar res = null;
+        try {
+            res = model.getVarByName(name);
 //            return res;
-//        } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
-//        }
-        return model.addVar(lb, ub, obj, type, name);
+        } catch (GRBException err) {
+            System.out.println("Error reading requested variable.");
+        }
+        if(res == null){
+            res = model.addVar(lb, ub, obj, type, name);
+        }
+        return res;
     }
 
     @Override
@@ -91,7 +95,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public void optimize() throws GRBException {
-        model.optimize();
+//        model.optimize();
+        model.update();
+        String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/";
+        model.read(basePath + "/ilpModel.sol");
+        model.update();
     }
 
     @Override

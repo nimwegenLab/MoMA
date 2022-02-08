@@ -143,7 +143,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 			return previousIsChoosen;
 		}
 		try {
-			long binary_selection_variable_value_rounded = Math.round(getGRBVar().get(GRB.DoubleAttr.X));
+			GRBVar grbVarOfAssignment = getGRBVar();
+			long binary_selection_variable_value_rounded = Math.round(grbVarOfAssignment.get(GRB.DoubleAttr.X));
 			previousIsChoosen = (binary_selection_variable_value_rounded == 1);
 			return previousIsChoosen;
 		} catch (GRBException err) {

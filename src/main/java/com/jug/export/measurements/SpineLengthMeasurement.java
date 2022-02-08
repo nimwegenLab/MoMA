@@ -113,11 +113,11 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
 //            System.out.println("Spine-length measurement FAILED.");
             spine = new Vector2DPolyline();
             spineLengthCalculationSuccessCol.addValue(0);
-            spineLengthCol.addValue(-1.0); /* if calculation fails, set value to -1 */
-            spineSizeCol.addValue(-1);
-            spineStartToEndPointAngleCol.addValue(-1.0);
-            spineXcoordsCol.addValue("NA");
-            spineYcoordsCol.addValue("NA");
+            spineLengthCol.addValue(Double.NaN); /* if calculation fails, set flag-value */
+            spineSizeCol.addValue(0); /* if calculation fails, set flag-value */
+            spineStartToEndPointAngleCol.addValue(Double.NaN); /* if calculation fails, set flag-value */
+            spineXcoordsCol.addValue("NA"); /* if calculation fails, set flag-value */
+            spineYcoordsCol.addValue("NA"); /* if calculation fails, set flag-value */
         }
         spine.setType(Vector2DPolyline.PolyshapeType.POLYLINE);
         component.addComponentFeature("spine", spine);

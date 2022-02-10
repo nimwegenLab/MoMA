@@ -164,8 +164,8 @@ public class CostFactory {
 	 * @return
 	 */
 	public static float getDivisionLikelihoodCost( final Component< FloatType, ? > sourceComponent ) {
-if ( sourceComponent.getChildren().size() > 2 ) { return 1.5f; }
-if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; }
+if ( sourceComponent.getChildren().size() > 2 ) { return 1.5f; } /* is this the reason we have value 1.3 for some divisions? There is a bug, where we sometimes have 3 child-components, so this if-statement would hold!// */
+if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; } /* is this the reason we have value 1.3 for some divisions? There is a bug, where we sometimes have 3 child-components, so this if-statement would hold!// */
 
 // if two children, eveluate likelihood of being pre-division
 final List< Component< FloatType, ? > > listOfChildren = ( List< Component< FloatType, ? >> ) sourceComponent.getChildren();

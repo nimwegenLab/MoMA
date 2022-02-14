@@ -428,7 +428,7 @@ public class GrowthlaneTrackingILP {
 
                 final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                 float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
-                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
+//                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > ASSIGNMENT_COST_CUTOFF) {
                     continue;

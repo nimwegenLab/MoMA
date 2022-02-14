@@ -22,7 +22,7 @@ public class ExplorationForImprovingCostFunctions {
         String inputPath = datasets_base_path + datasetSubPath + "/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
         Integer tmin = 0;
-        Integer tmax = 460;
+        Integer tmax = 420;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

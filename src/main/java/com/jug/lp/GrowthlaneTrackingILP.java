@@ -428,7 +428,7 @@ public class GrowthlaneTrackingILP {
 
                 final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                 float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
-                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
+//                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > ASSIGNMENT_COST_CUTOFF) {
                     continue;
@@ -524,10 +524,8 @@ public class GrowthlaneTrackingILP {
                                      float cost) {
         int numberOfLeavesUnderSource = getLeafNodes(sourceComponent).size();
         int numberOfLeavesUnderTarget = getLeafNodes(targetComponent).size();
-        if (numberOfLeavesUnderSource == 0)
-            numberOfLeavesUnderSource = 1;
-        if (numberOfLeavesUnderTarget == 0)
-            numberOfLeavesUnderTarget = 1;
+        if (numberOfLeavesUnderSource == 0) numberOfLeavesUnderSource = 1;
+        if (numberOfLeavesUnderTarget == 0) numberOfLeavesUnderTarget = 1;
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 

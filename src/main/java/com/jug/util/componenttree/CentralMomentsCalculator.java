@@ -61,10 +61,10 @@ public class CentralMomentsCalculator {
          * m10: centroid X coordinate
          * m01: centroid Y coordinate
          * n20: variance X coordinate
-         * n11: covariance X*Y
          * n02: variance Y coordinate
+         * n11: covariance X*Y
          */
-        return new double[] { m00, m10, m01, n20, n11, n02 };
+        return new double[] { m00, m10, m01, n20, n02, n11 };
     }
 
     private double getY(final Polygon2D input, final int index) {
@@ -87,8 +87,8 @@ public class CentralMomentsCalculator {
      * m10: centroid X coordinate
      * m01: centroid Y coordinate
      * n20: variance X coordinate
-     * n11: covariance of X and Y
      * n02: variance Y coordinate
+     * n11: covariance of X and Y
      *
      * @param input
      * @return

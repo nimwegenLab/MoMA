@@ -9,6 +9,12 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class CentralMomentsCalculatorTests {
+
+    /**
+     * The test values for the rectangle below are derived analytically in this publication:
+     *
+     * @see "On  Calculation of Arbitrary Moments of Polygon2Ds, Carsten Steger, October 1996"
+     **/
     @Test
     public void moments_for_a_rectangle_are_correct(){
         CentralMomentsCalculator polygonMomentsCalculator = new CentralMomentsCalculator();
@@ -21,7 +27,7 @@ public class CentralMomentsCalculatorTests {
         assertEquals("X coordinate of centroid is incorrect", 5, moments.getValue1(), 1e-5);
         assertEquals("Y coordinate of centroid is incorrect", 4, moments.getValue2(), 1e-5);  //
         assertEquals("X variance is incorrect", 17./3., moments.getValue3(), 1e-5); // X variance is correct
-        assertEquals("covariance is incorrect", 2, moments.getValue4(), 1e-5); // covariance is correct
-        assertEquals("Y variance is incorrect", 8./3., moments.getValue5(), 1e-5); // Y variance is correct
+        assertEquals("Y variance is incorrect", 8./3., moments.getValue4(), 1e-5); // Y variance is correct
+        assertEquals("covariance is incorrect", 2, moments.getValue5(), 1e-5); // covariance is correct
     }
 }

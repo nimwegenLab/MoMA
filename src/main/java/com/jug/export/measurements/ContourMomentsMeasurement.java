@@ -2,13 +2,11 @@ package com.jug.export.measurements;
 
 import com.jug.export.ResultTable;
 import com.jug.export.ResultTableColumn;
-import com.jug.util.componenttree.CentralMomentsCalculator;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentProperties;
-import net.imglib2.roi.geom.real.Polygon2D;
 import org.javatuples.Sextet;
 
-public class SegmentMomentsMeasurement implements SegmentMeasurementInterface {
+public class ContourMomentsMeasurement implements SegmentMeasurementInterface {
     private ResultTableColumn<Double> contourArea;
     private ResultTableColumn<Double> contourCentroidX;
     private ResultTableColumn<Double> contourCentroidY;
@@ -17,15 +15,15 @@ public class SegmentMomentsMeasurement implements SegmentMeasurementInterface {
     private ResultTableColumn<Double> contourCovarianceXY;
     private ComponentProperties componentProperties;
 
-    public SegmentMomentsMeasurement(ComponentProperties componentProperties) {
+    public ContourMomentsMeasurement(ComponentProperties componentProperties) {
         this.componentProperties = componentProperties;
     }
 
     @Override
     public void setOutputTable(ResultTable outputTable) {
         contourArea = outputTable.addColumn(new ResultTableColumn<>("contour_area__px"));
-        contourCentroidX = outputTable.addColumn(new ResultTableColumn<>("contour_centroid_x_coord__px"));
-        contourCentroidY = outputTable.addColumn(new ResultTableColumn<>("contour_centroid_y_coord__px"));
+        contourCentroidX = outputTable.addColumn(new ResultTableColumn<>("contour_centroid_x__px"));
+        contourCentroidY = outputTable.addColumn(new ResultTableColumn<>("contour_centroid_y__px"));
         contourVarianceX = outputTable.addColumn(new ResultTableColumn<>("contour_variance_x__px2"));
         contourVarianceY = outputTable.addColumn(new ResultTableColumn<>("contour_variance_y__px2"));
         contourCovarianceXY = outputTable.addColumn(new ResultTableColumn<>("contour_covariance__px2"));

@@ -8,7 +8,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
 import com.jug.export.measurements.SegmentMeasurementInterface;
-import com.jug.export.measurements.SegmentMomentsMeasurement;
+import com.jug.export.measurements.ContourMomentsMeasurement;
 import com.jug.export.measurements.SpineLengthMeasurement;
 import com.jug.gui.DialogManager;
 import com.jug.gui.IDialogManager;
@@ -108,7 +108,7 @@ public class PseudoDic {
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
         listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
-        listOfMeasurements.add(new SegmentMomentsMeasurement(componentProperties));
+        listOfMeasurements.add(new ContourMomentsMeasurement(componentProperties));
 
         if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());

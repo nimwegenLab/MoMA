@@ -35,7 +35,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         try {
             res = model.getConstrByName(name);
         } catch (GRBException err) {
-            System.out.println("Error reading requested variable.");
+//            System.out.println("Error reading requested variable.");
         }
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
@@ -75,7 +75,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
             res = model.getVarByName(name);
 //            return res;
         } catch (GRBException err) {
-            System.out.println("Error reading requested variable.");
+//            System.out.println("Error reading requested variable.");
         }
         if(res == null){
             res = model.addVar(lb, ub, obj, type, name);
@@ -96,7 +96,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     @Override
     public void optimize() throws GRBException {
         model.update();
-        String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
+        String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
         model.read(basePath + "/ilpModel.sol");
         model.update();
         model.optimize();

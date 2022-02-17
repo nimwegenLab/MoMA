@@ -26,8 +26,8 @@ public class IlpModelExporter implements ResultExporterInterface {
         model.write(outputPath2);
         String outputPath3 = outputFolder.getAbsolutePath() + "/ilpModel.sol";
         model.write(outputPath3);
-        String outputPath4 = outputFolder.getAbsolutePath() + "/ilpModel.json";
-        model.write(outputPath4);
+//        String outputPath4 = outputFolder.getAbsolutePath() + "/ilpModel.json";
+//        model.write(outputPath4);
         String outputPath5 = outputFolder.getAbsolutePath() + "/ilpModel.mst";
         model.write(outputPath5);
 //        System.out.println("stop");

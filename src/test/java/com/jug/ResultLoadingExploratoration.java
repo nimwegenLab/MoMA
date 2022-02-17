@@ -20,8 +20,8 @@ public class ResultLoadingExploratoration {
 
     public static void main(String[] args) {
         ResultLoadingExploratoration tests = new ResultLoadingExploratoration();
-        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
     }
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16() {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";

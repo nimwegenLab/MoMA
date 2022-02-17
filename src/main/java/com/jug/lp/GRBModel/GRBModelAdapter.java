@@ -95,11 +95,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public void optimize() throws GRBException {
-//        model.optimize();
         model.update();
         String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
         model.read(basePath + "/ilpModel.sol");
         model.update();
+        model.optimize();
     }
 
     @Override

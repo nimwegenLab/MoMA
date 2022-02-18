@@ -98,7 +98,8 @@ public class Growthlane {
 //		modelGurobi = null;
 		if (loadModelFromDisk)
 			try {
-				String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
+				String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
+//				String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
 				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
 				GRBModel grbModel = new GRBModel(env, basePath + "/ilpModel.mps");
 				model = new GRBModelAdapter(grbModel);

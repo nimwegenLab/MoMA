@@ -251,7 +251,8 @@ public class GrowthlaneTrackingILP {
 
     private void printIlpProperties() {
         System.out.println("########### ILP PROPERTIES START ###########");
-        System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
+        System.out.println("Number of hypotheses:\t" + nodes.getTotalNumberOfHypotheses());
+        System.out.println("Number of assignments:\t" + nodes.getTotalNumberOfAssignments());
         System.out.println("########### ILP PROPERTIES END ###########");
     }
 

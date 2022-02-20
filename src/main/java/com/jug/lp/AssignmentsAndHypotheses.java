@@ -118,6 +118,19 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
     }
 
     /**
+     * Return the total number of hypotheses.
+     *
+     * @return
+     */
+    public int getTotalNumberOfHypotheses() {
+        int numberOfHypotheses = 0;
+        for (List<H> HypothesesAtT : getAllHypotheses()) {
+            numberOfHypotheses += HypothesesAtT.size();
+        }
+        return numberOfHypotheses;
+    }
+
+    /**
      * Adds a hypothesis to <code>h_t</code>. If <code>h_t</code> does not
      * contain <code>t</code> time-steps this function will add the missing
      * amount.

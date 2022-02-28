@@ -11,6 +11,7 @@ import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagComponentCost;
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
@@ -132,6 +133,56 @@ public class CostFactory {
 			return 1.0; /* there is no watershed line so we return 1.0 */
 		}
 		return val.doubleValue();
+	}
+
+	/**
+	 * Calculate the likelihood value for the watershed line being ON.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
+		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+		return multiplyPixelValues(probabilities);
+	}
+
+	/**
+	 * Calculate the likelihood value for the watershed line being OFF.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
+		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> value.getRealDouble() - 1.).collect(Collectors.toList());
+		return multiplyPixelValues(probabilities);
+	}
+
+	/**
+	 * Calculate the likelihood value for the component being ON.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component){
+		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+		return multiplyPixelValues(probabilities);
+	}
+
+	/**
+	 * Calculate the likelihood value for the component being OFF.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component) {
+		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> value.getRealDouble() - 1.).collect(Collectors.toList());
+		return multiplyPixelValues(probabilities);
+	}
+
+	public static double multiplyPixelValues(List<Double> pixelVals) {
+//		List<Double> res = pixelVals.stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+//		List<Double> res = pixelVals.stream().map(value -> value.getRealDouble()).reduce(1, Math::multiplyExact);
+		return pixelVals.stream().reduce(1.0, (acc, value) -> acc * value).doubleValue();
 	}
 
 	/**

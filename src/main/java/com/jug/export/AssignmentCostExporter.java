@@ -5,6 +5,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentProperties;
@@ -29,6 +30,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Integer> cellRankCol;
     private final ResultTableColumn<Float> assignmentCostCol;
     private final ResultTableColumn<Integer> sourceHypInIlpSolutionCol;
+    private final ResultTableColumn<Double> offLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> onLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> onLikelihoodForComponentWatershedLineCol;
     ResultTableColumn<Integer> sourceTopLimitCol;
     ResultTableColumn<Integer> sourceBottomLimitCol;
     private final ResultTableColumn<Integer> target1TopLimitCol;
@@ -76,6 +81,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         target1BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_1_bottom_px"));
         target2TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_top_px"));
         target2BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_bottom_px"));
+        offLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("off_likelihood_for_component"));
+        onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("on_likelihood_for_component"));
+        offLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("off_likelihood_for_component_watershed_line"));
+        onLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("on_likelihood_for_component_watershed_line"));
     }
 
     @Override
@@ -115,6 +124,11 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             }
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
+
+            offLikelihoodForComponentCol.addValue(CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent()));
+            onLikelihoodForComponentCol.addValue(CostFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent()));
+            onLikelihoodForComponentWatershedLineCol.addValue(CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent()));
+            offLikelihoodForComponentWatershedLineCol.addValue(CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent()));
 
             int cellRank;
             if (assignmentInIlpSolution) {

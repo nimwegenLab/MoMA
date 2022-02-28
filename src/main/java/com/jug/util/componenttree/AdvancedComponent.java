@@ -496,7 +496,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     List<T> componentPixelValues = null;
 
-    List<T> getComponentPixelValues() {
+    public List<T> getComponentPixelValues() {
         if (componentPixelValues != null) {
             return componentPixelValues;
         }

@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class ExplorationForImprovingCostFunctions {
-    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/";
+    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/20220209_cost_function_improvements/";
 
     public static void main(String[] args) {
         ExplorationForImprovingCostFunctions tests = new ExplorationForImprovingCostFunctions();
@@ -18,17 +18,17 @@ public class ExplorationForImprovingCostFunctions {
     }
 
     public void _lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
-        String datasetSubPath = "/20220209_component_cost_improvement/lis_20211026/Pos7_GL12";
+        String datasetSubPath = "/lis_20211026/Pos7_GL12";
         String inputPath = datasets_base_path + datasetSubPath + "/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
         Integer tmin = 0;
-        Integer tmax = 420;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        Integer tmax = 100;
+        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
 
     public void _dany_20200812_8proms_ace_1_MMStack_Pos25_GL7() {
-        String datasetSubPath = "/20220209_component_cost_improvement/dany_20200812_8proms_ace_1_MMStack/Pos25_GL7/";
+        String datasetSubPath = "/dany_20200812_8proms_ace_1_MMStack/Pos25_GL7/";
         String inputPath = datasets_base_path + datasetSubPath + "/20200812_8proms_ace_1_MMStack_Pos25_GL7.tif";
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
         Integer tmin = 0;

@@ -153,7 +153,7 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
-		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> value.getRealDouble() - 1.).collect(Collectors.toList());
+		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> 1. - value.getRealDouble()).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
 	}
 
@@ -175,7 +175,7 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component) {
-		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> value.getRealDouble() - 1.).collect(Collectors.toList());
+		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> 1. - value.getRealDouble()).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
 	}
 

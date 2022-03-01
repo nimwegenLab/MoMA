@@ -16,17 +16,20 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
+import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
     private Imglib2Utils imglib2Utils;
+    private CentralMomentsCalculator polygonMomentsCalculator;
 
     public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
+        polygonMomentsCalculator = new CentralMomentsCalculator();
         this.ops = ops;
     }
 
@@ -39,6 +42,11 @@ public class ComponentProperties {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+    }
+
+    public Sextet<Double, Double, Double, Double, Double, Double> getCentralMoments(ComponentInterface component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        return polygonMomentsCalculator.calculate(poly);
     }
 
     /***

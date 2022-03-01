@@ -89,7 +89,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
-            System.out.println("t: " + t);
         }
         File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
         try {

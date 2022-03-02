@@ -13,6 +13,7 @@ import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.util.Pair;
 import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
@@ -70,6 +71,11 @@ public class ComponentMock implements ComponentInterface {
 
     @Override
     public List<Double> getComponentPixelValuesAsDouble() {
+        return null;
+    }
+
+    @Override
+    public Pair<Double, Double> getPixelValueExtremaInsideRange(double rangeMin, double rangeMax) {
         return null;
     }
 

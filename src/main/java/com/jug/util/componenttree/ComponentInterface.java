@@ -6,6 +6,7 @@ import net.imglib2.img.Img;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.util.Pair;
 
 import java.util.List;
 import java.util.Set;
@@ -26,4 +27,6 @@ public interface ComponentInterface<T extends Type<T>, C extends Component<T, C>
     Set<String> getComponentFeatureNames();
 
     List<Double> getComponentPixelValuesAsDouble();
+
+    Pair<Double, Double> getPixelValueExtremaInsideRange(double rangeMin, double rangeMax);
 }

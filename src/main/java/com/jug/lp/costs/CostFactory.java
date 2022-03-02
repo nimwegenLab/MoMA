@@ -10,6 +10,8 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -232,20 +234,15 @@ return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceCompone
 	}
 
 	public static Pair<Double, Double> getLikelihoodExtremaWithinRange(List<ComponentInterface> components, double rangeMin, double rangeMax) {
-		double minRet = Double.MAX_VALUE;
-		double maxRet = -Double.MAX_VALUE;
+		ArrayList<Double> minValues = new ArrayList();
+		ArrayList<Double> maxValues = new ArrayList();
 		for (ComponentInterface component : components) {
-			List<Double> pixelValues = component.getComponentPixelValuesAsDouble();
-			for (Double val : pixelValues){
-				if (val > rangeMin && val < minRet) minRet = val;
-				if (val < rangeMax && val > maxRet) maxRet = val;
-			}
+			Pair<Double, Double> extrema = component.getPixelValueExtremaInsideRange(rangeMin, rangeMax);
+			minValues.add(extrema.getA());
+			maxValues.add(extrema.getB());
 		}
+		double minRet = Collections.min(minValues);
+		double maxRet = Collections.max(maxValues);
 		return new ValuePair<>(minRet, maxRet);
 	}
-
-//	public static Pair<Double, Double> getLikelihoodExtremaWithinRange(List<Double> pixelValues, double rangeMin, double rangeMax) {
-//
-//		throw new NotImplementedException();
-//	}
 }

@@ -14,6 +14,7 @@ import net.imglib2.type.Type;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
 import java.util.Iterator;
@@ -500,6 +501,17 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     public List<Double> getComponentPixelValuesAsDouble(){
         List<Double> probabilities = ((AdvancedComponent<FloatType>) this).getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
         return probabilities;
+    }
+
+    public Pair<Double, Double> getPixelValueExtremaInsideRange(double rangeMin, double rangeMax) {
+        double minRet = Double.MAX_VALUE;
+        double maxRet = -Double.MAX_VALUE;
+        List<Double> pixelValues = this.getComponentPixelValuesAsDouble();
+        for (Double val : pixelValues) {
+            if (val > rangeMin && val < minRet) minRet = val;
+            if (val < rangeMax && val > maxRet) maxRet = val;
+        }
+        return new ValuePair<>(minRet, maxRet);
     }
 
     public List<T> getComponentPixelValues() {

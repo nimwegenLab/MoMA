@@ -8,10 +8,13 @@ import com.jug.lp.Hypothesis;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.List;
@@ -94,6 +97,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
         System.out.println("Exporting assignment costs...");
 
+        Pair<Double, Double> minMaxTuple = getValuesForLikelihoodCalculation();
+        
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
@@ -110,6 +115,12 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    private Pair<Double, Double> getValuesForLikelihoodCalculation() {
+        List<ComponentInterface> components = ilp.getAllComponentsInIlp();
+        Pair<Double, Double> minMaxPair = CostFactory.getLikelihoodExtremaWithinRange(components, 0, 1.0);
+        return minMaxPair;
     }
 
     private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){

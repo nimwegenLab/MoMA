@@ -230,4 +230,22 @@ final long deltaSizeChildrenToSourceComponent = Math.abs( sizeChild1 + sizeChild
 
 return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceComponent;
 	}
+
+	public static Pair<Double, Double> getLikelihoodExtremaWithinRange(List<ComponentInterface> components, double rangeMin, double rangeMax) {
+		double minRet = Double.MAX_VALUE;
+		double maxRet = -Double.MAX_VALUE;
+		for (ComponentInterface component : components) {
+			List<Double> pixelValues = component.getComponentPixelValuesAsDouble();
+			for (Double val : pixelValues){
+				if (val > rangeMin && val < minRet) minRet = val;
+				if (val < rangeMax && val > maxRet) maxRet = val;
+			}
+		}
+		return new ValuePair<>(minRet, maxRet);
+	}
+
+//	public static Pair<Double, Double> getLikelihoodExtremaWithinRange(List<Double> pixelValues, double rangeMin, double rangeMax) {
+//
+//		throw new NotImplementedException();
+//	}
 }

@@ -13,6 +13,7 @@ import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.SimpleComponentTree;
 import gurobi.*;
 import net.imglib2.Localizable;
@@ -156,6 +157,22 @@ public class GrowthlaneTrackingILP {
 
     public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> getNodes() {
         return nodes;
+    }
+
+    /**
+     * Return all components that are part of hypotheses in the ILP.
+     *
+     * @return
+     */
+    public List<ComponentInterface> getAllComponentsInIlp() {
+        ArrayList<ComponentInterface> ret = new ArrayList<ComponentInterface>();
+        List<List<Hypothesis<AdvancedComponent<FloatType>>>> result = nodes.getAllHypotheses();
+        for (List<Hypothesis<AdvancedComponent<FloatType>>> timestepList : result) {
+            for (Hypothesis<AdvancedComponent<FloatType>> hyp : timestepList) {
+                ret.add(hyp.getWrappedComponent());
+            }
+        }
+        return ret;
     }
 
     public HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getEdgeSets() {

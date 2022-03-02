@@ -1,8 +1,8 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.math.Vector2DPolyline;
-import net.imglib2.*;
 import net.imglib2.RandomAccess;
+import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
@@ -16,8 +16,9 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
-import java.util.*;
 import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
@@ -495,6 +496,11 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     List<T> componentPixelValues = null;
+
+    public List<Double> getComponentPixelValuesAsDouble(){
+        List<Double> probabilities = ((AdvancedComponent<FloatType>) this).getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+        return probabilities;
+    }
 
     public List<T> getComponentPixelValues() {
         if (componentPixelValues != null) {

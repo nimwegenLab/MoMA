@@ -69,6 +69,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public List<Double> getComponentPixelValuesAsDouble() {
+        return null;
+    }
+
+    @Override
     public Img getComponentImage(NativeType pixelValue) {
         return ImgView.wrap(componentImage);
     }

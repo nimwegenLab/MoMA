@@ -7,6 +7,7 @@ import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 
+import java.util.List;
 import java.util.Set;
 
 public interface ComponentInterface<T extends Type<T>, C extends Component<T, C>> extends Component<T, C> {
@@ -23,4 +24,6 @@ public interface ComponentInterface<T extends Type<T>, C extends Component<T, C>
     Vector2DPolyline getComponentFeature(String featureName);
 
     Set<String> getComponentFeatureNames();
+
+    List<Double> getComponentPixelValuesAsDouble();
 }

@@ -14,7 +14,6 @@ import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.List;
@@ -36,6 +35,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Double> offLikelihoodForComponentCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> maxLikelihoodLowerThanOneCol;
+    private final ResultTableColumn<Double> minLikelihoodLargerThanZeroCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentWatershedLineCol;
     ResultTableColumn<Integer> sourceTopLimitCol;
     ResultTableColumn<Integer> sourceBottomLimitCol;
@@ -88,6 +89,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_on"));
         offLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_off"));
         onLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_on"));
+        maxLikelihoodLowerThanOneCol = resultTable.addColumn(new ResultTableColumn<>("max_likelihood_lower_than_one"));
+        minLikelihoodLargerThanZeroCol = resultTable.addColumn(new ResultTableColumn<>("min_likelihood_larger_than_zero"));
     }
 
     @Override
@@ -143,6 +146,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             onLikelihoodForComponentWatershedLineCol.addValue(onLikelihoodForComponentWatershedLine);
             double offLikelihoodForComponentWatershedLine = CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent());
             offLikelihoodForComponentWatershedLineCol.addValue(offLikelihoodForComponentWatershedLine);
+            Pair<Double, Double> likelihoodExtrema = sourceHypothesis.getWrappedComponent().getPixelValueExtremaInsideRange(0.0, 1.0);
+            minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
+            maxLikelihoodLowerThanOneCol.addValue(likelihoodExtrema.getB());
 
             int cellRank;
             if (assignmentInIlpSolution) {

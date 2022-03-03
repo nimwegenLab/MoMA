@@ -56,7 +56,8 @@ public class ComponentTreeGenerator {
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
-        final int minSize = configuration.getSizeMinimumOfLeafComponent(); // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+//        final int minSize = configuration.getSizeMinimumOfLeafComponent(); // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+        final int minSize = 10;
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
@@ -77,11 +78,14 @@ public class ComponentTreeGenerator {
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
 
+        // watershed components into their parent-components
+        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
         tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
 
-        // watershed components into their parent-components
-        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+        IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
+        tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
 
         return tree;
     }

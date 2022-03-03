@@ -98,6 +98,9 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
+            if (tester.discontinueBranch()) {
+                return;
+            }
             for (final C sourceChildren : sourceComponent.getChildren()) {
                 RecursivelyFindValidComponent(sourceChildren);
             }

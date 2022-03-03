@@ -22,4 +22,8 @@ public class RootComponentSizeTester<T extends Type<T>, C extends Component<T, C
     public boolean IsValid(C component) {
         return component.getParent() != null || component.size() >= minimumSizeOfRootComponents; /* the component is root (i.e. has no parent) and is smaller than threshold */
     }
+
+    public boolean discontinueBranch() {
+        return true; /* if the root component is not valid, we do not want to add any child components of it */
+    }
 }

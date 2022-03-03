@@ -20,4 +20,8 @@ public class HasSiblingsComponentTester<T extends Type<T>, C extends Component<T
         if(component.getParent() == null) return true; // return True for root-component
         return component.getParent().getChildren().size() > 1;
     }
+
+    public boolean discontinueBranch() {
+        return false;
+    }
 }

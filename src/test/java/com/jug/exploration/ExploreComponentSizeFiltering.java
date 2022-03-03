@@ -22,8 +22,8 @@ public class ExploreComponentSizeFiltering {
         String datasetSubPath = "/lis_20211026/Pos7_GL12";
         String inputPath = datasets_base_path + datasetSubPath + "/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
-        Integer tmin = 490;
-        Integer tmax = 500;
+        Integer tmin = 400;
+        Integer tmax = 800;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

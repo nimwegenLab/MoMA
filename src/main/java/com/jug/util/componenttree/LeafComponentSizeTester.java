@@ -24,4 +24,8 @@ public class LeafComponentSizeTester<T extends Type<T>, C extends Component<T, C
         if(component.getParent() == null) return true;
         return component.size() > minimumSizeOfLeafComponents; /* the component is not root (i.e. has a parent) and is smaller than threshold */
     }
+
+    public boolean discontinueBranch() {
+        return false;
+    }
 }

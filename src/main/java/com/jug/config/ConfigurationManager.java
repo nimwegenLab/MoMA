@@ -362,4 +362,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return SIZE_MINIMUM_OF_LEAF_COMPONENTS;
     }
 
+    public int getSizeMinimumOfParentComponent() {
+        return Integer.MIN_VALUE;
+    }
 }

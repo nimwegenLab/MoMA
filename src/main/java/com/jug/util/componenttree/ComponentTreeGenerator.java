@@ -56,8 +56,7 @@ public class ComponentTreeGenerator {
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
-//        final int minSize = configuration.getSizeMinimumOfLeafComponent(); // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
-        final int minSize = 10;
+        final int minSize = 5; // this sets the minimum size of components during component generation for root components as well as child components. We set this to a low value to ensure a deep segmentation of our components. The minimum size of root and child components is then filtered using LeafComponentSizeTester and RootComponentSizeTester (see below).
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;

@@ -133,17 +133,17 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 });
                         break;
                     }
-                    case "SIZE_MINIMUM_OF_LEAF_COMPONENTS": {
+                    case "SIZE_MINIMUM_FOR_LEAF_COMPONENTS": {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.SIZE_MINIMUM_OF_LEAF_COMPONENTS,
-                                () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_OF_LEAF_COMPONENTS),
+                                () -> newValue != ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS,
+                                () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS),
                                 () -> {
-                                    ConfigurationManager.SIZE_MINIMUM_OF_LEAF_COMPONENTS = newValue;
+                                    ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS = newValue;
                                     MoMA.props.setProperty(
-                                            "SIZE_MINIMUM_OF_LEAF_COMPONENTS",
-                                            "" + ConfigurationManager.SIZE_MINIMUM_OF_LEAF_COMPONENTS);
+                                            "SIZE_MINIMUM_FOR_LEAF_COMPONENTS",
+                                            "" + ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();

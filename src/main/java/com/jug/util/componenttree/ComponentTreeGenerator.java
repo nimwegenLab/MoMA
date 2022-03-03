@@ -78,7 +78,7 @@ public class ComponentTreeGenerator {
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
-        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester, componentPropertiesCalculator);
+        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
 
         // watershed components into their parent-components
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);

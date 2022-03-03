@@ -43,9 +43,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      */
     public static float LYSIS_ASSIGNMENT_COST = 10.0f;
     /**
-     *
+     * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
     public static int SIZE_MINIMUM_OF_LEAF_COMPONENTS = 50;
+    /**
+     * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
+     */
+    public static int SIZE_MINIMUM_OF_ROOT_COMPONENTS = 50;
     /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
@@ -152,6 +156,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
         SIZE_MINIMUM_OF_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_OF_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_OF_LEAF_COMPONENTS)));
+        SIZE_MINIMUM_OF_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_OF_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_OF_ROOT_COMPONENTS)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
         THRESHOLD_FOR_COMPONENT_GENERATION = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Float.toString(THRESHOLD_FOR_COMPONENT_GENERATION)));
@@ -285,6 +290,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
             props.setProperty("SIZE_MINIMUM_OF_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_OF_LEAF_COMPONENTS));
+            props.setProperty("SIZE_MINIMUM_OF_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_OF_ROOT_COMPONENTS));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
             props.setProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Double.toString(THRESHOLD_FOR_COMPONENT_GENERATION));
             props.setProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Double.toString(THRESHOLD_FOR_COMPONENT_SPLITTING));
@@ -363,6 +369,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     }
 
     public int getSizeMinimumOfParentComponent() {
-        return Integer.MIN_VALUE;
+        return SIZE_MINIMUM_OF_ROOT_COMPONENTS;
     }
 }

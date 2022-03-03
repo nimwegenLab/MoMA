@@ -357,4 +357,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public int getCellDetectionRoiOffsetTop() {
         return CELL_DETECTION_ROI_OFFSET_TOP;
     }
+
+    public int getSizeMinimumOfLeafComponent() {
+        return SIZE_MINIMUM_OF_LEAF_COMPONENTS;
+    }
+
 }

@@ -56,7 +56,7 @@ public class ComponentTreeGenerator {
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
-        final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+        final int minSize = configuration.getSizeMinimumOfLeafComponent(); // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;

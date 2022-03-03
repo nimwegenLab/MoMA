@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.IComponentTreeGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.algorithm.binary.Thresholder;
@@ -18,15 +19,18 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
+    private IComponentTreeGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
     private WatershedMaskGenerator watershedMaskGenerator;
     private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder,
+    public ComponentTreeGenerator(IComponentTreeGeneratorConfiguration configuration,
+                                  RecursiveComponentWatershedder recursiveComponentWatershedder,
                                   ComponentProperties componentPropertiesCalculator,
                                   WatershedMaskGenerator watershedMaskGenerator,
                                   Imglib2Utils imglib2Utils) {
+        this.configuration = configuration;
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         this.watershedMaskGenerator = watershedMaskGenerator;

@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
+import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
@@ -65,7 +66,8 @@ public class GrowthlaneTrackingIlpTest {
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MAX_VALUE);
+        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
     }
 

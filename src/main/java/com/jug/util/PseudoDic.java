@@ -60,7 +60,7 @@ public class PseudoDic {
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
         watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING, configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
-        componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
+        componentTreeGenerator = new ComponentTreeGenerator(configurationManager, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */

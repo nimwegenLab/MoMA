@@ -107,7 +107,9 @@ public class PseudoDic {
 
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
-        listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        if(ConfigurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
+            listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        }
         listOfMeasurements.add(new ContourMomentsMeasurement(componentProperties));
 
         if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {

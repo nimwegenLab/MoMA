@@ -100,8 +100,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
         System.out.println("Exporting assignment costs...");
 
-        Pair<Double, Double> minMaxTuple = getValuesForLikelihoodCalculation();
-        
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
@@ -120,12 +118,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         }
     }
 
-    private Pair<Double, Double> getValuesForLikelihoodCalculation() {
-        List<ComponentInterface> components = ilp.getAllComponentsInIlp();
-        Pair<Double, Double> minMaxPair = CostFactory.getLikelihoodExtremaWithinRange(components, 0, 1.0);
-        return minMaxPair;
-    }
-
     private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
         final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
@@ -137,6 +129,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             }
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
+
+            Pair<Double, Double> minMaxTuple = CostFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
+            double minVal = minMaxTuple.getA();
+            double maxVal = minMaxTuple.getB();
 
             double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent());
             offLikelihoodForComponentCol.addValue(offLikelihoodForComponent);

@@ -569,6 +569,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 .sum();
     }
 
+    public List<Double> getWatershedLinePixelValuesAsDoubles() {
+        return ((AdvancedComponent<FloatType>) this).getWatershedLinePixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+    }
+
     List<T> watershedLinePixelValues = null;
 
     public List<T> getWatershedLinePixelValues() {

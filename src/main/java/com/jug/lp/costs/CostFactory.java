@@ -144,7 +144,7 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
-		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		return multiplyPixelValues(probabilities);
 	}
 
@@ -155,7 +155,8 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
-		List<Double> probabilities = component.getWatershedLinePixelValues().stream().map(value -> 1. - value.getRealDouble()).collect(Collectors.toList());
+		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
+		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
 	}
 
@@ -166,7 +167,7 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component){
-		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
 		return multiplyPixelValues(probabilities);
 	}
 
@@ -177,13 +178,12 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component) {
-		List<Double> probabilities = component.getComponentPixelValues().stream().map(value -> 1. - value.getRealDouble()).collect(Collectors.toList());
+		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
+		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
 	}
 
 	public static double multiplyPixelValues(List<Double> pixelVals) {
-//		List<Double> res = pixelVals.stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
-//		List<Double> res = pixelVals.stream().map(value -> value.getRealDouble()).reduce(1, Math::multiplyExact);
 		return pixelVals.stream().reduce(1.0, (acc, value) -> acc * value).doubleValue();
 	}
 
@@ -244,5 +244,10 @@ return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceCompone
 		double minRet = Collections.min(minValues);
 		double maxRet = Collections.max(maxValues);
 		return new ValuePair<>(minRet, maxRet);
+	}
+
+	public static Pair<Double, Double> getValuesForLikelihoodCalculation(List<ComponentInterface> components) {
+		Pair<Double, Double> minMaxPair = CostFactory.getLikelihoodExtremaWithinRange(components, 0, 1.0);
+		return minMaxPair;
 	}
 }

@@ -166,9 +166,26 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component){
+	public static double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
 		return multiplyPixelValues(probabilities);
+	}
+
+	/**
+	 * Calculate the log likelihood value for the component being ON.
+	 *
+	 * @param component
+	 * @return
+	 */
+	public static double getOnLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
+		return calculateSumOfLogValues(probabilities);
 	}
 
 	/**
@@ -187,10 +204,10 @@ public class CostFactory {
 	}
 
 	/**
-	 * Calculate the likelihood value for the component being OFF.
+	 * Calculate the log likelihood value for the component being OFF.
 	 *
 	 * @param component
-	 * @return ranges from 0 to 1.
+	 * @return
 	 */
 	public static double getOffLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();

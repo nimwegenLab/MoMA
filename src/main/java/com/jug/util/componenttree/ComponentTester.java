@@ -47,4 +47,8 @@ public class ComponentTester<T extends Type<T>, C extends Component<T, C>>
             tester.Reset();
         }
     }
+
+    public boolean discontinueBranch() {
+        return true;
+    }
 }

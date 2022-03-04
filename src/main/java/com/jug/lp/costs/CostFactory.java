@@ -177,10 +177,28 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component) {
+	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
 		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
+	}
+
+	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {
+		double minVal = valueRange.getA();
+		double maxVal = valueRange.getB();
+		List<Double> filteredList = values.parallelStream().map(val -> {
+			if (val < minVal) {
+				return minVal;
+			}
+			if (val > maxVal) {
+				return maxVal;
+			}
+			return val;
+		}).collect(Collectors.toList());
+		return filteredList;
 	}
 
 	public static double multiplyPixelValues(List<Double> pixelVals) {

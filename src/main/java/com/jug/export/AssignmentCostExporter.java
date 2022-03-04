@@ -134,7 +134,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             double minVal = minMaxTuple.getA();
             double maxVal = minMaxTuple.getB();
 
-            double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent());
+            double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLikelihoodForComponentCol.addValue(offLikelihoodForComponent);
             double onLikelihoodForComponent = CostFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent());
             onLikelihoodForComponentCol.addValue(onLikelihoodForComponent);

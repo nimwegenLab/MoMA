@@ -143,8 +143,40 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
+	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
+		return multiplyPixelValues(probabilities);
+	}
+
+	/**
+	 * Calculate the log likelihood value for the watershed line being ON.
+	 *
+	 * @param component
+	 * @return
+	 */
+	public static double getOnLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
+		return calculateSumOfLogValues(probabilities);
+	}
+
+	/**
+	 * Calculate the likelihood value for the watershed line being OFF.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
+		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
 		return multiplyPixelValues(probabilities);
 	}
 
@@ -154,10 +186,13 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component){
+	public static double getOffLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
 		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
-		return multiplyPixelValues(probabilities);
+		return calculateSumOfLogValues(probabilities);
 	}
 
 	/**

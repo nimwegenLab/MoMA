@@ -37,9 +37,11 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Double> onLikelihoodForComponentCol;
     private final ResultTableColumn<Double> onLogLikelihoodForComponentCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> offLogLikelihoodForComponentWatershedLineCol;
     private final ResultTableColumn<Double> maxLikelihoodLowerThanOneCol;
     private final ResultTableColumn<Double> minLikelihoodLargerThanZeroCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> onLogLikelihoodForComponentWatershedLineCol;
     ResultTableColumn<Integer> sourceTopLimitCol;
     ResultTableColumn<Integer> sourceBottomLimitCol;
     private final ResultTableColumn<Integer> target1TopLimitCol;
@@ -92,7 +94,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_on"));
         onLogLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_on"));
         offLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_off"));
+        offLogLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_watershed_line_off"));
         onLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_on"));
+        onLogLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_watershed_line_on"));
         maxLikelihoodLowerThanOneCol = resultTable.addColumn(new ResultTableColumn<>("max_likelihood_lower_than_one"));
         minLikelihoodLargerThanZeroCol = resultTable.addColumn(new ResultTableColumn<>("min_likelihood_larger_than_zero"));
     }
@@ -144,10 +148,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             onLikelihoodForComponentCol.addValue(onLikelihoodForComponent);
             double onLogLikelihoodForComponent = CostFactory.getOnLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLogLikelihoodForComponentCol.addValue(onLogLikelihoodForComponent);
-            double onLikelihoodForComponentWatershedLine = CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent());
+            double onLikelihoodForComponentWatershedLine = CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLikelihoodForComponentWatershedLineCol.addValue(onLikelihoodForComponentWatershedLine);
-            double offLikelihoodForComponentWatershedLine = CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent());
+            double onLogLikelihoodForComponentWatershedLine = CostFactory.getOnLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            onLogLikelihoodForComponentWatershedLineCol.addValue(onLogLikelihoodForComponentWatershedLine);
+            double offLikelihoodForComponentWatershedLine = CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLikelihoodForComponentWatershedLineCol.addValue(offLikelihoodForComponentWatershedLine);
+            double offLogLikelihoodForComponentWatershedLine = CostFactory.getOffLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLogLikelihoodForComponentWatershedLineCol.addValue(offLogLikelihoodForComponentWatershedLine);
             Pair<Double, Double> likelihoodExtrema = sourceHypothesis.getWrappedComponent().getPixelValueExtremaInsideRange(0.0, 1.0);
             minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
             maxLikelihoodLowerThanOneCol.addValue(likelihoodExtrema.getB());

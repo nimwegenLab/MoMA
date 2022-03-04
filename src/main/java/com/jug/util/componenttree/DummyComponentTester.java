@@ -14,4 +14,8 @@ public class DummyComponentTester<T extends Type<T>, C extends Component<T, C>>
         IComponentTester<T, C> {
 
     public boolean IsValid(C component){ return true;}
+
+    public boolean discontinueBranch() {
+        return false;
+    }
 }

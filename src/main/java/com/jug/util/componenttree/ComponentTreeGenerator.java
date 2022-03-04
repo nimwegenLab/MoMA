@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.IComponentTreeGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.algorithm.binary.Thresholder;
@@ -18,15 +19,18 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
+    private IComponentTreeGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
     private WatershedMaskGenerator watershedMaskGenerator;
     private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder,
+    public ComponentTreeGenerator(IComponentTreeGeneratorConfiguration configuration,
+                                  RecursiveComponentWatershedder recursiveComponentWatershedder,
                                   ComponentProperties componentPropertiesCalculator,
                                   WatershedMaskGenerator watershedMaskGenerator,
                                   Imglib2Utils imglib2Utils) {
+        this.configuration = configuration;
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         this.watershedMaskGenerator = watershedMaskGenerator;
@@ -52,7 +56,7 @@ public class ComponentTreeGenerator {
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
-        final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+        final int minSize = 5; // this sets the minimum size of components during component generation for root components as well as child components. We set this to a low value to ensure a deep segmentation of our components. The minimum size of root and child components is then filtered using LeafComponentSizeTester and RootComponentSizeTester (see below).
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
@@ -75,6 +79,12 @@ public class ComponentTreeGenerator {
 
         // watershed components into their parent-components
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+
+        IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
+        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
+
+        IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
+        tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
 
         return tree;
     }

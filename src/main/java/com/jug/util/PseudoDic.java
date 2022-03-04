@@ -8,6 +8,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
 import com.jug.export.measurements.SegmentMeasurementInterface;
+import com.jug.export.measurements.ContourMomentsMeasurement;
 import com.jug.export.measurements.SpineLengthMeasurement;
 import com.jug.gui.DialogManager;
 import com.jug.gui.IDialogManager;
@@ -59,7 +60,7 @@ public class PseudoDic {
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
         watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING, configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
-        componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
+        componentTreeGenerator = new ComponentTreeGenerator(configurationManager, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
@@ -106,7 +107,11 @@ public class PseudoDic {
 
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
-        listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        if(ConfigurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
+            listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
+        }
+        listOfMeasurements.add(new ContourMomentsMeasurement(componentProperties));
+
         if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());
         }

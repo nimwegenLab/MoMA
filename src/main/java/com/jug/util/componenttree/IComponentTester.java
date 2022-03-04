@@ -17,4 +17,10 @@ public interface IComponentTester<T extends Type<T>, C extends Component<T, C>> 
      * @return true if the component is valid.
      */
     boolean IsValid(C component);
+
+    /**
+     * Tells the tree generating algorithm, whether to continue processing this branch of the component tree.
+     * @return
+     */
+    boolean discontinueBranch();
 }

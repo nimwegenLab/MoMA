@@ -186,6 +186,21 @@ public class CostFactory {
 		return multiplyPixelValues(probabilities);
 	}
 
+	/**
+	 * Calculate the likelihood value for the component being OFF.
+	 *
+	 * @param component
+	 * @return ranges from 0 to 1.
+	 */
+	public static double getOffLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
+		if (valueRange != null) {
+			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
+		}
+		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
+		return calculateSumOfLogValues(probabilities);
+	}
+
 	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {
 		double minVal = valueRange.getA();
 		double maxVal = valueRange.getB();
@@ -199,6 +214,10 @@ public class CostFactory {
 			return val;
 		}).collect(Collectors.toList());
 		return filteredList;
+	}
+
+	public static double calculateSumOfLogValues(List<Double> values) {
+		return values.stream().map(val -> Math.log(val)).reduce(0.0, (acc, val) -> acc + val);
 	}
 
 	public static double multiplyPixelValues(List<Double> pixelVals) {

@@ -33,6 +33,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Float> assignmentCostCol;
     private final ResultTableColumn<Integer> sourceHypInIlpSolutionCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> offLogLikelihoodForComponentCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
     private final ResultTableColumn<Double> maxLikelihoodLowerThanOneCol;
@@ -86,6 +87,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         target2TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_top_px"));
         target2BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_bottom_px"));
         offLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_off"));
+        offLogLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_off"));
         onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_on"));
         offLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_off"));
         onLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_on"));
@@ -131,11 +133,11 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
 
             Pair<Double, Double> minMaxTuple = CostFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
-            double minVal = minMaxTuple.getA();
-            double maxVal = minMaxTuple.getB();
 
             double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLikelihoodForComponentCol.addValue(offLikelihoodForComponent);
+            double offLogLikelihoodForComponent = CostFactory.getOffLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLogLikelihoodForComponentCol.addValue(offLogLikelihoodForComponent);
             double onLikelihoodForComponent = CostFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent());
             onLikelihoodForComponentCol.addValue(onLikelihoodForComponent);
             double onLikelihoodForComponentWatershedLine = CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent());

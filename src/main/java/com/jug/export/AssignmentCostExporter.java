@@ -8,7 +8,6 @@ import com.jug.lp.Hypothesis;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
@@ -32,6 +31,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Integer> cellRankCol;
     private final ResultTableColumn<Float> assignmentCostCol;
     private final ResultTableColumn<Integer> sourceHypInIlpSolutionCol;
+    private final ResultTableColumn<Integer> componentTreeNodeLevelCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentCol;
     private final ResultTableColumn<Double> offLogLikelihoodForComponentCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentCol;
@@ -89,6 +89,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         target1BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_1_bottom_px"));
         target2TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_top_px"));
         target2BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_bottom_px"));
+        componentTreeNodeLevelCol = resultTable.addColumn(new ResultTableColumn<>("source_component_tree_level"));
         offLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_off"));
         offLogLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_off"));
         onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_on"));
@@ -137,6 +138,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             }
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
+
+
+            componentTreeNodeLevelCol.addValue(sourceHypothesis.getWrappedComponent().getNodeLevel());
 
             Pair<Double, Double> minMaxTuple = CostFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
 

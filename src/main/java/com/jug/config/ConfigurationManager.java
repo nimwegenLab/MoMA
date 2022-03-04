@@ -138,12 +138,19 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * What happens if exit constraints are NOT part of the model?
      */
 
-    /************************************/
-    public static boolean EXPORT_SPINE_MEASUREMENT = false;
+    /**
+     * Settings related to the measurement and export of the spine length.
+     */
+    public static boolean EXPORT_SPINE_MEASUREMENT = false; /* set whether to perform the spine length measurement */
     public static int SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = 5;
     public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = 5;
     public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = 21;
     public static double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
+
+    /**
+     * Setting related to the measurement and export of the oriented bounding box length measurement.
+     */
+    public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = false; /* set whether to perform the oriented bounding box measurement */
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
@@ -174,6 +181,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble(props.getProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP)));
 
         EXPORT_SPINE_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+        EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);
         SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE)));
@@ -324,6 +332,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
             setBooleanAsIntegerValue(props, "EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+            setBooleanAsIntegerValue(props, "EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);
+
             props.setProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE));
             props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE));
             props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE));

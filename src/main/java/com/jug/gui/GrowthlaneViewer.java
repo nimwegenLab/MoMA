@@ -55,8 +55,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int mousePosY;
     // tracking the mouse (when dragging)
     private boolean isDragging;
-    private String optimalSegmentInfoString = "";
-    private String optionalSegmentInfoString = " ";
+    private String componentInfoString = " ";
     private List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
@@ -151,8 +150,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         // Mouse-position related stuff...
-        optimalSegmentInfoString = "";
-        optionalSegmentInfoString = " ";
+        componentInfoString = " ";
         updateHypothesisInfoTooltip();
         drawHoveredOptionalHypothesis();
         drawHypothesisInfoTooltip(g);
@@ -165,16 +163,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private void drawHypothesisInfoTooltip(Graphics g) {
         g.drawImage(screenImage.image(), 0, 0, w, h, null);
-//        g.setColor(Color.GREEN.darker());
-//        g.drawString(optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
-//        drawString(g, optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
-//        g.setColor(Color.RED.brighter());
-//        g.drawString(optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS + 14); /* draw info-string for optional segment */
         g.setColor(getStringColor());
-        drawString(g, optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+        drawString(g, componentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
     }
 
-//    private Color optionalHypothesisTextColor = Color.BLUE.brighter();
     private Color optionalHypothesisTextColor = Color.RED.brighter();
     private Color optimalHypothesisTextColor = Color.GREEN.darker();
     private Color noHypothesisTextColor = Color.RED.brighter();
@@ -202,27 +194,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private void updateHypothesisInfoTooltip() {
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-//            if (getHoveredOptimalHypothesis() != null) {
-//                float cost = getHoveredOptimalHypothesis().getCost();
-//                AdvancedComponent<FloatType> component = getHoveredOptimalHypothesis().getWrappedComponent();
-//                ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
-////                optimalSegmentInfoString = String.format("%d\n %d\n c=%.4f", limits.getA(), limits.getB(), cost);
-////                optimalSegmentInfoString = String.format("%d\n %d\n", limits.getA(), limits.getB());
-//                optimalSegmentInfoString = String.format("T: %d\nB: %d\nC: %.4f", limits.getA(), limits.getB(), cost);
-////                optimalSegmentInfoString.replace("\\n", System.lineSeparator());
-////                Object length = ((AdvancedComponent<FloatType>)getHoveredOptimalHypothesis().getWrappedComponent()).getMajorAxisLength();
-////                optimalSegmentInfoString = String.format("l=%.4f", length);
-//            } else {
-//                optimalSegmentInfoString = "---";
-//            }
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
-//                optionalSegmentInfoString = String.format("c=%.4f", optionalCost);
-                optionalSegmentInfoString = String.format("C: %.4f\nT: %d\nB: %d\nL: %d\nA: %d\nN: %d", optionalCost, limits.getA(), limits.getB(), limits.getB()-limits.getA(), component.size(), component.getNodeLevel());
+                componentInfoString = String.format("C: %.4f\nT: %d\nB: %d\nL: %d\nA: %d\nN: %d", optionalCost, limits.getA(), limits.getB(), limits.getB()-limits.getA(), component.size(), component.getNodeLevel());
             } else {
-                optionalSegmentInfoString = "---";
+                componentInfoString = "---";
             }
         }
     }

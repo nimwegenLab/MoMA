@@ -13,6 +13,7 @@ import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.List;
@@ -25,6 +26,9 @@ import java.util.function.Supplier;
  */
 public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTable resultTable;
+    private final ResultTableColumn<String> componentId;
+    private final ResultTableColumn<String> parentId;
+    private final ResultTableColumn<String> rootId;
     private final ResultTableColumn<Integer> frameCol;
     private final ResultTableColumn<String> assignmentTypeCol;
     private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
@@ -100,12 +104,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         onLogLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_watershed_line_on"));
         maxLikelihoodLowerThanOneCol = resultTable.addColumn(new ResultTableColumn<>("max_likelihood_lower_than_one"));
         minLikelihoodLargerThanZeroCol = resultTable.addColumn(new ResultTableColumn<>("min_likelihood_larger_than_zero"));
+        componentId = resultTable.addColumn(new ResultTableColumn<>("component_id"));
+        parentId = resultTable.addColumn(new ResultTableColumn<>("parent_id"));
+        rootId = resultTable.addColumn(new ResultTableColumn<>("root_id"));
     }
 
     @Override
     public void export(ResultExporterData resultData) {
         File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
 
         System.out.println("Exporting assignment costs...");
 
@@ -127,6 +133,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         }
     }
 
+    private int counter = 0;
+
     private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
         final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
@@ -139,6 +147,22 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
 
+            System.out.println("counter: " + counter);
+            counter++;
+            System.out.println("frame: " + frame);
+
+            componentId.addValue(sourceHypothesis.getWrappedComponent().getStringId());
+            if(sourceHypothesis.getWrappedComponent().getParent() != null) {
+                parentId.addValue(sourceHypothesis.getWrappedComponent().getParent().getStringId());
+            } else{
+                parentId.addValue("NA");
+            }
+
+            if(sourceHypothesis.getWrappedComponent().getRoot() != null) {
+                rootId.addValue(sourceHypothesis.getWrappedComponent().getRoot().getStringId());
+            } else{
+                rootId.addValue("NA");
+            }
 
             componentTreeNodeLevelCol.addValue(sourceHypothesis.getWrappedComponent().getNodeLevel());
 

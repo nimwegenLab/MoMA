@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
 import net.imglib2.*;
@@ -142,6 +143,21 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return parent;
     }
 
+    private AdvancedComponent<T> root;
+
+    public AdvancedComponent<T> getRoot() {
+        if (getParent() == null) {
+            return null; /* this is the root component and hence it has no corresponding root */
+        }
+        if (root == null) {
+            root = this.getParent();
+            while (root.getParent() != null) {
+                root = root.getParent();
+            }
+        }
+        return root;
+    }
+
 //    public AdvancedComponent<T> getSibling() {
 //        AdvancedComponent<T> parent = this.getParent();
 //        if (parent == null) {
@@ -253,6 +269,30 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public List<AdvancedComponent<T>> getComponentTreeRoots() {
         return componentTreeRoots;
+    }
+
+    private ValuePair<Integer, Integer> verticalComponentLimits;
+
+    public ValuePair<Integer, Integer> getVerticalComponentLimits() {
+        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getTreeNodeInterval(this);
+        return verticalComponentLimits;
+    }
+
+    private int frame;
+
+    public void setFrameNumber(int frame) {
+        this.frame = frame;
+    }
+
+    public int getFrameNumber() {
+         return frame;
+    }
+
+    public String getStringId(){
+        frame = getFrameNumber();
+        ValuePair<Integer, Integer> verticalLimits = getVerticalComponentLimits();
+        String id = "HypAtT" + getFrameNumber() + "Top" + verticalLimits.getA() + "Bottom" + verticalLimits.getB();
+        return id;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {

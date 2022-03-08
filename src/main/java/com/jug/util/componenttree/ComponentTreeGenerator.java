@@ -73,7 +73,7 @@ public class ComponentTreeGenerator {
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         // filter components that do not have siblings
-        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
 
@@ -85,6 +85,8 @@ public class ComponentTreeGenerator {
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
         tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
+
+        tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
 
         return tree;
     }

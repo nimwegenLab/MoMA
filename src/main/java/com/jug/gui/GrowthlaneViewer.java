@@ -13,6 +13,7 @@ import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
@@ -157,27 +158,69 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         drawHypothesisInfoTooltip(g);
     }
 
+    void drawString(Graphics g, String text, int x, int y) {
+        for (String line : text.split("\n"))
+            g.drawString(line, x, y += g.getFontMetrics().getHeight());
+    }
+
     private void drawHypothesisInfoTooltip(Graphics g) {
         g.drawImage(screenImage.image(), 0, 0, w, h, null);
-        g.setColor(Color.GREEN.darker());
-        g.drawString(optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
-        g.setColor(Color.RED.brighter());
-        g.drawString(optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS + 14); /* draw info-string for optional segment */
+//        g.setColor(Color.GREEN.darker());
+//        g.drawString(optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+//        drawString(g, optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+//        g.setColor(Color.RED.brighter());
+//        g.drawString(optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS + 14); /* draw info-string for optional segment */
+        g.setColor(getStringColor());
+        drawString(g, optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+    }
+
+//    private Color optionalHypothesisTextColor = Color.BLUE.brighter();
+    private Color optionalHypothesisTextColor = Color.RED.brighter();
+    private Color optimalHypothesisTextColor = Color.GREEN.darker();
+    private Color noHypothesisTextColor = Color.RED.brighter();
+
+    private Color getStringColor(){
+        Hypothesis<AdvancedComponent<FloatType>> optimalHyp = getHoveredOptimalHypothesis();
+        Hypothesis<AdvancedComponent<FloatType>> optionalHyp = getHoveredOptionalHypothesis();
+
+        if (optimalHyp != null && optionalHyp == null) {
+            return optimalHypothesisTextColor;
+        }
+        if (optimalHyp == null && optionalHyp != null) {
+            return optionalHypothesisTextColor;
+        }
+        if (optimalHyp != null && optionalHyp != null) {
+            if(optionalHyp == optimalHyp){
+                return optimalHypothesisTextColor;
+            }
+            if(optionalHyp != optimalHyp){
+                return optionalHypothesisTextColor;
+            }
+        }
+        return noHypothesisTextColor;
     }
 
     private void updateHypothesisInfoTooltip() {
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-            if (getHoveredOptimalHypothesis() != null) {
-                float cost = getHoveredOptimalHypothesis().getCost();
-                optimalSegmentInfoString = String.format("c=%.4f", cost);
-//                Object length = ((AdvancedComponent<FloatType>)getHoveredOptimalHypothesis().getWrappedComponent()).getMajorAxisLength();
-//                optimalSegmentInfoString = String.format("l=%.4f", length);
-            } else {
-                optimalSegmentInfoString = "---";
-            }
+//            if (getHoveredOptimalHypothesis() != null) {
+//                float cost = getHoveredOptimalHypothesis().getCost();
+//                AdvancedComponent<FloatType> component = getHoveredOptimalHypothesis().getWrappedComponent();
+//                ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
+////                optimalSegmentInfoString = String.format("%d\n %d\n c=%.4f", limits.getA(), limits.getB(), cost);
+////                optimalSegmentInfoString = String.format("%d\n %d\n", limits.getA(), limits.getB());
+//                optimalSegmentInfoString = String.format("T: %d\nB: %d\nC: %.4f", limits.getA(), limits.getB(), cost);
+////                optimalSegmentInfoString.replace("\\n", System.lineSeparator());
+////                Object length = ((AdvancedComponent<FloatType>)getHoveredOptimalHypothesis().getWrappedComponent()).getMajorAxisLength();
+////                optimalSegmentInfoString = String.format("l=%.4f", length);
+//            } else {
+//                optimalSegmentInfoString = "---";
+//            }
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
-                optionalSegmentInfoString = String.format("c=%.4f", optionalCost);
+                AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
+                ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
+//                optionalSegmentInfoString = String.format("c=%.4f", optionalCost);
+                optionalSegmentInfoString = String.format("C: %.4f\nT: %d\nB: %d\nL: %d\nA: %d\nN: %d", optionalCost, limits.getA(), limits.getB(), limits.getB()-limits.getA(), component.size(), component.getNodeLevel());
             } else {
                 optionalSegmentInfoString = "---";
             }

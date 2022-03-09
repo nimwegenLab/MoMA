@@ -38,8 +38,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<Integer> componentTreeNodeLevelCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentCol;
     private final ResultTableColumn<Double> offLogLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> offLogLikelihoodForCompatibleChildNodesCol;
     private final ResultTableColumn<Double> onLikelihoodForComponentCol;
     private final ResultTableColumn<Double> onLogLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> onLogLikelihoodForCompatibleChildNodesCol;
     private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
     private final ResultTableColumn<Double> offLogLikelihoodForComponentWatershedLineCol;
     private final ResultTableColumn<Double> maxLikelihoodLowerThanOneCol;
@@ -107,6 +109,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         componentId = resultTable.addColumn(new ResultTableColumn<>("component_id"));
         parentId = resultTable.addColumn(new ResultTableColumn<>("parent_id"));
         rootId = resultTable.addColumn(new ResultTableColumn<>("root_id"));
+        onLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_on"));
+        offLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_off"));
     }
 
     @Override
@@ -187,6 +191,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Pair<Double, Double> likelihoodExtrema = sourceHypothesis.getWrappedComponent().getPixelValueExtremaInsideRange(0.0, 1.0);
             minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
             maxLikelihoodLowerThanOneCol.addValue(likelihoodExtrema.getB());
+
+            List<AdvancedComponent<FloatType>> compatibleChildComponents = sourceHypothesis.getWrappedComponent().getCompatibleChildNodes();
+
+            double onLogLikelihoodForCompatibleChildNodes = CostFactory.getOnLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+            onLogLikelihoodForCompatibleChildNodesCol.addValue(onLogLikelihoodForCompatibleChildNodes);
+
+            double offLogLikelihoodForCompatibleChildNodes = CostFactory.getOffLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+            offLogLikelihoodForCompatibleChildNodesCol.addValue(offLogLikelihoodForCompatibleChildNodes);
 
             int cellRank;
             if (assignmentInIlpSolution) {

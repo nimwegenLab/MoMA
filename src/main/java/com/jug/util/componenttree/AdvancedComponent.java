@@ -158,22 +158,38 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return root;
     }
 
-//    public AdvancedComponent<T> getSibling() {
-//        AdvancedComponent<T> parent = this.getParent();
-//        if (parent == null) {
-//            return null; /* there is no parent component and hence no sibling component */
-//        }
-//        List<AdvancedComponent<T>> children = parent.getChildren();
-//        if (children.size() == 1) {
+    public List<AdvancedComponent<T>> getCompatibleChildNodes() {
+        ArrayList<AdvancedComponent<T>> ret = new ArrayList<>();
+        AdvancedComponent<T> siblingBranch = this.getSibling();
+        AdvancedComponent<T> targetBranch = this;
+        if (siblingBranch == null) {
+            return ret;
+        }
+        while(siblingBranch != null){
+            ret.add(siblingBranch);
+            targetBranch = targetBranch.getParent();
+            siblingBranch = targetBranch.getSibling();
+        }
+        return ret;
+    }
+
+    public AdvancedComponent<T> getSibling() {
+        AdvancedComponent<T> parent = this.getParent();
+        if (parent == null) {
+            return null; /* there is no parent component and hence no sibling component */
+        }
+        List<AdvancedComponent<T>> children = parent.getChildren();
+        if (children.size() == 1) {
+            throw new RuntimeException("children.size() == 1: the target component does not have a sibling. This should not happen and is an error.");
 //            return null; /* there is only one child component of this component parent, which will be this component. Hence there is no sibling component. */
-//        }
-//        if (children.size() > 2) {
-//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
-//        }
-//        children.remove(this);
-//        AdvancedComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
-//        return sibling;
-//    }
+        }
+        if (children.size() > 2) {
+            throw new RuntimeException("children.size() > 2, but this method requires that there can only exist two child-component.");
+        }
+        children.remove(this);
+        AdvancedComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
+        return sibling;
+    }
 
     void setParent(AdvancedComponent<T> parent) {
         this.parent = parent;

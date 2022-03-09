@@ -28,34 +28,34 @@ public class CostFactory {
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
-	public static Pair< Float, float[] > getMigrationCost( final float sourcePosition, final float targetPosition ) {
-		float scaledPositionDifference = ( sourcePosition - targetPosition ) / normalizer;
+	public static Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
+		float scaledPositionDifference = (sourcePosition - targetPosition) / normalizer;
 		float exponent;
 		float migrationCost;
-		if ( scaledPositionDifference > 0 ) { // upward migration
-			scaledPositionDifference = Math.max( 0, scaledPositionDifference - 0.05f ); // going upwards for up to 5% is for free...
+		if (scaledPositionDifference > 0) { // upward migration
+			scaledPositionDifference = Math.max(0, scaledPositionDifference - 0.05f); // going upwards for up to 5% is for free...
 			exponent = 3.0f;
 		} else { // downward migration
-			Math.max( 0, scaledPositionDifference - 0.01f );  // going downwards for up to 1% is for free...
+			Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
 			exponent = 6.0f;
 		}
-		scaledPositionDifference = Math.abs( scaledPositionDifference );
-		migrationCost = scaledPositionDifference * ( float ) Math.pow( 1 + scaledPositionDifference, exponent );
+		scaledPositionDifference = Math.abs(scaledPositionDifference);
+		migrationCost = scaledPositionDifference * (float) Math.pow(1 + scaledPositionDifference, exponent);
 		return new ValuePair<>(migrationCost, new float[]{migrationCost});
 	}
 
-	public static Pair< Float, float[] > getGrowthCost( final float sourceSize, final float targetSize ) {
-		float scaledSizeDifference = ( targetSize - sourceSize ) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
+	public static Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize) {
+		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
 																				however, it makes more sense to look at the
 																				relative size change?! I will do so in the future. */
 		float exponent;
-		if ( scaledSizeDifference > 0 ) { // growth
-			scaledSizeDifference = Math.max( 0, scaledSizeDifference - 0.05f ); // growing up 5% is free
+		if (scaledSizeDifference > 0) { // growth
+			scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
 			exponent = 4.0f;
 		} else { // shrinkage
 			exponent = 40.0f;
 		}
-		scaledSizeDifference = Math.abs( scaledSizeDifference );
+		scaledSizeDifference = Math.abs(scaledSizeDifference);
 
 		float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
 
@@ -75,8 +75,7 @@ public class CostFactory {
 			return getComponentCostLegacy(component);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingWatershedLineOnly) {
 			return getComponentCostUsingWatershedLines(component);
-		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps)
-		{
+		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps) {
 			return getComponentCostUsingFullProbabilityMap(component);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
@@ -129,7 +128,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorComponentWatershedLine(AdvancedComponent<FloatType> component){
+	public static double getCostFactorComponentWatershedLine(AdvancedComponent<FloatType> component) {
 		Double val = component.getWatershedLinePixelValueAverage();
 		if (val == null) {
 			return 1.0; /* there is no watershed line so we return 1.0 */
@@ -143,7 +142,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -223,6 +222,14 @@ public class CostFactory {
 		return calculateSumOfLogValues(probabilities);
 	}
 
+	public static double getOnLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
+		double acc = 0.;
+		for (AdvancedComponent<FloatType> component : components){
+			acc += getOnLogLikelihoodForComponent(component, valueRange);
+		}
+		return acc;
+	}
+
 	/**
 	 * Calculate the likelihood value for the component being OFF.
 	 *
@@ -251,6 +258,14 @@ public class CostFactory {
 		}
 		probabilities = probabilities.stream().map(value -> 1. - value).collect(Collectors.toList());
 		return calculateSumOfLogValues(probabilities);
+	}
+
+	public static double getOffLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
+		double acc = 0.;
+		for (AdvancedComponent<FloatType> component : components){
+			acc += getOffLogLikelihoodForComponent(component, valueRange);
+		}
+		return acc;
 	}
 
 	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {

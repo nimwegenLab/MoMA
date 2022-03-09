@@ -25,7 +25,7 @@ public class ExplorationForImprovingCostFunctions {
         Integer tmax = 380;
 //        Integer tmin = 0;
 //        Integer tmax = 10;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
 

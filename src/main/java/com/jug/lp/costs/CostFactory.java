@@ -284,8 +284,9 @@ public class CostFactory {
 		}
 		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
 		double tmp = logLikelihoodDifference / root.size();
-		double res = -tmp / 7;
-		int level = component.getNodeLevel();
+		double res = -tmp / 7; /* normalize the root component to ~-1; child components to fractions of the root component cost */
+		res /= 5; /* normalize the root component to ~-.2; child components to fractions of the root component cost */
+//		int level = component.getNodeLevel();
 		return res;
 	}
 

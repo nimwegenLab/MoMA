@@ -21,11 +21,13 @@ public class ExplorationForImprovingCostFunctions {
         String datasetSubPath = "/lis_20211026/Pos7_GL12";
         String inputPath = datasets_base_path + datasetSubPath + "/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
-        Integer tmin = 370;
-        Integer tmax = 380;
+//        Integer tmin = 370;
+//        Integer tmax = 380;
 //        Integer tmin = 0;
 //        Integer tmax = 10;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        Integer tmin = 0;
+        Integer tmax = 440;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
 

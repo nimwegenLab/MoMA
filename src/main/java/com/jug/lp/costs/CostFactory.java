@@ -77,6 +77,9 @@ public class CostFactory {
 			return getComponentCostUsingWatershedLines(component);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps) {
 			return getComponentCostUsingFullProbabilityMap(component);
+		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost) {
+			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
+			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
@@ -266,6 +269,24 @@ public class CostFactory {
 			acc += getOffLogLikelihoodForComponent(component, valueRange);
 		}
 		return acc;
+	}
+
+	public static double getLogLikelihoodDifferenceForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		double offLikelihood = getOffLogLikelihoodForComponent(component, valueRange);
+		double onLikelihood = getOnLogLikelihoodForComponent(component, valueRange);
+		return onLikelihood - offLikelihood;
+	}
+
+	public static double getLogLikelihoodComponentCost(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		AdvancedComponent<FloatType> root = component.getRoot();
+		if (root == null) {
+			root = component;
+		}
+		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
+		double tmp = logLikelihoodDifference / root.size();
+		double res = -tmp / 7;
+		int level = component.getNodeLevel();
+		return res;
 	}
 
 	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {

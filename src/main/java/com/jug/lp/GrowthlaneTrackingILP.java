@@ -521,7 +521,7 @@ public class GrowthlaneTrackingILP {
             final float fromCost,
             final float toCost,
             final float mappingCosts) {
-        return 0.1f * fromCost + 0.9f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
+        return 0.5f * fromCost + 0.5f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
 																  we should probably do 50%/50%, but we did different and it's ok */
     }
 
@@ -561,7 +561,7 @@ public class GrowthlaneTrackingILP {
             final float upperTargetComponentCost,
             final float lowerTargetComponentCost,
             final float compatibilityCostOfDivision) {
-        return 0.1f * sourceComponentCost + 0.9f * (upperTargetComponentCost + lowerTargetComponentCost) / 2 + compatibilityCostOfDivision;
+        return 0.5f * sourceComponentCost + 0.5f * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
     }
 
     /**
@@ -686,8 +686,8 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize);
         final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
 
-        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
-//        float divisionCost = growthCost.getA() + averageMigrationCost;
+//        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
+        float divisionCost = growthCost.getA() + averageMigrationCost;
         return divisionCost;
     }
 

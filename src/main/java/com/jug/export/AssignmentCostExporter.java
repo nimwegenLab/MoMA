@@ -31,6 +31,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<String> rootId;
     private final ResultTableColumn<String> child1Id;
     private final ResultTableColumn<String> child2Id;
+    private final ResultTableColumn<String> target1Id;
+    private final ResultTableColumn<String> target2Id;
     private final ResultTableColumn<Integer> frameCol;
     private final ResultTableColumn<String> assignmentTypeCol;
     private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
@@ -113,6 +115,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         rootId = resultTable.addColumn(new ResultTableColumn<>("root_id"));
         child1Id = resultTable.addColumn(new ResultTableColumn<>("child_1_id"));
         child2Id = resultTable.addColumn(new ResultTableColumn<>("child_2_id"));
+        target1Id = resultTable.addColumn(new ResultTableColumn<>("target_1_id"));
+        target2Id = resultTable.addColumn(new ResultTableColumn<>("target_2_id"));
 //        onLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_on"));
 //        offLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_off"));
     }
@@ -258,11 +262,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
                 assignmentTypeCol.addValue("lys");
             }
 
+
+            addComponentIdToTable(targetComponent1, target1Id); /* assign targetComponent1 to target2id, so that the cell-rank order corresponds to that of the child-component */
             addComponentAreaToTable(targetComponent1, target1AreaCol);
             addComponentLengthToTable(targetComponent1, target1EllipseMajorCol);
             addComponentCenterYToTable(targetComponent1, target1CenterYCol);
             addComponentLimitsToTable(targetComponent1, target1TopLimitCol, target1BottomLimitCol);
 
+            addComponentIdToTable(targetComponent2, target2Id); /* assign targetComponent2 to target1id, so that the cell-rank order corresponds to that of the child-component */
             addComponentAreaToTable(targetComponent2, target2AreaCol);
             addComponentLengthToTable(targetComponent2, target2EllipseMajorCol);
             addComponentCenterYToTable(targetComponent2, target2CenterYCol);
@@ -282,6 +289,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         Double value = -1.0;
         if (component != null){
             value = componentProperties.getMinorMajorAxis(component).getB();
+        }
+        column.addValue(value);
+    }
+
+    void addComponentIdToTable(AdvancedComponent<FloatType> component, ResultTableColumn<String> column) {
+        String value = "NA";
+        if (component != null){
+            value = component.getStringId();
         }
         column.addValue(value);
     }

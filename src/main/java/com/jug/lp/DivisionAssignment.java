@@ -68,8 +68,8 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
     @Override
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
         List<Hypothesis<AdvancedComponent<FloatType>>> outputSet = new ArrayList<>();
-        outputSet.add(getLowerDestinationHypothesis());
         outputSet.add(getUpperDestinationHypothesis());
+        outputSet.add(getLowerDestinationHypothesis());
         return outputSet;
     }
 

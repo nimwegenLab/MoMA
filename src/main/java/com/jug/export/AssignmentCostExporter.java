@@ -29,6 +29,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTableColumn<String> componentId;
     private final ResultTableColumn<String> parentId;
     private final ResultTableColumn<String> rootId;
+    private final ResultTableColumn<String> child1Id;
+    private final ResultTableColumn<String> child2Id;
     private final ResultTableColumn<Integer> frameCol;
     private final ResultTableColumn<String> assignmentTypeCol;
     private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
@@ -86,9 +88,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         sourceEllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("source_ellipse_major_axis_px", "%.3f"));
         target1EllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("target_1_ellipse_major_axis_px", "%.3f"));
         target2EllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("target_2_ellipse_major_axis_px", "%.3f"));
-        sourceYCol = resultTable.addColumn(new ResultTableColumn<>("source_center_x_px", "%.3f"));
-        target1CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_x_px", "%.3f"));
-        target2CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_x_px", "%.3f"));
+        sourceYCol = resultTable.addColumn(new ResultTableColumn<>("source_center_y_px", "%.3f"));
+        target1CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_y_px", "%.3f"));
+        target2CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_y_px", "%.3f"));
         sourceTopLimitCol = resultTable.addColumn(new ResultTableColumn<>("source_top_px"));
         sourceBottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("source_bottom_px"));
         target1TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_1_top_px"));
@@ -109,6 +111,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         componentId = resultTable.addColumn(new ResultTableColumn<>("component_id"));
         parentId = resultTable.addColumn(new ResultTableColumn<>("parent_id"));
         rootId = resultTable.addColumn(new ResultTableColumn<>("root_id"));
+        child1Id = resultTable.addColumn(new ResultTableColumn<>("child_1_id"));
+        child2Id = resultTable.addColumn(new ResultTableColumn<>("child_2_id"));
 //        onLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_on"));
 //        offLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_off"));
     }
@@ -137,9 +141,11 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         }
     }
 
-    private int counter = 0;
+//    private int counter = 0;
 
     private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
+        System.out.println("frame: " + frame);
+
         final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
             boolean assignmentInIlpSolution;
@@ -151,9 +157,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
 
-            System.out.println("counter: " + counter);
-            counter++;
-            System.out.println("frame: " + frame);
+//            System.out.println("counter: " + counter);
+//            counter++;
+//            System.out.println("frame: " + frame);
 
             componentId.addValue(sourceHypothesis.getWrappedComponent().getStringId());
             if(sourceHypothesis.getWrappedComponent().getParent() != null) {
@@ -166,6 +172,19 @@ public class AssignmentCostExporter implements ResultExporterInterface {
                 rootId.addValue(sourceHypothesis.getWrappedComponent().getRoot().getStringId());
             } else{
                 rootId.addValue("NA");
+            }
+
+            List<AdvancedComponent<FloatType>> children = sourceHypothesis.getWrappedComponent().getChildren();
+            if (children.isEmpty()) {
+                child1Id.addValue("NA");
+                child2Id.addValue("NA");
+            } else {
+                child1Id.addValue(children.get(0).getStringId());
+                if (children.size() > 1) {
+                    child2Id.addValue(children.get(1).getStringId());
+                } else {
+                    child2Id.addValue("NA");
+                }
             }
 
             componentTreeNodeLevelCol.addValue(sourceHypothesis.getWrappedComponent().getNodeLevel());

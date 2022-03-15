@@ -80,6 +80,9 @@ public class CostFactory {
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost) {
 			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
 			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
+		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost2) {
+			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
+			return (float) getLogLikelihoodComponentCost2((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
@@ -288,6 +291,27 @@ public class CostFactory {
 		res /= 5; /* normalize the root component to ~-.2; child components to fractions of the root component cost */
 //		int level = component.getNodeLevel();
 		return res;
+	}
+
+	public static double getLogLikelihoodComponentCost2(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+//		df['log_likelihood_difference_rescaled'] = (df['log_likelihood_difference']) / (maxVal - minVal) / 20
+//		# print(f"median: {df['log_likelihood_difference_rescaled'].median()}")
+//		# df['log_likelihood_difference_rescaled'] = df['log_likelihood_difference_rescaled'] - df['log_likelihood_difference_rescaled'].median()
+//		df['log_likelihood_difference_rescaled'] = df['log_likelihood_difference_rescaled'] + .2
+//		df['log_likelihood_difference_rescaled'] = -df['log_likelihood_difference_rescaled']
+
+		double minVal = 157.74585918127187;
+		double maxVal = 20370.690630017525;
+		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
+		logLikelihoodDifference  /= (maxVal - minVal);
+		logLikelihoodDifference  /= 5;
+		logLikelihoodDifference += .2;
+		logLikelihoodDifference *= -1.0;
+//		double tmp = logLikelihoodDifference / root.size();
+//		double res = -tmp / 7; /* normalize the root component to ~-1; child components to fractions of the root component cost */
+//		res /= 5; /* normalize the root component to ~-.2; child components to fractions of the root component cost */
+//		int level = component.getNodeLevel();
+		return logLikelihoodDifference;
 	}
 
 	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {

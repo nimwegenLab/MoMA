@@ -1,5 +1,5 @@
 package com.jug.development.featureflags;
 
 public enum ComponentCostCalculationMethod {
-    Legacy, UsingWatershedLineOnly, UsingFullProbabilityMaps, UsingLogLikelihoodCost
+    Legacy, UsingWatershedLineOnly, UsingFullProbabilityMaps, UsingLogLikelihoodCost, UsingLogLikelihoodCost2
 }

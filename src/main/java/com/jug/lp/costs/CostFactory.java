@@ -294,6 +294,16 @@ public class CostFactory {
 	}
 
 	public static double getLogLikelihoodComponentCost2(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		double median = 2822.6407866395043;
+		double std = 2424.3775974757677;
+		double maxValScaled = 0.20728360048628378;
+		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
+		logLikelihoodDifference = -(logLikelihoodDifference - median) / (5 * std);
+		logLikelihoodDifference -= maxValScaled;
+		return logLikelihoodDifference;
+	}
+
+	public static double getLogLikelihoodComponentCost2_OLD(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 //		df['log_likelihood_difference_rescaled'] = (df['log_likelihood_difference']) / (maxVal - minVal) / 20
 //		# print(f"median: {df['log_likelihood_difference_rescaled'].median()}")
 //		# df['log_likelihood_difference_rescaled'] = df['log_likelihood_difference_rescaled'] - df['log_likelihood_difference_rescaled'].median()

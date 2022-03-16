@@ -294,9 +294,9 @@ public class CostFactory {
 	}
 
 	public static double getLogLikelihoodComponentCost3(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		double median = 2808.8360943845073;
+		double scalingFactor = 0.2 / 2800.0;
 		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		logLikelihoodDifference = -(logLikelihoodDifference / median) * 0.2;
+		logLikelihoodDifference = -logLikelihoodDifference * scalingFactor;
 		return logLikelihoodDifference;
 	}
 

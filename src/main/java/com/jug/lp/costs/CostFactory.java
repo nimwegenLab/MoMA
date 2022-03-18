@@ -45,9 +45,7 @@ public class CostFactory {
 	}
 
 	public static Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize) {
-		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: deltaL < 1 for anything that is smaller than the GL;
-																				however, it makes more sense to look at the
-																				relative size change?! I will do so in the future. */
+		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
 		float exponent;
 		if (scaledSizeDifference > 0) { // growth
 			scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free

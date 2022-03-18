@@ -80,8 +80,8 @@ public class CostFactory {
 			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost2) {
 			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
-			return (float) getLogLikelihoodComponentCost_Method2((AdvancedComponent<FloatType>) component, valueRange);
-//			return (float) getLogLikelihoodComponentCost_Method3((AdvancedComponent<FloatType>) component, valueRange);
+//			return (float) getLogLikelihoodComponentCost_Method2((AdvancedComponent<FloatType>) component, valueRange);
+			return (float) getLogLikelihoodComponentCost_Method3((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}

@@ -13,8 +13,8 @@ public class ExplorationForImprovingCostFunctions {
     public static void main(String[] args) {
         ExplorationForImprovingCostFunctions tests = new ExplorationForImprovingCostFunctions();
 
-        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
-//        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL7();
+//        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL7();
     }
 
     public void _lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
@@ -39,7 +39,7 @@ public class ExplorationForImprovingCostFunctions {
         String outputPath = datasets_base_path + datasetSubPath + "/output/";
         Integer tmin = 0;
         Integer tmax = null;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {

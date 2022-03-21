@@ -547,7 +547,7 @@ public class GrowthlaneTrackingILP {
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 
-    private float sourceWeightingFactor = 0.5f;
+    private float sourceWeightingFactor = 0.0f;
 
     private float targetWeightingFactor = (1 - sourceWeightingFactor);
 
@@ -576,7 +576,8 @@ public class GrowthlaneTrackingILP {
      * @return the modulated costs.
      */
     public float costModulationForSubstitutedILP(final float fromCosts) {
-        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
+        return 0.0f;
+//        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
         // fromCosts/2: 1/2 has to do with the folding of the node-cost into the assignments (e.g. mapping: 1/2 to left und 1/2 to right)
         // Math.min: because exit assignment should never cost something
     }

@@ -512,16 +512,16 @@ public class GrowthlaneTrackingILP {
      * of mapping assignments during the ILP hypotheses substitution takes
      * place.
      *
-     * @param fromCost
-     * @param toCost
+     * @param sourceComponentCost
+     * @param targetComponentCost
      * @param mappingCosts
      * @return
      */
     public float costModulationForSubstitutedILP(
-            final float fromCost,
-            final float toCost,
+            final float sourceComponentCost,
+            final float targetComponentCost,
             final float mappingCosts) {
-        return 0.5f * fromCost + 0.5f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
+        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * targetComponentCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
 																  we should probably do 50%/50%, but we did different and it's ok */
     }
 
@@ -547,6 +547,10 @@ public class GrowthlaneTrackingILP {
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 
+    private float sourceWeightingFactor = 0.5f;
+
+    private float targetWeightingFactor = (1 - sourceWeightingFactor);
+
     /**
      * This method defines how the segmentation costs are influencing the costs
      * of division assignments during the ILP hypotheses substitution takes
@@ -561,7 +565,7 @@ public class GrowthlaneTrackingILP {
             final float upperTargetComponentCost,
             final float lowerTargetComponentCost,
             final float compatibilityCostOfDivision) {
-        return 0.5f * sourceComponentCost + 0.5f * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
+        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
     }
 
     /**

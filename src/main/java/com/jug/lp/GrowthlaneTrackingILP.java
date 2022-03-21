@@ -547,7 +547,7 @@ public class GrowthlaneTrackingILP {
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 
-    private float sourceWeightingFactor = 0.0f;
+    private float sourceWeightingFactor = 1.0f;
 
     private float targetWeightingFactor = (1 - sourceWeightingFactor);
 

@@ -489,8 +489,8 @@ public class GrowthlaneTrackingILP {
         final long sourceComponentSize = getComponentSize(sourceComponent, 1);
         final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
         final float sourceUpperBoundary = sourceComponentBoundaries.getA();
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
@@ -669,9 +669,9 @@ public class GrowthlaneTrackingILP {
             final AdvancedComponent<FloatType> lowerTargetComponent) {
 
 
-        final ValuePair<Integer, Integer> sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
-        final ValuePair<Integer, Integer> lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
+        final ValuePair<Integer, Integer> sourceBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> lowerTargetBoundaries = lowerTargetComponent.getVerticalComponentLimits();
 
         final long sourceSize = getComponentSize(sourceComponent, 1);
         final long upperTargetSize = getComponentSize(upperTargetComponent, 1);

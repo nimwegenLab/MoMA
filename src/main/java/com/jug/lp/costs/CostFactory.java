@@ -80,8 +80,9 @@ public class CostFactory {
 			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost2) {
 			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
+			return (float) getLogLikelihoodComponentCost_Method1((AdvancedComponent<FloatType>) component, valueRange);
 //			return (float) getLogLikelihoodComponentCost_Method2((AdvancedComponent<FloatType>) component, valueRange);
-			return (float) getLogLikelihoodComponentCost_Method3((AdvancedComponent<FloatType>) component, valueRange);
+//			return (float) getLogLikelihoodComponentCost_Method3((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
@@ -296,6 +297,16 @@ public class CostFactory {
 		double scalingFactor = 0.2 / 2800.0;
 		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
 		logLikelihoodDifference = -logLikelihoodDifference * scalingFactor;
+		return logLikelihoodDifference;
+	}
+
+	public static double getLogLikelihoodComponentCost_Method1(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+		double median = 2808.8360943845073;
+		double std = 2289.8267841602974;
+		double scalingFactor = 1 / (6 * std);
+		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
+		logLikelihoodDifference = -(logLikelihoodDifference - median) * scalingFactor;
+		logLikelihoodDifference = logLikelihoodDifference - .2;
 		return logLikelihoodDifference;
 	}
 

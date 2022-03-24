@@ -80,11 +80,6 @@ public class CostFactory {
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost) {
 			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
 			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
-		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost2) {
-			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
-//			return (float) getLogLikelihoodComponentCost_Method1((AdvancedComponent<FloatType>) component, valueRange);
-//			return (float) getLogLikelihoodComponentCost_Method2((AdvancedComponent<FloatType>) component, valueRange);
-			return (float) getLogLikelihoodComponentCost_Method3((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
@@ -283,74 +278,9 @@ public class CostFactory {
 	}
 
 	public static double getLogLikelihoodComponentCost(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		AdvancedComponent<FloatType> root = component.getRoot();
-		if (root == null) {
-			root = component;
-		}
-		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		double tmp = logLikelihoodDifference / root.size();
-		double res = -tmp / 7; /* normalize the root component to ~-1; child components to fractions of the root component cost */
-		res /= 5; /* normalize the root component to ~-.2; child components to fractions of the root component cost */
-//		int level = component.getNodeLevel();
-		return res;
-	}
-
-	public static double getLogLikelihoodComponentCost_Method3(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		double scalingFactor = 0.2 / 2800.0;
+		double scalingFactor = 0.2 / 2800.0; /* this scaling factor was found to work well in conjunction with the other terms in the cost calculation; it corresponds to a typical cell-size of ~50microns */
 		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
 		logLikelihoodDifference = -logLikelihoodDifference * scalingFactor;
-		return logLikelihoodDifference;
-	}
-
-	public static double getLogLikelihoodComponentCost_Method1(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		double median = 2808.8360943845073;
-		double std = 2289.8267841602974;
-		double scalingFactor = 1 / (6 * std);
-		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		logLikelihoodDifference = -(logLikelihoodDifference - median) * scalingFactor;
-		logLikelihoodDifference = logLikelihoodDifference - .2;
-		return logLikelihoodDifference;
-	}
-
-	public static double getLogLikelihoodComponentCost_Method2(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		double median = -2808.8360943845073;
-		double scaleFactor = 2498.863894460321;
-		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		logLikelihoodDifference = -logLikelihoodDifference;
-		logLikelihoodDifference -= median;
-		logLikelihoodDifference = logLikelihoodDifference/scaleFactor;
-		logLikelihoodDifference = logLikelihoodDifference * .2 - .2;
-		return logLikelihoodDifference;
-	}
-
-	public static double getLogLikelihoodComponentCost2(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-		double median = 2822.6407866395043;
-		double std = 2424.3775974757677;
-		double maxValScaled = 0.20728360048628378;
-		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		logLikelihoodDifference = -(logLikelihoodDifference - median) / (5 * std);
-		logLikelihoodDifference -= maxValScaled;
-		return logLikelihoodDifference;
-	}
-
-	public static double getLogLikelihoodComponentCost2_OLD(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
-//		df['log_likelihood_difference_rescaled'] = (df['log_likelihood_difference']) / (maxVal - minVal) / 20
-//		# print(f"median: {df['log_likelihood_difference_rescaled'].median()}")
-//		# df['log_likelihood_difference_rescaled'] = df['log_likelihood_difference_rescaled'] - df['log_likelihood_difference_rescaled'].median()
-//		df['log_likelihood_difference_rescaled'] = df['log_likelihood_difference_rescaled'] + .2
-//		df['log_likelihood_difference_rescaled'] = -df['log_likelihood_difference_rescaled']
-
-		double minVal = 157.74585918127187;
-		double maxVal = 20370.690630017525;
-		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
-		logLikelihoodDifference  /= (maxVal - minVal);
-		logLikelihoodDifference  /= 5;
-		logLikelihoodDifference += .2;
-		logLikelihoodDifference *= -1.0;
-//		double tmp = logLikelihoodDifference / root.size();
-//		double res = -tmp / 7; /* normalize the root component to ~-1; child components to fractions of the root component cost */
-//		res /= 5; /* normalize the root component to ~-.2; child components to fractions of the root component cost */
-//		int level = component.getNodeLevel();
 		return logLikelihoodDifference;
 	}
 

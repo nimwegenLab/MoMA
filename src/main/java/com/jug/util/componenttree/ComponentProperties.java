@@ -95,7 +95,7 @@ public class ComponentProperties {
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
@@ -104,7 +104,7 @@ public class ComponentProperties {
     }
 
     public int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());
         return (int) (roi1.dimension(0) * roi1.dimension(1) + roi2.dimension(0) * roi2.dimension(1));

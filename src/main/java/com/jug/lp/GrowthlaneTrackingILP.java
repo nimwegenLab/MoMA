@@ -489,8 +489,8 @@ public class GrowthlaneTrackingILP {
         final long sourceComponentSize = getComponentSize(sourceComponent, 1);
         final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
         final float sourceUpperBoundary = sourceComponentBoundaries.getA();
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
@@ -501,9 +501,12 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceComponentSize, targetComponentSize);
+        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
-        return growthCost.getA() + averageMigrationCost;
+        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
+
+        float mappingCost = growthCost.getA() + averageMigrationCost;
+        return mappingCost;
     }
 
     /**
@@ -511,16 +514,16 @@ public class GrowthlaneTrackingILP {
      * of mapping assignments during the ILP hypotheses substitution takes
      * place.
      *
-     * @param fromCost
-     * @param toCost
+     * @param sourceComponentCost
+     * @param targetComponentCost
      * @param mappingCosts
      * @return
      */
     public float costModulationForSubstitutedILP(
-            final float fromCost,
-            final float toCost,
+            final float sourceComponentCost,
+            final float targetComponentCost,
             final float mappingCosts) {
-        return 0.1f * fromCost + 0.9f * toCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
+        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * targetComponentCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
 																  we should probably do 50%/50%, but we did different and it's ok */
     }
 
@@ -546,6 +549,10 @@ public class GrowthlaneTrackingILP {
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 
+    private float sourceWeightingFactor = 0.5f;
+
+    private float targetWeightingFactor = (1 - sourceWeightingFactor);
+
     /**
      * This method defines how the segmentation costs are influencing the costs
      * of division assignments during the ILP hypotheses substitution takes
@@ -560,7 +567,7 @@ public class GrowthlaneTrackingILP {
             final float upperTargetComponentCost,
             final float lowerTargetComponentCost,
             final float compatibilityCostOfDivision) {
-        return 0.1f * sourceComponentCost + 0.9f * (upperTargetComponentCost + lowerTargetComponentCost) / 2 + compatibilityCostOfDivision;
+        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
     }
 
     /**
@@ -571,7 +578,8 @@ public class GrowthlaneTrackingILP {
      * @return the modulated costs.
      */
     public float costModulationForSubstitutedILP(final float fromCosts) {
-        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
+        return 0.0f;
+//        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
         // fromCosts/2: 1/2 has to do with the folding of the node-cost into the assignments (e.g. mapping: 1/2 to left und 1/2 to right)
         // Math.min: because exit assignment should never cost something
     }
@@ -664,9 +672,9 @@ public class GrowthlaneTrackingILP {
             final AdvancedComponent<FloatType> lowerTargetComponent) {
 
 
-        final ValuePair<Integer, Integer> sourceBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
-        final ValuePair<Integer, Integer> upperTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(upperTargetComponent, 1);
-        final ValuePair<Integer, Integer> lowerTargetBoundaries = ComponentTreeUtils.getComponentPixelLimits(lowerTargetComponent, 1);
+        final ValuePair<Integer, Integer> sourceBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> lowerTargetBoundaries = lowerTargetComponent.getVerticalComponentLimits();
 
         final long sourceSize = getComponentSize(sourceComponent, 1);
         final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
@@ -682,10 +690,14 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize);
-        final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
+        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
-        return growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
+        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
+//        final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
+
+//        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
+        float divisionCost = growthCost.getA() + averageMigrationCost;
+        return divisionCost;
     }
 
     /**

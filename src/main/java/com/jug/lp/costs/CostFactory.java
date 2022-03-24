@@ -4,7 +4,6 @@ import com.jug.config.ConfigurationManager;
 import com.jug.development.featureflags.ComponentCostCalculationMethod;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -44,13 +43,16 @@ public class CostFactory {
 		return new ValuePair<>(migrationCost, new float[]{migrationCost});
 	}
 
-	public static Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize) {
+	public static Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize, boolean touchesCellDetectionRoiTop) {
 		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
 		float exponent;
 		if (scaledSizeDifference > 0) { // growth
 			scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
 			exponent = 4.0f;
 		} else { // shrinkage
+			if (touchesCellDetectionRoiTop) {
+				return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
+			}
 			exponent = 40.0f;
 		}
 		scaledSizeDifference = Math.abs(scaledSizeDifference);

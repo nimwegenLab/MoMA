@@ -62,6 +62,8 @@ public class CostFactory {
 		return new ValuePair<>(growthCost, new float[]{growthCost});
 	}
 
+	static double maxPosteriorProbability = 0.9999999;
+	static double minPosteriorProbability = 1 - maxPosteriorProbability;
 
 	/**
 	 * Calculate the component costs. The component cost is modulated between -0.2 and 0.2 using cost-factors, which
@@ -78,7 +80,7 @@ public class CostFactory {
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps) {
 			return getComponentCostUsingFullProbabilityMap(component);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost) {
-			ValuePair<Double, Double> valueRange = new ValuePair<>(0.5, 0.9999998807907104);
+			ValuePair<Double, Double> valueRange = new ValuePair<>(minPosteriorProbability, maxPosteriorProbability); /* cap the maximum value of the probability pixels, so that the log-likelihood is still defined */
 			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */

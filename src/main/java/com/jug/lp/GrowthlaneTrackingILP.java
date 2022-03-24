@@ -501,9 +501,7 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-        ValuePair<Integer, Integer> verticalLimits = targetComponent.getVerticalComponentLimits();
-        Integer cellBboxTop = verticalLimits.getA();
-        boolean targetTouchesCellDetectionRoiTop = (cellBboxTop <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
         final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
@@ -692,9 +690,7 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-        ValuePair<Integer, Integer> upperTargetVerticalLimits = upperTargetComponent.getVerticalComponentLimits();
-        Integer cellBboxTop = upperTargetVerticalLimits.getA();
-        boolean upperTargetTouchesCellDetectionRoiTop = (cellBboxTop <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
         final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 //        final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);

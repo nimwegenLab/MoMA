@@ -13,8 +13,8 @@ public class ExplorationForImprovingCostFunctions {
     public static void main(String[] args) {
         ExplorationForImprovingCostFunctions tests = new ExplorationForImprovingCostFunctions();
 
-//        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
-        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL7();
+        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+//        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL7();
     }
 
     public void _lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
@@ -25,10 +25,10 @@ public class ExplorationForImprovingCostFunctions {
 //        Integer tmax = 380;
 //        Integer tmin = 0;
 //        Integer tmax = 10;
-//        Integer tmin = 0;
-//        Integer tmax = 440;
-        Integer tmin = 300;
-        Integer tmax = 400;
+        Integer tmin = 0;
+        Integer tmax = 440;
+//        Integer tmin = 300;
+//        Integer tmax = 400;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

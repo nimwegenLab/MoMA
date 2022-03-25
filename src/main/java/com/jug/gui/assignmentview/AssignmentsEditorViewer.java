@@ -81,7 +81,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         // Hack to enable non-Mac MoMA to only use one row of tabs
         nextHackTab = new JPanel();
         tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
-        namesToRoll = new String[]{"OPT", "M", "D", "E", "L"};
+        namesToRoll = new String[]{"O", "M", "D", "E", "L"};
         final ChangeListener changeListener = changeEvent -> {
             final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
             if (sourceTabbedPane.getSelectedComponent().equals(nextHackTab)) {

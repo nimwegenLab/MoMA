@@ -43,16 +43,9 @@ public class DivisionAssignmentView extends AssignmentView {
         Integer lowerComponentSize = limitsRightLower.getB() - limitsRightLower.getA();
         Integer sourceComponentSize = limitsLeft.getB() - limitsLeft.getA();
 
-        float divisionRatio = (float)upperComponentSize / (float)lowerComponentSize;
-        int divisionLocation = limitsLeft.getA() + Math.round(divisionRatio * sourceComponentSize);
-
-//        Integer sourceComponentSize = limitsLeft.getB() - limitsLeft.getA();
-//        int divisionLocation;
-//        if (upperComponentSize <= sourceComponentSize) {
-//            divisionLocation = limitsLeft.getA() + upperComponentSize;
-//        } else {
-//            divisionLocation = limitsLeft.getA() + sourceComponentSize / 2;
-//        }
+        float divisionRatio = (float) upperComponentSize / (float) (lowerComponentSize + upperComponentSize);
+        float positionOffsetWithinSourceComponent = divisionRatio * sourceComponentSize;
+        int divisionLocation = limitsLeft.getA() + Math.round(positionOffsetWithinSourceComponent);
 
         final int x1 = 0;
         final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
@@ -62,8 +55,7 @@ public class DivisionAssignmentView extends AssignmentView {
         final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
         final int x5 = this.width / 3;
         final int y5 = divisionLocation + ASSIGNMENT_DISPLAY_OFFSET;
-//        final int y5 =
-//                ASSIGNMENT_DISPLAY_OFFSET + (2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2) / 3;
+
         final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
         final int y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 

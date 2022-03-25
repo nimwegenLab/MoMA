@@ -39,9 +39,14 @@ public class DivisionAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();
         final ValuePair<Integer, Integer> limitsRightLower = rightHypLower.getLocation();
 
-        Integer upperComponentLowerLimit = limitsRightUpper.getB();
-        Integer lowerComponentUpperLimit = limitsRightLower.getA();
-        int divisionLocation = (lowerComponentUpperLimit + upperComponentLowerLimit) / 2;
+        Integer upperComponentSize = limitsRightUpper.getB() - limitsRightUpper.getA();
+        Integer sourceComponentSize = limitsLeft.getB() - limitsLeft.getA();
+        int divisionLocation;
+        if (upperComponentSize <= sourceComponentSize) {
+            divisionLocation = limitsLeft.getA() + upperComponentSize;
+        } else {
+            divisionLocation = limitsLeft.getA() + sourceComponentSize / 2;
+        }
 
         final int x1 = 0;
         final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;

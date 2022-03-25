@@ -39,6 +39,10 @@ public class DivisionAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();
         final ValuePair<Integer, Integer> limitsRightLower = rightHypLower.getLocation();
 
+        Integer upperComponentLowerLimit = limitsRightUpper.getB();
+        Integer lowerComponentUpperLimit = limitsRightLower.getA();
+        int divisionLocation = (lowerComponentUpperLimit + upperComponentLowerLimit) / 2;
+
         final int x1 = 0;
         final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
         final int x2 = 0;
@@ -46,8 +50,9 @@ public class DivisionAssignmentView extends AssignmentView {
         final int y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
         final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
         final int x5 = this.width / 3;
-        final int y5 =
-                ASSIGNMENT_DISPLAY_OFFSET + (2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2) / 3;
+        final int y5 = divisionLocation;
+//        final int y5 =
+//                ASSIGNMENT_DISPLAY_OFFSET + (2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2) / 3;
         final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
         final int y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 

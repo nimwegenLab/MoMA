@@ -73,11 +73,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      * Builds the user interface.
      */
     private void buildGui(final int height) {
-        activeAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveExitAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, gui);
+        activeAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveExitAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height);
 
         // Hack to enable non-Mac MoMA to only use one row of tabs
         nextHackTab = new JPanel();

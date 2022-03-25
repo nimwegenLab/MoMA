@@ -49,7 +49,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
-    private final int width;
+    private final int width = 90;
     private final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;
@@ -73,7 +73,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private int dragY;
     private int dragInitiatingMouseButton = 0;
     private float dragStepWeight = 0;
-    private MoMAGui gui;
+
     // -------------------------------------------------------------------------------------
     // getters and setters
     // -------------------------------------------------------------------------------------
@@ -82,10 +82,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public AssignmentsEditorCanvasView(final int height, final MoMAGui callbackGui) {
+    public AssignmentsEditorCanvasView(final int height) {
         this(height, -ASSIGNMENT_COST_CUTOFF, ASSIGNMENT_COST_CUTOFF);
         this.doFilterDataByCost = false;
-        this.gui = callbackGui;
     }
 
     /**
@@ -107,7 +106,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             ASSIGNMENT_DISPLAY_OFFSET = -7;
         }
 
-        this.width = 90;
         this.setPreferredSize(new Dimension(width, height + HEIGHT_OFFSET));
 
         this.addMouseListener(this);

@@ -25,7 +25,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     // statics
     // -------------------------------------------------------------------------------------
     private static final long serialVersionUID = 6588846114839723373L;
-    private final MoMAGui gui;
+
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -47,8 +47,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     /**
      *
      */
-    public AssignmentsEditorViewer(final int height, final MoMAGui callbackGui) {
-        this.gui = callbackGui;
+    public AssignmentsEditorViewer(final int height) {
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
     }

@@ -13,7 +13,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset) {
         this.momaModel = momaModel;
-        assignmentView = new AssignmentsEditorViewer(viewHeight, mmgui);
+        assignmentView = new AssignmentsEditorViewer(viewHeight);
         assignmentView.addChangeListener(mmgui);
         this.addAssignmentView(assignmentView);
         this.setAppearanceAndLayout();

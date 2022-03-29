@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -71,6 +73,12 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      * Builds the user interface.
      */
     private void buildGui(final int height) {
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switchToNextTab();
+            }
+        });
         activeAssignments = new AssignmentsEditorCanvasView(height);
         inactiveMappingAssignments = new AssignmentsEditorCanvasView(height);
         inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height);
@@ -84,8 +92,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         final ChangeListener changeListener = changeEvent -> {
             final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
             if (sourceTabbedPane.getSelectedComponent().equals(nextTabHack)) {
-                int selectedTab = curTabIdx + 1;
-                switchToTab(selectedTab);
+                switchToNextTab();
             }
         };
 
@@ -105,6 +112,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
                 this.add(namesToRoll[i], tabsToRoll[i]);
             }
         }
+    }
+
+    private void switchToNextTab() {
+        int selectedTab = curTabIdx + 1;
+        switchToTab(selectedTab);
     }
 
     /**

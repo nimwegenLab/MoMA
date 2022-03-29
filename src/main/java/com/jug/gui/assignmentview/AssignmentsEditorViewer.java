@@ -1,7 +1,6 @@
 package com.jug.gui.assignmentview;
 
 import com.jug.gui.IlpModelChangedEventListener;
-import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -35,7 +34,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private AssignmentsEditorCanvasView inactiveExitAssignments;
     private AssignmentsEditorCanvasView inactiveLysisAssignments;
     private int curTabIdx = 0;
-    private JPanel nextHackTab;
+    private JPanel nextTabHack;
     private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data = new HashMap<>();
     private JComponent[] tabsToRoll;
     private String[] namesToRoll;
@@ -79,12 +78,12 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveLysisAssignments = new AssignmentsEditorCanvasView(height);
 
         // Hack to enable non-Mac MoMA to only use one row of tabs
-        nextHackTab = new JPanel();
+        nextTabHack = new JPanel();
         tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
         namesToRoll = new String[]{"O", "M", "D", "E", "L"};
         final ChangeListener changeListener = changeEvent -> {
             final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
-            if (sourceTabbedPane.getSelectedComponent().equals(nextHackTab)) {
+            if (sourceTabbedPane.getSelectedComponent().equals(nextTabHack)) {
                 int selectedTab = curTabIdx + 1;
                 switchToTab(selectedTab);
             }
@@ -97,7 +96,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
 
         if (!OSValidator.isMac()) {
-            this.add(">", nextHackTab);
+            this.add("", nextTabHack);
             this.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
             this.setSelectedIndex(1);
             this.addChangeListener(changeListener);

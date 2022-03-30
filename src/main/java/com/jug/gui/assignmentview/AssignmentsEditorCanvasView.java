@@ -210,38 +210,40 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private void drawGlOffsetTop(final Graphics2D g) {
         double componentExitRange = ConfigurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 
-        final int x1 = 0;
+        final float centeringOffset = .5f;
+        final float xLeftSide = 0 + centeringOffset;
+        final float xRightSide = this.width + centeringOffset;
         strokeColor = Color.RED.darker();
         BasicStroke dashedStroke = new BasicStroke(1, 1, 1, 1, new float[]{1.0f, 2.0f}, 1.0f);
         BasicStroke solidStroke = new BasicStroke(1);
 
         GeneralPath polygon = new GeneralPath();
-        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP);
-        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP);
+        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP);
+        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(solidStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
-        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
+        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
+        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
-        polygon.lineTo(this.width, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
+        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
+        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
-        polygon.lineTo(this.width, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.moveTo(xLeftSide, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.lineTo(xRightSide, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
         polygon.closePath();
         g.setPaint(Color.BLUE.darker());
         g.setStroke(solidStroke);

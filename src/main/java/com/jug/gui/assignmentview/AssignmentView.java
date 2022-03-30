@@ -5,6 +5,7 @@ import gurobi.GRBException;
 
 import java.awt.*;
 import java.awt.geom.GeneralPath;
+import java.text.DecimalFormat;
 
 public abstract class AssignmentView {
     AbstractAssignment abstractAssignment;
@@ -55,7 +56,7 @@ public abstract class AssignmentView {
     }
 
     public String getCostTooltipString() {
-        return String.format("%.4f", abstractAssignment.getCost());
+        return new DecimalFormat(".####").format(abstractAssignment.getCost());
     }
 
     public double getCost(){

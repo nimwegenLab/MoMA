@@ -510,7 +510,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         int viewHeight = (int) imageProvider.getImgRaw().dimension(1);
         int viewWidth = ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS;
-//        int viewWidth = ConfigurationManager.GL_WIDTH_IN_PIXELS;
 
         LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, ConfigurationManager.CELL_LABEL_LIST);
 

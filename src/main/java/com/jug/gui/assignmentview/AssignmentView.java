@@ -55,7 +55,7 @@ public abstract class AssignmentView {
     }
 
     public String getCostTooltipString() {
-        return String.format("c=%.4f", abstractAssignment.getCost());
+        return String.format("%.4f", abstractAssignment.getCost());
     }
 
     public double getCost(){

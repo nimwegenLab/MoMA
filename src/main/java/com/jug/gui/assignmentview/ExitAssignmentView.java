@@ -43,8 +43,8 @@ public class ExitAssignmentView extends AssignmentView {
         polygon = new GeneralPath();
         polygon.moveTo(x1, y1);
         polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width / 5, y3);
-        polygon.lineTo(this.width / 5, y4);
+        polygon.lineTo(this.width / 2.5, y3);
+        polygon.lineTo(this.width / 2.5, y4);
         polygon.closePath();
     }
 }

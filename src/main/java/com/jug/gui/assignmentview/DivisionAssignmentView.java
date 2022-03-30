@@ -53,7 +53,7 @@ public class DivisionAssignmentView extends AssignmentView {
         final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
         final int y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
         final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x5 = this.width / 3;
+        final int x5 = Math.round(this.width / 4);
         final int y5 = divisionLocation + ASSIGNMENT_DISPLAY_OFFSET;
 
         final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;

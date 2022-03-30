@@ -181,57 +181,6 @@ public class Util {
     }
 
     /**
-     * @param channelFrame
-     * @param hyp
-     * @return
-     */
-    public static IntervalView<FloatType> getIntensityBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg) {
-        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
-        lt[0] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
-        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
-        rb[0] = glMiddleInImg + ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 + ConfigurationManager.GL_WIDTH_IN_PIXELS % 2 - 1;
-        return Views.interval(channelFrame, lt, rb);
-    }
-
-    /**
-     * @param segmentedFrame
-     * @param hyp
-     * @return
-     */
-    public static IntervalView<ShortType> getClassificationBoxInImg(final IntervalView<ShortType> segmentedFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg) {
-        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
-        lt[0] = glMiddleInImg - ConfigurationManager.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
-        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
-        rb[0] = glMiddleInImg + ConfigurationManager.GL_WIDTH_IN_PIXELS; // to lazy for an additional param... twice GL_WIDTH should be ok...
-//		if ( false ) {
-//			new ImageJ();
-//			ImageJFunctions.showUnsignedShort( Views.interval( segmentedFrame, lt, rb ) );
-//		}
-        return Views.interval(segmentedFrame, lt, rb);
-    }
-
-    /**
-     * @param channelFrame
-     * @param hyp
-     * @return
-     */
-    public static IterableInterval<FloatType> getSegmentBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg) {
-        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
-        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
-        return Views.iterable(Views.interval(channelFrame, lt, rb));
-    }
-
-    /**
-     * @param hyp
-     * @return
-     */
-    public static int getSegmentBoxPixelCount(final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg) {
-        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
-        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
-        return (int) ((rb[0] - lt[0] + 1) * (rb[1] - lt[1] + 1));
-    }
-
-    /**
      * @param hyp
      * @return
      */

@@ -130,7 +130,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    long xOffset = view.min(0) + myWidth/2;
+                    long xOffset = view.min(0);
                     long yOffset = view.min(1);
                     drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                     drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
@@ -155,7 +155,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         componentInfoString = " ";
         updateHypothesisInfoTooltip();
         drawHoveredOptionalHypothesis();
-        drawHypothesisInfoTooltip(g);
+        renderToGraphicsObject(g);
     }
 
     void drawString(Graphics g, String text, int x, int y) {
@@ -163,8 +163,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             g.drawString(line, x, y += g.getFontMetrics().getHeight());
     }
 
-    private void drawHypothesisInfoTooltip(Graphics g) {
-        g.drawImage(screenImage.image(), 0, 0, myWidth, myHeight, null);
+    private void renderToGraphicsObject(Graphics g) {
+        int xOffset = 0;
+        g.drawImage(screenImage.image(), xOffset, 0, myWidth, myHeight, null);
         g.setColor(getStringColor());
         drawString(g, componentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
     }
@@ -215,9 +216,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         Hypothesis<AdvancedComponent<FloatType>> hoverOptionalHyp = getHoveredOptionalHypothesis();
         if (hoverOptionalHyp != null) {
             final AdvancedComponent<FloatType> comp = hoverOptionalHyp.getWrappedComponent();
-            long xOffset = view.min(0) + myWidth/2;
-            long yOffset = view.min(1);
-            drawOptionalSegmentation(screenImage, screenImageUnaltered, xOffset, yOffset, comp);
+            drawOptionalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), comp);
         }
     }
 

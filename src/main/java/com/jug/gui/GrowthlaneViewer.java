@@ -37,8 +37,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private static final long serialVersionUID = 8284204775277266994L;
     private static final int OFFSET_DISPLAY_COSTS = -25;
-    private final int w;
-    private final int h;
+    private final int myWidth;
+    private final int myHeight;
     private final MoMAGui mmgui;
     protected EventListenerList listenerList = new EventListenerList();
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
@@ -60,7 +60,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int w, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int myWidth, final int h) {
         super();
 
         this.mmgui = mmgui;
@@ -70,10 +70,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         addMouseMotionListener(this);
         addMouseWheelListener(this);
 
-        this.w = w;
-        this.h = h;
-        setPreferredSize(new Dimension(w, h));
-        this.screenImage = new ARGBScreenImage(w, h);
+        this.myWidth = myWidth;
+        this.myHeight = h;
+        setPreferredSize(new Dimension(myWidth, h));
+        this.screenImage = new ARGBScreenImage(myWidth, h);
         this.projector = null;
         this.view = null;
         this.glf = null;
@@ -109,8 +109,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      * Prepares to display an empty image.
      */
     public void setEmptyScreenImage() {
-        screenImage = new ARGBScreenImage(w, h);
-        screenImageUnaltered = new ARGBScreenImage(w, h);
+        screenImage = new ARGBScreenImage(myWidth, myHeight);
+        screenImageUnaltered = new ARGBScreenImage(myWidth, myHeight);
         this.projector = null;
         this.view = null;
         this.glf = null;
@@ -130,8 +130,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    long xOffset = view.min(0) + myWidth/2;
+                    long yOffset = view.min(1);
+                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -162,7 +164,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     }
 
     private void drawHypothesisInfoTooltip(Graphics g) {
-        g.drawImage(screenImage.image(), 0, 0, w, h, null);
+        g.drawImage(screenImage.image(), 0, 0, myWidth, myHeight, null);
         g.setColor(getStringColor());
         drawString(g, componentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
     }
@@ -213,7 +215,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         Hypothesis<AdvancedComponent<FloatType>> hoverOptionalHyp = getHoveredOptionalHypothesis();
         if (hoverOptionalHyp != null) {
             final AdvancedComponent<FloatType> comp = hoverOptionalHyp.getWrappedComponent();
-            drawOptionalSegmentation(screenImage, screenImageUnaltered, view.min(0), view.min(1), comp);
+            long xOffset = view.min(0) + myWidth/2;
+            long yOffset = view.min(1);
+            drawOptionalSegmentation(screenImage, screenImageUnaltered, xOffset, yOffset, comp);
         }
     }
 
@@ -497,12 +501,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     @Override
     public int getWidth() {
-        return w;
+        return myWidth;
     }
 
     @Override
     public int getHeight() {
-        return h;
+        return myHeight;
     }
 
     /**

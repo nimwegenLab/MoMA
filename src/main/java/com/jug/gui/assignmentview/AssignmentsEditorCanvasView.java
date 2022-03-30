@@ -49,7 +49,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
-    private final int width = 30;
+    private final int width = 33;
     private final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;

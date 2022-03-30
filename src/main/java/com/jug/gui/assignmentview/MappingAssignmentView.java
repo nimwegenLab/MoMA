@@ -14,7 +14,7 @@ public class MappingAssignmentView extends AssignmentView {
 
     public MappingAssignmentView(final MappingAssignment ma, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.abstractAssignment = ma;
-        this.width = width;
+        this.width = width - 1;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
     }

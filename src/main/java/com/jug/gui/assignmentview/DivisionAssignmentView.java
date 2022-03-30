@@ -14,7 +14,7 @@ public class DivisionAssignmentView extends AssignmentView {
 
     public DivisionAssignmentView(final DivisionAssignment da, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.abstractAssignment = da;
-        this.width = width;
+        this.width = width - 1;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
     }

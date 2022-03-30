@@ -14,7 +14,7 @@ public class MappingAssignmentView extends AssignmentView {
 
     public MappingAssignmentView(final MappingAssignment ma, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.abstractAssignment = ma;
-        this.width = width - 1;
+        this.width = width - 2;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
     }
@@ -37,18 +37,20 @@ public class MappingAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
         final ValuePair<Integer, Integer> limitsRight = rightHyp.getLocation();
 
-        final int x1 = 0;
-        final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x2 = 0;
-        final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y3 = limitsRight.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y4 = limitsRight.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        float centeringOffset = .5f;
+        float xRight = this.width + centeringOffset;
+        final float x1 = 0 + centeringOffset;
+        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float x2 = 0 + centeringOffset;
+        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y3 = limitsRight.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y4 = limitsRight.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
         polygon.moveTo(x1, y1);
         polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width, y3);
-        polygon.lineTo(this.width, y4);
+        polygon.lineTo(xRight, y3);
+        polygon.lineTo(xRight, y4);
         polygon.closePath();
     }
 }

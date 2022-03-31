@@ -3,7 +3,6 @@ package com.jug.gui.assignmentview;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEvent;
 import com.jug.gui.IlpModelChangedEventListener;
-import com.jug.gui.MoMAGui;
 import com.jug.lp.*;
 import com.jug.util.OSValidator;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -58,13 +57,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
     int selectedAssignmentIndex = 0;
     AssignmentView selectedAssignment;
-    private boolean doFilterDataByCost;
     private float filterMinCost = -100f;
     private float filterMaxCost = 100f;
-    private boolean doFilterDataByIdentity = false;
-    private boolean doAddToFilter = false; // if 'true' all assignments at the mouse location will be added to the filter next time repaint is called...
     private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data;
-    private boolean isMouseOver = false; /* indicates if the mouse is inside this AssignmentsEditorCanvasView instance */
     private int mousePosX;
     private int mousePosY;
     private int currentCostLine;
@@ -84,7 +79,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // -------------------------------------------------------------------------------------
     public AssignmentsEditorCanvasView(final int height) {
         this(height, -ASSIGNMENT_COST_CUTOFF, ASSIGNMENT_COST_CUTOFF);
-        this.doFilterDataByCost = false;
     }
 
     /**
@@ -106,9 +100,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             ASSIGNMENT_DISPLAY_OFFSET = -7;
         }
 
-        int actualHeight = height + HEIGHT_OFFSET;
         this.setPreferredSize(new Dimension(width, height + HEIGHT_OFFSET));
-//        this.setMinimumSize(new Dimension(width, actualHeight));
 
         this.addMouseListener(this);
         this.addMouseMotionListener(this);
@@ -117,7 +109,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         this.defaultFilterMinCost = filterMinCost;
         this.defaultFilterMaxCost = filterMaxCost;
 
-        this.doFilterDataByCost = true;
         this.setCostFilterMin(filterMinCost);
         this.setCostFilterMax(filterMaxCost);
 
@@ -163,7 +154,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      *             hypothesis at some time-point t and assignments towards t+1.
      */
     public void display(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
-        doFilterDataByCost = false;
         setData(data);
 
         this.repaint();
@@ -197,9 +187,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             g.setColor(Color.GRAY);
             g.drawString(String.format("dlta %.4f", this.dragStepWeight), 0, 50);
         }
-
-        // in case we where adding assignments - stop now!
-        this.doAddToFilter = false;
     }
 
     /**
@@ -342,8 +329,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         // shift-click   --   hide assignments
         if (!e.isAltDown() && !e.isControlDown() && e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {
             System.out.println("Filter!");
-            this.doFilterDataByIdentity = true;
-            this.doAddToFilter = true; // when repainting component next time...
             for (AssignmentView assignmentView : hoveredAssignments) {
                 assignmentView.hide();
             }
@@ -351,7 +336,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
         // right_click or shift-right_click  --  clear list of hidden assignments
         if (!e.isAltDown() && !e.isControlDown() && e.getButton() == MouseEvent.BUTTON3) {
-            this.doFilterDataByIdentity = false;
             this.filteredAssignments.clear();
             for (AssignmentView assignmentView : assignmentViews) {
                 assignmentView.unhide();
@@ -392,7 +376,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseEntered(final MouseEvent e) {
-        this.isMouseOver = true;
     }
 
     /**
@@ -400,7 +383,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseExited(final MouseEvent e) {
-        this.isMouseOver = false;
         clearHoveredAssignments();
         repaint();
     }
@@ -410,8 +392,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseDragged(final MouseEvent e) {
-        this.doFilterDataByCost = true;
-
         final float minstep = 0.01f;
         final float xsensitivity = 30.0f;
         final int dX = e.getX() - this.dragX;

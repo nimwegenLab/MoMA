@@ -24,6 +24,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int mousePosY;
     // tracking the mouse (when dragging)
     private boolean isDragging;
-    private String componentInfoString = " ";
+    private String componentInfoString = "";
     private List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
@@ -158,9 +159,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         renderToGraphicsObject(g);
     }
 
+    private Font textFont = new Font("default", Font.PLAIN, 8);
+
     void drawString(Graphics g, String text, int x, int y) {
-        for (String line : text.split("\n"))
-            g.drawString(line, x, y += g.getFontMetrics().getHeight());
+        for (String line : text.split("\n")) {
+            g.setFont(textFont);
+            g.drawString(line, x-1, y += g.getFontMetrics().getHeight());
+        }
     }
 
     private void renderToGraphicsObject(Graphics g) {
@@ -195,13 +200,20 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         return noHypothesisTextColor;
     }
 
+    private DecimalFormat costFormat = new DecimalFormat(".##");
+
     private void updateHypothesisInfoTooltip() {
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
-                componentInfoString = String.format("C: %.4f\nT: %d\nB: %d\nL: %d\nA: %d\nN: %d", optionalCost, limits.getA(), limits.getB(), limits.getB()-limits.getA(), component.size(), component.getNodeLevel());
+                componentInfoString = "C:" + costFormat.format(optionalCost) +
+                                    "\nT:" + limits.getA() +
+                                    "\nB:" + limits.getB() +
+                                    "\nL:" + (limits.getB() - limits.getA()) +
+                                    "\nA:" + component.size() +
+                                    "\nN:" + component.getNodeLevel();
             } else {
                 componentInfoString = "---";
             }

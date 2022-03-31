@@ -1,7 +1,6 @@
 package com.jug.gui.assignmentview;
 
 import com.jug.gui.IlpModelChangedEventListener;
-import com.jug.gui.MoMAGui;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -13,6 +12,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -25,7 +26,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     // statics
     // -------------------------------------------------------------------------------------
     private static final long serialVersionUID = 6588846114839723373L;
-    private final MoMAGui gui;
+
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -35,7 +36,6 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private AssignmentsEditorCanvasView inactiveExitAssignments;
     private AssignmentsEditorCanvasView inactiveLysisAssignments;
     private int curTabIdx = 0;
-    private JPanel nextHackTab;
     private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data = new HashMap<>();
     private JComponent[] tabsToRoll;
     private String[] namesToRoll;
@@ -47,49 +47,42 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     /**
      *
      */
-    public AssignmentsEditorViewer(final int height, final MoMAGui callbackGui) {
-        this.gui = callbackGui;
+    public AssignmentsEditorViewer(final int height) {
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
     }
 
-    // -------------------------------------------------------------------------------------
-    // getters and setters
-    // -------------------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------------------
-    // methods
-    // -------------------------------------------------------------------------------------
-
-    public void switchToTab(int targetTab) {
-        if (targetTab >= tabsToRoll.length) targetTab = 0;
-        this.add(namesToRoll[targetTab], tabsToRoll[targetTab]);
+    /**
+     * Switch to tab with index targetTabIndex, if targetTabIndex is within valid range. If not do nothing.
+     *
+     * @param targetTabIndex
+     */
+    public void switchToTab(int targetTabIndex) {
+        if (targetTabIndex == curTabIdx) return;
+        this.add(namesToRoll[targetTabIndex], tabsToRoll[targetTabIndex]);
         this.remove(tabsToRoll[curTabIdx]);
-        curTabIdx = targetTab;
-        this.setSelectedIndex(1);
+        curTabIdx = targetTabIndex;
+        this.setSelectedIndex(0);
     }
 
     /**
      * Builds the user interface.
      */
     private void buildGui(final int height) {
-        activeAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveExitAssignments = new AssignmentsEditorCanvasView(height, gui);
-        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, gui);
-
-        // Hack to enable non-Mac MoMA to only use one row of tabs
-        nextHackTab = new JPanel();
-        tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
-        namesToRoll = new String[]{"OPT", "M", "D", "E", "L"};
-        final ChangeListener changeListener = changeEvent -> {
-            final JTabbedPane sourceTabbedPane = (JTabbedPane) changeEvent.getSource();
-            if (sourceTabbedPane.getSelectedComponent().equals(nextHackTab)) {
-                int selectedTab = curTabIdx + 1;
-                switchToTab(selectedTab);
+        this.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                switchToNextTab();
             }
-        };
+        });
+        activeAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveExitAssignments = new AssignmentsEditorCanvasView(height);
+        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height);
+
+        tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
+        namesToRoll = new String[]{"O", "M", "D", "E", "L"};
 
         activeAssignments.display(GrowthlaneTrackingILP.getActiveAssignments(data));
         inactiveMappingAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
@@ -98,15 +91,23 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
 
         if (!OSValidator.isMac()) {
-            this.add(">", nextHackTab);
             this.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
-            this.setSelectedIndex(1);
-            this.addChangeListener(changeListener);
+            this.setSelectedIndex(0);
         } else {
             for (int i = 0; i < tabsToRoll.length; i++) {
                 this.add(namesToRoll[i], tabsToRoll[i]);
             }
         }
+    }
+
+    /**
+     * Cyclically switch to next tab from the currently selected one. If the currently selected one is the last tab in the tab-list
+     * it will switch to the first tab.
+     */
+    private void switchToNextTab() {
+        int indexOfNextTab = curTabIdx + 1;
+        if (indexOfNextTab >= tabsToRoll.length) indexOfNextTab = 0;
+        switchToTab(indexOfNextTab);
     }
 
     /**

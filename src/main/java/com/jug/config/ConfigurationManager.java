@@ -14,7 +14,13 @@ import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMa
 
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration {
-    public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
+    /**
+     * Controls the total width of the GL image as shown in GUI. The total width is is given by:
+     * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
+     * See also its usage in GrowthlaneViewer.java and MoMAGui.java
+     */
+    public static final int GL_PIXEL_PADDING_IN_VIEWS = 5;
+
     /**
      * One of the test for paper:
      * What happens if exit constraints are NOT part of the model?

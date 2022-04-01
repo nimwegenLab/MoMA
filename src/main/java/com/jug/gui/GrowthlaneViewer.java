@@ -52,7 +52,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private boolean showSegmentationAnnotations = true;
     // tracking the mouse (when over)
     private boolean isMouseOver;
-    private int mousePosX;
     private int mousePosY;
     // tracking the mouse (when dragging)
     private boolean isDragging;
@@ -504,7 +503,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     public void mouseMoved(final MouseEvent e) {
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
-        this.mousePosX = e.getX();
         this.mousePosY = e.getY();
         updateHoveredHypotheses();
         this.repaint();

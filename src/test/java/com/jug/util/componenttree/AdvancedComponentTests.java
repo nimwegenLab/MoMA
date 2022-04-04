@@ -3,11 +3,10 @@ package com.jug.util.componenttree;
 import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
-import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
-
+import ij.ImagePlus;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imglib2.Localizable;
@@ -30,18 +29,10 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class AdvancedComponentTests {
-    private final TestUtils testUtils;
-    private final ImageJ ij;
-
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
         new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
 //        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
-    }
-
-    public AdvancedComponentTests() {
-        ij = new ImageJ();
-        testUtils = new TestUtils(ij);
     }
 
     @Test
@@ -49,6 +40,7 @@ public class AdvancedComponentTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
+        ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         int frameIndex = 10;
@@ -56,7 +48,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentTreeGenerator componentTreeGenerator = testUtils.getComponentTreeGenerator(ij);
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
 
@@ -87,6 +79,7 @@ public class AdvancedComponentTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
+        ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         int frameIndex = 10;
@@ -124,6 +117,7 @@ public class AdvancedComponentTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 
+        ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
         int frameIndex = 10;

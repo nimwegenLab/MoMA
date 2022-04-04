@@ -3,8 +3,11 @@ package com.jug.util.componenttree;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-
+import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.Type;
+import net.imglib2.type.numeric.integer.IntType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -24,9 +27,11 @@ import java.util.Set;
 public final class SimpleComponentTree<T extends Type<T>, C extends Component<T, C>>
         implements
         ComponentForest<AdvancedComponent<T>> {
+    final ImgLabeling<Integer, IntType> labeling;
     private final List<AdvancedComponent<T>> nodes = new ArrayList<>();
     private final List<AdvancedComponent<T>> roots = new ArrayList<>();
     private final RandomAccessibleInterval<T> sourceImage;
+    private final Img<IntType> img;
     Integer label = 1;
     private final IComponentTester<T, C> tester;
     private ComponentProperties componentPropertiesCalculator;
@@ -40,6 +45,10 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
         this.sourceImage = sourceImage;
         this.tester = tester;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        img = ArrayImgs.ints(dims);
+        labeling = new ImgLabeling<>(img);
         CreateTree(componentForest);
         SortChildrenByPosition();
         sortRootNodes();
@@ -85,7 +94,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            AdvancedComponent<T> newRoot = new AdvancedComponent<>(label++, sourceComponent, sourceImage, componentPropertiesCalculator); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
+            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, componentPropertiesCalculator); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -111,7 +120,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private AdvancedComponent<T> CreateTargetChild(AdvancedComponent<T> targetComponent, C sourceChild) {
-        AdvancedComponent<T> targetChild = new AdvancedComponent<>(label++, sourceChild, sourceImage, componentPropertiesCalculator);
+        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, componentPropertiesCalculator);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

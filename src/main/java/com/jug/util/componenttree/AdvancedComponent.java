@@ -5,18 +5,23 @@ import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.algorithm.morphology.Dilation;
+import net.imglib2.algorithm.labeling.ConnectedComponentAnalysis;
 
 import java.util.Iterator;
 import java.util.*;
@@ -713,15 +718,19 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return
      */
     public <T extends NativeType<T>> Img<T> getComponentImage(T pixelValue) {
-        long[] dims = new long[sourceImage.numDimensions()];
-        sourceImage.dimensions(dims);
-        ArrayImgFactory<T> imageFactory = new ArrayImgFactory(pixelValue);
-        Img<T> img = imageFactory.create(dims);
+        Img<T> img = createImageWithSameDimension(pixelValue);
         RandomAccess<T> rndAccess = img.randomAccess();
         for (Iterator<Localizable> it = this.iterator(); it.hasNext(); ) {
             rndAccess.setPosition(it.next());
             rndAccess.get().set(pixelValue);
         }
+        return img;
+    }
+
+    public <T extends NativeType<T>> Img<T> createImageWithSameDimension(T type) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<T> img = new ArrayImgFactory(type).create(dims);
         return img;
     }
 
@@ -739,6 +748,18 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     @Override
     public Set<String> getComponentFeatureNames() {
         return componentFeatures.keySet();
+    }
+
+    public void getDilatedMask() {
+        RectangleShape shape = new RectangleShape(1, false);
+        Img<BitType> componentImage = getComponentImage(new BitType(true));
+        Img<BitType> dilatedImg = Dilation.dilate(componentImage, shape, 1);
+        ImgLabeling<Integer, IntType> labelingImg = createLabelingImage(sourceImage);
+        ImageJFunctions.show(dilatedImg);
+//        ConnectedComponentAnalysis.connectedComponents(dilatedImg, labelingImg, shape);
+//        ImgLabeling labeling = ij.op().labeling().cca(dilatedImg, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
+//        LabelRegions regions = new LabelRegions(labeling);
+//        return regions.getLabelRegion(0);
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

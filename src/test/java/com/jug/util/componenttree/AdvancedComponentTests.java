@@ -14,6 +14,9 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.BooleanType;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.logic.BoolType;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -31,8 +34,9 @@ import static org.junit.Assert.*;
 public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
-        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
 //        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
+        new AdvancedComponentTests().test__getDilatedComponent();
     }
 
     @Test
@@ -150,5 +154,29 @@ public class AdvancedComponentTests {
             ImageJFunctions.show(imgOfWatershedLine);
             break;
         }
+    }
+
+    @Test
+    public void test__getDilatedComponent() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+        int frameIndex = 10;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
+        assertEquals(2, currentImage.numDimensions());
+
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+        AdvancedComponent<FloatType> component = roots.get(1);
+        Img<BitType> componentImage = component.getComponentImage(new BitType(true));
+        component.getDilatedMask();
+        ImageJFunctions.show(componentImage);
     }
 }

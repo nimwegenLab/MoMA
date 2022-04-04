@@ -11,6 +11,8 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.*;
+import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
@@ -22,6 +24,7 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.algorithm.morphology.Dilation;
 import net.imglib2.algorithm.labeling.ConnectedComponentAnalysis;
+import net.imglib2.roi.geom.GeomMasks;
 
 import java.util.Iterator;
 import java.util.*;
@@ -750,13 +753,21 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return componentFeatures.keySet();
     }
 
-    public void getDilatedMask() {
+    public MaskInterval getDilatedMask() {
         RectangleShape shape = new RectangleShape(1, false);
         Img<BitType> componentImage = getComponentImage(new BitType(true));
         Img<BitType> dilatedImg = Dilation.dilate(componentImage, shape, 1);
-        ImgLabeling<Integer, IntType> labelingImg = createLabelingImage(sourceImage);
-        ImageJFunctions.show(dilatedImg);
-//        ConnectedComponentAnalysis.connectedComponents(dilatedImg, labelingImg, shape);
+//        IterableRegion<BitType> myregion = Regions.iterable(dilatedImg); // https://javadoc.scijava.org/ImgLib2/net/imglib2/roi/Regions.html#iterable-net.imglib2.RandomAccessibleInterval-
+        MaskInterval res = Masks.toMaskInterval(dilatedImg);
+
+//        ImageJFunctions.show(dilatedImg);
+//        Img<IntType> labels = createImageWithSameDimension(new IntType(0));
+
+        return res;
+//        ConnectedComponentAnalysis.connectedComponents(dilatedImg, labels, shape);
+//        ImageJFunctions.show(dilatedImg);
+//        Regions.
+//        Masks.
 //        ImgLabeling labeling = ij.op().labeling().cca(dilatedImg, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
 //        LabelRegions regions = new LabelRegions(labeling);
 //        return regions.getLabelRegion(0);

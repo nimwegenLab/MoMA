@@ -14,6 +14,8 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.MaskInterval;
+import net.imglib2.roi.Masks;
 import net.imglib2.type.BooleanType;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.logic.BoolType;
@@ -175,8 +177,11 @@ public class AdvancedComponentTests {
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
         AdvancedComponent<FloatType> component = roots.get(1);
-        Img<BitType> componentImage = component.getComponentImage(new BitType(true));
-        component.getDilatedMask();
-        ImageJFunctions.show(componentImage);
+//        Img<BitType> componentImage = component.getComponentImage(new BitType(true));
+//        ImageJFunctions.show(componentImage);
+        MaskInterval res = component.getDilatedMask();
+
+        new ij.ImageJ();
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(res));
     }
 }

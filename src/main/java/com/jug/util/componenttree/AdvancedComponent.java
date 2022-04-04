@@ -5,6 +5,7 @@ import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.morphology.Erosion;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
@@ -751,6 +752,14 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     @Override
     public Set<String> getComponentFeatureNames() {
         return componentFeatures.keySet();
+    }
+
+    public MaskInterval getErodedMask(){
+        RectangleShape shape = new RectangleShape(1, false);
+        Img<BitType> componentImage = getComponentImage(new BitType(true));
+        Img<BitType> dilatedImg = Erosion.erode(componentImage, shape, 1);
+        MaskInterval res = Masks.toMaskInterval(dilatedImg);
+        return res;
     }
 
     public MaskInterval getDilatedMask() {

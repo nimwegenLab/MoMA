@@ -179,9 +179,15 @@ public class AdvancedComponentTests {
         AdvancedComponent<FloatType> component = roots.get(1);
 //        Img<BitType> componentImage = component.getComponentImage(new BitType(true));
 //        ImageJFunctions.show(componentImage);
-        MaskInterval res = component.getDilatedMask();
+        MaskInterval dilatedMask = component.getDilatedMask();
+
+        MaskInterval erodedMask = component.getErodedMask();
 
         new ij.ImageJ();
-        ImageJFunctions.show(Masks.toRandomAccessibleInterval(res));
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(dilatedMask));
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(erodedMask));
+
+        MaskInterval differenceMask = dilatedMask.minus(erodedMask);
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(differenceMask));
     }
 }

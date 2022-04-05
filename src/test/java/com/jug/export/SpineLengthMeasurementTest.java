@@ -51,8 +51,8 @@ public class SpineLengthMeasurementTest {
             SegmentMeasurementData data = new SegmentMeasurementData(component, new ArrayList<>());
             sut.measure(data);
         }
-        ResultTableColumn<Double> column = resultTable.columnList.get(1);
-
+//        ResultTableColumn<Double> column = resultTable.columnList.get(1);
+        ResultTableColumn<Double> column = resultTable.getColumnByName("spine_length__px");
         double[] expected = new double[]{
                 41.13496287766395D,
                 47.08039933241312D,

@@ -103,7 +103,7 @@ public class ResultTableColumn<T> {
      *
      * @return header
      */
-    private String getColumnHeader(){
+    public String getColumnHeader(){
         return columnHeader;
     }
 }

@@ -112,5 +112,14 @@ public class ResultTable {
     private void writeSeparator(Writer writer) throws IOException {
         writer.write(String.format("%s", separator));
     }
+
+    public ResultTableColumn getColumnByName(String columnName) {
+        for (ResultTableColumn resultTableColumn : columnList) {
+            if (resultTableColumn.getColumnHeader() == columnName) {
+                return resultTableColumn;
+            }
+        }
+        throw new RuntimeException("the requested column does not exist");
+    }
 }
 

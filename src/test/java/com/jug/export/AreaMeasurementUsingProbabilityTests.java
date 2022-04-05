@@ -27,7 +27,7 @@ public class AreaMeasurementUsingProbabilityTests {
     private final AreaMeasurementUsingProbability sut;
 
     public static void main(String[] args) throws IOException {
-        new AreaMeasurementUsingProbabilityTests().test_area_measurement_1();
+        new AreaMeasurementUsingProbabilityTests().measurement_returns_expected_area();
     }
 
     public AreaMeasurementUsingProbabilityTests() {
@@ -37,10 +37,11 @@ public class AreaMeasurementUsingProbabilityTests {
     }
 
     @Test
-    public void test_area_measurement_1() throws IOException {
+    public void measurement_returns_expected_area() throws IOException {
+        int componentIndex = 2;
         List<ComponentInterface> components = getListOfComponents();
 
-        ComponentInterface componentToMeasure = components.get(4);
+        ComponentInterface componentToMeasure = components.get(componentIndex);
         sut.measure(new SegmentMeasurementData(componentToMeasure, components));
     }
 

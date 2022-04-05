@@ -9,6 +9,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AreaMeasurementUsingProbability implements SegmentMeasurementInterface {
@@ -24,13 +25,14 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         ComponentInterface component = data.getComponentToMeasure();
         List<ComponentInterface> allComponents = data.getAllOptimalComponents();
 
-        if (!allComponents.contains(component)) throw new RuntimeException("target component must be in list of all components");
+        List<ComponentInterface> neighbors = ComponentTreeUtils.getNeighborComponents(component, allComponents);
 
-        ComponentTreeUtils.sortComponentsByPosition(allComponents);
+        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(neighbors, new BitType(true));
+        ImageJFunctions.show(image);
 
-        allComponents.remove(component);
-
-        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(allComponents, new BitType(true));
+        List<ComponentInterface> componentList = new ArrayList<>();
+        componentList.add(component);
+        image = Plotting.createImageWithComponentsNew(componentList, new BitType(true));
         ImageJFunctions.show(image);
     }
 }

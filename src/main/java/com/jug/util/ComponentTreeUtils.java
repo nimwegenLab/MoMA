@@ -83,6 +83,27 @@ public class ComponentTreeUtils {
         }
     }
 
+    public static List<ComponentInterface> getNeighborComponents(ComponentInterface component, List<ComponentInterface> allComponents) {
+        if (!allComponents.contains(component))
+            throw new RuntimeException("target component must be in list of all components");
+
+        ComponentTreeUtils.sortComponentsByPosition(allComponents);
+        int componentIndex = allComponents.indexOf(component);
+
+        List<ComponentInterface> neighbors = new ArrayList();
+        if (componentIndex == 0) {
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        } else if (componentIndex == allComponents.size() - 1) {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            return neighbors;
+        } else {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        }
+    }
+
     /**
      *
      * @param components

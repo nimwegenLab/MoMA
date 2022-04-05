@@ -12,7 +12,7 @@ import static com.jug.util.JavaUtils.concatenateWithCollection;
 public class MoMATest {
     //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
 //    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__micha__Documents__01_work/MoMA/test_datasets";
-    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/";
+    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/";
 
 //-i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif

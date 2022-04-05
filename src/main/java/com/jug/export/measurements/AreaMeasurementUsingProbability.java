@@ -23,7 +23,7 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
 
     @Override
     public void setOutputTable(ResultTable outputTable) {
-        areaCol = outputTable.addColumn(new ResultTableColumn<Double>("spine_length_calculation_successful__boolean"));
+        areaCol = outputTable.addColumn(new ResultTableColumn<>("area_using_probability_map__px"));
     }
 
     @Override
@@ -34,6 +34,11 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
 
         List<ComponentInterface> neighbors = ComponentTreeUtils.getNeighborComponents(component, allComponents);
 
+        double area = calculateArea(component, probabilityMap, neighbors);
+        areaCol.addValue(area);
+    }
+
+    private double calculateArea(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap, List<ComponentInterface> neighbors) {
         MaskInterval dilatedMask = component.getDilatedMask();
         MaskInterval componentCoreMask = component.getErodedMask();
         MaskInterval componentBorderMask = dilatedMask.minus(componentCoreMask);
@@ -43,15 +48,15 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
             neighborMaskUnion = neighborMaskUnion.or(neighbor.getDilatedMask()); /* combine neighbor masks */
         }
 
-        MaskInterval intersectingBorderPixels = neighborMaskUnion.and(componentBorderMask);
+        MaskInterval intersectingBorderPixelMask = neighborMaskUnion.and(componentBorderMask);
         componentBorderMask = componentBorderMask.minus(neighborMaskUnion); /* remove intersecting pixels */
 
         new ij.ImageJ();
 
 //        ImageJFunctions.show(Masks.toRandomAccessibleInterval(neighborMaskUnion));
-        ImageJFunctions.show(Masks.toRandomAccessibleInterval(componentBorderMask), "componentBorderMask");
-
-        ImageJFunctions.show(Masks.toRandomAccessibleInterval(intersectingBorderPixels), "intersectingBorderPixels");
+//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(componentBorderMask), "componentBorderMask");
+//
+//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(intersectingBorderPixelMask), "intersectingBorderPixelMask");
 
         Double totalArea = 0D;
 //        Regions.iterable(componentCoreMask)
@@ -63,14 +68,22 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
             totalArea++;
         }
 
-        ImageJFunctions.show(probabilityMap);
+//        ImageJFunctions.show(probabilityMap);
 
         IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);
-        ImageJFunctions.show(probabilityMap, "probabilityMap");
+//        ImageJFunctions.show(probabilityMap, "probabilityMap");
         Cursor<FloatType> c2 = borderPixels.cursor();
         while(c2.hasNext()){
             c2.next();
             double val = c2.get().getRealDouble();
+            totalArea += val;
+        }
+
+        IterableInterval<FloatType> intersectingBorderPixels = Regions.sample(intersectingBorderPixelMask, probabilityMap);
+        Cursor<FloatType> c3 = intersectingBorderPixels.cursor();
+        while(c3.hasNext()){
+            c3.next();
+            double val = c3.get().getRealDouble() / 2; /* we count intersecting border pixels only half, because they belong to two neighboring components */
             totalArea += val;
         }
 
@@ -81,9 +94,10 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
 //        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(neighbors, new BitType(true));
 //        ImageJFunctions.show(image);
 //
-        List<ComponentInterface> componentList = new ArrayList<>();
-        componentList.add(component);
-        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(componentList, new BitType(true));
-        ImageJFunctions.show(image, "component");
+//        List<ComponentInterface> componentList = new ArrayList<>();
+//        componentList.add(component);
+//        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(componentList, new BitType(true));
+//        ImageJFunctions.show(image, "component");
+        return totalArea;
     }
 }

@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
@@ -81,6 +82,10 @@ public class ComponentTreeUtils {
             }
         }
     }
+
+//    sortComponent(List<ComponentInterface> components){
+//        components.sort(verticalComponentPositionComparator);
+//    }
 
     /**
      * Checks if {@param candidate} is above {@param hyp} inside the image.

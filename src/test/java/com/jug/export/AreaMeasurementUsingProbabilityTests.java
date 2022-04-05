@@ -50,10 +50,7 @@ public class AreaMeasurementUsingProbabilityTests {
             components.add(componentAndImage.getA());
         }
 
-        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(components, new BitType(true));
-        ImageJFunctions.show(image);
-
-        sut.measure(new SegmentMeasurementData(components.get(0), components));
-        System.out.println();
+        ComponentInterface componentToMeasure = components.get(4);
+        sut.measure(new SegmentMeasurementData(componentToMeasure, components));
     }
 }

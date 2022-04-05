@@ -38,7 +38,7 @@ public class AdvancedComponentTests {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
 //        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
 //        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
-        new AdvancedComponentTests().test__getDilatedComponent();
+        new AdvancedComponentTests().explore__getDilatedAndErodedComponents();
     }
 
     @Test
@@ -158,8 +158,7 @@ public class AdvancedComponentTests {
         }
     }
 
-    @Test
-    public void test__getDilatedComponent() throws IOException {
+    public void explore__getDilatedAndErodedComponents() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
 

@@ -1,5 +1,6 @@
 package com.jug.export;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.AreaMeasurementUsingProbability;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.util.TestUtils;
@@ -42,7 +43,9 @@ public class AreaMeasurementUsingProbabilityTests {
         List<ComponentInterface> components = getListOfComponents();
 
         ComponentInterface componentToMeasure = components.get(componentIndex);
-        sut.measure(new SegmentMeasurementData(componentToMeasure, components));
+        IImageProvider imageProvider = testUtils.getImageProvider();
+        SegmentMeasurementData data = new SegmentMeasurementData(componentToMeasure, components, imageProvider, testUtils.getFrameIndex());
+        sut.measure(data);
     }
 
     @Test
@@ -50,7 +53,7 @@ public class AreaMeasurementUsingProbabilityTests {
         List<ComponentInterface> components = getListOfComponents();
         ComponentInterface componentToMeasure = components.get(4);
         components.remove(componentToMeasure);
-        Exception exception = assertThrows(RuntimeException.class, () -> sut.measure(new SegmentMeasurementData(componentToMeasure, components)));
+        Exception exception = assertThrows(RuntimeException.class, () -> sut.measure(new SegmentMeasurementData(componentToMeasure, components, testUtils.getImageProvider(), testUtils.getFrameIndex())));
 
         String expectedMessage = "target component must be in list of all components";
         String actualMessage = exception.getMessage();

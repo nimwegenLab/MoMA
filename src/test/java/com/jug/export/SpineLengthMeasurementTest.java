@@ -48,7 +48,7 @@ public class SpineLengthMeasurementTest {
                     componentIndex,
                     new BitType(true));
             AdvancedComponent<FloatType> component = componentAndImage.getA();
-            SegmentMeasurementData data = new SegmentMeasurementData(component, new ArrayList<>());
+            SegmentMeasurementData data = new SegmentMeasurementData(component, new ArrayList<>(), testUtils.getImageProvider(), testUtils.getFrameIndex());
             sut.measure(data);
         }
         ResultTableColumn<Double> column = resultTable.columnList.get(1);

@@ -133,7 +133,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      *
      * @return copy of the image
      */
-    public RandomAccessibleInterval<T> getSourceImage() {
+    public RandomAccessibleInterval<FloatType> getSourceImage() {
         return ImgView.wrap(sourceImage, new ArrayImgFactory(new FloatType())).copy();
     }
 

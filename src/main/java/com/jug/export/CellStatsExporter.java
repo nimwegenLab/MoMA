@@ -250,7 +250,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 GrowthlaneTrackingILP ilp = MoMA.getGui().model.getCurrentGL().getIlp();
                 List<Hypothesis<AdvancedComponent<FloatType>>> optimalSegments = ilp.getOptimalSegmentation(timeStep);
                 List<ComponentInterface> optimalComponents = optimalSegments.stream().map(Hypothesis::getWrappedComponent).collect(Collectors.toList());
-                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalComponents);
+                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalComponents, imageProvider, timeStep);
                 measurements.forEach((measurement) -> measurement.measure(data));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();

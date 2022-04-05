@@ -30,7 +30,7 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
     public void measure(SegmentMeasurementDataInterface data) {
         ComponentInterface component = data.getComponentToMeasure();
         List<ComponentInterface> allComponents = data.getAllOptimalComponents();
-        RandomAccessibleInterval<FloatType> probabilityMap = data.getImageProvider().getImgProbs();
+        RandomAccessibleInterval<FloatType> probabilityMap = data.getImageProvider().getImgProbsAt(data.getFrameIndex());
 
         List<ComponentInterface> neighbors = ComponentTreeUtils.getNeighborComponents(component, allComponents);
 
@@ -54,16 +54,23 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         ImageJFunctions.show(Masks.toRandomAccessibleInterval(intersectingBorderPixels), "intersectingBorderPixels");
 
         Double totalArea = 0D;
+//        Regions.iterable(componentCoreMask)
+//        Regions.countTrue(componentCoreMask)
+        IterableInterval<FloatType> corePixels = Regions.sample(componentCoreMask, probabilityMap);
+        Cursor<FloatType> c1 = corePixels.cursor();
+        while(c1.hasNext()){
+            c1.next();
+            totalArea++;
+        }
 
         ImageJFunctions.show(probabilityMap);
 
-        RandomAccessibleInterval sourceImage = component.getSourceImage();
-        IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, sourceImage);
+        IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);
         ImageJFunctions.show(probabilityMap, "probabilityMap");
-        Cursor<FloatType> c = borderPixels.cursor();
-        while(c.hasNext()){
-            c.next();
-            double val = c.get().getRealDouble();
+        Cursor<FloatType> c2 = borderPixels.cursor();
+        while(c2.hasNext()){
+            c2.next();
+            double val = c2.get().getRealDouble();
             totalArea += val;
         }
 

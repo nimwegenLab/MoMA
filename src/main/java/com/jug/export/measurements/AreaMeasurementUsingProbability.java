@@ -57,7 +57,8 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
 
         ImageJFunctions.show(probabilityMap);
 
-        IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);
+        RandomAccessibleInterval sourceImage = component.getSourceImage();
+        IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, sourceImage);
         ImageJFunctions.show(probabilityMap, "probabilityMap");
         Cursor<FloatType> c = borderPixels.cursor();
         while(c.hasNext()){

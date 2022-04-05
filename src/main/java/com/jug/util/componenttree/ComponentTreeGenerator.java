@@ -38,8 +38,7 @@ public class ComponentTreeGenerator {
     }
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, float componentSplittingThreshold) {
-        Img<FloatType> img = imageProvider.getImgProbs();
-        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
+        Img<FloatType> raiFkt = imageProvider.getImgProbsAt(frameIndex);
 
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));

@@ -8,6 +8,8 @@ import java.util.List;
 public interface IImageProvider {
     Img<FloatType> getImgProbs();
 
+    Img<FloatType> getImgProbsAt(int timeStep);
+
     Img<FloatType> getImgRaw();
 
     List<Img<FloatType>> getRawChannelImgs();

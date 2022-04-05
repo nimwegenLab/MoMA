@@ -2,6 +2,7 @@ package com.jug.export.measurements;
 
 import com.jug.export.ResultTable;
 import com.jug.export.ResultTableColumn;
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.ComponentInterface;
 import com.moma.auxiliary.Plotting;
 import net.imglib2.RandomAccessibleInterval;
@@ -21,12 +22,15 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
     @Override
     public void measure(SegmentMeasurementDataInterface data) {
         ComponentInterface component = data.getComponentToMeasure();
-        List<ComponentInterface> otherComponents = data.getOptimalComponents();
-        otherComponents.remove(component);
+        List<ComponentInterface> allComponents = data.getAllOptimalComponents();
 
-        
+        if (!allComponents.contains(component)) throw new RuntimeException("target component must be in list of all components");
 
-        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(otherComponents, new BitType(true));
+        ComponentTreeUtils.sortComponentsByPosition(allComponents);
+
+        allComponents.remove(component);
+
+        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(allComponents, new BitType(true));
         ImageJFunctions.show(image);
     }
 }

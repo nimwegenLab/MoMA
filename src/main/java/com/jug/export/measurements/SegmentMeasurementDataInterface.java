@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface SegmentMeasurementDataInterface {
     ComponentInterface getComponentToMeasure();
-    List<ComponentInterface> getOptimalComponents();
+    List<ComponentInterface> getAllOptimalComponents();
 }

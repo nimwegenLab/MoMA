@@ -83,9 +83,13 @@ public class ComponentTreeUtils {
         }
     }
 
-//    sortComponent(List<ComponentInterface> components){
-//        components.sort(verticalComponentPositionComparator);
-//    }
+    /**
+     *
+     * @param components
+     */
+    public static void sortComponentsByPosition(List<ComponentInterface> components){
+        components.sort(verticalComponentPositionComparator);
+    }
 
     /**
      * Checks if {@param candidate} is above {@param hyp} inside the image.

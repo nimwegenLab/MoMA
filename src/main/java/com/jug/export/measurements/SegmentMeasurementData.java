@@ -19,7 +19,7 @@ public class SegmentMeasurementData implements SegmentMeasurementDataInterface {
     }
 
     @Override
-    public List<ComponentInterface> getOptimalComponents() {
+    public List<ComponentInterface> getAllOptimalComponents() {
         return allComponentsAtTimeStep;
     }
 }

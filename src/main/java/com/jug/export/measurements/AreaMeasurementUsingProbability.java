@@ -51,8 +51,8 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         MaskInterval intersectingBorderPixelMask = neighborMaskUnion.and(componentBorderMask);
         componentBorderMask = componentBorderMask.minus(neighborMaskUnion); /* remove intersecting pixels */
 
-        new ij.ImageJ();
-
+//        new ij.ImageJ();
+//
 //        ImageJFunctions.show(Masks.toRandomAccessibleInterval(neighborMaskUnion));
 //        ImageJFunctions.show(Masks.toRandomAccessibleInterval(componentBorderMask), "componentBorderMask");
 //

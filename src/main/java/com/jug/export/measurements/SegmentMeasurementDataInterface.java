@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface SegmentMeasurementDataInterface {
     ComponentInterface getComponentToMeasure();
-    List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegments();
+    List<ComponentInterface> getOptimalSegments();
 }

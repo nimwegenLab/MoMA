@@ -13,6 +13,7 @@ import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.img.Img;
@@ -26,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author jug
@@ -247,7 +249,8 @@ public class CellStatsExporter implements ResultExporterInterface {
                 SegmentRecord finalSegmentRecord = segmentRecord;
                 GrowthlaneTrackingILP ilp = MoMA.getGui().model.getCurrentGL().getIlp();
                 List<Hypothesis<AdvancedComponent<FloatType>>> optimalSegments = ilp.getOptimalSegmentation(timeStep);
-                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalSegments);
+                List<ComponentInterface> optimalComponents = optimalSegments.stream().map(Hypothesis::getWrappedComponent).collect(Collectors.toList());
+                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalComponents);
                 measurements.forEach((measurement) -> measurement.measure(data));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();

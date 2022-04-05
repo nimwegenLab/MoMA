@@ -171,11 +171,13 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
+                int timeStep = segmentRecord.timestep;
+
                 AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
-                final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
+                final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(timeStep);
 
                 final int numCells = glf.getSolutionStats_numberOfTrackedCells();
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
@@ -184,7 +186,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 cellIdCol.addValue(segmentRecord.getId());
                 parentIdCol.addValue(segmentRecord.getParentId());
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
-                frameCol.addValue(segmentRecord.timestep);
+                frameCol.addValue(timeStep);
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
@@ -211,7 +213,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
 
-                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, segmentRecord.timestep);
+                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, timeStep);
                 phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
                 phaseContrastCoefficientOfVariation.addValue(componentProperties.getIntensityCoefficientOfVariation(currentComponent, phaseContrastImage));
 
@@ -227,7 +229,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;
                 for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
-                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.timestep);
+                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, timeStep);
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 

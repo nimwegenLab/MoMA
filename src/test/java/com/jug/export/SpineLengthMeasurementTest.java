@@ -1,5 +1,6 @@
 package com.jug.export;
 
+import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SpineLengthMeasurement;
 import com.jug.util.TestUtils;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -16,6 +17,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -46,7 +48,8 @@ public class SpineLengthMeasurementTest {
                     componentIndex,
                     new BitType(true));
             AdvancedComponent<FloatType> component = componentAndImage.getA();
-            sut.measure(component);
+            SegmentMeasurementData data = new SegmentMeasurementData(component, new ArrayList<>());
+            sut.measure(data);
         }
         ResultTableColumn<Double> column = resultTable.columnList.get(0);
 

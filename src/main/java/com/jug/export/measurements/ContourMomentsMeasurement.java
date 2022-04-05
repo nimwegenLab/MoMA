@@ -30,8 +30,8 @@ public class ContourMomentsMeasurement implements SegmentMeasurementInterface {
     }
 
     @Override
-    public void measure(ComponentInterface component) {
-        Sextet<Double, Double, Double, Double, Double, Double> moments = componentProperties.getCentralMoments(component);
+    public void measure(SegmentMeasurementDataInterface data) {
+        Sextet<Double, Double, Double, Double, Double, Double> moments = componentProperties.getCentralMoments(data.getComponentToMeasure());
         contourArea.addValue(moments.getValue0());
         contourCentroidX.addValue(moments.getValue1());
         contourCentroidY.addValue(moments.getValue2());

@@ -4,9 +4,12 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -242,7 +245,10 @@ public class CellStatsExporter implements ResultExporterInterface {
                 }
 
                 SegmentRecord finalSegmentRecord = segmentRecord;
-                measurements.forEach((measurement) -> measurement.measure(finalSegmentRecord.hyp.getWrappedComponent()));
+                GrowthlaneTrackingILP ilp = MoMA.getGui().model.getCurrentGL().getIlp();
+                List<Hypothesis<AdvancedComponent<FloatType>>> optimalSegments = ilp.getOptimalSegmentation(timeStep);
+                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalSegments);
+                measurements.forEach((measurement) -> measurement.measure(data));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
 //                System.out.println("segmentRecord.getId(): " + segmentRecord.getId());

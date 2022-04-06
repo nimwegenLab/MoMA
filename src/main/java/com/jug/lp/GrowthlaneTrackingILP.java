@@ -282,6 +282,14 @@ public class GrowthlaneTrackingILP {
 
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);
+            model.update();
+            model.optimize();
+            model.sync();
+//        try {
+//            model.wait();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         }
         // add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
         // in order have some right assignment for LP hypotheses variable substitution.

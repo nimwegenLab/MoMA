@@ -10,6 +10,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         return this.model.getVarByName(name);
     }
 
+    @Override
+    public void sync() throws GRBException {
+        this.model.sync();
+    }
+
     public GRBModelAdapter(gurobi.GRBModel model) {
         this.model = model;
     }

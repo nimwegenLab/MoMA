@@ -3,8 +3,6 @@ package com.jug.lp.GRBModel;
 import gurobi.*;
 
 public interface IGRBModelAdapter {
-    public void sync() throws GRBException;
-
     GRBVar getVarByName(String name) throws GRBException;
 
     void update() throws GRBException;

@@ -84,7 +84,7 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL22/20200812_8proms_ace_1_MMStack_Pos25_GL22.tif";
         String outputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL22/output/";
         Integer tmin = 0;
-        Integer tmax = 10;
+        Integer tmax = 100;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

@@ -154,6 +154,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
 
     /**
+     * Set if the area calculation based on the probability map should be exported.
+     */
+    public static boolean EXPORT_PROBABILITY_AREA_MEASUREMENT = true; /* set whether to perform the spine length measurement */
+
+    /**
      * Setting related to the measurement and export of the oriented bounding box length measurement.
      */
     public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = false; /* set whether to perform the oriented bounding box measurement */
@@ -191,6 +196,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE)));
+
+        EXPORT_PROBABILITY_AREA_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_PROBABILITY_AREA_MEASUREMENT", EXPORT_PROBABILITY_AREA_MEASUREMENT);
 
         SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = Double.parseDouble(props.getProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS)));
 
@@ -339,6 +346,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             setBooleanAsIntegerValue(props, "EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
             setBooleanAsIntegerValue(props, "EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);
+            setBooleanAsIntegerValue(props, "EXPORT_PROBABILITY_AREA_MEASUREMENT", EXPORT_PROBABILITY_AREA_MEASUREMENT);
 
             props.setProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE));
             props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE));

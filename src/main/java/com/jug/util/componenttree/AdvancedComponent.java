@@ -5,15 +5,15 @@ import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
 import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.morphology.Dilation;
 import net.imglib2.algorithm.morphology.Erosion;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.roi.*;
-import net.imglib2.roi.geom.real.Polygon2D;
+import net.imglib2.roi.MaskInterval;
+import net.imglib2.roi.Masks;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
@@ -23,9 +23,6 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import net.imglib2.algorithm.morphology.Dilation;
-import net.imglib2.algorithm.labeling.ConnectedComponentAnalysis;
-import net.imglib2.roi.geom.GeomMasks;
 
 import java.util.Iterator;
 import java.util.*;
@@ -754,25 +751,33 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return componentFeatures.keySet();
     }
 
+    MaskInterval erodedMask;
     public MaskInterval getErodedMask(){
+        if (erodedMask != null) {
+            return erodedMask;
+        }
         RectangleShape shape = new RectangleShape(1, false);
         Img<BitType> componentImage = getComponentImage(new BitType(true));
         Img<BitType> dilatedImg = Erosion.erode(componentImage, shape, 1);
-        MaskInterval res = Masks.toMaskInterval(dilatedImg);
-        return res;
+        erodedMask = Masks.toMaskInterval(dilatedImg);
+        return erodedMask;
     }
 
+    MaskInterval dilatedMask;
     public MaskInterval getDilatedMask() {
+        if (dilatedMask != null) {
+            return dilatedMask;
+        }
         RectangleShape shape = new RectangleShape(1, false);
         Img<BitType> componentImage = getComponentImage(new BitType(true));
         Img<BitType> dilatedImg = Dilation.dilate(componentImage, shape, 1);
 //        IterableRegion<BitType> myregion = Regions.iterable(dilatedImg); // https://javadoc.scijava.org/ImgLib2/net/imglib2/roi/Regions.html#iterable-net.imglib2.RandomAccessibleInterval-
-        MaskInterval res = Masks.toMaskInterval(dilatedImg);
+        dilatedMask = Masks.toMaskInterval(dilatedImg);
+        return dilatedMask;
 
 //        ImageJFunctions.show(dilatedImg);
 //        Img<IntType> labels = createImageWithSameDimension(new IntType(0));
 
-        return res;
 //        ConnectedComponentAnalysis.connectedComponents(dilatedImg, labels, shape);
 //        ImageJFunctions.show(dilatedImg);
 //        Regions.

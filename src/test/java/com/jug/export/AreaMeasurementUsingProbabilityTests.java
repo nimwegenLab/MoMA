@@ -59,6 +59,27 @@ public class AreaMeasurementUsingProbabilityTests {
     }
 
     @Test
+    public void performing_measurement_twice_returns_expected_area() throws IOException { /* this makes sure that we do not modify some underlying data-structure during the measurement */
+        int componentIndex = 2;
+        double expectedArea = 1281.846370100975;
+        ResultTable resultTable = new ResultTable(",");
+        sut.setOutputTable(resultTable);
+
+        List<ComponentInterface> components = getListOfComponents();
+
+        ComponentInterface componentToMeasure = components.get(componentIndex);
+        IImageProvider imageProvider = testUtils.getImageProvider();
+        SegmentMeasurementData data = new SegmentMeasurementData(componentToMeasure, components, imageProvider, testUtils.getFrameIndex());
+
+        sut.measure(data);
+        sut.measure(data);
+
+        ResultTableColumn<Double> areaCol = resultTable.columnList.get(0);
+        Double actual = areaCol.getValue(0);
+        assertEquals(expectedArea, actual, 1e-4);
+    }
+
+    @Test
     public void measure__throw_exception_if_component_componentToMeasure_not_in_list_of_all_components() throws IOException {
         List<ComponentInterface> components = getListOfComponents();
         ComponentInterface componentToMeasure = components.get(4);

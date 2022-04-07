@@ -161,7 +161,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Setting related to the measurement and export of the oriented bounding box length measurement.
      */
-    public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = false; /* set whether to perform the oriented bounding box measurement */
+    public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 

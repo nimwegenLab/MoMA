@@ -6,10 +6,7 @@ import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
-import com.jug.export.measurements.OrientedBoundingBoxMeasurement;
-import com.jug.export.measurements.SegmentMeasurementInterface;
-import com.jug.export.measurements.ContourMomentsMeasurement;
-import com.jug.export.measurements.SpineLengthMeasurement;
+import com.jug.export.measurements.*;
 import com.jug.gui.DialogManager;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
@@ -115,8 +112,21 @@ public class PseudoDic {
         if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());
         }
+
+        if(ConfigurationManager.EXPORT_PROBABILITY_AREA_MEASUREMENT){
+            listOfMeasurements.add(getProbabilityAreaMeasurement());
+        }
 //        listOfMeasurements.add(getEllipseMeasurement());
         return listOfMeasurements;
+    }
+
+    private SegmentMeasurementInterface proabilityAreaMeasurement;
+    private SegmentMeasurementInterface getProbabilityAreaMeasurement() {
+        if (proabilityAreaMeasurement != null) {
+            return proabilityAreaMeasurement;
+        }
+        proabilityAreaMeasurement = new AreaMeasurementUsingProbability();
+        return proabilityAreaMeasurement;
     }
 
     private SpineLengthMeasurement getSpineLengthMeasurement() {

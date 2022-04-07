@@ -4,18 +4,13 @@ import com.jug.export.ResultTable;
 import com.jug.export.ResultTableColumn;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.ComponentInterface;
-import com.moma.auxiliary.Plotting;
 import net.imglib2.Cursor;
 import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskInterval;
-import net.imglib2.roi.Masks;
 import net.imglib2.roi.Regions;
-import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AreaMeasurementUsingProbability implements SegmentMeasurementInterface {

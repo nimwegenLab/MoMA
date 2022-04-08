@@ -4,12 +4,16 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.Hypothesis;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.img.Img;
@@ -23,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author jug
@@ -171,11 +176,13 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
+                int timeStep = segmentRecord.timestep;
+
                 AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =
                         ComponentTreeUtils.getTreeNodeInterval(currentComponent);
 
-                final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(segmentRecord.timestep);
+                final GrowthlaneFrame glf = gui.model.getCurrentGL().getFrames().get(timeStep);
 
                 final int numCells = glf.getSolutionStats_numberOfTrackedCells();
                 final int cellRank = glf.getSolutionStats_cellRank(segmentRecord.hyp);
@@ -184,7 +191,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 cellIdCol.addValue(segmentRecord.getId());
                 parentIdCol.addValue(segmentRecord.getParentId());
                 genealogyCol.addValue(segmentRecord.getGenealogyString());
-                frameCol.addValue(segmentRecord.timestep);
+                frameCol.addValue(timeStep);
 
                 ValuePair<Double, Double> minorAndMajorAxis = componentProperties.getMinorMajorAxis(currentComponent);
 
@@ -211,7 +218,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 cellAreaCol.addValue(componentProperties.getArea(currentComponent));
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
 
-                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, segmentRecord.timestep);
+                Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, timeStep);
                 phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
                 phaseContrastCoefficientOfVariation.addValue(componentProperties.getIntensityCoefficientOfVariation(currentComponent, phaseContrastImage));
 
@@ -227,7 +234,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 /* add total cell fluorescence intensity to respective columns */
                 int columnIndex = 0;
                 for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
-                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, segmentRecord.timestep);
+                    final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, timeStep);
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 
@@ -240,7 +247,11 @@ public class CellStatsExporter implements ResultExporterInterface {
                 }
 
                 SegmentRecord finalSegmentRecord = segmentRecord;
-                measurements.forEach((measurement) -> measurement.measure(finalSegmentRecord.hyp.getWrappedComponent()));
+                GrowthlaneTrackingILP ilp = MoMA.getGui().model.getCurrentGL().getIlp();
+                List<Hypothesis<AdvancedComponent<FloatType>>> optimalSegments = ilp.getOptimalSegmentation(timeStep);
+                List<ComponentInterface> optimalComponents = optimalSegments.stream().map(Hypothesis::getWrappedComponent).collect(Collectors.toList());
+                SegmentMeasurementData data = new SegmentMeasurementData(finalSegmentRecord.hyp.getWrappedComponent(), optimalComponents, imageProvider, timeStep);
+                measurements.forEach((measurement) -> measurement.measure(data));
 
                 segmentRecord = segmentRecord.nextSegmentInTime();
 //                System.out.println("segmentRecord.getId(): " + segmentRecord.getId());

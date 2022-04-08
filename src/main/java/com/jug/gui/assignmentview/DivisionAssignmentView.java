@@ -14,7 +14,7 @@ public class DivisionAssignmentView extends AssignmentView {
 
     public DivisionAssignmentView(final DivisionAssignment da, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
         this.abstractAssignment = da;
-        this.width = width;
+        this.width = width - 2;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
     }
@@ -39,26 +39,36 @@ public class DivisionAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> limitsRightUpper = rightHypUpper.getLocation();
         final ValuePair<Integer, Integer> limitsRightLower = rightHypLower.getLocation();
 
-        final int x1 = 0;
-        final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x2 = 0;
-        final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x5 = this.width / 3;
-        final int y5 =
-                ASSIGNMENT_DISPLAY_OFFSET + (2 * (limitsLeft.getA() + limitsLeft.getB()) / 2 + (limitsRightUpper.getB() + limitsRightLower.getA()) / 2) / 3;
-        final int y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        Integer upperComponentSize = limitsRightUpper.getB() - limitsRightUpper.getA();
+        Integer lowerComponentSize = limitsRightLower.getB() - limitsRightLower.getA();
+        Integer sourceComponentSize = limitsLeft.getB() - limitsLeft.getA();
+
+        float divisionRatio = (float) upperComponentSize / (float) (lowerComponentSize + upperComponentSize);
+        float positionOffsetWithinSourceComponent = divisionRatio * sourceComponentSize;
+        float divisionLocation = limitsLeft.getA() + Math.round(positionOffsetWithinSourceComponent);
+
+        float centeringOffset = .5f;
+        final float x1 = centeringOffset;
+        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float x2 = centeringOffset;
+        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y3 = limitsRightLower.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y4 = limitsRightLower.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float x5 = this.width / 4 + centeringOffset;
+        final float y5 = divisionLocation + ASSIGNMENT_DISPLAY_OFFSET;
+
+        final float x6 = this.width + centeringOffset;
+        final float y6 = limitsRightUpper.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y7 = limitsRightUpper.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
         polygon.moveTo(x1, y1);
         polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width, y3);
-        polygon.lineTo(this.width, y4);
+        polygon.lineTo(x6, y3);
+        polygon.lineTo(x6, y4);
         polygon.lineTo(x5, y5);
-        polygon.lineTo(this.width, y6);
-        polygon.lineTo(this.width, y7);
+        polygon.lineTo(x6, y6);
+        polygon.lineTo(x6, y7);
         polygon.closePath();
     }
 }

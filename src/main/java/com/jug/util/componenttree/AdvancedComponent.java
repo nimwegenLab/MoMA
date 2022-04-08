@@ -1,23 +1,32 @@
 package com.jug.util.componenttree;
 
+import com.jug.util.ComponentTreeUtils;
 import com.jug.util.math.Vector2DPolyline;
-import net.imglib2.*;
 import net.imglib2.RandomAccess;
+import net.imglib2.*;
 import net.imglib2.algorithm.componenttree.Component;
+import net.imglib2.algorithm.morphology.Dilation;
+import net.imglib2.algorithm.morphology.Erosion;
+import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.roi.MaskInterval;
+import net.imglib2.roi.Masks;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
+import net.imglib2.type.logic.BitType;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
-import java.util.*;
 import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
@@ -121,7 +130,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      *
      * @return copy of the image
      */
-    public RandomAccessibleInterval<T> getSourceImage() {
+    public RandomAccessibleInterval<FloatType> getSourceImage() {
         return ImgView.wrap(sourceImage, new ArrayImgFactory(new FloatType())).copy();
     }
 
@@ -140,22 +149,53 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return parent;
     }
 
-//    public AdvancedComponent<T> getSibling() {
-//        AdvancedComponent<T> parent = this.getParent();
-//        if (parent == null) {
-//            return null; /* there is no parent component and hence no sibling component */
-//        }
-//        List<AdvancedComponent<T>> children = parent.getChildren();
-//        if (children.size() == 1) {
+    private AdvancedComponent<T> root;
+
+    public AdvancedComponent<T> getRoot() {
+        if (getParent() == null) {
+            return null; /* this is the root component and hence it has no corresponding root */
+        }
+        if (root == null) {
+            root = this.getParent();
+            while (root.getParent() != null) {
+                root = root.getParent();
+            }
+        }
+        return root;
+    }
+
+    public List<AdvancedComponent<T>> getCompatibleChildNodes() {
+        ArrayList<AdvancedComponent<T>> ret = new ArrayList<>();
+        AdvancedComponent<T> siblingBranch = this.getSibling();
+        AdvancedComponent<T> targetBranch = this;
+        if (siblingBranch == null) {
+            return ret;
+        }
+        while(siblingBranch != null){
+            ret.add(siblingBranch);
+            targetBranch = targetBranch.getParent();
+            siblingBranch = targetBranch.getSibling();
+        }
+        return ret;
+    }
+
+    public AdvancedComponent<T> getSibling() {
+        AdvancedComponent<T> parent = this.getParent();
+        if (parent == null) {
+            return null; /* there is no parent component and hence no sibling component */
+        }
+        List<AdvancedComponent<T>> children = parent.getChildren();
+        if (children.size() == 1) {
+            throw new RuntimeException("children.size() == 1: the target component does not have a sibling. This should not happen and is an error.");
 //            return null; /* there is only one child component of this component parent, which will be this component. Hence there is no sibling component. */
-//        }
-//        if (children.size() > 2) {
-//            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
-//        }
-//        children.remove(this);
-//        AdvancedComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
-//        return sibling;
-//    }
+        }
+        if (children.size() > 2) {
+            throw new RuntimeException("children.size() > 2, but this method requires that there can only exist two child-component.");
+        }
+        children.remove(this);
+        AdvancedComponent<T> sibling = children.get(0); /* we assume that there is only one child left here! */
+        return sibling;
+    }
 
     void setParent(AdvancedComponent<T> parent) {
         this.parent = parent;
@@ -251,6 +291,30 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public List<AdvancedComponent<T>> getComponentTreeRoots() {
         return componentTreeRoots;
+    }
+
+    private ValuePair<Integer, Integer> verticalComponentLimits;
+
+    public ValuePair<Integer, Integer> getVerticalComponentLimits() {
+        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getTreeNodeInterval(this);
+        return verticalComponentLimits;
+    }
+
+    private int frame;
+
+    public void setFrameNumber(int frame) {
+        this.frame = frame;
+    }
+
+    public int getFrameNumber() {
+         return frame;
+    }
+
+    public String getStringId(){
+        frame = getFrameNumber();
+        ValuePair<Integer, Integer> verticalLimits = getVerticalComponentLimits();
+        String id = "HypAtT" + getFrameNumber() + "Top" + verticalLimits.getA() + "Bottom" + verticalLimits.getB();
+        return id;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {
@@ -496,7 +560,23 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     List<T> componentPixelValues = null;
 
-    List<T> getComponentPixelValues() {
+    public List<Double> getComponentPixelValuesAsDouble(){
+        List<Double> probabilities = ((AdvancedComponent<FloatType>) this).getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
+        return probabilities;
+    }
+
+    public Pair<Double, Double> getPixelValueExtremaInsideRange(double rangeMin, double rangeMax) {
+        double minRet = Double.MAX_VALUE;
+        double maxRet = -Double.MAX_VALUE;
+        List<Double> pixelValues = this.getComponentPixelValuesAsDouble();
+        for (Double val : pixelValues) {
+            if (val > rangeMin && val < minRet) minRet = val;
+            if (val < rangeMax && val > maxRet) maxRet = val;
+        }
+        return new ValuePair<>(minRet, maxRet);
+    }
+
+    public List<T> getComponentPixelValues() {
         if (componentPixelValues != null) {
             return componentPixelValues;
         }
@@ -549,6 +629,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 .map(d -> d.getRealDouble())
                 .mapToDouble(d -> d)
                 .sum();
+    }
+
+    public List<Double> getWatershedLinePixelValuesAsDoubles() {
+        return ((AdvancedComponent<FloatType>) this).getWatershedLinePixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
     }
 
     List<T> watershedLinePixelValues = null;
@@ -635,15 +719,19 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return
      */
     public <T extends NativeType<T>> Img<T> getComponentImage(T pixelValue) {
-        long[] dims = new long[sourceImage.numDimensions()];
-        sourceImage.dimensions(dims);
-        ArrayImgFactory<T> imageFactory = new ArrayImgFactory(pixelValue);
-        Img<T> img = imageFactory.create(dims);
+        Img<T> img = createImageWithSameDimension(pixelValue);
         RandomAccess<T> rndAccess = img.randomAccess();
         for (Iterator<Localizable> it = this.iterator(); it.hasNext(); ) {
             rndAccess.setPosition(it.next());
             rndAccess.get().set(pixelValue);
         }
+        return img;
+    }
+
+    public <T extends NativeType<T>> Img<T> createImageWithSameDimension(T type) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        Img<T> img = new ArrayImgFactory(type).create(dims);
         return img;
     }
 
@@ -661,6 +749,49 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     @Override
     public Set<String> getComponentFeatureNames() {
         return componentFeatures.keySet();
+    }
+
+    MaskInterval componentBorderMask;
+    public MaskInterval getBorderMask() {
+        if (componentBorderMask != null) {
+            return componentBorderMask;
+        }
+        MaskInterval dilatedMask = getDilatedMask();
+        MaskInterval componentCoreMask = getErodedMask();
+        componentBorderMask = dilatedMask.minus(componentCoreMask);
+        return componentBorderMask;
+    }
+
+    Img<BitType> erodedImg;
+    public Img<BitType> getCoreMaskImg() {
+        if (erodedImg != null) {
+            return erodedImg;
+        }
+        RectangleShape shape = new RectangleShape(1, false);
+        Img<BitType> componentImage = getComponentImage(new BitType(true));
+        erodedImg = Erosion.erode(componentImage, shape, 1);
+        return erodedImg;
+    }
+
+    MaskInterval erodedMask;
+    public MaskInterval getErodedMask(){
+        if (erodedMask != null) {
+            return erodedMask;
+        }
+        erodedMask = Masks.toMaskInterval(getCoreMaskImg());
+        return erodedMask;
+    }
+
+    MaskInterval dilatedMask;
+    public MaskInterval getDilatedMask() {
+        if (dilatedMask != null) {
+            return dilatedMask;
+        }
+        RectangleShape shape = new RectangleShape(1, false);
+        Img<BitType> componentImage = getComponentImage(new BitType(true));
+        Img<BitType> dilatedImg = Dilation.dilate(componentImage, shape, 1);
+        dilatedMask = Masks.toMaskInterval(dilatedImg);
+        return dilatedMask;
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

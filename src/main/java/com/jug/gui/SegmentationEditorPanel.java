@@ -56,6 +56,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void addShowSegmentsButton() {
         showSegmentsButton = new JButton("Seg");
+        showSegmentsButton.setFont(new Font("default", Font.BOLD, 11));
         showSegmentsButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         showSegmentsButton.addActionListener(e -> {
             ShowComponentsOfCurrentTimeStep();

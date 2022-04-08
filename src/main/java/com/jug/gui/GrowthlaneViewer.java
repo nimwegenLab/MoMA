@@ -13,6 +13,7 @@ import net.imglib2.display.screenimage.awt.ARGBScreenImage;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
@@ -23,6 +24,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,8 +38,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     private static final long serialVersionUID = 8284204775277266994L;
     private static final int OFFSET_DISPLAY_COSTS = -25;
-    private final int w;
-    private final int h;
+    private final int myWidth;
+    private final int myHeight;
     private final MoMAGui mmgui;
     protected EventListenerList listenerList = new EventListenerList();
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
@@ -50,17 +52,15 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private boolean showSegmentationAnnotations = true;
     // tracking the mouse (when over)
     private boolean isMouseOver;
-    private int mousePosX;
     private int mousePosY;
     // tracking the mouse (when dragging)
     private boolean isDragging;
-    private String optimalSegmentInfoString = "";
-    private String optionalSegmentInfoString = " ";
+    private String componentInfoString = "";
     private List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesAtHoverPosition = new ArrayList<>();
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int w, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int myWidth, final int h) {
         super();
 
         this.mmgui = mmgui;
@@ -70,10 +70,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         addMouseMotionListener(this);
         addMouseWheelListener(this);
 
-        this.w = w;
-        this.h = h;
-        setPreferredSize(new Dimension(w, h));
-        this.screenImage = new ARGBScreenImage(w, h);
+        this.myWidth = myWidth;
+        this.myHeight = h;
+        setPreferredSize(new Dimension(myWidth, h));
+        this.screenImage = new ARGBScreenImage(myWidth, h);
         this.projector = null;
         this.view = null;
         this.glf = null;
@@ -109,8 +109,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      * Prepares to display an empty image.
      */
     public void setEmptyScreenImage() {
-        screenImage = new ARGBScreenImage(w, h);
-        screenImageUnaltered = new ARGBScreenImage(w, h);
+        screenImage = new ARGBScreenImage(myWidth, myHeight);
+        screenImageUnaltered = new ARGBScreenImage(myWidth, myHeight);
         this.projector = null;
         this.view = null;
         this.glf = null;
@@ -130,8 +130,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
                 if (glf.getParent().getIlp() != null) {
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-                    drawSegments(screenImage, screenImageUnaltered, view.min(0), view.min(1), glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    long xOffset = view.min(0);
+                    long yOffset = view.min(1);
+                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -150,36 +152,69 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
 
         // Mouse-position related stuff...
-        optimalSegmentInfoString = "";
-        optionalSegmentInfoString = " ";
+        componentInfoString = " ";
         updateHypothesisInfoTooltip();
         drawHoveredOptionalHypothesis();
-        drawHypothesisInfoTooltip(g);
+        renderToGraphicsObject(g);
     }
 
-    private void drawHypothesisInfoTooltip(Graphics g) {
-        g.drawImage(screenImage.image(), 0, 0, w, h, null);
-        g.setColor(Color.GREEN.darker());
-        g.drawString(optimalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
-        g.setColor(Color.RED.brighter());
-        g.drawString(optionalSegmentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS + 14); /* draw info-string for optional segment */
+    private Font textFont = new Font("default", Font.PLAIN, 8);
+
+    void drawString(Graphics g, String text, int x, int y) {
+        for (String line : text.split("\n")) {
+            g.setFont(textFont);
+            g.drawString(line, x-1, y += g.getFontMetrics().getHeight());
+        }
     }
+
+    private void renderToGraphicsObject(Graphics g) {
+        int xOffset = 0;
+        g.drawImage(screenImage.image(), xOffset, 0, myWidth, myHeight, null);
+        g.setColor(getStringColor());
+        drawString(g, componentInfoString, 1, this.mousePosY - OFFSET_DISPLAY_COSTS); /* draw info-string for optimal segment */
+    }
+
+    private Color optionalHypothesisTextColor = Color.RED.brighter();
+    private Color optimalHypothesisTextColor = Color.GREEN.darker();
+    private Color noHypothesisTextColor = Color.RED.brighter();
+
+    private Color getStringColor(){
+        Hypothesis<AdvancedComponent<FloatType>> optimalHyp = getHoveredOptimalHypothesis();
+        Hypothesis<AdvancedComponent<FloatType>> optionalHyp = getHoveredOptionalHypothesis();
+
+        if (optimalHyp != null && optionalHyp == null) {
+            return optimalHypothesisTextColor;
+        }
+        if (optimalHyp == null && optionalHyp != null) {
+            return optionalHypothesisTextColor;
+        }
+        if (optimalHyp != null && optionalHyp != null) {
+            if(optionalHyp == optimalHyp){
+                return optimalHypothesisTextColor;
+            }
+            if(optionalHyp != optimalHyp){
+                return optionalHypothesisTextColor;
+            }
+        }
+        return noHypothesisTextColor;
+    }
+
+    private DecimalFormat costFormat = new DecimalFormat(".##");
 
     private void updateHypothesisInfoTooltip() {
         if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
-            if (getHoveredOptimalHypothesis() != null) {
-                float cost = getHoveredOptimalHypothesis().getCost();
-                optimalSegmentInfoString = String.format("c=%.4f", cost);
-//                Object length = ((AdvancedComponent<FloatType>)getHoveredOptimalHypothesis().getWrappedComponent()).getMajorAxisLength();
-//                optimalSegmentInfoString = String.format("l=%.4f", length);
-            } else {
-                optimalSegmentInfoString = "---";
-            }
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
-                optionalSegmentInfoString = String.format("c=%.4f", optionalCost);
+                AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
+                ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
+                componentInfoString = "C:" + costFormat.format(optionalCost) +
+                                    "\nT:" + limits.getA() +
+                                    "\nB:" + limits.getB() +
+                                    "\nL:" + (limits.getB() - limits.getA()) +
+                                    "\nA:" + component.size() +
+                                    "\nN:" + component.getNodeLevel();
             } else {
-                optionalSegmentInfoString = "---";
+                componentInfoString = "---";
             }
         }
     }
@@ -468,7 +503,6 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     public void mouseMoved(final MouseEvent e) {
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
-        this.mousePosX = e.getX();
         this.mousePosY = e.getY();
         updateHoveredHypotheses();
         this.repaint();
@@ -476,12 +510,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     @Override
     public int getWidth() {
-        return w;
+        return myWidth;
     }
 
     @Override
     public int getHeight() {
-        return h;
+        return myHeight;
     }
 
     /**

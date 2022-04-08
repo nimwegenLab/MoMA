@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
@@ -82,6 +83,35 @@ public class ComponentTreeUtils {
         }
     }
 
+    public static List<ComponentInterface> getNeighborComponents(ComponentInterface component, List<ComponentInterface> allComponents) {
+        if (!allComponents.contains(component))
+            throw new RuntimeException("target component must be in list of all components");
+
+        ComponentTreeUtils.sortComponentsByPosition(allComponents);
+        int componentIndex = allComponents.indexOf(component);
+
+        List<ComponentInterface> neighbors = new ArrayList();
+        if (componentIndex == 0) {
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        } else if (componentIndex == allComponents.size() - 1) {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            return neighbors;
+        } else {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        }
+    }
+
+    /**
+     *
+     * @param components
+     */
+    public static void sortComponentsByPosition(List<ComponentInterface> components){
+        components.sort(verticalComponentPositionComparator);
+    }
+
     /**
      * Checks if {@param candidate} is above {@param hyp} inside the image.
      *
@@ -102,11 +132,11 @@ public class ComponentTreeUtils {
      * @return
      */
     public static boolean isBelowByMoreThen(
-            final Component<FloatType, ?> sourceComponent,
-            final Component<FloatType, ?> targetComponent,
+            final AdvancedComponent<?> sourceComponent,
+            final AdvancedComponent<?> targetComponent,
             final int maximumAllowedDownwardMovement) {
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(targetComponent, 1);
-        final ValuePair<Integer, Integer> targetComponentBoundaries = ComponentTreeUtils.getComponentPixelLimits(sourceComponent, 1);
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = targetComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> targetComponentBoundaries = sourceComponent.getVerticalComponentLimits();
         final float targetUpperBoundary = targetComponentBoundaries.getA();
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
 
@@ -221,7 +251,7 @@ public class ComponentTreeUtils {
      * leftmost and rightmost point on the x-axis that is covered by
      * this component-tree-node respectively.
      */
-    public static ValuePair<Integer, Integer> getTreeNodeInterval(final Component<?, ?> node) {
+    public static ValuePair<Integer, Integer> getTreeNodeInterval(final AdvancedComponent<?> node) {
         return getComponentPixelLimits(node, 1);
     }
 
@@ -232,7 +262,7 @@ public class ComponentTreeUtils {
      * @param dim       the dimension in which component limits are determined
      * @return ValuePair<int min, int max> minimum and maximum pixel limits.
      */
-    public static ValuePair<Integer, Integer> getComponentPixelLimits(final Component<?, ?> component, int dim) {
+    public static ValuePair<Integer, Integer> getComponentPixelLimits(final AdvancedComponent<?> component, int dim) {
         int min = Integer.MAX_VALUE;
         int max = Integer.MIN_VALUE;
         for (Localizable localizable : component) {
@@ -251,10 +281,10 @@ public class ComponentTreeUtils {
      * @param position  position to test
      * @return true if y-position is in the bounding box
      */
-    public static boolean componentContainsYPosition(final Component<?, ?> component, Point position) {
+    public static boolean componentContainsYPosition(final AdvancedComponent<?> component, Point position) {
         int[] pos = new int[2]; // this works only for 2D images
         position.localize(pos);
-        ValuePair<Integer, Integer> yLimits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Integer, Integer> yLimits = component.getVerticalComponentLimits();;
         return pos[1] >= yLimits.getA() && pos[1] <= yLimits.getB();
     }
 
@@ -265,7 +295,7 @@ public class ComponentTreeUtils {
      * @param dim       the dimension along which the size will be determined
      * @return integer value, which is the difference between the starting and end pixel-positions of the component.
      */
-    public static int getComponentSize(final Component<?, ?> component, int dim) {
+    public static int getComponentSize(final AdvancedComponent<?> component, int dim) {
         ValuePair<Integer, Integer> limits = getComponentPixelLimits(component, dim);
         return limits.b - limits.a;
     }

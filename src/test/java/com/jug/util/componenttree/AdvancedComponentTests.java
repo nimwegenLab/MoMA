@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -13,6 +14,11 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.roi.MaskInterval;
+import net.imglib2.roi.Masks;
+import net.imglib2.type.BooleanType;
+import net.imglib2.type.logic.BitType;
+import net.imglib2.type.logic.BoolType;
 import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -30,8 +36,9 @@ import static org.junit.Assert.*;
 public class AdvancedComponentTests {
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
-        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
+//        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
 //        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
+        new AdvancedComponentTests().explore__getDilatedAndErodedComponents();
     }
 
     @Test
@@ -68,7 +75,8 @@ public class AdvancedComponentTests {
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
     }
 
@@ -148,5 +156,37 @@ public class AdvancedComponentTests {
             ImageJFunctions.show(imgOfWatershedLine);
             break;
         }
+    }
+
+    public void explore__getDilatedAndErodedComponents() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+        int frameIndex = 10;
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
+        assertEquals(2, currentImage.numDimensions());
+
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+
+        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
+        AdvancedComponent<FloatType> component = roots.get(1);
+//        Img<BitType> componentImage = component.getComponentImage(new BitType(true));
+//        ImageJFunctions.show(componentImage);
+        MaskInterval dilatedMask = component.getDilatedMask();
+
+        MaskInterval erodedMask = component.getErodedMask();
+
+        new ij.ImageJ();
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(dilatedMask));
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(erodedMask));
+
+        MaskInterval differenceMask = dilatedMask.minus(erodedMask);
+        ImageJFunctions.show(Masks.toRandomAccessibleInterval(differenceMask));
     }
 }

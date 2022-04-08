@@ -13,8 +13,14 @@ import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
-public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration {
-    public static final int GL_PIXEL_PADDING_IN_VIEWS = 15;
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration {
+    /**
+     * Controls the total width of the GL image as shown in GUI. The total width is is given by:
+     * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
+     * See also its usage in GrowthlaneViewer.java and MoMAGui.java
+     */
+    public static final int GL_PIXEL_PADDING_IN_VIEWS = 5;
+
     /**
      * One of the test for paper:
      * What happens if exit constraints are NOT part of the model?
@@ -42,6 +48,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * assignment during optimization. However, it can be manually forced during curation.
      */
     public static float LYSIS_ASSIGNMENT_COST = 10.0f;
+    /**
+     * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
+     */
+    public static int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
+    /**
+     * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
+     */
+    public static int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
     /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
@@ -130,12 +144,24 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * What happens if exit constraints are NOT part of the model?
      */
 
-    /************************************/
-    public static boolean EXPORT_SPINE_MEASUREMENT = false;
+    /**
+     * Settings related to the measurement and export of the spine length.
+     */
+    public static boolean EXPORT_SPINE_MEASUREMENT = false; /* set whether to perform the spine length measurement */
     public static int SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = 5;
     public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = 5;
     public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = 21;
     public static double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
+
+    /**
+     * Set if the area calculation based on the probability map should be exported.
+     */
+    public static boolean EXPORT_PROBABILITY_AREA_MEASUREMENT = true; /* set whether to perform the spine length measurement */
+
+    /**
+     * Setting related to the measurement and export of the oriented bounding box length measurement.
+     */
+    public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
@@ -147,6 +173,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
         ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
+        SIZE_MINIMUM_FOR_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS)));
+        SIZE_MINIMUM_FOR_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
         THRESHOLD_FOR_COMPONENT_GENERATION = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Float.toString(THRESHOLD_FOR_COMPONENT_GENERATION)));
@@ -164,9 +192,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble(props.getProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP)));
 
         EXPORT_SPINE_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+        EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);
         SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE)));
         SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = Integer.parseInt(props.getProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE)));
+
+        EXPORT_PROBABILITY_AREA_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_PROBABILITY_AREA_MEASUREMENT", EXPORT_PROBABILITY_AREA_MEASUREMENT);
 
         SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = Double.parseDouble(props.getProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS)));
 
@@ -279,6 +310,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));
             props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
+            props.setProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS));
+            props.setProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
             props.setProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Double.toString(THRESHOLD_FOR_COMPONENT_GENERATION));
             props.setProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Double.toString(THRESHOLD_FOR_COMPONENT_SPLITTING));
@@ -312,6 +345,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
             setBooleanAsIntegerValue(props, "EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
+            setBooleanAsIntegerValue(props, "EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);
+            setBooleanAsIntegerValue(props, "EXPORT_PROBABILITY_AREA_MEASUREMENT", EXPORT_PROBABILITY_AREA_MEASUREMENT);
+
             props.setProperty("SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE));
             props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE));
             props.setProperty("SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE", Integer.toString(SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE));
@@ -350,5 +386,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public int getCellDetectionRoiOffsetTop() {
         return CELL_DETECTION_ROI_OFFSET_TOP;
+    }
+
+    public int getSizeMinimumOfLeafComponent() {
+        return SIZE_MINIMUM_FOR_LEAF_COMPONENTS;
+    }
+
+    public int getSizeMinimumOfParentComponent() {
+        return SIZE_MINIMUM_FOR_ROOT_COMPONENTS;
     }
 }

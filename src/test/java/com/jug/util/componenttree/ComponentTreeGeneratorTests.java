@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.google.common.collect.Lists;
+import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -190,7 +191,8 @@ public class ComponentTreeGeneratorTests {
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
     }
 }

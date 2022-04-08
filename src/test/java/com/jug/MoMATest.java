@@ -12,7 +12,7 @@ import static com.jug.util.JavaUtils.concatenateWithCollection;
 public class MoMATest {
     //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
 //    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/home__micha__Documents__01_work/MoMA/test_datasets";
-    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/";
+    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/";
 
 //-i
 ///home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_synthetic_rich_media/cropped_420200403_5_rpmB_1_rrnB_synthrich7_1_MMStack_Pos13_preproc_GL16.tif
@@ -75,16 +75,16 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/20210923_glu_batch_1_MMStack_Pos0_GL38.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/theo_20210923__Pos0_GL38/output/";
         Integer tmin = 0;
-        Integer tmax = 100;
-//        Integer tmax = null;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+//        Integer tmax = 100;
+        Integer tmax = null;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     public void _dany_20200812_8proms_ace_1_MMStack_Pos25_GL22() {
         String inputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL22/20200812_8proms_ace_1_MMStack_Pos25_GL22.tif";
         String outputPath = datasets_base_path + "/001_moma_debugging/20200812_8proms_ace_1/Pos25_GL22/output/";
-        Integer tmin = 30;
-        Integer tmax = 31;
+        Integer tmin = 0;
+        Integer tmax = 100;
         startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

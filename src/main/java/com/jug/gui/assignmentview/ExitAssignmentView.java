@@ -33,18 +33,20 @@ public class ExitAssignmentView extends AssignmentView {
         final Hypothesis<AdvancedComponent<FloatType>> leftHyp = ((ExitAssignment) abstractAssignment).getAssociatedHypothesis();
         final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
 
-        final int x1 = 0;
-        final int y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int x2 = 0;
-        final int y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y3 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final int y4 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        float centeringOffset = .5f;
+        float xRightSide = this.width / 2.5f + centeringOffset;
+        final float x1 = 0 + centeringOffset;
+        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float x2 = 0 + centeringOffset;
+        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y3 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float y4 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
         polygon.moveTo(x1, y1);
         polygon.lineTo(x2, y2);
-        polygon.lineTo(this.width / 5, y3);
-        polygon.lineTo(this.width / 5, y4);
+        polygon.lineTo(xRightSide, y3);
+        polygon.lineTo(xRightSide, y4);
         polygon.closePath();
     }
 }

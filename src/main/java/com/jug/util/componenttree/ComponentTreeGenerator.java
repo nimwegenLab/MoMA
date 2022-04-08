@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.IComponentTreeGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.algorithm.binary.Thresholder;
@@ -18,15 +19,18 @@ import java.util.function.Predicate;
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
 public class ComponentTreeGenerator {
+    private IComponentTreeGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
     private WatershedMaskGenerator watershedMaskGenerator;
     private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(RecursiveComponentWatershedder recursiveComponentWatershedder,
+    public ComponentTreeGenerator(IComponentTreeGeneratorConfiguration configuration,
+                                  RecursiveComponentWatershedder recursiveComponentWatershedder,
                                   ComponentProperties componentPropertiesCalculator,
                                   WatershedMaskGenerator watershedMaskGenerator,
                                   Imglib2Utils imglib2Utils) {
+        this.configuration = configuration;
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         this.watershedMaskGenerator = watershedMaskGenerator;
@@ -34,8 +38,7 @@ public class ComponentTreeGenerator {
     }
 
     public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, float componentSplittingThreshold) {
-        Img<FloatType> img = imageProvider.getImgProbs();
-        Img<FloatType> raiFkt = ImgView.wrap(Views.hyperSlice(img, 2, frameIndex));
+        Img<FloatType> raiFkt = imageProvider.getImgProbsAt(frameIndex);
 
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
@@ -52,7 +55,7 @@ public class ComponentTreeGenerator {
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
-        final int minSize = 50; // minSize=50px seems safe, assuming pixel-area of a round cell with radius of have the bacterial width: 3.141*0.35**2/0.065**2, where pixelSize=0.065mu and width/2=0.35mu
+        final int minSize = 5; // this sets the minimum size of components during component generation for root components as well as child components. We set this to a low value to ensure a deep segmentation of our components. The minimum size of root and child components is then filtered using LeafComponentSizeTester and RootComponentSizeTester (see below).
         final long maxSize = Long.MAX_VALUE;
         final double maxVar = 1.0;
         final double minDiversity = 0.2;
@@ -69,12 +72,20 @@ public class ComponentTreeGenerator {
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
         // filter components that do not have siblings
-        SimpleComponentTree tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
 
         // watershed components into their parent-components
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+
+        IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
+        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
+
+        IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
+        tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
+
+        tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
 
         return tree;
     }

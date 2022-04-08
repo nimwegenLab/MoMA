@@ -5,12 +5,15 @@ import com.jug.GrowthlaneFrame;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
+import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentProperties;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.List;
@@ -23,12 +26,32 @@ import java.util.function.Supplier;
  */
 public class AssignmentCostExporter implements ResultExporterInterface {
     private final ResultTable resultTable;
+    private final ResultTableColumn<String> componentId;
+    private final ResultTableColumn<String> parentId;
+    private final ResultTableColumn<String> rootId;
+    private final ResultTableColumn<String> child1Id;
+    private final ResultTableColumn<String> child2Id;
+    private final ResultTableColumn<String> target1Id;
+    private final ResultTableColumn<String> target2Id;
     private final ResultTableColumn<Integer> frameCol;
     private final ResultTableColumn<String> assignmentTypeCol;
     private final ResultTableColumn<Integer> assignmentInIlpSolutionCol;
     private final ResultTableColumn<Integer> cellRankCol;
     private final ResultTableColumn<Float> assignmentCostCol;
     private final ResultTableColumn<Integer> sourceHypInIlpSolutionCol;
+    private final ResultTableColumn<Integer> componentTreeNodeLevelCol;
+    private final ResultTableColumn<Double> offLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> offLogLikelihoodForComponentCol;
+//    private final ResultTableColumn<Double> offLogLikelihoodForCompatibleChildNodesCol;
+    private final ResultTableColumn<Double> onLikelihoodForComponentCol;
+    private final ResultTableColumn<Double> onLogLikelihoodForComponentCol;
+//    private final ResultTableColumn<Double> onLogLikelihoodForCompatibleChildNodesCol;
+    private final ResultTableColumn<Double> offLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> offLogLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> maxLikelihoodLowerThanOneCol;
+    private final ResultTableColumn<Double> minLikelihoodLargerThanZeroCol;
+    private final ResultTableColumn<Double> onLikelihoodForComponentWatershedLineCol;
+    private final ResultTableColumn<Double> onLogLikelihoodForComponentWatershedLineCol;
     ResultTableColumn<Integer> sourceTopLimitCol;
     ResultTableColumn<Integer> sourceBottomLimitCol;
     private final ResultTableColumn<Integer> target1TopLimitCol;
@@ -67,21 +90,40 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         sourceEllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("source_ellipse_major_axis_px", "%.3f"));
         target1EllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("target_1_ellipse_major_axis_px", "%.3f"));
         target2EllipseMajorCol = resultTable.addColumn(new ResultTableColumn<>("target_2_ellipse_major_axis_px", "%.3f"));
-        sourceYCol = resultTable.addColumn(new ResultTableColumn<>("source_center_x_px", "%.3f"));
-        target1CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_x_px", "%.3f"));
-        target2CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_x_px", "%.3f"));
+        sourceYCol = resultTable.addColumn(new ResultTableColumn<>("source_center_y_px", "%.3f"));
+        target1CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_y_px", "%.3f"));
+        target2CenterYCol = resultTable.addColumn(new ResultTableColumn<>("target_1_center_y_px", "%.3f"));
         sourceTopLimitCol = resultTable.addColumn(new ResultTableColumn<>("source_top_px"));
         sourceBottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("source_bottom_px"));
         target1TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_1_top_px"));
         target1BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_1_bottom_px"));
         target2TopLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_top_px"));
         target2BottomLimitCol = resultTable.addColumn(new ResultTableColumn<>("target_2_bottom_px"));
+        componentTreeNodeLevelCol = resultTable.addColumn(new ResultTableColumn<>("source_component_tree_level"));
+        offLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_off"));
+        offLogLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_off"));
+        onLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_on"));
+        onLogLikelihoodForComponentCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_on"));
+        offLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_off"));
+        offLogLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_watershed_line_off"));
+        onLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("likelihood_for_component_watershed_line_on"));
+        onLogLikelihoodForComponentWatershedLineCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_component_watershed_line_on"));
+        maxLikelihoodLowerThanOneCol = resultTable.addColumn(new ResultTableColumn<>("max_likelihood_lower_than_one"));
+        minLikelihoodLargerThanZeroCol = resultTable.addColumn(new ResultTableColumn<>("min_likelihood_larger_than_zero"));
+        componentId = resultTable.addColumn(new ResultTableColumn<>("component_id"));
+        parentId = resultTable.addColumn(new ResultTableColumn<>("parent_id"));
+        rootId = resultTable.addColumn(new ResultTableColumn<>("root_id"));
+        child1Id = resultTable.addColumn(new ResultTableColumn<>("child_1_id"));
+        child2Id = resultTable.addColumn(new ResultTableColumn<>("child_2_id"));
+        target1Id = resultTable.addColumn(new ResultTableColumn<>("target_1_id"));
+        target2Id = resultTable.addColumn(new ResultTableColumn<>("target_2_id"));
+//        onLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_on"));
+//        offLogLikelihoodForCompatibleChildNodesCol = resultTable.addColumn(new ResultTableColumn<>("log_likelihood_for_compatible_child_components_off"));
     }
 
     @Override
     public void export(ResultExporterData resultData) {
         File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
 
         System.out.println("Exporting assignment costs...");
 
@@ -89,7 +131,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
-            System.out.println("t: " + t);
         }
         File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
         try {
@@ -104,7 +145,11 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         }
     }
 
+//    private int counter = 0;
+
     private void exportAllAssignmentInformationForHypothesisNew(int frame, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
+        System.out.println("frame: " + frame);
+
         final GrowthlaneFrame glf = growthlane.getFrames().get(frame);
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
             boolean assignmentInIlpSolution;
@@ -115,6 +160,68 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             }
             Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis = assignment.getSourceHypothesis();
             List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = assignment.getTargetHypotheses();
+
+//            System.out.println("counter: " + counter);
+//            counter++;
+//            System.out.println("frame: " + frame);
+
+            componentId.addValue(sourceHypothesis.getWrappedComponent().getStringId());
+            if(sourceHypothesis.getWrappedComponent().getParent() != null) {
+                parentId.addValue(sourceHypothesis.getWrappedComponent().getParent().getStringId());
+            } else{
+                parentId.addValue("NA");
+            }
+
+            if(sourceHypothesis.getWrappedComponent().getRoot() != null) {
+                rootId.addValue(sourceHypothesis.getWrappedComponent().getRoot().getStringId());
+            } else{
+                rootId.addValue("NA");
+            }
+
+            List<AdvancedComponent<FloatType>> children = sourceHypothesis.getWrappedComponent().getChildren();
+            if (children.isEmpty()) {
+                child1Id.addValue("NA");
+                child2Id.addValue("NA");
+            } else {
+                child1Id.addValue(children.get(0).getStringId());
+                if (children.size() > 1) {
+                    child2Id.addValue(children.get(1).getStringId());
+                } else {
+                    child2Id.addValue("NA");
+                }
+            }
+
+            componentTreeNodeLevelCol.addValue(sourceHypothesis.getWrappedComponent().getNodeLevel());
+
+            Pair<Double, Double> minMaxTuple = CostFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
+
+            double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLikelihoodForComponentCol.addValue(offLikelihoodForComponent);
+            double offLogLikelihoodForComponent = CostFactory.getOffLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLogLikelihoodForComponentCol.addValue(offLogLikelihoodForComponent);
+            double onLikelihoodForComponent = CostFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            onLikelihoodForComponentCol.addValue(onLikelihoodForComponent);
+            double onLogLikelihoodForComponent = CostFactory.getOnLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            onLogLikelihoodForComponentCol.addValue(onLogLikelihoodForComponent);
+            double onLikelihoodForComponentWatershedLine = CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            onLikelihoodForComponentWatershedLineCol.addValue(onLikelihoodForComponentWatershedLine);
+            double onLogLikelihoodForComponentWatershedLine = CostFactory.getOnLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            onLogLikelihoodForComponentWatershedLineCol.addValue(onLogLikelihoodForComponentWatershedLine);
+            double offLikelihoodForComponentWatershedLine = CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLikelihoodForComponentWatershedLineCol.addValue(offLikelihoodForComponentWatershedLine);
+            double offLogLikelihoodForComponentWatershedLine = CostFactory.getOffLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            offLogLikelihoodForComponentWatershedLineCol.addValue(offLogLikelihoodForComponentWatershedLine);
+            Pair<Double, Double> likelihoodExtrema = sourceHypothesis.getWrappedComponent().getPixelValueExtremaInsideRange(0.0, 1.0);
+            minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
+            maxLikelihoodLowerThanOneCol.addValue(likelihoodExtrema.getB());
+
+//            List<AdvancedComponent<FloatType>> compatibleChildComponents = sourceHypothesis.getWrappedComponent().getCompatibleChildNodes();
+//
+//            double onLogLikelihoodForCompatibleChildNodes = CostFactory.getOnLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+//            onLogLikelihoodForCompatibleChildNodesCol.addValue(onLogLikelihoodForCompatibleChildNodes);
+//
+//            double offLogLikelihoodForCompatibleChildNodes = CostFactory.getOffLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+//            offLogLikelihoodForCompatibleChildNodesCol.addValue(offLogLikelihoodForCompatibleChildNodes);
 
             int cellRank;
             if (assignmentInIlpSolution) {
@@ -155,11 +262,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
                 assignmentTypeCol.addValue("lys");
             }
 
+
+            addComponentIdToTable(targetComponent1, target1Id); /* assign targetComponent1 to target2id, so that the cell-rank order corresponds to that of the child-component */
             addComponentAreaToTable(targetComponent1, target1AreaCol);
             addComponentLengthToTable(targetComponent1, target1EllipseMajorCol);
             addComponentCenterYToTable(targetComponent1, target1CenterYCol);
             addComponentLimitsToTable(targetComponent1, target1TopLimitCol, target1BottomLimitCol);
 
+            addComponentIdToTable(targetComponent2, target2Id); /* assign targetComponent2 to target1id, so that the cell-rank order corresponds to that of the child-component */
             addComponentAreaToTable(targetComponent2, target2AreaCol);
             addComponentLengthToTable(targetComponent2, target2EllipseMajorCol);
             addComponentCenterYToTable(targetComponent2, target2CenterYCol);
@@ -179,6 +289,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         Double value = -1.0;
         if (component != null){
             value = componentProperties.getMinorMajorAxis(component).getB();
+        }
+        column.addValue(value);
+    }
+
+    void addComponentIdToTable(AdvancedComponent<FloatType> component, ResultTableColumn<String> column) {
+        String value = "NA";
+        if (component != null){
+            value = component.getStringId();
         }
         column.addValue(value);
     }

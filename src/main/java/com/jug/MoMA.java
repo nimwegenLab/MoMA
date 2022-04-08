@@ -555,6 +555,7 @@ public class MoMA implements IImageProvider {
 	/**
 	 * @return the imgRaw
 	 */
+	@Override
 	public Img< FloatType > getImgRaw() {
 		return imgRaw;
 	}
@@ -562,6 +563,7 @@ public class MoMA implements IImageProvider {
 	/**
 	 * @return the rawChannelImgs
 	 */
+	@Override
 	public List< Img< FloatType >> getRawChannelImgs() {
 		return rawChannelImgs;
 	}
@@ -569,10 +571,18 @@ public class MoMA implements IImageProvider {
 	/**
 	 * @return the imgProbs
 	 */
+	@Override
 	public Img< FloatType > getImgProbs() {
 		return imgProbs;
 	}
 
+	@Override
+	public Img<FloatType> getImgProbsAt(int timeStep) {
+		Img<FloatType> img = this.getImgProbs();
+		return ImgView.wrap(Views.hyperSlice(img, 2, timeStep));
+	}
+
+	@Override
 	public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
 		return ImgView.wrap(Views.hyperSlice(dic.getImageProvider().getRawChannelImgs().get(channel), 2, timestep));
 	}

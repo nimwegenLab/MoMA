@@ -16,17 +16,20 @@ import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import org.apache.commons.lang.NotImplementedException;
+import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
     private Imglib2Utils imglib2Utils;
+    private CentralMomentsCalculator polygonMomentsCalculator;
 
     public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
         this.imglib2Utils = imglib2Utils;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
+        polygonMomentsCalculator = new CentralMomentsCalculator();
         this.ops = ops;
     }
 
@@ -39,6 +42,11 @@ public class ComponentProperties {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
+    }
+
+    public Sextet<Double, Double, Double, Double, Double, Double> getCentralMoments(ComponentInterface component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        return polygonMomentsCalculator.calculate(poly);
     }
 
     /***
@@ -87,7 +95,7 @@ public class ComponentProperties {
     }
 
     public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
@@ -96,7 +104,7 @@ public class ComponentProperties {
     }
 
     public int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        ValuePair<Integer, Integer> limits = ComponentTreeUtils.getComponentPixelLimits(component, 1);
+        ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());
         return (int) (roi1.dimension(0) * roi1.dimension(1) + roi2.dimension(0) * roi2.dimension(1));

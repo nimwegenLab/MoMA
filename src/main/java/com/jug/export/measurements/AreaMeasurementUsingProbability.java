@@ -34,17 +34,15 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
     }
 
     private double calculateArea(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap, List<ComponentInterface> neighbors) {
-        MaskInterval dilatedMask = component.getDilatedMask();
-        MaskInterval componentCoreMask = component.getErodedMask();
-        MaskInterval componentBorderMask = dilatedMask.minus(componentCoreMask);
+        MaskInterval componentBorderMask = component.getBorderMask();
 
-        MaskInterval neighborMaskUnion = neighbors.get(0).getDilatedMask();
+        MaskInterval neighborBorderMaskUnion = neighbors.get(0).getBorderMask();
         for(ComponentInterface neighbor : neighbors){
-            neighborMaskUnion = neighborMaskUnion.or(neighbor.getDilatedMask()); /* combine neighbor masks */
+            neighborBorderMaskUnion = neighborBorderMaskUnion.or(neighbor.getBorderMask()); /* combine neighbor masks */
         }
 
-        MaskInterval intersectingBorderPixelMask = neighborMaskUnion.and(componentBorderMask);
-        componentBorderMask = componentBorderMask.minus(neighborMaskUnion); /* remove intersecting pixels */
+        MaskInterval intersectingBorderPixelMask = neighborBorderMaskUnion.and(componentBorderMask);
+        componentBorderMask = componentBorderMask.minus(intersectingBorderPixelMask); /* remove intersecting pixels */
 
 //        new ij.ImageJ();
 //
@@ -56,6 +54,7 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         Double totalArea = 0D;
 //        Regions.iterable(componentCoreMask)
 //        Regions.countTrue(componentCoreMask)
+        MaskInterval componentCoreMask = component.getErodedMask();
         IterableInterval<FloatType> corePixels = Regions.sample(componentCoreMask, probabilityMap);
         Cursor<FloatType> c1 = corePixels.cursor();
         while(c1.hasNext()){

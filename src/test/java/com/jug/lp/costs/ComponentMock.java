@@ -87,6 +87,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public MaskInterval getBorderMask() {
+        return null;
+    }
+
+    @Override
     public MaskInterval getDilatedMask() {
         return null;
     }

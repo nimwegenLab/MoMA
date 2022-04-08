@@ -4,6 +4,7 @@ import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
+import net.imglib2.roi.Mask;
 import net.imglib2.roi.MaskInterval;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.type.NativeType;
@@ -34,6 +35,8 @@ public interface ComponentInterface<T extends Type<T>, C extends Component<T, C>
     List<Double> getComponentPixelValuesAsDouble();
 
     Pair<Double, Double> getPixelValueExtremaInsideRange(double rangeMin, double rangeMax);
+
+    MaskInterval getBorderMask();
 
     MaskInterval getDilatedMask();
 

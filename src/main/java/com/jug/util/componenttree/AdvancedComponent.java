@@ -751,6 +751,18 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return componentFeatures.keySet();
     }
 
+    MaskInterval componentBorderMask;
+
+    public MaskInterval getBorderMask() {
+        if (componentBorderMask != null) {
+            return componentBorderMask;
+        }
+        MaskInterval dilatedMask = getDilatedMask();
+        MaskInterval componentCoreMask = getErodedMask();
+        componentBorderMask = dilatedMask.minus(componentCoreMask);
+        return componentBorderMask;
+    }
+
     MaskInterval erodedMask;
     public MaskInterval getErodedMask(){
         if (erodedMask != null) {

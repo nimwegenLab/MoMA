@@ -102,6 +102,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public Img<BitType> getCoreMaskImg() {
+        return null;
+    }
+
+    @Override
     public Img getComponentImage(NativeType pixelValue) {
         return ImgView.wrap(componentImage);
     }

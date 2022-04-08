@@ -54,14 +54,8 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         Double totalArea = 0D;
 //        Regions.iterable(componentCoreMask)
 //        Regions.countTrue(componentCoreMask)
-        MaskInterval componentCoreMask = component.getErodedMask();
-        IterableInterval<FloatType> corePixels = Regions.sample(componentCoreMask, probabilityMap);
-        Cursor<FloatType> c1 = corePixels.cursor();
-        while(c1.hasNext()){
-            c1.next();
-            totalArea++;
-        }
 
+        totalArea += Regions.countTrue(component.getCoreMaskImg());
 //        ImageJFunctions.show(probabilityMap);
 
         IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);

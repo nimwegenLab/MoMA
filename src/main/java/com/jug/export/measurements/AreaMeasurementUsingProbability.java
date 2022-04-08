@@ -44,48 +44,26 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         MaskInterval intersectingBorderPixelMask = neighborBorderMaskUnion.and(componentBorderMask);
         componentBorderMask = componentBorderMask.minus(intersectingBorderPixelMask); /* remove intersecting pixels */
 
-//        new ij.ImageJ();
-//
-//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(neighborMaskUnion));
-//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(componentBorderMask), "componentBorderMask");
-//
-//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(intersectingBorderPixelMask), "intersectingBorderPixelMask");
-
         Double totalArea = 0D;
-//        Regions.iterable(componentCoreMask)
-//        Regions.countTrue(componentCoreMask)
 
-        totalArea += Regions.countTrue(component.getCoreMaskImg());
-//        ImageJFunctions.show(probabilityMap);
+        totalArea += Regions.countTrue(component.getCoreMaskImg()); /* add sum of the number of pixels in the "core" area of the mask */
 
         IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);
-//        ImageJFunctions.show(probabilityMap, "probabilityMap");
         Cursor<FloatType> c2 = borderPixels.cursor();
         while(c2.hasNext()){
             c2.next();
             double val = c2.get().getRealDouble();
-            totalArea += val;
+            totalArea += val; /* add sum of the values of border pixels in probabilityMap that do not overlap with other components */
         }
 
         IterableInterval<FloatType> intersectingBorderPixels = Regions.sample(intersectingBorderPixelMask, probabilityMap);
         Cursor<FloatType> c3 = intersectingBorderPixels.cursor();
         while(c3.hasNext()){
             c3.next();
-            double val = c3.get().getRealDouble() / 2; /* we count intersecting border pixels only half, because they belong to two neighboring components */
+            double val = c3.get().getRealDouble() / 2; /* sum the number of values of the border pixels in probabilityMap that overlap with other components; we count intersecting border pixels only half, because they belong to two neighboring components */
             totalArea += val;
         }
 
-//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(dilatedMask));
-//        ImageJFunctions.show(Masks.toRandomAccessibleInterval(erodedMask));
-//
-
-//        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(neighbors, new BitType(true));
-//        ImageJFunctions.show(image);
-//
-//        List<ComponentInterface> componentList = new ArrayList<>();
-//        componentList.add(component);
-//        RandomAccessibleInterval<BitType> image = Plotting.createImageWithComponentsNew(componentList, new BitType(true));
-//        ImageJFunctions.show(image, "component");
         return totalArea;
     }
 }

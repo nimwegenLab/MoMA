@@ -752,7 +752,6 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     MaskInterval componentBorderMask;
-
     public MaskInterval getBorderMask() {
         if (componentBorderMask != null) {
             return componentBorderMask;
@@ -791,20 +790,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         RectangleShape shape = new RectangleShape(1, false);
         Img<BitType> componentImage = getComponentImage(new BitType(true));
         Img<BitType> dilatedImg = Dilation.dilate(componentImage, shape, 1);
-//        IterableRegion<BitType> myregion = Regions.iterable(dilatedImg); // https://javadoc.scijava.org/ImgLib2/net/imglib2/roi/Regions.html#iterable-net.imglib2.RandomAccessibleInterval-
         dilatedMask = Masks.toMaskInterval(dilatedImg);
         return dilatedMask;
-
-//        ImageJFunctions.show(dilatedImg);
-//        Img<IntType> labels = createImageWithSameDimension(new IntType(0));
-
-//        ConnectedComponentAnalysis.connectedComponents(dilatedImg, labels, shape);
-//        ImageJFunctions.show(dilatedImg);
-//        Regions.
-//        Masks.
-//        ImgLabeling labeling = ij.op().labeling().cca(dilatedImg, ConnectedComponents.StructuringElement.EIGHT_CONNECTED);
-//        LabelRegions regions = new LabelRegions(labeling);
-//        return regions.getLabelRegion(0);
     }
 
     private class RegionLocalizableIterator implements Iterator<Localizable> {

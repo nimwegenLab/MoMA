@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.componenttree.ComponentPositionComparator;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
@@ -80,6 +81,35 @@ public class ComponentTreeUtils {
                 recursivelyAddLeavesToList(child, leaves);
             }
         }
+    }
+
+    public static List<ComponentInterface> getNeighborComponents(ComponentInterface component, List<ComponentInterface> allComponents) {
+        if (!allComponents.contains(component))
+            throw new RuntimeException("target component must be in list of all components");
+
+        ComponentTreeUtils.sortComponentsByPosition(allComponents);
+        int componentIndex = allComponents.indexOf(component);
+
+        List<ComponentInterface> neighbors = new ArrayList();
+        if (componentIndex == 0) {
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        } else if (componentIndex == allComponents.size() - 1) {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            return neighbors;
+        } else {
+            neighbors.add(allComponents.get(componentIndex - 1));
+            neighbors.add(allComponents.get(componentIndex + 1));
+            return neighbors;
+        }
+    }
+
+    /**
+     *
+     * @param components
+     */
+    public static void sortComponentsByPosition(List<ComponentInterface> components){
+        components.sort(verticalComponentPositionComparator);
     }
 
     /**

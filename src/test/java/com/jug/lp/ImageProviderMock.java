@@ -2,7 +2,9 @@ package com.jug.lp;
 
 import com.jug.datahandling.IImageProvider;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
 import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.view.Views;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
@@ -17,6 +19,12 @@ public class ImageProviderMock implements IImageProvider {
     @Override
     public Img<FloatType> getImgProbs() {
         return this.probabilityImage;
+    }
+
+    @Override
+    public Img<FloatType> getImgProbsAt(int timeStep) {
+        Img<FloatType> img = this.getImgProbs();
+        return ImgView.wrap(Views.hyperSlice(img, 2, timeStep));
     }
 
     @Override

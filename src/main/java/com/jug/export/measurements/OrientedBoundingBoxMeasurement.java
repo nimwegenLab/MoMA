@@ -38,7 +38,8 @@ public class OrientedBoundingBoxMeasurement implements SegmentMeasurementInterfa
     }
 
     @Override
-    public void measure(ComponentInterface component) {
+    public void measure(SegmentMeasurementDataInterface data) {
+        ComponentInterface component = data.getComponentToMeasure();
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
         Vector2DPolyline boundingBoxFeature = Vector2DPolyline.createFromVertexList(orientedBoundingBoxPolygon.vertices());

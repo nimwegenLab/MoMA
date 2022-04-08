@@ -47,7 +47,8 @@ public class SpineLengthMeasurement implements SegmentMeasurementInterface {
     }
 
     @Override
-    public void measure(ComponentInterface component) {
+    public void measure(SegmentMeasurementDataInterface data) {
+        ComponentInterface component = data.getComponentToMeasure();
         RandomAccessibleInterval<BitType> image = component.getComponentImage(new BitType(true));
         Vector2DPolyline medialLine = medialLineCalculator.calculate(image);
         medialLine.setType(Vector2DPolyline.PolyshapeType.POLYLINE);

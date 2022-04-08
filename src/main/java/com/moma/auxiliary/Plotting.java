@@ -2,6 +2,7 @@ package com.moma.auxiliary;
 
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
@@ -152,16 +153,16 @@ public class Plotting {
         }
     }
 
-    public static <T extends NativeType<T>> RandomAccessibleInterval<T> createImageWithComponentsNew(List<AdvancedComponent<FloatType>> components,
+    public static <T extends NativeType<T>> RandomAccessibleInterval<T> createImageWithComponentsNew(List<ComponentInterface> components,
                                                                                                      T val) {
-        AdvancedComponent<FloatType> first = components.get(0);
+        ComponentInterface first = components.get(0);
         RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
         long xDim = sourceImage.dimension(0);
         long yDim = sourceImage.dimension(1);
         ArrayImgFactory<T> imageFactory = new ArrayImgFactory(val);
 
         final RandomAccessibleInterval<T> resultImage = imageFactory.create(xDim, yDim);
-        for (AdvancedComponent<FloatType> ctn : components) {
+        for (ComponentInterface ctn : components) {
             drawComponentToImage3(ctn, resultImage, val);
         }
         return resultImage;

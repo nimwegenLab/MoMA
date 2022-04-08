@@ -770,8 +770,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
         RectangleShape shape = new RectangleShape(1, false);
         Img<BitType> componentImage = getComponentImage(new BitType(true));
-        Img<BitType> dilatedImg = Erosion.erode(componentImage, shape, 1);
-        erodedMask = Masks.toMaskInterval(dilatedImg);
+        Img<BitType> erodedImg = Erosion.erode(componentImage, shape, 1);
+        erodedMask = Masks.toMaskInterval(erodedImg);
         return erodedMask;
     }
 

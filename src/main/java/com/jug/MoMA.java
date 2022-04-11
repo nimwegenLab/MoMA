@@ -49,6 +49,7 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  */
 public class MoMA implements IImageProvider {
 	private static ConfigurationManager configurationManager;
+	private static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
 
 	static {
 		LegacyInjector.preinit();
@@ -153,15 +154,6 @@ public class MoMA implements IImageProvider {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		configurationManager = new ConfigurationManager();
-		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
-
-		final MoMA main = new MoMA();
-
-		dic = new PseudoDic(configurationManager, main);
-
-		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
-
 		// ===== command line parsing ======================================================================
 
 		// create Options object & the parser
@@ -246,7 +238,7 @@ public class MoMA implements IImageProvider {
 		}
 
 		if ( cmd.hasOption( "ground_truth_export" ) ) {
-			configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
+			GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
 		}
 
 		File inputFolder = null;
@@ -413,6 +405,16 @@ public class MoMA implements IImageProvider {
 			}
 		}
 		// ******* END CHECK GUROBI **** END CHECK GUROBI **** END CHECK GUROBI ********
+
+		configurationManager = new ConfigurationManager();
+		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
+
+		final MoMA main = new MoMA();
+
+		dic = new PseudoDic(configurationManager, main);
+
+		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !HEADLESS ) {
 			guiFrame = new JFrame();

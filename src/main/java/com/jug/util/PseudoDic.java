@@ -6,6 +6,7 @@ import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
+import com.jug.datahandling.ImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.DialogManager;
@@ -46,6 +47,7 @@ public class PseudoDic {
     private final GitVersionProvider gitVersionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
     private final ConvertService convertService;
+    private IImageProvider imageProvider;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
@@ -85,8 +87,12 @@ public class PseudoDic {
         return mixtureModelFit;
     }
 
+    public void setImageProvider(IImageProvider imageProvider) {
+        this.imageProvider = imageProvider;
+    }
+
     public IImageProvider getImageProvider() {
-        return momaInstance;
+        return this.imageProvider;
     }
 
     public MoMA getMomaInstance() {
@@ -98,7 +104,7 @@ public class PseudoDic {
     public Imglib2Utils getImglib2utils() { return imglib2utils; }
 
     public CellStatsExporter getCellStatsExporter() {
-        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getMomaInstance(), getGitVersionProvider().getVersionString(), getMeasurements());
+        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getGitVersionProvider().getVersionString(), getMeasurements());
     }
 
     private List<SegmentMeasurementInterface> getMeasurements() {
@@ -199,7 +205,7 @@ public class PseudoDic {
     MoMAGui gui;
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getMomaInstance(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
         }
         return gui;
     }

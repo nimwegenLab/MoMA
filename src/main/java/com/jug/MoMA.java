@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
+import com.jug.datahandling.ImageProvider;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
@@ -46,9 +47,10 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
 /**
  * @author jug
  */
-public class MoMA implements IImageProvider {
+public class MoMA {
 	private static ConfigurationManager configurationManager;
 	private static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
+	private static ImageProvider imageProvider;
 
 	static {
 		LegacyInjector.preinit();
@@ -461,9 +463,12 @@ public class MoMA implements IImageProvider {
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		try {
 			if ( numChannels == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
-			main.rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
-			main.imgRaw = main.rawChannelImgs.get( 0 );
-			main.restartFromGLSegmentation(main);
+
+			imageProvider = new ImageProvider();
+			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
+			dic.setImageProvider(imageProvider);
+//			main.imgRaw = main.rawChannelImgs.get( 0 );
+			main.restartFromGLSegmentation(imageProvider);
 			if ( HEADLESS ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );
 				main.generateILPs();
@@ -487,7 +492,7 @@ public class MoMA implements IImageProvider {
 		// show loaded and annotated data
 		if (showIJ) {
 			new ImageJ();
-			ImageJFunctions.show( main.imgRaw, "Rotated & cropped raw data" );
+			ImageJFunctions.show( imageProvider.getImgRaw(), "Rotated & cropped raw data" );
 			// ImageJFunctions.show( main.imgTemp, "Temporary" );
 			// ImageJFunctions.show( main.imgAnnotated, "Annotated ARGB data" );
 
@@ -532,10 +537,10 @@ public class MoMA implements IImageProvider {
 	 * The singleton instance of ImageJ.
 	 */
 
-	private List< Img< FloatType >> rawChannelImgs;
-	private Img< FloatType > imgRaw;
-	private Img< FloatType > imgTemp;
-	private Img< FloatType > imgProbs;
+//	private List< Img< FloatType >> rawChannelImgs;
+//	private Img< FloatType > imgRaw;
+//	private Img< FloatType > imgTemp;
+//	private Img< FloatType > imgProbs;
 
 	/**
 	 * Contains all Growthlanes found in the given data.
@@ -560,48 +565,6 @@ public class MoMA implements IImageProvider {
 	// -------------------------------------------------------------------------------------
 	// setters and getters
 	// -------------------------------------------------------------------------------------
-	/**
-	 * @return the imgRaw
-	 */
-	@Override
-	public Img< FloatType > getImgRaw() {
-		return imgRaw;
-	}
-
-	/**
-	 * @return the rawChannelImgs
-	 */
-	@Override
-	public List< Img< FloatType >> getRawChannelImgs() {
-		return rawChannelImgs;
-	}
-
-	/**
-	 * @return the imgProbs
-	 */
-	@Override
-	public Img< FloatType > getImgProbs() {
-		return imgProbs;
-	}
-
-	@Override
-	public Img<FloatType> getImgProbsAt(int timeStep) {
-		Img<FloatType> img = this.getImgProbs();
-		return ImgView.wrap(Views.hyperSlice(img, 2, timeStep));
-	}
-
-	@Override
-	public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
-		return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
-	}
-
-	/**
-	 * @param imgTemp
-	 *            the imgTemp to set
-	 */
-	private void setImgTemp(final Img<FloatType> imgTemp) {
-		this.imgTemp = imgTemp;
-	}
 
 	/**
 	 * @return the growthlanes
@@ -817,12 +780,12 @@ public class MoMA implements IImageProvider {
 		return selectedFile;
 	}
 
-	/**
-	 * Resets imgTemp to contain the raw data from imgRaw.
-	 */
-	private void resetImgTempToRaw() {
-		setImgTemp( imgRaw.copy() );
-	}
+//	/**
+//	 * Resets imgTemp to contain the raw data from imgRaw.
+//	 */
+//	private void resetImgTempToRaw() {
+//		setImgTemp( imgRaw.copy() );
+//	}
 
 
 	/**
@@ -854,9 +817,9 @@ public class MoMA implements IImageProvider {
         this.setGrowthlanes(new ArrayList<>() );
 		getGrowthlanes().add( new Growthlane(imageProvider, this.dic.getDialogManager()) );
 
-        for ( long frameIdx = 0; frameIdx < imgTemp.dimension( 2 ); frameIdx++ ) {
+        for ( long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension( 2 ); frameIdx++ ) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, dic.getComponentTreeGenerator());
-            final IntervalView< FloatType > ivFrame = Views.hyperSlice( imgTemp, 2, frameIdx );
+            final IntervalView< FloatType > ivFrame = Views.hyperSlice( imageProvider.getImgRaw(), 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthlanes().get(0).add(currentFrame);
         }
@@ -868,12 +831,12 @@ public class MoMA implements IImageProvider {
 	 * Growthlane.findGapHypotheses(Img). Note that this function always uses
 	 * the image data in 'imgTemp'.
 	 */
-	private void generateAllSimpleSegmentationHypotheses() {
-		imgProbs = processImageOrLoadFromDisk();
+	private void generateAllSimpleSegmentationHypotheses(IImageProvider imageProvider) {
+		imageProvider.setImgProbs(processImageOrLoadFromDisk());
 		for ( final Growthlane gl : getGrowthlanes() ) {
 			gl.getFrames().parallelStream().forEach((glf) -> {
 				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( this, glf.getFrameIndex() );
+				glf.generateSimpleSegmentationHypotheses( imageProvider, glf.getFrameIndex() );
 			});
 			System.out.println( " ...done!" );
 		}
@@ -900,7 +863,7 @@ public class MoMA implements IImageProvider {
 		 */
 		Img<FloatType> probabilityMap;
 		if (!new File(processedImageFileName).exists()) {
-			probabilityMap = unetProcessor.process(imgTemp);
+			probabilityMap = unetProcessor.process(imageProvider.getImgRaw());
 			ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
 			IJ.saveAsTiff(tmp_image, processedImageFileName);
 		} else {
@@ -994,13 +957,11 @@ public class MoMA implements IImageProvider {
 		}
 
 		System.out.print( "Searching for Growthlanes..." );
-		resetImgTempToRaw();
         addGrowthlanes(imageProvider);
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );
-		resetImgTempToRaw();
-		generateAllSimpleSegmentationHypotheses();
+		generateAllSimpleSegmentationHypotheses(imageProvider);
 		System.out.println( " done!" );
 
 		if ( !HEADLESS && hideConsoleLater ) {

@@ -6,6 +6,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.util.List;
 
 public interface IImageProvider {
+    void setImgProbs(Img<FloatType> imgProbs);
+
     Img<FloatType> getImgProbs();
 
     Img<FloatType> getImgProbsAt(int timeStep);

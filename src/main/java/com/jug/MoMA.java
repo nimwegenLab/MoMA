@@ -592,7 +592,7 @@ public class MoMA implements IImageProvider {
 
 	@Override
 	public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
-		return ImgView.wrap(Views.hyperSlice(dic.getImageProvider().getRawChannelImgs().get(channel), 2, timestep));
+		return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
 	}
 
 	/**

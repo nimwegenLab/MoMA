@@ -467,7 +467,17 @@ public class MoMA {
 			imageProvider = new ImageProvider();
 			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
 			dic.setImageProvider(imageProvider);
+
+			boolean hideConsoleLater = false;
+			if ( !HEADLESS && !main.isConsoleVisible() ) {
+				main.showConsoleWindow( true );
+				hideConsoleLater = true;
+			}
 			main.restartFromGLSegmentation(imageProvider);
+			if ( !HEADLESS && hideConsoleLater ) {
+				main.showConsoleWindow( false );
+			}
+
 			if ( HEADLESS ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );
 				main.generateILPs();
@@ -933,12 +943,6 @@ public class MoMA {
 	 * or bottom offsets are altered, which invalidates all analysis run so far.
 	 */
 	public void restartFromGLSegmentation(IImageProvider imageProvider) {
-		boolean hideConsoleLater = false;
-		if ( !HEADLESS && !isConsoleVisible() ) {
-			showConsoleWindow( true );
-			hideConsoleLater = true;
-		}
-
 		System.out.print( "Searching for Growthlanes..." );
         addGrowthlanes(imageProvider);
 		System.out.println( " done!" );
@@ -946,10 +950,6 @@ public class MoMA {
 		System.out.println( "Generating Segmentation Hypotheses..." );
 		generateAllSimpleSegmentationHypotheses(imageProvider);
 		System.out.println( " done!" );
-
-		if ( !HEADLESS && hideConsoleLater ) {
-			showConsoleWindow( false );
-		}
 	}
 
 

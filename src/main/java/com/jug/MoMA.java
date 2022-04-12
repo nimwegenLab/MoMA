@@ -467,7 +467,6 @@ public class MoMA {
 			imageProvider = new ImageProvider();
 			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
 			dic.setImageProvider(imageProvider);
-//			main.imgRaw = main.rawChannelImgs.get( 0 );
 			main.restartFromGLSegmentation(imageProvider);
 			if ( HEADLESS ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );
@@ -493,12 +492,6 @@ public class MoMA {
 		if (showIJ) {
 			new ImageJ();
 			ImageJFunctions.show( imageProvider.getImgRaw(), "Rotated & cropped raw data" );
-			// ImageJFunctions.show( main.imgTemp, "Temporary" );
-			// ImageJFunctions.show( main.imgAnnotated, "Annotated ARGB data" );
-
-			// main.getCellSegmentedChannelImgs()
-			// ImageJFunctions.show( main.imgClassified, "Classification" );
-			// ImageJFunctions.show( main.getCellSegmentedChannelImgs(), "Segmentation" );
 		}
 
 		gui = dic.getMomaGui();
@@ -537,10 +530,6 @@ public class MoMA {
 	 * The singleton instance of ImageJ.
 	 */
 
-//	private List< Img< FloatType >> rawChannelImgs;
-//	private Img< FloatType > imgRaw;
-//	private Img< FloatType > imgTemp;
-//	private Img< FloatType > imgProbs;
 
 	/**
 	 * Contains all Growthlanes found in the given data.
@@ -780,12 +769,6 @@ public class MoMA {
 		return selectedFile;
 	}
 
-//	/**
-//	 * Resets imgTemp to contain the raw data from imgRaw.
-//	 */
-//	private void resetImgTempToRaw() {
-//		setImgTemp( imgRaw.copy() );
-//	}
 
 
 	/**

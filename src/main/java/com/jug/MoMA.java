@@ -142,11 +142,6 @@ public class MoMA implements IImageProvider {
 	 */
 	private static String defaultFilenameDecoration;
 
-	/**
-	 * Path to the dataset that we are working on.
-	 */
-	public static String IMAGE_PATH;
-
 
 	// ====================================================================================================================
 
@@ -452,14 +447,12 @@ public class MoMA implements IImageProvider {
 			}
 		}
 
-		IMAGE_PATH = props.getProperty( "import_path", System.getProperty( "user.home" ) );
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
-			inputFolder = main.showStartupDialog( guiFrame, IMAGE_PATH);
+			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getImagePath());
 		}
 		System.out.println( "Default filename decoration = " + inputFolder.getName() );
 		defaultFilenameDecoration = inputFolder.getName();
-		IMAGE_PATH = inputFolder.getAbsolutePath();
-		props.setProperty( "import_path", IMAGE_PATH);
+		configurationManager.setImagePath(inputFolder.getAbsolutePath());
 
 		if ( !HEADLESS ) {
 			// Setting up console window...
@@ -470,7 +463,7 @@ public class MoMA implements IImageProvider {
 		// ------------------------------------------------------------------------------------------------------
 		// ------------------------------------------------------------------------------------------------------
 		try {
-			main.processDataFromFolder(IMAGE_PATH, minTime, maxTime, minChannelIdx, numChannels );
+			main.processDataFromFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels );
 		} catch ( final Exception e ) {
 			e.printStackTrace();
 			if (!running_as_Fiji_plugin) {
@@ -927,7 +920,7 @@ public class MoMA implements IImageProvider {
 		/**
 		 *  generate probability filename
 		 */
-		File file = new File(IMAGE_PATH);
+		File file = new File(configurationManager.getImagePath());
 		if(file.isDirectory()){
 			File[] list = file.listFiles();
 			file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */

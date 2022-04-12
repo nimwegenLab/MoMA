@@ -399,4 +399,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public File getCurrentPropertyFile() {
         return currentPropertyFile;
     }
+
+    public String getImagePath(){
+        return props.getProperty( "import_path", System.getProperty( "user.home" ) );
+    }
+
+    public void setImagePath(String imagePath){
+        props.setProperty( "import_path", imagePath);
+    }
 }

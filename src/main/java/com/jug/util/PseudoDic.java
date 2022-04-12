@@ -40,7 +40,6 @@ public class PseudoDic {
     private final MixtureModelFit mixtureModelFit;
     private final ComponentTreeGenerator componentTreeGenerator;
     private final Imglib2Utils imglib2utils;
-    private final GroundTruthFramesExporter groundTruthFramesExporter;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
     private final UnetProcessor unetProcessor;
     private final WatershedMaskGenerator watershedMaskGenerator;
@@ -61,7 +60,6 @@ public class PseudoDic {
         componentTreeGenerator = new ComponentTreeGenerator(configurationManager, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
-        groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
         unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
         unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
         gitVersionProvider = new GitVersionProvider();
@@ -165,7 +163,14 @@ public class PseudoDic {
         return new IlpModelExporter(() -> MoMA.getDefaultFilenameDecoration());
     }
 
-    public GroundTruthFramesExporter getGroundTruthFramesExporter() { return groundTruthFramesExporter; }
+    private GroundTruthFramesExporter groundTruthFramesExporter;
+    public GroundTruthFramesExporter getGroundTruthFramesExporter() {
+        if (groundTruthFramesExporter != null) {
+            return groundTruthFramesExporter;
+        }
+        groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration(), getConfigurationManager()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        return groundTruthFramesExporter;
+    }
 
     AssignmentCostExporter assignmentCostExporter;
     public AssignmentCostExporter getAssignmentCostExporter() {

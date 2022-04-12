@@ -36,7 +36,6 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     private final MoMAGui gui;
     private final IImageProvider imageProvider;
-    private final String loadedDataFolder;
     private String versionString;
     private List<SegmentMeasurementInterface> measurements;
     private ConfigurationManager configurationManager;
@@ -57,7 +56,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         this.imageProvider = imageProvider;
         this.versionString = versionString;
         this.measurements = measurements;
-        loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
     @Override
@@ -159,19 +157,19 @@ public class CellStatsExporter implements ResultExporterInterface {
         measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
         Pattern positionPattern = Pattern.compile("Pos(\\d+)");
-        Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);
+        Matcher positionMatcher = positionPattern.matcher(configurationManager.getImagePath());
         positionMatcher.find();
         String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
 
         Pattern growthlanePattern = Pattern.compile("GL(\\d+)");
-        Matcher growthlaneMatcher = growthlanePattern.matcher(loadedDataFolder);
+        Matcher growthlaneMatcher = growthlanePattern.matcher(configurationManager.getImagePath());
         growthlaneMatcher.find();
         String growthlaneNumber = growthlaneMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
 
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
         writer.write(String.format("moma_version=\"%s\"\n", versionString));
-        writer.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+        writer.write(String.format("input_image=\"%s\"\n", configurationManager.getImagePath()));
         writer.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
@@ -286,7 +284,7 @@ public class CellStatsExporter implements ResultExporterInterface {
             out = new OutputStreamWriter(new FileOutputStream(file));
 
             out.write(String.format("moma_version=\"%s\"\n", versionString));
-            out.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+            out.write(String.format("input_image=\"%s\"\n", configurationManager.getImagePath()));
             out.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
             out.write("\n");
 

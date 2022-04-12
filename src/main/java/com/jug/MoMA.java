@@ -76,9 +76,9 @@ public class MoMA implements IImageProvider {
 	// - - - - - - - - - - - - - -
 	private static int minTime = -1;
 	private static int maxTime = -1;
-	private static int initialOptimizationRange = -1;
 	private static int minChannelIdx = 1;
 	private static int numChannels = 1;
+	private static int initialOptimizationRange = -1;
 
 
 	// - - - - - - - - - - - - - -
@@ -460,7 +460,19 @@ public class MoMA implements IImageProvider {
 		final File folder = new File(configurationManager.getImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		try {
-			main.processDataFromFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels );
+			if ( numChannels == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
+			main.rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
+			main.imgRaw = main.rawChannelImgs.get( 0 );
+			main.restartFromGLSegmentation(main);
+			if ( HEADLESS ) {
+				System.out.println( "Generating Integer Linear Program(s)..." );
+				main.generateILPs();
+				System.out.println( " done!" );
+
+				System.out.println( "Running Integer Linear Program(s)..." );
+				main.runILPs();
+				System.out.println( " done!" );
+			}
 		} catch ( final Exception e ) {
 			e.printStackTrace();
 			if (!running_as_Fiji_plugin) {
@@ -806,44 +818,6 @@ public class MoMA implements IImageProvider {
 	}
 
 	/**
-	 * Opens all tiffs in the given folder, straightens and crops images,
-	 * extracts growth lines, subtracts background, builds segmentation
-	 * hypothesis and a Markov random field for tracking. Finally it even solves
-	 * this model using Gurobi and reads out the MAP.
-	 *
-	 * Note: multi-channel assumption is that filename encodes channel by
-	 * containing a substring of format "_c%02d".
-	 *
-	 * @param path
-	 *            the folder to be processed.
-	 * @param minTime
-	 * @param maxTime
-	 * @param minChannelIdx
-	 * @param numChannels
-	 * @throws Exception
-	 */
-	private void processDataFromFolder( final String path, final int minTime, final int maxTime, final int minChannelIdx, final int numChannels ) throws Exception {
-
-		if ( numChannels == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
-
-		rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
-
-		imgRaw = rawChannelImgs.get( 0 );
-
-		restartFromGLSegmentation(this);
-
-		if ( HEADLESS ) {
-			System.out.println( "Generating Integer Linear Program(s)..." );
-			generateILPs();
-			System.out.println( " done!" );
-
-			System.out.println( "Running Integer Linear Program(s)..." );
-			runILPs();
-			System.out.println( " done!" );
-		}
-	}
-
-	/**
 	 * Resets imgTemp to contain the raw data from imgRaw.
 	 */
 	private void resetImgTempToRaw() {
@@ -1006,20 +980,6 @@ public class MoMA implements IImageProvider {
 	 */
 	public static int getInitialOptimizationRange() {
 		return initialOptimizationRange;
-	}
-
-	/**
-	 * @return the first channel index of the loaded data
-	 */
-	public static int getMinChannelIdx() {
-		return minChannelIdx;
-	}
-
-	/**
-	 * @return the number of channels loaded
-	 */
-	public static int getNumChannels() {
-		return numChannels;
 	}
 
 	/**

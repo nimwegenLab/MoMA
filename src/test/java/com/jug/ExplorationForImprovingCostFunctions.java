@@ -8,7 +8,8 @@ import java.nio.file.Paths;
 import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class ExplorationForImprovingCostFunctions {
-    String datasets_base_path = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/20220209_cost_function_improvements/";
+//    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/";
+    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/20220209_cost_function_improvements/";
 
     public static void main(String[] args) {
         ExplorationForImprovingCostFunctions tests = new ExplorationForImprovingCostFunctions();
@@ -27,8 +28,8 @@ public class ExplorationForImprovingCostFunctions {
 //        Integer tmax = 10;
 //        Integer tmin = 0;
 //        Integer tmax = 440;
-        Integer tmin = 350;
-        Integer tmax = 360;
+        Integer tmin = 300;
+        Integer tmax = 400;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 

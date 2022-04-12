@@ -395,4 +395,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public int getSizeMinimumOfParentComponent() {
         return SIZE_MINIMUM_FOR_ROOT_COMPONENTS;
     }
+
+    public File getCurrentPropertyFile() {
+        return currentPropertyFile;
+    }
 }

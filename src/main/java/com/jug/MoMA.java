@@ -412,11 +412,11 @@ public class MoMA implements IImageProvider {
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
 
-		GlDataLoader glDataLoader = new GlDataLoader(optionalPropertyFile);
-
 		final MoMA main = new MoMA();
 
 		dic = new PseudoDic(configurationManager, main);
+
+		GlDataLoader dataLoader = dic.getGlDataLoader();
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 

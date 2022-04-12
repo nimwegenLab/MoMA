@@ -4,6 +4,7 @@ import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
+import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
@@ -212,5 +213,14 @@ public class PseudoDic {
             dialogManager = new DialogManager(() -> getMomaGui());
         }
         return dialogManager;
+    }
+
+    private GlDataLoader glDataLoader;
+    public GlDataLoader getGlDataLoader() {
+        if (glDataLoader != null) {
+            return glDataLoader;
+        }
+        glDataLoader = new GlDataLoader(configurationManager.getCurrentPropertyFile(), getUnetProcessor());
+        return glDataLoader;
     }
 }

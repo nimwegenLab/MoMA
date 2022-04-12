@@ -1,5 +1,8 @@
 package com.jug.datahandling;
 
+import com.jug.util.componenttree.UnetProcessor;
+import org.apache.commons.lang.NotImplementedException;
+
 import java.io.File;
 
 /***
@@ -10,7 +13,7 @@ public class GlDataLoader {
     private final String glDataPath;
     private File mmPropertiesPath;
 
-    public GlDataLoader(File mmPropertiesPath) {
+    public GlDataLoader(File mmPropertiesPath, UnetProcessor unetProcessor) {
         this.mmPropertiesPath = mmPropertiesPath;
         this.glDataPath = mmPropertiesPath.getParent();
     }
@@ -19,6 +22,7 @@ public class GlDataLoader {
         if (!mmPropertiesPath.exists()) {
             return false;
         }
-        uNetModelPath =
+//        uNetModelPath =
+        throw new NotImplementedException();
     }
 }

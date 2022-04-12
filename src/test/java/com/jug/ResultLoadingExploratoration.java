@@ -32,7 +32,7 @@ public class ResultLoadingExploratoration {
         String settings_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/source_for_mm_properties_loading__DONT_DELETE/mm.properties";
         Integer tmin = 0;
         Integer tmax = 10;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export", "-p", settings_file_path});
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export", "-p", settings_file_path});
     }
 
 

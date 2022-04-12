@@ -3,9 +3,7 @@ package com.jug;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
-import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
-import com.jug.gui.MoMAModel;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.PseudoDic;
@@ -35,7 +33,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -411,7 +408,7 @@ public class MoMA implements IImageProvider {
 
 		dic = new PseudoDic(configurationManager, main);
 
-		GlDataLoader dataLoader = dic.getGlDataLoader();
+//		GlDataLoader dataLoader = dic.getGlDataLoader();
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
@@ -460,8 +457,8 @@ public class MoMA implements IImageProvider {
 			main.showConsoleWindow( true );
 		}
 
-		// ------------------------------------------------------------------------------------------------------
-		// ------------------------------------------------------------------------------------------------------
+		final File folder = new File(configurationManager.getImagePath());
+		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		try {
 			main.processDataFromFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels );
 		} catch ( final Exception e ) {
@@ -829,11 +826,6 @@ public class MoMA implements IImageProvider {
 
 		if ( numChannels == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
 
-		// extract dataset name and set in GUI
-		final File folder = new File( path );
-		setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
-
-		// load channels separately into Img objects
 		rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
 
 		imgRaw = rawChannelImgs.get( 0 );
@@ -884,7 +876,7 @@ public class MoMA implements IImageProvider {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
 	 */
-    private void findGrowthlanes(IImageProvider imageProvider) {
+    private void addGrowthlanes(IImageProvider imageProvider) {
         this.setGrowthlanes(new ArrayList<>() );
 		getGrowthlanes().add( new Growthlane(imageProvider, this.dic.getDialogManager()) );
 
@@ -1043,7 +1035,7 @@ public class MoMA implements IImageProvider {
 
 		System.out.print( "Searching for Growthlanes..." );
 		resetImgTempToRaw();
-        findGrowthlanes(imageProvider);
+        addGrowthlanes(imageProvider);
 		System.out.println( " done!" );
 
 		System.out.println( "Generating Segmentation Hypotheses..." );

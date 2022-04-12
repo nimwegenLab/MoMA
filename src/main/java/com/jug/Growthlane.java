@@ -93,7 +93,7 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( true );
 		}
 
-		boolean loadModelFromDisk = true;
+		boolean loadModelFromDisk = false;
 		GRBModelAdapter model = null;
 //		modelGurobi = null;
 		if (loadModelFromDisk)

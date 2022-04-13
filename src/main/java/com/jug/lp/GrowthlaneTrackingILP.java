@@ -828,7 +828,7 @@ public class GrowthlaneTrackingILP {
      * the MotherMachineGui is checked).
      */
     public synchronized void autosave() {
-        if (!MoMA.HEADLESS && MoMA.getGui().isAutosaveRequested()) {
+        if (!MoMA.getIfRunningHeadless() && MoMA.getGui().isAutosaveRequested()) {
             final File autosaveFile =
                     new File(MoMA.props.getProperty("import_path") + "/--autosave.moma");
             saveState(autosaveFile);
@@ -857,7 +857,7 @@ public class GrowthlaneTrackingILP {
             final DialogGurobiProgress dialog = new DialogGurobiProgress(MoMA.getGuiFrame());
             final GurobiCallback gcb = new GurobiCallback(dialog, MoMA.GUROBI_TIME_LIMIT, MoMA.GUROBI_MAX_OPTIMALITY_GAP);
             model.setCallback(gcb);
-            if (!MoMA.HEADLESS) {
+            if (!MoMA.getIfRunningHeadless()) {
                 dialog.setVisible(true);
             }
 
@@ -874,7 +874,7 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - -
             if (model.get(GRB.IntAttr.Status) == GRB.Status.OPTIMAL) {
                 status = IlpStatus.OPTIMAL;
-                if (!MoMA.HEADLESS) {
+                if (!MoMA.getIfRunningHeadless()) {
                     dialog.pushStatus("Optimum was found!");
                     if (MoMA.getGui() != null) {
                         MoMA.getGui().focusOnSliderTime();
@@ -884,7 +884,7 @@ public class GrowthlaneTrackingILP {
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.INFEASIBLE) {
                 status = IlpStatus.INFEASIBLE;
-                if (!MoMA.HEADLESS) {
+                if (!MoMA.getIfRunningHeadless()) {
                     dialog.pushStatus("ILP now infeasible. Please reoptimize!");
                 }
             } else if (model.get(GRB.IntAttr.Status) == GRB.Status.UNBOUNDED) {
@@ -895,7 +895,7 @@ public class GrowthlaneTrackingILP {
                 status = IlpStatus.NUMERIC;
             } else {
                 status = IlpStatus.LIMIT_REACHED;
-                if (!MoMA.HEADLESS) {
+                if (!MoMA.getIfRunningHeadless()) {
                     dialog.pushStatus(String.format("Timelimit reached, rel. optimality gap: %.2f%%", gcb.getLatestGap() * 100.0));
                 }
             }
@@ -1829,7 +1829,7 @@ public class GrowthlaneTrackingILP {
                     final int readTmax = Integer.parseInt(columns[3].trim());
 
                     if (configurationManager.getMinTime() != readTmin || configurationManager.getMaxTime() != readTmax) {
-                        if (!MoMA.HEADLESS) {
+                        if (!MoMA.getIfRunningHeadless()) {
                             JOptionPane.showMessageDialog(
                                     MoMA.getGui(),
                                     "Tracking to be loaded is at best a partial fit.\nMatching data will be loaded whereever possible...",

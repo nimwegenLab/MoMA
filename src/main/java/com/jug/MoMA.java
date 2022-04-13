@@ -1,5 +1,6 @@
 package com.jug;
 
+import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.ImageProvider;
 import com.jug.datahandling.InitializationHelpers;
@@ -15,7 +16,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.apache.commons.cli.*;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -37,8 +37,8 @@ import java.util.Properties;
  */
 public class MoMA {
 	private static ConfigurationManager configurationManager;
-	private static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
 	private static ImageProvider imageProvider;
+	private static CommandLineArgumentsParser commandLineArgumentParser;
 
 	static {
 		LegacyInjector.preinit();
@@ -57,16 +57,7 @@ public class MoMA {
 	 */
 	static boolean showIJ = false;
 
-	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
-
-	static int userDefinedMinTime;
-	static int userDefinedMaxTime;
-
-	// - - - - - - - - - - - - - -
-	// Info about loaded data
-	// - - - - - - - - - - - - - -
-	private static int initialOptimizationRange = -1;
 
 
 	// - - - - - - - - - - - - - -
@@ -113,11 +104,6 @@ public class MoMA {
 	private static File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
 
 	/**
-	 * Property file provided by user through as command-line option.
-	 */
-	private static File optionalPropertyFile = null;
-
-	/**
 	 * Property file in the moma directory the user.
 	 */
 	private static final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
@@ -138,180 +124,25 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		if (checkGurobiInstallation()) return;
 
-		// ===== command line parsing ======================================================================
-
-		// create Options object & the parser
-		final Options options = new Options();
-		final CommandLineParser parser = new DefaultParser();
-		// defining command line options
-		final Option help = new Option( "help", "print this message" );
-
-		final Option headless = new Option( "h", "headless", false, "start without user interface (note: input-folder must be given!)" );
-		headless.setRequired( false );
-
-		final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
-		groundTruthGeneration.setRequired( false );
-
-		final Option timeFirst = new Option( "tmin", "min_time", true, "first time-point to be processed" );
-		timeFirst.setRequired( false );
-
-		final Option timeLast = new Option( "tmax", "max_time", true, "last time-point to be processed" );
-		timeLast.setRequired( false );
-
-		final Option optRange = new Option( "optrange", "optimization_range", true, "initial optimization range" );
-		optRange.setRequired( false );
-
-		final Option infolder = new Option( "i", "infolder", true, "folder to read data from" );
-		infolder.setRequired( false );
-
-		final Option outfolder = new Option( "o", "outfolder", true, "folder to write preprocessed data to (equals infolder if not given)" );
-		outfolder.setRequired( false );
-
-		final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
-		userProps.setRequired( false );
-
-		options.addOption(help);
-		options.addOption(headless);
-		options.addOption(groundTruthGeneration);
-		options.addOption(timeFirst);
-		options.addOption(timeLast);
-		options.addOption(optRange);
-		options.addOption(infolder);
-		options.addOption(outfolder);
-		options.addOption(userProps);
-		// get the commands parsed
-		CommandLine cmd = null;
-		try {
-			cmd = parser.parse( options, args );
-		} catch ( final ParseException e1 ) {
-			final HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp(
-					"... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
-					"",
-					options,
-					"Error: " + e1.getMessage() );
-			if (!running_as_Fiji_plugin) {
-				System.exit( 0 );
-			} else {
-				return;
-			}
-		}
-
-		if ( cmd.hasOption( "help" ) ) {
-			final HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp( "... -i <in-folder> -o [out-folder] [-headless]", options );
-			if (!running_as_Fiji_plugin) {
-				System.exit( 0 );
-			} else {
-				return;
-			}
-		}
-
-		if ( cmd.hasOption( "h" ) ) {
-			System.out.println( ">>> Starting MM in headless mode." );
-			HEADLESS = true;
-			if ( !cmd.hasOption( "i" ) ) {
-				final HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp( "Headless-mode requires option '-i <in-folder>'...", options );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 0 );
-				} else {
-					return;
-				}
-			}
-		}
-
-		if ( cmd.hasOption( "ground_truth_export" ) ) {
-			GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
-		}
-
-		File inputFolder = null;
-		if ( cmd.hasOption( "i" ) ) {
-			inputFolder = new File( cmd.getOptionValue( "i" ) );
-			/*
-			if ( !inputFolder.isDirectory() ) {
-				System.out.println( "Error: Input folder is not a directory!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 2 );
-				} else {
-					return;
-				}
-			}*/
-			if ( !inputFolder.canRead() ) {
-				System.out.println( "Error: Input folder cannot be read!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 2 );
-				} else {
-					return;
-				}
-			}
-		}
-
-		File outputFolder;
-		if ( !cmd.hasOption( "o" ) ) {
-			if ( inputFolder == null ) {
-				System.out.println( "Error: Output folder would be set to a 'null' input folder! Please check your command line arguments..." );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 3 );
-				} else {
-					return;
-				}
-			}
-			outputFolder = inputFolder;
-			STATS_OUTPUT_PATH = outputFolder.getAbsolutePath();
-		} else {
-			outputFolder = new File( cmd.getOptionValue( "o" ) );
-
-			if ( !outputFolder.isDirectory() ) {
-				System.out.println( "Error: Output folder is not a directory!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 3 );
-				} else {
-					return;
-				}
-			}
-			if ( !outputFolder.canWrite() ) {
-				System.out.println( "Error: Output folder cannot be written to!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 3 );
-				} else {
-					return;
-				}
-			}
-
-			STATS_OUTPUT_PATH = outputFolder.getAbsolutePath();
-		}
-
-		if ( cmd.hasOption( "p" ) ) {
-			optionalPropertyFile = new File( cmd.getOptionValue( "p" ) );
-		}
-
-		if ( cmd.hasOption( "tmin" ) ) {
-			userDefinedMinTime = Integer.parseInt( cmd.getOptionValue( "tmin" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
-		}
-		if ( cmd.hasOption( "tmax" ) ) {
-			userDefinedMaxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
-		}
-
-		if ( cmd.hasOption( "optrange" ) ) {
-			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
-		}
+		commandLineArgumentParser = new CommandLineArgumentsParser(running_as_Fiji_plugin);
+		commandLineArgumentParser.parse(args);
+		File inputFolder = commandLineArgumentParser.getInputFolder();
 
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
 		datasetProperties.readDatasetProperties(inputFolder);
 
 		configurationManager = new ConfigurationManager();
-		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
-		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
+		configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
+		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
 		configurationManager.setMinTime(datasetProperties.getMinTime());
 		configurationManager.setMaxTime(datasetProperties.getMaxTime());
 
-		if(userDefinedMinTime > datasetProperties.getMinTime()){
-			configurationManager.setMinTime(userDefinedMinTime);
+		if(commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()){
+			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 		}
-		if(userDefinedMaxTime < datasetProperties.getMaxTime()){
-			configurationManager.setMaxTime(userDefinedMaxTime);
+		if(commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()){
+			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 		}
 
 		final MoMA main = new MoMA();
@@ -320,12 +151,12 @@ public class MoMA {
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
-		if ( !HEADLESS ) {
+		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = new JFrame();
 			main.initMainWindow( guiFrame );
 		}
 
-		if ( !HEADLESS ) {
+		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			// Iterate over all currently attached monitors and check if sceen
 			// position is actually possible,
 			// otherwise fall back to the DEFAULT values and ignore the ones
@@ -359,7 +190,7 @@ public class MoMA {
 		defaultFilenameDecoration = inputFolder.getName();
 		configurationManager.setImagePath(inputFolder.getAbsolutePath());
 
-		if ( !HEADLESS ) {
+		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			// Setting up console window...
 			main.initConsoleWindow();
 			main.showConsoleWindow( true );
@@ -379,17 +210,17 @@ public class MoMA {
 			dic.setImageProvider(imageProvider);
 
 			boolean hideConsoleLater = false;
-			if ( !HEADLESS && !main.isConsoleVisible() ) {
+			if ( !commandLineArgumentParser.getIfRunningHeadless() && !main.isConsoleVisible() ) {
 				main.showConsoleWindow( true );
 				hideConsoleLater = true;
 			}
 
 			dic.getGlDataLoader().restartFromGLSegmentation(imageProvider);
-			if ( !HEADLESS && hideConsoleLater ) {
+			if ( !commandLineArgumentParser.getIfRunningHeadless() && hideConsoleLater ) {
 				main.showConsoleWindow( false );
 			}
 
-			if ( HEADLESS ) {
+			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );
 				dic.getGlDataLoader().generateILPs();
 				System.out.println( " done!" );
@@ -417,7 +248,7 @@ public class MoMA {
 
 		gui = dic.getMomaGui();
 
-		if ( !HEADLESS ) {
+		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			SwingUtilities.invokeLater(() -> {
 				System.out.print( "Build GUI..." );
 				main.showConsoleWindow(false);
@@ -449,7 +280,7 @@ public class MoMA {
 			new GRBEnv( "MoMA_gurobi.log" );
 		} catch ( final GRBException e ) {
 			final String msgs = "Initial Gurobi test threw exception... check your Gruobi setup!\n\nJava library path: " + jlp;
-			if ( HEADLESS ) {
+			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
 				System.out.println( msgs );
 			} else {
 				JOptionPane.showMessageDialog(
@@ -466,7 +297,7 @@ public class MoMA {
 			}
 		} catch ( final UnsatisfiedLinkError ulr ) {
 			final String msgs = "Could not initialize Gurobi.\n" + "You might not have installed Gurobi properly or you miss a valid license.\n" + "Please visit 'www.gurobi.com' for further information.\n\n" + ulr.getMessage() + "\nJava library path: " + jlp;
-			if ( HEADLESS ) {
+			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
 				System.out.println( msgs );
 			} else {
 				JOptionPane.showMessageDialog(
@@ -765,7 +596,11 @@ public class MoMA {
 	 * @return the initial optimization range, -1 if it is infinity.
 	 */
 	public static int getInitialOptimizationRange() {
-		return initialOptimizationRange;
+		return commandLineArgumentParser.getInitialOptimizationRange();
+	}
+
+	public static boolean getIfRunningHeadless() {
+		return commandLineArgumentParser.getIfRunningHeadless();
 	}
 
 	/**

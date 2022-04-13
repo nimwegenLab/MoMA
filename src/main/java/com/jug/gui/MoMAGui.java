@@ -160,7 +160,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);
-        if (!MoMA.HEADLESS) {
+        if (!MoMA.getIfRunningHeadless()) {
             MoMA.getGuiFrame().setMenuBar(menuBar);
         }
 
@@ -1060,7 +1060,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Generating ILP...");
-        if (MoMA.HEADLESS) {
+        if (MoMA.getIfRunningHeadless()) {
             model.getCurrentGL().generateILP(null);
         } else {
             model.getCurrentGL().generateILP(
@@ -1123,7 +1123,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         File folderToUse;
-        if (!MoMA.HEADLESS) {
+        if (!MoMA.getIfRunningHeadless()) {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
             folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
@@ -1171,7 +1171,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         File file = new File(MoMA.STATS_OUTPUT_PATH + "/index.html");
 
-        if (!MoMA.HEADLESS) {
+        if (!MoMA.getIfRunningHeadless()) {
             final JFileChooser fc = new JFileChooser();
             fc.setSelectedFile(file);
             fc.addChoosableFileFilter(new ExtensionFileFilter(new String[]{"html"}, "HTML-file"));
@@ -1216,7 +1216,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         // ----------------------------------------------------------------------------------------------------
 
-        if (!MoMA.HEADLESS) {
+        if (!MoMA.getIfRunningHeadless()) {
             dataToDisplayChanged();
         }
     }

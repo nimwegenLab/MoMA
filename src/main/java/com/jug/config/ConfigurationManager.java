@@ -15,6 +15,12 @@ import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMa
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration, IConfiguration {
     /**
+     * The path to usually open JFileChoosers at (except for initial load
+     * dialog).
+     */
+    public static String DEFAULT_PATH = System.getProperty( "user.home" );
+
+    /**
      * Controls the total width of the GL image as shown in GUI. The total width is is given by:
      * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
      * See also its usage in GrowthlaneViewer.java and MoMAGui.java

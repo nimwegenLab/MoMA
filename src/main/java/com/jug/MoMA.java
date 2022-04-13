@@ -150,6 +150,8 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		if (checkGurobiInstallation()) return;
+
 		// ===== command line parsing ======================================================================
 
 		// create Options object & the parser
@@ -359,8 +361,6 @@ public class MoMA {
 		if ( cmd.hasOption( "optrange" ) ) {
 			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
 		}
-
-		if (checkGurobiInstallation()) return;
 
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);

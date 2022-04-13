@@ -286,9 +286,6 @@ public class MoMA {
 			optionalPropertyFile = new File( cmd.getOptionValue( "p" ) );
 		}
 
-		final InitializationHelpers datasetProperties = new InitializationHelpers();
-		datasetProperties.readDatasetProperties(inputFolder);
-
 		if ( cmd.hasOption( "tmin" ) ) {
 			userDefinedMinTime = Integer.parseInt( cmd.getOptionValue( "tmin" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
 		}
@@ -299,6 +296,9 @@ public class MoMA {
 		if ( cmd.hasOption( "optrange" ) ) {
 			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
 		}
+
+		final InitializationHelpers datasetProperties = new InitializationHelpers();
+		datasetProperties.readDatasetProperties(inputFolder);
 
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
@@ -711,6 +711,25 @@ public class MoMA {
 		}
 
 		return selectedFile;
+	}
+
+
+
+	/**
+	 * Adds all intensity values of row i in view to rowSums[i].
+	 *
+	 * @param view
+	 * @param rowSums
+	 */
+	private float[] addRowSumsFromInterval( final IntervalView< FloatType > view, final float[] rowSums ) {
+		for ( int i = ( int ) view.min( 1 ); i <= view.max( 1 ); i++ ) {
+			final IntervalView< FloatType > row = Views.hyperSlice( view, 1, i );
+			final Cursor< FloatType > cursor = Views.iterable( row ).cursor();
+			while ( cursor.hasNext() ) {
+				rowSums[ i - ( int ) view.min( 1 ) ] += cursor.next().get();
+			}
+		}
+		return rowSums;
 	}
 
 	/**

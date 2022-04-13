@@ -410,8 +410,6 @@ public class MoMA {
 
 		dic = new PseudoDic(configurationManager, main);
 
-//		GlDataLoader dataLoader = dic.getGlDataLoader();
-
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !HEADLESS ) {
@@ -473,18 +471,19 @@ public class MoMA {
 				main.showConsoleWindow( true );
 				hideConsoleLater = true;
 			}
-			main.restartFromGLSegmentation(imageProvider);
+
+			dic.getGlDataLoader().restartFromGLSegmentation(imageProvider);
 			if ( !HEADLESS && hideConsoleLater ) {
 				main.showConsoleWindow( false );
 			}
 
 			if ( HEADLESS ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );
-				main.generateILPs();
+				dic.getGlDataLoader().generateILPs();
 				System.out.println( " done!" );
 
 				System.out.println( "Running Integer Linear Program(s)..." );
-				main.runILPs();
+				dic.getGlDataLoader().runILPs();
 				System.out.println( " done!" );
 			}
 		} catch ( final Exception e ) {
@@ -542,11 +541,6 @@ public class MoMA {
 
 
 	/**
-	 * Contains all Growthlanes found in the given data.
-	 */
-	private List<Growthlane> growthlanes;
-
-	/**
 	 * Frame hosting the console output.
 	 */
 	private JFrame frameConsoleWindow;
@@ -564,21 +558,6 @@ public class MoMA {
 	// -------------------------------------------------------------------------------------
 	// setters and getters
 	// -------------------------------------------------------------------------------------
-
-	/**
-	 * @return the growthlanes
-	 */
-	public List<Growthlane> getGrowthlanes() {
-		return growthlanes;
-	}
-
-	/**
-	 * @param growthlanes
-	 *            the growthlanes to set
-	 */
-	private void setGrowthlanes(final List<Growthlane> growthlanes) {
-		this.growthlanes = growthlanes;
-	}
 
 	// -------------------------------------------------------------------------------------
 	// methods
@@ -799,96 +778,6 @@ public class MoMA {
 	}
 
 	/**
-     * NOTE: This method is kept to be compatible with down-stream code.
-	 * Write the centers of the growth line given in 'imgTemp'. Since it is centered
-     * in the image, we set the coordinates to the center of the image. Note, that
-     * this method is a legacy artifact. Legacy-Moma was able to treat full-frames with
-     * multiple GL inside an image by detecting them. This now no longer necessary after
-     * doing the preprocessing, so that we can simplify this method, the way we did.
-	 */
-    private void addGrowthlanes(IImageProvider imageProvider) {
-        this.setGrowthlanes(new ArrayList<>() );
-		getGrowthlanes().add( new Growthlane(imageProvider, this.dic.getDialogManager()) );
-
-        for ( long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension( 2 ); frameIdx++ ) {
-            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, dic.getComponentTreeGenerator());
-            final IntervalView< FloatType > ivFrame = Views.hyperSlice( imageProvider.getImgRaw(), 2, frameIdx );
-            currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
-            getGrowthlanes().get(0).add(currentFrame);
-        }
-    }
-
-
-	/**
-	 * Iterates over all found Growthlanes and evokes
-	 * Growthlane.findGapHypotheses(Img). Note that this function always uses
-	 * the image data in 'imgTemp'.
-	 */
-	private void generateAllSimpleSegmentationHypotheses(IImageProvider imageProvider) {
-		imageProvider.setImgProbs(processImageOrLoadFromDisk());
-		for ( final Growthlane gl : getGrowthlanes() ) {
-			gl.getFrames().parallelStream().forEach((glf) -> {
-				System.out.print( "." );
-				glf.generateSimpleSegmentationHypotheses( imageProvider, glf.getFrameIndex() );
-			});
-			System.out.println( " ...done!" );
-		}
-	}
-
-	private Img<FloatType> processImageOrLoadFromDisk() {
-		UnetProcessor unetProcessor = dic.getUnetProcessor();
-
-		String checksum = unetProcessor.getModelChecksum();
-		/**
-		 *  generate probability filename
-		 */
-		File file = new File(configurationManager.getImagePath());
-		if(file.isDirectory()){
-			File[] list = file.listFiles();
-			file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
-		}
-		String outputFolderPath = file.getParent();
-		String filename = removeExtension(file.getName());
-		String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
-
-		/**
-		 *  create or load probability maps
-		 */
-		Img<FloatType> probabilityMap;
-		if (!new File(processedImageFileName).exists()) {
-			probabilityMap = unetProcessor.process(imageProvider.getImgRaw());
-			ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
-			IJ.saveAsTiff(tmp_image, processedImageFileName);
-		} else {
-			ImagePlus imp = IJ.openImage(processedImageFileName);
-			probabilityMap = ImageJFunctions.convertFloat(imp);
-		}
-		return probabilityMap;
-	}
-
-	/**
-	 * Creates and triggers filling of mmILP, containing all
-	 * optimization-related structures used to compute the optimal tracking.
-	 */
-	private void generateILPs() {
-		for ( final Growthlane gl : getGrowthlanes() ) {
-			gl.generateILP( null );
-		}
-	}
-
-	/**
-	 * Runs all the generated ILPs.
-	 */
-	private void runILPs() {
-		int i = 0;
-		for ( final Growthlane gl : getGrowthlanes() ) {
-			System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
-			gl.getIlp().run();
-			i++;
-		}
-	}
-
-	/**
 	 * @return the guiFrame
 	 */
 	public static JFrame getGuiFrame() {
@@ -937,21 +826,6 @@ public class MoMA {
 	public static int getInitialOptimizationRange() {
 		return initialOptimizationRange;
 	}
-
-	/**
-	 * Allows one to restart by GL segmentation. This is e.g. needed after top
-	 * or bottom offsets are altered, which invalidates all analysis run so far.
-	 */
-	public void restartFromGLSegmentation(IImageProvider imageProvider) {
-		System.out.print( "Searching for Growthlanes..." );
-        addGrowthlanes(imageProvider);
-		System.out.println( " done!" );
-
-		System.out.println( "Generating Segmentation Hypotheses..." );
-		generateAllSimpleSegmentationHypotheses(imageProvider);
-		System.out.println( " done!" );
-	}
-
 
 	/**
 	 * @param datasetName the datasetName to set

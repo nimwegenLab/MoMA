@@ -360,47 +360,7 @@ public class MoMA {
 			initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
 		}
 
-		// ******** CHECK GUROBI ********* CHECK GUROBI ********* CHECK GUROBI *********
-		final String jlp = System.getProperty( "java.library.path" );
-		try {
-			new GRBEnv( "MoMA_gurobi.log" );
-		} catch ( final GRBException e ) {
-			final String msgs = "Initial Gurobi test threw exception... check your Gruobi setup!\n\nJava library path: " + jlp;
-			if ( HEADLESS ) {
-				System.out.println( msgs );
-			} else {
-				JOptionPane.showMessageDialog(
-						MoMA.guiFrame,
-						msgs,
-						"Gurobi Error?",
-						JOptionPane.ERROR_MESSAGE );
-			}
-			e.printStackTrace();
-			if (!running_as_Fiji_plugin) {
-				System.exit( 98 );
-			} else {
-				return;
-			}
-		} catch ( final UnsatisfiedLinkError ulr ) {
-			final String msgs = "Could not initialize Gurobi.\n" + "You might not have installed Gurobi properly or you miss a valid license.\n" + "Please visit 'www.gurobi.com' for further information.\n\n" + ulr.getMessage() + "\nJava library path: " + jlp;
-			if ( HEADLESS ) {
-				System.out.println( msgs );
-			} else {
-				JOptionPane.showMessageDialog(
-						MoMA.guiFrame,
-						msgs,
-						"Gurobi Error?",
-						JOptionPane.ERROR_MESSAGE );
-				ulr.printStackTrace();
-			}
-			System.out.println( "\n>>>>> Java library path: " + jlp + "\n" );
-			if (!running_as_Fiji_plugin) {
-				System.exit( 99 );
-			} else {
-				return;
-			}
-		}
-		// ******* END CHECK GUROBI **** END CHECK GUROBI **** END CHECK GUROBI ********
+		if (checkGurobiInstallation()) return;
 
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
@@ -529,6 +489,49 @@ public class MoMA {
 				System.exit( 11 );
 			}
 		}
+	}
+
+	private static boolean checkGurobiInstallation() {
+		final String jlp = System.getProperty( "java.library.path" );
+		try {
+			new GRBEnv( "MoMA_gurobi.log" );
+		} catch ( final GRBException e ) {
+			final String msgs = "Initial Gurobi test threw exception... check your Gruobi setup!\n\nJava library path: " + jlp;
+			if ( HEADLESS ) {
+				System.out.println( msgs );
+			} else {
+				JOptionPane.showMessageDialog(
+						MoMA.guiFrame,
+						msgs,
+						"Gurobi Error?",
+						JOptionPane.ERROR_MESSAGE );
+			}
+			e.printStackTrace();
+			if (!running_as_Fiji_plugin) {
+				System.exit( 98 );
+			} else {
+				return true;
+			}
+		} catch ( final UnsatisfiedLinkError ulr ) {
+			final String msgs = "Could not initialize Gurobi.\n" + "You might not have installed Gurobi properly or you miss a valid license.\n" + "Please visit 'www.gurobi.com' for further information.\n\n" + ulr.getMessage() + "\nJava library path: " + jlp;
+			if ( HEADLESS ) {
+				System.out.println( msgs );
+			} else {
+				JOptionPane.showMessageDialog(
+						MoMA.guiFrame,
+						msgs,
+						"Gurobi Error?",
+						JOptionPane.ERROR_MESSAGE );
+				ulr.printStackTrace();
+			}
+			System.out.println( "\n>>>>> Java library path: " + jlp + "\n" );
+			if (!running_as_Fiji_plugin) {
+				System.exit( 99 );
+			} else {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	// -------------------------------------------------------------------------------------

@@ -66,8 +66,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 
         /* Export user inputs to the tracking algorithm */
-        final int tmin = MoMA.getMinTime();
-        final int tmax = MoMA.getMaxTime();
+        final int tmin = configurationManager.getMinTime();
+        final int tmax = configurationManager.getMaxTime();
         final File file =
                 new File(outputFolder, String.format(
                         "[%d-%d]__%s.moma",

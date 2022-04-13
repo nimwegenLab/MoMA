@@ -1,24 +1,16 @@
 package com.jug;
 
 import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.GlDataLoader;
-import com.jug.datahandling.IImageProvider;
 import com.jug.datahandling.ImageProvider;
+import com.jug.datahandling.InitializationHelpers;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
-import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.PseudoDic;
-import com.jug.util.componenttree.UnetProcessor;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
-import ij.IJ;
 import ij.ImageJ;
-import ij.ImagePlus;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.Cursor;
-import net.imglib2.img.Img;
-import net.imglib2.img.ImgView;
-import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
@@ -34,11 +26,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
-
-import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 /*
   Main class for the MotherMachine project.
@@ -72,14 +60,12 @@ public class MoMA {
 	public static boolean HEADLESS = false;
 	public static boolean running_as_Fiji_plugin = false;
 
+	static int userDefinedMinTime;
+	static int userDefinedMaxTime;
 
 	// - - - - - - - - - - - - - -
 	// Info about loaded data
 	// - - - - - - - - - - - - - -
-	private static int minTime = -1;
-	private static int maxTime = -1;
-	private static int minChannelIdx = 1;
-	private static int numChannels = 1;
 	private static int initialOptimizationRange = -1;
 
 
@@ -300,62 +286,14 @@ public class MoMA {
 			optionalPropertyFile = new File( cmd.getOptionValue( "p" ) );
 		}
 
-
-		if (inputFolder.isDirectory() && inputFolder.listFiles(FloatTypeImgLoader.tifFilter).length > 1) {
-			System.out.println("reading a folder of images");
-			int min_t = Integer.MAX_VALUE;
-			int max_t = Integer.MIN_VALUE;
-			int min_c = Integer.MAX_VALUE;
-			int max_c = Integer.MIN_VALUE;
-			for (final File image : inputFolder.listFiles(FloatTypeImgLoader.tifFilter)) {
-
-				final int c = FloatTypeImgLoader.getChannelFromFilename(image.getName());
-				final int t = FloatTypeImgLoader.getTimeFromFilename(image.getName());
-
-				if (c < min_c) {
-					min_c = c;
-				}
-				if (c > max_c) {
-					max_c = c;
-				}
-
-				if (t < min_t) {
-					min_t = t;
-				}
-				if (t > max_t) {
-					max_t = t;
-				}
-			}
-			minTime = min_t;
-			maxTime = max_t + 1;
-			minChannelIdx = min_c;
-			numChannels = max_c - min_c + 1;
-		} else {
-			System.out.println("Loading images ...");
-			ImagePlus imp;
-			if (inputFolder.isDirectory() && inputFolder.listFiles(FloatTypeImgLoader.tifFilter).length == 1) {
-				imp = IJ.openImage(inputFolder.listFiles(FloatTypeImgLoader.tifFilter)[0].getAbsolutePath());
-			} else {
-				imp = IJ.openImage(inputFolder.getAbsolutePath());
-			}
-
-			minTime = 1;
-			maxTime = imp.getNFrames();
-			minChannelIdx = 1;
-			numChannels = imp.getNChannels();
-		}
-		System.out.println("Determined minTime: " + minTime);
-		System.out.println("Determined maxTime: " + maxTime);
-
-		System.out.println("Determined minChannelIdx: " + minChannelIdx);
-		System.out.println("Determined numChannels: " + numChannels);
-
+		final InitializationHelpers datasetProperties = new InitializationHelpers();
+		datasetProperties.readDatasetProperties(inputFolder);
 
 		if ( cmd.hasOption( "tmin" ) ) {
-			minTime = Integer.parseInt( cmd.getOptionValue( "tmin" ) );
+			userDefinedMinTime = Integer.parseInt( cmd.getOptionValue( "tmin" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
 		}
 		if ( cmd.hasOption( "tmax" ) ) {
-			maxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) );
+			userDefinedMaxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
 		}
 
 		if ( cmd.hasOption( "optrange" ) ) {
@@ -365,6 +303,16 @@ public class MoMA {
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
+
+		configurationManager.setMinTime(datasetProperties.getMinTime());
+		configurationManager.setMaxTime(datasetProperties.getMaxTime());
+
+		if(userDefinedMinTime > datasetProperties.getMinTime()){
+			configurationManager.setMinTime(userDefinedMinTime);
+		}
+		if(userDefinedMaxTime < datasetProperties.getMaxTime()){
+			configurationManager.setMaxTime(userDefinedMaxTime);
+		}
 
 		final MoMA main = new MoMA();
 
@@ -420,10 +368,14 @@ public class MoMA {
 		final File folder = new File(configurationManager.getImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		try {
-			if ( numChannels == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
+			if ( datasetProperties.getNumChannels() == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
 
 			imageProvider = new ImageProvider();
-			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(), minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
+			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(),
+					configurationManager.getMinTime(),
+					configurationManager.getMaxTime(),
+					datasetProperties.getMinChannelIdx(),
+					datasetProperties.getNumChannels() + datasetProperties.getMinChannelIdx() - 1);
 			dic.setImageProvider(imageProvider);
 
 			boolean hideConsoleLater = false;
@@ -807,20 +759,6 @@ public class MoMA {
 	 */
 	public static void setDefaultFilenameDecoration( final String defaultFilenameDecoration ) {
 		MoMA.defaultFilenameDecoration = defaultFilenameDecoration;
-	}
-
-	/**
-	 * @return the first time-point loaded
-	 */
-	public static int getMinTime() {
-		return minTime;
-	}
-
-	/**
-	 * @return the last loaded time-point
-	 */
-	public static int getMaxTime() {
-		return maxTime;
 	}
 
 	/**

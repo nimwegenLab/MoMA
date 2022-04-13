@@ -2,6 +2,7 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.config.ComponentTreeGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
@@ -54,7 +55,7 @@ public class GrowthlaneTrackingIlpTest {
         IDialogManager dialogManagerMock = new DialogManagerMock();
         Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), "mockVersionString");
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), new ConfigMock(), "mockVersionString");
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }
@@ -80,6 +81,19 @@ public class GrowthlaneTrackingIlpTest {
 
         @Override
         public double getMaximumGrowthRate() {
+            return 0;
+        }
+    }
+
+    class ConfigMock implements IConfiguration{
+
+        @Override
+        public int getMaxTime() {
+            return 0;
+        }
+
+        @Override
+        public int getMinTime() {
             return 0;
         }
     }

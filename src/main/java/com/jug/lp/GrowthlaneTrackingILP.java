@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
@@ -66,6 +67,7 @@ public class GrowthlaneTrackingILP {
     private final IImageProvider imageProvider;
     private ITrackingConfiguration trackingConfiguration;
     private String versionString;
+    private IConfiguration configurationManager;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
     private IDialogManager dialogManager;
@@ -78,6 +80,7 @@ public class GrowthlaneTrackingILP {
                                  IImageProvider imageProvider,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  ITrackingConfiguration trackingConfiguration,
+                                 IConfiguration configurationManager,
                                  String versionString) {
         this.gl = gl;
         this.model = grbModel;
@@ -85,6 +88,7 @@ public class GrowthlaneTrackingILP {
         this.imageProvider = imageProvider;
         this.trackingConfiguration = trackingConfiguration;
         this.versionString = versionString;
+        this.configurationManager = configurationManager;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -1714,11 +1718,11 @@ public class GrowthlaneTrackingILP {
                 }
             }
             out.write(String.format("TIME, %d, %d, %d\n", numT,
-                    MoMA.getMinTime(), MoMA.getMaxTime()));
+                    configurationManager.getMinTime(), configurationManager.getMaxTime()));
             out.write(String.format("SIZE, %d, %d\n", numH, numA));
             out.newLine();
 
-            final int timeOffset = MoMA.getMinTime();
+            final int timeOffset = configurationManager.getMinTime();
 
             // SegmentsInFrameCountConstraints
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1806,7 +1810,7 @@ public class GrowthlaneTrackingILP {
 
         final List<Hypothesis<?>> pruneRoots = new ArrayList<>();
 
-        final int timeOffset = MoMA.getMinTime();
+        final int timeOffset = configurationManager.getMinTime();
 
         String line;
         while ((line = reader.readLine()) != null) {
@@ -1824,7 +1828,7 @@ public class GrowthlaneTrackingILP {
                     final int readTmin = Integer.parseInt(columns[2].trim());
                     final int readTmax = Integer.parseInt(columns[3].trim());
 
-                    if (MoMA.getMinTime() != readTmin || MoMA.getMaxTime() != readTmax) {
+                    if (configurationManager.getMinTime() != readTmin || configurationManager.getMaxTime() != readTmax) {
                         if (!MoMA.HEADLESS) {
                             JOptionPane.showMessageDialog(
                                     MoMA.getGui(),

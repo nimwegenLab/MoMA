@@ -13,7 +13,7 @@ import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
-public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration, IConfiguration {
     /**
      * Controls the total width of the GL image as shown in GUI. The total width is is given by:
      * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
@@ -162,6 +162,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Setting related to the measurement and export of the oriented bounding box length measurement.
      */
     public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
+
+    private int minTime;
+    private int maxTime;
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
@@ -406,5 +409,31 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public void setImagePath(String imagePath){
         props.setProperty( "import_path", imagePath);
+    }
+
+    /**
+     * Set the minimum value of the time-range that will be analyzed.
+     * @param minTime
+     */
+    public void setMinTime(int minTime) {
+        this.minTime = minTime;
+    }
+
+    @Override
+    public int getMinTime() {
+        return minTime;
+    }
+
+    /**
+     * Set the maximum value of the time-range that will be analyzed.
+     * @param maxTime
+     */
+    public void setMaxTime(int maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    @Override
+    public int getMaxTime() {
+        return maxTime;
     }
 }

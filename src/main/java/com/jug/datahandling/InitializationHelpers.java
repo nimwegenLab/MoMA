@@ -6,7 +6,7 @@ import ij.ImagePlus;
 
 import java.io.File;
 
-public class InitializationHelpers implements DatasetPropertiesInterface {
+public class InitializationHelpers implements IDatasetProperties {
     private int minTime = -1;
     private int maxTime = -1;
     private int minChannelIdx = 1;
@@ -64,24 +64,22 @@ public class InitializationHelpers implements DatasetPropertiesInterface {
         System.out.println("Determined numChannels: " + numChannels);
     }
 
-    /**
-     * @return the first time-point loaded
-     */
+    @Override
     public int getMinTime() {
         return minTime;
     }
 
-    /**
-     * @return the last loaded time-point
-     */
+    @Override
     public int getMaxTime() {
         return maxTime;
     }
 
+    @Override
     public int getNumChannels() {
         return numChannels;
     }
 
+    @Override
     public int getMinChannelIdx() {
         return minChannelIdx;
     }

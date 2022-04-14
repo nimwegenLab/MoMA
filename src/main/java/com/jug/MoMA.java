@@ -96,7 +96,7 @@ public class MoMA {
 		commandLineArgumentParser.parse(args);
 		File inputFolder = commandLineArgumentParser.getInputFolder();
 
-		if (SetupValidator.checkGurobiInstallation(getIfRunningHeadless(), running_as_Fiji_plugin)) return;
+		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;
 
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
 		datasetProperties.readDatasetProperties(inputFolder);
@@ -105,6 +105,7 @@ public class MoMA {
 		configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
+		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.setMinTime(datasetProperties.getMinTime());
 		configurationManager.setMaxTime(datasetProperties.getMaxTime());
 
@@ -391,10 +392,6 @@ public class MoMA {
 	 */
 	public static int getInitialOptimizationRange() {
 		return commandLineArgumentParser.getInitialOptimizationRange();
-	}
-
-	public static boolean getIfRunningHeadless() {
-		return commandLineArgumentParser.getIfRunningHeadless();
 	}
 
 	/**

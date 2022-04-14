@@ -163,7 +163,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             MoMA.getGuiFrame().setMenuBar(menuBar);
         }
 
@@ -1041,7 +1041,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Generating ILP...");
-        if (MoMA.getIfRunningHeadless()) {
+        if (configurationManager.getIfRunningHeadless()) {
             model.getCurrentGL().generateILP(null);
         } else {
             model.getCurrentGL().generateILP(
@@ -1104,7 +1104,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         File folderToUse;
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
             folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, configurationManager.getOutputPath(), "Choose export folder...");
@@ -1152,7 +1152,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         File file = new File(configurationManager.getOutputPath() + "/index.html");
 
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             final JFileChooser fc = new JFileChooser();
             fc.setSelectedFile(file);
             fc.addChoosableFileFilter(new ExtensionFileFilter(new String[]{"html"}, "HTML-file"));
@@ -1197,7 +1197,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         // ----------------------------------------------------------------------------------------------------
 
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             dataToDisplayChanged();
         }
     }

@@ -44,4 +44,10 @@ public interface IConfiguration {
      * @return optimality gap in percent
      */
     double getGurobiMaxOptimalityGap();
+
+    /**
+     * Returns if MoMA is being executed without GUI (i.e. in headless mode).
+     * @return
+     */
+    boolean getIfRunningHeadless();
 }

@@ -499,4 +499,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public double getGurobiMaxOptimalityGap() {
         return GUROBI_MAX_OPTIMALITY_GAP;
     }
+
+    boolean runningHeadless;
+    public void setIfRunningHeadless(boolean runningHeadless){
+        this.runningHeadless = runningHeadless;
+    }
+
+    @Override
+    public boolean getIfRunningHeadless() {
+        return runningHeadless;
+    }
 }

@@ -110,7 +110,7 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         // INITIALIZE PROGRESS-BAR if not run headless
         final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(true);
         }
 
@@ -259,13 +259,13 @@ public class CellStatsExporter implements ResultExporterInterface {
             while (segmentRecord.exists());
 
             // REPORT PROGRESS if need be
-            if (!MoMA.getIfRunningHeadless()) {
+            if (!configurationManager.getIfRunningHeadless()) {
                 dialogProgress.hasProgressed();
             }
         }
 
         // Dispose ProgressBar in need be
-        if (!MoMA.getIfRunningHeadless()) {
+        if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(false);
             dialogProgress.dispose();
         }
@@ -296,12 +296,12 @@ public class CellStatsExporter implements ResultExporterInterface {
             }
             out.close();
         } catch (final FileNotFoundException e1) {
-            if (!MoMA.getIfRunningHeadless())
+            if (!configurationManager.getIfRunningHeadless())
                 JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             System.err.println("Export Error: File not found!");
             e1.printStackTrace();
         } catch (final IOException e1) {
-            if (!MoMA.getIfRunningHeadless())
+            if (!configurationManager.getIfRunningHeadless())
                 JOptionPane.showMessageDialog(gui, "Selected file could not be written!", "Error!", JOptionPane.ERROR_MESSAGE);
             System.err.println("Export Error: Selected file could not be written!");
             e1.printStackTrace();

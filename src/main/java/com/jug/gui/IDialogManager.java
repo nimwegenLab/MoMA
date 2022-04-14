@@ -5,4 +5,6 @@ package com.jug.gui;
  */
 public interface IDialogManager {
     void showErrorDialogWithTextArea(String title, String message);
+
+    void showPropertiesEditor();
 }

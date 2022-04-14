@@ -20,13 +20,14 @@ import java.util.function.Supplier;
 /**
  * @author jug
  */
-class DialogPropertiesEditor extends JDialog implements ActionListener {
+public class DialogPropertiesEditor extends JDialog implements ActionListener {
 
 	private static final long serialVersionUID = -5529104109524798394L;
 	private final PropEditedListener propEditListener = new PropEditedListener();
     private static Component parent = null;
     private final PropFactory propFactory;
     private PropertySheetPanel sheet;
+    private ConfigurationManager configurationManager;
     private PseudoDic dic;
 
     public class PropEditedListener implements PropertyChangeListener {
@@ -39,18 +40,18 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 			try {
                 switch (sourceName) {
                     case "GUROBI_TIME_LIMIT":
-                        MoMA.GUROBI_TIME_LIMIT =
+                        configurationManager.GUROBI_TIME_LIMIT =
                                 Double.parseDouble(evt.getNewValue().toString());
                         props.setProperty(
                                 "GUROBI_TIME_LIMIT",
-                                "" + MoMA.GUROBI_TIME_LIMIT);
+                                "" + configurationManager.GUROBI_TIME_LIMIT);
                         break;
                     case "GUROBI_MAX_OPTIMALITY_GAP":
-                        MoMA.GUROBI_MAX_OPTIMALITY_GAP =
+                        configurationManager.GUROBI_MAX_OPTIMALITY_GAP =
                                 Double.parseDouble(evt.getNewValue().toString());
                         props.setProperty(
                                 "GUROBI_MAX_OPTIMALITY_GAP",
-                                "" + MoMA.GUROBI_MAX_OPTIMALITY_GAP);
+                                "" + configurationManager.GUROBI_MAX_OPTIMALITY_GAP);
                         break;
                     case "SEGMENTATION_MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
@@ -72,7 +73,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
                                         ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
-                                        MoMA.dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+                                        dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                         props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
                                                 "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
@@ -198,7 +199,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
-                                    MoMA.dic.getWatershedMaskGenerator().setThresholdForComponentMerging(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
+                                    dic.getWatershedMaskGenerator().setThresholdForComponentMerging(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -218,7 +219,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
-                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
+                                    dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -238,7 +239,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
-                                    MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+                                    dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -389,8 +390,9 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor(final Component parent, final Properties props, PseudoDic dic) {
+	public DialogPropertiesEditor(final Component parent, final Properties props, ConfigurationManager configurationManager, PseudoDic dic) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
+        this.configurationManager = configurationManager;
         this.dic = dic;
         propFactory = new PropFactory();
 		this.parent = parent;

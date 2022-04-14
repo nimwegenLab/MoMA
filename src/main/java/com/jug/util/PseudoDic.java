@@ -201,7 +201,7 @@ public class PseudoDic {
     MoMAGui gui;
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
         }
         return gui;
     }
@@ -214,10 +214,17 @@ public class PseudoDic {
         return momaModel;
     }
 
+    DialogPropertiesEditor propsEditor;
+    public DialogPropertiesEditor getPropertiesEditorWindow(){
+        if(propsEditor != null) {return propsEditor; }
+        propsEditor = new DialogPropertiesEditor(this, getConfigurationManager().props, getConfigurationManager(), this);
+        return propsEditor;
+    }
+
     IDialogManager dialogManager;
     public IDialogManager getDialogManager(){
         if(dialogManager == null){
-            dialogManager = new DialogManager(() -> getMomaGui());
+            dialogManager = new DialogManager(() -> getMomaGui(), getPropertiesEditorWindow());
         }
         return dialogManager;
     }

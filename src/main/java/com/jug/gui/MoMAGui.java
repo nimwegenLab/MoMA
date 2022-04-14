@@ -51,7 +51,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // fields
     // -------------------------------------------------------------------------------------
     public final MoMAModel model;
-    private final DialogPropertiesEditor propsEditor;
+    private IDialogManager dialogManager;
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
@@ -114,7 +114,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    MoMA momaInstance,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
-                   LoggerWindow loggerWindow) {
+                   LoggerWindow loggerWindow,
+                   IDialogManager dialogManager) {
         super(new BorderLayout());
 
         this.model = mmm;
@@ -124,7 +125,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.configurationManager = configurationManager;
         this.loggerWindow = loggerWindow;
 
-        propsEditor = new DialogPropertiesEditor(this, configurationManager.props);
+        this.dialogManager = dialogManager;
 
         buildGui();
         dataToDisplayChanged();
@@ -826,7 +827,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public void actionPerformed(final ActionEvent e) {
 
         if (e.getSource().equals(menuProps)) {
-            propsEditor.setVisible(true);
+            dialogManager.showPropertiesEditor();
         }
         if (e.getSource().equals(menuLoad)) {
 

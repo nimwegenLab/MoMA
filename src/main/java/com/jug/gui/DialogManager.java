@@ -9,9 +9,11 @@ import java.util.function.Supplier;
  */
 public class DialogManager implements IDialogManager {
     private Supplier<MoMAGui> guiSupplier;
+    private DialogPropertiesEditor propertiesEditor;
 
-    public DialogManager(Supplier<MoMAGui> guiSupplier){
+    public DialogManager(Supplier<MoMAGui> guiSupplier, DialogPropertiesEditor propertiesEditor){
         this.guiSupplier = guiSupplier;
+        this.propertiesEditor = propertiesEditor;
     }
 
     /**
@@ -28,5 +30,10 @@ public class DialogManager implements IDialogManager {
             JScrollPane scrollPane = new JScrollPane(textArea);
             JOptionPane.showMessageDialog(gui, scrollPane, title, JOptionPane.ERROR_MESSAGE);
         });
+    }
+
+    @Override
+    public void showPropertiesEditor() {
+        propertiesEditor.setVisible(true);
     }
 }

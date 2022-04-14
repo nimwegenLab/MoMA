@@ -51,8 +51,6 @@ public class MoMA {
 	 */
 	public static JFrame guiFrame;
 
-	private static MoMAGui gui;
-
 	/**
 	 * Path to Moma setting directory
 	 */
@@ -205,24 +203,22 @@ public class MoMA {
 			ImageJFunctions.show( imageProvider.getImgRaw(), "Rotated & cropped raw data" );
 		}
 
-		gui = dic.getMomaGui();
-
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			SwingUtilities.invokeLater(() -> {
 				System.out.print( "Build GUI..." );
 				loggerWindow.showConsoleWindow(false);
 
-				guiFrame.add(gui);
+				guiFrame.add(dic.getMomaGui());
 				guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
 				guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
-				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
+				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(dic.getMomaGui()));
 
 				guiFrame.setVisible(true);
 				System.out.println( " done!" );
 			});
 		} else {
-			gui.exportHtmlOverview();
-			gui.exportDataFiles(new File(configurationManager.getOutputPath()));
+			dic.getMomaGui().exportHtmlOverview();
+			dic.getMomaGui().exportDataFiles(new File(configurationManager.getOutputPath()));
 
 			configurationManager.saveParams(getGuiFrame());
 
@@ -328,7 +324,7 @@ public class MoMA {
 			chooser.setFileFilter( new FileFilter() {
 
 				@Override
-				public final boolean accept( final File file ) {
+				public boolean accept( final File file ) {
 					return file.isDirectory();
 				}
 

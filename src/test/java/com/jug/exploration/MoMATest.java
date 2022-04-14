@@ -1,13 +1,5 @@
-package com.jug;
+package com.jug.exploration;
 
-import org.junit.Test;
-
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
-
-import static com.jug.util.JavaUtils.concatenateWithCollection;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class MoMATest {

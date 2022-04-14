@@ -1,12 +1,6 @@
-package com.jug;
+package com.jug.exploration;
 
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
-
-import static com.jug.util.JavaUtils.concatenateWithCollection;
 
 public class ResultLoadingExploratoration {
     //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";

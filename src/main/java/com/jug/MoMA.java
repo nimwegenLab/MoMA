@@ -75,18 +75,6 @@ public class MoMA {
 
 
 	/**
-	 * The path to usually open JFileChoosers at (except for initial load
-	 * dialog).
-	 */
-	public static String DEFAULT_PATH = System.getProperty( "user.home" );
-
-	/**
-	 * The path to save ground truth and time statistics to (yes, we write
-	 * papers!).
-	 */
-	public static String STATS_OUTPUT_PATH = DEFAULT_PATH;
-
-	/**
 	 * The maximum time in seconds GUROBI is allowed to search for a good
 	 * tracking solution. (After that period of time GUROBI will stop and best
 	 * solution found so far will be used.)
@@ -144,6 +132,8 @@ public class MoMA {
 		if (commandLineArgumentParser.getUserDefinedMaxTime() > 0 && commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()) {
 			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 		}
+
+		configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
 
 		final MoMA main = new MoMA();
 
@@ -264,7 +254,7 @@ public class MoMA {
 			});
 		} else {
 			gui.exportHtmlOverview();
-			gui.exportDataFiles(new File(MoMA.STATS_OUTPUT_PATH));
+			gui.exportDataFiles(new File(configurationManager.getOutputPath()));
 
 			configurationManager.saveParams(getGuiFrame());
 

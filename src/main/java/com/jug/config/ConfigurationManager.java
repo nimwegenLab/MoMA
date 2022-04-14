@@ -21,6 +21,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static String DEFAULT_PATH = System.getProperty( "user.home" );
 
     /**
+     * The path to save ground truth and time statistics to (yes, we write
+     * papers!).
+     */
+    public static String STATS_OUTPUT_PATH = DEFAULT_PATH;
+
+    /**
      * Controls the total width of the GL image as shown in GUI. The total width is is given by:
      * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
      * See also its usage in GrowthlaneViewer.java and MoMAGui.java
@@ -441,5 +447,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     @Override
     public int getMaxTime() {
         return maxTime;
+    }
+
+    public void setOutputPath(String outputPath) {
+        STATS_OUTPUT_PATH = outputPath;
+    }
+
+    public String getOutputPath() {
+        return STATS_OUTPUT_PATH;
     }
 }

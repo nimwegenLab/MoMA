@@ -17,7 +17,7 @@ public class CommandLineArgumentsParser {
     // Info about loaded data
     // - - - - - - - - - - - - - -
     private Integer initialOptimizationRange = -1;
-    private String STATS_OUTPUT_PATH;
+    private String outputPath;
     private boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
     private boolean HEADLESS;
 
@@ -146,7 +146,7 @@ public class CommandLineArgumentsParser {
                 }
             }
             outputFolder = inputFolder;
-            STATS_OUTPUT_PATH = outputFolder.getAbsolutePath();
+            outputPath = outputFolder.getAbsolutePath();
         } else {
             outputFolder = new File( cmd.getOptionValue( "o" ) );
 
@@ -167,7 +167,7 @@ public class CommandLineArgumentsParser {
                 }
             }
 
-            STATS_OUTPUT_PATH = outputFolder.getAbsolutePath();
+            outputPath = outputFolder.getAbsolutePath();
         }
 
         if ( cmd.hasOption( "p" ) ) {
@@ -215,5 +215,9 @@ public class CommandLineArgumentsParser {
      */
     public int getInitialOptimizationRange() {
         return initialOptimizationRange;
+    }
+
+    public String getOutputPath() {
+        return outputPath;
     }
 }

@@ -60,6 +60,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final List<AssignmentEditorPanel> assignmentEditorPanels = new ArrayList<>();
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private final boolean showGroundTruthExportFunctionality;
+    private ConfigurationManager configurationManager;
     private final IImageProvider imageProvider;
     private final MoMA momaInstance;
     public JSlider sliderGL;
@@ -110,13 +111,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      * @param mmm the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider, MoMA momaInstance, boolean showGroundTruthExportFunctionality) {
+    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider, MoMA momaInstance, boolean showGroundTruthExportFunctionality, ConfigurationManager configurationManager) {
         super(new BorderLayout());
 
         this.model = mmm;
         this.imageProvider = imageProvider;
         this.momaInstance = momaInstance;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
+        this.configurationManager = configurationManager;
 
         propsEditor = new DialogPropertiesEditor(this, MoMA.props);
 
@@ -835,7 +837,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
                 final File file = OsDependentFileChooser.showLoadFileChooser(
                         self,
-                        MoMA.STATS_OUTPUT_PATH,
+                        configurationManager.getOutputPath(),
                         "Choose tracking to load...",
                         new ExtensionFileFilter("moma", "Curated MoMA tracking"));
                 System.out.println("File to load tracking from: " + file.getAbsolutePath());
@@ -861,7 +863,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp != null) { // && ilp.getStatus() != GrowthlaneTrackingILP.OPTIMIZATION_NEVER_PERFORMED
                 final File file = OsDependentFileChooser.showSaveFileChooser(
                         this,
-                        MoMA.STATS_OUTPUT_PATH,
+                        configurationManager.getOutputPath(),
                         "Save current tracking to...",
                         new ExtensionFileFilter("moma", "Curated MOMA tracking"));
                 System.out.println("File to save tracking to: " + file.getAbsolutePath());
@@ -885,13 +887,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(menuSaveFG)) {
             final File file = OsDependentFileChooser.showSaveFileChooser(
                     this,
-                    MoMA.DEFAULT_PATH,
+                    configurationManager.DEFAULT_PATH,
                     "Save Factor Graph...",
                     new ExtensionFileFilter(new String[]{"txt", "TXT"}, "TXT-file"));
 
             if (file != null) {
-                MoMA.DEFAULT_PATH = file.getParent();
-
                 if (model.getCurrentGL().getIlp() == null) {
                     System.out.println("Generating ILP...");
                     model.getCurrentGL().generateILP(
@@ -1126,7 +1126,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (!MoMA.getIfRunningHeadless()) {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
-            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, MoMA.STATS_OUTPUT_PATH, "Choose export folder...");
+            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this, configurationManager.getOutputPath(), "Choose export folder...");
             if (folderToUse == null) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -1136,7 +1136,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 return null;
             }
         } else { /* if running headless: use default output path */
-            folderToUse = new File(MoMA.STATS_OUTPUT_PATH);
+            folderToUse = new File(configurationManager.getOutputPath());
         }
         return folderToUse;
     }
@@ -1169,7 +1169,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int startFrame = 1;
         int endFrame = sliderTime.getMaximum() + 1;
 
-        File file = new File(MoMA.STATS_OUTPUT_PATH + "/index.html");
+        File file = new File(configurationManager.getOutputPath() + "/index.html");
 
         if (!MoMA.getIfRunningHeadless()) {
             final JFileChooser fc = new JFileChooser();
@@ -1181,7 +1181,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 if (!file.getAbsolutePath().endsWith(".html") && !file.getAbsolutePath().endsWith(".htm")) {
                     file = new File(file.getAbsolutePath() + ".html");
                 }
-                MoMA.STATS_OUTPUT_PATH = file.getParent();
+                configurationManager.setOutputPath(file.getParent());
 
                 boolean done = false;
                 while (!done) {

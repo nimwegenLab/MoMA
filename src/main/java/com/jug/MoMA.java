@@ -312,11 +312,6 @@ public class MoMA {
 	// -------------------------------------------------------------------------------------
 
 	/**
-	 * The singleton instance of ImageJ.
-	 */
-
-
-	/**
 	 * Frame hosting the console output.
 	 */
 	private JFrame frameConsoleWindow;
@@ -534,25 +529,6 @@ public class MoMA {
 		return selectedFile;
 	}
 
-
-
-	/**
-	 * Adds all intensity values of row i in view to rowSums[i].
-	 *
-	 * @param view
-	 * @param rowSums
-	 */
-	private float[] addRowSumsFromInterval( final IntervalView< FloatType > view, final float[] rowSums ) {
-		for ( int i = ( int ) view.min( 1 ); i <= view.max( 1 ); i++ ) {
-			final IntervalView< FloatType > row = Views.hyperSlice( view, 1, i );
-			final Cursor< FloatType > cursor = Views.iterable( row ).cursor();
-			while ( cursor.hasNext() ) {
-				rowSums[ i - ( int ) view.min( 1 ) ] += cursor.next().get();
-			}
-		}
-		return rowSums;
-	}
-
 	/**
 	 * @return the guiFrame
 	 */
@@ -572,14 +548,6 @@ public class MoMA {
 	 */
 	public static String getDefaultFilenameDecoration() {
 		return defaultFilenameDecoration;
-	}
-
-	/**
-	 * @param defaultFilenameDecoration
-	 *            the defaultFilenameDecoration to set
-	 */
-	public static void setDefaultFilenameDecoration( final String defaultFilenameDecoration ) {
-		MoMA.defaultFilenameDecoration = defaultFilenameDecoration;
 	}
 
 	/**

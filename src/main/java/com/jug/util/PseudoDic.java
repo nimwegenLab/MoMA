@@ -8,10 +8,7 @@ import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
-import com.jug.gui.DialogManager;
-import com.jug.gui.IDialogManager;
-import com.jug.gui.MoMAGui;
-import com.jug.gui.MoMAModel;
+import com.jug.gui.*;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -204,7 +201,7 @@ public class PseudoDic {
     MoMAGui gui;
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow());
         }
         return gui;
     }
@@ -237,5 +234,14 @@ public class PseudoDic {
                                         getComponentTreeGenerator(),
                                         getDialogManager());
         return glDataLoader;
+    }
+
+    private ConsoleWindow loggerWindow;
+    public ConsoleWindow getLoggerWindow() {
+        if (loggerWindow != null) {
+            return loggerWindow;
+        }
+        loggerWindow = new ConsoleWindow(this, getConfigurationManager());
+        return loggerWindow;
     }
 }

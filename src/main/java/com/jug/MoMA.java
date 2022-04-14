@@ -4,6 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.ImageProvider;
 import com.jug.datahandling.InitializationHelpers;
+import com.jug.gui.ConsoleWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.PseudoDic;
@@ -39,6 +40,7 @@ public class MoMA {
 	private static ConfigurationManager configurationManager;
 	private static ImageProvider imageProvider;
 	private static CommandLineArgumentsParser commandLineArgumentParser;
+	private static ConsoleWindow loggerWindow;
 
 	static {
 		LegacyInjector.preinit();
@@ -138,6 +140,7 @@ public class MoMA {
 		final MoMA main = new MoMA();
 
 		dic = new PseudoDic(configurationManager, main);
+		loggerWindow = dic.getLoggerWindow();
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
@@ -182,8 +185,8 @@ public class MoMA {
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			// Setting up console window...
-			main.initConsoleWindow();
-			main.showConsoleWindow( true );
+			loggerWindow.initConsoleWindow();
+			loggerWindow.showConsoleWindow( true );
 		}
 
 		final File folder = new File(configurationManager.getImagePath());
@@ -200,14 +203,14 @@ public class MoMA {
 			dic.setImageProvider(imageProvider);
 
 			boolean hideConsoleLater = false;
-			if ( !commandLineArgumentParser.getIfRunningHeadless() && !main.isConsoleVisible() ) {
-				main.showConsoleWindow( true );
+			if ( !commandLineArgumentParser.getIfRunningHeadless() && !loggerWindow.isConsoleVisible() ) {
+				loggerWindow.showConsoleWindow( true );
 				hideConsoleLater = true;
 			}
 
 			dic.getGlDataLoader().restartFromGLSegmentation(imageProvider);
 			if ( !commandLineArgumentParser.getIfRunningHeadless() && hideConsoleLater ) {
-				main.showConsoleWindow( false );
+				loggerWindow.showConsoleWindow( false );
 			}
 
 			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
@@ -241,7 +244,7 @@ public class MoMA {
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			SwingUtilities.invokeLater(() -> {
 				System.out.print( "Build GUI..." );
-				main.showConsoleWindow(false);
+				loggerWindow.showConsoleWindow(false);
 
 				guiFrame.add(gui);
 				guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
@@ -312,112 +315,9 @@ public class MoMA {
 	// -------------------------------------------------------------------------------------
 
 	/**
-	 * Frame hosting the console output.
-	 */
-	private JFrame frameConsoleWindow;
-
-	/**
-	 * TextArea hosting the console output within the JFrame frameConsoleWindow.
-	 */
-	private JTextArea consoleWindowTextArea;
-
-	/**
 	 * String denoting the name of the loaded dataset (e.g. used in GUI)
 	 */
 	private String datasetName;
-
-	// -------------------------------------------------------------------------------------
-	// setters and getters
-	// -------------------------------------------------------------------------------------
-
-	// -------------------------------------------------------------------------------------
-	// methods
-	// -------------------------------------------------------------------------------------
-
-	/**
-	 * Created and shows the console window and redirects System.out and
-	 * System.err to it.
-	 */
-	private void initConsoleWindow() {
-		frameConsoleWindow = new JFrame( String.format( "%s Console Window", dic.getGitVersionProvider().getVersionString() ) );
-		// frameConsoleWindow.setResizable( false );
-		consoleWindowTextArea = new JTextArea();
-		consoleWindowTextArea.setLineWrap( true );
-		consoleWindowTextArea.setWrapStyleWord( true );
-
-		final int centerX = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
-		final int centerY = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2;
-		frameConsoleWindow.setBounds(centerX - configurationManager.GUI_CONSOLE_WIDTH / 2, centerY - configurationManager.GUI_HEIGHT / 2, configurationManager.GUI_CONSOLE_WIDTH, configurationManager.GUI_HEIGHT);
-		final JScrollPane scrollPane = new JScrollPane( consoleWindowTextArea );
-//		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-		scrollPane.setBorder( BorderFactory.createEmptyBorder( 0, 15, 0, 0 ) );
-		frameConsoleWindow.getContentPane().add( scrollPane );
-
-		final OutputStream out = new OutputStream() {
-
-			private final PrintStream original = new PrintStream( System.out );
-
-			@Override
-			public void write( final int b ) {
-				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print((char) b);
-			}
-
-			@Override
-			public void write( final byte[] b, final int off, final int len ) {
-				updateConsoleTextArea( new String( b, off, len ) );
-				original.print( new String( b, off, len ) );
-			}
-
-			@Override
-			public void write( final byte[] b ) {
-				write( b, 0, b.length );
-			}
-		};
-
-		final OutputStream err = new OutputStream() {
-
-			private final PrintStream original = new PrintStream( System.out );
-
-			@Override
-			public void write( final int b ) {
-				updateConsoleTextArea( String.valueOf( ( char ) b ) );
-				original.print((char) b);
-			}
-
-			@Override
-			public void write( final byte[] b, final int off, final int len ) {
-				updateConsoleTextArea( new String( b, off, len ) );
-				original.print( new String( b, off, len ) );
-			}
-
-			@Override
-			public void write( final byte[] b ) {
-				write( b, 0, b.length );
-			}
-		};
-
-		System.setOut( new PrintStream( out, true ) );
-		System.setErr( new PrintStream( err, true ) );
-	}
-
-	private void updateConsoleTextArea( final String text ) {
-		SwingUtilities.invokeLater(() -> consoleWindowTextArea.append( text ));
-	}
-
-	/**
-	 * Shows the ConsoleWindow
-	 */
-	public void showConsoleWindow( final boolean show ) {
-		frameConsoleWindow.setVisible( show );
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isConsoleVisible() {
-		return this.frameConsoleWindow.isVisible();
-	}
 
 	/**
 	 * Initializes the MotherMachine main app. This method contains platform

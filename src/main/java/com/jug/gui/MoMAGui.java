@@ -61,6 +61,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private final boolean showGroundTruthExportFunctionality;
     private ConfigurationManager configurationManager;
+    private ConsoleWindow loggerWindow;
     private final IImageProvider imageProvider;
     private final MoMA momaInstance;
     public JSlider sliderGL;
@@ -111,7 +112,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      * @param mmm the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel mmm, IImageProvider imageProvider, MoMA momaInstance, boolean showGroundTruthExportFunctionality, ConfigurationManager configurationManager) {
+    public MoMAGui(final MoMAModel mmm,
+                   IImageProvider imageProvider,
+                   MoMA momaInstance,
+                   boolean showGroundTruthExportFunctionality,
+                   ConfigurationManager configurationManager,
+                   ConsoleWindow loggerWindow) {
         super(new BorderLayout());
 
         this.model = mmm;
@@ -119,6 +125,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.momaInstance = momaInstance;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
         this.configurationManager = configurationManager;
+        this.loggerWindow = loggerWindow;
 
         propsEditor = new DialogPropertiesEditor(this, MoMA.props);
 
@@ -877,7 +884,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(menuViewShowConsole)) {
-            momaInstance.showConsoleWindow(!momaInstance.isConsoleVisible());
+            loggerWindow.showConsoleWindow(!loggerWindow.isConsoleVisible());
             MoMA.getGuiFrame().setVisible(true);
         }
         if (e.getSource().equals(menuShowImgRaw)) {
@@ -887,7 +894,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(menuSaveFG)) {
             final File file = OsDependentFileChooser.showSaveFileChooser(
                     this,
-                    configurationManager.DEFAULT_PATH,
+                    configurationManager.getDefaultPath(),
                     "Save Factor Graph...",
                     new ExtensionFileFilter(new String[]{"txt", "TXT"}, "TXT-file"));
 

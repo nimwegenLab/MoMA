@@ -456,4 +456,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public String getOutputPath() {
         return STATS_OUTPUT_PATH;
     }
+
+    public String getDefaultPath() {
+        return DEFAULT_PATH;
+    }
 }

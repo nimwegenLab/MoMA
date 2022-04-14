@@ -8,6 +8,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
 import static com.jug.util.JavaUtils.concatenateWithCollection;
+import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class MoMATest {
     //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
@@ -415,9 +416,7 @@ public class MoMATest {
     public void headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
-        MoMA moma = new MoMA();
-        MoMA.HEADLESS = true;
-        MoMA.main(new String[]{"-i", inputPath, "-o", outputPath});
+        startMoma(true, inputPath, outputPath, null, null, true);
     }
 
     
@@ -447,67 +446,5 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
-    }
-
-    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
-        startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
-    }
-
-    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
-        if (deleteProbabilityMaps) {
-            remove_probability_maps(inputPath);
-        }
-        create_output_folder(outputPath);
-
-        String[] args;
-
-        if (tmin != null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
-        } else if (tmin != null && tmax == null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString()};
-        } else if (tmin == null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
-        } else { // both tmin and tmax are null
-            args = new String[]{"-i", inputPath, "-o", outputPath};
-        }
-        if (additionalArgs != null) {
-            args = concatenateWithCollection(args, additionalArgs);
-        }
-        MoMA.HEADLESS = headless;
-        MoMA.main(args);
-    }
-
-    private void create_output_folder(String outputPath) {
-        File file = new File(outputPath);
-        file.mkdir();
-    }
-
-    /**
-     * Delete preexisting probability maps. During testing, we often want to test the generation
-     * of the probability maps, which are cached to disk and loaded, if they exist for a given model.
-     * This function removes those cached files to always run the U-Net preprocessing.
-     *
-     * @param path
-     */
-    private void remove_probability_maps(String path) {
-        PathMatcher matcher =
-                FileSystems.getDefault().getPathMatcher("glob:*__model_*.tif*");
-        File f = new File(path);
-        File parentFolder = new File(f.getParent());
-
-        String[] pathnames = parentFolder.list();
-        for (String name : pathnames) {
-            String filePath = parentFolder + "/" + name;
-            if (matcher.matches(Paths.get(name))) {
-                System.out.print(filePath);
-                File f2 = new File(filePath);
-                if (f2.delete())                      //returns Boolean value
-                {
-                    System.out.println("Deleted: " + f.getName());   //getting and printing the file name
-                } else {
-                    System.out.println("Failed to delete: " + f.getName());
-                }
-            }
-        }
     }
 }

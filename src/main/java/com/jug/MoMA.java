@@ -4,7 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.ImageProvider;
 import com.jug.datahandling.InitializationHelpers;
-import com.jug.gui.ConsoleWindow;
+import com.jug.gui.LoggerWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.util.PseudoDic;
@@ -12,11 +12,7 @@ import gurobi.GRBEnv;
 import gurobi.GRBException;
 import ij.ImageJ;
 import net.imagej.patcher.LegacyInjector;
-import net.imglib2.Cursor;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.IntervalView;
-import net.imglib2.view.Views;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -25,8 +21,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Properties;
 
 /*
@@ -40,7 +34,7 @@ public class MoMA {
 	private static ConfigurationManager configurationManager;
 	private static ImageProvider imageProvider;
 	private static CommandLineArgumentsParser commandLineArgumentParser;
-	private static ConsoleWindow loggerWindow;
+	private static LoggerWindow loggerWindow;
 
 	static {
 		LegacyInjector.preinit();

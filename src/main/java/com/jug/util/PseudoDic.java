@@ -236,12 +236,12 @@ public class PseudoDic {
         return glDataLoader;
     }
 
-    private ConsoleWindow loggerWindow;
-    public ConsoleWindow getLoggerWindow() {
+    private LoggerWindow loggerWindow;
+    public LoggerWindow getLoggerWindow() {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new ConsoleWindow(this, getConfigurationManager());
+        loggerWindow = new LoggerWindow(this, getConfigurationManager());
         return loggerWindow;
     }
 }

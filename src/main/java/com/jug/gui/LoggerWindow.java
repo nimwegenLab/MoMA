@@ -8,7 +8,7 @@ import java.awt.*;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-public class ConsoleWindow {
+public class LoggerWindow {
     private final String windowTitle;
     private ConfigurationManager configurationManager;
     /**
@@ -21,7 +21,7 @@ public class ConsoleWindow {
      */
     private JTextArea consoleWindowTextArea;
 
-    public ConsoleWindow(PseudoDic dic, ConfigurationManager configurationManager) {
+    public LoggerWindow(PseudoDic dic, ConfigurationManager configurationManager) {
         windowTitle = String.format( "%s Console Window", dic.getGitVersionProvider().getVersionString() );
         this.configurationManager = configurationManager;
     }
@@ -98,7 +98,7 @@ public class ConsoleWindow {
     }
 
     /**
-     * Shows the ConsoleWindow
+     * Shows the LoggerWindow
      */
     public void showConsoleWindow( final boolean show ) {
         frameConsoleWindow.setVisible( show );

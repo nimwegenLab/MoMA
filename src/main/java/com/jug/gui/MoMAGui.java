@@ -22,7 +22,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import net.miginfocom.swing.MigLayout;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
@@ -61,7 +60,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private final boolean showGroundTruthExportFunctionality;
     private ConfigurationManager configurationManager;
-    private ConsoleWindow loggerWindow;
+    private LoggerWindow loggerWindow;
     private final IImageProvider imageProvider;
     private final MoMA momaInstance;
     public JSlider sliderGL;
@@ -117,7 +116,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    MoMA momaInstance,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
-                   ConsoleWindow loggerWindow) {
+                   LoggerWindow loggerWindow) {
         super(new BorderLayout());
 
         this.model = mmm;

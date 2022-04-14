@@ -19,7 +19,6 @@ import net.imagej.ops.OpService;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -251,23 +250,5 @@ public class PseudoDic {
         }
         loggerWindow = new LoggerWindow(this, getConfigurationManager());
         return loggerWindow;
-    }
-
-    /**
-     * The <code>JFrame</code> containing the main GUI.
-     */
-    private JFrame guiFrame;
-    public JFrame getGuiFrame(){
-        if(guiFrame != null) {
-            return guiFrame;
-        }
-        guiFrame = new JFrame();
-        guiFrame.add(getMomaGui());
-        guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
-        guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
-        guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(getMomaGui()));
-
-        guiFrame.setVisible(true);
-        return guiFrame;
     }
 }

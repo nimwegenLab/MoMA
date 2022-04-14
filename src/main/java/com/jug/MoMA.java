@@ -60,12 +60,6 @@ public class MoMA {
 	// - - - - - - - - - - - - - -
 	// GUI-WINDOW RELATED STATICS
 	// - - - - - - - - - - - - - -
-	/**
-	 * The <code>JFrame</code> containing the main GUI.
-	 */
-	public static JFrame guiFrame;
-
-
 	private static MoMAGui gui;
 
 	/**
@@ -125,8 +119,8 @@ public class MoMA {
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
-			guiFrame = new JFrame();
-			main.initMainWindow( guiFrame );
+//			guiFrame = new JFrame();
+			main.initMainWindow( getGuiFrame() );
 		}
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
@@ -157,7 +151,7 @@ public class MoMA {
 		}
 
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
-			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getImagePath());
+			inputFolder = main.showStartupDialog( getGuiFrame(), configurationManager.getImagePath());
 		}
 		System.out.println( "Default filename decoration = " + inputFolder.getName() );
 		defaultFilenameDecoration = inputFolder.getName();
@@ -226,12 +220,6 @@ public class MoMA {
 				System.out.print( "Build GUI..." );
 				loggerWindow.showConsoleWindow(false);
 
-				guiFrame.add(gui);
-				guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
-				guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
-				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
-
-				guiFrame.setVisible(true);
 				System.out.println( " done!" );
 			});
 		} else {
@@ -369,7 +357,7 @@ public class MoMA {
 	 * @return the guiFrame
 	 */
 	public static JFrame getGuiFrame() {
-		return guiFrame;
+		return dic.getGuiFrame();
 	}
 
 	/**

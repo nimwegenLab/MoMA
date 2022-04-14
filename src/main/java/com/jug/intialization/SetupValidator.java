@@ -17,7 +17,7 @@ public class SetupValidator {
                 System.out.println( msgs );
             } else {
                 JOptionPane.showMessageDialog(
-                        MoMA.guiFrame,
+                        null,
                         msgs,
                         "Gurobi Error?",
                         JOptionPane.ERROR_MESSAGE );
@@ -34,7 +34,7 @@ public class SetupValidator {
                 System.out.println( msgs );
             } else {
                 JOptionPane.showMessageDialog(
-                        MoMA.guiFrame,
+                        null,
                         msgs,
                         "Gurobi Error?",
                         JOptionPane.ERROR_MESSAGE );

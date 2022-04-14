@@ -231,7 +231,6 @@ public class MoMA {
 				guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
 				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(gui));
 
-				gui.setVisible(true);
 				guiFrame.setVisible(true);
 				System.out.println( " done!" );
 			});

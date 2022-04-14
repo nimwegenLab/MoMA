@@ -9,8 +9,6 @@ import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
 import com.jug.util.PseudoDic;
-import gurobi.GRBEnv;
-import gurobi.GRBException;
 import ij.ImageJ;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.img.display.imagej.ImageJFunctions;
@@ -22,11 +20,6 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
-import java.util.Properties;
-
-/*
-  Main class for the MotherMachine project.
- */
 
 /**
  * @author jug
@@ -46,25 +39,17 @@ public class MoMA {
 	 */
 	public static PseudoDic dic;
 
-	// -------------------------------------------------------------------------------------
-	// statics
-	// -------------------------------------------------------------------------------------
-	/*
-	  Control if ImageJ and loaded data will be shown...
+	/**
+	 * Controls if ImageJ and loaded data will be shown.
 	 */
 	static boolean showIJ = false;
 
 	public static boolean running_as_Fiji_plugin = false;
 
-
-	// - - - - - - - - - - - - - -
-	// GUI-WINDOW RELATED STATICS
-	// - - - - - - - - - - - - - -
 	/**
 	 * The <code>JFrame</code> containing the main GUI.
 	 */
 	public static JFrame guiFrame;
-
 
 	private static MoMAGui gui;
 

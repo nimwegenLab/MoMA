@@ -100,8 +100,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private MenuItem menuLoad;
     private MenuItem menuSave;
 
-    private MenuItem menuSaveFG;
-
     // -------------------------------------------------------------------------------------
     // construction & gui creation
     // -------------------------------------------------------------------------------------
@@ -146,14 +144,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuLoad.addActionListener(this);
         menuSave = new MenuItem("Save tracking...");
         menuSave.addActionListener(this);
-        menuSaveFG = new MenuItem("Save FG...");
-        menuSaveFG.addActionListener(this);
         menuFile.add(menuProps);
         menuFile.addSeparator();
         menuFile.add(menuLoad);
         menuFile.add(menuSave);
-        menuFile.addSeparator();
-        menuFile.add(menuSaveFG);
         menuBar.add(menuFile);
 
         final Menu menuView = new Menu("View");
@@ -889,26 +883,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(menuShowImgRaw)) {
             new ImageJ();
             ImageJFunctions.show(imageProvider.getRawChannelImgs().get(0), "raw data (ch.0)");
-        }
-        if (e.getSource().equals(menuSaveFG)) {
-            final File file = OsDependentFileChooser.showSaveFileChooser(
-                    this,
-                    configurationManager.getDefaultPath(),
-                    "Save Factor Graph...",
-                    new ExtensionFileFilter(new String[]{"txt", "TXT"}, "TXT-file"));
-
-            if (file != null) {
-                if (model.getCurrentGL().getIlp() == null) {
-                    System.out.println("Generating ILP...");
-                    model.getCurrentGL().generateILP(
-                            new DialogProgress(this, "Building tracking model...", (model.getCurrentGL().size() - 1) * 2));
-                } else {
-                    System.out.println("Using existing ILP (possibly containing user-defined ground-truth bits)...");
-                }
-                System.out.println("Saving ILP as FactorGraph...");
-                new FactorGraphExporter(model.getCurrentGL()).exportFG_PAUL(file);
-                System.out.println("...done!");
-            }
         }
         if (e.getSource().equals(buttonSet)) {
             final Thread t = new Thread(() -> {

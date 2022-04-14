@@ -138,10 +138,10 @@ public class MoMA {
 		configurationManager.setMinTime(datasetProperties.getMinTime());
 		configurationManager.setMaxTime(datasetProperties.getMaxTime());
 
-		if(commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()){
+		if (commandLineArgumentParser.getUserDefinedMinTime() > 0 && commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()) {
 			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 		}
-		if(commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()){
+		if (commandLineArgumentParser.getUserDefinedMinTime() > 0 && commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()) {
 			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 		}
 

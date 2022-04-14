@@ -11,12 +11,12 @@ public class CommandLineArgumentsParser {
      * Property file provided by user through as command-line option.
      */
     private File optionalPropertyFile = null;
-    private int userDefinedMinTime;
-    private int userDefinedMaxTime;
+    private int userDefinedMinTime = -1;
+    private int userDefinedMaxTime = -1;
     // - - - - - - - - - - - - - -
     // Info about loaded data
     // - - - - - - - - - - - - - -
-    private int initialOptimizationRange = -1;
+    private Integer initialOptimizationRange = -1;
     private String STATS_OUTPUT_PATH;
     private boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
     private boolean HEADLESS;

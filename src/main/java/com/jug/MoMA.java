@@ -377,7 +377,7 @@ public class MoMA {
 	 * @return the MotherMachineGui instance.
 	 */
 	public static MoMAGui getGui() {
-		return gui;
+		return dic.getMomaGui();
 	}
 
 	/**

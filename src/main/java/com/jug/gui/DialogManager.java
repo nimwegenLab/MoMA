@@ -9,10 +9,12 @@ import java.util.function.Supplier;
  */
 public class DialogManager implements IDialogManager {
     private Supplier<MoMAGui> guiSupplier;
+    private Supplier<DialogPropertiesEditor> propertiesEditorSupplier;
     private DialogPropertiesEditor propertiesEditor;
 
-    public DialogManager(Supplier<MoMAGui> guiSupplier, DialogPropertiesEditor propertiesEditor){
+    public DialogManager(Supplier<MoMAGui> guiSupplier, Supplier<DialogPropertiesEditor> propertiesEditorSupplier){
         this.guiSupplier = guiSupplier;
+        this.propertiesEditorSupplier = propertiesEditorSupplier;
         this.propertiesEditor = propertiesEditor;
     }
 
@@ -34,6 +36,7 @@ public class DialogManager implements IDialogManager {
 
     @Override
     public void showPropertiesEditor() {
-        propertiesEditor.setVisible(true);
+        propertiesEditorSupplier.get().setVisible(true);
+//        propertiesEditor.setVisible(true);
     }
 }

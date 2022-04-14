@@ -6,4 +6,9 @@ public class DialogManagerMock implements IDialogManager {
     public void showErrorDialogWithTextArea(String title, String message) {
 
     }
+
+    @Override
+    public void showPropertiesEditor() {
+
+    }
 }

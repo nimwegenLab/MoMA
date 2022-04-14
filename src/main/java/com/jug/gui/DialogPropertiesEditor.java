@@ -294,7 +294,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                     }
                     default:
                         JOptionPane.showMessageDialog(
-                                MoMA.getGui(),
+                                parent,
                                 "Value not changed - NOT YET IMPLEMENTED!",
                                 "Warning",
                                 JOptionPane.WARNING_MESSAGE);
@@ -302,7 +302,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                 }
 			} catch ( final NumberFormatException e ) {
 				JOptionPane.showMessageDialog(
-						MoMA.getGui(),
+                        parent,
 						"Illegal value entered -- value not changed!",
 						"Error",
 						JOptionPane.ERROR_MESSAGE );
@@ -390,7 +390,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor(final Component parent, final Properties props, ConfigurationManager configurationManager, PseudoDic dic) {
+	public DialogPropertiesEditor(final MoMAGui parent, final Properties props, ConfigurationManager configurationManager, PseudoDic dic) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
         this.configurationManager = configurationManager;
         this.dic = dic;

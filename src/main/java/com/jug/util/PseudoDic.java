@@ -198,14 +198,6 @@ public class PseudoDic {
 
     public GitVersionProvider getGitVersionProvider() { return gitVersionProvider; }
 
-    MoMAGui gui;
-    public MoMAGui getMomaGui() {
-        if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
-        }
-        return gui;
-    }
-
     private MoMAModel momaModel;
     public MoMAModel getMomaModel() {
         if(momaModel == null){
@@ -217,16 +209,24 @@ public class PseudoDic {
     DialogPropertiesEditor propsEditor;
     public DialogPropertiesEditor getPropertiesEditorWindow(){
         if(propsEditor != null) {return propsEditor; }
-        propsEditor = new DialogPropertiesEditor(this, getConfigurationManager().props, getConfigurationManager(), this);
+        propsEditor = new DialogPropertiesEditor(getMomaGui(), getConfigurationManager().props, getConfigurationManager(), this);
         return propsEditor;
     }
 
     IDialogManager dialogManager;
     public IDialogManager getDialogManager(){
         if(dialogManager == null){
-            dialogManager = new DialogManager(() -> getMomaGui(), getPropertiesEditorWindow());
+            dialogManager = new DialogManager(() -> getMomaGui(), () -> getPropertiesEditorWindow());
         }
         return dialogManager;
+    }
+
+    MoMAGui gui;
+    public MoMAGui getMomaGui() {
+        if (gui == null) {
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
+        }
+        return gui;
     }
 
     private GlDataLoader glDataLoader;

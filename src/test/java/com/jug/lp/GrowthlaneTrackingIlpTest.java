@@ -85,7 +85,7 @@ public class GrowthlaneTrackingIlpTest {
         }
     }
 
-    class ConfigMock implements IConfiguration{
+    class ConfigMock implements IConfiguration {
 
         @Override
         public int getMaxTime() {
@@ -94,6 +94,31 @@ public class GrowthlaneTrackingIlpTest {
 
         @Override
         public int getMinTime() {
+            return 0;
+        }
+
+        @Override
+        public boolean getRunIlpOnChange() {
+            return false;
+        }
+
+        @Override
+        public void setRunIlpOnChange(boolean runOnChange) {
+
+        }
+
+        @Override
+        public String getPathForAutosaving() {
+            return null;
+        }
+
+        @Override
+        public double getGurobiTimeLimit() {
+            return 0;
+        }
+
+        @Override
+        public double getGurobiMaxOptimalityGap() {
             return 0;
         }
     }

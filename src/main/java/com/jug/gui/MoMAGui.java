@@ -124,7 +124,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.configurationManager = configurationManager;
         this.loggerWindow = loggerWindow;
 
-        propsEditor = new DialogPropertiesEditor(this, MoMA.props);
+        propsEditor = new DialogPropertiesEditor(this, configurationManager.props);
 
         buildGui();
         dataToDisplayChanged();
@@ -261,7 +261,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
             ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
-                if (!MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE) {
+                if (!configurationManager.getRunIlpOnChange()) {
                     buttonOptimizeMore.setForeground(Color.RED);
                 }
             });
@@ -556,15 +556,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panel3.add(comboboxWhichImgToShow, gridBagConstraintPanel3);
 
         JCheckBox checkboxOptimizeOnIlpChange = new JCheckBox();
-        checkboxOptimizeOnIlpChange.setSelected(MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE);
+        checkboxOptimizeOnIlpChange.setSelected(configurationManager.getRunIlpOnChange());
         checkboxOptimizeOnIlpChange.setText("Run optimization on change");
         checkboxOptimizeOnIlpChange.addActionListener(e -> {
             if (checkboxOptimizeOnIlpChange.isSelected()) {
-                MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+                configurationManager.setRunIlpOnChange(true);
                 JOptionPane.showMessageDialog(this, "Optimization will now run automatically after each change. It is suggested to run optimization once now before continuing by pressing the button 'Optimize'.");
                 return;
             }
-            MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE = false;
+            configurationManager.setRunIlpOnChange(false);
             JOptionPane.showMessageDialog(this, "Optimization now needs to be run manually by pressing the button 'Optimize' after making changes.");
         });
         panel4.add(checkboxOptimizeOnIlpChange, gridBagConstraintPanel4);

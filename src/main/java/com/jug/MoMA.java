@@ -65,21 +65,6 @@ public class MoMA {
 	 */
 	public static JFrame guiFrame;
 
-	/**
-	 * Properties to configure app (loaded and saved to properties file!).
-	 */
-	public static Properties props = null;
-
-
-	/**
-	 * The maximum time in seconds GUROBI is allowed to search for a good
-	 * tracking solution. (After that period of time GUROBI will stop and best
-	 * solution found so far will be used.)
-	 */
-	public static double GUROBI_TIME_LIMIT = 15.0;
-	public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
-
-	public static boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
 	private static MoMAGui gui;
 

@@ -1,7 +1,7 @@
 package com.jug.gui;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.util.PseudoDic;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
@@ -27,6 +27,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
     private static Component parent = null;
     private final PropFactory propFactory;
     private PropertySheetPanel sheet;
+    private PseudoDic dic;
 
     public class PropEditedListener implements PropertyChangeListener {
 
@@ -40,14 +41,14 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     case "GUROBI_TIME_LIMIT":
                         MoMA.GUROBI_TIME_LIMIT =
                                 Double.parseDouble(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "GUROBI_TIME_LIMIT",
                                 "" + MoMA.GUROBI_TIME_LIMIT);
                         break;
                     case "GUROBI_MAX_OPTIMALITY_GAP":
                         MoMA.GUROBI_MAX_OPTIMALITY_GAP =
                                 Double.parseDouble(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "GUROBI_MAX_OPTIMALITY_GAP",
                                 "" + MoMA.GUROBI_MAX_OPTIMALITY_GAP);
                         break;
@@ -72,7 +73,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     () -> {
                                         ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
                                         MoMA.dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
-                                        MoMA.props.setProperty(
+                                        props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
                                                 "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
                                         final Thread t = new Thread(() -> {
@@ -92,7 +93,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.ASSIGNMENT_COST_CUTOFF),
                                 () -> {
                                     ConfigurationManager.ASSIGNMENT_COST_CUTOFF = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "ASSIGNMENT_COST_CUTOFF",
                                             "" + ConfigurationManager.ASSIGNMENT_COST_CUTOFF);
                                     ((MoMAGui) parent).restartTrackingAsync();
@@ -107,7 +108,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.LYSIS_ASSIGNMENT_COST),
                                 () -> {
                                     ConfigurationManager.LYSIS_ASSIGNMENT_COST = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "LYSIS_ASSIGNMENT_COST",
                                             "" + ConfigurationManager.LYSIS_ASSIGNMENT_COST);
                                     ((MoMAGui) parent).restartTrackingAsync();
@@ -122,7 +123,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS),
                                 () -> {
                                     ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "SIZE_MINIMUM_FOR_ROOT_COMPONENTS",
                                             "" + ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS);
                                     final Thread t = new Thread(() -> {
@@ -141,7 +142,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS),
                                 () -> {
                                     ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "SIZE_MINIMUM_FOR_LEAF_COMPONENTS",
                                             "" + ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS);
                                     final Thread t = new Thread(() -> {
@@ -160,7 +161,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.GL_OFFSET_TOP),
                                 () -> {
                                     ConfigurationManager.GL_OFFSET_TOP = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.GL_OFFSET_TOP);
                                     ((MoMAGui) parent).restartTrackingAsync();
@@ -175,7 +176,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP),
                                 () -> {
                                     ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "CELL_DETECTION_ROI_OFFSET_TOP",
                                             "" + ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
                                     final Thread t = new Thread(() -> {
@@ -194,7 +195,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING),
                                 () -> {
                                     ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
                                     MoMA.dic.getWatershedMaskGenerator().setThresholdForComponentMerging(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
@@ -214,7 +215,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION),
                                 () -> {
                                     ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
                                     MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
@@ -234,7 +235,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING),
                                 () -> {
                                     ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING = newValue;
-                                    MoMA.props.setProperty(
+                                    props.setProperty(
                                             "GL_OFFSET_TOP",
                                             "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
                                     MoMA.dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
@@ -261,7 +262,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     case "INTENSITY_FIT_ITERATIONS": {
                         ConfigurationManager.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "INTENSITY_FIT_ITERATIONS",
                                 "" + ConfigurationManager.INTENSITY_FIT_ITERATIONS);
                         break;
@@ -269,7 +270,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     case "INTENSITY_FIT_PRECISION": {
                         ConfigurationManager.INTENSITY_FIT_PRECISION =
                                 Double.parseDouble(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "INTENSITY_FIT_PRECISION",
                                 "" + ConfigurationManager.INTENSITY_FIT_PRECISION);
                         break;
@@ -277,7 +278,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     case "INTENSITY_FIT_INITIAL_WIDTH": {
                         ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH =
                                 Double.parseDouble(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "INTENSITY_FIT_INITIAL_WIDTH",
                                 "" + ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
@@ -285,7 +286,7 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
                         ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS =
                                 Integer.parseInt(evt.getNewValue().toString());
-                        MoMA.props.setProperty(
+                        props.setProperty(
                                 "INTENSITY_FIT_RANGE_IN_PIXELS",
                                 "" + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
                         break;
@@ -388,8 +389,9 @@ class DialogPropertiesEditor extends JDialog implements ActionListener {
 	private JButton bClose;
 	private final Properties props;
 
-	public DialogPropertiesEditor(final Component parent, final Properties props) {
+	public DialogPropertiesEditor(final Component parent, final Properties props, PseudoDic dic) {
 		super( SwingUtilities.windowForComponent( parent ), "MoMA Properties Editor" );
+        this.dic = dic;
         propFactory = new PropFactory();
 		this.parent = parent;
 		this.dialogInit();

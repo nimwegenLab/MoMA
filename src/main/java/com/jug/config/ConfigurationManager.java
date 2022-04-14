@@ -9,11 +9,25 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration, IConfiguration {
+    /**
+     * Properties to configure app (loaded and saved to properties file!).
+     */
+    public static Properties props = null;
+
+    /**
+     * The maximum time in seconds GUROBI is allowed to search for a good
+     * tracking solution. (After that period of time GUROBI will stop and best
+     * solution found so far will be used.)
+     */
+    public static double GUROBI_TIME_LIMIT = 15.0;
+    public static double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
+
+    public static boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+
     /**
      * The path to usually open JFileChoosers at (except for initial load
      * dialog).
@@ -449,6 +463,21 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return maxTime;
     }
 
+    @Override
+    public boolean getRunIlpOnChange() {
+        return GUI_OPTIMIZE_ON_ILP_CHANGE;
+    }
+
+    @Override
+    public void setRunIlpOnChange(boolean runOnChange) {
+        GUI_OPTIMIZE_ON_ILP_CHANGE = runOnChange;
+    }
+
+    @Override
+    public String getPathForAutosaving() {
+        return props.getProperty("import_path") + "/--autosave.moma";
+    }
+
     public void setOutputPath(String outputPath) {
         STATS_OUTPUT_PATH = outputPath;
     }
@@ -459,5 +488,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public String getDefaultPath() {
         return DEFAULT_PATH;
+    }
+
+    @Override
+    public double getGurobiTimeLimit() {
+        return GUROBI_TIME_LIMIT;
+    }
+
+    @Override
+    public double getGurobiMaxOptimalityGap() {
+        return GUROBI_MAX_OPTIMALITY_GAP;
     }
 }

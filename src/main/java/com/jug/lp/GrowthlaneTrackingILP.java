@@ -829,15 +829,14 @@ public class GrowthlaneTrackingILP {
      */
     public synchronized void autosave() {
         if (!MoMA.getIfRunningHeadless() && MoMA.getGui().isAutosaveRequested()) {
-            final File autosaveFile =
-                    new File(MoMA.props.getProperty("import_path") + "/--autosave.moma");
+            final File autosaveFile = new File(configurationManager.getPathForAutosaving());
             saveState(autosaveFile);
             System.out.println("Autosave to: " + autosaveFile.getAbsolutePath());
         }
     }
 
     public void run() {
-        if (MoMA.GUI_OPTIMIZE_ON_ILP_CHANGE) {
+        if (configurationManager.getRunIlpOnChange()) {
             runImmediately();
         }
     }
@@ -855,7 +854,7 @@ public class GrowthlaneTrackingILP {
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 
             final DialogGurobiProgress dialog = new DialogGurobiProgress(MoMA.getGuiFrame());
-            final GurobiCallback gcb = new GurobiCallback(dialog, MoMA.GUROBI_TIME_LIMIT, MoMA.GUROBI_MAX_OPTIMALITY_GAP);
+            final GurobiCallback gcb = new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap());
             model.setCallback(gcb);
             if (!MoMA.getIfRunningHeadless()) {
                 dialog.setVisible(true);

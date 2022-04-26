@@ -60,4 +60,9 @@ public class ConfigMock implements IConfiguration {
     public float getAssignmentCostCutoff() {
         return Float.MAX_VALUE;
     }
+
+    @Override
+    public float getLysisAssignmentCost() {
+        return 10.0f;
+    }
 }

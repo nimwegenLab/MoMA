@@ -56,4 +56,6 @@ public interface IConfiguration {
     double getComponentExitRange();
 
     float getAssignmentCostCutoff();
+
+    float getLysisAssignmentCost();
 }

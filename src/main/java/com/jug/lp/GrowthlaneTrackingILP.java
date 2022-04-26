@@ -30,7 +30,6 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.config.ConfigurationManager.LYSIS_ASSIGNMENT_COST;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
 
@@ -369,7 +368,7 @@ public class GrowthlaneTrackingILP {
 
         float cost;
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            cost = LYSIS_ASSIGNMENT_COST;
+            cost = configurationManager.getLysisAssignmentCost();
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp));
 //            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", sourceTimeStep, hyp.getStringId()));

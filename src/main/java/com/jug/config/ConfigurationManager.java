@@ -69,6 +69,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * This value is critical(!): Assignments with costs higher than this value will be ignored.
      */
 
+    @Override
     public float getAssignmentCostCutoff() {
         return ASSIGNMENT_COST_CUTOFF;
     }
@@ -77,8 +78,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * This value sets the fixed cost for lysis assignments. It is set so high, that it will not be considered for
      * assignment during optimization. However, it can be manually forced during curation.
      */
-
-    public static float LYSIS_ASSIGNMENT_COST = 10.0f;
+    @Override
+    public float getLysisAssignmentCost() {
+        return LYSIS_ASSIGNMENT_COST;
+    }
+    public float LYSIS_ASSIGNMENT_COST = 10.0f;
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */

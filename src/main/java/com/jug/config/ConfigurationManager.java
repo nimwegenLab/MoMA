@@ -117,7 +117,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets the vertical position at the top of the image up to where U-Net will process the image.
      */
-    public static int CELL_DETECTION_ROI_OFFSET_TOP = 0;
+    public int CELL_DETECTION_ROI_OFFSET_TOP = 0;
     /**
      * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
      * at the vertical position defined by GL_OFFSET_TOP.
@@ -436,6 +436,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return MAXIMUM_GROWTH_RATE;
     }
 
+    @Override
     public int getCellDetectionRoiOffsetTop() {
         return CELL_DETECTION_ROI_OFFSET_TOP;
     }

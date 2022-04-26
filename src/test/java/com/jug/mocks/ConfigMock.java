@@ -71,4 +71,10 @@ public class ConfigMock implements IConfiguration {
         int MAX_CELL_DROP = 50;
         return MAX_CELL_DROP;
     }
+
+    @Override
+    public int getCellDetectionRoiOffsetTop() {
+        int CELL_DETECTION_ROI_OFFSET_TOP = 120;
+        return CELL_DETECTION_ROI_OFFSET_TOP;
+    }
 }

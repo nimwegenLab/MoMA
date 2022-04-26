@@ -60,4 +60,6 @@ public interface IConfiguration {
     float getLysisAssignmentCost();
 
     int getMaxCellDrop();
+
+    int getCellDetectionRoiOffsetTop();
 }

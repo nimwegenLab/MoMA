@@ -3,7 +3,6 @@ package com.jug.lp;
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
-import com.jug.config.ConfigurationManager;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
@@ -506,7 +505,7 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
         final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
@@ -695,7 +694,7 @@ public class GrowthlaneTrackingILP {
         final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
         final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 //        final float divisionLikelihoodCost = costFactory.getDivisionLikelihoodCost(sourceComponent);

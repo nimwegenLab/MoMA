@@ -62,4 +62,8 @@ public interface IConfiguration {
     int getMaxCellDrop();
 
     int getCellDetectionRoiOffsetTop();
+
+    float getMaximumShrinkagePerFrame();
+
+    float getMaximumGrowthPerFrame();
 }

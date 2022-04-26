@@ -428,7 +428,7 @@ public class GrowthlaneTrackingILP {
 
             List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
-                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), sourceTimeStep);
+                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), sourceTimeStep, configurationManager.getMaximumShrinkagePerFrame(), configurationManager.getMaximumGrowthPerFrame());
             } else {
                 targetComponents = targetComponentTree.getAllComponents();
             }

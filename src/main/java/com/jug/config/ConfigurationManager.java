@@ -54,8 +54,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
     /*********************************** CONFIG VALUES DEFINITION START ***********************************************/
-    public static final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
-    public static final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
+    public float getMaximumGrowthPerFrame(){
+        return MAXIMUM_GROWTH_PER_FRAME;
+    }
+    public final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
+    public float getMaximumShrinkagePerFrame(){
+        return MAXIMUM_SHRINKAGE_PER_FRAME;
+    }
+    public final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
     public int DEFAULT_GUI_POS_X = 100;
     /**
      * Parameter: how many pixels wide is the image containing the selected

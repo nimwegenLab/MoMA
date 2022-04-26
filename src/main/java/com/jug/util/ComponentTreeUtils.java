@@ -150,10 +150,12 @@ public class ComponentTreeUtils {
     public static List<AdvancedComponent<FloatType>> getPlausibleTargetComponents(
             final AdvancedComponent<FloatType> sourceComponent,
             final List<AdvancedComponent<FloatType>> targetComponents,
-            int sourceTime) {
+            int sourceTime,
+            float maximumShrinkagePerFrame,
+            float maximumGrowthPerFrame) {
         List<AdvancedComponent<FloatType>> result = new ArrayList<>();
         for (AdvancedComponent<FloatType> targetComponent : targetComponents) {
-            if (isPlausibleTargetComponent(sourceComponent, targetComponent, sourceTime)) {
+            if (isPlausibleTargetComponent(sourceComponent, targetComponent, sourceTime, maximumShrinkagePerFrame, maximumGrowthPerFrame)) {
                 result.add(targetComponent);
             }
         }
@@ -162,7 +164,9 @@ public class ComponentTreeUtils {
 
     public static boolean isPlausibleTargetComponent(final AdvancedComponent<FloatType> sourceComponent,
                                                      final AdvancedComponent<FloatType> targetComponent,
-                                                     int sourceTime) {
+                                                     int sourceTime,
+                                                     float maximumShrinkagePerFrame,
+                                                     float maximumGrowthPerFrame) {
         int totalAreaBelowSourceComponent = sourceComponent.getTotalAreaOfComponentsBelow();
         int totalAreaIncludingSourceComponent = totalAreaBelowSourceComponent + (int) sourceComponent.size();
 
@@ -187,19 +191,19 @@ public class ComponentTreeUtils {
 //            currentTime = sourceTime;
 //        }
 
-//        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.MAXIMUM_SHRINKAGE_PER_FRAME)) - Math.abs(differenceOfTotalArea);
+//        int lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - MoMA.maximumShrinkagePerFrame)) - Math.abs(differenceOfTotalArea);
         int lowerTargetAreaLimit;
         if (differenceOfTotalArea < 0) {
-            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME)) - (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME) * Math.abs(differenceOfTotalArea));
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - maximumShrinkagePerFrame)) - (int) Math.ceil((1 + maximumGrowthPerFrame) * Math.abs(differenceOfTotalArea));
         } else {
-            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME));
+            lowerTargetAreaLimit = (int) Math.floor(totalAreaBelowSourceComponent * (1 - maximumShrinkagePerFrame));
         }
 
         int upperTargetAreaLimit;
         if (differenceOfTotalArea > 0) {
-            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME));
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + maximumGrowthPerFrame));
         } else {
-            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + ConfigurationManager.MAXIMUM_GROWTH_PER_FRAME)) + (int) Math.ceil((1 + ConfigurationManager.MAXIMUM_SHRINKAGE_PER_FRAME) * Math.abs(differenceOfTotalArea));
+            upperTargetAreaLimit = (int) Math.ceil(totalAreaIncludingSourceComponent * (1 + maximumGrowthPerFrame)) + (int) Math.ceil((1 + maximumShrinkagePerFrame) * Math.abs(differenceOfTotalArea));
         }
 
 

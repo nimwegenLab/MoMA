@@ -77,4 +77,14 @@ public class ConfigMock implements IConfiguration {
         int CELL_DETECTION_ROI_OFFSET_TOP = 120;
         return CELL_DETECTION_ROI_OFFSET_TOP;
     }
+
+    @Override
+    public float getMaximumShrinkagePerFrame() {
+        return 0;
+    }
+
+    @Override
+    public float getMaximumGrowthPerFrame() {
+        return 0;
+    }
 }

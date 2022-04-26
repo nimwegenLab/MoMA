@@ -142,7 +142,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public int INTENSITY_FIT_ITERATIONS = 1000; /* Number of iterations performed during fit. */
     public double INTENSITY_FIT_PRECISION = 1e-3; /* Precision for which fitting will be finished. */
     public double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
-    public static int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
+
+    public int getMaxCellDrop(){
+        return MAX_CELL_DROP;
+    }
+    public int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
     /**
      * X-position of the main GUI-window. This value will be loaded from and
      * stored in the properties file!

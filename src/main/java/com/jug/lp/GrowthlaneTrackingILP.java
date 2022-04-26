@@ -444,7 +444,7 @@ public class GrowthlaneTrackingILP {
 
                 float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
 
-                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, ConfigurationManager.MAX_CELL_DROP)) {
+                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
                     continue;
                 }
 
@@ -615,7 +615,7 @@ public class GrowthlaneTrackingILP {
             float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
-                if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, ConfigurationManager.MAX_CELL_DROP)) {
+                if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, configurationManager.getMaxCellDrop())) {
                     continue;
                 }
 

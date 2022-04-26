@@ -58,4 +58,6 @@ public interface IConfiguration {
     float getAssignmentCostCutoff();
 
     float getLysisAssignmentCost();
+
+    int getMaxCellDrop();
 }

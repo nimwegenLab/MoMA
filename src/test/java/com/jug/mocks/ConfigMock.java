@@ -65,4 +65,10 @@ public class ConfigMock implements IConfiguration {
     public float getLysisAssignmentCost() {
         return 10.0f;
     }
+
+    @Override
+    public int getMaxCellDrop() {
+        int MAX_CELL_DROP = 50;
+        return MAX_CELL_DROP;
+    }
 }

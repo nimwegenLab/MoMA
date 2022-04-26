@@ -205,8 +205,8 @@ public class MoMA {
 				loggerWindow.showConsoleWindow(false);
 
 				guiFrame.add(dic.getMomaGui());
-				guiFrame.setSize(ConfigurationManager.GUI_WIDTH, ConfigurationManager.GUI_HEIGHT);
-				guiFrame.setLocation(ConfigurationManager.GUI_POS_X, ConfigurationManager.GUI_POS_Y);
+				guiFrame.setSize(configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT);
+				guiFrame.setLocation(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y);
 				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(dic.getMomaGui()));
 
 				guiFrame.setVisible(true);

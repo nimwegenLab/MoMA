@@ -200,7 +200,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 boundingBoxTopCol.addValue(cellBboxTop);
                 boundingBoxBottomCol.addValue(limits.getB());
 
-                if (cellBboxTop <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP){
+                if (cellBboxTop <= configurationManager.CELL_DETECTION_ROI_OFFSET_TOP){
                     touchesCellDetectionRoiTopCol.addValue(1);
                 }
                 else{
@@ -236,7 +236,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 
-                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, avgXpos);
+                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, avgXpos, configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
                     double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
                     intensityFitCellIntensityCols.get(columnIndex).addValue(estimates[0]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */
                     intensityFitBackgroundIntensityCols.get(columnIndex).addValue(estimates[1]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */

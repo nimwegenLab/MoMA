@@ -38,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.jug.config.ConfigurationManager.EXPORT_ASSIGNMENT_COSTS;
-
 /**
  * @author jug
  */
@@ -198,8 +196,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 new RangeSlider(0, model.getCurrentGL().size() - 2);
         sliderTrackingRange.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
         sliderTrackingRange.setValue(0);
-        if (ConfigurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
-            sliderTrackingRange.setUpperValue(ConfigurationManager.OPTIMISATION_INTERVAL_LENGTH);
+        if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
+            sliderTrackingRange.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
         } else {
             sliderTrackingRange.setUpperValue(max);
         }
@@ -512,12 +510,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         });
 
         int viewHeight = (int) imageProvider.getImgRaw().dimension(1);
-        int viewWidth = ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS;
+        int viewWidth = configurationManager.GL_WIDTH_IN_PIXELS + 2 * configurationManager.GL_PIXEL_PADDING_IN_VIEWS;
 
-        LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, ConfigurationManager.CELL_LABEL_LIST);
+        LabelEditorDialog labelEditorDialog = new LabelEditorDialog(this, configurationManager.CELL_LABEL_LIST);
 
-        int min_time_offset = -ConfigurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
-        int max_time_offset = ConfigurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
+        int min_time_offset = -configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
+        int max_time_offset = configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
             SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter());
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
@@ -1083,7 +1081,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
-        if (EXPORT_ASSIGNMENT_COSTS) {
+        if (configurationManager.EXPORT_ASSIGNMENT_COSTS) {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
 
@@ -1125,11 +1123,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private boolean showFitRangeWarningDialogIfNeeded() {
         final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, 0);
 
-        if (channelFrame.dimension(0) >= ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS)
+        if (channelFrame.dimension(0) >= configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS)
             return true; /* Image wider then fit range. No need to warn. */
 
         int userSelection = JOptionPane.showConfirmDialog(null,
-                String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),
+                String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),
                 "Fit Range Warning",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);

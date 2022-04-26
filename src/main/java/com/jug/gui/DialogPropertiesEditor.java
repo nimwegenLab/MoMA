@@ -55,7 +55,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         break;
                     case "SEGMENTATION_MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
-                        if(newPath!=ConfigurationManager.SEGMENTATION_MODEL_PATH) {
+                        if(newPath!=configurationManager.SEGMENTATION_MODEL_PATH) {
                             File f = new File(newPath);
                             if(!f.exists() || f.isDirectory()) {
                                 JOptionPane.showMessageDialog(
@@ -63,20 +63,20 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                                         "Specified file does not exist. Falling back to previous path.",
                                         "Model file not found.",
                                         JOptionPane.ERROR_MESSAGE);
-                                sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+                                sourceProperty.setValue(configurationManager.SEGMENTATION_MODEL_PATH);
                                 break;
                             }
 
                             showPropertyEditedNeedsRerunDialog("Continue?",
                                     "Changing this value will rerun segmentation and optimization.\nYou will loose all manual edits performed so far!",
-                                    () -> newPath != ConfigurationManager.SEGMENTATION_MODEL_PATH,
-                                    () -> sourceProperty.setValue(ConfigurationManager.SEGMENTATION_MODEL_PATH),
+                                    () -> newPath != configurationManager.SEGMENTATION_MODEL_PATH,
+                                    () -> sourceProperty.setValue(configurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
-                                        ConfigurationManager.SEGMENTATION_MODEL_PATH = newPath;
-                                        dic.getUnetProcessor().setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+                                        configurationManager.SEGMENTATION_MODEL_PATH = newPath;
+                                        dic.getUnetProcessor().setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
                                         props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
-                                                "" + ConfigurationManager.SEGMENTATION_MODEL_PATH);
+                                                "" + configurationManager.SEGMENTATION_MODEL_PATH);
                                         final Thread t = new Thread(() -> {
                                             ((MoMAGui) parent).restartFromGLSegmentation();
                                             ((MoMAGui) parent).restartTracking();
@@ -90,13 +90,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.ASSIGNMENT_COST_CUTOFF,
-                                () -> sourceProperty.setValue(ConfigurationManager.ASSIGNMENT_COST_CUTOFF),
+                                () -> newValue != configurationManager.ASSIGNMENT_COST_CUTOFF,
+                                () -> sourceProperty.setValue(configurationManager.ASSIGNMENT_COST_CUTOFF),
                                 () -> {
-                                    ConfigurationManager.ASSIGNMENT_COST_CUTOFF = newValue;
+                                    configurationManager.ASSIGNMENT_COST_CUTOFF = newValue;
                                     props.setProperty(
                                             "ASSIGNMENT_COST_CUTOFF",
-                                            "" + ConfigurationManager.ASSIGNMENT_COST_CUTOFF);
+                                            "" + configurationManager.ASSIGNMENT_COST_CUTOFF);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;
@@ -105,13 +105,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.LYSIS_ASSIGNMENT_COST,
-                                () -> sourceProperty.setValue(ConfigurationManager.LYSIS_ASSIGNMENT_COST),
+                                () -> newValue != configurationManager.LYSIS_ASSIGNMENT_COST,
+                                () -> sourceProperty.setValue(configurationManager.LYSIS_ASSIGNMENT_COST),
                                 () -> {
-                                    ConfigurationManager.LYSIS_ASSIGNMENT_COST = newValue;
+                                    configurationManager.LYSIS_ASSIGNMENT_COST = newValue;
                                     props.setProperty(
                                             "LYSIS_ASSIGNMENT_COST",
-                                            "" + ConfigurationManager.LYSIS_ASSIGNMENT_COST);
+                                            "" + configurationManager.LYSIS_ASSIGNMENT_COST);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;
@@ -120,13 +120,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS,
-                                () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS),
+                                () -> newValue != configurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS,
+                                () -> sourceProperty.setValue(configurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS),
                                 () -> {
-                                    ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS = newValue;
+                                    configurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS = newValue;
                                     props.setProperty(
                                             "SIZE_MINIMUM_FOR_ROOT_COMPONENTS",
-                                            "" + ConfigurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS);
+                                            "" + configurationManager.SIZE_MINIMUM_FOR_ROOT_COMPONENTS);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -139,13 +139,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS,
-                                () -> sourceProperty.setValue(ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS),
+                                () -> newValue != configurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS,
+                                () -> sourceProperty.setValue(configurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS),
                                 () -> {
-                                    ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS = newValue;
+                                    configurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS = newValue;
                                     props.setProperty(
                                             "SIZE_MINIMUM_FOR_LEAF_COMPONENTS",
-                                            "" + ConfigurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS);
+                                            "" + configurationManager.SIZE_MINIMUM_FOR_LEAF_COMPONENTS);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -158,13 +158,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.GL_OFFSET_TOP,
-                                () -> sourceProperty.setValue(ConfigurationManager.GL_OFFSET_TOP),
+                                () -> newValue != configurationManager.GL_OFFSET_TOP,
+                                () -> sourceProperty.setValue(configurationManager.GL_OFFSET_TOP),
                                 () -> {
-                                    ConfigurationManager.GL_OFFSET_TOP = newValue;
+                                    configurationManager.GL_OFFSET_TOP = newValue;
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + ConfigurationManager.GL_OFFSET_TOP);
+                                            "" + configurationManager.GL_OFFSET_TOP);
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;
@@ -173,13 +173,13 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         int newValue = Integer.parseInt(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP,
-                                () -> sourceProperty.setValue(ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP),
+                                () -> newValue != configurationManager.CELL_DETECTION_ROI_OFFSET_TOP,
+                                () -> sourceProperty.setValue(configurationManager.CELL_DETECTION_ROI_OFFSET_TOP),
                                 () -> {
-                                    ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP = newValue;
+                                    configurationManager.CELL_DETECTION_ROI_OFFSET_TOP = newValue;
                                     props.setProperty(
                                             "CELL_DETECTION_ROI_OFFSET_TOP",
-                                            "" + ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
+                                            "" + configurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -192,14 +192,14 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         float newValue = Float.parseFloat(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING,
-                                () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING),
+                                () -> newValue != configurationManager.THRESHOLD_FOR_COMPONENT_MERGING,
+                                () -> sourceProperty.setValue(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING),
                                 () -> {
-                                    ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING = newValue;
+                                    configurationManager.THRESHOLD_FOR_COMPONENT_MERGING = newValue;
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
-                                    dic.getWatershedMaskGenerator().setThresholdForComponentMerging(ConfigurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
+                                            "" + configurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
+                                    dic.getWatershedMaskGenerator().setThresholdForComponentMerging(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -212,14 +212,14 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         float newValue = Float.parseFloat(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION,
-                                () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION),
+                                () -> newValue != configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION,
+                                () -> sourceProperty.setValue(configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION),
                                 () -> {
-                                    ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION = newValue;
+                                    configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION = newValue;
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
-                                    dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
+                                            "" + configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
+                                    dic.getWatershedMaskGenerator().setThreshold(configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -232,14 +232,14 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         float newValue = Float.parseFloat(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING,
-                                () -> sourceProperty.setValue(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING),
+                                () -> newValue != configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING,
+                                () -> sourceProperty.setValue(configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING),
                                 () -> {
-                                    ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING = newValue;
+                                    configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING = newValue;
                                     props.setProperty(
                                             "GL_OFFSET_TOP",
-                                            "" + ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
-                                    dic.getWatershedMaskGenerator().setThreshold(ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+                                            "" + configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+                                    dic.getWatershedMaskGenerator().setThreshold(configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
                                     final Thread t = new Thread(() -> {
                                         ((MoMAGui) parent).restartFromGLSegmentation();
                                         ((MoMAGui) parent).restartTracking();
@@ -252,44 +252,44 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                         double newValue = Double.parseDouble(evt.getNewValue().toString());
                         showPropertyEditedNeedsRerunDialog("Continue?",
                                 "Changing this value will restart the optimization.\nYou will loose all manual edits performed so far!",
-                                () -> newValue != ConfigurationManager.MAXIMUM_GROWTH_RATE,
-                                () -> sourceProperty.setValue(ConfigurationManager.MAXIMUM_GROWTH_RATE),
+                                () -> newValue != configurationManager.MAXIMUM_GROWTH_RATE,
+                                () -> sourceProperty.setValue(configurationManager.MAXIMUM_GROWTH_RATE),
                                 () -> {
-                                    ConfigurationManager.MAXIMUM_GROWTH_RATE = newValue;
+                                    configurationManager.MAXIMUM_GROWTH_RATE = newValue;
                                     ((MoMAGui) parent).restartTrackingAsync();
                                 });
                         break;
                     }
                     case "INTENSITY_FIT_ITERATIONS": {
-                        ConfigurationManager.INTENSITY_FIT_ITERATIONS =
+                        configurationManager.INTENSITY_FIT_ITERATIONS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         props.setProperty(
                                 "INTENSITY_FIT_ITERATIONS",
-                                "" + ConfigurationManager.INTENSITY_FIT_ITERATIONS);
+                                "" + configurationManager.INTENSITY_FIT_ITERATIONS);
                         break;
                     }
                     case "INTENSITY_FIT_PRECISION": {
-                        ConfigurationManager.INTENSITY_FIT_PRECISION =
+                        configurationManager.INTENSITY_FIT_PRECISION =
                                 Double.parseDouble(evt.getNewValue().toString());
                         props.setProperty(
                                 "INTENSITY_FIT_PRECISION",
-                                "" + ConfigurationManager.INTENSITY_FIT_PRECISION);
+                                "" + configurationManager.INTENSITY_FIT_PRECISION);
                         break;
                     }
                     case "INTENSITY_FIT_INITIAL_WIDTH": {
-                        ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH =
+                        configurationManager.INTENSITY_FIT_INITIAL_WIDTH =
                                 Double.parseDouble(evt.getNewValue().toString());
                         props.setProperty(
                                 "INTENSITY_FIT_INITIAL_WIDTH",
-                                "" + ConfigurationManager.INTENSITY_FIT_INITIAL_WIDTH);
+                                "" + configurationManager.INTENSITY_FIT_INITIAL_WIDTH);
                         break;
                     }
                     case "INTENSITY_FIT_RANGE_IN_PIXELS": {
-                        ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS =
+                        configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS =
                                 Integer.parseInt(evt.getNewValue().toString());
                         props.setProperty(
                                 "INTENSITY_FIT_RANGE_IN_PIXELS",
-                                "" + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
+                                "" + configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
                         break;
                     }
                     default:

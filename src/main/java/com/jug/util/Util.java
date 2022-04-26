@@ -166,16 +166,16 @@ public class Util {
      * @param hyp
      * @return
      */
-    public static IntervalView<FloatType> getColumnBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg) {
+    public static IntervalView<FloatType> getColumnBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg, int INTENSITY_FIT_RANGE_IN_PIXELS) {
         final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
         final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
 
-        if (channelFrame.dimension(0) <= ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS) {
+        if (channelFrame.dimension(0) <= INTENSITY_FIT_RANGE_IN_PIXELS) {
             lt[0] = glMiddleInImg - channelFrame.dimension(0) / 2;
             rb[0] = glMiddleInImg + channelFrame.dimension(0) / 2 + channelFrame.dimension(0) % 2 - 1;
         } else {
-            lt[0] = glMiddleInImg - ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS / 2;
-            rb[0] = glMiddleInImg + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS / 2 + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
+            lt[0] = glMiddleInImg - INTENSITY_FIT_RANGE_IN_PIXELS / 2;
+            rb[0] = glMiddleInImg + INTENSITY_FIT_RANGE_IN_PIXELS / 2 + INTENSITY_FIT_RANGE_IN_PIXELS % 2 - 1;
         }
         return Views.interval(Views.zeroMin(channelFrame), lt, rb);
     }

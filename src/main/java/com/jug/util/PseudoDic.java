@@ -59,7 +59,7 @@ public class PseudoDic {
         assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
-        unetProcessor.setModelFilePath(ConfigurationManager.SEGMENTATION_MODEL_PATH);
+        unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
         gitVersionProvider = new GitVersionProvider();
     }
 
@@ -105,16 +105,16 @@ public class PseudoDic {
 
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
-        if(ConfigurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
+        if(configurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
             listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
         }
         listOfMeasurements.add(new ContourMomentsMeasurement(componentProperties));
 
-        if (ConfigurationManager.EXPORT_SPINE_MEASUREMENT) {
+        if (configurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());
         }
 
-        if(ConfigurationManager.EXPORT_PROBABILITY_AREA_MEASUREMENT){
+        if(configurationManager.EXPORT_PROBABILITY_AREA_MEASUREMENT){
             listOfMeasurements.add(getProbabilityAreaMeasurement());
         }
 //        listOfMeasurements.add(getEllipseMeasurement());
@@ -224,7 +224,7 @@ public class PseudoDic {
     MoMAGui gui;
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), ConfigurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
         }
         return gui;
     }

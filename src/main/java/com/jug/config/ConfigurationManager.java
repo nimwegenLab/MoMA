@@ -16,7 +16,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Properties to configure app (loaded and saved to properties file!).
      */
-    public static Properties props = null;
+    public Properties props = null;
 
     /**
      * The maximum time in seconds GUROBI is allowed to search for a good
@@ -194,7 +194,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
-    public static void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+    public void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
@@ -262,7 +262,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * @return instance of {@link Properties} containing the key-value pairs
      * found in that file.
      */
-    private static Properties loadParams(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+    private Properties loadParams(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         if (optionalPropertyFile != null) {
             if (optionalPropertyFile.exists() && optionalPropertyFile.isFile()) {
                 try {
@@ -320,7 +320,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Save parameters to the currently used config file.
      */
-    public static void saveParams(JFrame guiFrame) {
+    public void saveParams(JFrame guiFrame) {
         saveParams(currentPropertyFile, guiFrame);
     }
 
@@ -328,7 +328,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Saves a file 'mm.properties' in the current folder. This file contains
      * all MotherMachine specific properties as key-value pairs.
      */
-    public static void saveParams(final File f, JFrame guiFrame) {
+    public void saveParams(final File f, JFrame guiFrame) {
         try {
             final OutputStream out = new FileOutputStream(f);
 
@@ -389,7 +389,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         }
     }
 
-    private static boolean parseBooleanFromIntegerValue(String key, boolean defaultValue) {
+    private boolean parseBooleanFromIntegerValue(String key, boolean defaultValue) {
         int defaultValueAsInt = defaultValue ? 1 : 0;
         return Integer.parseInt(props.getProperty(key, Integer.toString(defaultValueAsInt))) == 1;
     }

@@ -522,7 +522,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
 
-            AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset);
+            AssignmentEditorPanel assignmentEditorPanel = new AssignmentEditorPanel(this, model, viewHeight, time_offset, configurationManager);
             panel1.add(assignmentEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(assignmentEditorPanel);
             assignmentEditorPanels.add(assignmentEditorPanel);

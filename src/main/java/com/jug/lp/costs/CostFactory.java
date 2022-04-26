@@ -1,6 +1,7 @@
 package com.jug.lp.costs;
 
 import com.jug.config.ConfigurationManager;
+import com.jug.config.IConfiguration;
 import com.jug.development.featureflags.ComponentCostCalculationMethod;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
@@ -26,6 +27,11 @@ public class CostFactory {
 	It should be removed in favor of having costs based on relative growth and/or movement at some point.
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
+	private IConfiguration configurationManager;
+
+	public CostFactory(IConfiguration configurationManager) {
+		this.configurationManager = configurationManager;
+	}
 
 	public Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
 		float scaledPositionDifference = (sourcePosition - targetPosition) / normalizer;
@@ -119,10 +125,10 @@ public class CostFactory {
 	 * @return ranges from 0 to 1.
 	 */
 	public double getCostFactorComponentExit(ComponentInterface component) {
-		float roiBoundaryPosition = (float) ConfigurationManager.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
+		float roiBoundaryPosition = (float) configurationManager.getGlOffsetTop(); // position above which a component lies outside of the ROI
 		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
 		double positionRelativeToRoiBoundary = verticalPositionOfComponent - roiBoundaryPosition;
-		double componentExitRange = ConfigurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
+		double componentExitRange = configurationManager.getComponentExitRange() / 2.0f; // defines the range, over which the cost increases.
 		double exitCostFactor = 1 / (1 + Math.exp(-positionRelativeToRoiBoundary / componentExitRange)); /* this factor increases cost as the component exits the ROI boundary */
 		return exitCostFactor;
 	}

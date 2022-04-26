@@ -85,7 +85,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
-    public static int GL_OFFSET_TOP = 65;
+    public int GL_OFFSET_TOP = 65;
+
+    @Override
+    public int getGlOffsetTop(){
+        return GL_OFFSET_TOP;
+    }
+
     /**
      * The number of pixels between adjacent components for which the two components will still be merged in that pixel
      * column.
@@ -108,6 +114,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * at the vertical position defined by GL_OFFSET_TOP.
      */
     public static float COMPONENT_EXIT_RANGE = 50;
+    @Override
+    public double getComponentExitRange(){
+        return COMPONENT_EXIT_RANGE;
+    }
     /**
      * String pointing at the U-Net TensorFlow model file that should be used for
      * classification during segmentation.

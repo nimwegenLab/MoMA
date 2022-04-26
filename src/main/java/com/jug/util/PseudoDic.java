@@ -178,7 +178,7 @@ public class PseudoDic {
     CostFactory costFactory;
     public CostFactory getCostFactory(){
         if(costFactory == null){
-            costFactory = new CostFactory();
+            costFactory = new CostFactory(getConfigurationManager());
         }
         return costFactory;
     }

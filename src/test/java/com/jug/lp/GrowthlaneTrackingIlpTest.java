@@ -8,6 +8,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
 import com.jug.lp.costs.CostFactory;
+import com.jug.mocks.ConfigMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import gurobi.GRBException;
@@ -56,7 +57,8 @@ public class GrowthlaneTrackingIlpTest {
         IDialogManager dialogManagerMock = new DialogManagerMock();
         Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), new ConfigMock(), "mockVersionString", new CostFactory());
+        ConfigMock configMock = new ConfigMock();
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }
@@ -83,49 +85,6 @@ public class GrowthlaneTrackingIlpTest {
         @Override
         public double getMaximumGrowthRate() {
             return 0;
-        }
-    }
-
-    class ConfigMock implements IConfiguration {
-
-        @Override
-        public int getMaxTime() {
-            return 0;
-        }
-
-        @Override
-        public int getMinTime() {
-            return 0;
-        }
-
-        @Override
-        public boolean getRunIlpOnChange() {
-            return false;
-        }
-
-        @Override
-        public void setRunIlpOnChange(boolean runOnChange) {
-
-        }
-
-        @Override
-        public String getPathForAutosaving() {
-            return null;
-        }
-
-        @Override
-        public double getGurobiTimeLimit() {
-            return 0;
-        }
-
-        @Override
-        public double getGurobiMaxOptimalityGap() {
-            return 0;
-        }
-
-        @Override
-        public boolean getIfRunningHeadless() {
-            return false;
         }
     }
 }

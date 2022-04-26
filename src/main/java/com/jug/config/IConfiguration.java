@@ -50,4 +50,8 @@ public interface IConfiguration {
      * @return
      */
     boolean getIfRunningHeadless();
+
+    int getGlOffsetTop();
+
+    double getComponentExitRange();
 }

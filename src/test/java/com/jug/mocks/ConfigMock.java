@@ -55,4 +55,9 @@ public class ConfigMock implements IConfiguration {
         float COMPONENT_EXIT_RANGE = 50;
         return COMPONENT_EXIT_RANGE;
     }
+
+    @Override
+    public float getAssignmentCostCutoff() {
+        return Float.MAX_VALUE;
+    }
 }

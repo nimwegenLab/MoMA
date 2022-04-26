@@ -54,4 +54,6 @@ public interface IConfiguration {
     int getGlOffsetTop();
 
     double getComponentExitRange();
+
+    float getAssignmentCostCutoff();
 }

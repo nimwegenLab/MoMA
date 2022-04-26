@@ -18,8 +18,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
-import static com.jug.config.ConfigurationManager.ASSIGNMENT_COST_CUTOFF;
-
 /**
  * @author jug
  */
@@ -79,7 +77,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // construction
     // -------------------------------------------------------------------------------------
     public AssignmentsEditorCanvasView(final int height, ConfigurationManager configurationManager) {
-        this(height, -ASSIGNMENT_COST_CUTOFF, ASSIGNMENT_COST_CUTOFF);
+        this(height, -configurationManager.ASSIGNMENT_COST_CUTOFF, configurationManager.ASSIGNMENT_COST_CUTOFF);
         this.configurationManager = configurationManager;
     }
 

@@ -68,11 +68,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * This value is critical(!): Assignments with costs higher than this value will be ignored.
      */
-    public static float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
+
+    public float getAssignmentCostCutoff() {
+        return ASSIGNMENT_COST_CUTOFF;
+    }
+    public float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
     /**
      * This value sets the fixed cost for lysis assignments. It is set so high, that it will not be considered for
      * assignment during optimization. However, it can be manually forced during curation.
      */
+
     public static float LYSIS_ASSIGNMENT_COST = 10.0f;
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
@@ -113,7 +118,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
      * at the vertical position defined by GL_OFFSET_TOP.
      */
-    public static float COMPONENT_EXIT_RANGE = 50;
+    public float COMPONENT_EXIT_RANGE = 50;
     @Override
     public double getComponentExitRange(){
         return COMPONENT_EXIT_RANGE;

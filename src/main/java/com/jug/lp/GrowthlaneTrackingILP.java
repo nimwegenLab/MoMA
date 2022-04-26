@@ -30,7 +30,6 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 
-import static com.jug.config.ConfigurationManager.ASSIGNMENT_COST_CUTOFF;
 import static com.jug.config.ConfigurationManager.LYSIS_ASSIGNMENT_COST;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
@@ -454,7 +453,7 @@ public class GrowthlaneTrackingILP {
                 float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
-                if (cost > ASSIGNMENT_COST_CUTOFF) {
+                if (cost > configurationManager.getAssignmentCostCutoff()) {
                     continue;
                 }
 //                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
@@ -642,7 +641,7 @@ public class GrowthlaneTrackingILP {
                             lowerTargetComponentCost,
                             compatibilityCostOfDivision);
 
-                    if (cost > ASSIGNMENT_COST_CUTOFF) {
+                    if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
                     }
                     final Hypothesis<AdvancedComponent<FloatType>> to =

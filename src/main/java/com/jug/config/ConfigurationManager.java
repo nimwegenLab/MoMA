@@ -45,7 +45,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
      * See also its usage in GrowthlaneViewer.java and MoMAGui.java
      */
-    public static final int GL_PIXEL_PADDING_IN_VIEWS = 5;
+    public final int GL_PIXEL_PADDING_IN_VIEWS = 5;
 
     /**
      * One of the test for paper:

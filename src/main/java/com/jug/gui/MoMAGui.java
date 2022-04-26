@@ -517,7 +517,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter());
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager);
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -533,7 +533,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, max_time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter());
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, viewWidth, viewHeight, max_time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager);
         panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);

@@ -26,6 +26,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
     private final int timeStepOffset;
     private GroundTruthFramesExporter groundTruthFramesExporter;
+    private ConfigurationManager configurationManager;
     private final IImageProvider imageProvider;
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
@@ -37,12 +38,13 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private Color groundTruthCheckboxDefaultColor;
     private MoMAGui mmgui;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter, ConfigurationManager configurationManager) {
         this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
         this.groundTruthFramesExporter = groundTruthFramesExporter;
+        this.configurationManager = configurationManager;
         growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
@@ -285,7 +287,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(2), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else { // default value to ColorChannel.CHANNEL0
-            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - configurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         }
         return viewImgCenterActive;
     }
@@ -302,7 +304,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                                 (RandomAccessibleInterval<FloatType>) viewToShow,
                                 new RealFloatNormalizeConverter(max.get()),
                                 new FloatType()),
-                        glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS,
+                        glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - configurationManager.GL_PIXEL_PADDING_IN_VIEWS,
                         glf.getOffsetY());
         return viewImgCenterActive;
     }

@@ -61,7 +61,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Parameter: how many pixels wide is the image containing the selected
      * Growthlane?
      */
-    public static int GL_WIDTH_IN_PIXELS = 20;
+    public int GL_WIDTH_IN_PIXELS = 20;
     public int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
     public List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
     public String CELL_LABELS = "dead;dying;fading";

@@ -166,9 +166,9 @@ public class Util {
      * @param hyp
      * @return
      */
-    public static IntervalView<FloatType> getColumnBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg, int INTENSITY_FIT_RANGE_IN_PIXELS) {
-        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg);
-        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg);
+    public static IntervalView<FloatType> getColumnBoxInImg(final IntervalView<FloatType> channelFrame, final Hypothesis<AdvancedComponent<FloatType>> hyp, final long glMiddleInImg, int INTENSITY_FIT_RANGE_IN_PIXELS, int glWidthInPixels) {
+        final long[] lt = Util.getTopLeftInSourceImg(hyp, glMiddleInImg, glWidthInPixels);
+        final long[] rb = Util.getRightBottomInSourceImg(hyp, glMiddleInImg, glWidthInPixels);
 
         if (channelFrame.dimension(0) <= INTENSITY_FIT_RANGE_IN_PIXELS) {
             lt[0] = glMiddleInImg - channelFrame.dimension(0) / 2;
@@ -184,9 +184,9 @@ public class Util {
      * @param hyp
      * @return
      */
-    private static long[] getTopLeftInSourceImg(final Hypothesis<AdvancedComponent<FloatType>> hyp, final long middle) {
+    private static long[] getTopLeftInSourceImg(final Hypothesis<AdvancedComponent<FloatType>> hyp, final long middle, int glWidthInPixels) {
         final ValuePair<Integer, Integer> limits = hyp.getLocation();
-        final long left = middle - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2;
+        final long left = middle - glWidthInPixels / 2;
         final long top = limits.getA();
         return new long[]{left, top};
     }
@@ -195,9 +195,9 @@ public class Util {
      * @param hyp
      * @return
      */
-    private static long[] getRightBottomInSourceImg(final Hypothesis<AdvancedComponent<FloatType>> hyp, final long middle) {
+    private static long[] getRightBottomInSourceImg(final Hypothesis<AdvancedComponent<FloatType>> hyp, final long middle, int glWidthInPixels) {
         final ValuePair<Integer, Integer> limits = hyp.getLocation();
-        final long right = middle + ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 + ConfigurationManager.GL_WIDTH_IN_PIXELS % 2 - 1;
+        final long right = middle + glWidthInPixels / 2 + glWidthInPixels % 2 - 1;
         final long bottom = limits.getB();
         return new long[]{right, bottom};
     }

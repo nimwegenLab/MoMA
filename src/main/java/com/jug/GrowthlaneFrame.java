@@ -21,22 +21,24 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
     private int frameIndex;
     private ComponentTreeGenerator componentTreeGenerator;
     private ConfigurationManager configurationManager;
+    private IImageProvider imageProvider;
 
     public int getFrameIndex() {
         return frameIndex;
     }
 
-    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator, ConfigurationManager configurationManager) {
+    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator, ConfigurationManager configurationManager, IImageProvider imageProvider) {
         this.frameIndex = frameIndex;
         this.componentTreeGenerator = componentTreeGenerator;
         this.configurationManager = configurationManager;
+        this.imageProvider = imageProvider;
     }
 
     /**
      * @see AbstractGrowthlaneFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
      */
     @Override
-    protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
+    protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree() {
         return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
     }
 }

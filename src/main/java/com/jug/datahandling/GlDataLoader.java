@@ -79,12 +79,12 @@ public class GlDataLoader {
      * multiple GL inside an image by detecting them. This now no longer necessary after
      * doing the preprocessing, so that we can simplify this method, the way we did.
      */
-    private void addGrowthlanes(IImageProvider imageProvider) {
+    private void addGrowthlanes() {
         this.setGrowthlanes(new ArrayList<>() );
         getGrowthlanes().add( new Growthlane(imageProvider, dialogManager) );
 
         for ( long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension( 2 ); frameIdx++ ) {
-            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentTreeGenerator, configurationManager);
+            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentTreeGenerator, configurationManager, imageProvider);
             final IntervalView< FloatType > ivFrame = Views.hyperSlice( imageProvider.getImgRaw(), 2, frameIdx );
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             getGrowthlanes().get(0).add(currentFrame);
@@ -96,12 +96,12 @@ public class GlDataLoader {
      * Growthlane.findGapHypotheses(Img). Note that this function always uses
      * the image data in 'imgTemp'.
      */
-    private void generateAllSimpleSegmentationHypotheses(IImageProvider imageProvider) {
+    private void generateAllSimpleSegmentationHypotheses() {
         imageProvider.setImgProbs(processImageOrLoadFromDisk());
         for ( final Growthlane gl : getGrowthlanes() ) {
             gl.getFrames().parallelStream().forEach((glf) -> {
                 System.out.print( "." );
-                glf.generateSimpleSegmentationHypotheses( imageProvider, glf.getFrameIndex() );
+                glf.generateSimpleSegmentationHypotheses();
             });
             System.out.println( " ...done!" );
         }
@@ -111,13 +111,13 @@ public class GlDataLoader {
      * Allows one to restart by GL segmentation. This is e.g. needed after top
      * or bottom offsets are altered, which invalidates all analysis run so far.
      */
-    public void restartFromGLSegmentation(IImageProvider imageProvider) {
+    public void restartFromGLSegmentation() {
         System.out.print( "Searching for Growthlanes..." );
-        addGrowthlanes(imageProvider);
+        addGrowthlanes();
         System.out.println( " done!" );
 
         System.out.println( "Generating Segmentation Hypotheses..." );
-        generateAllSimpleSegmentationHypotheses(imageProvider);
+        generateAllSimpleSegmentationHypotheses();
         System.out.println( " done!" );
     }
 

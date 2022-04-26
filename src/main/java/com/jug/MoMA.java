@@ -170,7 +170,7 @@ public class MoMA {
 				hideConsoleLater = true;
 			}
 
-			dic.getGlDataLoader().restartFromGLSegmentation(imageProvider);
+			dic.getGlDataLoader().restartFromGLSegmentation();
 			if ( !commandLineArgumentParser.getIfRunningHeadless() && hideConsoleLater ) {
 				loggerWindow.showConsoleWindow( false );
 			}

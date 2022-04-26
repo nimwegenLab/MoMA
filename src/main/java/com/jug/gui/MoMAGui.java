@@ -982,7 +982,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
 
     public void restartFromGLSegmentation() {
-        model.mm.restartFromGLSegmentation(imageProvider);
+        model.mm.restartFromGLSegmentation();
     }
 
     /**
@@ -1030,11 +1030,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     private void prepareOptimization() {
         System.out.println("Filling in CT hypotheses where needed...");
-        int frameIndex = 0;
         for (final GrowthlaneFrame glf : model.getCurrentGL().getFrames()) {
             if (glf.getComponentTree() == null) {
-                glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
-                frameIndex++;
+                glf.generateSimpleSegmentationHypotheses();
             }
         }
 
@@ -1209,11 +1207,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void activateSimpleHypothesesForGL(final Growthlane gl) {
-        int frameIndex = 0;
         for (final GrowthlaneFrame glf : gl.getFrames()) {
             System.out.print(".");
-            glf.generateSimpleSegmentationHypotheses(imageProvider, frameIndex);
-            frameIndex++;
+            glf.generateSimpleSegmentationHypotheses();
         }
         System.out.println();
     }

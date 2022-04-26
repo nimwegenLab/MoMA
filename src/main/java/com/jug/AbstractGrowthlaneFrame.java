@@ -106,15 +106,15 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    public void generateSimpleSegmentationHypotheses(final IImageProvider imageProvider, int frameIndex) {
-        componentTree = buildIntensityTree(imageProvider, frameIndex);
+    public void generateSimpleSegmentationHypotheses() {
+        componentTree = buildIntensityTree();
     }
 
     /**
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    protected abstract ComponentForest<C> buildIntensityTree(final IImageProvider imageProvider, int frameIndex);
+    protected abstract ComponentForest<C> buildIntensityTree();
 
     /**
      * @return the average X coordinate of the center line of this

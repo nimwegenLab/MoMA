@@ -7,6 +7,7 @@ import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
+import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import gurobi.GRBException;
@@ -55,7 +56,7 @@ public class GrowthlaneTrackingIlpTest {
         IDialogManager dialogManagerMock = new DialogManagerMock();
         Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), new ConfigMock(), "mockVersionString");
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), new ConfigMock(), "mockVersionString", new CostFactory());
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }

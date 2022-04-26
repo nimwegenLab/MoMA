@@ -21,13 +21,13 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
  * @author jug
  */
 public class CostFactory {
-	private static float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
+	private float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
 	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
 	It should be removed in favor of having costs based on relative growth and/or movement at some point.
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
-	public static Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
+	public Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
 		float scaledPositionDifference = (sourcePosition - targetPosition) / normalizer;
 		float exponent;
 		float migrationCost;
@@ -43,7 +43,7 @@ public class CostFactory {
 		return new ValuePair<>(migrationCost, new float[]{migrationCost});
 	}
 
-	public static Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize, boolean touchesCellDetectionRoiTop) {
+	public Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize, boolean touchesCellDetectionRoiTop) {
 		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
 		float exponent;
 		if (scaledSizeDifference > 0) { // growth
@@ -62,8 +62,8 @@ public class CostFactory {
 		return new ValuePair<>(growthCost, new float[]{growthCost});
 	}
 
-	static double maxPosteriorProbability = 0.9999999;
-	static double minPosteriorProbability = 1 - maxPosteriorProbability;
+	double maxPosteriorProbability = 0.9999999;
+	double minPosteriorProbability = 1 - maxPosteriorProbability;
 
 	/**
 	 * Calculate the component costs. The component cost is modulated between -0.2 and 0.2 using cost-factors, which
@@ -72,7 +72,7 @@ public class CostFactory {
 	 * @param component
 	 * @return
 	 */
-	public static float getComponentCost(final ComponentInterface component) {
+	public float getComponentCost(final ComponentInterface component) {
 		if (featureFlagComponentCost == ComponentCostCalculationMethod.Legacy) {
 			return getComponentCostLegacy(component);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingWatershedLineOnly) {
@@ -86,16 +86,16 @@ public class CostFactory {
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
 	}
 
-	public static double maximumComponentCost = 0.2; // maximum component cost
-	public static double minimumComponentCost = -0.2; // minimum component cost
+	public double maximumComponentCost = 0.2; // maximum component cost
+	public double minimumComponentCost = -0.2; // minimum component cost
 
-	public static float getComponentCostLegacy(final ComponentInterface component) {
+	public float getComponentCostLegacy(final ComponentInterface component) {
 		double exitCostFactor = getCostFactorComponentExit(component);
 		float cost = (float) (maximumComponentCost + (minimumComponentCost - maximumComponentCost) * exitCostFactor);
 		return cost;
 	}
 
-	public static float getComponentCostUsingWatershedLines(final ComponentInterface component) {
+	public float getComponentCostUsingWatershedLines(final ComponentInterface component) {
 		double exitCostFactor = getCostFactorComponentExit(component);
 		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((AdvancedComponent<FloatType>) component);
 		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((AdvancedComponent<FloatType>) component);
@@ -103,7 +103,7 @@ public class CostFactory {
 		return cost;
 	}
 
-	public static float getComponentCostUsingFullProbabilityMap(ComponentInterface component) {
+	public float getComponentCostUsingFullProbabilityMap(ComponentInterface component) {
 		double exitCostFactor = getCostFactorComponentExit(component);
 		double componentWatershedLineFactor = getCostFactorComponentWatershedLine((AdvancedComponent<FloatType>) component);
 		double parentComponentWatershedLineFactor = getCostFactorParentComponentWatershedLine((AdvancedComponent<FloatType>) component);
@@ -118,7 +118,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorComponentExit(ComponentInterface component) {
+	public double getCostFactorComponentExit(ComponentInterface component) {
 		float roiBoundaryPosition = (float) ConfigurationManager.GL_OFFSET_TOP; // position above which a component lies outside of the ROI
 		double verticalPositionOfComponent = component.firstMomentPixelCoordinates()[1];
 		double positionRelativeToRoiBoundary = verticalPositionOfComponent - roiBoundaryPosition;
@@ -133,7 +133,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorComponentWatershedLine(AdvancedComponent<FloatType> component) {
+	public double getCostFactorComponentWatershedLine(AdvancedComponent<FloatType> component) {
 		Double val = component.getWatershedLinePixelValueAverage();
 		if (val == null) {
 			return 1.0; /* there is no watershed line so we return 1.0 */
@@ -147,7 +147,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getOnLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -161,7 +161,7 @@ public class CostFactory {
 	 * @param component
 	 * @return
 	 */
-	public static double getOnLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+	public double getOnLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -175,7 +175,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+	public double getOffLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -190,7 +190,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOffLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+	public double getOffLogLikelihoodForComponentWatershedLine(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getWatershedLinePixelValuesAsDoubles();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -205,7 +205,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
+	public double getOnLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange){
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -219,7 +219,7 @@ public class CostFactory {
 	 * @param component
 	 * @return
 	 */
-	public static double getOnLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getOnLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -227,7 +227,7 @@ public class CostFactory {
 		return calculateSumOfLogValues(probabilities);
 	}
 
-	public static double getOnLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
+	public double getOnLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
 		double acc = 0.;
 		for (AdvancedComponent<FloatType> component : components){
 			acc += getOnLogLikelihoodForComponent(component, valueRange);
@@ -241,7 +241,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getOffLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -256,7 +256,7 @@ public class CostFactory {
 	 * @param component
 	 * @return
 	 */
-	public static double getOffLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getOffLogLikelihoodForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		List<Double> probabilities = component.getComponentPixelValuesAsDouble();
 		if (valueRange != null) {
 			probabilities = replaceValuesOutsideRange(probabilities, valueRange);
@@ -265,7 +265,7 @@ public class CostFactory {
 		return calculateSumOfLogValues(probabilities);
 	}
 
-	public static double getOffLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
+	public double getOffLogLikelihoodForComponents(List<AdvancedComponent<FloatType>> components, Pair<Double, Double> valueRange) {
 		double acc = 0.;
 		for (AdvancedComponent<FloatType> component : components){
 			acc += getOffLogLikelihoodForComponent(component, valueRange);
@@ -273,20 +273,20 @@ public class CostFactory {
 		return acc;
 	}
 
-	public static double getLogLikelihoodDifferenceForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getLogLikelihoodDifferenceForComponent(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		double offLikelihood = getOffLogLikelihoodForComponent(component, valueRange);
 		double onLikelihood = getOnLogLikelihoodForComponent(component, valueRange);
 		return onLikelihood - offLikelihood;
 	}
 
-	public static double getLogLikelihoodComponentCost(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
+	public double getLogLikelihoodComponentCost(AdvancedComponent<FloatType> component, Pair<Double, Double> valueRange) {
 		double scalingFactor = 0.2 / 2800.0; /* this scaling factor was found to work well in conjunction with the other terms in the cost calculation; it corresponds to a typical cell-size of ~50microns */
 		double logLikelihoodDifference = getLogLikelihoodDifferenceForComponent(component, valueRange);
 		logLikelihoodDifference = -logLikelihoodDifference * scalingFactor;
 		return logLikelihoodDifference;
 	}
 
-	public static List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {
+	public List<Double> replaceValuesOutsideRange(List<Double> values, Pair<Double, Double> valueRange) {
 		double minVal = valueRange.getA();
 		double maxVal = valueRange.getB();
 		List<Double> filteredList = values.parallelStream().map(val -> {
@@ -301,11 +301,11 @@ public class CostFactory {
 		return filteredList;
 	}
 
-	public static double calculateSumOfLogValues(List<Double> values) {
+	public double calculateSumOfLogValues(List<Double> values) {
 		return values.stream().map(val -> Math.log(val)).reduce(0.0, (acc, val) -> acc + val);
 	}
 
-	public static double multiplyPixelValues(List<Double> pixelVals) {
+	public double multiplyPixelValues(List<Double> pixelVals) {
 		return pixelVals.stream().reduce(1.0, (acc, value) -> acc * value).doubleValue();
 	}
 
@@ -319,7 +319,7 @@ public class CostFactory {
 	 * @param component
 	 * @return ranges from 0 to 1.
 	 */
-	public static double getCostFactorParentComponentWatershedLine(AdvancedComponent<FloatType> component){
+	public double getCostFactorParentComponentWatershedLine(AdvancedComponent<FloatType> component){
 		AdvancedComponent<FloatType> parent = component.getParent();
 		if (parent == null) {
 			return 1.0; /* If there is no parent component then this is a root component. We set the factor to 1, because this means that all surrounding pixel probabilities fall below the global threshold. */
@@ -327,7 +327,7 @@ public class CostFactory {
 		return 1. - getCostFactorComponentWatershedLine(parent);
 	}
 
-	public static double getCostFactorComponentProbability(AdvancedComponent<FloatType> component) {
+	public double getCostFactorComponentProbability(AdvancedComponent<FloatType> component) {
 		return component.getPixelValueAverage();
 //		double total = component.getPixelValueTotal();
 //		double hullArea = component.getConvexHullArea();
@@ -338,7 +338,7 @@ public class CostFactory {
 	 * @param sourceComponent
 	 * @return
 	 */
-	public static float getDivisionLikelihoodCost( final AdvancedComponent< FloatType> sourceComponent ) {
+	public float getDivisionLikelihoodCost( final AdvancedComponent< FloatType> sourceComponent ) {
 if ( sourceComponent.getChildren().size() > 2 ) { return 1.5f; } /* is this the reason we have value 1.3 for some divisions? There is a bug, where we sometimes have 3 child-components, so this if-statement would hold!// */
 if ( sourceComponent.getChildren().size() <= 1 ) { return 1.5f; } /* is this the reason we have value 1.3 for some divisions? There is a bug, where we sometimes have 3 child-components, so this if-statement would hold!// */
 
@@ -355,7 +355,7 @@ final long deltaSizeChildrenToSourceComponent = Math.abs( sizeChild1 + sizeChild
 return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceComponent;
 	}
 
-	public static Pair<Double, Double> getLikelihoodExtremaWithinRange(List<ComponentInterface> components, double rangeMin, double rangeMax) {
+	public Pair<Double, Double> getLikelihoodExtremaWithinRange(List<ComponentInterface> components, double rangeMin, double rangeMax) {
 		ArrayList<Double> minValues = new ArrayList();
 		ArrayList<Double> maxValues = new ArrayList();
 		for (ComponentInterface component : components) {
@@ -368,8 +368,8 @@ return 0.1f * deltaSizeBetweenChildren + 0.1f * deltaSizeChildrenToSourceCompone
 		return new ValuePair<>(minRet, maxRet);
 	}
 
-	public static Pair<Double, Double> getValuesForLikelihoodCalculation(List<ComponentInterface> components) {
-		Pair<Double, Double> minMaxPair = CostFactory.getLikelihoodExtremaWithinRange(components, 0, 1.0);
+	public Pair<Double, Double> getValuesForLikelihoodCalculation(List<ComponentInterface> components) {
+		Pair<Double, Double> minMaxPair = getLikelihoodExtremaWithinRange(components, 0, 1.0);
 		return minMaxPair;
 	}
 }

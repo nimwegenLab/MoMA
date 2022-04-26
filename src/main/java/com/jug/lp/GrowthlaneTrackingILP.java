@@ -68,6 +68,7 @@ public class GrowthlaneTrackingILP {
     private ITrackingConfiguration trackingConfiguration;
     private String versionString;
     private IConfiguration configurationManager;
+    private CostFactory costFactory;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
     private IDialogManager dialogManager;
@@ -81,7 +82,8 @@ public class GrowthlaneTrackingILP {
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  ITrackingConfiguration trackingConfiguration,
                                  IConfiguration configurationManager,
-                                 String versionString) {
+                                 String versionString,
+                                 CostFactory costFactory) {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
@@ -89,6 +91,7 @@ public class GrowthlaneTrackingILP {
         this.trackingConfiguration = trackingConfiguration;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
+        this.costFactory = costFactory;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -330,7 +333,7 @@ public class GrowthlaneTrackingILP {
      */
     public float getComponentCost(final int t, final Component<?, ?> ctNode) {
 //        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
-        return CostFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
+        return costFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
     }
 
     /**
@@ -501,13 +504,13 @@ public class GrowthlaneTrackingILP {
         final float targetUpperBoundary = targetComponentBoundaries.getA();
         final float targetLowerBoundary = targetComponentBoundaries.getB();
 
-        final Pair<Float, float[]> migrationCostOfUpperBoundary = CostFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
+        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
         float mappingCost = growthCost.getA() + averageMigrationCost;
         return mappingCost;
@@ -690,14 +693,14 @@ public class GrowthlaneTrackingILP {
         final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
         final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
 
-        final Pair<Float, float[]> migrationCostOfUpperBoundary = CostFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = CostFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP);
 
-        final Pair<Float, float[]> growthCost = CostFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
-//        final float divisionLikelihoodCost = CostFactory.getDivisionLikelihoodCost(sourceComponent);
+        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
+//        final float divisionLikelihoodCost = costFactory.getDivisionLikelihoodCost(sourceComponent);
 
 //        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
         float divisionCost = growthCost.getA() + averageMigrationCost;

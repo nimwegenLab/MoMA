@@ -10,6 +10,7 @@ import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
 import com.jug.lp.AssignmentPlausibilityTester;
+import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
@@ -174,10 +175,17 @@ public class PseudoDic {
         return groundTruthFramesExporter;
     }
 
+    CostFactory costFactory;
+    public CostFactory getCostFactory(){
+        if(costFactory == null){
+            costFactory = new CostFactory();
+        }
+        return costFactory;
+    }
     AssignmentCostExporter assignmentCostExporter;
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
-            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties());
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties(), getCostFactory());
         }
         return assignmentCostExporter;
     }

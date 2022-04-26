@@ -71,12 +71,14 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     private Growthlane growthlane;
     private Supplier<String> defaultFilenameDecorationSupplier;
     private ComponentProperties componentProperties;
+    private CostFactory costFactory;
 
-    public AssignmentCostExporter(Growthlane growthlane, Supplier<String> defaultFilenameDecorationSupplier, ComponentProperties componentProperties) {
+    public AssignmentCostExporter(Growthlane growthlane, Supplier<String> defaultFilenameDecorationSupplier, ComponentProperties componentProperties, CostFactory costFactory) {
         this.ilp = growthlane.getIlp();
         this.growthlane = growthlane;
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         this.componentProperties = componentProperties;
+        this.costFactory = costFactory;
         this.resultTable = new ResultTable(",");
         this.frameCol = resultTable.addColumn(new ResultTableColumn<>("frame"));
         this.assignmentTypeCol = resultTable.addColumn(new ResultTableColumn<>("assignment_type"));
@@ -193,23 +195,23 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
             componentTreeNodeLevelCol.addValue(sourceHypothesis.getWrappedComponent().getNodeLevel());
 
-            Pair<Double, Double> minMaxTuple = CostFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
+            Pair<Double, Double> minMaxTuple = costFactory.getValuesForLikelihoodCalculation(ilp.getAllComponentsInIlp());
 
-            double offLikelihoodForComponent = CostFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double offLikelihoodForComponent = costFactory.getOffLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLikelihoodForComponentCol.addValue(offLikelihoodForComponent);
-            double offLogLikelihoodForComponent = CostFactory.getOffLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double offLogLikelihoodForComponent = costFactory.getOffLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLogLikelihoodForComponentCol.addValue(offLogLikelihoodForComponent);
-            double onLikelihoodForComponent = CostFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double onLikelihoodForComponent = costFactory.getOnLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLikelihoodForComponentCol.addValue(onLikelihoodForComponent);
-            double onLogLikelihoodForComponent = CostFactory.getOnLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double onLogLikelihoodForComponent = costFactory.getOnLogLikelihoodForComponent(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLogLikelihoodForComponentCol.addValue(onLogLikelihoodForComponent);
-            double onLikelihoodForComponentWatershedLine = CostFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double onLikelihoodForComponentWatershedLine = costFactory.getOnLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLikelihoodForComponentWatershedLineCol.addValue(onLikelihoodForComponentWatershedLine);
-            double onLogLikelihoodForComponentWatershedLine = CostFactory.getOnLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double onLogLikelihoodForComponentWatershedLine = costFactory.getOnLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             onLogLikelihoodForComponentWatershedLineCol.addValue(onLogLikelihoodForComponentWatershedLine);
-            double offLikelihoodForComponentWatershedLine = CostFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double offLikelihoodForComponentWatershedLine = costFactory.getOffLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLikelihoodForComponentWatershedLineCol.addValue(offLikelihoodForComponentWatershedLine);
-            double offLogLikelihoodForComponentWatershedLine = CostFactory.getOffLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
+            double offLogLikelihoodForComponentWatershedLine = costFactory.getOffLogLikelihoodForComponentWatershedLine(sourceHypothesis.getWrappedComponent(), minMaxTuple);
             offLogLikelihoodForComponentWatershedLineCol.addValue(offLogLikelihoodForComponentWatershedLine);
             Pair<Double, Double> likelihoodExtrema = sourceHypothesis.getWrappedComponent().getPixelValueExtremaInsideRange(0.0, 1.0);
             minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
@@ -217,10 +219,10 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
 //            List<AdvancedComponent<FloatType>> compatibleChildComponents = sourceHypothesis.getWrappedComponent().getCompatibleChildNodes();
 //
-//            double onLogLikelihoodForCompatibleChildNodes = CostFactory.getOnLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+//            double onLogLikelihoodForCompatibleChildNodes = costFactory.getOnLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
 //            onLogLikelihoodForCompatibleChildNodesCol.addValue(onLogLikelihoodForCompatibleChildNodes);
 //
-//            double offLogLikelihoodForCompatibleChildNodes = CostFactory.getOffLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
+//            double offLogLikelihoodForCompatibleChildNodes = costFactory.getOffLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
 //            offLogLikelihoodForCompatibleChildNodesCol.addValue(offLogLikelihoodForCompatibleChildNodes);
 
             int cellRank;

@@ -119,7 +119,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Threshold value above which probability values will be set to one and hence components will not be split.
      */
-    public static float THRESHOLD_FOR_COMPONENT_SPLITTING = 1.0f;
+    public float THRESHOLD_FOR_COMPONENT_SPLITTING = 1.0f;
     /**
      * Sets the vertical position at the top of the image up to where U-Net will process the image.
      */

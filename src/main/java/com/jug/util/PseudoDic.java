@@ -29,8 +29,8 @@ import java.util.function.Function;
  * in order. Ideally at some point, this will be replaced with a true dependency injection frame-work.
  */
 public class PseudoDic {
-    public static Context context;
-    public static OpService ops;
+    public Context context;
+    public OpService ops;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final ComponentProperties componentProperties;
     private final ConfigurationManager configurationManager;

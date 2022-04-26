@@ -20,14 +20,16 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
 
     private int frameIndex;
     private ComponentTreeGenerator componentTreeGenerator;
+    private ConfigurationManager configurationManager;
 
     public int getFrameIndex() {
         return frameIndex;
     }
 
-    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator) {
+    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator, ConfigurationManager configurationManager) {
         this.frameIndex = frameIndex;
         this.componentTreeGenerator = componentTreeGenerator;
+        this.configurationManager = configurationManager;
     }
 
     /**
@@ -35,6 +37,6 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
      */
     @Override
     protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex) {
-        return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex, ConfigurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+        return componentTreeGenerator.buildIntensityTree(imageProvider, frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
     }
 }

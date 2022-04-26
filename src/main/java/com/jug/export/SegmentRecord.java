@@ -1,6 +1,5 @@
 package com.jug.export;
 
-import com.jug.config.ConfigurationManager;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -216,10 +215,6 @@ public final class SegmentRecord {
      * @return
      */
     float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
-        if (ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension(0)) {
-            System.out.println("EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension(0) + " instead of " + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
-        }
-
         final float[] ret = new float[(int) columnBoxInChannel.dimension(0)];
         int idx = 0;
         for (int i = (int) columnBoxInChannel.min(0); i <= columnBoxInChannel.max(0); i++) {

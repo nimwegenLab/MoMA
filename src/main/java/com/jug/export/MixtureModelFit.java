@@ -57,6 +57,9 @@ public class MixtureModelFit {
      * This method does not return anything, but resulting values are stored in the measurements of the {@param bacteria}
      */
     public double[] performMeasurement(SegmentRecord bacteria, IntervalView<FloatType> columnBoxInChannel, long imageWidth) {
+        if (configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension(0)) {
+            System.out.println("EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension(0) + " instead of " + configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
+        }
         final float[] column_intensities_float = bacteria.computeChannelColumnIntensities(columnBoxInChannel);
         final double[] observedFluo = IntStream.range(0, column_intensities_float.length)
                 .mapToDouble(i -> column_intensities_float[i]).toArray();

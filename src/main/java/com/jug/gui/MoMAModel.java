@@ -31,10 +31,10 @@ public class MoMAModel {
     /**
      * Construction
      *
-     * @param mm the instance of MotherMachine to be wrapped by this GUI model
+     * @param glDataLoader the instance of GlDataLoader, which provides access to loaded data.
      */
-    public MoMAModel(final GlDataLoader mm) {
-        this.mm = mm;
+    public MoMAModel(final GlDataLoader glDataLoader) {
+        this.mm = glDataLoader;
         currentGLidx = 0;
         currentGLFidx = 0;
     }

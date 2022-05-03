@@ -122,9 +122,7 @@ public class MoMA {
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = new JFrame();
 			main.initMainWindow( guiFrame );
-		}
 
-		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			// Iterate over all currently attached monitors and check if sceen
 			// position is actually possible,
 			// otherwise fall back to the DEFAULT values and ignore the ones

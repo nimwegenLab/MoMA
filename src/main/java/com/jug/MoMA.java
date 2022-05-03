@@ -72,35 +72,37 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		/* parse command line arguments */
 		commandLineArgumentParser = new CommandLineArgumentsParser(running_as_Fiji_plugin);
 		commandLineArgumentParser.parse(args);
-		File inputFolder = commandLineArgumentParser.getInputFolder();
 
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;
 
-		final InitializationHelpers datasetProperties = new InitializationHelpers();
-		datasetProperties.readDatasetProperties(inputFolder);
-
+		/* setup configuration manager and read configuration */
 		configurationManager = new ConfigurationManager();
 		configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
-
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
+
+		/* overwrite configuration values with parsed command line values, if needed */
+		File inputFolder = commandLineArgumentParser.getInputFolder();
+		if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
+			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
+		}
+		if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
+			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
+		}
+
+		configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
+
+		final InitializationHelpers datasetProperties = new InitializationHelpers();
+		datasetProperties.readDatasetProperties(inputFolder);
 		if (configurationManager.getMinTime() == -1) {
 			configurationManager.setMinTime(datasetProperties.getMinTime());
 		}
 		if (configurationManager.getMaxTime() == -1) {
 			configurationManager.setMaxTime(datasetProperties.getMaxTime());
 		}
-
-		if (commandLineArgumentParser.getUserDefinedMinTime() > 1 && commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()) {
-			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
-		}
-		if (commandLineArgumentParser.getUserDefinedMaxTime() > 0 && commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()) {
-			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
-		}
-
-		configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
 
 		final MoMA main = new MoMA();
 

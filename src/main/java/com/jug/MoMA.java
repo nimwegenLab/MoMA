@@ -139,7 +139,7 @@ public class MoMA {
 		}
 
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
-			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getImagePath());
+			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getInputImagePath());
 		}
 		System.out.println( "Default filename decoration = " + inputFolder.getName() );
 		defaultFilenameDecoration = inputFolder.getName();
@@ -151,13 +151,13 @@ public class MoMA {
 			loggerWindow.showConsoleWindow( true );
 		}
 
-		final File folder = new File(configurationManager.getImagePath());
+		final File folder = new File(configurationManager.getInputImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		try {
 			if ( datasetProperties.getNumChannels() == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
 
 			imageProvider = new ImageProvider();
-			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getImagePath(),
+			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getInputImagePath(),
 					configurationManager.getMinTime(),
 					configurationManager.getMaxTime(),
 					datasetProperties.getMinChannelIdx(),

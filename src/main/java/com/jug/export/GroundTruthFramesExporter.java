@@ -76,7 +76,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
             String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks__" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
-            writeImagePaths(out, configurationManager.getImagePath(), cellMaskImagePath);
+            writeImagePaths(out, configurationManager.getInputImagePath(), cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

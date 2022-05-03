@@ -4,7 +4,6 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IDialogManager;
-import com.jug.util.FloatTypeImgLoader;
 import com.jug.util.componenttree.ComponentTreeGenerator;
 import com.jug.util.componenttree.UnetProcessor;
 import ij.IJ;
@@ -16,6 +15,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -97,7 +97,7 @@ public class GlDataLoader {
      * the image data in 'imgTemp'.
      */
     private void generateAllSimpleSegmentationHypotheses() {
-        imageProvider.setImgProbs(processImageOrLoadFromDisk());
+        imageProvider.setImgProbs(getProbabilityImage());
         for ( final Growthlane gl : getGrowthlanes() ) {
             gl.getFrames().parallelStream().forEach((glf) -> {
                 System.out.print( "." );
@@ -143,21 +143,8 @@ public class GlDataLoader {
         }
     }
 
-    private Img<FloatType> processImageOrLoadFromDisk() {
-        String checksum = unetProcessor.getModelChecksum();
-        /**
-         *  generate probability filename
-         */
-        File file = new File(configurationManager.getImagePath());
-        String filename = removeExtension(file.getName());
-//        if(file.isDirectory()){
-//            File[] list = file.listFiles();
-//            file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
-//        }
-//        String outputFolderPath = file.getParent();
-//        String filename = removeExtension(file.getName());
-        String outputFolderPath = configurationManager.getOutputPath();
-        String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
+    private Img<FloatType> getProbabilityImage() {
+        String processedImageFileName = getProbabilityImageFilePath();
 
         /**
          *  create or load probability maps
@@ -172,5 +159,15 @@ public class GlDataLoader {
             probabilityMap = ImageJFunctions.convertFloat(imp);
         }
         return probabilityMap;
+    }
+
+    @NotNull
+    private String getProbabilityImageFilePath() {
+        String checksum = unetProcessor.getModelChecksum();
+        File file = new File(configurationManager.getInputImagePath());
+        String filename = removeExtension(file.getName());
+        String outputFolderPath = configurationManager.getOutputPath();
+        String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
+        return processedImageFileName;
     }
 }

@@ -11,6 +11,7 @@ public class CommandLineArgumentsParser {
      * Property file provided by user through as command-line option.
      */
     private File optionalPropertyFile = null;
+    private File reloadFolderPath = null;
     private int userDefinedMinTime = -1;
     private int userDefinedMaxTime = -1;
     // - - - - - - - - - - - - - -
@@ -21,6 +22,7 @@ public class CommandLineArgumentsParser {
     private boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
     private boolean HEADLESS;
 
+    private boolean reloadingData;
 
     public CommandLineArgumentsParser(boolean running_as_Fiji_plugin) {
         this.running_as_Fiji_plugin = running_as_Fiji_plugin;
@@ -36,6 +38,9 @@ public class CommandLineArgumentsParser {
         final Option help = new Option( "help", "print this message" );
 
         final Option headless = new Option( "h", "headless", false, "start without user interface (note: input-folder must be given!)" );
+        headless.setRequired( false );
+
+        final Option reloadOption = new Option( "rl", "reload", true, "reloads previously curated data; any additional arguments will be ignored" );
         headless.setRequired( false );
 
         final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
@@ -61,6 +66,7 @@ public class CommandLineArgumentsParser {
 
         options.addOption(help);
         options.addOption(headless);
+        options.addOption(reloadOption);
         options.addOption(groundTruthGeneration);
         options.addOption(timeFirst);
         options.addOption(timeLast);
@@ -75,7 +81,7 @@ public class CommandLineArgumentsParser {
         } catch ( final ParseException e1 ) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
-                    "... [-p props-file] -i in-folder [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
+                    "... [-p props-file] [-i in-folder] [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
                     "",
                     options,
                     "Error: " + e1.getMessage() );
@@ -112,6 +118,12 @@ public class CommandLineArgumentsParser {
 
         if ( cmd.hasOption( "ground_truth_export" ) ) {
             GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
+        }
+
+        if (cmd.hasOption("reload")) {
+            reloadingData = true;
+            reloadFolderPath = new File(cmd.getOptionValue("reload"));
+            return; /* if we are reloading previous analysis we do not need to read the cmd arguments below, which are mutually exclusive to reloading */
         }
 
         if ( cmd.hasOption( "i" ) ) {
@@ -217,5 +229,13 @@ public class CommandLineArgumentsParser {
 
     public String getOutputPath() {
         return outputPath;
+    }
+
+    public boolean isReloadingData() {
+        return reloadingData;
+    }
+
+    public File getReloadFolderPath() {
+        return reloadFolderPath;
     }
 }

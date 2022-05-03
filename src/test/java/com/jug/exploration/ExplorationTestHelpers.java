@@ -52,9 +52,12 @@ public class ExplorationTestHelpers {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
         } else if (outputPath != null) { // both tmin and tmax are null
             args = new String[]{"-i", inputPath, "-o", outputPath};
+        } else if (inputPath != null) {
+            args = new String[]{"-i", };
         } else {
-            args = new String[]{"-i", inputPath};
+            args = new String[]{};
         }
+
         if (additionalArgs != null) {
             args = concatenateWithCollection(args, additionalArgs);
         }

@@ -12,6 +12,7 @@ import com.jug.util.PseudoDic;
 import ij.ImageJ;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -80,35 +81,44 @@ public class MoMA {
 
 		/* setup configuration manager and read configuration */
 		configurationManager = new ConfigurationManager();
-		configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
-		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
+		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
-		/* overwrite configuration values with parsed command line values, if needed */
-		File inputFolder = commandLineArgumentParser.getInputFolder();
-		if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
-			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
-		}
-		if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
-			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
-		}
-		configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
-
-		/* test validity of the minimum or maximum times or use dataset values, if not specified */
+		File inputFolder = null;
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
-		datasetProperties.readDatasetProperties(inputFolder);
-		if (configurationManager.getMinTime() == -1) {
-			configurationManager.setMinTime(datasetProperties.getMinTime());
+		if(commandLineArgumentParser.isReloadingData()){
+			configurationManager.load(commandLineArgumentParser.getReloadFolderPath(), userMomaHomePropertyFile, momaUserDirectory);
+//			inputFolder;
+			datasetProperties.readDatasetProperties(inputFolder);
+			throw new NotImplementedException("Implementation of the reloading feature is still unfinished!");
 		} else {
-			if(configurationManager.getMinTime() < datasetProperties.getMinTime() || configurationManager.getMinTime() > datasetProperties.getMaxTime()){
-				throw new RuntimeException("minimum value of time range to analyze is invalid.");
+			configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
+
+			/* overwrite configuration values with parsed command line values, if needed */
+			inputFolder = commandLineArgumentParser.getInputFolder();
+			if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
+				configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 			}
-		}
-		if (configurationManager.getMaxTime() == -1) {
-			configurationManager.setMaxTime(datasetProperties.getMaxTime());
-		} else {
-			if(configurationManager.getMaxTime() < datasetProperties.getMinTime() || configurationManager.getMaxTime() > datasetProperties.getMaxTime()){
-				throw new RuntimeException("maximum value of time range to analyze is invalid.");
+			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
+				configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
+			}
+			configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
+
+			/* test validity of the minimum or maximum times or use dataset values, if not specified */
+			datasetProperties.readDatasetProperties(inputFolder);
+			if (configurationManager.getMinTime() == -1) {
+				configurationManager.setMinTime(datasetProperties.getMinTime());
+			} else {
+				if(configurationManager.getMinTime() < datasetProperties.getMinTime() || configurationManager.getMinTime() > datasetProperties.getMaxTime()){
+					throw new RuntimeException("minimum value of time range to analyze is invalid.");
+				}
+			}
+			if (configurationManager.getMaxTime() == -1) {
+				configurationManager.setMaxTime(datasetProperties.getMaxTime());
+			} else {
+				if(configurationManager.getMaxTime() < datasetProperties.getMinTime() || configurationManager.getMaxTime() > datasetProperties.getMaxTime()){
+					throw new RuntimeException("maximum value of time range to analyze is invalid.");
+				}
 			}
 		}
 

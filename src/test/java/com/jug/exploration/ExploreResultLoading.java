@@ -17,11 +17,14 @@ public class ExploreResultLoading {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/output";
         String settings_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/output/mm.properties";
+        String reload_folder_path = datasets_base_path + "/dany_20200730__Pos3_GL16/output";
         Integer tmin = null;
         Integer tmax = null;
+//        inputPath = null;
 //        outputPath = null;
 //        startMoma(true, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
-        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
+//        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
+        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 
 

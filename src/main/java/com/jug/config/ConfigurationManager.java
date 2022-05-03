@@ -226,8 +226,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
 
-        minTime = Integer.parseInt(props.getProperty("MIN_TIME", Integer.toString(minTime)));
-        maxTime = Integer.parseInt(props.getProperty("MAX_TIME", Integer.toString(maxTime)));
+        minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
+        maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_STOP", Integer.toString(maxTime)));
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt(props.getProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS)));
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
@@ -363,8 +363,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         try {
             final OutputStream out = new FileOutputStream(f);
 
-            props.setProperty("MIN_TIME", Integer.toString(minTime));
-            props.setProperty("MAX_TIME", Integer.toString(maxTime));
+            props.setProperty("TIME_RANGE_START", Integer.toString(minTime));
+            props.setProperty("TIME_RANGE_STOP", Integer.toString(maxTime));
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
             props.setProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS));
             props.setProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP));

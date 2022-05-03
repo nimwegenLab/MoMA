@@ -173,16 +173,7 @@ public class MoMA {
 					datasetProperties.getMinChannelIdx(),
 					datasetProperties.getNumChannels() + datasetProperties.getMinChannelIdx() - 1);
 
-			boolean hideConsoleLater = false;
-			if ( !commandLineArgumentParser.getIfRunningHeadless() && !loggerWindow.isConsoleVisible() ) {
-				loggerWindow.showConsoleWindow( true );
-				hideConsoleLater = true;
-			}
-
 			dic.getGlDataLoader().restartFromGLSegmentation();
-			if ( !commandLineArgumentParser.getIfRunningHeadless() && hideConsoleLater ) {
-				loggerWindow.showConsoleWindow( false );
-			}
 
 			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
 				System.out.println( "Generating Integer Linear Program(s)..." );

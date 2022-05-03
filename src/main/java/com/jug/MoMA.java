@@ -26,7 +26,6 @@ import java.io.File;
  */
 public class MoMA {
 	private static ConfigurationManager configurationManager;
-	private static ImageProvider imageProvider;
 	private static CommandLineArgumentsParser commandLineArgumentParser;
 	private static LoggerWindow loggerWindow;
 
@@ -153,16 +152,16 @@ public class MoMA {
 
 		final File folder = new File(configurationManager.getInputImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
+		ImageProvider imageProvider = new ImageProvider();
+		dic.setImageProvider(imageProvider);
 		try {
 			if ( datasetProperties.getNumChannels() == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
 
-			imageProvider = new ImageProvider();
 			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getInputImagePath(),
 					configurationManager.getMinTime(),
 					configurationManager.getMaxTime(),
 					datasetProperties.getMinChannelIdx(),
 					datasetProperties.getNumChannels() + datasetProperties.getMinChannelIdx() - 1);
-			dic.setImageProvider(imageProvider);
 
 			boolean hideConsoleLater = false;
 			if ( !commandLineArgumentParser.getIfRunningHeadless() && !loggerWindow.isConsoleVisible() ) {
@@ -196,7 +195,7 @@ public class MoMA {
 		// show loaded and annotated data
 		if (showIJ) {
 			new ImageJ();
-			ImageJFunctions.show( imageProvider.getImgRaw(), "Rotated & cropped raw data" );
+			ImageJFunctions.show( dic.getImageProvider().getImgRaw(), "Rotated & cropped raw data" );
 		}
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {

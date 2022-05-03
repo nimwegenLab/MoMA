@@ -202,9 +202,7 @@ public class CommandLineArgumentsParser {
         return userDefinedMinTime;
     }
 
-    public int getUserDefinedMaxTime() {
-        return userDefinedMaxTime;
-    }
+    public int getUserDefinedMaxTime() { return userDefinedMaxTime; }
 
     public boolean getShowGroundTruthFunctionality(){
         return GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY;

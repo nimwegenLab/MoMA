@@ -41,7 +41,6 @@ public class ExplorationTestHelpers {
         if (deleteProbabilityMaps) {
             remove_probability_maps(inputPath);
         }
-        create_output_folder(outputPath);
 
         String[] args;
 
@@ -59,6 +58,11 @@ public class ExplorationTestHelpers {
         if (additionalArgs != null) {
             args = concatenateWithCollection(args, additionalArgs);
         }
+
+        if (outputPath != null){
+            create_output_folder(outputPath);
+        }
+
 //        MoMA.HEADLESS = headless;
         if(headless){
             args = concatenateWithCollection(args, new String[]{"-headless"});

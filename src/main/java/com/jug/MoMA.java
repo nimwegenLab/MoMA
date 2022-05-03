@@ -147,6 +147,10 @@ public class MoMA {
 				int DEFAULT_GUI_POS_Y = 100;
 				configurationManager.GUI_POS_Y = DEFAULT_GUI_POS_Y;
 			}
+
+			// Setting up console window...
+			loggerWindow.initConsoleWindow();
+			loggerWindow.showConsoleWindow( true );
 		}
 
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
@@ -155,12 +159,6 @@ public class MoMA {
 		System.out.println( "Default filename decoration = " + inputFolder.getName() );
 		defaultFilenameDecoration = inputFolder.getName();
 		configurationManager.setImagePath(inputFolder.getAbsolutePath());
-
-		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
-			// Setting up console window...
-			loggerWindow.initConsoleWindow();
-			loggerWindow.showConsoleWindow( true );
-		}
 
 		final File folder = new File(configurationManager.getInputImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );

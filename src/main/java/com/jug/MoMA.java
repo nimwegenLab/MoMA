@@ -92,16 +92,24 @@ public class MoMA {
 		if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
 			configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 		}
-
 		configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
 
+		/* test validity of the minimum or maximum times or use dataset values, if not specified */
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
 		datasetProperties.readDatasetProperties(inputFolder);
 		if (configurationManager.getMinTime() == -1) {
 			configurationManager.setMinTime(datasetProperties.getMinTime());
+		} else {
+			if(configurationManager.getMinTime() < datasetProperties.getMinTime() || configurationManager.getMinTime() > datasetProperties.getMaxTime()){
+				throw new RuntimeException("minimum value of time range to analyze is invalid.");
+			}
 		}
 		if (configurationManager.getMaxTime() == -1) {
 			configurationManager.setMaxTime(datasetProperties.getMaxTime());
+		} else {
+			if(configurationManager.getMaxTime() < datasetProperties.getMinTime() || configurationManager.getMaxTime() > datasetProperties.getMaxTime()){
+				throw new RuntimeException("maximum value of time range to analyze is invalid.");
+			}
 		}
 
 		final MoMA main = new MoMA();

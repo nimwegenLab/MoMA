@@ -38,7 +38,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * The path to save ground truth and time statistics to (yes, we write
      * papers!).
      */
-    public String STATS_OUTPUT_PATH = DEFAULT_PATH;
+    public String outputPath = DEFAULT_PATH;
 
     /**
      * Controls the total width of the GL image as shown in GUI. The total width is is given by:
@@ -509,11 +509,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     }
 
     public void setOutputPath(String outputPath) {
-        STATS_OUTPUT_PATH = outputPath;
+        this.outputPath = outputPath;
     }
 
     public String getOutputPath() {
-        return STATS_OUTPUT_PATH;
+        return outputPath;
     }
 
     public String getDefaultPath() {

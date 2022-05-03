@@ -149,12 +149,14 @@ public class GlDataLoader {
          *  generate probability filename
          */
         File file = new File(configurationManager.getImagePath());
-        if(file.isDirectory()){
-            File[] list = file.listFiles();
-            file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
-        }
-        String outputFolderPath = file.getParent();
         String filename = removeExtension(file.getName());
+//        if(file.isDirectory()){
+//            File[] list = file.listFiles();
+//            file = new File(list[0].getAbsolutePath()); /* we were passed a folder, but we want the full file name, for storing the probability map with correct name */
+//        }
+//        String outputFolderPath = file.getParent();
+//        String filename = removeExtension(file.getName());
+        String outputFolderPath = configurationManager.getOutputPath();
         String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
 
         /**
@@ -163,7 +165,7 @@ public class GlDataLoader {
         Img<FloatType> probabilityMap;
         if (!new File(processedImageFileName).exists()) {
             probabilityMap = unetProcessor.process(imageProvider.getImgRaw());
-            ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "tmp_image");
+            ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
             IJ.saveAsTiff(tmp_image, processedImageFileName);
         } else {
             ImagePlus imp = IJ.openImage(processedImageFileName);

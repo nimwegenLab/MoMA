@@ -16,7 +16,7 @@ public class ExploreResultLoading {
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_mm_properties_loading() {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/output";
-        String settings_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/source_for_mm_properties_loading__DONT_DELETE/mm.properties";
+        String settings_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/output/mm.properties";
         Integer tmin = null;
         Integer tmax = null;
 //        outputPath = null;

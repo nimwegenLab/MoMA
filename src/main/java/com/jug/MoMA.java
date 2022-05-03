@@ -86,10 +86,14 @@ public class MoMA {
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
-		configurationManager.setMinTime(datasetProperties.getMinTime());
-		configurationManager.setMaxTime(datasetProperties.getMaxTime());
+		if (configurationManager.getMinTime() == -1) {
+			configurationManager.setMinTime(datasetProperties.getMinTime());
+		}
+		if (configurationManager.getMaxTime() == -1) {
+			configurationManager.setMaxTime(datasetProperties.getMaxTime());
+		}
 
-		if (commandLineArgumentParser.getUserDefinedMinTime() > 0 && commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()) {
+		if (commandLineArgumentParser.getUserDefinedMinTime() > 1 && commandLineArgumentParser.getUserDefinedMinTime() > datasetProperties.getMinTime()) {
 			configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 		}
 		if (commandLineArgumentParser.getUserDefinedMaxTime() > 0 && commandLineArgumentParser.getUserDefinedMaxTime() < datasetProperties.getMaxTime()) {

@@ -33,7 +33,7 @@ public class PseudoDic {
     public OpService ops;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final ComponentProperties componentProperties;
-    private final ConfigurationManager configurationManager;
+    private ConfigurationManager configurationManager;
     private final MoMA momaInstance;
     private final MixtureModelFit mixtureModelFit;
     private final ComponentTreeGenerator componentTreeGenerator;
@@ -77,6 +77,10 @@ public class PseudoDic {
     }
 
     public ConfigurationManager getConfigurationManager() {
+        if (configurationManager != null) {
+            return configurationManager;
+        }
+        configurationManager = new ConfigurationManager();
         return configurationManager;
     }
 

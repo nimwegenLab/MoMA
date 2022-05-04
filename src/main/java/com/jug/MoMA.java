@@ -76,6 +76,9 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
+		final MoMA main = new MoMA();
+		dic = new PseudoDic(main);
+
 		/* parse command line arguments */
 		commandLineArgumentParser = new CommandLineArgumentsParser(running_as_Fiji_plugin);
 		commandLineArgumentParser.parse(args);
@@ -84,7 +87,8 @@ public class MoMA {
 
 		/* setup configuration manager and read configuration */
 		FilePaths filePaths = new FilePaths();
-		configurationManager = new ConfigurationManager();
+
+		configurationManager = dic.getConfigurationManager();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
@@ -127,9 +131,6 @@ public class MoMA {
 			}
 		}
 
-		final MoMA main = new MoMA();
-
-		dic = new PseudoDic(configurationManager, main);
 		loggerWindow = dic.getLoggerWindow();
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );

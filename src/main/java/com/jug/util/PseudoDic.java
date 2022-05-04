@@ -48,8 +48,7 @@ public class PseudoDic {
     private ConvertService convertService;
     private IImageProvider imageProvider;
 
-    public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
-        this.configurationManager = configurationManager;
+    public PseudoDic(MoMA main) {
         this.momaInstance = main;
     }
 

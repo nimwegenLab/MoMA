@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.MoMA;
+import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
@@ -323,5 +324,14 @@ public class PseudoDic {
         }
         loggerWindow = new LoggerWindow(this, getConfigurationManager());
         return loggerWindow;
+    }
+
+    private CommandLineArgumentsParser commandLineArgumentParser;
+
+    public CommandLineArgumentsParser getCommandLineArgumentParser() {
+        if(isNull(commandLineArgumentParser)){
+            commandLineArgumentParser = new CommandLineArgumentsParser();
+        }
+        return commandLineArgumentParser;
     }
 }

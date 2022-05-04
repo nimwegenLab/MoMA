@@ -1,6 +1,5 @@
 package com.jug;
 
-import com.google.common.io.Files;
 import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.FilePaths;
@@ -79,7 +78,8 @@ public class MoMA {
 		dic = new PseudoDic();
 
 		/* parse command line arguments */
-		commandLineArgumentParser = new CommandLineArgumentsParser(running_as_Fiji_plugin);
+		commandLineArgumentParser = dic.getCommandLineArgumentParser();
+		commandLineArgumentParser.setrunning_as_Fiji_plugin(running_as_Fiji_plugin);
 		commandLineArgumentParser.parse(args);
 
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;

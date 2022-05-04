@@ -26,7 +26,7 @@ public class CommandLineArgumentsParser {
 
     private boolean reloadingData;
 
-    public CommandLineArgumentsParser(boolean running_as_Fiji_plugin) {
+    public void setrunning_as_Fiji_plugin(boolean running_as_Fiji_plugin){
         this.running_as_Fiji_plugin = running_as_Fiji_plugin;
     }
 

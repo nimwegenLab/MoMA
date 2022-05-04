@@ -36,7 +36,7 @@ public class PseudoDic {
     private AssignmentPlausibilityTester assignmentPlausibilityTester;
     private ComponentProperties componentProperties;
     private ConfigurationManager configurationManager;
-    private final MoMA momaInstance;
+    private MoMA momaInstance;
     private MixtureModelFit mixtureModelFit;
     private ComponentTreeGenerator componentTreeGenerator;
     private Imglib2Utils imglib2utils;
@@ -48,8 +48,7 @@ public class PseudoDic {
     private ConvertService convertService;
     private IImageProvider imageProvider;
 
-    public PseudoDic(MoMA main) {
-        this.momaInstance = main;
+    public PseudoDic() {
     }
 
     public Context getSciJavaContext() {
@@ -104,6 +103,9 @@ public class PseudoDic {
     }
 
     public MoMA getMomaInstance() {
+        if (isNull(momaInstance)) {
+            momaInstance = new MoMA();
+        }
         return momaInstance;
     }
 

@@ -76,8 +76,7 @@ public class MoMA {
 	 * @param args
 	 */
 	public static void main( final String[] args ) {
-		final MoMA main = new MoMA();
-		dic = new PseudoDic(main);
+		dic = new PseudoDic();
 
 		/* parse command line arguments */
 		commandLineArgumentParser = new CommandLineArgumentsParser(running_as_Fiji_plugin);
@@ -137,7 +136,7 @@ public class MoMA {
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = new JFrame();
-			main.initMainWindow( guiFrame );
+			dic.getMomaInstance().initMainWindow( guiFrame );
 
 			// Iterate over all currently attached monitors and check if sceen
 			// position is actually possible,
@@ -170,14 +169,14 @@ public class MoMA {
 		}
 
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
-			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getInputImagePath());
+			inputFolder = dic.getMomaInstance().showStartupDialog( guiFrame, configurationManager.getInputImagePath());
 		}
 		defaultFilenameDecoration = inputFolder.getFileName().toString();
 		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
 		configurationManager.setImagePath(inputFolder.toAbsolutePath().toString());
 
 		final File folder = new File(configurationManager.getInputImagePath());
-		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
+		dic.getMomaInstance().setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		ImageProvider imageProvider = new ImageProvider();
 		dic.setImageProvider(imageProvider);
 		try {

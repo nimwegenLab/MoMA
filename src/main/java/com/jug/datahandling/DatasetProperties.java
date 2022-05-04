@@ -6,7 +6,7 @@ import ij.ImagePlus;
 
 import java.io.File;
 
-public class InitializationHelpers implements IDatasetProperties {
+public class DatasetProperties implements IDatasetProperties {
     private int minTime = -1;
     private int maxTime = -1;
     private int minChannelIdx = 1;

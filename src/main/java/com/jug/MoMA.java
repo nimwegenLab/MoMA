@@ -2,9 +2,8 @@ package com.jug;
 
 import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.ImageProvider;
-import com.jug.datahandling.InitializationHelpers;
+import com.jug.datahandling.DatasetProperties;
 import com.jug.gui.LoggerWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
@@ -90,7 +89,7 @@ public class MoMA {
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
 		Path inputFolder = null;
-		final InitializationHelpers datasetProperties = new InitializationHelpers();
+		final DatasetProperties datasetProperties = new DatasetProperties();
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);

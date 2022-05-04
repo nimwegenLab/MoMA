@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import static java.util.Objects.isNull;
+
 /**
  * This is pseudo dependency injection container, which I use to work on getting my class dependencies and initialization
  * in order. Ideally at some point, this will be replaced with a true dependency injection frame-work.
@@ -39,24 +41,20 @@ public class PseudoDic {
     private ComponentTreeGenerator componentTreeGenerator;
     private final Imglib2Utils imglib2utils;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
-    private final UnetProcessor unetProcessor;
+    private UnetProcessor unetProcessor;
     private WatershedMaskGenerator watershedMaskGenerator;
     private final GitVersionProvider gitVersionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
-    private final ConvertService convertService;
+    private ConvertService convertService;
     private IImageProvider imageProvider;
 
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
 
-        convertService = getSciJavaContext().service(ConvertService.class);
-        ops = getSciJavaContext().service(OpService.class);
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
-        unetProcessor.setModelFilePath(getConfigurationManager().SEGMENTATION_MODEL_PATH);
         gitVersionProvider = new GitVersionProvider();
     }
 
@@ -67,7 +65,13 @@ public class PseudoDic {
         return context;
     }
 
-    public OpService getImageJOpService() { return ops; }
+    public OpService getImageJOpService() {
+        if (ops == null) {
+            ops = getSciJavaContext().service(OpService.class);
+
+        }
+        return ops;
+    }
 
     public AssignmentPlausibilityTester getAssignmentPlausibilityTester() {
         if (assignmentPlausibilityTester == null) {
@@ -167,10 +171,17 @@ public class PseudoDic {
     OverlayUtils overlayUtils;
 
     public OverlayUtils getOverlayUtils() {
-        if (overlayUtils == null) {
-            overlayUtils = new OverlayUtils(convertService);
+        if (isNull(overlayUtils)) {
+            overlayUtils = new OverlayUtils(getConvertService());
         }
         return overlayUtils;
+    }
+
+    private ConvertService getConvertService() {
+        if (isNull(convertService)) {
+            convertService = getSciJavaContext().service(ConvertService.class);
+        }
+        return convertService;
     }
 
     public CellMaskExporter getCellMaskExporter() {
@@ -210,6 +221,10 @@ public class PseudoDic {
     }
 
     public UnetProcessor getUnetProcessor() {
+        if (isNull(unetProcessor)) {
+            unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
+            unetProcessor.setModelFilePath(getConfigurationManager().SEGMENTATION_MODEL_PATH);
+        }
         return unetProcessor;
     }
 

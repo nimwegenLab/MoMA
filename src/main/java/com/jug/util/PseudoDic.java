@@ -136,7 +136,7 @@ public class PseudoDic {
 
     private List<SegmentMeasurementInterface> getMeasurements() {
         List<SegmentMeasurementInterface> listOfMeasurements = new ArrayList<>();
-        if(configurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
+        if (configurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT) {
             listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
         }
         listOfMeasurements.add(new ContourMomentsMeasurement(getComponentProperties()));
@@ -145,7 +145,7 @@ public class PseudoDic {
             listOfMeasurements.add(getSpineLengthMeasurement());
         }
 
-        if(configurationManager.EXPORT_PROBABILITY_AREA_MEASUREMENT){
+        if (configurationManager.EXPORT_PROBABILITY_AREA_MEASUREMENT) {
             listOfMeasurements.add(getProbabilityAreaMeasurement());
         }
 //        listOfMeasurements.add(getEllipseMeasurement());
@@ -153,6 +153,7 @@ public class PseudoDic {
     }
 
     private SegmentMeasurementInterface proabilityAreaMeasurement;
+
     private SegmentMeasurementInterface getProbabilityAreaMeasurement() {
         if (proabilityAreaMeasurement != null) {
             return proabilityAreaMeasurement;
@@ -204,6 +205,7 @@ public class PseudoDic {
     }
 
     private GroundTruthFramesExporter groundTruthFramesExporter;
+
     public GroundTruthFramesExporter getGroundTruthFramesExporter() {
         if (groundTruthFramesExporter != null) {
             return groundTruthFramesExporter;
@@ -213,13 +215,16 @@ public class PseudoDic {
     }
 
     CostFactory costFactory;
-    public CostFactory getCostFactory(){
-        if(costFactory == null){
+
+    public CostFactory getCostFactory() {
+        if (costFactory == null) {
             costFactory = new CostFactory(getConfigurationManager());
         }
         return costFactory;
     }
+
     AssignmentCostExporter assignmentCostExporter;
+
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
             assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties(), getCostFactory());
@@ -239,7 +244,7 @@ public class PseudoDic {
         return unetProcessor;
     }
 
-    public IUnetProcessingConfiguration getUnetProcessorConfiguration(){
+    public IUnetProcessingConfiguration getUnetProcessorConfiguration() {
         return configurationManager;
     }
 
@@ -259,29 +264,35 @@ public class PseudoDic {
     }
 
     private MoMAModel momaModel;
+
     public MoMAModel getMomaModel() {
-        if(momaModel == null){
+        if (momaModel == null) {
             momaModel = new MoMAModel(getGlDataLoader());
         }
         return momaModel;
     }
 
     DialogPropertiesEditor propsEditor;
-    public DialogPropertiesEditor getPropertiesEditorWindow(){
-        if(propsEditor != null) {return propsEditor; }
+
+    public DialogPropertiesEditor getPropertiesEditorWindow() {
+        if (propsEditor != null) {
+            return propsEditor;
+        }
         propsEditor = new DialogPropertiesEditor(getMomaGui(), getConfigurationManager().props, getConfigurationManager(), this);
         return propsEditor;
     }
 
     IDialogManager dialogManager;
-    public IDialogManager getDialogManager(){
-        if(dialogManager == null){
+
+    public IDialogManager getDialogManager() {
+        if (dialogManager == null) {
             dialogManager = new DialogManager(() -> getMomaGui(), () -> getPropertiesEditorWindow());
         }
         return dialogManager;
     }
 
     MoMAGui gui;
+
     public MoMAGui getMomaGui() {
         if (gui == null) {
             gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
@@ -290,20 +301,22 @@ public class PseudoDic {
     }
 
     private GlDataLoader glDataLoader;
+
     public GlDataLoader getGlDataLoader() {
         if (glDataLoader != null) {
             return glDataLoader;
         }
         glDataLoader = new GlDataLoader(configurationManager.getCurrentPropertyFile(),
-                                        getUnetProcessor(),
-                                        getConfigurationManager(),
-                                        getImageProvider(),
-                                        getComponentTreeGenerator(),
-                                        getDialogManager());
+                getUnetProcessor(),
+                getConfigurationManager(),
+                getImageProvider(),
+                getComponentTreeGenerator(),
+                getDialogManager());
         return glDataLoader;
     }
 
     private LoggerWindow loggerWindow;
+
     public LoggerWindow getLoggerWindow() {
         if (loggerWindow != null) {
             return loggerWindow;

@@ -85,8 +85,6 @@ public class MoMA {
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;
 
 		/* setup configuration manager and read configuration */
-		FilePaths filePaths = new FilePaths();
-
 		configurationManager = dic.getConfigurationManager();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
@@ -94,9 +92,8 @@ public class MoMA {
 		Path inputFolder = null;
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
 		if (commandLineArgumentParser.isReloadingData()) {
-			filePaths.setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
-			configurationManager.load(filePaths.getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
-//			inputFolder;
+			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
+			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			datasetProperties.readDatasetProperties(inputFolder.toFile());
 			throw new NotImplementedException("Implementation of the reloading feature is still unfinished!");
 		} else {

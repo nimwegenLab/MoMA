@@ -5,6 +5,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
+import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.*;
@@ -333,5 +334,14 @@ public class PseudoDic {
             commandLineArgumentParser = new CommandLineArgumentsParser();
         }
         return commandLineArgumentParser;
+    }
+
+    FilePaths filePaths;
+
+    public FilePaths getFilePaths() {
+        if (isNull(filePaths)) {
+            filePaths = new FilePaths();
+        }
+        return filePaths;
     }
 }

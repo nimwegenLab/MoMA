@@ -7,6 +7,7 @@ import java.nio.file.Files;
 
 public class FilePaths {
     Path propertiesFile;
+    private Path inputImagePath;
 
     public void setLoadingDirectoryPath(String directoryPath) {
         propertiesFile = Paths.get(directoryPath, "mm.properties");
@@ -15,5 +16,13 @@ public class FilePaths {
 
     public Path getPropertiesFile(){
         return propertiesFile;
+    }
+
+    public void setInputImagePath(String inputImagePath) {
+        this.inputImagePath = Paths.get(inputImagePath);
+    }
+
+    public Path getInputImagePath() {
+        return inputImagePath;
     }
 }

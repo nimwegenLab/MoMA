@@ -93,8 +93,8 @@ public class MoMA {
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
-			datasetProperties.readDatasetProperties(inputFolder.toFile());
-			throw new NotImplementedException("Implementation of the reloading feature is still unfinished!");
+			dic.getFilePaths().setInputImagePath(configurationManager.getInputImagePath());
+			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
 			configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
 
@@ -282,8 +282,8 @@ public class MoMA {
 		if ( datapath.equals( System.getProperty( "user.home" ) ) ) {
 			decision = JOptionPane.NO_OPTION;
 		} else {
-			final String message = "Should the MotherMachine be opened with the data found in:\n" + datapath + "\n\nIn case you want to choose a folder please select 'No'...";
-			final String title = "MotherMachine Data Folder Selection";
+			final String message = "Should MoMA be opened with the data found in:\n" + datapath + "\n\nIn case you want to choose a folder please select 'No'...";
+			final String title = "MoMA Data Folder Selection";
 			decision = JOptionPane.showConfirmDialog( guiFrame, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
 		}
 		if ( decision == JOptionPane.YES_OPTION ) {

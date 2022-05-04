@@ -1,5 +1,6 @@
 package com.jug;
 
+import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
@@ -13,6 +14,8 @@ import gurobi.GRBModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author jug
  */
@@ -25,6 +28,7 @@ public class Growthlane {
 	private GrowthlaneTrackingILP ilp; //<
 	private IImageProvider imageProvider;
 	private IDialogManager dialogManager;
+	private FilePaths filePaths;
 
 	// Hypothesis< Component< FloatType, ? > >,
 	// AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > ilp;
@@ -49,9 +53,10 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IImageProvider imageProvider, IDialogManager dialogManager) {
+	public Growthlane(IImageProvider imageProvider, IDialogManager dialogManager, FilePaths filePaths) {
 		this.imageProvider = imageProvider;
 		this.dialogManager = dialogManager;
+		this.filePaths = filePaths;
 		this.frames = new ArrayList<>();
 	}
 
@@ -96,12 +101,13 @@ public class Growthlane {
 		boolean loadModelFromDisk = false;
 		GRBModelAdapter model = null;
 //		modelGurobi = null;
-		if (loadModelFromDisk)
+		if (!isNull(filePaths.getGurobiMpsFilePath()))
 			try {
-				String basePath = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
+//				String basePath = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
 //				String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
 				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
-				GRBModel grbModel = new GRBModel(env, basePath + "/ilpModel.mps");
+//				GRBModel grbModel = new GRBModel(env, basePath + "/ilpModel.mps");
+				GRBModel grbModel = new GRBModel(env, filePaths.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
 				e.printStackTrace();

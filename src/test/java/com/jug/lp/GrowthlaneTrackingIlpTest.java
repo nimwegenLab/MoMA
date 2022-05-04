@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
+import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
@@ -55,7 +56,7 @@ public class GrowthlaneTrackingIlpTest {
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
-        Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock);
+        Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock, new FilePaths());
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), configMock, "mockVersionString", new CostFactory(configMock));

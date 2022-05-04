@@ -15,11 +15,13 @@ public class FilePaths {
     private Path inputImagePath;
     private Path outputPath;
     private String modelFile;
+    private Path gurobiMpsFilePath;
 
     public void setLoadingDirectoryPath(String directoryPath) {
         propertiesFile = Paths.get(directoryPath, "mm.properties");
         outputPath = Paths.get(directoryPath);
         Files.exists(propertiesFile);
+        gurobiMpsFilePath = Paths.get(directoryPath, "ilpModel.mps");
     }
 
     public void setPropertiesFile(Path propertiesFile) {
@@ -66,5 +68,9 @@ public class FilePaths {
         String outputFolderPath = getOutputPath().toString();
         String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
         return processedImageFileName;
+    }
+
+    public Path getGurobiMpsFilePath() {
+        return gurobiMpsFilePath;
     }
 }

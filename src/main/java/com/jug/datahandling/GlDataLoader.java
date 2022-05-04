@@ -84,7 +84,7 @@ public class GlDataLoader {
      */
     private void addGrowthlanes() {
         this.setGrowthlanes(new ArrayList<>() );
-        getGrowthlanes().add( new Growthlane(imageProvider, dialogManager) );
+        getGrowthlanes().add( new Growthlane(imageProvider, dialogManager, filePaths) );
 
         for ( long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension( 2 ); frameIdx++ ) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentTreeGenerator, configurationManager, imageProvider);

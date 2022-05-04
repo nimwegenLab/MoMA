@@ -241,7 +241,6 @@ public class PseudoDic {
     public UnetProcessor getUnetProcessor() {
         if (isNull(unetProcessor)) {
             unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
-            unetProcessor.setModelFilePath(getConfigurationManager().SEGMENTATION_MODEL_PATH);
         }
         return unetProcessor;
     }
@@ -297,7 +296,7 @@ public class PseudoDic {
 
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getLoggerWindow(), getDialogManager());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager());
         }
         return gui;
     }
@@ -313,7 +312,8 @@ public class PseudoDic {
                 getConfigurationManager(),
                 getImageProvider(),
                 getComponentTreeGenerator(),
-                getDialogManager());
+                getDialogManager(),
+                getFilePaths());
         return glDataLoader;
     }
 

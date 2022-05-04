@@ -2,8 +2,8 @@ package com.jug;
 
 import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.ImageProvider;
 import com.jug.datahandling.DatasetProperties;
+import com.jug.datahandling.ImageProvider;
 import com.jug.gui.LoggerWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
@@ -12,7 +12,6 @@ import com.jug.util.PseudoDic;
 import ij.ImageJ;
 import net.imagej.patcher.LegacyInjector;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.SystemUtils;
 
 import javax.swing.*;
@@ -22,6 +21,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author jug
@@ -88,28 +88,30 @@ public class MoMA {
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
-		Path inputFolder = null;
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
-			dic.getFilePaths().setInputImagePath(configurationManager.getInputImagePath());
+			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
+			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
-			configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
+			dic.getFilePaths().setPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
+			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
+			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputFolder());
+			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			/* overwrite configuration values with parsed command line values, if needed */
-			inputFolder = commandLineArgumentParser.getInputFolder();
 			if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
 				configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 			}
 			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
 				configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 			}
-			configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath().toString());
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
 
 			/* test validity of the minimum or maximum times or use dataset values, if not specified */
-			datasetProperties.readDatasetProperties(inputFolder.toFile());
 			if (configurationManager.getMinTime() == -1) {
 				configurationManager.setMinTime(datasetProperties.getMinTime());
 			} else {
@@ -164,12 +166,12 @@ public class MoMA {
 			loggerWindow.showConsoleWindow( true );
 		}
 
-		if ( inputFolder == null || inputFolder.equals( "" ) ) {
-			inputFolder = dic.getMomaInstance().showStartupDialog( guiFrame, configurationManager.getInputImagePath());
+		if (dic.getFilePaths().getInputImagePath() == null) {
+			dic.getFilePaths().setInputImagePath(dic.getMomaInstance().showStartupDialog(guiFrame, configurationManager.getInputImagePath()));
 		}
-		defaultFilenameDecoration = inputFolder.getFileName().toString();
+		defaultFilenameDecoration = dic.getFilePaths().getInputImagePath().getFileName().toString();
 		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
-		configurationManager.setImagePath(inputFolder.toAbsolutePath().toString());
+		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
 		final File folder = new File(configurationManager.getInputImagePath());
 		dic.getMomaInstance().setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
@@ -225,7 +227,7 @@ public class MoMA {
 			});
 		} else {
 			dic.getMomaGui().exportHtmlOverview();
-			dic.getMomaGui().exportDataFiles(new File(configurationManager.getOutputPath()));
+			dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
 
 			configurationManager.saveParams(getGuiFrame());
 

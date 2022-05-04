@@ -513,18 +513,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return props.getProperty("import_path") + "/--autosave.moma";
     }
 
-    public void setOutputPath(String outputPath) {
-        this.outputPath = outputPath;
-    }
-
-    public String getOutputPath() {
-        return outputPath;
-    }
-
-    public String getDefaultPath() {
-        return DEFAULT_PATH;
-    }
-
     @Override
     public double getGurobiTimeLimit() {
         return GUROBI_TIME_LIMIT;

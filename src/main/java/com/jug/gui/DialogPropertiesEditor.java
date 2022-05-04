@@ -73,7 +73,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                                     () -> sourceProperty.setValue(configurationManager.SEGMENTATION_MODEL_PATH),
                                     () -> {
                                         configurationManager.SEGMENTATION_MODEL_PATH = newPath;
-                                        dic.getUnetProcessor().setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
+                                        dic.getFilePaths().setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
                                         props.setProperty(
                                                 "SEGMENTATION_MODEL_PATH",
                                                 "" + configurationManager.SEGMENTATION_MODEL_PATH);

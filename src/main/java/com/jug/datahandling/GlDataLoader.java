@@ -34,6 +34,7 @@ public class GlDataLoader {
     private IImageProvider imageProvider;
     private ComponentTreeGenerator componentTreeGenerator;
     private IDialogManager dialogManager;
+    private FilePaths filePaths;
     private File mmPropertiesPath;
 
     public GlDataLoader(File mmPropertiesPath,
@@ -41,7 +42,8 @@ public class GlDataLoader {
                         ConfigurationManager configurationManager,
                         IImageProvider imageProvider,
                         ComponentTreeGenerator componentTreeGenerator,
-                        IDialogManager dialogManager) {
+                        IDialogManager dialogManager,
+                        FilePaths filePaths) {
         this.mmPropertiesPath = mmPropertiesPath;
         this.glDataPath = mmPropertiesPath.getParent();
         this.unetProcessor = unetProcessor;
@@ -49,6 +51,7 @@ public class GlDataLoader {
         this.imageProvider = imageProvider;
         this.componentTreeGenerator = componentTreeGenerator;
         this.dialogManager = dialogManager;
+        this.filePaths = filePaths;
     }
 
     /**
@@ -144,7 +147,7 @@ public class GlDataLoader {
     }
 
     private Img<FloatType> getProbabilityImage() {
-        String processedImageFileName = getProbabilityImageFilePath();
+        String processedImageFileName = filePaths.getProbabilityImageFilePath();
 
         /**
          *  create or load probability maps
@@ -159,15 +162,5 @@ public class GlDataLoader {
             probabilityMap = ImageJFunctions.convertFloat(imp);
         }
         return probabilityMap;
-    }
-
-    @NotNull
-    private String getProbabilityImageFilePath() {
-        String checksum = unetProcessor.getModelChecksum();
-        File file = new File(configurationManager.getInputImagePath());
-        String filename = removeExtension(file.getName());
-        String outputFolderPath = configurationManager.getOutputPath();
-        String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
-        return processedImageFileName;
     }
 }

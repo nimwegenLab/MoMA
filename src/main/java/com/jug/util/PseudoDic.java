@@ -49,7 +49,7 @@ public class PseudoDic {
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
-        context = new Context();
+
         convertService = getSciJavaContext().service(ConvertService.class);
         ops = getSciJavaContext().service(OpService.class);
         imglib2utils = new Imglib2Utils(getImageJOpService());
@@ -60,7 +60,12 @@ public class PseudoDic {
         gitVersionProvider = new GitVersionProvider();
     }
 
-    public Context getSciJavaContext() { return context; }
+    public Context getSciJavaContext() {
+        if (context == null) {
+            context = new Context();
+        }
+        return context;
+    }
 
     public OpService getImageJOpService() { return ops; }
 

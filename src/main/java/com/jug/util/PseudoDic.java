@@ -34,16 +34,16 @@ public class PseudoDic {
     public Context context;
     public OpService ops;
     private AssignmentPlausibilityTester assignmentPlausibilityTester;
-    private final ComponentProperties componentProperties;
+    private ComponentProperties componentProperties;
     private ConfigurationManager configurationManager;
     private final MoMA momaInstance;
     private MixtureModelFit mixtureModelFit;
     private ComponentTreeGenerator componentTreeGenerator;
-    private final Imglib2Utils imglib2utils;
-    private final RecursiveComponentWatershedder recursiveComponentWatershedder;
+    private Imglib2Utils imglib2utils;
+    private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private UnetProcessor unetProcessor;
     private WatershedMaskGenerator watershedMaskGenerator;
-    private final GitVersionProvider gitVersionProvider;
+    private GitVersionProvider gitVersionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
     private ConvertService convertService;
     private IImageProvider imageProvider;
@@ -51,11 +51,6 @@ public class PseudoDic {
     public PseudoDic(ConfigurationManager configurationManager, MoMA main) {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
-
-        imglib2utils = new Imglib2Utils(getImageJOpService());
-        recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
-        componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        gitVersionProvider = new GitVersionProvider();
     }
 
     public Context getSciJavaContext() {
@@ -81,6 +76,9 @@ public class PseudoDic {
     }
 
     public ComponentProperties getComponentProperties() {
+        if (isNull(componentProperties)) {
+            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils());
+        }
         return componentProperties;
     }
 
@@ -112,12 +110,24 @@ public class PseudoDic {
 
     public ComponentTreeGenerator getComponentTreeGenerator() {
         if (componentTreeGenerator == null) {
-            componentTreeGenerator = new ComponentTreeGenerator(getConfigurationManager(), recursiveComponentWatershedder, componentProperties, getWatershedMaskGenerator(), imglib2utils);
+            componentTreeGenerator = new ComponentTreeGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
         }
         return componentTreeGenerator;
     }
 
-    public Imglib2Utils getImglib2utils() { return imglib2utils; }
+    private RecursiveComponentWatershedder getRecursiveComponentWatershedder() {
+        if (isNull(recursiveComponentWatershedder)) {
+            recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
+        }
+        return recursiveComponentWatershedder;
+    }
+
+    public Imglib2Utils getImglib2utils() {
+        if (isNull(imglib2utils)) {
+            imglib2utils = new Imglib2Utils(getImageJOpService());
+        }
+        return imglib2utils;
+    }
 
     public CellStatsExporter getCellStatsExporter() {
         return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getGitVersionProvider().getVersionString(), getMeasurements());
@@ -128,7 +138,7 @@ public class PseudoDic {
         if(configurationManager.EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT){
             listOfMeasurements.add(new OrientedBoundingBoxMeasurement(context));
         }
-        listOfMeasurements.add(new ContourMomentsMeasurement(componentProperties));
+        listOfMeasurements.add(new ContourMomentsMeasurement(getComponentProperties()));
 
         if (configurationManager.EXPORT_SPINE_MEASUREMENT) {
             listOfMeasurements.add(getSpineLengthMeasurement());
@@ -240,7 +250,12 @@ public class PseudoDic {
         return watershedMaskGenerator;
     }
 
-    public GitVersionProvider getGitVersionProvider() { return gitVersionProvider; }
+    public GitVersionProvider getGitVersionProvider() {
+        if (isNull(gitVersionProvider)) {
+            gitVersionProvider = new GitVersionProvider();
+        }
+        return gitVersionProvider;
+    }
 
     private MoMAModel momaModel;
     public MoMAModel getMomaModel() {

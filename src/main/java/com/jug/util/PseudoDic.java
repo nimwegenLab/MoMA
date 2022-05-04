@@ -31,16 +31,16 @@ import java.util.function.Function;
 public class PseudoDic {
     public Context context;
     public OpService ops;
-    private final AssignmentPlausibilityTester assignmentPlausibilityTester;
+    private AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final ComponentProperties componentProperties;
     private ConfigurationManager configurationManager;
     private final MoMA momaInstance;
-    private final MixtureModelFit mixtureModelFit;
-    private final ComponentTreeGenerator componentTreeGenerator;
+    private MixtureModelFit mixtureModelFit;
+    private ComponentTreeGenerator componentTreeGenerator;
     private final Imglib2Utils imglib2utils;
     private final RecursiveComponentWatershedder recursiveComponentWatershedder;
     private final UnetProcessor unetProcessor;
-    private final WatershedMaskGenerator watershedMaskGenerator;
+    private WatershedMaskGenerator watershedMaskGenerator;
     private final GitVersionProvider gitVersionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
     private final ConvertService convertService;
@@ -50,15 +50,11 @@ public class PseudoDic {
         this.configurationManager = configurationManager;
         this.momaInstance = main;
         context = new Context();
-        convertService = context.service(ConvertService.class);
-        ops = context.service(OpService.class);
+        convertService = getSciJavaContext().service(ConvertService.class);
+        ops = getSciJavaContext().service(OpService.class);
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        watershedMaskGenerator = new WatershedMaskGenerator(getConfigurationManager().THRESHOLD_FOR_COMPONENT_MERGING, getConfigurationManager().THRESHOLD_FOR_COMPONENT_GENERATION);
-        componentTreeGenerator = new ComponentTreeGenerator(getConfigurationManager(), recursiveComponentWatershedder, componentProperties, getWatershedMaskGenerator(), imglib2utils);
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester(getConfigurationManager());
-        mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
         unetProcessor.setModelFilePath(getConfigurationManager().SEGMENTATION_MODEL_PATH);
         gitVersionProvider = new GitVersionProvider();
@@ -69,6 +65,9 @@ public class PseudoDic {
     public OpService getImageJOpService() { return ops; }
 
     public AssignmentPlausibilityTester getAssignmentPlausibilityTester() {
+        if (assignmentPlausibilityTester == null) {
+            assignmentPlausibilityTester = new AssignmentPlausibilityTester(getConfigurationManager());
+        }
         return assignmentPlausibilityTester;
     }
 
@@ -77,14 +76,16 @@ public class PseudoDic {
     }
 
     public ConfigurationManager getConfigurationManager() {
-        if (configurationManager != null) {
-            return configurationManager;
+        if (configurationManager == null) {
+            configurationManager = new ConfigurationManager();
         }
-        configurationManager = new ConfigurationManager();
         return configurationManager;
     }
 
     public MixtureModelFit getMixtureModelFit() {
+        if (mixtureModelFit == null) {
+            mixtureModelFit = new MixtureModelFit(getConfigurationManager());
+        }
         return mixtureModelFit;
     }
 
@@ -100,7 +101,12 @@ public class PseudoDic {
         return momaInstance;
     }
 
-    public ComponentTreeGenerator getComponentTreeGenerator() { return componentTreeGenerator; }
+    public ComponentTreeGenerator getComponentTreeGenerator() {
+        if (componentTreeGenerator == null) {
+            componentTreeGenerator = new ComponentTreeGenerator(getConfigurationManager(), recursiveComponentWatershedder, componentProperties, getWatershedMaskGenerator(), imglib2utils);
+        }
+        return componentTreeGenerator;
+    }
 
     public Imglib2Utils getImglib2utils() { return imglib2utils; }
 
@@ -206,7 +212,13 @@ public class PseudoDic {
         return configurationManager;
     }
 
-    public WatershedMaskGenerator getWatershedMaskGenerator() { return watershedMaskGenerator; }
+    public WatershedMaskGenerator getWatershedMaskGenerator() {
+        if (watershedMaskGenerator != null) {
+            return watershedMaskGenerator;
+        }
+        watershedMaskGenerator = new WatershedMaskGenerator(getConfigurationManager().THRESHOLD_FOR_COMPONENT_MERGING, getConfigurationManager().THRESHOLD_FOR_COMPONENT_GENERATION);
+        return watershedMaskGenerator;
+    }
 
     public GitVersionProvider getGitVersionProvider() { return gitVersionProvider; }
 

@@ -23,8 +23,8 @@ public class ExploreResultLoading {
 //        inputPath = null;
 //        outputPath = null;
 //        startMoma(true, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
-//        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
-        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
+        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", settings_file_path});
+//        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 
 

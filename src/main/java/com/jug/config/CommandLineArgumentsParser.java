@@ -2,23 +2,25 @@ package com.jug.config;
 
 import org.apache.commons.cli.*;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class CommandLineArgumentsParser {
     private boolean running_as_Fiji_plugin;
-    private File inputFolder;
+    private Path inputFolder;
     /**
      * Property file provided by user through as command-line option.
      */
-    private File optionalPropertyFile = null;
-    private File reloadFolderPath = null;
+    private Path optionalPropertyFile = null;
+    private String reloadFolderPath = null;
     private int userDefinedMinTime = -1;
     private int userDefinedMaxTime = -1;
     // - - - - - - - - - - - - - -
     // Info about loaded data
     // - - - - - - - - - - - - - -
     private Integer initialOptimizationRange = -1;
-    private String outputPath;
+    private Path outputPath;
     private boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
     private boolean HEADLESS;
 
@@ -122,12 +124,12 @@ public class CommandLineArgumentsParser {
 
         if (cmd.hasOption("reload")) {
             reloadingData = true;
-            reloadFolderPath = new File(cmd.getOptionValue("reload"));
+            reloadFolderPath = cmd.getOptionValue("reload");
             return; /* if we are reloading previous analysis we do not need to read the cmd arguments below, which are mutually exclusive to reloading */
         }
 
         if ( cmd.hasOption( "i" ) ) {
-            inputFolder = new File( cmd.getOptionValue( "i" ) );
+            inputFolder = Paths.get(cmd.getOptionValue("i"));
 			/*
 			if ( !inputFolder.isDirectory() ) {
 				System.out.println( "Error: Input folder is not a directory!" );
@@ -137,7 +139,7 @@ public class CommandLineArgumentsParser {
 					return;
 				}
 			}*/
-            if ( !inputFolder.canRead() ) {
+            if ( !Files.isReadable(inputFolder) ) {
                 System.out.println( "Error: Input folder cannot be read!" );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 2 );
@@ -147,7 +149,7 @@ public class CommandLineArgumentsParser {
             }
         }
 
-        File outputFolder;
+        Path outputFolder;
         if ( !cmd.hasOption( "o" ) ) {
             if ( inputFolder == null ) {
                 System.out.println( "Error: Output folder would be set to a 'null' input folder! Please check your command line arguments..." );
@@ -158,11 +160,11 @@ public class CommandLineArgumentsParser {
                 }
             }
             outputFolder = inputFolder;
-            outputPath = outputFolder.getAbsolutePath();
+            outputPath = outputFolder.toAbsolutePath();
         } else {
-            outputFolder = new File( cmd.getOptionValue( "o" ) );
+            outputFolder = Paths.get( cmd.getOptionValue( "o" ) );
 
-            if ( !outputFolder.isDirectory() ) {
+            if ( !Files.isDirectory(outputFolder) ) {
                 System.out.println( "Error: Output folder is not a directory!" );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 3 );
@@ -170,7 +172,7 @@ public class CommandLineArgumentsParser {
                     return;
                 }
             }
-            if ( !outputFolder.canWrite() ) {
+            if ( !Files.isWritable(outputFolder) ) {
                 System.out.println( "Error: Output folder cannot be written to!" );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 3 );
@@ -179,11 +181,11 @@ public class CommandLineArgumentsParser {
                 }
             }
 
-            outputPath = outputFolder.getAbsolutePath();
+            outputPath = outputFolder.toAbsolutePath();
         }
 
         if ( cmd.hasOption( "p" ) ) {
-            optionalPropertyFile = new File( cmd.getOptionValue( "p" ) );
+            optionalPropertyFile = Paths.get( cmd.getOptionValue( "p" ) );
         }
 
         if ( cmd.hasOption( "tmin" ) ) {
@@ -198,7 +200,7 @@ public class CommandLineArgumentsParser {
         }
     }
 
-    public File getInputFolder() {
+    public Path getInputFolder() {
         return inputFolder;
     }
 
@@ -206,7 +208,7 @@ public class CommandLineArgumentsParser {
         return HEADLESS;
     }
 
-    public File getOptionalPropertyFile(){
+    public Path getOptionalPropertyFile(){
         return optionalPropertyFile;
     }
 
@@ -227,7 +229,7 @@ public class CommandLineArgumentsParser {
         return initialOptimizationRange;
     }
 
-    public String getOutputPath() {
+    public Path getOutputPath() {
         return outputPath;
     }
 
@@ -235,7 +237,7 @@ public class CommandLineArgumentsParser {
         return reloadingData;
     }
 
-    public File getReloadFolderPath() {
+    public String getReloadFolderPath() {
         return reloadFolderPath;
     }
 }

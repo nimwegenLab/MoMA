@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -223,8 +224,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
-    public void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
-        props = loadParams(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+    public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+        props = loadParams(optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
         maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_STOP", Integer.toString(maxTime)));

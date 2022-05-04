@@ -1,7 +1,9 @@
 package com.jug;
 
+import com.google.common.io.Files;
 import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.ImageProvider;
 import com.jug.datahandling.InitializationHelpers;
 import com.jug.gui.LoggerWindow;
@@ -21,6 +23,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.nio.file.Path;
 
 /**
  * @author jug
@@ -80,16 +83,18 @@ public class MoMA {
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;
 
 		/* setup configuration manager and read configuration */
+		FilePaths filePaths = new FilePaths();
 		configurationManager = new ConfigurationManager();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
-		File inputFolder = null;
+		Path inputFolder = null;
 		final InitializationHelpers datasetProperties = new InitializationHelpers();
-		if(commandLineArgumentParser.isReloadingData()){
-			configurationManager.load(commandLineArgumentParser.getReloadFolderPath(), userMomaHomePropertyFile, momaUserDirectory);
+		if (commandLineArgumentParser.isReloadingData()) {
+			filePaths.setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
+			configurationManager.load(filePaths.getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 //			inputFolder;
-			datasetProperties.readDatasetProperties(inputFolder);
+			datasetProperties.readDatasetProperties(inputFolder.toFile());
 			throw new NotImplementedException("Implementation of the reloading feature is still unfinished!");
 		} else {
 			configurationManager.load(commandLineArgumentParser.getOptionalPropertyFile(), userMomaHomePropertyFile, momaUserDirectory);
@@ -102,10 +107,10 @@ public class MoMA {
 			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
 				configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 			}
-			configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath());
+			configurationManager.setOutputPath(commandLineArgumentParser.getOutputPath().toString());
 
 			/* test validity of the minimum or maximum times or use dataset values, if not specified */
-			datasetProperties.readDatasetProperties(inputFolder);
+			datasetProperties.readDatasetProperties(inputFolder.toFile());
 			if (configurationManager.getMinTime() == -1) {
 				configurationManager.setMinTime(datasetProperties.getMinTime());
 			} else {
@@ -166,9 +171,9 @@ public class MoMA {
 		if ( inputFolder == null || inputFolder.equals( "" ) ) {
 			inputFolder = main.showStartupDialog( guiFrame, configurationManager.getInputImagePath());
 		}
-		System.out.println( "Default filename decoration = " + inputFolder.getName() );
-		defaultFilenameDecoration = inputFolder.getName();
-		configurationManager.setImagePath(inputFolder.getAbsolutePath());
+		defaultFilenameDecoration = inputFolder.getFileName().toString();
+		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
+		configurationManager.setImagePath(inputFolder.toAbsolutePath().toString());
 
 		final File folder = new File(configurationManager.getInputImagePath());
 		main.setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
@@ -270,7 +275,7 @@ public class MoMA {
 	 *            path to be suggested to open
 	 * @return
 	 */
-	private File showStartupDialog( final JFrame guiFrame, final String datapath ) {
+	private Path showStartupDialog( final JFrame guiFrame, final String datapath ) {
 
 		File file;
 		final String parentFolder = datapath.substring( 0, datapath.lastIndexOf( File.separatorChar ) );
@@ -290,7 +295,7 @@ public class MoMA {
 		} else {
 			file = showFolderChooser( guiFrame, parentFolder );
 		}
-		return file;
+		return file.toPath();
 	}
 
 	/**

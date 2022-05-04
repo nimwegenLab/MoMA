@@ -173,14 +173,14 @@ public class MoMA {
 		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
 		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
-		final File folder = new File(configurationManager.getInputImagePath());
+		final File folder = dic.getFilePaths().getInputImagePath().toFile();
 		dic.getMomaInstance().setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		ImageProvider imageProvider = new ImageProvider();
 		dic.setImageProvider(imageProvider);
 		try {
 			if ( datasetProperties.getNumChannels() == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
 
-			imageProvider.loadTiffsFromFileOrFolder(configurationManager.getInputImagePath(),
+			imageProvider.loadTiffsFromFileOrFolder(dic.getFilePaths().getInputImagePath().toString(),
 					configurationManager.getMinTime(),
 					configurationManager.getMaxTime(),
 					datasetProperties.getMinChannelIdx(),

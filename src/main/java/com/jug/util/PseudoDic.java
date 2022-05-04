@@ -55,12 +55,12 @@ public class PseudoDic {
         imglib2utils = new Imglib2Utils(getImageJOpService());
         recursiveComponentWatershedder = new RecursiveComponentWatershedder(getImageJOpService());
         componentProperties = new ComponentProperties(getImageJOpService(), imglib2utils);
-        watershedMaskGenerator = new WatershedMaskGenerator(configurationManager.THRESHOLD_FOR_COMPONENT_MERGING, configurationManager.THRESHOLD_FOR_COMPONENT_GENERATION);
-        componentTreeGenerator = new ComponentTreeGenerator(configurationManager, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2utils);
-        assignmentPlausibilityTester = new AssignmentPlausibilityTester(configurationManager);
+        watershedMaskGenerator = new WatershedMaskGenerator(getConfigurationManager().THRESHOLD_FOR_COMPONENT_MERGING, getConfigurationManager().THRESHOLD_FOR_COMPONENT_GENERATION);
+        componentTreeGenerator = new ComponentTreeGenerator(getConfigurationManager(), recursiveComponentWatershedder, componentProperties, getWatershedMaskGenerator(), imglib2utils);
+        assignmentPlausibilityTester = new AssignmentPlausibilityTester(getConfigurationManager());
         mixtureModelFit = new MixtureModelFit(getConfigurationManager());
         unetProcessor = new UnetProcessor(getSciJavaContext(), getUnetProcessorConfiguration());
-        unetProcessor.setModelFilePath(configurationManager.SEGMENTATION_MODEL_PATH);
+        unetProcessor.setModelFilePath(getConfigurationManager().SEGMENTATION_MODEL_PATH);
         gitVersionProvider = new GitVersionProvider();
     }
 

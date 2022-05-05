@@ -95,7 +95,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public void optimize() throws GRBException {
-        model.update();
+//        model.update();
 //        String basePath = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
 ////        String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
 //        model.read(basePath + "/ilpModel.sol");

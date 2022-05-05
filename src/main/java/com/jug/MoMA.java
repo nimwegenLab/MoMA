@@ -225,6 +225,13 @@ public class MoMA {
 				guiFrame.setVisible(true);
 				System.out.println( " done!" );
 			});
+
+			if (commandLineArgumentParser.isReloadingData()) {
+				SwingUtilities.invokeLater(() -> { /* run optimization on UI thread to ensure the GUI has finished displaying before; this is not good code */
+					dic.getGlDataLoader().generateILPs();
+					dic.getGlDataLoader().runILPs(); /* if we are reloading data, we want to directly optimize to see the previous results in the GUI */
+				});
+			}
 		} else {
 			dic.getMomaGui().exportHtmlOverview();
 			dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());

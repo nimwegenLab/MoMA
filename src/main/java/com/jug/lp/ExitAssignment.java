@@ -91,34 +91,6 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     }
 
     /**
-     * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        final ArrayList<String> ret = new ArrayList<>();
-
-        StringBuilder constraint = new StringBuilder();
-        constraint.append(String.format("(%d,%d,1)", Hup.size(), this.getVarIdx()));
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
-            if (edges.getRightNeighborhood(upperHyp) != null) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood(upperHyp)) {
-                    if (a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
-                        continue;
-                    }
-                    // add term if assignment is NOT another exit-assignment
-                    constraint.append(String.format("+(1,%d,1)", a_j.getVarIdx()));
-                }
-            }
-        }
-
-        constraint.append(String.format(" <= %d", Hup.size()));
-
-        ret.add(constraint.toString());
-        return ret;
-    }
-
-    /**
      * Adds a list of constraints and factors as strings.
      */
     @Override

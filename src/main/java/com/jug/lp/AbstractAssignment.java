@@ -159,12 +159,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public abstract void addConstraintsToILP() throws GRBException;
 
 	/**
-	 * Abstract method that will, once implemented, build the constraint
-	 * representations needed to save the FG.
-	 */
-	public abstract List< String > getConstraintsToSave_PASCAL();
-
-	/**
 	 * Adds a list of functions and factors to the FactorGraphFileBuilder.
 	 * This fkt and fac is used to save a FactorGraph describing the
 	 * optimization problem at hand.

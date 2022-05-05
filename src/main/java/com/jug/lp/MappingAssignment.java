@@ -90,13 +90,4 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis target) {
         return "MappingAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
     }
-
-    /**
-     * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        return new ArrayList<>();
-    }
-
 }

@@ -63,14 +63,6 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     /**
-     * @see AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        return null;
-    }
-
-    /**
      * Adds a list of constraints and factors as strings.
      */
     @Override

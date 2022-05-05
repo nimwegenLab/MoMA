@@ -24,10 +24,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	private GRBVar ilpVar;
 
-	private boolean isGroundTruth = false;
-	private boolean isGroundUntruth = false;
-	private GRBConstr constrGroundTruth;
-
 	private boolean isPruned = false;
 
 	/**
@@ -250,7 +246,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	private void addConstraint(double rhsValue) throws GRBException {
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
-		constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, "AssignmentGtConstraint_" + getGrbVarName());
+		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, "AssignmentGtConstraint_" + getGrbVarName());
 	}
 
 	private void removeConstraint() throws GRBException {
@@ -265,7 +261,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @return null if not set, otherwise the GRBConstr.
 	 */
 	public GRBConstr getGroundTruthConstraint() {
-		return constrGroundTruth;
+		return getGrbConstr();
 	}
 
 	/**

@@ -191,14 +191,26 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
+		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
-	public void setGroundUntruth( final boolean groundUntruth ) {
-		this.isGroundUntruth = groundUntruth;
-		if (groundUntruth) {
-			this.isGroundTruth = false; /* if user force this to be GroundUntruth, it cannot be GroundTruth at the same time */
+	public void setGroundUntruth(final boolean targetStateIsTrue) {
+		try {
+			if (targetStateIsTrue) {
+				if (isGroundTruth()) {
+					removeConstraint();
+				}
+				addGroundUntruthConstraint();
+				return;
+			}
+			if (!targetStateIsTrue && isGroundUntruth()) {
+				removeConstraint();
+				return;
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
 		}
-		addOrRemoveGroundTruthConstraint( groundUntruth );
+		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
 	public void reoptimize() {

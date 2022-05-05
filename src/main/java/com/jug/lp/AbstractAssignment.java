@@ -247,9 +247,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void removeConstraint() throws GRBException {
-		if (constrGroundTruth != null) {
+		GRBConstr constrGroundTruth = getGrbConstr();
+		if (getGrbConstr() != null) {
 			ilp.model.remove(constrGroundTruth);
-			constrGroundTruth = null;
 		}
 	}
 

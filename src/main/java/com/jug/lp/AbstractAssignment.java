@@ -1,9 +1,11 @@
 package com.jug.lp;
 
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import gurobi.*;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -20,7 +22,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	GrowthlaneTrackingILP ilp;
 
-	private int exportVarIdx = -1;
 	private GRBVar ilpVar;
 
 	private boolean isGroundTruth = false;
@@ -67,21 +68,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	abstract public List<H> getTargetHypotheses();
 
-	//	/**
-//	 * This function is for example used when exporting a FactorGraph
-//	 * that describes the entire optimization problem at hand.
-//	 *
-//	 * @return a variable index that is unique for the indicator
-//	 *         variable used for this assignment.
-//	 * @throws Exception
-//	 */
-	public int getVarIdx() {
-		if ( exportVarIdx == -1 ) {
-			System.out.println( "AAAAACHTUNG!!! Variable index not initialized before export was attempted!" );
-		}
-		return exportVarIdx;
-	}
-
 	/**
 	 * @return the ilpVar
 	 */
@@ -99,17 +85,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	private void setGRBVar(final GRBVar ilpVar) {
 		this.ilpVar = ilpVar;
-	}
-
-//	/**
-//	 * One can set a variable id.
-//	 * This is used for exporting purposes like e.g. by
-//	 * <code>FactorGraphFileBuilder</code>.
-//	 *
-//	 * @param varId
-//	 */
-	public void setVarId( final int varId ) {
-		this.exportVarIdx = varId;
 	}
 
 	/**
@@ -159,7 +134,36 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public abstract void addConstraintsToILP() throws GRBException;
 
 	public boolean isGroundTruth() {
-		return isGroundTruth;
+//		return isGroundTruth;
+		GRBConstr grbConstr = getGrbConstr();
+		if (grbConstr == null) return false; /* no variable was found so this assignment is not forced */
+		if(isNull(grbConstr)){
+			return false;
+		}
+//		grbConstr.get(GRB.DoubleAttr.values())
+		Double constraintValue;
+		try {
+			constraintValue = grbConstr.get(GRB.DoubleAttr.RHS);
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		if(constraintValue>0.5){
+			return true;
+		}
+		return false;
+//		return false;
+//		grbVar.get()
+	}
+
+	@Nullable
+	private GRBConstr getGrbConstr() {
+		try {
+//			grbVar = ilp.model.getVarByName("AssignmentGtConstraint_" + getGrbVarName());
+			constrGroundTruth = ilp.model.getConstrByName("AssignmentGtConstraint_" + getGrbVarName());
+		} catch (GRBException e) {
+			return null;
+		}
+		return constrGroundTruth;
 	}
 
 	public boolean isGroundUntruth() {
@@ -168,13 +172,17 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	public void setGroundTruth( final boolean groundTruth ) {
 		this.isGroundTruth = groundTruth;
-		this.isGroundUntruth = false;
+		if (groundTruth) {
+			this.isGroundUntruth = false; /* if user force this to be GroundTruth, it cannot be GroundUntruth at the same time */
+		}
 		addOrRemoveGroundTruthConstraint( groundTruth );
 	}
 
 	public void setGroundUntruth( final boolean groundUntruth ) {
-		this.isGroundTruth = false;
 		this.isGroundUntruth = groundUntruth;
+		if (groundUntruth) {
+			this.isGroundTruth = false; /* if user force this to be GroundUntruth, it cannot be GroundTruth at the same time */
+		}
 		addOrRemoveGroundTruthConstraint( groundUntruth );
 	}
 

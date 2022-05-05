@@ -6,6 +6,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
 
     @Override
+    public GRBConstr getConstrByName(String name) throws GRBException {
+        return this.model.getConstrByName(name);
+    }
+
+    @Override
     public GRBVar getVarByName(String name) throws GRBException {
         return this.model.getVarByName(name);
     }

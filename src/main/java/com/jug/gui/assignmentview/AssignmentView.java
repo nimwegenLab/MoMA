@@ -46,7 +46,9 @@ public abstract class AssignmentView {
     }
 
     public void toggleGroundTruth() {
-        abstractAssignment.setGroundTruth(!abstractAssignment.isGroundTruth());
+        boolean gtVal = abstractAssignment.isGroundTruth();
+        boolean newValue = !gtVal;
+        abstractAssignment.setGroundTruth(newValue);
         abstractAssignment.reoptimize();
     }
 

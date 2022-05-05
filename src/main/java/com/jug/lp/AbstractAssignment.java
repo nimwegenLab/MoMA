@@ -176,10 +176,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void setGroundTruth(final boolean targetStateIsTrue) {
-//		this.isGroundTruth = groundTruth;
-//		if (groundTruth) {
-//			this.isGroundUntruth = false; /* if user force this to be GroundTruth, it cannot be GroundUntruth at the same time */
-//		}
 		try {
 			if (targetStateIsTrue) {
 				if (isGroundUntruth()) {
@@ -195,7 +191,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
-//		addOrRemoveGroundTruthConstraint( targetStateIsTrue );
 	}
 
 	public void setGroundUntruth( final boolean groundUntruth ) {

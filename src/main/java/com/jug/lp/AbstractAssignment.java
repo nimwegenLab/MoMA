@@ -175,12 +175,27 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return constraintValue < 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
-	public void setGroundTruth( final boolean groundTruth ) {
+	public void setGroundTruth(final boolean targetStateIsTrue) {
 //		this.isGroundTruth = groundTruth;
-		if (groundTruth) {
-			this.isGroundUntruth = false; /* if user force this to be GroundTruth, it cannot be GroundUntruth at the same time */
+//		if (groundTruth) {
+//			this.isGroundUntruth = false; /* if user force this to be GroundTruth, it cannot be GroundUntruth at the same time */
+//		}
+		try {
+			if (targetStateIsTrue) {
+				if (isGroundUntruth()) {
+					removeConstraint();
+				}
+				addGroundTruthConstraint();
+				return;
+			}
+			if (!targetStateIsTrue && isGroundTruth()) {
+				removeConstraint();
+				return;
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
 		}
-		addOrRemoveGroundTruthConstraint( groundTruth );
+//		addOrRemoveGroundTruthConstraint( targetStateIsTrue );
 	}
 
 	public void setGroundUntruth( final boolean groundUntruth ) {
@@ -207,7 +222,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	private void addOrRemoveGroundTruthConstraint(final boolean add) {
 		try {
 			if (add) {
-				final float value = (this.isGroundUntruth) ? 0f : 1f; /* sets whether the assignment will be added as ground-truth or ground-untruth */
+				final float value = (isGroundUntruth()) ? 0f : 1f; /* sets whether the assignment will be added as ground-truth or ground-untruth */
 				addConstraint(value);
 			} else {
 				removeConstraint();
@@ -217,7 +232,15 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	private void addConstraint(float rhsValue) throws GRBException {
+	private void addGroundTruthConstraint() throws GRBException {
+		addConstraint(1.0);
+	}
+
+	private void addGroundUntruthConstraint() throws GRBException {
+		addConstraint(0.0);
+	}
+
+	private void addConstraint(double rhsValue) throws GRBException {
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, "AssignmentGtConstraint_" + getGrbVarName());

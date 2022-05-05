@@ -98,7 +98,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 			cost = ( float ) getGRBVar().get( GRB.DoubleAttr.Obj );
 		} catch ( final GRBException e ) {
 			System.err.println( "CRITICAL: cost could not be read out of Gurobi ILP!" );
-//			e.printStackTrace();
 		}
 		return cost;
 	}
@@ -148,7 +147,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	private GRBConstr getGrbConstr() {
 		GRBConstr grbConstr;
 		try {
-//			grbVar = ilp.model.getVarByName("AssignmentGtConstraint_" + getGrbVarName());
 			grbConstr = ilp.model.getConstrByName("AssignmentGtConstraint_" + getGrbVarName());
 		} catch (GRBException e) {
 			return null;
@@ -219,22 +217,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	/**
-	 *
-	 */
-	private void addOrRemoveGroundTruthConstraint(final boolean add) {
-		try {
-			if (add) {
-				final float value = (isGroundUntruth()) ? 0f : 1f; /* sets whether the assignment will be added as ground-truth or ground-untruth */
-				addConstraint(value);
-			} else {
-				removeConstraint();
-			}
-		} catch (final GRBException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void addGroundTruthConstraint() throws GRBException {
 		addConstraint(1.0);
 	}
@@ -251,7 +233,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	private void removeConstraint() throws GRBException {
 		GRBConstr constrGroundTruth = getGrbConstr();
-		if (getGrbConstr() != null) {
+		if (!isNull(getGrbConstr())) {
 			ilp.model.remove(constrGroundTruth);
 		}
 	}

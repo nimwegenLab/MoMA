@@ -101,10 +101,6 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return location.limits;
     }
 
-    public HypLoc getHypLoc() {
-        return location;
-    }
-
     public int getTime() {
         return location.t;
     }

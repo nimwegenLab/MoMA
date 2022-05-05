@@ -134,40 +134,45 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public abstract void addConstraintsToILP() throws GRBException;
 
 	public boolean isGroundTruth() {
-//		return isGroundTruth;
 		GRBConstr grbConstr = getGrbConstr();
-		if (grbConstr == null) return false; /* no variable was found so this assignment is not forced */
-		if(isNull(grbConstr)){
-			return false;
+		if (isNull(grbConstr)) {
+			return false;  /* no variable was found so this assignment is not forced */
 		}
-//		grbConstr.get(GRB.DoubleAttr.values())
+
 		Double constraintValue;
 		try {
 			constraintValue = grbConstr.get(GRB.DoubleAttr.RHS);
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
-		if(constraintValue>0.5){
-			return true;
-		}
-		return false;
-//		return false;
-//		grbVar.get()
+		return constraintValue > 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
 	@Nullable
 	private GRBConstr getGrbConstr() {
+		GRBConstr grbConstr;
 		try {
 //			grbVar = ilp.model.getVarByName("AssignmentGtConstraint_" + getGrbVarName());
-			constrGroundTruth = ilp.model.getConstrByName("AssignmentGtConstraint_" + getGrbVarName());
+			grbConstr = ilp.model.getConstrByName("AssignmentGtConstraint_" + getGrbVarName());
 		} catch (GRBException e) {
 			return null;
 		}
-		return constrGroundTruth;
+		return grbConstr;
 	}
 
 	public boolean isGroundUntruth() {
-		return isGroundUntruth;
+		GRBConstr grbConstr = getGrbConstr();
+		if(isNull(grbConstr)){
+			return false; /* no variable was found so this assignment is not forced */
+		}
+
+		Double constraintValue;
+		try {
+			constraintValue = grbConstr.get(GRB.DoubleAttr.RHS);
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		return constraintValue < 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
 	public void setGroundTruth( final boolean groundTruth ) {

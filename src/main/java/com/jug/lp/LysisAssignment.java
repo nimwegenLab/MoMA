@@ -63,13 +63,6 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     /**
-     * Adds a list of constraints and factors as strings.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
-    }
-
-    /**
      * Returns the segmentation hypothesis this exit-assignment is associated
      * with.
      *

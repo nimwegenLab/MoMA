@@ -44,13 +44,6 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
     }
 
     /**
-     * Division assignments do not come with constraints.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
-    }
-
-    /**
      * Returns the segmentation hypothesis this division-assignment comes from
      * (the one at the earlier time-point t).
      *

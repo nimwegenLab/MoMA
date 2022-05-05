@@ -41,13 +41,6 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
     }
 
     /**
-     * Mapping assignments do not come with constraints.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
-    }
-
-    /**
      * Returns the segmentation hypothesis this mapping-assignment comes from
      * (the one at the earlier time-point t).
      *

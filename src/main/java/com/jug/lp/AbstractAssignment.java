@@ -158,13 +158,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public abstract void addConstraintsToILP() throws GRBException;
 
-	/**
-	 * Adds a list of functions and factors to the FactorGraphFileBuilder.
-	 * This fkt and fac is used to save a FactorGraph describing the
-	 * optimization problem at hand.
-	 */
-	public abstract void addFunctionsAndFactors( FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds );
-
 	public boolean isGroundTruth() {
 		return isGroundTruth;
 	}

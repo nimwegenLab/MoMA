@@ -91,37 +91,6 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     }
 
     /**
-     * Adds a list of constraints and factors as strings.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
-        final List<Integer> varIds = new ArrayList<>();
-        final List<Integer> coeffs = new ArrayList<>();
-
-        // expr.addTerm( Hup.size(), this.getGRBVar() );
-        coeffs.add(Hup.size());
-//		varIds.add( new Integer( this.getVarIdx() ) );
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
-            if (edges.getRightNeighborhood(upperHyp) != null) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood(upperHyp)) {
-                    if (a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
-                        continue;
-                    }
-                    // add term if assignment is NOT another exit-assignment
-                    // expr.addTerm( 1.0, a_j.getGRBVar() );
-                    coeffs.add(1);
-//					varIds.add( new Integer( a_j.getVarIdx() ) );
-                }
-            }
-        }
-
-        // model.addConstr( expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId );
-        final int fkt_id = fgFile.addConstraintFkt(coeffs, "<=", Hup.size());
-        fgFile.addFactor(fkt_id, varIds, regionIds);
-    }
-
-    /**
      * Returns the segmentation hypothesis this exit-assignment is associated
      * with.
      *

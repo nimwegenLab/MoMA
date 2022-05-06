@@ -104,30 +104,32 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         if (targetStateIsTrue == isForceIgnored()) {
             return;
         }
-
         if (isForced()) {
             setIsForced(false);
         }
-
         if (!targetStateIsTrue) {
             removeSegmentNotInSolutionConstraint();
             return;
         }
         if (targetStateIsTrue) {
-            Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
-            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
-            final GRBLinExpr expr = new GRBLinExpr();
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-                expr.addTerm(1.0, assmnt.getGRBVar());
-            }
-            try {
-                ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName());
-            } catch (final GRBException e) {
-                throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
-            }
+            addSegmentNotInSolutionConstraint();
             return;
         }
         throw new RuntimeException("We should not reach here. Something went wrong.");
+    }
+
+    private void addSegmentNotInSolutionConstraint() {
+        Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
+        final GRBLinExpr expr = new GRBLinExpr();
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+            expr.addTerm(1.0, assmnt.getGRBVar());
+        }
+        try {
+            ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName());
+        } catch (final GRBException e) {
+            throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
+        }
     }
 
     @NotNull

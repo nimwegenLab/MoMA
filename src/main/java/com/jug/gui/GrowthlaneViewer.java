@@ -316,24 +316,16 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
             if (hyps2avoid == null) return;
 
-            try {
-                if (!selectedParentHypothesis.isForceIgnored()) {
-                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.removeSegmentConstraints(hyp2avoid);
-                        }
-                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
-                    }
-                } else {
-                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.removeSegmentConstraints(hyp2avoid);
-                        }
-                    }
+            if (!selectedParentHypothesis.isForceIgnored()) {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
+                    hyp2avoid.setIsForceIgnored(true);
                 }
-            } catch (final GRBException e1) {
-                e1.printStackTrace();
+            } else {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
+                    ilp.removeSegmentConstraints(hyp2avoid);
+                }
             }
+
             mmgui.dataToDisplayChanged();
             fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
             runIlpAndFocusSlider(ilp);

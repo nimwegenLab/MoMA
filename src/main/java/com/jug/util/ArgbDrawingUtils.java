@@ -35,7 +35,7 @@ public class ArgbDrawingUtils {
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
-            } else if (hypothesis.isForced) {
+            } else if (hypothesis.isForced()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else if (hypothesis.isIgnored) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */

@@ -355,7 +355,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
         if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
 
-        if (hyp2add.isForced) {
+        if (hyp2add.isForced()) {
             ilp.removeSegmentConstraints(hyp2add);
         } else {
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
@@ -402,7 +402,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthlaneTrackingILP ilp = glf.getParent().getIlp();
 
-                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
+                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced()) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()
                         .orElse(null);
                 if (selectedHypothesis == null) {

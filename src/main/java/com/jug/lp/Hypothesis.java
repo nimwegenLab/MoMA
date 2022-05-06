@@ -2,13 +2,17 @@ package com.jug.lp;
 
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import static java.util.Objects.isNull;
 
 /**
  * This class is used to wrap away whatever object that represents one of the
@@ -23,9 +27,30 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
     private final T wrappedComponent;
     private final float cost;
+    private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
     public ArrayList<String> labels = new ArrayList<>();
-    public boolean isForced = false;
+
+    public boolean isForced(){
+        GRBConstr grbConstr = getSegmentInSolutionConstraint();
+        if (isNull(grbConstr)) {
+            return false;  /* no variable was found so this assignment is not forced */
+        }
+        return true;
+    }
+
+    @Nullable
+    private GRBConstr getSegmentInSolutionConstraint() {
+        GRBConstr grbConstr;
+        try {
+            grbConstr = ilp.model.getConstrByName("SegmentInSolutionConstraint_" + getStringId());
+        } catch (GRBException e) {
+            return null;
+        }
+        return grbConstr;
+    }
+
+
     public boolean isIgnored = false;
     /**
      * Used to store a 'segment in solution constraint' after it was added to
@@ -39,10 +64,11 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
      */
     private boolean isPruneRoot = false;
     private boolean isPruned = false;
-    public Hypothesis(final int t, final T elementToWrap, final float cost) {
+    public Hypothesis(final int t, final T elementToWrap, final float cost, GrowthlaneTrackingILP ilp) {
         // setSegmentHypothesis( elementToWrap );
         this.wrappedComponent = elementToWrap;
         this.cost = cost;
+        this.ilp = ilp;
         location = new HypLoc(t, elementToWrap);
     }
 

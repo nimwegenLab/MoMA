@@ -103,6 +103,9 @@ public class MoMA {
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			/* overwrite configuration values with parsed command line values, if needed */
+			if (commandLineArgumentParser.getUserDefinedMinTime() == 0) {
+				throw new RuntimeException("minimum value of time range to analyze is invalid; must be at least 1; we use a 1-based time-index like in ImageJ");
+			}
 			if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
 				configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
 			}

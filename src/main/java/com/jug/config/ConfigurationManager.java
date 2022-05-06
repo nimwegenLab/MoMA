@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
+import static java.util.Objects.isNull;
 
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration, IConfiguration {
@@ -225,7 +226,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
-        props = loadParams(optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
+        props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
         maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_STOP", Integer.toString(maxTime)));

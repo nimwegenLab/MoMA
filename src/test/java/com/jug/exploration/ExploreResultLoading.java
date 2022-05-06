@@ -31,7 +31,7 @@ public class ExploreResultLoading {
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16() {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/output/";
-        Integer tmin = 0;
+        Integer tmin = 1;
         Integer tmax = 10;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
@@ -40,7 +40,7 @@ public class ExploreResultLoading {
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
         String inputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/output/";
-        Integer tmin = 0;
+        Integer tmin = 1;
         Integer tmax = 480;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});

@@ -51,7 +51,7 @@ public class GrowthlaneTrackingILP {
     private final Growthlane gl;
     private final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes =
             new AssignmentsAndHypotheses<>();  // all variables of FG
-    private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets =
+    public final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets =
             new HypothesisNeighborhoods<>();  // incoming and outgoing assignments per hypothesis
     private final HashMap<Hypothesis<AdvancedComponent<FloatType>>, GRBConstr> ignoreSegmentConstraints =
             new HashMap<>(); // for user interaction: avoid node
@@ -1613,21 +1613,11 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     public void addSegmentInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2add, final List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) throws GRBException {
-        final GRBLinExpr expr = new GRBLinExpr();
-
         // Remove constraints form all given hypotheses
         if (hypothesesToRemove != null) {
             removeSegmentConstraints(hypothesesToRemove);
         }
-
-        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2add);
-        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-            expr.addTerm(1.0, assmnt.getGRBVar());
-        }
-
-        // Store the newly created constraint in hyp2add
-        hyp2add.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 1.0, "SegmentInSolutionConstraint_" + hyp2add.getStringId()));
-//        hyp2add.isForced = true;
+        hyp2add.setIsForce(true);
     }
 
     /**

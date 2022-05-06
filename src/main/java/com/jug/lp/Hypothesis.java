@@ -5,12 +5,15 @@ import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
+import gurobi.GRBLinExpr;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Set;
 
 import static java.util.Objects.isNull;
 
@@ -39,15 +42,38 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return true;
     }
 
+    public void setIsForce(boolean targetStateIsTrue){
+        if(targetStateIsTrue){
+            Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
+            final GRBLinExpr expr = new GRBLinExpr();
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+                expr.addTerm(1.0, assmnt.getGRBVar());
+            }
+
+            try {
+                // Store the newly created constraint in hyp2add
+                hyp2add.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName()));
+            } catch (final GRBException e) {
+                throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
+            }
+        }
+    }
+
     @Nullable
     private GRBConstr getSegmentInSolutionConstraint() {
         GRBConstr grbConstr;
         try {
-            grbConstr = ilp.model.getConstrByName("SegmentInSolutionConstraint_" + getStringId());
+            grbConstr = ilp.model.getConstrByName(getSegmentInSolutionConstraintName());
         } catch (GRBException e) {
             return null;
         }
         return grbConstr;
+    }
+
+    @NotNull
+    private String getSegmentInSolutionConstraintName() {
+        return "SegmentInSolutionConstraint_" + getStringId();
     }
 
 

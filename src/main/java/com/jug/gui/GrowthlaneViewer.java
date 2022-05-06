@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
 import static com.jug.util.ArgbDrawingUtils.drawSegments;
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
@@ -118,11 +119,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     @Override
     public void paintComponent(final Graphics g) {
-        if (glf == null)
+        if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         try {
-            if (projector != null) {
+            if (!isNull(projector)) {
                 projector.map();
                 LoopBuilder.setImages(screenImage, screenImageUnaltered).forEachPixel((src, dest) -> dest.set(src)); /* copy original image data, which will act as source for calculating overlay pixel values */
             }
@@ -182,13 +183,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         Hypothesis<AdvancedComponent<FloatType>> optimalHyp = getHoveredOptimalHypothesis();
         Hypothesis<AdvancedComponent<FloatType>> optionalHyp = getHoveredOptionalHypothesis();
 
-        if (optimalHyp != null && optionalHyp == null) {
+        if (!isNull(optimalHyp) && isNull(optionalHyp)) {
             return optimalHypothesisTextColor;
         }
-        if (optimalHyp == null && optionalHyp != null) {
+        if (isNull(optimalHyp) && !isNull(optionalHyp)) {
             return optionalHypothesisTextColor;
         }
-        if (optimalHyp != null && optionalHyp != null) {
+        if (!isNull(optimalHyp) && !isNull(optionalHyp)) {
             if(optionalHyp == optimalHyp){
                 return optimalHypothesisTextColor;
             }
@@ -256,7 +257,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
-        if (glf == null)
+        if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         int increment = e.getWheelRotation();
@@ -290,7 +291,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
-        if (glf == null)
+        if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         final int t = glf.getTime();
@@ -314,7 +315,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
             hyps2avoid.add(selectedParentHypothesis); /* add hypothesis of parent segment itself */
 
-            if (hyps2avoid == null) return;
+            if (isNull(hyps2avoid)) return;
 
             if (!selectedParentHypothesis.isForceIgnored()) {
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
@@ -336,7 +337,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getSelectedHypothesis();
-            if (hyp == null) return;
+            if (isNull(hyp)) return;
             hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
@@ -345,7 +346,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         // simple CLICK: ADD/REMOVE ENFORCING CONSTRAINT HYPOTHESIS
         // -------------------------
         Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
-        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
+        if (isNull(hyp2add)) return; /* failed to get a non-null hypothesis, so return */
 
         if (hyp2add.isForced()) {
             ilp.removeSegmentConstraints(hyp2add);

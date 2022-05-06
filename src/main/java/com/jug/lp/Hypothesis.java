@@ -46,12 +46,13 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         if (targetStateIsTrue == isForced()) {
             return;
         }
-        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
-        if(!targetStateIsTrue && !isNull(segmentInSolutionConstraint)){
-            removeSegmentInSolutionConstraint(segmentInSolutionConstraint);
+
+        if(!targetStateIsTrue){
+            removeSegmentInSolutionConstraint();
             return;
         }
-        else if(targetStateIsTrue){
+
+        if(targetStateIsTrue){
             Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
             final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
             final GRBLinExpr expr = new GRBLinExpr();
@@ -61,7 +62,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
             try {
                 // Store the newly created constraint in hyp2add
-                hyp2add.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName()));
+                ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName());
             } catch (final GRBException e) {
                 throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
             }
@@ -70,7 +71,12 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         throw new RuntimeException("We should not reach here. Something went wrong.");
     }
 
-    private void removeSegmentInSolutionConstraint(GRBConstr segmentInSolutionConstraint) {
+    private void removeSegmentInSolutionConstraint() {
+        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
+        removeSegmentConstraint(segmentInSolutionConstraint);
+    }
+
+    private void removeSegmentConstraint(GRBConstr segmentInSolutionConstraint) {
         try {
             ilp.model.remove(segmentInSolutionConstraint);
         } catch (GRBException e) {
@@ -79,11 +85,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     private void removeSegmentNotInSolutionConstraint(GRBConstr segmentNotInSolutionConstraint) {
-        try {
-            ilp.model.remove(segmentNotInSolutionConstraint);
-        } catch (GRBException e) {
-            throw new RuntimeException(e);
-        }
+        removeSegmentConstraint(segmentNotInSolutionConstraint);
     }
 
     public void setIsForceIgnored(boolean targetStateIsTrue) {
@@ -103,7 +105,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
                 expr.addTerm(1.0, assmnt.getGRBVar());
             }
             try {
-                hyp2avoid.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName()));
+                ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName());
             } catch (final GRBException e) {
                 throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
             }
@@ -152,12 +154,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return grbConstr;
     }
 
-    /**
-     * Used to store a 'segment in solution constraint' after it was added to
-     * the ILP. If such a constraint does not exist for this hypothesis, this
-     * value is null.
-     */
-    private GRBConstr segmentSpecificConstraint = null;
+
     /**
      * Used to store track-branch pruning sources. This is a way to easily
      * exclude branches from data export etc.
@@ -228,12 +225,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
      * Used to store a 'segment in solution constraint' or a 'segment not in
      * solution constraint' after it was added to the ILP.
      *
-     * @param constr the installed constraint.
      */
-    public void setSegmentSpecificConstraint(final GRBConstr constr) {
-        this.segmentSpecificConstraint = constr;
-    }
-
     public ValuePair<Integer, Integer> getLocation() {
         return location.limits;
     }

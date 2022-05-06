@@ -31,6 +31,7 @@ import java.util.function.Function;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
@@ -1612,9 +1613,9 @@ public class GrowthlaneTrackingILP {
      * @param hyp2add the hypothesis for which the constraint should be installed.
      * @throws GRBException
      */
-    public void addSegmentInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2add, final List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) throws GRBException {
+    public void addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(final Hypothesis<AdvancedComponent<FloatType>> hyp2add, final List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) throws GRBException {
         // Remove constraints form all given hypotheses
-        if (hypothesesToRemove != null) {
+        if (!isNull(hypothesesToRemove)) {
             removeSegmentConstraints(hypothesesToRemove);
         }
         hyp2add.setIsForced(true);
@@ -1848,7 +1849,7 @@ public class GrowthlaneTrackingILP {
                             for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
                                 if (hyp.getId() == id) {
                                     if (1 == (int) rhs) {
-                                        addSegmentInSolutionConstraint(hyp, null);
+                                        addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp, null);
                                     } else {
                                         addSegmentNotInSolutionConstraint(hyp);
                                     }
@@ -1937,7 +1938,7 @@ public class GrowthlaneTrackingILP {
                             findActiveAssignment(nh);
                     if (aa != null) {
                         // fix this segment
-                        addSegmentInSolutionConstraint(hyp, null);
+                        addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp, null);
                     } else {
                         // avoid this segment
                         addSegmentNotInSolutionConstraint(hyp);

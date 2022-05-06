@@ -357,7 +357,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 if (hyp2add.getSegmentSpecificConstraint() != null) {
                     ilp.removeSegmentConstraints(hyp2add);
                 }
-                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
+                ilp.addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }

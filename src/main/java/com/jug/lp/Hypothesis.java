@@ -34,7 +34,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     private final HypLoc location;
     public ArrayList<String> labels = new ArrayList<>();
 
-    public boolean isForced(){
+    public boolean isForced() {
         GRBConstr grbConstr = getSegmentInSolutionConstraint();
         if (isNull(grbConstr)) {
             return false;  /* no variable was found so this assignment is not forced */
@@ -42,7 +42,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return true;
     }
 
-    public void setIsForced(boolean targetStateIsTrue){
+    public void setIsForced(boolean targetStateIsTrue) {
         if (targetStateIsTrue == isForced()) {
             return;
         }
@@ -51,12 +51,12 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             setIsForceIgnored(false);
         }
 
-        if(!targetStateIsTrue){
+        if (!targetStateIsTrue) {
             removeSegmentInSolutionConstraint();
             return;
         }
 
-        if(targetStateIsTrue){
+        if (targetStateIsTrue) {
             addSegmentInSolutionConstraint();
             return;
         }
@@ -171,6 +171,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
      */
     private boolean isPruneRoot = false;
     private boolean isPruned = false;
+
     public Hypothesis(final int t, final T elementToWrap, final float cost, GrowthlaneTrackingILP ilp) {
         // setSegmentHypothesis( elementToWrap );
         this.wrappedComponent = elementToWrap;
@@ -210,7 +211,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     public GRBConstr getSegmentSpecificConstraint() {
         GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
         GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
-        if(!isNull(segmentInSolutionConstraint) && !isNull(segmentNotInSolutionConstraint)){
+        if (!isNull(segmentInSolutionConstraint) && !isNull(segmentNotInSolutionConstraint)) {
             throw new RuntimeException("conflicting segment constraints have occurred; this should not have happened");
         }
         if (!isNull(segmentNotInSolutionConstraint)) {
@@ -225,7 +226,6 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     /**
      * Used to store a 'segment in solution constraint' or a 'segment not in
      * solution constraint' after it was added to the ILP.
-     *
      */
     public ValuePair<Integer, Integer> getLocation() {
         return location.limits;

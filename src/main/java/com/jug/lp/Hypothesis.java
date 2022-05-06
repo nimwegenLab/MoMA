@@ -64,19 +64,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     private void addSegmentInSolutionConstraint() {
-        Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
-        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
-        final GRBLinExpr expr = new GRBLinExpr();
-        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-            expr.addTerm(1.0, assmnt.getGRBVar());
-        }
-
-        try {
-            // Store the newly created constraint in hyp2add
-            ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName());
-        } catch (final GRBException e) {
-            throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
-        }
+        addSegmentConstraint(1.0, getSegmentInSolutionConstraintName());
     }
 
     private void removeSegmentInSolutionConstraint() {
@@ -119,6 +107,10 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     private void addSegmentNotInSolutionConstraint() {
+        addSegmentConstraint(0.0, getSegmentNotInSolutionConstraintName());
+    }
+
+    private void addSegmentConstraint(double rhs, String segmentConstraintName) {
         Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
         final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
         final GRBLinExpr expr = new GRBLinExpr();
@@ -126,9 +118,9 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             expr.addTerm(1.0, assmnt.getGRBVar());
         }
         try {
-            ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName());
+            ilp.model.addConstr(expr, GRB.EQUAL, rhs, segmentConstraintName);
         } catch (final GRBException e) {
-            throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
+            throw new RuntimeException("Failed to add constraint: " + segmentConstraintName);
         }
     }
 

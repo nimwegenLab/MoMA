@@ -57,22 +57,26 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         }
 
         if(targetStateIsTrue){
-            Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
-            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
-            final GRBLinExpr expr = new GRBLinExpr();
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-                expr.addTerm(1.0, assmnt.getGRBVar());
-            }
-
-            try {
-                // Store the newly created constraint in hyp2add
-                ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName());
-            } catch (final GRBException e) {
-                throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
-            }
+            addSegmentInSolutionConstraint();
             return;
         }
         throw new RuntimeException("We should not reach here. Something went wrong.");
+    }
+
+    private void addSegmentInSolutionConstraint() {
+        Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
+        final GRBLinExpr expr = new GRBLinExpr();
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+            expr.addTerm(1.0, assmnt.getGRBVar());
+        }
+
+        try {
+            // Store the newly created constraint in hyp2add
+            ilp.model.addConstr(expr, GRB.EQUAL, 1.0, getSegmentInSolutionConstraintName());
+        } catch (final GRBException e) {
+            throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
+        }
     }
 
     private void removeSegmentInSolutionConstraint() {
@@ -81,6 +85,9 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     private void removeSegmentConstraint(GRBConstr segmentInSolutionConstraint) {
+        if (isNull(segmentInSolutionConstraint)) {
+            return;
+        }
         try {
             ilp.model.remove(segmentInSolutionConstraint);
         } catch (GRBException e) {
@@ -88,7 +95,8 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         }
     }
 
-    private void removeSegmentNotInSolutionConstraint(GRBConstr segmentNotInSolutionConstraint) {
+    private void removeSegmentNotInSolutionConstraint() {
+        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
         removeSegmentConstraint(segmentNotInSolutionConstraint);
     }
 
@@ -101,9 +109,8 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             setIsForced(false);
         }
 
-        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
-        if (!targetStateIsTrue && !isNull(segmentNotInSolutionConstraint)) {
-            removeSegmentNotInSolutionConstraint(segmentNotInSolutionConstraint);
+        if (!targetStateIsTrue) {
+            removeSegmentNotInSolutionConstraint();
             return;
         }
         if (targetStateIsTrue) {

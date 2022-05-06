@@ -7,9 +7,9 @@ public class ExploreResultLoading {
 
     public static void main(String[] args) {
         ExploreResultLoading tests = new ExploreResultLoading();
-        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_mm_properties_loading();
+//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_mm_properties_loading();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
     }
 
 
@@ -43,5 +43,6 @@ public class ExploreResultLoading {
         Integer tmin = 0;
         Integer tmax = 480;
         startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+//        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 }

@@ -1637,15 +1637,8 @@ public class GrowthlaneTrackingILP {
      * @param hypothesisToRemove
      */
     public void removeSegmentConstraints(Hypothesis<AdvancedComponent<FloatType>> hypothesisToRemove) {
-        final GRBConstr oldConstr = hypothesisToRemove.getSegmentSpecificConstraint();
-        if (oldConstr != null) {
-            try {
-                model.remove(oldConstr);
-                hypothesisToRemove.setSegmentSpecificConstraint(null);
-            } catch (final GRBException e) {
-                e.printStackTrace();
-            }
-        }
+        hypothesisToRemove.setIsForce(false);
+        hypothesisToRemove.setIsForceIgnored(false);
     }
 
     /**

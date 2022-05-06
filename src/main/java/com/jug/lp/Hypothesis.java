@@ -43,7 +43,15 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     public void setIsForce(boolean targetStateIsTrue){
-        if(targetStateIsTrue){
+        if (targetStateIsTrue == isForced()) {
+            return;
+        }
+        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
+        if(!targetStateIsTrue && !isNull(segmentInSolutionConstraint)){
+            removeSegmentInSolutionConstraint(segmentInSolutionConstraint);
+            return;
+        }
+        else if(targetStateIsTrue){
             Hypothesis<AdvancedComponent<FloatType>> hyp2add = (Hypothesis<AdvancedComponent<FloatType>>) this;
             final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2add);
             final GRBLinExpr expr = new GRBLinExpr();
@@ -57,11 +65,37 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             } catch (final GRBException e) {
                 throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
             }
+            return;
+        }
+        throw new RuntimeException("We should not reach here. Something went wrong.");
+    }
+
+    private void removeSegmentInSolutionConstraint(GRBConstr segmentInSolutionConstraint) {
+        try {
+            ilp.model.remove(segmentInSolutionConstraint);
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    public void setIsForceIgnored(boolean targetStateIsTrue){
-        if(targetStateIsTrue){
+    private void removeSegmentNotInSolutionConstraint(GRBConstr segmentNotInSolutionConstraint) {
+        try {
+            ilp.model.remove(segmentNotInSolutionConstraint);
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void setIsForceIgnored(boolean targetStateIsTrue) {
+        if (targetStateIsTrue == isIgnored()) {
+            return;
+        }
+        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
+        if (!targetStateIsTrue && !isNull(segmentNotInSolutionConstraint)) {
+            removeSegmentNotInSolutionConstraint(segmentNotInSolutionConstraint);
+            return;
+        }
+        if (targetStateIsTrue) {
             Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
             final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
             final GRBLinExpr expr = new GRBLinExpr();
@@ -73,7 +107,9 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             } catch (final GRBException e) {
                 throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
             }
+            return;
         }
+        throw new RuntimeException("We should not reach here. Something went wrong.");
     }
 
     @NotNull
@@ -96,7 +132,6 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     private String getSegmentInSolutionConstraintName() {
         return "SegmentInSolutionConstraint_" + getStringId();
     }
-
 
     public boolean isIgnored() {
         GRBConstr grbConstr = getSegmentNotInSolutionConstraint();
@@ -175,7 +210,18 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
      * constraint was never created.
      */
     public GRBConstr getSegmentSpecificConstraint() {
-        return this.segmentSpecificConstraint;
+        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
+        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
+        if(!isNull(segmentInSolutionConstraint) && !isNull(segmentNotInSolutionConstraint)){
+            throw new RuntimeException("conflicting segment constraints have occurred; this should not have happened");
+        }
+        if (!isNull(segmentNotInSolutionConstraint)) {
+            return segmentNotInSolutionConstraint;
+        }
+        if (!isNull(segmentInSolutionConstraint)) {
+            return segmentInSolutionConstraint;
+        }
+        return null;
     }
 
     /**

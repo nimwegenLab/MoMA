@@ -42,7 +42,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return true;
     }
 
-    public void setIsForce(boolean targetStateIsTrue){
+    public void setIsForced(boolean targetStateIsTrue){
         if (targetStateIsTrue == isForced()) {
             return;
         }
@@ -190,15 +190,6 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     public float getCost() {
         return cost;
     }
-
-    // /**
-    // * @param elementToWrap
-    // * the segmentHypothesis to wrap inside this
-    // * {@link Hypothesis}
-    // */
-    // public void setSegmentHypothesis( final T elementToWrap ) {
-    // this.wrappedHypothesis = elementToWrap;
-    // }
 
     /**
      * @return the stored gurobi constraint that either forces this hypothesis

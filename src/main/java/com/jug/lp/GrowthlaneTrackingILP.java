@@ -1617,7 +1617,7 @@ public class GrowthlaneTrackingILP {
         if (hypothesesToRemove != null) {
             removeSegmentConstraints(hypothesesToRemove);
         }
-        hyp2add.setIsForce(true);
+        hyp2add.setIsForced(true);
     }
 
     /**
@@ -1637,7 +1637,7 @@ public class GrowthlaneTrackingILP {
      * @param hypothesisToRemove
      */
     public void removeSegmentConstraints(Hypothesis<AdvancedComponent<FloatType>> hypothesisToRemove) {
-        hypothesisToRemove.setIsForce(false);
+        hypothesisToRemove.setIsForced(false);
         hypothesisToRemove.setIsForceIgnored(false);
     }
 

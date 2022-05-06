@@ -164,7 +164,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     void drawString(Graphics g, String text, int x, int y) {
         for (String line : text.split("\n")) {
             g.setFont(textFont);
-            g.drawString(line, x-1, y += g.getFontMetrics().getHeight());
+            g.drawString(line, x - 1, y += g.getFontMetrics().getHeight());
         }
     }
 
@@ -179,7 +179,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private Color optimalHypothesisTextColor = Color.GREEN.darker();
     private Color noHypothesisTextColor = Color.RED.brighter();
 
-    private Color getStringColor(){
+    private Color getStringColor() {
         Hypothesis<AdvancedComponent<FloatType>> optimalHyp = getHoveredOptimalHypothesis();
         Hypothesis<AdvancedComponent<FloatType>> optionalHyp = getHoveredOptionalHypothesis();
 
@@ -190,10 +190,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return optionalHypothesisTextColor;
         }
         if (!isNull(optimalHyp) && !isNull(optionalHyp)) {
-            if(optionalHyp == optimalHyp){
+            if (optionalHyp == optimalHyp) {
                 return optimalHypothesisTextColor;
             }
-            if(optionalHyp != optimalHyp){
+            if (optionalHyp != optimalHyp) {
                 return optionalHypothesisTextColor;
             }
         }
@@ -209,11 +209,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
                 componentInfoString = "C:" + costFormat.format(optionalCost) +
-                                    "\nT:" + limits.getA() +
-                                    "\nB:" + limits.getB() +
-                                    "\nL:" + (limits.getB() - limits.getA()) +
-                                    "\nA:" + component.size() +
-                                    "\nN:" + component.getNodeLevel();
+                        "\nT:" + limits.getA() +
+                        "\nB:" + limits.getB() +
+                        "\nL:" + (limits.getB() - limits.getA()) +
+                        "\nA:" + component.size() +
+                        "\nN:" + component.getNodeLevel();
             } else {
                 componentInfoString = "---";
             }

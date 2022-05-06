@@ -317,7 +317,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (hyps2avoid == null) return;
 
             try {
-                if (!selectedParentHypothesis.isIgnored()) {
+                if (!selectedParentHypothesis.isForceIgnored()) {
                     for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
                         if (hyp2avoid.getSegmentSpecificConstraint() != null) {
                             ilp.removeSegmentConstraints(hyp2avoid);
@@ -406,7 +406,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                         .findFirst()
                         .orElse(null);
                 if (selectedHypothesis == null) {
-                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isIgnored()) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForceIgnored()) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
                             .findFirst()
                             .orElse(null);
                 }

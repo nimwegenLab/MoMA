@@ -47,6 +47,10 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
             return;
         }
 
+        if (isForceIgnored()) {
+            setIsForceIgnored(false);
+        }
+
         if(!targetStateIsTrue){
             removeSegmentInSolutionConstraint();
             return;
@@ -89,9 +93,14 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     public void setIsForceIgnored(boolean targetStateIsTrue) {
-        if (targetStateIsTrue == isIgnored()) {
+        if (targetStateIsTrue == isForceIgnored()) {
             return;
         }
+
+        if (isForced()) {
+            setIsForced(false);
+        }
+
         GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
         if (!targetStateIsTrue && !isNull(segmentNotInSolutionConstraint)) {
             removeSegmentNotInSolutionConstraint(segmentNotInSolutionConstraint);
@@ -135,7 +144,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return "SegmentInSolutionConstraint_" + getStringId();
     }
 
-    public boolean isIgnored() {
+    public boolean isForceIgnored() {
         GRBConstr grbConstr = getSegmentNotInSolutionConstraint();
         if (isNull(grbConstr)) {
             return false;  /* no variable was found so this assignment is not forced */

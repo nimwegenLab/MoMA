@@ -1658,14 +1658,7 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     public void addSegmentNotInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid) throws GRBException {
-        final GRBLinExpr expr = new GRBLinExpr();
-
-        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp2avoid);
-        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-            expr.addTerm(1.0, assmnt.getGRBVar());
-        }
-
-        hyp2avoid.setSegmentSpecificConstraint(model.addConstr(expr, GRB.EQUAL, 0.0, "SegmentNotInSolutionConstraint_" + hyp2avoid.getStringId()));
+        hyp2avoid.setIsForceIgnored(true);
         hyp2avoid.isIgnored = true;
     }
 

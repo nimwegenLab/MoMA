@@ -60,6 +60,22 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         }
     }
 
+    public void setIsForceIgnored(boolean targetStateIsTrue){
+        if(targetStateIsTrue){
+            Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
+            final GRBLinExpr expr = new GRBLinExpr();
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+                expr.addTerm(1.0, assmnt.getGRBVar());
+            }
+            try {
+                hyp2avoid.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 0.0, "SegmentNotInSolutionConstraint_" + hyp2avoid.getStringId()));
+            } catch (final GRBException e) {
+                throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
+            }
+        }
+    }
+
     @Nullable
     private GRBConstr getSegmentInSolutionConstraint() {
         GRBConstr grbConstr;

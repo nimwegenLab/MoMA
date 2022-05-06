@@ -69,11 +69,16 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
                 expr.addTerm(1.0, assmnt.getGRBVar());
             }
             try {
-                hyp2avoid.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 0.0, "SegmentNotInSolutionConstraint_" + hyp2avoid.getStringId()));
+                hyp2avoid.setSegmentSpecificConstraint(ilp.model.addConstr(expr, GRB.EQUAL, 0.0, getSegmentNotInSolutionConstraintName()));
             } catch (final GRBException e) {
-                throw new RuntimeException("Failed to add Gurobi SegmentInSolutionConstraint");
+                throw new RuntimeException("Failed to add Gurobi SegmentNotInSolutionConstraint");
             }
         }
+    }
+
+    @NotNull
+    private String getSegmentNotInSolutionConstraintName() {
+        return "SegmentNotInSolutionConstraint_" + getStringId();
     }
 
     @Nullable
@@ -93,7 +98,25 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
 
-    public boolean isIgnored = false;
+    public boolean isIgnored() {
+        GRBConstr grbConstr = getSegmentNotInSolutionConstraint();
+        if (isNull(grbConstr)) {
+            return false;  /* no variable was found so this assignment is not forced */
+        }
+        return true;
+    }
+
+    @Nullable
+    private GRBConstr getSegmentNotInSolutionConstraint() {
+        GRBConstr grbConstr;
+        try {
+            grbConstr = ilp.model.getConstrByName(getSegmentNotInSolutionConstraintName());
+        } catch (GRBException e) {
+            return null;
+        }
+        return grbConstr;
+    }
+
     /**
      * Used to store a 'segment in solution constraint' after it was added to
      * the ILP. If such a constraint does not exist for this hypothesis, this

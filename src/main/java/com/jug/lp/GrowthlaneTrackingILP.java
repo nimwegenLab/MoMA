@@ -1642,8 +1642,6 @@ public class GrowthlaneTrackingILP {
             try {
                 model.remove(oldConstr);
                 hypothesisToRemove.setSegmentSpecificConstraint(null);
-//                hypothesisToRemove.isForced = false;
-                hypothesisToRemove.isIgnored = false;
             } catch (final GRBException e) {
                 e.printStackTrace();
             }
@@ -1659,7 +1657,6 @@ public class GrowthlaneTrackingILP {
      */
     public void addSegmentNotInSolutionConstraint(final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid) throws GRBException {
         hyp2avoid.setIsForceIgnored(true);
-        hyp2avoid.isIgnored = true;
     }
 
     public void addProgressListener(final ProgressListener pl) {

@@ -7,10 +7,10 @@ public class ExploreResultLoading {
 
     public static void main(String[] args) {
         ExploreResultLoading tests = new ExploreResultLoading();
-        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
-//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
+//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
     }
 
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading() {
@@ -28,20 +28,21 @@ public class ExploreResultLoading {
     }
 
 
-    public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16() {
+    public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties() {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/output/";
-        Integer tmin = 1;
-        Integer tmax = 10;
-        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        String properties_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/output/mm.properties";
+        Integer tmin = 70;
+        Integer tmax = 80;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export", "-p", properties_file_path});
     }
 
 
-    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {
+    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties() {
         String inputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
         String outputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/output/";
-        Integer tmin = 1;
-        Integer tmax = 480;
+        Integer tmin = null;
+        Integer tmax = null;
         startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export"});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }

@@ -103,33 +103,27 @@ public class MoMA {
 			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputFolder());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
+			configurationManager.setMinTime(datasetProperties.getMinTime());
+			configurationManager.setMaxTime(datasetProperties.getMaxTime());
+
 			/* overwrite configuration values with parsed command line values, if needed */
 			if (commandLineArgumentParser.getUserDefinedMinTime() == 0) {
 				throw new RuntimeException("minimum value of time range to analyze is invalid; must be at least 1; we use a 1-based time-index like in ImageJ");
 			}
 			if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
-				configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
-			}
-			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
-				configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
-			}
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
-
-			/* test validity of the minimum or maximum times or use dataset values, if not specified */
-			if (configurationManager.getMinTime() == -1) {
-				configurationManager.setMinTime(datasetProperties.getMinTime());
-			} else {
-				if(configurationManager.getMinTime() < datasetProperties.getMinTime() || configurationManager.getMinTime() > datasetProperties.getMaxTime()){
+				if (inValidRange(datasetProperties)) {
+					configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
+				}
+				else {
 					throw new RuntimeException("minimum value of time range to analyze is invalid.");
 				}
 			}
-			if (configurationManager.getMaxTime() == -1) {
-				configurationManager.setMaxTime(datasetProperties.getMaxTime());
-			} else {
-				if(configurationManager.getMaxTime() < datasetProperties.getMinTime() || configurationManager.getMaxTime() > datasetProperties.getMaxTime()){
-					throw new RuntimeException("maximum value of time range to analyze is invalid.");
+			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
+				if (inValidRange(datasetProperties)) {
+					configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
 				}
 			}
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
 		}
 
 		loggerWindow = dic.getLoggerWindow();
@@ -246,6 +240,11 @@ public class MoMA {
 				System.exit( 11 );
 			}
 		}
+	}
+
+	private static boolean inValidRange(DatasetProperties datasetProperties) {
+		return (commandLineArgumentParser.getUserDefinedMinTime() >= datasetProperties.getMinTime()) &
+				commandLineArgumentParser.getUserDefinedMinTime() <= datasetProperties.getMaxTime();
 	}
 
 	/**

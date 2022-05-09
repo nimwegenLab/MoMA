@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,5 +159,11 @@ public class TestUtils {
         } else {
             return !(Math.abs(d1 - d2) <= delta);
         }
+    }
+
+    public static Path getPathToResourcesDirectory(){
+        String pathToMomaGitRepo = new File("").getAbsolutePath();
+        Path pathToResources = Paths.get(pathToMomaGitRepo, "src/test/resources");
+        return pathToResources;
     }
 }

@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.util.FloatTypeImgLoader;
+import com.jug.util.TestUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
@@ -10,7 +11,10 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class UnetProcessorTest {
@@ -24,12 +28,14 @@ public class UnetProcessorTest {
     public void process_runs_on_datasets_shapes_below_unet_input_layer() throws FileNotFoundException {
         ImageJ ij = new ImageJ();
         ij.ui().showUI();
-        String basePath = "/home/micha/Documents/01_work/git/MoMA/src/test/resources/ImageFormatTest/";
-        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x531_original.tif"; // wide and high enough; UNet input-layer shape is: 32x512
+        Path pathToResourcesDirectory = TestUtils.getPathToResourcesDirectory();
+//        String imageFile = new File("").getAbsolutePath();
+//        String basePath = "/home/micha/Documents/01_work/git/MoMA/src/test/resources/ImageFormatTest/";
+        Path path = Paths.get(pathToResourcesDirectory.toString(), "ImageFormatTest", "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x531_original.tif"); // wide and high enough; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x444.tif"; // too thin and too low; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_24x531.tif"; // too thin, but high enough; UNet input-layer shape is: 32x512
 //        String path = basePath + "new_10frames_20190424_hi2_hi3_med2_rplN_4_MMStack_Pos0_GL3_shape_106x444.tif"; // wide enough, but too low; UNet input-layer shape is: 32x512
-        Img<FloatType> inputImage = readImageData(path);
+        Img<FloatType> inputImage = readImageData(path.toString());
         Img<FloatType> processedImage = new UnetProcessor(ij.context(), new UnetProcessingConfigurationMock()).process(inputImage);
         ImageJFunctions.show(inputImage, "Input image");
         ImageJFunctions.show(processedImage, "Processed image");
@@ -70,6 +76,12 @@ public class UnetProcessorTest {
         @Override
         public int getCellDetectionRoiOffsetTop() {
             return 0;
+        }
+
+        @Override
+        public Path getModelFilePath() {
+            return null;
+//            /home/micha/Documents/01_work/git/MoMA/src/test/resources/UnetProcessorTest/model_20210715_5b27d7aa__tensorflow_model.epoch-0200-val_binary_crossentropy_adapter-0.0208.zip
         }
     }
 }

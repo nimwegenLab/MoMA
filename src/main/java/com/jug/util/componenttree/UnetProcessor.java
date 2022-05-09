@@ -55,7 +55,7 @@ public class UnetProcessor {
             final CommandModule module = commandService.run(
                     GenericNetwork.class, false,
                     "input", dataset,
-                    "modelFile", modelFile,
+                    "modelFile", unetProcessingConfiguration.getModelFilePath().toString(),
                     "normalizeInput", false,
                     "blockMultiple", 8,
                     "nTiles", 1,

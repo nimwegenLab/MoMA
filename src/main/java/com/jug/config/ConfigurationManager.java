@@ -5,6 +5,7 @@ import org.apache.commons.io.FileUtils;
 import javax.swing.*;
 import java.io.*;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -451,6 +452,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     @Override
     public int getCellDetectionRoiOffsetTop() {
         return CELL_DETECTION_ROI_OFFSET_TOP;
+    }
+
+    @Override
+    public Path getModelFilePath() {
+        return Paths.get(SEGMENTATION_MODEL_PATH);
     }
 
     public int getSizeMinimumOfLeafComponent() {

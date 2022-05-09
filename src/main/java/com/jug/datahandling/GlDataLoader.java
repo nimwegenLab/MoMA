@@ -153,13 +153,13 @@ public class GlDataLoader {
          *  create or load probability maps
          */
         Img<FloatType> probabilityMap;
-        if (!new File(processedImageFileName).exists()) {
+        if (new File(processedImageFileName).exists()) {
+            ImagePlus imp = IJ.openImage(processedImageFileName);
+            probabilityMap = ImageJFunctions.convertFloat(imp);
+        } else {
             probabilityMap = unetProcessor.process(imageProvider.getImgRaw());
             ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
             IJ.saveAsTiff(tmp_image, processedImageFileName);
-        } else {
-            ImagePlus imp = IJ.openImage(processedImageFileName);
-            probabilityMap = ImageJFunctions.convertFloat(imp);
         }
         return probabilityMap;
     }

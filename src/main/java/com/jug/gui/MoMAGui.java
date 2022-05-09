@@ -6,7 +6,9 @@ import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.IImageProvider;
-import com.jug.export.*;
+import com.jug.export.HtmlOverviewExporter;
+import com.jug.export.ResultExporter;
+import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
@@ -85,6 +87,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonOptimizeMore;
     private JButton buttonExportHtml;
     private JButton buttonExportData;
+
+    private JButton buttonSaveTracking;
 
     private JComboBox comboboxWhichImgToShow;
 
@@ -274,6 +278,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonExportHtml.addActionListener(this);
         buttonExportData = new JButton("Export Data");
         buttonExportData.addActionListener(this);
+        buttonSaveTracking = new JButton("Save Tracking");
+        buttonSaveTracking.addActionListener(this);
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
         panelHorizontalHelper.add(checkboxAutosave);
@@ -282,6 +288,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(buttonOptimizeMore);
         panelHorizontalHelper.add(buttonExportHtml);
         panelHorizontalHelper.add(buttonExportData);
+        panelHorizontalHelper.add(buttonSaveTracking);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // --- Final adding and layout steps -------------
@@ -981,6 +988,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
             t.start();
         }
+        if (e.getSource().equals(buttonSaveTracking)) {
+            File folderToUse = queryUserForFolderToUse();
+            final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
+            t.start();
+        }
         setFocusToTimeSlider();
     }
 
@@ -1087,6 +1099,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
 
+        final ResultExporter resultExporter = new ResultExporter(exporters);
+        resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+    }
+
+    public void exportTrackingData(File folderToUse) {
+        if (folderToUse == null) return;
+
+        List<ResultExporterInterface> exporters = new ArrayList<>();
+        exporters.add(MoMA.dic.getIlpModelExporter());
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }

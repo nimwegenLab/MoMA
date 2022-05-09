@@ -533,4 +533,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public boolean getIfRunningHeadless() {
         return runningHeadless;
     }
+
+    private boolean isReloading = false;
+    public boolean getIsReloading(){ return isReloading;}
+
+    public void setIsReloading(boolean isReloading) {
+        this.isReloading = isReloading;
+    }
 }

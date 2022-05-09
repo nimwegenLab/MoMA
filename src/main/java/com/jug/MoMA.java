@@ -89,6 +89,7 @@ public class MoMA {
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
 		final DatasetProperties datasetProperties = new DatasetProperties();
+		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);

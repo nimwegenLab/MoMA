@@ -7,13 +7,13 @@ public class ExploreResultLoading {
 
     public static void main(String[] args) {
         ExploreResultLoading tests = new ExploreResultLoading();
-//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_mm_properties_loading();
+        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
     }
 
 
-    public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_mm_properties_loading() {
+    public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading() {
         String inputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/dany_20200730__Pos3_GL16/output";
         String settings_file_path = datasets_base_path + "/dany_20200730__Pos3_GL16/output/mm.properties";

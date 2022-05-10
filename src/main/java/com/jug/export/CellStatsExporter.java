@@ -65,19 +65,9 @@ public class CellStatsExporter implements ResultExporterInterface {
         /* Export cell tracks */
         exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 
-        /* Export user inputs to the tracking algorithm */
-        final int tmin = configurationManager.getMinTime();
-        final int tmax = configurationManager.getMaxTime();
-        final File file =
-                new File(outputFolder, String.format(
-                        "[%d-%d]__%s.moma",
-                        tmin,
-                        tmax,
-                        MoMA.getDefaultFilenameDecoration()));
-        MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
-
         final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
         long avgXpos = firstGLF.getAvgXpos();
+        /* Export cell stats */
         exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                 cellTrackStartingPoints,
                 avgXpos);

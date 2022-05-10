@@ -348,4 +348,8 @@ public class PseudoDic {
     public ResultExporterInterface getMMPropertiesExporter() {
         return new MMPropertiesExporter(getConfigurationManager());
     }
+
+    public ResultExporterInterface getCurationStatsExporter() {
+        return new CurationStatsExporter(getConfigurationManager());
+    }
 }

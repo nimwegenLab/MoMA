@@ -344,4 +344,8 @@ public class PseudoDic {
         }
         return filePaths;
     }
+
+    public ResultExporterInterface getMMPropertiesExporter() {
+        return new MMPropertiesExporter(getConfigurationManager());
+    }
 }

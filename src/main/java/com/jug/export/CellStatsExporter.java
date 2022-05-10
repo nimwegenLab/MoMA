@@ -81,8 +81,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                 cellTrackStartingPoints,
                 avgXpos);
-        // always export mmproperties
-        configurationManager.saveParams(new File(outputFolder, "mm.properties"), MoMA.getGuiFrame());
     }
 
     /**

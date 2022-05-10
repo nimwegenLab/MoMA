@@ -254,6 +254,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         return momaModel.getCurrentTime() + this.timeStepOffset;
     }
 
+    @Override
     public void display() {
         updateTitleLabel();
         updateCellNumberInputField();

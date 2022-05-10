@@ -1099,7 +1099,7 @@ public class GrowthlaneTrackingILP {
         final List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getHypothesesAt(t);
         List<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
         for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
-            if (hypothesis.getSegmentSpecificConstraint() != null) {
+            if (hypothesis.isForced() || hypothesis.isForceIgnored()) {
                 result.add(hypothesis);
             }
         }

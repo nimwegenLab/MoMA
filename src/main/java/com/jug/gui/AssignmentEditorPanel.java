@@ -49,6 +49,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         checkboxIsSelected.setEnabled(currentTimeStepIsValid());
     }
 
+    @Override
     public void display() {
         GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         updateSelectionCheckbox();

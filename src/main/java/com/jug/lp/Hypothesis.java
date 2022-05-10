@@ -78,6 +78,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         }
         try {
             ilp.model.remove(segmentInSolutionConstraint);
+            ilp.model.update();
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
@@ -113,12 +114,13 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     private void addSegmentConstraint(double rhs, String segmentConstraintName) {
         Hypothesis<AdvancedComponent<FloatType>> hyp2avoid = (Hypothesis<AdvancedComponent<FloatType>>) this;
         final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp2avoid);
-        final GRBLinExpr expr = new GRBLinExpr();
-        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-            expr.addTerm(1.0, assmnt.getGRBVar());
-        }
         try {
+            final GRBLinExpr expr = new GRBLinExpr();
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+                expr.addTerm(1.0, assmnt.getGRBVar());
+            }
             ilp.model.addConstr(expr, GRB.EQUAL, rhs, segmentConstraintName);
+            ilp.model.update();
         } catch (final GRBException e) {
             throw new RuntimeException("Failed to add constraint: " + segmentConstraintName);
         }
@@ -159,6 +161,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         try {
             grbConstr = ilp.model.getConstrByName(getSegmentNotInSolutionConstraintName());
         } catch (GRBException e) {
+            System.out.println(e);
             return null;
         }
         return grbConstr;

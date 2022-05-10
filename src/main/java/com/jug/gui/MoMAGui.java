@@ -1110,6 +1110,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getIlpModelExporter());
+        exporters.add(MoMA.dic.getMMPropertiesExporter());
+        exporters.add(MoMA.dic.getCurationStatsExporter());
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(folderToUse, this.sliderTime.getMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }

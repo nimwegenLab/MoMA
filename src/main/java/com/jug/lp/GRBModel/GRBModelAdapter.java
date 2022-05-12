@@ -40,7 +40,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         try {
             res = model.getConstrByName(name);
         } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
+            System.out.println("Error reading requested variable.");
         }
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
@@ -78,9 +78,8 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         GRBVar res = null;
         try {
             res = model.getVarByName(name);
-//            return res;
         } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
+            System.out.println("Error reading requested variable.");
         }
         if(res == null){
             res = model.addVar(lb, ub, obj, type, name);

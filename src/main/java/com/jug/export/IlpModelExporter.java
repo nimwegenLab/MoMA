@@ -1,6 +1,7 @@
 package com.jug.export;
 
 import com.jug.lp.GRBModel.IGRBModelAdapter;
+import gurobi.GRB;
 import gurobi.GRBException;
 
 import java.io.File;
@@ -17,9 +18,11 @@ public class IlpModelExporter implements ResultExporterInterface {
     @Override
     public void export(ResultExporterData resultData) throws GRBException {
         File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
-        String filename = defaultFilenameDecorationSupplier.get();
         IGRBModelAdapter model = resultData.getIlpModel();
+
+        int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);
+        System.out.println(String.format("ignoreNamesVal: %d", ignoreNamesVal));
+
         String outputPath = outputFolder.getAbsolutePath() + "/ilpModel.lp";
         model.write(outputPath);
         String outputPath2 = outputFolder.getAbsolutePath() + "/ilpModel.mps";

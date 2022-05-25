@@ -32,17 +32,6 @@ public class DebuggingExploration {
         startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
-    public void _2020524_fix_issue_with_non_exported_cell_mask__debug_issue() {
-        String datasetSubPath = "2020524-fix-issue-with-non-exported-cell-mask/";
-        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos3_GL25", "20220320_VNG1040_AB2h_1_Frame0-478_resaved_MMStack_Pos0_Pos3_GL25.tif");
-        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output/");
-        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
-        Integer tmin = 240;
-        Integer tmax = 260;
-//        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p", mmPropertiesPath.toString()});
-    }
-
     private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
         if (deleteProbabilityMaps) {
             remove_probability_maps(inputPath);

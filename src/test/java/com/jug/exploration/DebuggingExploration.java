@@ -30,7 +30,7 @@ public class DebuggingExploration {
         Integer tmin = 249;
         Integer tmax = 252;
 //        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p", mmPropertiesPath.toString()});
-        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     public void _2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue() {

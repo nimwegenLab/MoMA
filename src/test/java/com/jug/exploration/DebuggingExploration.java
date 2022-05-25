@@ -26,10 +26,10 @@ public class DebuggingExploration {
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos3_GL25", "20220320_VNG1040_AB2h_1_Frame0-478_resaved_MMStack_Pos0_Pos3_GL25.tif");
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "reproduce_issue/");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
-        Integer tmin = null;
-        Integer tmax = null;
+        Integer tmin = 249;
+        Integer tmax = 252;
 //        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p", mmPropertiesPath.toString()});
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
+        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
     public void _2020524_fix_issue_with_non_exported_cell_mask__debug_issue() {

@@ -117,7 +117,7 @@ public class CellMaskExporter implements ResultExporterInterface {
     private void writeSegmentsToResultImage(List<SegmentRecord> cellTrackStartingPoints) {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             int segmentCounter = 0;
-            while (segment.exists) {
+            do {
                 IntervalView<IntType> z0slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
                 Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.getId()), z0slice);
                 int sourceSegmentId;
@@ -132,6 +132,7 @@ public class CellMaskExporter implements ResultExporterInterface {
                 segment = segment.nextSegmentInTime();
                 segmentCounter++;
             }
+            while (segment.exists);
         }
     }
 

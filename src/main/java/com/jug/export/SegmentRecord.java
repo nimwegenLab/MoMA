@@ -154,7 +154,7 @@ public final class SegmentRecord {
         exists = true;
         try {
             final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(this.hyp);
-            if (rightAssmt == null) {
+            if (timestep == ilp.getNodes().getNumberOfTimeSteps() - 1) {
                 exists = false;
                 terminated_by = SegmentRecord.ENDOFTRACKING;
             } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {

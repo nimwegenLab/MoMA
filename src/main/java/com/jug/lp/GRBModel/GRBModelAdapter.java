@@ -75,10 +75,6 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
-        if (name.equals("MappingAtT0_HypAtT0Top144Bottom186_HypAtT1Top120Bottom139") ||
-                name.equals("MappingAtT0_HypAtT0Top311Bottom356_HypAtT1Top311Bottom356")) {
-            System.out.println("stop");
-        }
         GRBVar res = null;
         try {
             res = model.getVarByName(name);

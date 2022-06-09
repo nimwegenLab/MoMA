@@ -42,26 +42,28 @@ public class ComponentTreeGeneratorTests {
      * @throws InterruptedException
      */
     @Test
-    public void testWatershedding() throws IOException, InterruptedException {
+    public void testComponentTreeGeneration() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
-//        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped_20180711_glyc_lactuloseTMG20uM_1_MMStack_Pos3_preproc_GL16__model_6a24d4567cae96f9a0469d872dfd2ecb2abb4d0a9d0464e561d2dbc7dd0c0411.tif";
-//        int frameIndex = 30;
-        assertTrue(new File(imageFile).exists());
 
-        ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
+        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
+        AdvancedComponent<FloatType> res = roots.get(0);
+        Plotting.drawComponentTree2(tree, new ArrayList<>());
+    }
 
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
+    /**
+     * Add test for generating the component tree on a sample image and displaying it.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testWatershedding() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
+        int frameIndex = 10;
 
-        ImageJFunctions.show(currentImage);
-
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 0.5f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         AdvancedComponent<FloatType> res = roots.get(0);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
@@ -77,19 +79,8 @@ public class ComponentTreeGeneratorTests {
     public void testSegmentAreaCalculation() throws IOException, InterruptedException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
-        assertTrue(new File(imageFile).exists());
 
-        ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
-
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
-
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -194,5 +185,24 @@ public class ComponentTreeGeneratorTests {
         ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
         ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentTreeGenerator;
+    }
+
+    private ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+        assertTrue(new File(imageFile).exists());
+
+        ImageJ ij = new ImageJ();
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+
+        IImageProvider imageProviderMock = new ImageProviderMock(input);
+        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
+        assertEquals(2, currentImage.numDimensions());
+
+        ImageJFunctions.show(currentImage);
+
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, componentSplittingThreshold);
+        return tree;
     }
 }

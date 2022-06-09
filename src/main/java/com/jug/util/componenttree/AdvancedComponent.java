@@ -14,6 +14,7 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.MaskInterval;
 import net.imglib2.roi.Masks;
+import net.imglib2.roi.geom.real.Polyline;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
@@ -813,5 +814,19 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             c.fwd();
             return c;
         }
+    }
+
+    public int hashCode() {
+        int result = 777;
+        int t = 11;
+        for(Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {
+            RealLocalizable v = (RealLocalizable)var3.next();
+
+            for(int d = 0; d < v.numDimensions(); ++d) {
+                double p = v.getDoublePosition(d);
+                result = (int)((double)result + (double)t * p * p);
+            }
+        }
+        return result;
     }
 }

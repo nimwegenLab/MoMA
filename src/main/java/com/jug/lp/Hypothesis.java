@@ -188,7 +188,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     public String getStringId() {
-        return "HypAtT" + location.t + "Top" + location.limits.getA() + "Bottom" + location.limits.getB();
+        return "HypAtT" + location.t + "Top" + location.limits.getA() + "Bottom" + location.limits.getB() + "Hash" + wrappedComponent.hashCode();
     }
 
     /**

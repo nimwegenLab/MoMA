@@ -32,7 +32,8 @@ public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
 //        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
-        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
+//        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
+        new ComponentTreeGeneratorTests().testComponentTreeGeneration();
     }
 
     /**
@@ -43,12 +44,11 @@ public class ComponentTreeGeneratorTests {
      */
     @Test
     public void testComponentTreeGeneration() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
-        int frameIndex = 10;
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_492-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        int frameIndex = 4;
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        AdvancedComponent<FloatType> res = roots.get(0);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -64,8 +64,7 @@ public class ComponentTreeGeneratorTests {
         int frameIndex = 10;
 
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
-        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+            Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
     /**

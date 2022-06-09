@@ -24,7 +24,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -48,10 +47,13 @@ public class ComponentTreeGeneratorTests {
         int frameIndex = 1;
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-        for(AdvancedComponent component : tree.getAllComponents()){
+        for (AdvancedComponent component : tree.getAllComponents()) {
             System.out.println(component.getStringId());
+            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponent(component));
+//            TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
+//            imp.setOverlay(text, Color.white, 0, Color.black);
         }
-//        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
     /**
@@ -66,7 +68,7 @@ public class ComponentTreeGeneratorTests {
         int frameIndex = 10;
 
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
-            Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
     /**

@@ -119,6 +119,7 @@ public class Plotting {
         ImageJFunctions.show(Views.stack(componentLevelImageStack));
     }
 
+
     public static RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
                                                                                List<AdvancedComponent<FloatType>> optimalComponents) {
         AdvancedComponent<FloatType> first = components.get(0);
@@ -133,6 +134,12 @@ public class Plotting {
             drawComponentToImage2(ctn, resultImage, val);
         }
         return resultImage;
+    }
+
+    public static RandomAccessibleInterval<ARGBType> createImageWithComponent(AdvancedComponent<FloatType> component) {
+        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
+        componentList.add(component);
+        return createImageWithComponents(componentList, new ArrayList<>());
     }
 
     private static void drawComponentToImage2(final Component<?, ?> ctn,

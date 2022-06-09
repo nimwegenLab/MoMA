@@ -111,16 +111,17 @@ public class MoMA {
 				throw new RuntimeException("minimum value of time range to analyze is invalid; must be at least 1; we use a 1-based time-index like in ImageJ");
 			}
 			if (commandLineArgumentParser.getUserDefinedMinTime() != -1) {
-				if (inValidRange(datasetProperties)) {
+				if (datasetProperties.timestepInsideRange(commandLineArgumentParser.getUserDefinedMinTime())) {
 					configurationManager.setMinTime(commandLineArgumentParser.getUserDefinedMinTime());
-				}
-				else {
-					throw new RuntimeException("minimum value of time range to analyze is invalid.");
+				} else {
+					throw new RuntimeException("minimum value of user-specified time range is invalid.");
 				}
 			}
 			if (commandLineArgumentParser.getUserDefinedMaxTime() != -1) {
-				if (inValidRange(datasetProperties)) {
+				if (datasetProperties.timestepInsideRange(commandLineArgumentParser.getUserDefinedMaxTime())) {
 					configurationManager.setMaxTime(commandLineArgumentParser.getUserDefinedMaxTime());
+				} else {
+					throw new RuntimeException("maximum value of user-specified time range is invalid.");
 				}
 			}
 			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
@@ -240,11 +241,6 @@ public class MoMA {
 				System.exit( 11 );
 			}
 		}
-	}
-
-	private static boolean inValidRange(DatasetProperties datasetProperties) {
-		return (commandLineArgumentParser.getUserDefinedMinTime() >= datasetProperties.getMinTime()) &
-				commandLineArgumentParser.getUserDefinedMinTime() <= datasetProperties.getMaxTime();
 	}
 
 	/**

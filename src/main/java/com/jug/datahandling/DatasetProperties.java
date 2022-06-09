@@ -83,4 +83,9 @@ public class DatasetProperties implements IDatasetProperties {
     public int getMinChannelIdx() {
         return minChannelIdx;
     }
+
+    public boolean timestepInsideRange(int timestep) {
+        return (timestep >= this.getMinTime()) &
+                timestep <= this.getMaxTime();
+    }
 }

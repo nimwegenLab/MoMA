@@ -31,8 +31,8 @@ import static org.junit.Assert.*;
 public class ComponentTreeGeneratorTests {
     public static void main(String... args) throws IOException, InterruptedException {
 //        new ComponentTreeGeneratorTests().testWatershedding();
-        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
-//        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
+//        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
+        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
     }
 
     /**
@@ -65,7 +65,6 @@ public class ComponentTreeGeneratorTests {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        AdvancedComponent<FloatType> res = roots.get(0);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -115,30 +114,17 @@ public class ComponentTreeGeneratorTests {
     @Test
     public void testSegmentAreaCalculationOfChildren() throws IOException, InterruptedException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
-        assertTrue(new File(imageFile).exists());
-
-        ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
         int frameIndex = 0;
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
 
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
         int counter = 0;
         for (AdvancedComponent<FloatType> root : roots) {
             List<AdvancedComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
-//            List<AdvancedComponent<FloatType>> components = new ArrayList<>();
-//            components.add(root);
             if (!components.isEmpty()){
                 ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
-//            TextRoi text = new TextRoi(0, 0, String.format("y_center=%d", (int) root.firstMomentPixelCoordinates()[1]));
                 TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
                 imp.setOverlay(text, Color.white, 0, Color.black);
             }
@@ -149,19 +135,9 @@ public class ComponentTreeGeneratorTests {
     @Test
     public void testPrintRankOfSegment() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
-        assertTrue(new File(imageFile).exists());
-
-        ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
         int frameIndex = 0;
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
 
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -198,7 +174,7 @@ public class ComponentTreeGeneratorTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ImageJFunctions.show(currentImage);
+//        ImageJFunctions.show(currentImage);
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 

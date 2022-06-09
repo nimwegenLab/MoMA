@@ -2,6 +2,8 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
+import java.util.HashSet;
+
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
 
@@ -73,16 +75,22 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.set(param, newval);
     }
 
+    HashSet<String> variableNames = new HashSet<>();
+
     @Override
-    public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
+    public GRBVar addVar(double lb, double ub, double obj, char type, String variableName) throws GRBException {
+        if(variableNames.contains(variableName)){
+            throw new RuntimeException("gurobi variable already exists: " + variableName);
+        }
+        variableNames.add(variableName);
         GRBVar res = null;
         try {
-            res = model.getVarByName(name);
+            res = model.getVarByName(variableName);
         } catch (GRBException err) {
 //            System.out.println("Error reading requested variable.");
         }
         if(res == null){
-            res = model.addVar(lb, ub, obj, type, name);
+            res = model.addVar(lb, ub, obj, type, variableName);
         }
         return res;
     }

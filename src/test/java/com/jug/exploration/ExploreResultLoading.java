@@ -1,5 +1,8 @@
 package com.jug.exploration;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class ExploreResultLoading {
@@ -46,16 +49,19 @@ public class ExploreResultLoading {
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties() {
-        String inputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif";
-        String outputPath = datasets_base_path + "/lis_20211026__Pos7_GL12/output/";
-        Integer tmin = 463;
-        Integer tmax = 464;
-        startMoma(false, inputPath, outputPath, tmin, tmax, false, new String[]{"-ground_truth_export"});
+        String subfolder = "lis_20211026__Pos7_GL12";
+        Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
+        Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
+        Integer tmin = 1;
+        Integer tmax = 400;
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading() {
-        String reload_folder_path = datasets_base_path + "/lis_20211026__Pos7_GL12/output";
-        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
+        String subfolder = "lis_20211026__Pos7_GL12";
+        Path reload_folder_path = Paths.get(datasets_base_path, subfolder, "output");
+        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
     }
 }

@@ -53,9 +53,9 @@ public class ExploreResultLoading {
         Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
-        Integer tmin = null;
-        Integer tmax = null;
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
+        Integer tmin = 494;
+        Integer tmax = 495; // offending frame: 495
+        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 

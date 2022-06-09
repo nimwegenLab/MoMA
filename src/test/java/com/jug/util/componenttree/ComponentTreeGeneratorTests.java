@@ -44,12 +44,14 @@ public class ComponentTreeGeneratorTests {
      */
     @Test
     public void testComponentTreeGeneration() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_492-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
-        int frameIndex = 4;
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_494-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        int frameIndex = 1;
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-        List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        for(AdvancedComponent component : tree.getAllComponents()){
+            System.out.println(component.getStringId());
+        }
+//        Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
     /**

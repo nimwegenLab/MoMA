@@ -185,21 +185,20 @@ public class ComponentTreeGeneratorTests {
     }
 
     private ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProvider(imageFile);
+        ImageJ ij = new ImageJ();
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        return tree;
+    }
+
+    private IImageProvider getImageProvider(String imageFile) throws IOException {
         assertTrue(new File(imageFile).exists());
 
         ImageJ ij = new ImageJ();
         Img input = (Img) ij.io().open(imageFile);
         assertNotNull(input);
 
-        IImageProvider imageProviderMock = new ImageProviderMock(input);
-        RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
-        assertEquals(2, currentImage.numDimensions());
-
-//        ImageJFunctions.show(currentImage);
-
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
-        return tree;
+        return new ImageProviderMock(input);
     }
 }

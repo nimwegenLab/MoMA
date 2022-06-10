@@ -32,7 +32,26 @@ public class ComponentTreeGeneratorTests {
 //        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
 //        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
-        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
+//        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
+        new ComponentTreeGeneratorTests().testComponentTreeGeneration();
+    }
+
+    /**
+     * Add test for generating the component tree on a sample image and displaying it.
+     *
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public void testComponentTreeGeneration() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_494-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        int frameIndex = 1;
+
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+
+//        for (AdvancedComponent component2 : tree.getAllComponents()) {
+//            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
+//        }
+        Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
     /**

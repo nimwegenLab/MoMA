@@ -19,13 +19,13 @@ public class MoMATest {
 //        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL5();
 
 //        tests._theo_20210923_glu_batch_1_MMStack_Pos0_GL38();
-        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
+//        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
 //        tests._cell_fragments__lis_20201119_Pos6_GL6();
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
-//        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
+        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
 //        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
@@ -148,13 +148,13 @@ public class MoMATest {
 
     
     public void _filamenting_cell__lis_20201119__Pos5_GL17() {
-        String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
-        String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/output/";
+        String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
+        String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CIP/lis_20201119/Pos5_GL17/output/";
 //        Integer tmin = 120;
 //        Integer tmax = 140;
 //        Integer tmin = 160;
 //        Integer tmax = 303;
-        Integer tmin = 0;
+        Integer tmin = 1;
         Integer tmax = 480;
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }

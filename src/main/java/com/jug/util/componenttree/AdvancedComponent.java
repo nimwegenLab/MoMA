@@ -14,7 +14,6 @@ import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.MaskInterval;
 import net.imglib2.roi.Masks;
-import net.imglib2.roi.geom.real.Polyline;
 import net.imglib2.roi.labeling.*;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
@@ -28,6 +27,8 @@ import net.imglib2.util.ValuePair;
 import java.util.Iterator;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
@@ -328,7 +329,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getLowerNeighbors() {
-        if (Objects.isNull(lowerNeighbors)){
+        if (isNull(lowerNeighbors)){
             lowerNeighbors = calculateLowerNeighbors();
         }
         return lowerNeighbors;
@@ -360,7 +361,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return the lower neighbor node
      */
     public AdvancedComponent<T> getLowerNeighborClosestToRootLevel() {
-        if (Objects.isNull(lowerNeighborClosestToRootLevel)) {
+        if (isNull(lowerNeighborClosestToRootLevel)) {
             lowerNeighborClosestToRootLevel = calculateLowerNeighborClosestToRootLevel();
         }
         return lowerNeighborClosestToRootLevel;
@@ -399,7 +400,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getUpperNeighbors() {
-        if (Objects.isNull(upperNeighbors)){
+        if (isNull(upperNeighbors)){
             upperNeighbors = calculateUpperNeighbors();
         }
         return upperNeighbors;
@@ -430,7 +431,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return the lower neighbor node
      */
     public AdvancedComponent<T> getUpperNeighborClosestToRootLevel() {
-        if (Objects.isNull(upperNeighborClosestToRootLevel)) {
+        if (isNull(upperNeighborClosestToRootLevel)) {
             upperNeighborClosestToRootLevel = calculateUpperNeighborClosestToRootLevel();
         }
         return upperNeighborClosestToRootLevel;
@@ -816,7 +817,17 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
     }
 
+    Integer hashCode = null;
+
     public int hashCode() {
+        if (!isNull(hashCode)) {
+            return hashCode;
+        }
+        hashCode = calculateHashCode();
+        return hashCode;
+    }
+
+    private int calculateHashCode() {
         int result = 777;
         int t = 11;
         for(Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {

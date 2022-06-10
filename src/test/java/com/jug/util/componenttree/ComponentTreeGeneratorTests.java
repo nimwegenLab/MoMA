@@ -35,11 +35,12 @@ public class ComponentTreeGeneratorTests {
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentTreeGeneratorTests().testWatershedding();
+//        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
 //        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
 //        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
 //        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation();
+        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
     }
 
     /**

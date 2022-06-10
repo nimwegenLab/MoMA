@@ -44,6 +44,10 @@ public class TestUtils {
     private ImageProviderMock imageProviderMock;
     private int frameIndex;
 
+    public TestUtils() {
+        this(new ImageJ());
+    }
+
     public TestUtils(ImageJ ij) {
         this.ij = ij;
     }
@@ -165,5 +169,21 @@ public class TestUtils {
         String pathToMomaGitRepo = new File("").getAbsolutePath();
         Path pathToResources = Paths.get(pathToMomaGitRepo, "src/test/resources");
         return pathToResources;
+    }
+
+
+    public ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProvider(imageFile);
+        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        return tree;
+    }
+
+    public IImageProvider getImageProvider(String imageFile) throws IOException {
+        assertTrue(new File(imageFile).exists());
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+
+        return new ImageProviderMock(input);
     }
 }

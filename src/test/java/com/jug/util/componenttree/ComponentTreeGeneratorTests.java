@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
@@ -28,6 +29,12 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ComponentTreeGeneratorTests {
+    private final TestUtils testUtils;
+
+    public ComponentTreeGeneratorTests() {
+        testUtils = new TestUtils();
+    }
+
     public static void main(String... args) throws IOException, InterruptedException {
 //        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
@@ -46,7 +53,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 0;
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
 //        for (AdvancedComponent component2 : tree.getAllComponents()) {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
@@ -65,7 +72,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_494-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 1;
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
         List<AdvancedComponent<FloatType>> rootComponents = tree.rootsSorted();
 
         Set<Integer> expectedRootHashCodes = new HashSet<>(Arrays.asList(new Integer[]{557155091, 2026295260, 911273390, 356038541, 1017538091, 796074954, 592650667, 548763902, 1886319597, 1117842004, -2000971763, -643329487}));
@@ -87,7 +94,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -102,7 +109,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -138,7 +145,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -158,7 +165,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -170,35 +177,5 @@ public class ComponentTreeGeneratorTests {
             TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
             imp.setOverlay(text, Color.white, 0, Color.black);
         }
-    }
-
-    @NotNull
-    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
-        OpService ops = ij.op();
-        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentTreeGenerator;
-    }
-
-    private ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
-        IImageProvider imageProvider = getImageProvider(imageFile);
-        ImageJ ij = new ImageJ();
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
-        return tree;
-    }
-
-    private IImageProvider getImageProvider(String imageFile) throws IOException {
-        assertTrue(new File(imageFile).exists());
-
-        ImageJ ij = new ImageJ();
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
-
-        return new ImageProviderMock(input);
     }
 }

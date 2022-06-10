@@ -71,19 +71,17 @@ public class ComponentTreeGenerator {
         testers.add(widthLimit);
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-        // filter components that do not have siblings
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
-        HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
-
-        // watershed components into their parent-components
-        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree); /* IMPORTANT: this step watersheds components into their parent-components, which yields the final size of components; this needs to be done before performing the following filter-steps on component-size, etc. */
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
         tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
         tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
+
+        HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
+        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
         tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
 

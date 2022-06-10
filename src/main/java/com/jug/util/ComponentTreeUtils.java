@@ -1,6 +1,5 @@
 package com.jug.util;
 
-import com.jug.config.ConfigurationManager;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
@@ -412,11 +411,11 @@ public class ComponentTreeUtils {
      * @param componentlevelListConsumer consumer of the list of components in the level and corresponding level number.
      * @param <C>                        type of component being processed.
      */
-    public static <T extends Type<T>> void doForEachComponentInTreeLevel(final ComponentForest<AdvancedComponent<T>> componentForest,
-                                                                         Consumer<Pair<List<AdvancedComponent<T>>, Integer>> componentlevelListConsumer) {
+    public static <T extends Type<T>, C extends Component<T, C>> void doForEachComponentInTreeLevel(final ComponentForest<C> componentForest,
+                                                                                                    Consumer<Pair<List<C>, Integer>> componentlevelListConsumer) {
         int level = 0;
-        ArrayList<AdvancedComponent<T>> ctnLevel = new ArrayList<>();
-        for (final AdvancedComponent<T> root : componentForest.roots()) { // populate the root-level component list
+        ArrayList<C> ctnLevel = new ArrayList<>();
+        for (final C root : componentForest.roots()) { // populate the root-level component list
             ctnLevel.add(root);
         }
 

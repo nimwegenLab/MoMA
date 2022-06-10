@@ -141,7 +141,7 @@ public class ComponentPropertiesTest {
 
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
+        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>(), component.getSourceImage());
         List<MaskPredicate< ? >> rois = Arrays.asList(
 //                poly,
 //                polyHull

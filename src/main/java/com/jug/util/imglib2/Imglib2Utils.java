@@ -128,8 +128,8 @@ public class Imglib2Utils {
      * @param sourceImage
      * @return
      */
-    public <T extends NativeType<T>> Img<T> createImageWithSameDimension(RandomAccessibleInterval sourceImage,
-                                                                          T type) {
+    public static <T extends NativeType<T>> Img<T> createImageWithSameDimension(RandomAccessibleInterval sourceImage,
+                                                                                T type) {
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
         Img<T> img = new ArrayImgFactory(type).create(dims);

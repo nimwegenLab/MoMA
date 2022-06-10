@@ -151,7 +151,7 @@ public class AdvancedComponentTests {
             }
             RandomAccessibleInterval<ARGBType> parentComponentImage = root.getComponentImage(new ARGBType(ARGBType.rgba(255,255,255,255)));
             ImageJFunctions.show(parentComponentImage);
-            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>());
+            RandomAccessibleInterval<ARGBType> childComponentsImage = Plotting.createImageWithComponents(root.getChildren(), new ArrayList<>(), root.getChildren().get(0).getSourceImage());
             ImageJFunctions.show(childComponentsImage);
             ImageJFunctions.show(imgOfWatershedLine);
             break;

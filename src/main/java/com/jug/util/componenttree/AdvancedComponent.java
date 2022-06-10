@@ -217,7 +217,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     void addChild(AdvancedComponent<T> child) {
         this.children.add(child);
         if (children.size() > 2) {
-            throw new RuntimeException("component" + getStringId() + " has >2 child-nodes.");
+//            throw new RuntimeException("component" + getStringId() + " has >2 child-nodes.");
         }
     }
 

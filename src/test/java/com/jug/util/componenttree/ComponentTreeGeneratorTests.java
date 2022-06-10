@@ -41,11 +41,11 @@ public class ComponentTreeGeneratorTests {
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-//        new ComponentTreeGeneratorTests().testWatershedding();
+        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
 //        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
 //        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
-        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation();
+//        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation();
     }
 
     /**
@@ -95,7 +95,8 @@ public class ComponentTreeGeneratorTests {
 //        for (AdvancedComponent component2 : tree.getAllComponents()) {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
-//        Plotting.drawComponentTree2(componentTree, new ArrayList<>());
+
+        Plotting.drawComponentTree2(componentTree, new ArrayList<>());
     }
 
     /**
@@ -149,7 +150,7 @@ public class ComponentTreeGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 0.5f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }
 
@@ -208,7 +209,7 @@ public class ComponentTreeGeneratorTests {
         for (AdvancedComponent<FloatType> root : roots) {
             List<AdvancedComponent<FloatType>> components = root.getComponentsBelowClosestToRoot();
             if (!components.isEmpty()){
-                ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>()));
+                ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(components, new ArrayList<>(), root.getSourceImage()));
                 TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
                 imp.setOverlay(text, Color.white, 0, Color.black);
             }
@@ -227,7 +228,7 @@ public class ComponentTreeGeneratorTests {
         for (AdvancedComponent<FloatType> root : roots) {
             ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
             componentsToDraw.add(root);
-            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>()));
+            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), root.getSourceImage()));
             int rank = root.getRankRelativeToComponentsClosestToRoot();
             TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
             imp.setOverlay(text, Color.white, 0, Color.black);

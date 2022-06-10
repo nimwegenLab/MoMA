@@ -3,6 +3,7 @@ package com.moma.auxiliary;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
+import com.jug.util.imglib2.Imglib2Utils;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
@@ -93,21 +94,22 @@ public class Plotting {
     }
 
 
-    public static void drawComponentTree2(ComponentForest<AdvancedComponent<FloatType>> ct,
-                                          List<AdvancedComponent<FloatType>> componentsInOptimalSolution) {
+    public static <T extends Type<T>, C extends Component<T, C>> void drawComponentTree2(ComponentForest<C> ct,
+                                          List<C> componentsInOptimalSolution) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
 
         // create image factory with correct dimensions
-        AdvancedComponent<FloatType> first = ct.roots().iterator().next();
+        C first = ct.roots().iterator().next();
+        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
 
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();
-        Consumer<Pair<List<AdvancedComponent<FloatType>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
-            List<AdvancedComponent<FloatType>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
+        Consumer<Pair<List<C>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
+            List<C> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {
-                RandomAccessibleInterval<ARGBType> componentLevelImage = createImageWithComponents(componentsOfLevel, componentsInOptimalSolution);
+                RandomAccessibleInterval<ARGBType> componentLevelImage = createImageWithComponents(componentsOfLevel, componentsInOptimalSolution, sourceImage);
                 componentLevelImageStack.add(componentLevelImage);
             }
         };
@@ -120,26 +122,33 @@ public class Plotting {
     }
 
 
-    public static RandomAccessibleInterval<ARGBType> createImageWithComponents(List<AdvancedComponent<FloatType>> components,
-                                                                               List<AdvancedComponent<FloatType>> optimalComponents) {
-        AdvancedComponent<FloatType> first = components.get(0);
-        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
-        long xDim = sourceImage.dimension(0);
-        long yDim = sourceImage.dimension(1);
-        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
-
-        final RandomAccessibleInterval<ARGBType> resultImage = imageFactory.create(xDim, yDim);
-        for (AdvancedComponent<FloatType> ctn : components) {
+    public static <T extends Type<T>, C extends Component<T, C>> RandomAccessibleInterval<ARGBType> createImageWithComponents(List<C> components,
+                                                                                                                              List<C> optimalComponents,
+                                                                                                                              RandomAccessibleInterval sourceImage) {
+//        AdvancedComponent<FloatType> first = components.get(0);
+//        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
+        Imglib2Utils.createImageWithSameDimension(sourceImage, new ARGBType());
+        final RandomAccessibleInterval<ARGBType> resultImage = getArgbTypeRandomAccessibleInterval(sourceImage);
+        for (C ctn : components) {
             boolean val = optimalComponents.contains(ctn);
             drawComponentToImage2(ctn, resultImage, val);
         }
         return resultImage;
     }
 
+    private static RandomAccessibleInterval<ARGBType> getArgbTypeRandomAccessibleInterval(RandomAccessibleInterval sourceImage) {
+        long xDim = sourceImage.dimension(0);
+        long yDim = sourceImage.dimension(1);
+        ArrayImgFactory<ARGBType> imageFactory = new ArrayImgFactory<>(new ARGBType());
+
+        final RandomAccessibleInterval<ARGBType> resultImage = imageFactory.create(xDim, yDim);
+        return resultImage;
+    }
+
     public static RandomAccessibleInterval<ARGBType> createImageWithComponent(AdvancedComponent<FloatType> component) {
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
-        return createImageWithComponents(componentList, new ArrayList<>());
+        return createImageWithComponents(componentList, new ArrayList<>(), component.getSourceImage());
     }
 
     private static void drawComponentToImage2(final Component<?, ?> ctn,

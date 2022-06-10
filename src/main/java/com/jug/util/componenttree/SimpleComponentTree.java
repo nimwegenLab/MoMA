@@ -137,5 +137,9 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     public List<AdvancedComponent<T>> getAllComponents() {
         return nodes;
     }
+
+    public RandomAccessibleInterval<T> getSourceImage() {
+        return sourceImage;
+    }
 }
 

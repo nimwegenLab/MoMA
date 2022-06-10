@@ -96,7 +96,7 @@ public class ComponentPropertiesTest {
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), roots.get(0).getSourceImage());
         assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
     }
 

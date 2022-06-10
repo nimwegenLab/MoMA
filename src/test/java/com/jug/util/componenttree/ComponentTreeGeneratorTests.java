@@ -1,18 +1,13 @@
 package com.jug.util.componenttree;
 
 import com.google.common.collect.Lists;
-import com.jug.config.ComponentTreeGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
-import com.jug.lp.ImageProviderMock;
 import com.jug.util.PseudoDic;
 import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
 import ij.gui.TextRoi;
-import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
@@ -21,17 +16,16 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ComponentTreeGeneratorTests {
     private final TestUtils testUtils;
@@ -96,7 +90,7 @@ public class ComponentTreeGeneratorTests {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
 
-        Plotting.drawComponentTree2(componentTree, new ArrayList<>());
+        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
     }
 
     /**
@@ -114,7 +108,7 @@ public class ComponentTreeGeneratorTests {
 //        for (AdvancedComponent component2 : tree.getAllComponents()) {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.getSourceImage());
     }
 
     /**
@@ -151,7 +145,7 @@ public class ComponentTreeGeneratorTests {
         int frameIndex = 10;
 
         ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.roots().iterator().next().getSourceImage());
     }
 
     /**

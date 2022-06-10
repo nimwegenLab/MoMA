@@ -95,14 +95,14 @@ public class Plotting {
 
 
     public static <T extends Type<T>, C extends Component<T, C>> void drawComponentTree2(ComponentForest<C> ct,
-                                          List<C> componentsInOptimalSolution) {
+                                                                                         List<C> componentsInOptimalSolution,
+                                                                                         RandomAccessibleInterval sourceImage) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
 
         // create image factory with correct dimensions
         C first = ct.roots().iterator().next();
-        RandomAccessibleInterval sourceImage = ((AdvancedComponent) first).getSourceImage();
 
         // define consumer that will draw components to image and add them to the image stack
         final ArrayList<RandomAccessibleInterval<ARGBType>> componentLevelImageStack = new ArrayList<>();

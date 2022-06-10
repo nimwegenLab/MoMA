@@ -76,7 +76,7 @@ public class TestUtils {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         AdvancedComponent<FloatType> res = roots.get(0);
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), res.getSourceImage());
     }
 
     public <T extends NativeType> ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<T>> getComponentWithImage(String imageFile,

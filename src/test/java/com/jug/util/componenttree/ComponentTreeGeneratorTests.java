@@ -199,7 +199,7 @@ public class ComponentTreeGeneratorTests {
 
         ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, componentSplittingThreshold);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
         return tree;
     }
 }

@@ -820,11 +820,11 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         int result = 777;
         int t = 11;
         for(Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {
-            RealLocalizable v = (RealLocalizable)var3.next();
+            Localizable v = (Localizable)var3.next();
 
             for(int d = 0; d < v.numDimensions(); ++d) {
-                double p = v.getDoublePosition(d);
-                result = (int)((double)result + (double)t * p * p);
+                int p = v.getIntPosition(d);
+                result = result + t * p * p;
             }
         }
         return result;

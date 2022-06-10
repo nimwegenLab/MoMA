@@ -47,11 +47,14 @@ public class ComponentTreeGeneratorTests {
         int frameIndex = 1;
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-        for (AdvancedComponent component : tree.getAllComponents()) {
-            System.out.println(component.getStringId());
-            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponent(component));
-//            TextRoi text = new TextRoi(0, 0, String.format("i=%d", counter));
-//            imp.setOverlay(text, Color.white, 0, Color.black);
+//        List<AdvancedComponent<FloatType>> components = tree.getAllComponents();
+//        AdvancedComponent component = components.get(0);
+//        System.out.println(component.getStringId());
+//        ImageJFunctions.show(Plotting.createImageWithComponent(component));
+
+        for (AdvancedComponent component2 : tree.getAllComponents()) {
+            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
+        System.out.println(component2.getStringId());
         }
         Plotting.drawComponentTree2(tree, new ArrayList<>());
     }

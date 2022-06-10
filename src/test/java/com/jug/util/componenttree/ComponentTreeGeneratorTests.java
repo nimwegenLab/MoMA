@@ -22,7 +22,7 @@ import org.junit.Test;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -32,7 +32,7 @@ public class ComponentTreeGeneratorTests {
 //        new ComponentTreeGeneratorTests().testWatershedding();
 //        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
 //        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
-        new ComponentTreeGeneratorTests().testComponentTreeGeneration();
+        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
     }
 
     /**
@@ -42,21 +42,20 @@ public class ComponentTreeGeneratorTests {
      * @throws InterruptedException
      */
     @Test
-    public void testComponentTreeGeneration() throws IOException {
+    public void root_components__return__correct_hash_code() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_494-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 1;
 
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-//        List<AdvancedComponent<FloatType>> components = tree.getAllComponents();
-//        AdvancedComponent component = components.get(0);
-//        System.out.println(component.getStringId());
-//        ImageJFunctions.show(Plotting.createImageWithComponent(component));
+        List<AdvancedComponent<FloatType>> rootComponents = tree.rootsSorted();
 
-        for (AdvancedComponent component2 : tree.getAllComponents()) {
-            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
-        System.out.println(component2.getStringId());
+        Set<Integer> expectedRootHashCodes = new HashSet<>(Arrays.asList(new Integer[]{557155091, 2026295260, 911273390, 356038541, 1017538091, 796074954, 592650667, 548763902, 1886319597, 1117842004, -2000971763, -643329487}));
+
+        for (AdvancedComponent root : rootComponents){
+            assertTrue("hash code note found in list of expected hash codes", expectedRootHashCodes.contains(root.hashCode()));
+            expectedRootHashCodes.remove(root.hashCode());
         }
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        assertTrue("not all expected hash codes were found", expectedRootHashCodes.isEmpty());
     }
 
     /**

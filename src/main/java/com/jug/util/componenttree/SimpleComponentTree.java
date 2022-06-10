@@ -33,16 +33,14 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private final RandomAccessibleInterval<T> sourceImage;
     private final Img<IntType> img;
     Integer label = 1;
+    private int frame;
     private final IComponentTester<T, C> tester;
     private ComponentProperties componentPropertiesCalculator;
 
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentPropertiesCalculator) {
-        this(componentForest, sourceImage, new DummyComponentTester(), componentPropertiesCalculator);
-    }
-
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
+    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
         this.sourceImage = sourceImage;
+        this.frame = frame;
         this.tester = tester;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         long[] dims = new long[sourceImage.numDimensions()];
@@ -94,7 +92,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, componentPropertiesCalculator); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
+            AdvancedComponent<T> newRoot = new AdvancedComponent<>(labeling, label++, sourceComponent, sourceImage, componentPropertiesCalculator, frame); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -120,7 +118,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
 
     @NotNull
     private AdvancedComponent<T> CreateTargetChild(AdvancedComponent<T> targetComponent, C sourceChild) {
-        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, componentPropertiesCalculator);
+        AdvancedComponent<T> targetChild = new AdvancedComponent<>(labeling, label++, sourceChild, sourceImage, componentPropertiesCalculator, frame);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

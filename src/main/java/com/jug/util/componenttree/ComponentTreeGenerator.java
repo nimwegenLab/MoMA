@@ -70,19 +70,17 @@ public class ComponentTreeGenerator {
         testers.add(widthLimit);
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
+        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, frameIndex, tester, componentPropertiesCalculator);
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree); /* IMPORTANT: this step watersheds components into their parent-components, which yields the final size of components; this needs to be done before performing the following filter-steps on component-size, etc. */
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
-        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
+        tree = new SimpleComponentTree(tree, raiFkt, frameIndex, rootSizeTester , componentPropertiesCalculator);
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
-        tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
+        tree = new SimpleComponentTree(tree, raiFkt, frameIndex, leafSizeTester , componentPropertiesCalculator);
 
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
-
-        tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
+        tree = new SimpleComponentTree(tree, raiFkt, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
         for (AdvancedComponent component : tree.getAllComponents()) {
             if (component.getChildren().size() > 2) {

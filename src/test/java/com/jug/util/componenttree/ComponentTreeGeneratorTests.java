@@ -65,7 +65,6 @@ public class ComponentTreeGeneratorTests {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Test
     public void testWatershedding() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
@@ -117,7 +116,6 @@ public class ComponentTreeGeneratorTests {
      * @throws IOException
      * @throws InterruptedException
      */
-    @Test
     public void testSegmentAreaCalculationOfChildren() throws IOException, InterruptedException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;
@@ -138,7 +136,6 @@ public class ComponentTreeGeneratorTests {
         }
     }
 
-    @Test
     public void testPrintRankOfSegment() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;

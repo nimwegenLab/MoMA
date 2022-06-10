@@ -10,7 +10,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -84,6 +83,12 @@ public class ComponentTreeGenerator {
         tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
         tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
+
+        for (AdvancedComponent component : tree.getAllComponents()) {
+            if (component.getChildren().size() > 2) {
+                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
+            }
+        }
 
         return tree;
     }

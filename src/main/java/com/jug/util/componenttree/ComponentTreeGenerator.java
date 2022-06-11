@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.config.IComponentTreeGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.moma.auxiliary.Plotting;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
@@ -60,6 +61,8 @@ public class ComponentTreeGenerator {
 
         // generate MSER tree
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
+
+        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
 
         // filter components by width
         Predicate<Integer> widthCondition = (width) -> (width <= 20);

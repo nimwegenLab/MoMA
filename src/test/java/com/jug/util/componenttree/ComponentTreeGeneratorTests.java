@@ -57,6 +57,8 @@ public class ComponentTreeGeneratorTests {
 
         PseudoDic dic = new PseudoDic();
         WatershedMaskGenerator watershedMaskGenerator = dic.getWatershedMaskGenerator();
+        watershedMaskGenerator.setThreshold(0.5f);
+        watershedMaskGenerator.setThresholdForComponentMerging(0.5f);
         Imglib2Utils imglib2Utils = dic.getImglib2utils();
         float componentSplittingThreshold = 1.0f;
 

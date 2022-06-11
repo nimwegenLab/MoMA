@@ -40,15 +40,57 @@ public class ComponentTreeGeneratorTests {
 //        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
 //        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
 //        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation();
-        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
+//        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
+        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__test_new_tree_generation_method();
     }
 
-    /**
-     * Add test for generating the component tree on a sample image and displaying it.
-     *
-     * @throws IOException
-     * @throws InterruptedException
-     */
+    public void debugThreeWayComponentSegmentation__test_new_tree_generation_method() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        int frameIndex = 0;
+
+        IImageProvider imageProvider = testUtils.getImageProvider(imageFile);
+
+        PseudoDic dic = new PseudoDic();
+        WatershedMaskGenerator watershedMaskGenerator = dic.getWatershedMaskGenerator();
+        watershedMaskGenerator.setThreshold(0.5f);
+        watershedMaskGenerator.setThresholdForComponentMerging(0.5f);
+        Imglib2Utils imglib2Utils = dic.getImglib2utils();
+        float componentSplittingThreshold = 1.0f;
+
+        Img<FloatType> raiFkt = imageProvider.getImgProbsAt(frameIndex);
+
+        /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
+        Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
+
+        /* fill holes in water shedding mask to avoid components from having holes */
+        mask = ImgView.wrap(imglib2Utils.fillHoles(mask));
+
+        raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
+
+        /* set values >componentSplittingThreshold to 1; this avoids over segmentation during component generation */
+        Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
+        raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
+
+
+        final double delta = 0.0001;
+//        final double delta = 0.02;
+        final int minSize = 5; // this sets the minimum size of components during component generation for root components as well as child components. We set this to a low value to ensure a deep segmentation of our components. The minimum size of root and child components is then filtered using LeafComponentSizeTester and RootComponentSizeTester (see below).
+        final long maxSize = Long.MAX_VALUE;
+        final double maxVar = 1.0;
+        final double minDiversity = 0.2;
+        final boolean darkToBright = false;
+
+        // generate MSER tree
+        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
+
+
+//        for (AdvancedComponent component2 : tree.getAllComponents()) {
+//            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
+//        }
+
+        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
+    }
+
     public void debugThreeWayComponentSegmentation__check_MserTree() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 0;
@@ -96,12 +138,6 @@ public class ComponentTreeGeneratorTests {
         Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
     }
 
-    /**
-     * Add test for generating the component tree on a sample image and displaying it.
-     *
-     * @throws IOException
-     * @throws InterruptedException
-     */
     public void debugThreeWayComponentSegmentation() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 0;

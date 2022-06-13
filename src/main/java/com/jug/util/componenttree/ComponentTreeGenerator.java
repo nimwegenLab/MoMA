@@ -62,8 +62,6 @@ public class ComponentTreeGenerator {
         // generate MSER tree
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
-        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
-
         // filter components by width
         Predicate<Integer> widthCondition = (width) -> (width <= 20);
         ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
@@ -83,11 +81,11 @@ public class ComponentTreeGenerator {
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
         tree = new SimpleComponentTree(tree, raiFkt, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
-        for (AdvancedComponent component : tree.getAllComponents()) {
-            if (component.getChildren().size() > 2) {
-                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
-            }
-        }
+//        for (AdvancedComponent component : tree.getAllComponents()) {
+//            if (component.getChildren().size() > 2) {
+//                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
+//            }
+//        }
 
         return tree;
     }

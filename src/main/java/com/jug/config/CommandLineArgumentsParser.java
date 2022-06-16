@@ -152,7 +152,7 @@ public class CommandLineArgumentsParser {
         Path outputFolder;
         if ( !cmd.hasOption( "o" ) ) {
             if ( inputFolder == null ) {
-                System.out.println( "Error: Output folder would be set to a 'null' input folder! Please check your command line arguments..." );
+                System.out.println( "Error: Input folder not specified. Please use the -i argument to do so and check your command line arguments." );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 3 );
                 } else {
@@ -165,7 +165,7 @@ public class CommandLineArgumentsParser {
             outputFolder = Paths.get( cmd.getOptionValue( "o" ) );
 
             if ( !Files.isDirectory(outputFolder) ) {
-                System.out.println( "Error: Output folder is not a directory!" );
+                System.out.println( "Error: Output folder is not a directory." );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 3 );
                 } else {
@@ -173,7 +173,7 @@ public class CommandLineArgumentsParser {
                 }
             }
             if ( !Files.isWritable(outputFolder) ) {
-                System.out.println( "Error: Output folder cannot be written to!" );
+                System.out.println( "Error: Output folder cannot be written to." );
                 if (!running_as_Fiji_plugin) {
                     System.exit( 3 );
                 } else {

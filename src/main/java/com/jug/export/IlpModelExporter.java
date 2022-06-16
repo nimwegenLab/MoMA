@@ -5,11 +5,10 @@ import gurobi.GRB;
 import gurobi.GRBException;
 
 import java.io.File;
-import java.util.List;
 import java.util.function.Supplier;
 
 public class IlpModelExporter implements ResultExporterInterface {
-    private Supplier<String> defaultFilenameDecorationSupplier;
+    private final Supplier<String> defaultFilenameDecorationSupplier;
 
     public IlpModelExporter(Supplier<String> defaultFilenameDecorationSupplier) {
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
@@ -18,6 +17,9 @@ public class IlpModelExporter implements ResultExporterInterface {
     @Override
     public void export(ResultExporterData resultData) throws GRBException {
         File outputFolder = resultData.getOutputFolder();
+
+        resultData.getGrowthlaneTrackingILP().lockAssignmentsForStorage();
+
         IGRBModelAdapter model = resultData.getIlpModel();
 
         int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);

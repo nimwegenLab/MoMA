@@ -1665,6 +1665,28 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllAssignments() {
+        ArrayList<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = new ArrayList<>();
+        for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
+                assignments.add(assignment);
+            }
+        }
+        return assignments;
+    }
+
+    public void lockAssignmentsForStorage() {
+        for (AbstractAssignment assignment : getAllAssignments()) {
+            assignment.addLockingConstraintForStorage();
+        }
+        try {
+            model.update();
+            model.optimize();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * @param file
      */
@@ -2074,14 +2096,14 @@ public class GrowthlaneTrackingILP {
     /***
      * Freezes all assignments before time step t, so that they will not change during optimization.
      *
-     * @param t: time step before which to freeze
+     * @param tEnd: time step before which to freeze
      */
-    public void freezeBefore(final int t) {
-        for (int i = 0; i < t; i++) {
-            freezeAssignmentsAsAre(i);
+    public void freezeBefore(final int tEnd) {
+        for (int t = 0; t < tEnd; t++) {
+            freezeAssignmentsAsAre(t, "FreezeAssignmentConstraintAtT" + t);
         }
-        for (int i = t; i < gl.size(); i++) {
-            unfreezeAssignmentsFor(i);
+        for (int t = tEnd; t < gl.size(); t++) {
+            unfreezeAssignmentsFor(t);
         }
     }
 
@@ -2091,7 +2113,7 @@ public class GrowthlaneTrackingILP {
      * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
      * maintained active and inactive assignments are maintained inactive.
      */
-    public void freezeAssignmentsAsAre(final int t) {
+    public void freezeAssignmentsAsAre(int t, String constraintNamePrefix) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                 nodes.getHypothesesAt(t);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
@@ -2111,7 +2133,7 @@ public class GrowthlaneTrackingILP {
                             }
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, rhs, "FreezeAssignmentConstraintAtT" + t + "_" + hyp.getStringId());
+                                model.addConstr(expr, GRB.EQUAL, rhs, constraintNamePrefix + "_" + hyp.getStringId());
                         freezeSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import gurobi.*;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -218,17 +219,17 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void addGroundTruthConstraint() throws GRBException {
-		addConstraint(1.0);
+		addConstraint(1.0, "AssignmentGtConstraint_" + getGrbVarName());
 	}
 
 	private void addGroundUntruthConstraint() throws GRBException {
-		addConstraint(0.0);
+		addConstraint(0.0, "AssignmentGtConstraint_" + getGrbVarName());
 	}
 
-	private void addConstraint(double rhsValue) throws GRBException {
+	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
-		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, "AssignmentGtConstraint_" + getGrbVarName());
+		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
 	}
 
 	private void removeConstraint() throws GRBException {
@@ -236,6 +237,23 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		if (!isNull(getGrbConstr())) {
 			ilp.model.remove(constrGroundTruth);
 		}
+	}
+
+	public void addLockingConstraintForStorage() {
+		try {
+			if (this.isChoosen()) {
+				addConstraint(1.0, getStorageLockConstraintName());
+			} else {
+				addConstraint(0.0, getStorageLockConstraintName());
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@NotNull
+	private String getStorageLockConstraintName() throws GRBException {
+		return "AssignmentStorageLock_" + getGrbVarName();
 	}
 
 	/**

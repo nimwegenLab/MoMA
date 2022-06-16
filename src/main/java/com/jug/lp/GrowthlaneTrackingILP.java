@@ -2086,7 +2086,10 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     *
+     * This method add constraints for all outgoing assignments of hypotheses at time t, so that these assignments will
+     * be forced to their current selection-state. This done in the following way by setting the value coefficients in
+     * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
+     * maintained active and inactive assignments are maintained inactive.
      */
     public void freezeAssignmentsAsAre(final int t) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
@@ -2098,13 +2101,13 @@ public class GrowthlaneTrackingILP {
                             edgeSets.getRightNeighborhood(hyp);
                     final GRBLinExpr expr = new GRBLinExpr();
                     if (rightNeighbors != null) {
-                        double rhs = 0.0;
+                        double rhs = 0.0; /* right hand side (rhs) value will stay 0.0, if no outgoing assignments is active/selected. */
                         for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
                             if (assmnt.isChoosen()) {
-                                expr.addTerm(1.0, assmnt.getGRBVar());
-                                rhs = 1.0;
+                                rhs = 1.0; /* set to 1, if one of the outgoing assignments _is_ selected. */
+                                expr.addTerm(1.0, assmnt.getGRBVar()); /* set coefficient to 1.0; this will force the assignment to be active to fulfill expression equality below */
                             } else {
-                                expr.addTerm(2.0, assmnt.getGRBVar());
+                                expr.addTerm(2.0, assmnt.getGRBVar()); /* set coefficient to 2.0; this will always violate the equality of the expression below; hence the assignment is never active */
                             }
                         }
                         final GRBConstr constr =

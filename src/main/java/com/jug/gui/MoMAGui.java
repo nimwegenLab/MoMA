@@ -179,7 +179,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // --- Slider for time and GL -------------
 
-        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getCurrentGL().size() - 1, 0);
+        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
         model.setCurrentGLF(sliderTime.getValue());
         sliderTime.addChangeListener(this);
         if (sliderTime.getMaximum() < 200) {
@@ -196,12 +196,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         // --- Slider for TrackingRage ----------
 
-        int max = model.getCurrentGL().size() - 2;
+        int max = model.getTimeStepMaximum();
         if (MoMA.getInitialOptimizationRange() != -1) {
-            max = Math.min(MoMA.getInitialOptimizationRange(), model.getCurrentGL().size() - 2);
+            max = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
         }
         sliderTrackingRange =
-                new RangeSlider(0, model.getCurrentGL().size() - 2);
+                new RangeSlider(0, model.getTimeStepMaximum());
         sliderTrackingRange.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
         sliderTrackingRange.setValue(0);
         if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
@@ -1057,7 +1057,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             model.getCurrentGL().generateILP(null);
         } else {
             model.getCurrentGL().generateILP(
-                    new DialogProgress(this, "Building tracking model...", (model.getCurrentGL().size() - 1) * 2));
+                    new DialogProgress(this, "Building tracking model...", model.getTimeStepMaximum() * 2));
         }
     }
 

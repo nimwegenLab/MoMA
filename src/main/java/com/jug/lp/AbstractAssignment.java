@@ -2,7 +2,6 @@ package com.jug.lp;
 
 import gurobi.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -38,14 +37,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	abstract public int getId();
 
-	public String getStringId() {
-		try {
-			return getGrbVarName();
-		} catch (GRBException err) {
-			return "AssignmentNameUndefined";
-		}
-	}
-
 	/**
 	 * @return the type
 	 */
@@ -72,8 +63,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return ilpVar;
 	}
 
-	public String getGrbVarName() throws GRBException {
-		return getGRBVar().get(GRB.StringAttr.VarName);
+	public String getStringId() {
+		try {
+			return getGRBVar().get(GRB.StringAttr.VarName);
+		} catch (GRBException err) {
+			throw new RuntimeException("Could not retrieve name of the Gurobi variable of assignment.");
+		}
 	}
 
 	/**
@@ -132,7 +127,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public boolean isGroundTruth() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
-			return false;  /* no variable was found so this assignment is not forced */
+			return false; /* no variable was found so this assignment is not forced */
 		}
 
 		Double constraintValue;
@@ -145,13 +140,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	@NotNull
-	private String getGroundTruthConstraintName() throws GRBException {
-		return "AssignmentGtConstraint_" + getGrbVarName();
+	private String getGroundTruthConstraintName() {
+		return "AssignmentGtConstraint_" + getStringId();
 	}
 
 	public boolean isGroundUntruth() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
-		if(isNull(grbConstr)){
+		if (isNull(grbConstr)) {
 			return false; /* no variable was found so this assignment is not forced */
 		}
 
@@ -266,7 +261,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getStorageLockConstraintName() throws GRBException {
-		return "AssignmentStorageLock_" + getGrbVarName();
+		return "AssignmentStorageLock_" + getStringId();
 	}
 
 	/**
@@ -274,9 +269,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @return null if not set, otherwise the GRBConstr.
 	 */
 	public GRBConstr getGroundTruthConstraint() {
+		return getConstraint(getGroundTruthConstraintName());
+	}
+
+	private GRBConstr getConstraint(String constraintName) {
 		GRBConstr grbConstr;
 		try {
-			grbConstr = ilp.model.getConstrByName(getGroundTruthConstraintName());
+			grbConstr = ilp.model.getConstrByName(constraintName);
 		} catch (GRBException e) {
 			return null;
 		}

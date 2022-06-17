@@ -148,11 +148,16 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	private GRBConstr getGrbConstr() {
 		GRBConstr grbConstr;
 		try {
-			grbConstr = ilp.model.getConstrByName("AssignmentGtConstraint_" + getGrbVarName());
+			grbConstr = ilp.model.getConstrByName(getGroundTruthConstraintName());
 		} catch (GRBException e) {
 			return null;
 		}
 		return grbConstr;
+	}
+
+	@NotNull
+	private String getGroundTruthConstraintName() throws GRBException {
+		return "AssignmentGtConstraint_" + getGrbVarName();
 	}
 
 	public boolean isGroundUntruth() {
@@ -219,11 +224,11 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void addGroundTruthConstraint() throws GRBException {
-		addConstraint(1.0, "AssignmentGtConstraint_" + getGrbVarName());
+		addConstraint(1.0, getGroundTruthConstraintName());
 	}
 
 	private void addGroundUntruthConstraint() throws GRBException {
-		addConstraint(0.0, "AssignmentGtConstraint_" + getGrbVarName());
+		addConstraint(0.0, getGroundTruthConstraintName());
 	}
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {

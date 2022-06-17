@@ -1675,13 +1675,32 @@ public class GrowthlaneTrackingILP {
         return assignments;
     }
 
-    public void lockAssignmentsForStorage() {
+    /**
+     * Adds storage lock constraints to all assignment variables in the Gurobi model. This enforces the previous state
+     * of the Gurobi model, when it is read from disk and optimized when loading/restoring a previous curation.
+     */
+    public void addStorageLockConstraintsToAssignments() {
         for (AbstractAssignment assignment : getAllAssignments()) {
-            assignment.addStorageLockConstraintForStorage();
+            assignment.addStorageLockConstraint();
         }
         try {
             model.update();
-            model.optimize();
+            model.optimize(); /* we need to optimize after adding constraints so that the model state fully defined, if we store it afterwards */
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Removes storage lock constraints from all assignment variables in the Gurobi model. This must be performed after
+     * reading a Gurobi model from disk and optimizing it, so that the user can continue modifying it.
+     */
+    public void removeStorageLockConstraintsFromAssignments() {
+        for (AbstractAssignment assignment : getAllAssignments()) {
+            assignment.removeStorageLockConstraint();
+        }
+        try {
+            model.update();
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }

@@ -245,7 +245,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	public void addStorageLockConstraintForStorage() {
+	public void addStorageLockConstraint() {
 		try {
 			if (this.isChoosen()) {
 				addConstraint(1.0, getStorageLockConstraintName());

@@ -18,7 +18,7 @@ public class IlpModelExporter implements ResultExporterInterface {
     public void export(ResultExporterData resultData) throws GRBException {
         File outputFolder = resultData.getOutputFolder();
 
-        resultData.getGrowthlaneTrackingILP().lockAssignmentsForStorage();
+        resultData.getGrowthlaneTrackingILP().addStorageLockConstraintsToAssignments();
 
         IGRBModelAdapter model = resultData.getIlpModel();
 
@@ -36,5 +36,6 @@ public class IlpModelExporter implements ResultExporterInterface {
         String outputPath5 = outputFolder.getAbsolutePath() + "/ilpModel.mst";
         model.write(outputPath5);
 //        System.out.println("stop");
+        resultData.getGrowthlaneTrackingILP().removeStorageLockConstraintsFromAssignments();
     }
 }

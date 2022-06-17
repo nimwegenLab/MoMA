@@ -163,13 +163,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		try {
 			if (targetStateIsTrue) {
 				if (isGroundUntruth()) {
-					removeConstraint();
+					removeGroundTruthConstraint();
 				}
 				addGroundTruthConstraint();
 				return;
 			}
 			if (!targetStateIsTrue && isGroundTruth()) {
-				removeConstraint();
+				removeGroundTruthConstraint();
 				return;
 			}
 		} catch (GRBException e) {
@@ -182,13 +182,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		try {
 			if (targetStateIsTrue) {
 				if (isGroundTruth()) {
-					removeConstraint();
+					removeGroundTruthConstraint();
 				}
 				addGroundUntruthConstraint();
 				return;
 			}
 			if (!targetStateIsTrue && isGroundUntruth()) {
-				removeConstraint();
+				removeGroundTruthConstraint();
 				return;
 			}
 		} catch (GRBException e) {
@@ -230,10 +230,18 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	private void removeConstraint() throws GRBException {
-		GRBConstr constrGroundTruth = getGroundTruthConstraint();
-		if (!isNull(constrGroundTruth)) {
-			ilp.model.remove(constrGroundTruth);
+	private void removeGroundTruthConstraint() throws GRBException {
+		removeConstraintWithName(getGroundTruthConstraintName());
+	}
+
+	private void removeConstraintWithName(String constraintName) {
+		GRBConstr constraint = getConstraint(constraintName);
+		if (!isNull(constraint)) {
+			try {
+				ilp.model.remove(constraint);
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

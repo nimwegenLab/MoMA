@@ -1677,7 +1677,7 @@ public class GrowthlaneTrackingILP {
 
     public void lockAssignmentsForStorage() {
         for (AbstractAssignment assignment : getAllAssignments()) {
-            assignment.addLockingConstraintForStorage();
+            assignment.addStorageLockConstraintForStorage();
         }
         try {
             model.update();

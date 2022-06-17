@@ -245,7 +245,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	public void addLockingConstraintForStorage() {
+	public void addStorageLockConstraintForStorage() {
 		try {
 			if (this.isChoosen()) {
 				addConstraint(1.0, getStorageLockConstraintName());
@@ -257,18 +257,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	public void removeLockingConstraint() {
-		try {
-			if (constraintExistsWithName(getStorageLockConstraintName())) {
-
-			}
-		} catch (GRBException e) {
-			throw new RuntimeException(e);
-		}
+	public void removeStorageLockConstraint() {
+		removeConstraintWithName(getStorageLockConstraintName());
 	}
 
 	@NotNull
-	private String getStorageLockConstraintName() throws GRBException {
+	private String getStorageLockConstraintName() {
 		return "AssignmentStorageLock_" + getStringId();
 	}
 

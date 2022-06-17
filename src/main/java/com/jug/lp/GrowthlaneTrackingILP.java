@@ -70,6 +70,7 @@ public class GrowthlaneTrackingILP {
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private int pbcId = 0;
     private IDialogManager dialogManager;
+    private boolean removeStorageLockConstraintAfterFirstOptimization;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -921,6 +922,11 @@ public class GrowthlaneTrackingILP {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
+        }
+
+        if (removeStorageLockConstraintAfterFirstOptimization) {
+            removeStorageLockConstraintsFromAssignments();
+            removeStorageLockConstraintAfterFirstOptimization = false;
         }
     }
 
@@ -2181,6 +2187,9 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    public void setRemoveStorageLockConstraintAfterFirstOptimization() {
+        removeStorageLockConstraintAfterFirstOptimization = true;
+    }
 
     public void addDialogManger(IDialogManager dialogManager) {
         this.dialogManager = dialogManager;

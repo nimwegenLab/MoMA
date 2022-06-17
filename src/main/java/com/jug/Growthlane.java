@@ -128,6 +128,7 @@ public class Growthlane {
 		}
 		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();
+		ilp.setRemoveStorageLockConstraintAfterFirstOptimization();
 
 		if ( guiProgressReceiver != null ) {
 			guiProgressReceiver.setVisible( false );

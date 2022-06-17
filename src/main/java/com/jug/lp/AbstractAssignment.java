@@ -265,6 +265,16 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
+	public void removeLockingConstraint() {
+		try {
+			if (constraintExistsWithName(getStorageLockConstraintName())) {
+
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@NotNull
 	private String getStorageLockConstraintName() throws GRBException {
 		return "AssignmentStorageLock_" + getGrbVarName();

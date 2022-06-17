@@ -130,7 +130,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public abstract void addConstraintsToILP() throws GRBException;
 
 	public boolean isGroundTruth() {
-		GRBConstr grbConstr = getGrbConstr();
+		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
 			return false;  /* no variable was found so this assignment is not forced */
 		}
@@ -144,24 +144,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return constraintValue > 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
-	@Nullable
-	private GRBConstr getGrbConstr() {
-		GRBConstr grbConstr;
-		try {
-			grbConstr = ilp.model.getConstrByName(getGroundTruthConstraintName());
-		} catch (GRBException e) {
-			return null;
-		}
-		return grbConstr;
-	}
-
 	@NotNull
 	private String getGroundTruthConstraintName() throws GRBException {
 		return "AssignmentGtConstraint_" + getGrbVarName();
 	}
 
 	public boolean isGroundUntruth() {
-		GRBConstr grbConstr = getGrbConstr();
+		GRBConstr grbConstr = getGroundTruthConstraint();
 		if(isNull(grbConstr)){
 			return false; /* no variable was found so this assignment is not forced */
 		}
@@ -247,8 +236,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void removeConstraint() throws GRBException {
-		GRBConstr constrGroundTruth = getGrbConstr();
-		if (!isNull(getGrbConstr())) {
+		GRBConstr constrGroundTruth = getGroundTruthConstraint();
+		if (!isNull(constrGroundTruth)) {
 			ilp.model.remove(constrGroundTruth);
 		}
 	}
@@ -285,7 +274,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @return null if not set, otherwise the GRBConstr.
 	 */
 	public GRBConstr getGroundTruthConstraint() {
-		return getGrbConstr();
+		GRBConstr grbConstr;
+		try {
+			grbConstr = ilp.model.getConstrByName(getGroundTruthConstraintName());
+		} catch (GRBException e) {
+			return null;
+		}
+		return grbConstr;
 	}
 
 	/**

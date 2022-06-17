@@ -232,9 +232,18 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
+		if (constraintExistsWithName(constraintName)) return;
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
+	}
+
+	private boolean constraintExistsWithName(String constraintName){
+		try {
+			return !isNull(ilp.model.getConstrByName(constraintName));
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void removeConstraint() throws GRBException {

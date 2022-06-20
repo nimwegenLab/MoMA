@@ -878,7 +878,7 @@ public class GrowthlaneTrackingILP {
                 if (!configurationManager.getIfRunningHeadless()) {
                     dialog.pushStatus("Optimum was found!");
                     if (MoMA.getGui() != null) {
-                        MoMA.getGui().focusOnSliderTime();
+                        MoMA.getGui().requestFocusOnTimeStepSlider();
                     }
                     dialog.setVisible(false);
                     dialog.dispose();

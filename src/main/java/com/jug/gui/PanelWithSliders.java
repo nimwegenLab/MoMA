@@ -1,6 +1,5 @@
 package com.jug.gui;
 
-import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
 
@@ -24,7 +23,7 @@ public class PanelWithSliders extends JPanel {
 
     private void build() {
         // --- Slider for time and GL -------------
-        int currentTimeStep = configurationManager.getCurrentTimeStep();
+        int currentTimeStep = configurationManager.getOptimizationRangeStart(); /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
         timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), currentTimeStep);
         model.setCurrentGLF(timestepSlider.getValue());
 
@@ -43,7 +42,6 @@ public class PanelWithSliders extends JPanel {
         timestepSlider.addChangeListener((e) -> {
             this.labelCurrentTime.setText(String.format(" t = %4d", timestepSlider.getValue()));
             this.model.setCurrentGLF(timestepSlider.getValue());
-            configurationManager.setCurrentTimeStep(timestepSlider.getValue());
         });
 
         // --- Slider for TrackingRage ----------
@@ -75,7 +73,7 @@ public class PanelWithSliders extends JPanel {
         this.add(timestepSlider);
     }
 
-    public void requestFocus(){
+    public void requestFocusOnTimeStepSlider(){
         timestepSlider.requestFocus();
     }
 

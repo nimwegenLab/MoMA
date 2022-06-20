@@ -12,7 +12,7 @@ public class WindowFocusListenerImplementation implements WindowFocusListener {
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
-        momaGui.focusOnSliderTime();
+        momaGui.requestFocusOnTimeStepSlider();
     }
 
     @Override

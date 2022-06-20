@@ -312,7 +312,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
-            mmgui.focusOnSliderTime();
+            mmgui.requestFocusOnTimeStepSlider();
             return;
         }
 
@@ -385,7 +385,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
         final IlpThread thread = new IlpThread();
         thread.start();
-        mmgui.focusOnSliderTime();
+        mmgui.requestFocusOnTimeStepSlider();
     }
 
     private Hypothesis<AdvancedComponent<FloatType>> getSelectedHypothesis() {
@@ -494,7 +494,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.isDragging = false;
         repaint();
-        mmgui.focusOnSliderTime();
+        mmgui.requestFocusOnTimeStepSlider();
     }
 
     /**

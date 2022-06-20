@@ -109,7 +109,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         buildGui();
         dataToDisplayChanged();
-        focusOnSliderTime();
+        requestFocusOnTimeStepSlider();
     }
 
     private void registerSliderListeners() {
@@ -286,7 +286,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                panelWithSliders.requestFocus();
+                requestFocusOnTimeStepSlider();
             }
         });
 
@@ -317,7 +317,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("t")) {
-                    panelWithSliders.getTimestepSlider().requestFocus();
+                    requestFocusOnTimeStepSlider();
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("g")) {
@@ -606,7 +606,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             model.setCurrentGL(sliderGL.getValue(), panelWithSliders.getTimestepSlider().getValue());
         }
         updateGui();
-        focusOnSliderTime();
+        requestFocusOnTimeStepSlider();
     }
 
     /**
@@ -683,7 +683,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
-                panelWithSliders.getTimestepSlider().requestFocus();
+                requestFocusOnTimeStepSlider();
                 dataToDisplayChanged();
             });
             t.start();
@@ -698,7 +698,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 model.getCurrentGL().getIlp().run();
                 System.out.println("...done!");
 
-                panelWithSliders.getTimestepSlider().requestFocus();
+                requestFocusOnTimeStepSlider();
                 dataToDisplayChanged();
             });
             t.start();
@@ -1029,8 +1029,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     /**
      * Requests the focus on the slider controlling the time (frame).
      */
-    public void focusOnSliderTime() {
-        SwingUtilities.invokeLater(() -> panelWithSliders.getTimestepSlider().requestFocus());
+    public void requestFocusOnTimeStepSlider() {
+        SwingUtilities.invokeLater(() -> panelWithSliders.requestFocusOnTimeStepSlider());
     }
 
     /**

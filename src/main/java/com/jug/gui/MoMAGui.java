@@ -736,8 +736,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition());
                 }
                 if (panelWithSliders.getTimeStepSliderPosition() < panelWithSliders.getTrackingRangeStart()) {
-                    final int len =
-                            panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
+                    int len = panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
                     panelWithSliders.setTrackingRangeStart(panelWithSliders.getTimeStepSliderPosition() - len / 2);
                     panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition() + len / 2 + len % 2);
                 }

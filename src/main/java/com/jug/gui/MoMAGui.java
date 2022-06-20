@@ -10,7 +10,7 @@ import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.lp.*;
+import com.jug.lp.GrowthlaneTrackingILP;
 import ij.ImageJ;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
@@ -1037,5 +1037,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     public void setCenterTime(int timestep) {
         panelWithSliders.setTimeStepSliderPosition(timestep);
+    }
+
+    public void startOptimizing() {
+        buttonOptimizeMore.doClick();
     }
 }

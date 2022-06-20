@@ -230,6 +230,12 @@ public class MoMA {
 				guiFrame.setVisible(true);
 				System.out.println( " done!" );
 			});
+
+			if (commandLineArgumentParser.isReloadingData()) {
+				SwingUtilities.invokeLater(() -> { /* run optimization on UI thread to ensure the GUI has finished displaying before; this is not good code */
+					dic.getMomaGui().startOptimizing(); /* if we are reloading data, we want to directly optimize to see the previous results in the GUI */
+				});
+			}
 		} else {
 			dic.getMomaGui().exportHtmlOverview();
 			dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
@@ -376,13 +382,6 @@ public class MoMA {
 	 */
 	public static String getDefaultFilenameDecoration() {
 		return defaultFilenameDecoration;
-	}
-
-	/**
-	 * @return the initial optimization range, -1 if it is infinity.
-	 */
-	public static int getInitialOptimizationRange() {
-		return commandLineArgumentParser.getInitialOptimizationRange();
 	}
 
 	/**

@@ -708,7 +708,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
                     final int extent =
                             panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
-                    panelWithSliders.getTrackingRangeSlider().setUpperValue(t1 - 1 + extent);
+                    panelWithSliders.setTrackingRangeEnd(t1 - 1 + extent);
                     buttonOptimizeMore.doClick();
                 }
                 panelWithSliders.getTrackingRangeSlider().setValue(t1 - 1);
@@ -734,13 +734,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 if (panelWithSliders.getTimestepSlider().getValue() > panelWithSliders.getTrackingRangeEnd()) {
-                    panelWithSliders.getTrackingRangeSlider().setUpperValue(panelWithSliders.getTimestepSlider().getValue());
+                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimestepSlider().getValue());
                 }
                 if (panelWithSliders.getTimestepSlider().getValue() < panelWithSliders.getTrackingRangeStart()) {
                     final int len =
                             panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
                     panelWithSliders.getTrackingRangeSlider().setValue(panelWithSliders.getTimestepSlider().getValue() - len / 2);
-                    panelWithSliders.getTrackingRangeSlider().setUpperValue(panelWithSliders.getTimestepSlider().getValue() + len / 2 + len % 2);
+                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimestepSlider().getValue() + len / 2 + len % 2);
                 }
 
                 model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
@@ -797,7 +797,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (!(panelWithSliders.getTrackingRangeEnd() == panelWithSliders.getTrackingRangeSlider().getMaximum())) {
             final int extent =
                     panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
-            panelWithSliders.getTrackingRangeSlider().setUpperValue(extent);
+            panelWithSliders.setTrackingRangeEnd(extent);
         }
         panelWithSliders.getTrackingRangeSlider().setValue(0);
 

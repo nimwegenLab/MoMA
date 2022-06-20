@@ -113,6 +113,10 @@ public class PanelWithSliders extends JPanel {
         return getTrackingRangeSlider().getValue();
     }
 
+    public int getTrackingRangeSliderMaximum() {
+        return getTrackingRangeSlider().getMaximum();
+    }
+
     public int getTimeStepSliderMaximum(){
         return getTimestepSlider().getMaximum();
     }

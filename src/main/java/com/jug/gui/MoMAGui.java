@@ -704,7 +704,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
             final Thread t = new Thread(() -> {
                 final int t1 = panelWithSliders.getTimeStepSliderPosition();
-                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
                     final int extent =
                             panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
                     panelWithSliders.setTrackingRangeEnd(t1 - 1 + extent);
@@ -743,7 +743,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
-                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
                     // this is needed because of the duplication of the last time-point
                     model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
                 }
@@ -793,14 +793,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public void restartTracking() {
         prepareOptimization();
 
-        if (!(panelWithSliders.getTrackingRangeEnd() == panelWithSliders.getTrackingRangeSlider().getMaximum())) {
+        if (!(panelWithSliders.getTrackingRangeEnd() == panelWithSliders.getTrackingRangeSliderMaximum())) {
             final int extent = panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
             panelWithSliders.setTrackingRangeEnd(extent);
         }
         panelWithSliders.getTrackingRangeSlider().setValue(0);
 
         model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
-        if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+        if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
             // this is needed because of the duplication of the last time-point
             model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
         }

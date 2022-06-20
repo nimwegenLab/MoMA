@@ -125,6 +125,12 @@ public class MoMA {
 				}
 			}
 			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
+			configurationManager.setOptimizationRangeStart(0); /* not reloading, so set optimization range to maximal possible value */
+			if (commandLineArgumentParser.getInitialOptimizationRange() < 0) {
+				configurationManager.setOptimizationRangeEnd(configurationManager.getMaxTime()); /* not reloading and user did not specify an initial optimization range (i.e. CMD argument "optrange"); optimization range specified; so set optimization range to maximal possible value */
+			} else {
+				configurationManager.setOptimizationRangeEnd(commandLineArgumentParser.getInitialOptimizationRange()); /* user specified an initial optimization range; set value to it */
+			}
 		}
 
 		loggerWindow = dic.getLoggerWindow();

@@ -5,6 +5,7 @@ import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 public class RangeSliderPanel extends JPanel {
@@ -25,7 +26,7 @@ public class RangeSliderPanel extends JPanel {
         // --- Slider for time and GL -------------
         sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
         model.setCurrentGLF(sliderTime.getValue());
-//        sliderTime.addChangeListener(this);
+
         if (sliderTime.getMaximum() < 200) {
             sliderTime.setMajorTickSpacing(10);
             sliderTime.setMinorTickSpacing(2);
@@ -60,8 +61,6 @@ public class RangeSliderPanel extends JPanel {
         lblIgnoreBeyond.setToolTipText("correct up to left slider / ignore data beyond right slider");
 
         // --- Assemble sliders -----------------
-//        final JPanel panelSliderArrangement =
-//                new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
         this.add(lblIgnoreBeyond);
         this.add(sliderTrackingRange);
         this.add(labelCurrentTime);
@@ -82,5 +81,9 @@ public class RangeSliderPanel extends JPanel {
 
     public RangeSlider getSliderTrackingRange() {
         return sliderTrackingRange;
+    }
+
+    public void addListenerToTimeSlider(ChangeListener listener) {
+        sliderTime.addChangeListener(listener);
     }
 }

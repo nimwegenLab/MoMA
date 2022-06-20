@@ -24,7 +24,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import net.miginfocom.swing.MigLayout;
 import org.jetbrains.annotations.Nullable;
 import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
@@ -133,11 +132,24 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.loggerWindow = loggerWindow;
 
         this.dialogManager = dialogManager;
+
+        rangeSliderPanel.addListenerToTimeSlider((changeEvent) -> {
+            updateCenteredTimeStep();
+            if (spaceBarIsBeingHeld.isActive()) {
+                segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
+            }
+            updateGui();
+        });
         this.rangeSliderPanel = rangeSliderPanel;
 
         buildGui();
         dataToDisplayChanged();
         focusOnSliderTime();
+    }
+
+    private void updateGui() {
+        dataToDisplayChanged();
+        this.repaint();
     }
 
     /**
@@ -759,21 +771,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             model.setCurrentGL(sliderGL.getValue(), rangeSliderPanel.getSliderTime().getValue());
         }
 
-        if (e.getSource().equals(sliderTime)) {
-             updateCenteredTimeStep();
-             if(spaceBarIsBeingHeld.isActive()){
-                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
-             }
-        }
-
         if (e.getSource().equals(sliderTrackingRange)) {
             if (model.getCurrentGL().getIlp() != null) {
                 model.getCurrentGL().getIlp().ignoreBeyond(rangeSliderPanel.getSliderTrackingRange().getUpperValue());
             }
         }
 
-        dataToDisplayChanged();
-        this.repaint();
+        updateGui();
 
         focusOnSliderTime();
     }

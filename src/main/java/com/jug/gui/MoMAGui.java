@@ -74,17 +74,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonSet;
     private JButton buttonReset;
 
-    // Menu-items
     private MenuItem menuViewShowConsole;
     private MenuItem menuShowImgRaw;
-
     private MenuItem menuProps;
     private MenuItem menuLoad;
     private MenuItem menuSave;
-
-    // -------------------------------------------------------------------------------------
-    // construction & gui creation
-    // -------------------------------------------------------------------------------------
 
     /**
      * Construction
@@ -182,7 +176,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(rangeSliderPanel, BorderLayout.CENTER);
         panelContent.add(panelHorizontalHelper, BorderLayout.SOUTH);
 
-        // Does not exist any more...
+        /* the GL slider is currently not being used; but we keep the code for the moment, because it could become relevant again */
         sliderGL = new JSlider(SwingConstants.VERTICAL, 0, model.mm.getGrowthlanes().size() - 1, 0);
         sliderGL.setValue(0);
         sliderGL.addChangeListener(this);
@@ -611,10 +605,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(sliderGL)) {
             model.setCurrentGL(sliderGL.getValue(), rangeSliderPanel.getSliderTime().getValue());
         }
-
-
         updateGui();
-
         focusOnSliderTime();
     }
 
@@ -623,7 +614,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     @Override
     public void actionPerformed(final ActionEvent e) {
-
         if (e.getSource().equals(menuProps)) {
             dialogManager.showPropertiesEditor();
         }

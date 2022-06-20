@@ -101,6 +101,10 @@ public class PanelWithSliders extends JPanel {
         return getTimestepSlider().getValue();
     }
 
+    public int getTimeStepSliderMaximum(){
+        return getTimestepSlider().getMaximum();
+    }
+
     public void setTrackingRangeEnd(int timeStep) {
         getTrackingRangeSlider().setUpperValue(timeStep);
     }
@@ -109,15 +113,15 @@ public class PanelWithSliders extends JPanel {
         return getTrackingRangeSlider().getUpperValue();
     }
 
+    public void setTrackingRangeStart(int timeStep) {
+        getTrackingRangeSlider().setValue(timeStep);
+    }
+
     public int getTrackingRangeStart() {
         return getTrackingRangeSlider().getValue();
     }
 
     public int getTrackingRangeSliderMaximum() {
         return getTrackingRangeSlider().getMaximum();
-    }
-
-    public int getTimeStepSliderMaximum(){
-        return getTimestepSlider().getMaximum();
     }
 }

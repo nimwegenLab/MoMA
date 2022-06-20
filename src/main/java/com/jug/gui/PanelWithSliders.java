@@ -24,7 +24,8 @@ public class PanelWithSliders extends JPanel {
 
     private void build() {
         // --- Slider for time and GL -------------
-        timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
+        int currentTimeStep = configurationManager.getCurrentTimeStep();
+        timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), currentTimeStep);
         model.setCurrentGLF(timestepSlider.getValue());
 
         if (timestepSlider.getMaximum() < 200) {
@@ -39,7 +40,11 @@ public class PanelWithSliders extends JPanel {
         timestepSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
 
         labelCurrentTime = new JLabel(String.format(" t = %4d", timestepSlider.getValue()));
-        timestepSlider.addChangeListener((e) -> this.updateCenteredTimeStep());
+        timestepSlider.addChangeListener((e) -> {
+            this.labelCurrentTime.setText(String.format(" t = %4d", timestepSlider.getValue()));
+            this.model.setCurrentGLF(timestepSlider.getValue());
+            configurationManager.setCurrentTimeStep(timestepSlider.getValue());
+        });
 
         // --- Slider for TrackingRage ----------
         int optimizationRangeStart = configurationManager.getOptimizationRangeStart();
@@ -68,11 +73,6 @@ public class PanelWithSliders extends JPanel {
         this.add(trackingRangeSlider);
         this.add(labelCurrentTime);
         this.add(timestepSlider);
-    }
-
-    public void updateCenteredTimeStep() {
-        this.labelCurrentTime.setText(String.format(" t = %4d", timestepSlider.getValue()));
-        this.model.setCurrentGLF(timestepSlider.getValue());
     }
 
     public void requestFocus(){

@@ -227,11 +227,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private int optimizationRangeStart = -1;
     private int optimizationRangeEnd = -1;
 
+    private int currentTimeStep = 1;
+
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
+        currentTimeStep = Integer.parseInt(props.getProperty("CURRENT_TIMESTEP", Integer.toString(getCurrentTimeStep())));
         optimizationRangeStart = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_START", Integer.toString(optimizationRangeStart)));
         optimizationRangeEnd = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_END", Integer.toString(optimizationRangeEnd)));
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
@@ -371,6 +374,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         try {
             final OutputStream out = new FileOutputStream(f);
 
+            props.setProperty("CURRENT_TIMESTEP", Integer.toString(getCurrentTimeStep()));
             props.setProperty("OPTIMIZATION_RANGE_START", Integer.toString(getOptimizationRangeStart()));
             props.setProperty("OPTIMIZATION_RANGE_END", Integer.toString(getOptimizationRangeEnd()));
             props.setProperty("TIME_RANGE_START", Integer.toString(minTime));
@@ -568,5 +572,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public void setOptimizationRangeEnd(int optimizationRangeEnd) {
         this.optimizationRangeEnd = optimizationRangeEnd;
+    }
+
+    public int getCurrentTimeStep() {
+        return currentTimeStep;
+    }
+
+    public void setCurrentTimeStep(int currentTimeStep) {
+        this.currentTimeStep = currentTimeStep;
     }
 }

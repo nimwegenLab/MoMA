@@ -1,6 +1,5 @@
 package com.jug.gui;
 
-import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
@@ -11,21 +10,13 @@ import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
-import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.*;
-import com.jug.util.ComponentTreeUtils;
-import com.jug.util.Util;
-import com.jug.util.componenttree.AdvancedComponent;
 import ij.ImageJ;
-import net.imglib2.Localizable;
-import net.imglib2.algorithm.componenttree.Component;
-import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.Nullable;
-import org.math.plot.Plot2DPanel;
 import weka.gui.ExtensionFileFilter;
 
 import javax.swing.*;
@@ -37,7 +28,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -47,9 +37,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private static final long serialVersionUID = -1008974839249784873L;
 
-    // -------------------------------------------------------------------------------------
-    // fields
-    // -------------------------------------------------------------------------------------
     public final MoMAModel model;
     private IDialogManager dialogManager;
     private RangeSliderPanel rangeSliderPanel;
@@ -66,14 +53,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final IImageProvider imageProvider;
     public JSlider sliderGL;
 
-    // -------------------------------------------------------------------------------------
-    // gui-fields
-    // -------------------------------------------------------------------------------------
     public GrowthlaneViewer growthLaneViewerCenter;
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
     private SegmentationEditorPanel segmentationEditorPanelCenter;
-    // show helper lines in IntervalViews?
-    private boolean showSegmentationAnnotations = true;
+    private boolean showSegmentationAnnotations = true; /* show helper lines in IntervalViews? */
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
@@ -137,7 +120,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private void registerSliderListeners() {
         this.rangeSliderPanel.addListenerToTimeSlider((changeEvent) -> {
-            updateCenteredTimeStep();
             if (spaceBarIsBeingHeld.isActive()) {
                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
             }
@@ -636,10 +618,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         focusOnSliderTime();
     }
 
-    private void updateCenteredTimeStep() {
-        this.model.setCurrentGLF(rangeSliderPanel.getSliderTime().getValue());
-    }
-
     /**
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      */
@@ -1037,23 +1015,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             dataToDisplayChanged();
         }
     }
-
-    /**
-     * Goes over all glfs of the current gl and activates the simple, intensity
-     * + comp.tree hypotheses.
-     */
-    private void activateSimpleHypotheses() {
-        activateSimpleHypothesesForGL(model.getCurrentGL());
-    }
-
-    private void activateSimpleHypothesesForGL(final Growthlane gl) {
-        for (final GrowthlaneFrame glf : gl.getFrames()) {
-            System.out.print(".");
-            glf.generateSimpleSegmentationHypotheses();
-        }
-        System.out.println();
-    }
-
 
     /**
      * Exports current tracking solution as individual PNG images in the given

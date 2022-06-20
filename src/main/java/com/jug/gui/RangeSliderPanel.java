@@ -67,8 +67,9 @@ public class RangeSliderPanel extends JPanel {
         this.add(sliderTime);
     }
 
-    public void updateCenteredTimeStep(){
+    public void updateCenteredTimeStep() {
         this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
+        this.model.setCurrentGLF(sliderTime.getValue());
     }
 
     public void requestFocus(){

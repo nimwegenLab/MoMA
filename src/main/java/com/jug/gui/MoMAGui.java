@@ -65,7 +65,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private LoggerWindow loggerWindow;
     private final IImageProvider imageProvider;
     public JSlider sliderGL;
-    public JSlider sliderTime;
+
     // -------------------------------------------------------------------------------------
     // gui-fields
     // -------------------------------------------------------------------------------------
@@ -74,7 +74,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private SegmentationEditorPanel segmentationEditorPanelCenter;
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
-    private RangeSlider sliderTrackingRange;
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
@@ -146,9 +145,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
             updateGui();
         });
+
+        this.rangeSliderPanel.addListenerToRangeSlider((changeEvent) -> {
+            if (model.getCurrentGL().getIlp() != null) {
+                model.getCurrentGL().getIlp().ignoreBeyond(rangeSliderPanel.getSliderTrackingRange().getUpperValue());
+            }
+            updateGui();
+        });
     }
 
-    private void updateGui() {
+    public void updateGui() {
         dataToDisplayChanged();
         this.repaint();
     }
@@ -772,20 +778,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             model.setCurrentGL(sliderGL.getValue(), rangeSliderPanel.getSliderTime().getValue());
         }
 
-        if (e.getSource().equals(sliderTrackingRange)) {
-            if (model.getCurrentGL().getIlp() != null) {
-                model.getCurrentGL().getIlp().ignoreBeyond(rangeSliderPanel.getSliderTrackingRange().getUpperValue());
-            }
-        }
 
         updateGui();
 
         focusOnSliderTime();
     }
 
-    /**
-     *
-     */
     private void updateCenteredTimeStep() {
         this.model.setCurrentGLF(rangeSliderPanel.getSliderTime().getValue());
     }
@@ -997,7 +995,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         dataToDisplayChanged();
     }
 
-    private void setFocusToTimeSlider() {
+    public void setFocusToTimeSlider() {
         SwingUtilities.invokeLater(() -> rangeSliderPanel.getSliderTime().requestFocusInWindow());
     }
 
@@ -1239,5 +1237,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     public boolean isAutosaveRequested() {
         return checkboxAutosave.isSelected();
+    }
+
+    public void setCenterTime(int timestep) {
+        rangeSliderPanel.getSliderTime().setValue(timestep);
     }
 }

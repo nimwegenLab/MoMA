@@ -154,8 +154,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
             final Thread t = new Thread(() -> {
                 momaModel.getCurrentGL().getIlp().run();
-                mmgui.dataToDisplayChanged();
-                mmgui.sliderTime.requestFocus();
+                mmgui.updateGui();
+                mmgui.setFocusToTimeSlider();
             });
             t.start();
         });
@@ -240,7 +240,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             else{
                 unselectGroundTruthSelectionCheckbox();
             }
-            mmgui.sliderTime.requestFocus();
+            mmgui.setFocusToTimeSlider();
         });
         checkboxIsSelectedAsGroundTruth.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedAsGroundTruth);

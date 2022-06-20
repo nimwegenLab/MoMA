@@ -55,7 +55,7 @@ public class HtmlOverviewExporter {
             final String row3 = "";
 
             for (int i = startFrame; i <= endFrame; i++) {
-                gui.sliderTime.setValue(i);
+                gui.setCenterTime(i);
                 try {
                     String fn1 = String.format("/" + basename + "_gl_%02d_glf_%03d.png", gui.sliderGL.getValue(), i);
                     gui.growthLaneViewerCenter.exportScreenImage(imgpath + fn1);

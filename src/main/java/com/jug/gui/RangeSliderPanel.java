@@ -86,4 +86,8 @@ public class RangeSliderPanel extends JPanel {
     public void addListenerToTimeSlider(ChangeListener listener) {
         sliderTime.addChangeListener(listener);
     }
+
+    public void addListenerToRangeSlider(ChangeListener listener) {
+        sliderTrackingRange.addChangeListener(listener);
+    }
 }

@@ -731,7 +731,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
-                    panelWithSliders.getTrackingRangeSlider().setValue(0);
+                    panelWithSliders.getTrackingRangeSlider().setValue(configurationManager.getOptimizationRangeStart());
                 }
 
                 if (panelWithSliders.getTimestepSlider().getValue() > panelWithSliders.getTrackingRangeSlider().getUpperValue()) {

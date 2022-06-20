@@ -3,18 +3,19 @@ package com.jug.gui;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
-import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class RangeSliderPanel extends JLabel {
+public class RangeSliderPanel extends JPanel {
     private JLabel labelCurrentTime;
     private RangeSlider sliderTrackingRange;
     private ConfigurationManager configurationManager;
     private MoMAModel model;
     public JSlider sliderTime;
 
-    public RangeSliderPanel(ConfigurationManager configurationManager, final MoMAModel model){
+    public RangeSliderPanel(LayoutManager layout, ConfigurationManager configurationManager, final MoMAModel model){
+        super(layout);
         this.configurationManager = configurationManager;
         this.model = model;
         build();
@@ -59,12 +60,12 @@ public class RangeSliderPanel extends JLabel {
         lblIgnoreBeyond.setToolTipText("correct up to left slider / ignore data beyond right slider");
 
         // --- Assemble sliders -----------------
-        final JPanel panelSliderArrangement =
-                new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
-        panelSliderArrangement.add(lblIgnoreBeyond);
-        panelSliderArrangement.add(sliderTrackingRange);
-        panelSliderArrangement.add(labelCurrentTime);
-        panelSliderArrangement.add(sliderTime);
+//        final JPanel panelSliderArrangement =
+//                new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
+        this.add(lblIgnoreBeyond);
+        this.add(sliderTrackingRange);
+        this.add(labelCurrentTime);
+        this.add(sliderTime);
     }
 
     public void updateCenteredTimeStep(){
@@ -77,5 +78,9 @@ public class RangeSliderPanel extends JLabel {
 
     public JSlider getSliderTime() {
         return sliderTime;
+    }
+
+    public RangeSlider getSliderTrackingRange() {
+        return sliderTrackingRange;
     }
 }

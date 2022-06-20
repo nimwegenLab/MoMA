@@ -19,9 +19,11 @@ import com.jug.util.imglib2.OverlayUtils;
 import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
+import net.miginfocom.swing.MigLayout;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -297,7 +299,8 @@ public class PseudoDic {
     RangeSliderPanel rangeSliderPanel;
     public RangeSliderPanel getRangeSliderPanel(){
         if(isNull(rangeSliderPanel)){
-            rangeSliderPanel = new RangeSliderPanel(configurationManager, getMomaModel());
+            LayoutManager layout = new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]");
+            rangeSliderPanel = new RangeSliderPanel(layout, configurationManager, getMomaModel());
         }
         return rangeSliderPanel;
     }

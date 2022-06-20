@@ -39,6 +39,7 @@ public class RangeSliderPanel extends JPanel {
         sliderTime.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
 
         labelCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
+        sliderTime.addChangeListener((e) -> this.updateCenteredTimeStep());
 
         // --- Slider for TrackingRage ----------
 
@@ -55,12 +56,11 @@ public class RangeSliderPanel extends JPanel {
         } else {
             sliderTrackingRange.setUpperValue(max);
         }
-//        sliderTrackingRange.addChangeListener(this);
+
         final JLabel lblIgnoreBeyond =
                 new JLabel(String.format("opt. range:", sliderTrackingRange.getValue()));
         lblIgnoreBeyond.setToolTipText("correct up to left slider / ignore data beyond right slider");
 
-        // --- Assemble sliders -----------------
         this.add(lblIgnoreBeyond);
         this.add(sliderTrackingRange);
         this.add(labelCurrentTime);

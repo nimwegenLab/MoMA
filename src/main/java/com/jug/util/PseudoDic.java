@@ -307,7 +307,7 @@ public class PseudoDic {
 
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
         }
         return gui;
     }

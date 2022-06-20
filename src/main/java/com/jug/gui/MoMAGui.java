@@ -64,7 +64,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private FilePaths filePaths;
     private LoggerWindow loggerWindow;
     private final IImageProvider imageProvider;
-    private final MoMA momaInstance;
     public JSlider sliderGL;
     public JSlider sliderTime;
     // -------------------------------------------------------------------------------------
@@ -114,7 +113,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     public MoMAGui(final MoMAModel model,
                    IImageProvider imageProvider,
-                   MoMA momaInstance,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
                    FilePaths filePaths,
@@ -125,7 +123,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         this.model = model;
         this.imageProvider = imageProvider;
-        this.momaInstance = momaInstance;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
         this.configurationManager = configurationManager;
         this.filePaths = filePaths;
@@ -133,18 +130,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         this.dialogManager = dialogManager;
 
-        rangeSliderPanel.addListenerToTimeSlider((changeEvent) -> {
+        this.rangeSliderPanel = rangeSliderPanel;
+        registerSliderListeners();
+
+        buildGui();
+        dataToDisplayChanged();
+        focusOnSliderTime();
+    }
+
+    private void registerSliderListeners() {
+        this.rangeSliderPanel.addListenerToTimeSlider((changeEvent) -> {
             updateCenteredTimeStep();
             if (spaceBarIsBeingHeld.isActive()) {
                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
             }
             updateGui();
         });
-        this.rangeSliderPanel = rangeSliderPanel;
-
-        buildGui();
-        dataToDisplayChanged();
-        focusOnSliderTime();
     }
 
     private void updateGui() {

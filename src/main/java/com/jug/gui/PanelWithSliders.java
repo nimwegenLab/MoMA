@@ -92,4 +92,20 @@ public class PanelWithSliders extends JPanel {
     public void addListenerToRangeSlider(ChangeListener listener) {
         trackingRangeSlider.addChangeListener(listener);
     }
+
+    public void setTimeStepSliderPosition(int timestep) {
+        getTimestepSlider().setValue(timestep);
+    }
+
+    public int getTrackingRangeEnd() {
+        return getTrackingRangeSlider().getUpperValue();
+    }
+
+    public int getTrackingRangeStart() {
+        return getTrackingRangeSlider().getValue();
+    }
+
+    public int getTimeStepSliderPosition() {
+        return getTimestepSlider().getValue();
+    }
 }

@@ -122,7 +122,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
             if (model.getCurrentGL().getIlp() != null) {
-                model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeSlider().getUpperValue());
+                model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
             }
             updateGui();
         });
@@ -137,7 +137,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * Builds the GUI.
      */
     private void buildGui() {
-
         final MenuBar menuBar = new MenuBar();
         final Menu menuFile = new Menu("File");
         menuProps = new MenuItem("Preferences...");
@@ -321,7 +320,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("g")) {
-                    panelWithSliders.getTimestepSlider().setValue(panelWithSliders.getTrackingRangeSlider().getUpperValue());
+                    panelWithSliders.setTimeStepSliderPosition(panelWithSliders.getTrackingRangeEnd());
                     dataToDisplayChanged();
                 }
                 if (e.getActionCommand().equals("a")) {
@@ -587,7 +586,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (tabsViews.getComponent(tabsViews.getSelectedIndex()).equals(panelSegmentationAndAssignmentView)) {
             updateIlpVariableEditorPanels();
         }
-        setFocusToTimeSlider();
+        requestFocusOnTimeStepSlider();
     }
 
     private void updateIlpVariableEditorPanels() {
@@ -705,10 +704,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
             final Thread t = new Thread(() -> {
-                final int t1 = panelWithSliders.getTimestepSlider().getValue();
-                if (panelWithSliders.getTrackingRangeSlider().getUpperValue() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+                final int t1 = panelWithSliders.getTimeStepSliderPosition();
+                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
                     final int extent =
-                            panelWithSliders.getTrackingRangeSlider().getUpperValue() - panelWithSliders.getTrackingRangeSlider().getValue();
+                            panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
                     panelWithSliders.getTrackingRangeSlider().setUpperValue(t1 - 1 + extent);
                     buttonOptimizeMore.doClick();
                 }
@@ -734,20 +733,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     panelWithSliders.getTrackingRangeSlider().setValue(configurationManager.getOptimizationRangeStart());
                 }
 
-                if (panelWithSliders.getTimestepSlider().getValue() > panelWithSliders.getTrackingRangeSlider().getUpperValue()) {
+                if (panelWithSliders.getTimestepSlider().getValue() > panelWithSliders.getTrackingRangeEnd()) {
                     panelWithSliders.getTrackingRangeSlider().setUpperValue(panelWithSliders.getTimestepSlider().getValue());
                 }
-                if (panelWithSliders.getTimestepSlider().getValue() < panelWithSliders.getTrackingRangeSlider().getValue()) {
+                if (panelWithSliders.getTimestepSlider().getValue() < panelWithSliders.getTrackingRangeStart()) {
                     final int len =
-                            panelWithSliders.getTrackingRangeSlider().getUpperValue() - panelWithSliders.getTrackingRangeSlider().getValue();
+                            panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
                     panelWithSliders.getTrackingRangeSlider().setValue(panelWithSliders.getTimestepSlider().getValue() - len / 2);
                     panelWithSliders.getTrackingRangeSlider().setUpperValue(panelWithSliders.getTimestepSlider().getValue() + len / 2 + len % 2);
                 }
 
-                model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeSlider().getValue());
-                if (panelWithSliders.getTrackingRangeSlider().getUpperValue() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+                model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
+                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
                     // this is needed because of the duplication of the last time-point
-                    model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeSlider().getUpperValue());
+                    model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
                 }
 
                 System.out.println("Finding optimal result...");
@@ -772,7 +771,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
             t.start();
         }
-        setFocusToTimeSlider();
+        requestFocusOnTimeStepSlider();
     }
 
 
@@ -795,17 +794,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public void restartTracking() {
         prepareOptimization();
 
-        if (!(panelWithSliders.getTrackingRangeSlider().getUpperValue() == panelWithSliders.getTrackingRangeSlider().getMaximum())) {
+        if (!(panelWithSliders.getTrackingRangeEnd() == panelWithSliders.getTrackingRangeSlider().getMaximum())) {
             final int extent =
-                    panelWithSliders.getTrackingRangeSlider().getUpperValue() - panelWithSliders.getTrackingRangeSlider().getValue();
+                    panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
             panelWithSliders.getTrackingRangeSlider().setUpperValue(extent);
         }
         panelWithSliders.getTrackingRangeSlider().setValue(0);
 
-        model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeSlider().getValue());
-        if (panelWithSliders.getTrackingRangeSlider().getUpperValue() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
+        model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
+        if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSlider().getMaximum()) {
             // this is needed because of the duplication of the last time-point
-            model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeSlider().getUpperValue());
+            model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
         }
 
         System.out.println("Finding optimal result...");
@@ -813,10 +812,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         System.out.println("...done!");
 
         dataToDisplayChanged();
-    }
-
-    public void setFocusToTimeSlider() {
-        SwingUtilities.invokeLater(() -> panelWithSliders.getTimestepSlider().requestFocusInWindow());
     }
 
     /**
@@ -1031,6 +1026,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     public void requestFocusOnTimeStepSlider() {
         SwingUtilities.invokeLater(() -> panelWithSliders.requestFocusOnTimeStepSlider());
+//        SwingUtilities.invokeLater(() -> panelWithSliders.getTimestepSlider().requestFocusInWindow());
     }
 
     /**
@@ -1043,6 +1039,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     public void setCenterTime(int timestep) {
-        panelWithSliders.getTimestepSlider().setValue(timestep);
+        panelWithSliders.setTimeStepSliderPosition(timestep);
     }
 }

@@ -97,6 +97,10 @@ public class PanelWithSliders extends JPanel {
         getTimestepSlider().setValue(timestep);
     }
 
+    public int getTimeStepSliderPosition() {
+        return getTimestepSlider().getValue();
+    }
+
     public void setTrackingRangeEnd(int timeStep) {
         getTrackingRangeSlider().setUpperValue(timeStep);
     }
@@ -107,9 +111,5 @@ public class PanelWithSliders extends JPanel {
 
     public int getTrackingRangeStart() {
         return getTrackingRangeSlider().getValue();
-    }
-
-    public int getTimeStepSliderPosition() {
-        return getTimestepSlider().getValue();
     }
 }

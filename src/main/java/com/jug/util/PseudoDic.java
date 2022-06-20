@@ -294,9 +294,17 @@ public class PseudoDic {
 
     MoMAGui gui;
 
+    RangeSliderPanel rangeSliderPanel;
+    public RangeSliderPanel getRangeSliderPanel(){
+        if(isNull(rangeSliderPanel)){
+            rangeSliderPanel = new RangeSliderPanel(configurationManager, getMomaModel());
+        }
+        return rangeSliderPanel;
+    }
+
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager());
+            gui = new MoMAGui(getMomaModel(), getImageProvider(), getMomaInstance(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
         }
         return gui;
     }

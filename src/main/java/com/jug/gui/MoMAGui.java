@@ -53,6 +53,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // -------------------------------------------------------------------------------------
     public final MoMAModel model;
     private IDialogManager dialogManager;
+    private RangeSliderPanel rangeSliderPanel;
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
@@ -76,7 +77,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     // show helper lines in IntervalViews?
     private boolean showSegmentationAnnotations = true;
     private RangeSlider sliderTrackingRange;
-    private JLabel labelCurrentTime;
     private JTabbedPane tabsViews;
     private CountOverviewPanel panelCountingView;
     private JScrollPane panelSegmentationAndAssignmentView;
@@ -111,19 +111,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     /**
      * Construction
      *
-     * @param mmm the MotherMachineModel to show
+     * @param model the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel mmm,
+    public MoMAGui(final MoMAModel model,
                    IImageProvider imageProvider,
                    MoMA momaInstance,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
                    FilePaths filePaths,
                    LoggerWindow loggerWindow,
-                   IDialogManager dialogManager) {
+                   IDialogManager dialogManager,
+                   RangeSliderPanel rangeSliderPanel) {
         super(new BorderLayout());
 
-        this.model = mmm;
+        this.model = model;
         this.imageProvider = imageProvider;
         this.momaInstance = momaInstance;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
@@ -132,6 +133,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.loggerWindow = loggerWindow;
 
         this.dialogManager = dialogManager;
+        this.rangeSliderPanel = rangeSliderPanel;
 
         buildGui();
         dataToDisplayChanged();
@@ -177,53 +179,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         JPanel panelVerticalHelper;
         JPanel panelHorizontalHelper;
 
-        // --- Slider for time and GL -------------
-
-        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
-        model.setCurrentGLF(sliderTime.getValue());
-        sliderTime.addChangeListener(this);
-        if (sliderTime.getMaximum() < 200) {
-            sliderTime.setMajorTickSpacing(10);
-            sliderTime.setMinorTickSpacing(2);
-        } else {
-            sliderTime.setMajorTickSpacing(100);
-            sliderTime.setMinorTickSpacing(10);
-        }
-        sliderTime.setPaintTicks(true);
-        sliderTime.setPaintLabels(true);
-        sliderTime.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
-        labelCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
-
-        // --- Slider for TrackingRage ----------
-
-        int max = model.getTimeStepMaximum();
-        if (MoMA.getInitialOptimizationRange() != -1) {
-            max = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
-        }
-        sliderTrackingRange =
-                new RangeSlider(0, model.getTimeStepMaximum());
-        sliderTrackingRange.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        sliderTrackingRange.setValue(0);
-        if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
-            sliderTrackingRange.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
-        } else {
-            sliderTrackingRange.setUpperValue(max);
-        }
-        sliderTrackingRange.addChangeListener(this);
-        final JLabel lblIgnoreBeyond =
-                new JLabel(String.format("opt. range:", sliderTrackingRange.getValue()));
-        lblIgnoreBeyond.setToolTipText("correct up to left slider / ignore data beyond right slider");
-
-        // --- Assemble sliders -----------------
-        final JPanel panelSliderArrangement =
-                new JPanel(new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]"));
-        panelSliderArrangement.add(lblIgnoreBeyond);
-        panelSliderArrangement.add(sliderTrackingRange);
-        panelSliderArrangement.add(labelCurrentTime);
-        panelSliderArrangement.add(sliderTime);
-
         panelHorizontalHelper = new JPanel(new BorderLayout());
-        panelHorizontalHelper.add(panelSliderArrangement, BorderLayout.CENTER);
+        panelHorizontalHelper.add(rangeSliderPanel, BorderLayout.CENTER);
         panelContent.add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // Does not exist any more...
@@ -336,7 +293,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                sliderTime.requestFocus();
+                rangeSliderPanel.requestFocus();
             }
         });
 
@@ -825,7 +782,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      */
     private void updateCenteredTimeStep() {
-        this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
         this.model.setCurrentGLF(sliderTime.getValue());
     }
 
@@ -1037,8 +993,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void setFocusToTimeSlider() {
-
-        SwingUtilities.invokeLater(() -> sliderTime.requestFocusInWindow());
+        SwingUtilities.invokeLater(() -> rangeSliderPanel.getSliderTime().requestFocusInWindow());
     }
 
     /**
@@ -1269,8 +1224,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * Requests the focus on the slider controlling the time (frame).
      */
     public void focusOnSliderTime() {
-
-        SwingUtilities.invokeLater(() -> sliderTime.requestFocus());
+        SwingUtilities.invokeLater(() -> rangeSliderPanel.getSliderTime().requestFocus());
     }
 
     /**

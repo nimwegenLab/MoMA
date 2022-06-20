@@ -600,7 +600,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     @Override
     public void stateChanged(final ChangeEvent e) {
-
         if (e.getSource().equals(sliderGL)) {
             model.setCurrentGL(sliderGL.getValue(), panelWithSliders.getTimeStepSliderPosition());
         }
@@ -874,7 +873,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(folderToUse, this.panelWithSliders.getTimestepSlider().getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+        resultExporter.export(folderToUse, panelWithSliders.getTimeStepSliderMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }
 
     public void exportTrackingData(File folderToUse) {
@@ -885,7 +884,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(folderToUse, this.panelWithSliders.getTimestepSlider().getMaximum(), this.model.getCurrentGL().getFrames().get(0));
+        resultExporter.export(folderToUse, this.panelWithSliders.getTimeStepSliderMaximum(), this.model.getCurrentGL().getFrames().get(0));
     }
 
     /**
@@ -947,7 +946,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         boolean doExport = true;
         int startFrame = 1;
-        int endFrame = panelWithSliders.getTimestepSlider().getMaximum() + 1;
+        int endFrame = panelWithSliders.getTimeStepSliderMaximum() + 1;
 
         File file = new File(filePaths.getOutputPath().toString() + "/index.html");
 

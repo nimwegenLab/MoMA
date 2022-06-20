@@ -55,7 +55,7 @@ public class ExploreResultLoading {
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
         Integer tmin = 1;
         Integer tmax = 120;
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-optrange", "10"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 

@@ -233,7 +233,7 @@ public class MoMA {
 
 			if (commandLineArgumentParser.isReloadingData()) {
 				SwingUtilities.invokeLater(() -> { /* run optimization on UI thread to ensure the GUI has finished displaying before; this is not good code */
-					dic.getMomaGui().startOptimizing(); /* if we are reloading data, we want to directly optimize to see the previous results in the GUI */
+					dic.getMomaGui().startOptimizationWhenReloadingPreviousCuration(); /* if we are reloading data, we want to directly optimize to see the previous results in the GUI */
 				});
 			}
 		} else {

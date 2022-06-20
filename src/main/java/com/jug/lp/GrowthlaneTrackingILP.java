@@ -2125,7 +2125,7 @@ public class GrowthlaneTrackingILP {
      */
     public void freezeBefore(final int tEnd) {
         for (int t = 0; t < tEnd; t++) {
-            freezeAssignmentsAsAre(t, "FreezeAssignmentConstraintAtT" + t);
+            freezeAssignmentsAsAre(t);
         }
         for (int t = tEnd; t < gl.size(); t++) {
             unfreezeAssignmentsFor(t);
@@ -2138,52 +2138,17 @@ public class GrowthlaneTrackingILP {
      * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
      * maintained active and inactive assignments are maintained inactive.
      */
-    public void freezeAssignmentsAsAre(int t, String constraintNamePrefix) {
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
-                nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            if (freezeSegmentConstraints.get(hyp) == null) {
-                try {
-                    final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors =
-                            edgeSets.getRightNeighborhood(hyp);
-                    final GRBLinExpr expr = new GRBLinExpr();
-                    if (rightNeighbors != null) {
-                        double rhs = 0.0; /* right hand side (rhs) value will stay 0.0, if no outgoing assignments is active/selected. */
-                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-                            if (assmnt.isChoosen()) {
-                                rhs = 1.0; /* set to 1, if one of the outgoing assignments _is_ selected. */
-                                expr.addTerm(1.0, assmnt.getGRBVar()); /* set coefficient to 1.0; this will force the assignment to be active to fulfill expression equality below */
-                            } else {
-                                expr.addTerm(2.0, assmnt.getGRBVar()); /* set coefficient to 2.0; this will always violate the equality of the expression below; hence the assignment is never active */
-                            }
-                        }
-                        final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, rhs, constraintNamePrefix + "_" + hyp.getStringId());
-                        freezeSegmentConstraints.put(hyp, constr);
-                    }
-                } catch (final GRBException e) {
-//					e.printStackTrace();
-                }
-            }
+    public void freezeAssignmentsAsAre(int t) {
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            assignment.addOptimizationLockConstraint();
         }
     }
 
-    /**
-     * @param t
-     */
     private void unfreezeAssignmentsFor(final int t) {
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
-                nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final GRBConstr constr = freezeSegmentConstraints.get(hyp);
-            if (constr != null) {
-                try {
-                    model.remove(constr);
-                    freezeSegmentConstraints.remove(hyp);
-                } catch (final GRBException e) {
-//					e.printStackTrace();
-                }
-            }
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            assignment.removeOptimizationLockConstraint();
         }
     }
 

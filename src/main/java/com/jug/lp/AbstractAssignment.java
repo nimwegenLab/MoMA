@@ -141,7 +141,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getGroundTruthConstraintName() {
-		return "AssignmentGtConstraint_" + getStringId();
+		return "GroundTruthConstraint_" + getStringId();
 	}
 
 	public boolean isGroundUntruth() {
@@ -216,7 +216,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
-		if (constraintExistsWithName(constraintName)) return;
+		if (constraintExistsWithName(constraintName)) {
+			return;
+		};
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
@@ -261,9 +263,30 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		removeConstraintWithName(getStorageLockConstraintName());
 	}
 
+	public void addOptimizationLockConstraint() {
+		try {
+			if (this.isChoosen()) {
+				addConstraint(1.0, getOptimizationLockConstraintName());
+			} else {
+				addConstraint(0.0, getOptimizationLockConstraintName());
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void removeOptimizationLockConstraint() {
+		removeConstraintWithName(getOptimizationLockConstraintName());
+	}
+
 	@NotNull
 	private String getStorageLockConstraintName() {
-		return "AssignmentStorageLock_" + getStringId();
+		return "StorageLockConstraint_" + getStringId();
+	}
+
+	@NotNull
+	private String getOptimizationLockConstraintName(){
+		return "OptimizationLockConstraint_" + getStringId();
 	}
 
 	/**

@@ -1039,7 +1039,26 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelWithSliders.setTimeStepSliderPosition(timestep);
     }
 
-    public void startOptimizing() {
-        buttonOptimizeMore.doClick();
+    /***
+     * This method must be used, when reloading a previous curation state. It does not introduce any additional
+     * modifications to the ILP state before running the optimization. In particular, it does not introduce any
+     * locking constraints or optimization using the methods:
+     *             model.getCurrentGL().getIlp().freezeBefore();
+     *             model.getCurrentGL().getIlp().ignoreBeyond();
+     * as is the case, when calling e.g. buttonOptimizeMore.doClick(); see the action callback stargin with:
+     * if (e.getSource().equals(buttonOptimizeMore)) { ... }
+     */
+    public void startOptimizationWhenReloadingPreviousCuration() {
+        final Thread t = new Thread(() -> {
+            if (model.getCurrentGL().getIlp() == null) {
+                prepareOptimization();
+            }
+            System.out.println("Loading previous tracking state...");
+            model.getCurrentGL().getIlp().runImmediately();
+            System.out.println("...done!");
+            buttonOptimizeMore.setForeground(Color.BLACK);
+            dataToDisplayChanged();
+        });
+        t.start();
     }
 }

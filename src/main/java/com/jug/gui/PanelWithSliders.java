@@ -42,19 +42,23 @@ public class PanelWithSliders extends JPanel {
         timestepSlider.addChangeListener((e) -> this.updateCenteredTimeStep());
 
         // --- Slider for TrackingRage ----------
-        int max = model.getTimeStepMaximum();
+        int optimizationRangeStart = configurationManager.getOptimizationRangeStart();
+        int optimizationRangeEnd = configurationManager.getOptimizationRangeEnd();
         if (MoMA.getInitialOptimizationRange() != -1) {
-            max = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
+            optimizationRangeEnd = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
         }
-        trackingRangeSlider =
-                new RangeSlider(0, model.getTimeStepMaximum());
+        trackingRangeSlider = new RangeSlider(0, model.getTimeStepMaximum());
         trackingRangeSlider.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        trackingRangeSlider.setValue(0);
+        trackingRangeSlider.setValue(optimizationRangeStart);
         if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
             trackingRangeSlider.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
         } else {
-            trackingRangeSlider.setUpperValue(max);
+            trackingRangeSlider.setUpperValue(optimizationRangeEnd);
         }
+        trackingRangeSlider.addChangeListener((e) -> {
+            configurationManager.setOptimizationRangeStart(trackingRangeSlider.getValue());
+            configurationManager.setOptimizationRangeEnd(trackingRangeSlider.getUpperValue());
+        });
 
         final JLabel lblIgnoreBeyond =
                 new JLabel(String.format("opt. range:", trackingRangeSlider.getValue()));

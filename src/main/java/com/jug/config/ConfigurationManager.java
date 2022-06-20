@@ -232,8 +232,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
-        minTime = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_START", Integer.toString(optimizationRangeStart)));
-        maxTime = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_END", Integer.toString(optimizationRangeEnd)));
+        optimizationRangeStart = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_START", Integer.toString(optimizationRangeStart)));
+        optimizationRangeEnd = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_END", Integer.toString(optimizationRangeEnd)));
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
         maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_END", Integer.toString(maxTime)));
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));

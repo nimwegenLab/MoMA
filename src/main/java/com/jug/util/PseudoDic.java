@@ -296,13 +296,13 @@ public class PseudoDic {
 
     MoMAGui gui;
 
-    RangeSliderPanel rangeSliderPanel;
-    public RangeSliderPanel getRangeSliderPanel(){
-        if(isNull(rangeSliderPanel)){
+    PanelWithSliders panelWithSliders;
+    public PanelWithSliders getRangeSliderPanel(){
+        if(isNull(panelWithSliders)){
             LayoutManager layout = new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]");
-            rangeSliderPanel = new RangeSliderPanel(layout, configurationManager, getMomaModel());
+            panelWithSliders = new PanelWithSliders(layout, configurationManager, getMomaModel());
         }
-        return rangeSliderPanel;
+        return panelWithSliders;
     }
 
     public MoMAGui getMomaGui() {

@@ -8,14 +8,14 @@ import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 
-public class RangeSliderPanel extends JPanel {
+public class PanelWithSliders extends JPanel {
     private JLabel labelCurrentTime;
     private RangeSlider sliderTrackingRange;
     private ConfigurationManager configurationManager;
     private MoMAModel model;
     public JSlider sliderTime;
 
-    public RangeSliderPanel(LayoutManager layout, ConfigurationManager configurationManager, final MoMAModel model){
+    public PanelWithSliders(LayoutManager layout, ConfigurationManager configurationManager, final MoMAModel model){
         super(layout);
         this.configurationManager = configurationManager;
         this.model = model;
@@ -42,7 +42,6 @@ public class RangeSliderPanel extends JPanel {
         sliderTime.addChangeListener((e) -> this.updateCenteredTimeStep());
 
         // --- Slider for TrackingRage ----------
-
         int max = model.getTimeStepMaximum();
         if (MoMA.getInitialOptimizationRange() != -1) {
             max = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());

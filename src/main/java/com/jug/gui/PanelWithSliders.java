@@ -10,10 +10,10 @@ import java.awt.*;
 
 public class PanelWithSliders extends JPanel {
     private JLabel labelCurrentTime;
-    private RangeSlider sliderTrackingRange;
+    private RangeSlider trackingRangeSlider;
     private ConfigurationManager configurationManager;
     private MoMAModel model;
-    public JSlider sliderTime;
+    public JSlider timestepSlider;
 
     public PanelWithSliders(LayoutManager layout, ConfigurationManager configurationManager, final MoMAModel model){
         super(layout);
@@ -24,70 +24,70 @@ public class PanelWithSliders extends JPanel {
 
     private void build() {
         // --- Slider for time and GL -------------
-        sliderTime = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
-        model.setCurrentGLF(sliderTime.getValue());
+        timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), 0);
+        model.setCurrentGLF(timestepSlider.getValue());
 
-        if (sliderTime.getMaximum() < 200) {
-            sliderTime.setMajorTickSpacing(10);
-            sliderTime.setMinorTickSpacing(2);
+        if (timestepSlider.getMaximum() < 200) {
+            timestepSlider.setMajorTickSpacing(10);
+            timestepSlider.setMinorTickSpacing(2);
         } else {
-            sliderTime.setMajorTickSpacing(100);
-            sliderTime.setMinorTickSpacing(10);
+            timestepSlider.setMajorTickSpacing(100);
+            timestepSlider.setMinorTickSpacing(10);
         }
-        sliderTime.setPaintTicks(true);
-        sliderTime.setPaintLabels(true);
-        sliderTime.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
+        timestepSlider.setPaintTicks(true);
+        timestepSlider.setPaintLabels(true);
+        timestepSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
 
-        labelCurrentTime = new JLabel(String.format(" t = %4d", sliderTime.getValue()));
-        sliderTime.addChangeListener((e) -> this.updateCenteredTimeStep());
+        labelCurrentTime = new JLabel(String.format(" t = %4d", timestepSlider.getValue()));
+        timestepSlider.addChangeListener((e) -> this.updateCenteredTimeStep());
 
         // --- Slider for TrackingRage ----------
         int max = model.getTimeStepMaximum();
         if (MoMA.getInitialOptimizationRange() != -1) {
             max = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
         }
-        sliderTrackingRange =
+        trackingRangeSlider =
                 new RangeSlider(0, model.getTimeStepMaximum());
-        sliderTrackingRange.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        sliderTrackingRange.setValue(0);
+        trackingRangeSlider.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+        trackingRangeSlider.setValue(0);
         if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
-            sliderTrackingRange.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
+            trackingRangeSlider.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
         } else {
-            sliderTrackingRange.setUpperValue(max);
+            trackingRangeSlider.setUpperValue(max);
         }
 
         final JLabel lblIgnoreBeyond =
-                new JLabel(String.format("opt. range:", sliderTrackingRange.getValue()));
+                new JLabel(String.format("opt. range:", trackingRangeSlider.getValue()));
         lblIgnoreBeyond.setToolTipText("correct up to left slider / ignore data beyond right slider");
 
         this.add(lblIgnoreBeyond);
-        this.add(sliderTrackingRange);
+        this.add(trackingRangeSlider);
         this.add(labelCurrentTime);
-        this.add(sliderTime);
+        this.add(timestepSlider);
     }
 
     public void updateCenteredTimeStep() {
-        this.labelCurrentTime.setText(String.format(" t = %4d", sliderTime.getValue()));
-        this.model.setCurrentGLF(sliderTime.getValue());
+        this.labelCurrentTime.setText(String.format(" t = %4d", timestepSlider.getValue()));
+        this.model.setCurrentGLF(timestepSlider.getValue());
     }
 
     public void requestFocus(){
-        sliderTime.requestFocus();
+        timestepSlider.requestFocus();
     }
 
-    public JSlider getSliderTime() {
-        return sliderTime;
+    public JSlider getTimestepSlider() {
+        return timestepSlider;
     }
 
-    public RangeSlider getSliderTrackingRange() {
-        return sliderTrackingRange;
+    public RangeSlider getTrackingRangeSlider() {
+        return trackingRangeSlider;
     }
 
     public void addListenerToTimeSlider(ChangeListener listener) {
-        sliderTime.addChangeListener(listener);
+        timestepSlider.addChangeListener(listener);
     }
 
     public void addListenerToRangeSlider(ChangeListener listener) {
-        sliderTrackingRange.addChangeListener(listener);
+        trackingRangeSlider.addChangeListener(listener);
     }
 }

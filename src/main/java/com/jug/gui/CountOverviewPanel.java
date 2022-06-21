@@ -88,7 +88,7 @@ class CountOverviewPanel extends JPanel {
         data = new Vector<>();
 
         int sumOfCells = 0;
-        if (currentGL != null && currentGL.getIlp() != null) {
+        if (currentGL != null && currentGL.getIlp().isReady()) {
             // collect data
             for (final GrowthlaneFrame glf : currentGL.getFrames()) {
                 final Vector<String> row = new Vector<>();

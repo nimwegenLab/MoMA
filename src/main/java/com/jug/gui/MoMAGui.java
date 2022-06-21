@@ -121,7 +121,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         });
 
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
-            if (model.getCurrentGL().getIlp() != null) {
+            if (model.getCurrentGL().getIlp().isReady()) {
                 model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
             }
             updateGui();

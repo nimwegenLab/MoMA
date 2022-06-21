@@ -130,7 +130,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
-                if (glf.getParent().getIlp() != null) {
+                if (glf.getParent().ilpIsReady()) {
                     long xOffset = view.min(0);
                     long yOffset = view.min(1);
                     drawSegments(screenImage,
@@ -211,7 +211,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private DecimalFormat costFormat = new DecimalFormat(".##");
 
     private void updateHypothesisInfoTooltip() {
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
@@ -243,7 +243,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private void updateHoveredOptimalHypothesis() {
         hoveredOptimalHypothesis = null;
         final int t = glf.getTime();
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
             hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY);
         }
     }
@@ -397,7 +397,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (!this.isMouseOver) {
             hypothesesAtHoverPosition = new ArrayList<>();
             indexOfCurrentHoveredHypothesis = -1;
-        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
             List<Hypothesis<AdvancedComponent<FloatType>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;

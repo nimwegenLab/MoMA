@@ -135,4 +135,11 @@ public class Growthlane {
 			guiProgressReceiver.dispose();
 		}
 	}
+
+	public boolean ilpIsReady() {
+		if (isNull(ilp)) {
+			return false;
+		}
+		return ilp.isReady();
+	}
 }

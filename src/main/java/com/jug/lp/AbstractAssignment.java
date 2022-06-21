@@ -286,7 +286,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getOptimizationLockConstraintName(){
-		return "OptimLockConstr_" + getStringId();
+		return "OptimRangeLockConstr_" + getStringId();
 	}
 
 	/**

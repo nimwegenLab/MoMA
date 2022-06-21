@@ -2112,7 +2112,7 @@ public class GrowthlaneTrackingILP {
                             expr.addTerm(1.0, assmnt.getGRBVar());
                         }
                         final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "IgnoreSegmentConstraintAtT" + t + "_" + hyp.getStringId());
+                                model.addConstr(expr, GRB.EQUAL, 0.0, "OptimRangeIgnorConstr_At" + t + "_" + hyp.getStringId());
                         ignoreSegmentConstraints.put(hyp, constr);
                     }
                 } catch (final GRBException e) {

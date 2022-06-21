@@ -102,9 +102,11 @@ public class GlDataLoader {
     private void generateAllSimpleSegmentationHypotheses() {
         imageProvider.setImgProbs(getProbabilityImage());
         for ( final Growthlane gl : getGrowthlanes() ) {
+            int numberOfFrames = gl.getFrames().size();
             gl.getFrames().parallelStream().forEach((glf) -> {
-                System.out.print( "." );
+                int currentFrame = glf.getFrameIndex() + 1;
                 glf.generateSimpleSegmentationHypotheses();
+                System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
             });
             System.out.println( " ...done!" );
         }

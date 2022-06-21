@@ -128,7 +128,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
     @NotNull
     private String getSegmentNotInSolutionConstraintName() {
-        return "SegmentNotInSolutionConstraint_" + getStringId();
+        return "HypIgnoreConstr_" + getStringId();
     }
 
     @Nullable
@@ -144,7 +144,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
 
     @NotNull
     private String getSegmentInSolutionConstraintName() {
-        return "SegmentInSolutionConstraint_" + getStringId();
+        return "HypEnforceConstr_" + getStringId();
     }
 
     public boolean isForceIgnored() {

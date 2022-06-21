@@ -775,7 +775,7 @@ public class GrowthlaneTrackingILP {
                 runnerNode = runnerNode.getParent();
             }
             pbcId++;
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockingConstraintAtT" + t + "_Id" + pbcId);
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrAtT" + t + "_Id" + pbcId);
         } else {
             // if ctNode is a inner node -> recursion
             for (final C ctChild : ctNode.getChildren()) {
@@ -823,7 +823,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ContinuityConstraintAtT" + t + "_Id" + eccId);
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrAtT" + t + "_Id" + eccId);
                 eccId++;
             }
         }

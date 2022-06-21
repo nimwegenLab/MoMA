@@ -81,6 +81,6 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "LysisAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+        return "LysAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

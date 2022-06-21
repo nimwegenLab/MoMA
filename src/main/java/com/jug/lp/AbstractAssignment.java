@@ -141,7 +141,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getGroundTruthConstraintName() {
-		return "GroundTruthConstraint_" + getStringId();
+		return "GroundTruthConstr_" + getStringId();
 	}
 
 	public boolean isGroundUntruth() {
@@ -281,12 +281,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getStorageLockConstraintName() {
-		return "StorageLockConstraint_" + getStringId();
+		return "StoreLockConstr_" + getStringId();
 	}
 
 	@NotNull
 	private String getOptimizationLockConstraintName(){
-		return "OptimizationLockConstraint_" + getStringId();
+		return "OptimLockConstr_" + getStringId();
 	}
 
 	/**

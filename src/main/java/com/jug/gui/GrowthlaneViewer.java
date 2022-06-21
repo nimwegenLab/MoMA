@@ -211,7 +211,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private DecimalFormat costFormat = new DecimalFormat(".##");
 
     private void updateHypothesisInfoTooltip() {
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
@@ -243,7 +243,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private void updateHoveredOptimalHypothesis() {
         hoveredOptimalHypothesis = null;
         final int t = glf.getTime();
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY);
         }
     }
@@ -397,7 +397,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (!this.isMouseOver) {
             hypothesesAtHoverPosition = new ArrayList<>();
             indexOfCurrentHoveredHypothesis = -1;
-        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp().isReady()) {
+        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             List<Hypothesis<AdvancedComponent<FloatType>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;

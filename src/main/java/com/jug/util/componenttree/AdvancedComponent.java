@@ -302,8 +302,15 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private ValuePair<Integer, Integer> verticalComponentLimits;
 
     public ValuePair<Integer, Integer> getVerticalComponentLimits() {
-        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getTreeNodeInterval(this);
+        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 1);
         return verticalComponentLimits;
+    }
+
+    private ValuePair<Integer, Integer> horizontalComponentLimits;
+
+    public ValuePair<Integer, Integer> getHorizontalComponentLimits() {
+        if (horizontalComponentLimits == null) horizontalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 0);
+        return horizontalComponentLimits;
     }
 
     private int frame;
@@ -314,8 +321,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public String getStringId(){
         frame = getFrameNumber();
-        ValuePair<Integer, Integer> verticalLimits = getVerticalComponentLimits();
-        String id = "HypAtT" + getFrameNumber() + "Top" + verticalLimits.getA() + "Bottom" + verticalLimits.getB() + "Hash" + hashCode();
+//        String id = "HypAtT" + getFrameNumber() + "Top" + getVerticalComponentLimits().getA() + "Bottom" + getVerticalComponentLimits().getB() + "Hash" + hashCode();
+        String id = "HypAtT" + getFrameNumber() + "Top" + getVerticalComponentLimits().getA() + "Bottom" + getVerticalComponentLimits().getB() + "Left" + getHorizontalComponentLimits().getA() + "Right" + getHorizontalComponentLimits().getB() + "Hash" + hashCode();
         return id;
     }
 

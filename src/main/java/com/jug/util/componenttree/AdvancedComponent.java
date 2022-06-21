@@ -321,8 +321,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public String getStringId(){
         frame = getFrameNumber();
-//        String id = "HypAtT" + getFrameNumber() + "Top" + getVerticalComponentLimits().getA() + "Bottom" + getVerticalComponentLimits().getB() + "Hash" + hashCode();
-        String id = "HypAtT" + getFrameNumber() + "Top" + getVerticalComponentLimits().getA() + "Bottom" + getVerticalComponentLimits().getB() + "Left" + getHorizontalComponentLimits().getA() + "Right" + getHorizontalComponentLimits().getB() + "Hash" + hashCode();
+        String id = "HypAtT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         return id;
     }
 

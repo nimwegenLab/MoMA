@@ -224,6 +224,18 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
 	}
 
+	private void addFreezeConstraintWithName(String constraintName) {
+		try {
+			if (this.isChoosen()) {
+				addConstraint(1.0, constraintName);
+			} else {
+				addConstraint(0.0, constraintName);
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	private boolean constraintExistsWithName(String constraintName){
 		try {
 			return !isNull(ilp.model.getConstrByName(constraintName));
@@ -248,15 +260,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void addStorageLockConstraint() {
-		try {
-			if (this.isChoosen()) {
-				addConstraint(1.0, getStorageLockConstraintName());
-			} else {
-				addConstraint(0.0, getStorageLockConstraintName());
-			}
-		} catch (GRBException e) {
-			throw new RuntimeException(e);
-		}
+		addFreezeConstraintWithName(getStorageLockConstraintName());
 	}
 
 	public void removeStorageLockConstraint() {
@@ -264,15 +268,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void addOptimizationLockConstraint() {
-		try {
-			if (this.isChoosen()) {
-				addConstraint(1.0, getOptimizationLockConstraintName());
-			} else {
-				addConstraint(0.0, getOptimizationLockConstraintName());
-			}
-		} catch (GRBException e) {
-			throw new RuntimeException(e);
-		}
+		addFreezeConstraintWithName(getOptimizationLockConstraintName());
 	}
 
 	public void removeOptimizationLockConstraint() {

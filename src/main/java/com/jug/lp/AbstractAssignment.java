@@ -280,6 +280,23 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	@NotNull
+	private String getOptimizationIgnoreConstraintName(){
+		return "OptimRangeIgnorConstr_" + getStringId();
+	}
+
+	public void addOptimizationIgnoreConstraint() {
+		try {
+			addConstraint(0.0, getOptimizationIgnoreConstraintName());
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void removeOptimizationIgnoreConstraint() {
+		removeConstraintWithName(getOptimizationIgnoreConstraintName());
+	}
+
+	@NotNull
 	private String getStorageLockConstraintName() {
 		return "StoreLockConstr_" + getStringId();
 	}

@@ -2056,23 +2056,16 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
+     * Ignore all assignments after the end of the tracking range that the user specified.
      *
+     * @param tStart: time step after which assignments will be ignored
      */
-    public void ignoreBeyond(final int t) {
-        if (t + 1 >= gl.size()) {
-            // remove ignore-constraints altogether
-            for (int i = 0; i < gl.size(); i++) {
-                unignoreSegmentsAt(i);
-            }
-        } else {
-            // remove ignore-constraints at [0,t]
-            for (int i = 0; i <= t; i++) {
-                unignoreSegmentsAt(i);
-            }
-            // add ignore-constraints at [t+1,T]
-            for (int i = t + 1; i < gl.size(); i++) {
-                ignoreSegmentsAt(i);
-            }
+    public void ignoreBeyond(final int tStart) {
+        for (int i = 0; i <= tStart; i++) {
+            unignoreSegmentsAt(i);
+        }
+        for (int i = tStart + 1; i < gl.size(); i++) {
+            ignoreSegmentsAt(i);
         }
     }
 
@@ -2080,45 +2073,19 @@ public class GrowthlaneTrackingILP {
      * @param t
      */
     private void unignoreSegmentsAt(final int t) {
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
-                nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final GRBConstr constr = ignoreSegmentConstraints.get(hyp);
-            if (constr != null) {
-                try {
-                    model.remove(constr);
-                    ignoreSegmentConstraints.remove(hyp);
-                } catch (final GRBException e) {
-//					e.printStackTrace();
-                }
-            }
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            assignment.removeOptimizationIgnoreConstraint();
         }
     }
 
     /**
      * @param t
      */
-    private void ignoreSegmentsAt(final int t) {
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
-                nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            if (ignoreSegmentConstraints.get(hyp) == null) {
-                try {
-                    final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors =
-                            edgeSets.getRightNeighborhood(hyp);
-                    final GRBLinExpr expr = new GRBLinExpr();
-                    if (rightNeighbors != null) {
-                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-                            expr.addTerm(1.0, assmnt.getGRBVar());
-                        }
-                        final GRBConstr constr =
-                                model.addConstr(expr, GRB.EQUAL, 0.0, "OptimRangeIgnorConstr_At" + t + "_" + hyp.getStringId());
-                        ignoreSegmentConstraints.put(hyp, constr);
-                    }
-                } catch (final GRBException e) {
-//					e.printStackTrace();
-                }
-            }
+    public void ignoreSegmentsAt(int t) {
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            assignment.addOptimizationIgnoreConstraint();
         }
     }
 

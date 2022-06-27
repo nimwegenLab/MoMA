@@ -119,13 +119,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
             updateGui();
         });
-
-        this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
-            if (model.getCurrentGL().getIlp().isReady()) {
-                model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
-            }
-            updateGui();
-        });
     }
 
     public void updateGui() {
@@ -742,10 +735,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
 
                 model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
-                if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
-                    // this is needed because of the duplication of the last time-point
-                    model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
-                }
+                model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
 
                 System.out.println("Finding optimal result...");
                 model.getCurrentGL().getIlp().runImmediately();

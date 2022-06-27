@@ -281,7 +281,11 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void addOptimizationIgnoreConstraint() {
-		addFreezeConstraintWithName(getOptimizationIgnoreConstraintName());
+		try {
+			addConstraint(0.0, getOptimizationIgnoreConstraintName());
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void removeOptimizationIgnoreConstraint() {

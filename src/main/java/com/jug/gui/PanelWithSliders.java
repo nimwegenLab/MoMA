@@ -48,21 +48,8 @@ public class PanelWithSliders extends JPanel {
         // --- Slider for TrackingRage ----------
         trackingRangeSlider = new RangeSlider(0, model.getTimeStepMaximum());
         trackingRangeSlider.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
-//        int optimizationRangeEnd = configurationManager.getOptimizationRangeEnd();
-//        if (MoMA.getInitialOptimizationRange() != -1) {
-//            optimizationRangeEnd = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
-//        }
         trackingRangeSlider.setValue(configurationManager.getMinTime());
         trackingRangeSlider.setUpperValue(configurationManager.getMaxTime());
-//        if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
-//            trackingRangeSlider.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
-//        } else {
-//            trackingRangeSlider.setUpperValue(optimizationRangeEnd);
-//        }
-//        trackingRangeSlider.addChangeListener((e) -> {
-//            configurationManager.setOptimizationRangeStart(trackingRangeSlider.getValue());
-//            configurationManager.setOptimizationRangeEnd(trackingRangeSlider.getUpperValue());
-//        });
 
         final JLabel lblIgnoreBeyond =
                 new JLabel(String.format("opt. range:", trackingRangeSlider.getValue()));

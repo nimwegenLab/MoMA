@@ -1,8 +1,8 @@
 package com.jug.gui;
 
+import com.jug.Growthlane;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
-import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -73,11 +73,17 @@ public class PanelWithSliders extends JPanel {
         this.add(labelCurrentTime);
         this.add(timestepSlider);
 
-        GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
-        trackingRangeSlider.setEnabled(ilp.isReady());
-        ilp.addChangeListener((e) -> {
-            GrowthlaneTrackingILP tmp = (GrowthlaneTrackingILP) e.getSource();
-            trackingRangeSlider.setEnabled(tmp.isReady());
+        final Growthlane currentGL = model.getCurrentGL();
+        trackingRangeSlider.setEnabled(currentGL.ilpIsReady());
+        currentGL.addChangeListener((e) -> {
+            Growthlane gl = ((Growthlane) e.getSource());
+            if(gl.ilpIsReady()){
+                trackingRangeSlider.setEnabled(true);
+                setTrackingRangeStart(gl.getIlp().getOptimizationRangeStart());
+            }
+            else{
+                trackingRangeSlider.setEnabled(false);
+            }
         });
     }
 

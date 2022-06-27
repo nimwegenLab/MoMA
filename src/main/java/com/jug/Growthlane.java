@@ -11,6 +11,8 @@ import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,6 +136,8 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( false );
 			guiProgressReceiver.dispose();
 		}
+
+		ilp.addChangeListener((e) -> fireStateChanged());
 	}
 
 	public boolean ilpIsReady() {
@@ -141,5 +145,21 @@ public class Growthlane {
 			return false;
 		}
 		return ilp.isReady();
+	}
+
+	private List<ChangeListener> listenerList = new ArrayList<>();
+
+	public void addChangeListener(ChangeListener l) {
+		listenerList.add(l);
+	}
+
+	public void removeChangeListener(ChangeListener l) {
+		listenerList.remove(l);
+	}
+
+	public void fireStateChanged() {
+		for (ChangeListener listener : listenerList) {
+			listener.stateChanged(new ChangeEvent(this));
+		}
 	}
 }

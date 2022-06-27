@@ -9,7 +9,6 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
-import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
@@ -925,15 +924,17 @@ public class GrowthlaneTrackingILP {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }
+            if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
+                removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
+                removeStorageLockConstraintAfterFirstOptimization = false;
+            }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
         }
-
-        if (removeStorageLockConstraintAfterFirstOptimization) {
-            removeStorageLockConstraintsFromAssignments();
-            removeStorageLockConstraintAfterFirstOptimization = false;
+        finally {
+            fireStateChanged();
         }
     }
 
@@ -2140,14 +2141,6 @@ public class GrowthlaneTrackingILP {
         listenerList.add(l);
     }
 
-    /**
-     * Removes a ChangeListener from the slider.
-     *
-     * @param l the ChangeListener to remove
-     * @see #fireStateChanged
-     * @see #addChangeListener
-
-     */
     public void removeChangeListener(ChangeListener l) {
         listenerList.remove(l);
     }
@@ -2158,34 +2151,59 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private int optimizationRangeStart = -1;
+//    private int optimizationRangeStart = -1;
 
     public int getOptimizationRangeStart() {
-//        if (optimizationRangeStart != -1) {
-//            return optimizationRangeStart;
-//        } else {
-            AbstractAssignment lastAssignmentWithConstraint = getLastAssignmentWithTargetConstraint();
-            if (!isNull(lastAssignmentWithConstraint)) {
-                optimizationRangeStart = lastAssignmentWithConstraint.getSourceTimeStep();
-            } else {
-                optimizationRangeStart = 0;
-            }
-//        }
-        return optimizationRangeStart;
+        final int timeStepOfLastAssignmentWithLockingConstraint = getTimeStepOfLastAssignmentWithLockingConstraint();
+        return timeStepOfLastAssignmentWithLockingConstraint;
     }
 
-    private AbstractAssignment getLastAssignmentWithTargetConstraint() {
-        AbstractAssignment lastAssignment = null;
+//        public int getOptimizationRangeStart_() {
+////        if (optimizationRangeStart != -1) {
+////            return optimizationRangeStart;
+////        } else {
+//            AbstractAssignment lastAssignmentWithConstraint = getLastAssignmentWithLockingConstraint();
+//            if (!isNull(lastAssignmentWithConstraint)) {
+//                optimizationRangeStart = lastAssignmentWithConstraint.getSourceTimeStep();
+//            } else {
+//                optimizationRangeStart = 0;
+//            }
+////        }
+//        return optimizationRangeStart;
+//    }
+
+    private int getTimeStepOfLastAssignmentWithLockingConstraint() {
+        for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
+            if (!assignmentsHaveLockingConstraintsAt(t)) {
+                return t;
+            }
+        }
+        return 0;
+    }
+
+    private boolean assignmentsHaveLockingConstraintsAt(int t){
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            if (assignment.hasOptimizationLockConstraint()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private AbstractAssignment getLastAssignmentWithLockingConstraint_() {
+        AbstractAssignment lastAssignmentWithLock = null;
         for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
             List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
             for (AbstractAssignment<?> assignment : assignments) {
                 if (assignment.hasOptimizationLockConstraint()) {
-                    lastAssignment = assignment;
+                    lastAssignmentWithLock = assignment;
+                    continue;
                 } else {
-                    return lastAssignment;
+                    return lastAssignmentWithLock;
                 }
             }
         }
-        return lastAssignment;
+        return lastAssignmentWithLock;
     }
 }

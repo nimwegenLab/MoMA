@@ -78,12 +78,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	@NotNull
 	private String getOptimizationLockConstraintName(){
-		return "OptimRangeLockConstr_" + getStringId();
+		return "BeforeOptimRangeLockConstr_" + getStringId();
 	}
 
 	@NotNull
 	private String getOptimizationIgnoreConstraintName(){
-		return "OptimRangeIgnorConstr_" + getStringId();
+		return "AfterOptimRangeConstr_" + getStringId();
 	}
 
 	/**

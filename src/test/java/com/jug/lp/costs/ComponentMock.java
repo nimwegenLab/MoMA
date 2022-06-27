@@ -4,7 +4,6 @@ import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ImageJ;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.labeling.ConnectedComponents;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
@@ -48,6 +47,11 @@ public class ComponentMock implements ComponentInterface {
 
     @Override
     public Double getWatershedLinePixelValueAverage() {
+        return null;
+    }
+
+    @Override
+    public List<Double> getWatershedLinePixelValuesAsDoubles() {
         return null;
     }
 
@@ -122,8 +126,13 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
-    public Component getParent() {
+    public ComponentInterface getParent() {
         return null;
+    }
+
+    @Override
+    public double getPixelValueAverage() {
+        return 0;
     }
 
     @Override

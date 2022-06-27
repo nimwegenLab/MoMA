@@ -2152,8 +2152,7 @@ public class GrowthlaneTrackingILP {
     }
 
     public int getOptimizationRangeStart() {
-        final int timeStepOfLastAssignmentWithLockingConstraint = getTimeStepOfLastAssignmentWithLockingConstraint();
-        return timeStepOfLastAssignmentWithLockingConstraint;
+        return getTimeStepOfLastAssignmentWithLockingConstraint();
     }
 
     private int getTimeStepOfLastAssignmentWithLockingConstraint() {

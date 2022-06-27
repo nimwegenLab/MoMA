@@ -79,7 +79,9 @@ public class PanelWithSliders extends JPanel {
             Growthlane gl = ((Growthlane) e.getSource());
             if(gl.ilpIsReady()){
                 trackingRangeSlider.setEnabled(true);
-                setTrackingRangeStart(gl.getIlp().getOptimizationRangeStart());
+                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
+                setTrackingRangeStart(optimizationRangeStart);
+                timestepSlider.setValue(optimizationRangeStart);
             }
             else{
                 trackingRangeSlider.setEnabled(false);

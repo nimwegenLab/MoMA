@@ -499,6 +499,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        if (hoveredAssignments.isEmpty()) {
+            return; /* no entries in the list of hovered assignments that we could scroll through */
+        }
         resetSelectedAssignments();
         int increment = -e.getWheelRotation();
 

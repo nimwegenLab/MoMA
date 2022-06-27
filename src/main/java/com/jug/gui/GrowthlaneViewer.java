@@ -265,9 +265,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
-        if (isNull(glf))
+        if (isNull(glf)) {
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
-
+        }
+        if (hypothesesAtHoverPosition.isEmpty()) {
+            return; /* no entries in the list of hovered hypothesis that we could scroll through */
+        }
         int increment = e.getWheelRotation();
 
         if (indexOfCurrentHoveredHypothesis + increment >= getHypothesesAtHoverPosition().size()) {

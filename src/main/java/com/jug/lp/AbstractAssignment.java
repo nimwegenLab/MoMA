@@ -71,6 +71,21 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
+	@NotNull
+	private String getStorageLockConstraintName() {
+		return "StoreLockConstr_" + getStringId();
+	}
+
+	@NotNull
+	private String getOptimizationLockConstraintName(){
+		return "OptimRangeLockConstr_" + getStringId();
+	}
+
+	@NotNull
+	private String getOptimizationIgnoreConstraintName(){
+		return "OptimRangeIgnorConstr_" + getStringId();
+	}
+
 	/**
 	 * @param ilpVar
 	 *            the ilpVar to set
@@ -275,11 +290,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		removeConstraintWithName(getOptimizationLockConstraintName());
 	}
 
-	@NotNull
-	private String getOptimizationIgnoreConstraintName(){
-		return "OptimRangeIgnorConstr_" + getStringId();
-	}
-
 	public void addOptimizationIgnoreConstraint() {
 		try {
 			addConstraint(0.0, getOptimizationIgnoreConstraintName());
@@ -290,16 +300,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
 	public void removeOptimizationIgnoreConstraint() {
 		removeConstraintWithName(getOptimizationIgnoreConstraintName());
-	}
-
-	@NotNull
-	private String getStorageLockConstraintName() {
-		return "StoreLockConstr_" + getStringId();
-	}
-
-	@NotNull
-	private String getOptimizationLockConstraintName(){
-		return "OptimRangeLockConstr_" + getStringId();
 	}
 
 	/**

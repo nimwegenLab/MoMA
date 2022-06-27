@@ -25,7 +25,7 @@ public class Growthlane {
 	// fields
 	// -------------------------------------------------------------------------------------
 	private final List<GrowthlaneFrame> frames;
-	private GrowthlaneTrackingILP ilp; //<
+	private GrowthlaneTrackingILP ilp;
 	private IImageProvider imageProvider;
 	private IDialogManager dialogManager;
 	private FilePaths filePaths;

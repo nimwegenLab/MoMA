@@ -18,6 +18,7 @@ import static java.util.Objects.isNull;
 @SuppressWarnings( "restriction" )
 public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 
+	private final int sourceTimeStep;
 	private int type;
 
 	GrowthlaneTrackingILP ilp;
@@ -29,7 +30,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	/**
 	 * Creates an assignment...
 	 */
-	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp) {
+	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, int sourceTimeStep) {
+		this.sourceTimeStep = sourceTimeStep;
 		this.setType( type );
 		setGRBVar( ilpVariable );
 		setGrowthlaneTrackingILP( ilp );
@@ -233,7 +235,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
 		if (constraintExistsWithName(constraintName)) {
 			return;
-		};
+		}
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
@@ -286,6 +288,10 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		addFreezeConstraintWithName(getOptimizationLockConstraintName());
 	}
 
+	public boolean hasOptimizationLockConstraint() {
+		return constraintExistsWithName(getOptimizationLockConstraintName());
+	}
+
 	public void removeOptimizationLockConstraint() {
 		removeConstraintWithName(getOptimizationLockConstraintName());
 	}
@@ -334,5 +340,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public boolean isPruned() {
 		return isPruned;
+	}
+
+	public int getSourceTimeStep() {
+		return sourceTimeStep;
 	}
 }

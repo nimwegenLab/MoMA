@@ -14,23 +14,15 @@ import java.util.List;
  */
 @SuppressWarnings("restriction")
 public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
-
-    private static final int dcId = 0;
-    private int sourceTimeStep;
-    private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
     private final Hypothesis<AdvancedComponent<FloatType>> who;
 
     /**
      * Creates an ExitAssignment.
      *
-     * @param nodes
-     * @param edges
      * @param who
      */
-    public LysisAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> who) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp);
-        this.sourceTimeStep = sourceTimeStep;
-        this.edges = edges;
+    public LysisAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final Hypothesis<AdvancedComponent<FloatType>> who) {
+        super(GrowthlaneTrackingILP.ASSIGNMENT_LYSIS, ilpVariable, ilp, sourceTimeStep);
         this.who = who;
     }
 

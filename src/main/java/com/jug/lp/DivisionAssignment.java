@@ -28,8 +28,9 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
                               final GrowthlaneTrackingILP ilp,
                               final Hypothesis<AdvancedComponent<FloatType>> from,
                               final Hypothesis<AdvancedComponent<FloatType>> toUpper,
-                              final Hypothesis<AdvancedComponent<FloatType>> toLower) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
+                              final Hypothesis<AdvancedComponent<FloatType>> toLower,
+                              int sourceTimeStep) {
+        super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp, sourceTimeStep);
         this.from = from;
         this.toUpper = toUpper;
         this.toLower = toLower;

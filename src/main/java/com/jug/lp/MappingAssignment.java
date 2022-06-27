@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
-    private int sourceTimeStep;
     private final Hypothesis<AdvancedComponent<FloatType>> from;
     private final Hypothesis<AdvancedComponent<FloatType>> to;
 
@@ -26,8 +25,7 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      * @param to
      */
     public MappingAssignment(final int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> from, final Hypothesis<AdvancedComponent<FloatType>> to) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp);
-        this.sourceTimeStep = sourceTimeStep;
+        super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp, sourceTimeStep);
         this.from = from;
         this.to = to;
     }

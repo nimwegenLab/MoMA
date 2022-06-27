@@ -1,7 +1,6 @@
 package com.jug.lp;
 
 import com.jug.config.ConfigurationManager;
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBException;
@@ -10,9 +9,7 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug
@@ -21,7 +18,6 @@ import java.util.Set;
 public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
     private static int dcId = 0;
-    private int sourceTimeStep;
     private final List<Hypothesis<AdvancedComponent<FloatType>>> Hup;
     private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
     private final Hypothesis<AdvancedComponent<FloatType>> who;
@@ -34,8 +30,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      * @param who
      */
     public ExitAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> who) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp);
-        this.sourceTimeStep = sourceTimeStep;
+        super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp, sourceTimeStep);
         this.Hup = Hup;
         this.edges = edges;
         this.who = who;
@@ -85,7 +80,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         }
 
         if (add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS) {
-            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstrAtT" + sourceTimeStep + "_" + this.getId() + "_Id" + dcId);
+            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstrAtT" + getSourceTimeStep() + "_" + this.getId() + "_Id" + dcId);
         }
         dcId++;
     }

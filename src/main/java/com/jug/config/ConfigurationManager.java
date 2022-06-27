@@ -224,16 +224,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private int minTime = -1;
     private int maxTime = -1;
 
-    private int optimizationRangeStart = -1;
-    private int optimizationRangeEnd = -1;
+//    private int optimizationRangeStart = -1;
+//    private int optimizationRangeEnd = -1;
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
-        optimizationRangeStart = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_START", Integer.toString(optimizationRangeStart)));
-        optimizationRangeEnd = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_END", Integer.toString(optimizationRangeEnd)));
+//        optimizationRangeStart = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_START", Integer.toString(optimizationRangeStart)));
+//        optimizationRangeEnd = Integer.parseInt(props.getProperty("OPTIMIZATION_RANGE_END", Integer.toString(optimizationRangeEnd)));
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
         maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_END", Integer.toString(maxTime)));
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
@@ -371,8 +371,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         try {
             final OutputStream out = new FileOutputStream(f);
 
-            props.setProperty("OPTIMIZATION_RANGE_START", Integer.toString(getOptimizationRangeStart()));
-            props.setProperty("OPTIMIZATION_RANGE_END", Integer.toString(getOptimizationRangeEnd()));
+//            props.setProperty("OPTIMIZATION_RANGE_START", Integer.toString(getOptimizationRangeStart()));
+//            props.setProperty("OPTIMIZATION_RANGE_END", Integer.toString(getOptimizationRangeEnd()));
             props.setProperty("TIME_RANGE_START", Integer.toString(minTime));
             props.setProperty("TIME_RANGE_END", Integer.toString(maxTime));
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
@@ -554,19 +554,19 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         this.isReloading = isReloading;
     }
 
-    public int getOptimizationRangeStart() {
-        return optimizationRangeStart;
-    }
-
-    public void setOptimizationRangeStart(int optimizationRangeStart) {
-        this.optimizationRangeStart = optimizationRangeStart;
-    }
-
-    public int getOptimizationRangeEnd() {
-        return optimizationRangeEnd;
-    }
-
-    public void setOptimizationRangeEnd(int optimizationRangeEnd) {
-        this.optimizationRangeEnd = optimizationRangeEnd;
-    }
+//    public int getOptimizationRangeStart() {
+//        return optimizationRangeStart;
+//    }
+//
+//    public void setOptimizationRangeStart(int optimizationRangeStart) {
+//        this.optimizationRangeStart = optimizationRangeStart;
+//    }
+//
+//    public int getOptimizationRangeEnd() {
+//        return optimizationRangeEnd;
+//    }
+//
+//    public void setOptimizationRangeEnd(int optimizationRangeEnd) {
+//        this.optimizationRangeEnd = optimizationRangeEnd;
+//    }
 }

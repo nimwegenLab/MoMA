@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
+import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -23,7 +24,7 @@ public class PanelWithSliders extends JPanel {
 
     private void build() {
         // --- Slider for time and GL -------------
-        int currentTimeStep = configurationManager.getOptimizationRangeStart(); /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
+        int currentTimeStep = configurationManager.getMinTime(); /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
         timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), currentTimeStep);
         model.setCurrentGLF(timestepSlider.getValue());
 
@@ -51,17 +52,17 @@ public class PanelWithSliders extends JPanel {
 //        if (MoMA.getInitialOptimizationRange() != -1) {
 //            optimizationRangeEnd = Math.min(MoMA.getInitialOptimizationRange(), model.getTimeStepMaximum());
 //        }
-        trackingRangeSlider.setValue(configurationManager.getOptimizationRangeStart());
-        trackingRangeSlider.setUpperValue(configurationManager.getOptimizationRangeEnd());
+        trackingRangeSlider.setValue(configurationManager.getMinTime());
+        trackingRangeSlider.setUpperValue(configurationManager.getMaxTime());
 //        if (configurationManager.OPTIMISATION_INTERVAL_LENGTH >= 0) {
 //            trackingRangeSlider.setUpperValue(configurationManager.OPTIMISATION_INTERVAL_LENGTH);
 //        } else {
 //            trackingRangeSlider.setUpperValue(optimizationRangeEnd);
 //        }
-        trackingRangeSlider.addChangeListener((e) -> {
-            configurationManager.setOptimizationRangeStart(trackingRangeSlider.getValue());
-            configurationManager.setOptimizationRangeEnd(trackingRangeSlider.getUpperValue());
-        });
+//        trackingRangeSlider.addChangeListener((e) -> {
+//            configurationManager.setOptimizationRangeStart(trackingRangeSlider.getValue());
+//            configurationManager.setOptimizationRangeEnd(trackingRangeSlider.getUpperValue());
+//        });
 
         final JLabel lblIgnoreBeyond =
                 new JLabel(String.format("opt. range:", trackingRangeSlider.getValue()));
@@ -71,6 +72,13 @@ public class PanelWithSliders extends JPanel {
         this.add(trackingRangeSlider);
         this.add(labelCurrentTime);
         this.add(timestepSlider);
+
+        GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
+        trackingRangeSlider.setEnabled(ilp.isReady());
+        ilp.addChangeListener((e) -> {
+            GrowthlaneTrackingILP tmp = (GrowthlaneTrackingILP) e.getSource();
+            trackingRangeSlider.setEnabled(tmp.isReady());
+        });
     }
 
     public void requestFocusOnTimeStepSlider(){

@@ -733,17 +733,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
-                    panelWithSliders.setTrackingRangeStart(configurationManager.getOptimizationRangeStart());
+//                    panelWithSliders.setTrackingRangeStart(model.getCurrentGL().getIlp().getOptimizationRangeStart());
                 }
 
-                if (panelWithSliders.getTimeStepSliderPosition() > panelWithSliders.getTrackingRangeEnd()) {
-                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition());
-                }
-                if (panelWithSliders.getTimeStepSliderPosition() < panelWithSliders.getTrackingRangeStart()) {
-                    int len = panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
-                    panelWithSliders.setTrackingRangeStart(panelWithSliders.getTimeStepSliderPosition() - len / 2);
-                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition() + len / 2 + len % 2);
-                }
+//                if (panelWithSliders.getTimeStepSliderPosition() > panelWithSliders.getTrackingRangeEnd()) {
+//                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition());
+//                }
+//                if (panelWithSliders.getTimeStepSliderPosition() < panelWithSliders.getTrackingRangeStart()) {
+//                    int len = panelWithSliders.getTrackingRangeEnd() - panelWithSliders.getTrackingRangeStart();
+//                    panelWithSliders.setTrackingRangeStart(panelWithSliders.getTimeStepSliderPosition() - len / 2);
+//                    panelWithSliders.setTrackingRangeEnd(panelWithSliders.getTimeStepSliderPosition() + len / 2 + len % 2);
+//                }
 
                 System.out.println("Finding optimal result...");
                 model.getCurrentGL().getIlp().runImmediately();

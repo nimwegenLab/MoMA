@@ -9,6 +9,7 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
+import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
@@ -25,6 +26,8 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
@@ -377,7 +380,7 @@ public class GrowthlaneTrackingILP {
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp));
 //            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", sourceTimeStep, hyp.getStringId()));
-            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, hyp);
+            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
         }
@@ -658,7 +661,7 @@ public class GrowthlaneTrackingILP {
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
 
-                    final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor);
+                    final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor, sourceTimeStep);
                     nodes.addAssignment(sourceTimeStep, da);
                     edgeSets.addToRightNeighborhood(from, da);
                     edgeSets.addToLeftNeighborhood(to, da);
@@ -2129,5 +2132,60 @@ public class GrowthlaneTrackingILP {
 
     public void addDialogManger(IDialogManager dialogManager) {
         this.dialogManager = dialogManager;
+    }
+
+    private List<ChangeListener> listenerList = new ArrayList<>();
+
+    public void addChangeListener(ChangeListener l) {
+        listenerList.add(l);
+    }
+
+    /**
+     * Removes a ChangeListener from the slider.
+     *
+     * @param l the ChangeListener to remove
+     * @see #fireStateChanged
+     * @see #addChangeListener
+
+     */
+    public void removeChangeListener(ChangeListener l) {
+        listenerList.remove(l);
+    }
+
+    public void fireStateChanged() {
+        for (ChangeListener listener : listenerList) {
+            listener.stateChanged(new ChangeEvent(this));
+        }
+    }
+
+    private int optimizationRangeStart = -1;
+
+    public int getOptimizationRangeStart() {
+//        if (optimizationRangeStart != -1) {
+//            return optimizationRangeStart;
+//        } else {
+            AbstractAssignment lastAssignmentWithConstraint = getLastAssignmentWithTargetConstraint();
+            if (!isNull(lastAssignmentWithConstraint)) {
+                optimizationRangeStart = lastAssignmentWithConstraint.getSourceTimeStep();
+            } else {
+                optimizationRangeStart = 0;
+            }
+//        }
+        return optimizationRangeStart;
+    }
+
+    private AbstractAssignment getLastAssignmentWithTargetConstraint() {
+        AbstractAssignment lastAssignment = null;
+        for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+            for (AbstractAssignment<?> assignment : assignments) {
+                if (assignment.hasOptimizationLockConstraint()) {
+                    lastAssignment = assignment;
+                } else {
+                    return lastAssignment;
+                }
+            }
+        }
+        return lastAssignment;
     }
 }

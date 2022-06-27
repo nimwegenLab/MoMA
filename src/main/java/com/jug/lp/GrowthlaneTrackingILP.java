@@ -2151,26 +2151,10 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-//    private int optimizationRangeStart = -1;
-
     public int getOptimizationRangeStart() {
         final int timeStepOfLastAssignmentWithLockingConstraint = getTimeStepOfLastAssignmentWithLockingConstraint();
         return timeStepOfLastAssignmentWithLockingConstraint;
     }
-
-//        public int getOptimizationRangeStart_() {
-////        if (optimizationRangeStart != -1) {
-////            return optimizationRangeStart;
-////        } else {
-//            AbstractAssignment lastAssignmentWithConstraint = getLastAssignmentWithLockingConstraint();
-//            if (!isNull(lastAssignmentWithConstraint)) {
-//                optimizationRangeStart = lastAssignmentWithConstraint.getSourceTimeStep();
-//            } else {
-//                optimizationRangeStart = 0;
-//            }
-////        }
-//        return optimizationRangeStart;
-//    }
 
     private int getTimeStepOfLastAssignmentWithLockingConstraint() {
         for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
@@ -2189,21 +2173,5 @@ public class GrowthlaneTrackingILP {
             }
         }
         return false;
-    }
-
-    private AbstractAssignment getLastAssignmentWithLockingConstraint_() {
-        AbstractAssignment lastAssignmentWithLock = null;
-        for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
-            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
-            for (AbstractAssignment<?> assignment : assignments) {
-                if (assignment.hasOptimizationLockConstraint()) {
-                    lastAssignmentWithLock = assignment;
-                    continue;
-                } else {
-                    return lastAssignmentWithLock;
-                }
-            }
-        }
-        return lastAssignmentWithLock;
     }
 }

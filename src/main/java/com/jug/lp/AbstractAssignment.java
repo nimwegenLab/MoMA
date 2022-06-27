@@ -291,6 +291,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void addOptimizationIgnoreConstraint() {
+//		addFreezeConstraintWithName(getOptimizationIgnoreConstraintName()); /* using this will change the behavior of the optimization range, so that the assignment AFTER the range will not be ignored, but instead forced to their current state */
 		try {
 			addConstraint(0.0, getOptimizationIgnoreConstraintName());
 		} catch (GRBException e) {

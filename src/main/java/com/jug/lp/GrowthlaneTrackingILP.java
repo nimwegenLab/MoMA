@@ -2190,7 +2190,7 @@ public class GrowthlaneTrackingILP {
     private boolean assignmentsHavePostOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if (assignment.hasPreOptimizationRangeConstraint()) {
+            if (assignment.hasPostOptimizationRangeConstraint()) {
                 return true;
             }
         }

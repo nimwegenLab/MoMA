@@ -2,6 +2,7 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class GRBModelAdapter implements IGRBModelAdapter {
@@ -30,30 +31,30 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.update();
     }
 
-    @Override
-    public void remove(GRBConstr var) throws GRBException {
-        model.remove(var);
-    }
-
-    HashSet<String> constraintNames = new HashSet<>();
+    HashMap<GRBConstr, String> constraintNames = new HashMap<>();
 
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
-        if(constraintNames.contains(name)){
+        if (constraintNames.containsValue(name)) {
             throw new RuntimeException("gurobi constraint already exists: " + name);
         }
-        constraintNames.add(name);
-//        return model.addConstr(lhsExpr, sense, rhs, name);
         GRBConstr res = null;
         try {
             res = model.getConstrByName(name);
         } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
+//            throw new RuntimeException("Failed while adding Gurobi constraint: " + name);
         }
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
         }
+        constraintNames.put(res, name);
         return res;
+    }
+
+    @Override
+    public void remove(GRBConstr var) throws GRBException {
+        model.remove(var);
+        constraintNames.remove(var);
     }
 
     @Override

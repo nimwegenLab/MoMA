@@ -2181,7 +2181,7 @@ public class GrowthlaneTrackingILP {
     private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
         for (int t = nodes.getNumberOfTimeSteps() - 1; t >= 0; t--) {
             if (!assignmentsHavePostOptimizationRangeConstraintAt(t)) {
-                return t;
+                return t+1; /* prior iteration contained the last assignment with a constraint; hence return t+1 */
             }
         }
         return 0;

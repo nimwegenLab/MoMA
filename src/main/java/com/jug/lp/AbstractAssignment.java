@@ -288,8 +288,12 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
 	}
 
-	public boolean hasOptimizationLockConstraint() {
+	public boolean hasPreOptimizationRangeConstraint() {
 		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
+	}
+
+	public boolean hasPostOptimizationRangeConstraint() {
+		return constraintExistsWithName(getPostOptimizationRangeConstraintName());
 	}
 
 	public void removeOptimizationLockConstraint() {

@@ -2152,22 +2152,45 @@ public class GrowthlaneTrackingILP {
     }
 
     public int getOptimizationRangeStart() {
-        return getTimeStepOfLastAssignmentWithLockingConstraint();
+        return getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint();
     }
 
-    private int getTimeStepOfLastAssignmentWithLockingConstraint() {
+    private int getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint() {
         for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
-            if (!assignmentsHaveLockingConstraintsAt(t)) {
+            if (!assignmentsHavePreOptimizationRangeConstraintAt(t)) {
                 return t;
             }
         }
         return 0;
     }
 
-    private boolean assignmentsHaveLockingConstraintsAt(int t){
+    private boolean assignmentsHavePreOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if (assignment.hasOptimizationLockConstraint()) {
+            if (assignment.hasPreOptimizationRangeConstraint()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int getOptimizationRangeEnd() {
+        return getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint();
+    }
+
+    private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
+        for (int t = nodes.getNumberOfTimeSteps() - 1; t >= 0; t--) {
+            if (!assignmentsHavePostOptimizationRangeConstraintAt(t)) {
+                return t;
+            }
+        }
+        return 0;
+    }
+
+    private boolean assignmentsHavePostOptimizationRangeConstraintAt(int t){
+        List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        for (AbstractAssignment<?> assignment : assignments) {
+            if (assignment.hasPreOptimizationRangeConstraint()) {
                 return true;
             }
         }

@@ -69,6 +69,8 @@ public class PanelWithSliders extends JPanel {
                 int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
                 setTrackingRangeStart(optimizationRangeStart);
                 timestepSlider.setValue(optimizationRangeStart);
+                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
+                setTrackingRangeEnd(optimizationRangeEnd);
             }
             else{
                 trackingRangeSlider.setEnabled(false);

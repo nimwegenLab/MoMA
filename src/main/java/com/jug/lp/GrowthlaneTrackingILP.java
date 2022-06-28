@@ -2066,17 +2066,17 @@ public class GrowthlaneTrackingILP {
      */
     public void ignoreBeyond(final int tStart) {
         for (int i = 0; i <= tStart; i++) {
-            unignoreSegmentsAt(i);
+            unignoreAssignmentsAt(i);
         }
         for (int i = tStart + 1; i < gl.size(); i++) {
-            ignoreSegmentsAt(i);
+            ignoreAssignmentsAt(i);
         }
     }
 
     /**
      * @param t
      */
-    private void unignoreSegmentsAt(final int t) {
+    private void unignoreAssignmentsAt(final int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.removeOptimizationIgnoreConstraint();
@@ -2086,7 +2086,7 @@ public class GrowthlaneTrackingILP {
     /**
      * @param t
      */
-    public void ignoreSegmentsAt(int t) {
+    public void ignoreAssignmentsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.addOptimizationIgnoreConstraint();

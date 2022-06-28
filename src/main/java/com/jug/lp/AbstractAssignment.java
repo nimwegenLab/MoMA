@@ -79,13 +79,13 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	@NotNull
-	private String getOptimizationLockConstraintName(){
-		return "BeforeOptimRangeLockConstr_" + getStringId();
+	private String getPreOptimizationRangeConstraintName(){
+		return "PreOptimRangeLockConstr_" + getStringId();
 	}
 
 	@NotNull
-	private String getOptimizationIgnoreConstraintName(){
-		return "AfterOptimRangeConstr_" + getStringId();
+	private String getPostOptimizationRangeConstraintName(){
+		return "PostOptimRangeLockConstr_" + getStringId();
 	}
 
 	/**
@@ -285,28 +285,23 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	public void addOptimizationLockConstraint() {
-		addFreezeConstraintWithName(getOptimizationLockConstraintName());
+		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
 	}
 
 	public boolean hasOptimizationLockConstraint() {
-		return constraintExistsWithName(getOptimizationLockConstraintName());
+		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
 	}
 
 	public void removeOptimizationLockConstraint() {
-		removeConstraintWithName(getOptimizationLockConstraintName());
+		removeConstraintWithName(getPreOptimizationRangeConstraintName());
 	}
 
 	public void addOptimizationIgnoreConstraint() {
-//		addFreezeConstraintWithName(getOptimizationIgnoreConstraintName()); /* using this will change the behavior of the optimization range, so that the assignment AFTER the range will not be ignored, but instead forced to their current state */
-		try {
-			addConstraint(0.0, getOptimizationIgnoreConstraintName());
-		} catch (GRBException e) {
-			throw new RuntimeException(e);
-		}
+		addFreezeConstraintWithName(getPostOptimizationRangeConstraintName());
 	}
 
 	public void removeOptimizationIgnoreConstraint() {
-		removeConstraintWithName(getOptimizationIgnoreConstraintName());
+		removeConstraintWithName(getPostOptimizationRangeConstraintName());
 	}
 
 	/**

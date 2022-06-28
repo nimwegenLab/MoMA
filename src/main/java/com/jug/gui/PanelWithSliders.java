@@ -24,8 +24,8 @@ public class PanelWithSliders extends JPanel {
 
     private void build() {
         // --- Slider for time and GL -------------
-        int currentTimeStep = configurationManager.getMinTime(); /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
-        timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), currentTimeStep);
+        int initialTimeStep = 0; /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
+        timestepSlider = new JSlider(SwingConstants.HORIZONTAL, 0, model.getTimeStepMaximum(), initialTimeStep);
         model.setCurrentGLF(timestepSlider.getValue());
 
         if (timestepSlider.getMaximum() < 200) {
@@ -48,7 +48,7 @@ public class PanelWithSliders extends JPanel {
         // --- Slider for TrackingRage ----------
         trackingRangeSlider = new RangeSlider(0, model.getTimeStepMaximum());
         trackingRangeSlider.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
-        trackingRangeSlider.setValue(configurationManager.getMinTime());
+        trackingRangeSlider.setValue(initialTimeStep);
         trackingRangeSlider.setUpperValue(configurationManager.getMaxTime());
 
         final JLabel lblIgnoreBeyond =

@@ -56,15 +56,10 @@ public class GrowthlaneTrackingILP {
             new AssignmentsAndHypotheses<>();  // all variables of FG
     public final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets =
             new HypothesisNeighborhoods<>();  // incoming and outgoing assignments per hypothesis
-    private final HashMap<Hypothesis<AdvancedComponent<FloatType>>, GRBConstr> ignoreSegmentConstraints =
-            new HashMap<>(); // for user interaction: avoid node
-    private final HashMap<Hypothesis<AdvancedComponent<FloatType>>, GRBConstr> freezeSegmentConstraints =
-            new HashMap<>(); // for user interaction: force node
     private final GRBConstr[] segmentInFrameCountConstraint;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
-    private final IImageProvider imageProvider;
     private ITrackingConfiguration trackingConfiguration;
     private String versionString;
     private IConfiguration configurationManager;
@@ -79,7 +74,6 @@ public class GrowthlaneTrackingILP {
     // -------------------------------------------------------------------------------------
     public GrowthlaneTrackingILP(final Growthlane gl,
                                  IGRBModelAdapter grbModel,
-                                 IImageProvider imageProvider,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  ITrackingConfiguration trackingConfiguration,
                                  IConfiguration configurationManager,
@@ -88,7 +82,6 @@ public class GrowthlaneTrackingILP {
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
-        this.imageProvider = imageProvider;
         this.trackingConfiguration = trackingConfiguration;
         this.versionString = versionString;
         this.configurationManager = configurationManager;

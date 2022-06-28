@@ -125,7 +125,7 @@ public class Growthlane {
 //		} catch (GRBException e) {
 //			e.printStackTrace();
 //		}
-		ilp = new GrowthlaneTrackingILP(this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
+		ilp = new GrowthlaneTrackingILP(this, model, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

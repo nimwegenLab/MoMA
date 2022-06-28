@@ -10,6 +10,7 @@ import com.jug.lp.GrowthlaneTrackingILP;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
+import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -147,7 +148,7 @@ public class Growthlane {
 		return ilp.isReady();
 	}
 
-	private List<ChangeListener> listenerList = new ArrayList<>();
+	private List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from with in the callback without a concurrent modification error; this seems hacky */
 
 	public void addChangeListener(ChangeListener l) {
 		listenerList.add(l);

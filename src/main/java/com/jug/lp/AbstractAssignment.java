@@ -84,7 +84,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	}
 
 	@NotNull
-	private String getPostOptimizationRangeConstraintName(){
+	private String getPostOptimizationRangeLockConstraintName(){
 		return "PostOptimRangeLockConstr_" + getStringId();
 	}
 
@@ -284,28 +284,28 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		removeConstraintWithName(getStorageLockConstraintName());
 	}
 
-	public void addOptimizationLockConstraint() {
-		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
-	}
-
-	public boolean hasPreOptimizationRangeConstraint() {
+	public boolean hasPreOptimizationRangeLockConstraint() {
 		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
 	}
 
-	public boolean hasPostOptimizationRangeConstraint() {
-		return constraintExistsWithName(getPostOptimizationRangeConstraintName());
+	public void addPreOptimizationRangeLockConstraint() {
+		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
 	}
 
-	public void removeOptimizationLockConstraint() {
+	public void removePreOptimizationRangeLockConstraint() {
 		removeConstraintWithName(getPreOptimizationRangeConstraintName());
 	}
 
-	public void addOptimizationIgnoreConstraint() {
-		addFreezeConstraintWithName(getPostOptimizationRangeConstraintName());
+	public void addPostOptimizationRangeLockConstraint() {
+		addFreezeConstraintWithName(getPostOptimizationRangeLockConstraintName());
 	}
 
-	public void removeOptimizationIgnoreConstraint() {
-		removeConstraintWithName(getPostOptimizationRangeConstraintName());
+	public void removePostOptimizationRangeLockConstraint() {
+		removeConstraintWithName(getPostOptimizationRangeLockConstraintName());
+	}
+
+	public boolean hasPostOptimizationRangeLockConstraint() {
+		return constraintExistsWithName(getPostOptimizationRangeLockConstraintName());
 	}
 
 	/**

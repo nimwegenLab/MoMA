@@ -2079,7 +2079,7 @@ public class GrowthlaneTrackingILP {
     private void unignoreAssignmentsAt(final int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            assignment.removeOptimizationIgnoreConstraint();
+            assignment.removePostOptimizationRangeLockConstraint();
         }
     }
 
@@ -2089,7 +2089,7 @@ public class GrowthlaneTrackingILP {
     public void ignoreAssignmentsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            assignment.addOptimizationIgnoreConstraint();
+            assignment.addPostOptimizationRangeLockConstraint();
         }
     }
 
@@ -2116,14 +2116,14 @@ public class GrowthlaneTrackingILP {
     public void freezeAssignmentsAsAre(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            assignment.addOptimizationLockConstraint();
+            assignment.addPreOptimizationRangeLockConstraint();
         }
     }
 
     private void unfreezeAssignmentsFor(final int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            assignment.removeOptimizationLockConstraint();
+            assignment.removePreOptimizationRangeLockConstraint();
         }
     }
 
@@ -2167,7 +2167,7 @@ public class GrowthlaneTrackingILP {
     private boolean assignmentsHavePreOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if (assignment.hasPreOptimizationRangeConstraint()) {
+            if (assignment.hasPreOptimizationRangeLockConstraint()) {
                 return true;
             }
         }
@@ -2190,7 +2190,7 @@ public class GrowthlaneTrackingILP {
     private boolean assignmentsHavePostOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if (assignment.hasPostOptimizationRangeConstraint()) {
+            if (assignment.hasPostOptimizationRangeLockConstraint()) {
                 return true;
             }
         }

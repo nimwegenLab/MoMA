@@ -35,8 +35,14 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.remove(var);
     }
 
+    HashSet<String> constraintNames = new HashSet<>();
+
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
+        if(constraintNames.contains(name)){
+            throw new RuntimeException("gurobi constraint already exists: " + name);
+        }
+        constraintNames.add(name);
 //        return model.addConstr(lhsExpr, sense, rhs, name);
         GRBConstr res = null;
         try {
@@ -78,19 +84,19 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     HashSet<String> variableNames = new HashSet<>();
 
     @Override
-    public GRBVar addVar(double lb, double ub, double obj, char type, String variableName) throws GRBException {
-        if(variableNames.contains(variableName)){
-            throw new RuntimeException("gurobi variable already exists: " + variableName);
+    public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
+        if(variableNames.contains(name)){
+            throw new RuntimeException("gurobi variable already exists: " + name);
         }
-        variableNames.add(variableName);
+        variableNames.add(name);
         GRBVar res = null;
         try {
-            res = model.getVarByName(variableName);
+            res = model.getVarByName(name);
         } catch (GRBException err) {
 //            System.out.println("Error reading requested variable.");
         }
         if(res == null){
-            res = model.addVar(lb, ub, obj, type, variableName);
+            res = model.addVar(lb, ub, obj, type, name);
         }
         return res;
     }

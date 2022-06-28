@@ -2064,19 +2064,19 @@ public class GrowthlaneTrackingILP {
      *
      * @param tStart: time step after which assignments will be ignored
      */
-    public void ignoreBeyond(final int tStart) {
+    public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
         for (int i = 0; i <= tStart; i++) {
-            unignoreAssignmentsAt(i);
+            removePostOptimizationRangeLockConstraintsAt(i);
         }
         for (int i = tStart + 1; i < gl.size(); i++) {
-            ignoreAssignmentsAt(i);
+            addPostOptimizationRangeLockConstraintsAt(i);
         }
     }
 
     /**
      * @param t
      */
-    private void unignoreAssignmentsAt(final int t) {
+    private void removePostOptimizationRangeLockConstraintsAt(final int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.removePostOptimizationRangeLockConstraint();
@@ -2086,7 +2086,7 @@ public class GrowthlaneTrackingILP {
     /**
      * @param t
      */
-    public void ignoreAssignmentsAt(int t) {
+    public void addPostOptimizationRangeLockConstraintsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.addPostOptimizationRangeLockConstraint();
@@ -2098,12 +2098,12 @@ public class GrowthlaneTrackingILP {
      *
      * @param tEnd: time step before which to freeze
      */
-    public void freezeBefore(final int tEnd) {
+    public void addPreOptimizationRangeLockConstraintsBefore(final int tEnd) {
         for (int t = 0; t < tEnd; t++) {
-            freezeAssignmentsAsAre(t);
+            addPreOptimizationRangeLockConstraintsAt(t);
         }
         for (int t = tEnd; t < gl.size(); t++) {
-            unfreezeAssignmentsFor(t);
+            removePreOptimizationRangeLockConstraintsAt(t);
         }
     }
 
@@ -2113,14 +2113,14 @@ public class GrowthlaneTrackingILP {
      * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
      * maintained active and inactive assignments are maintained inactive.
      */
-    public void freezeAssignmentsAsAre(int t) {
+    public void addPreOptimizationRangeLockConstraintsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.addPreOptimizationRangeLockConstraint();
         }
     }
 
-    private void unfreezeAssignmentsFor(final int t) {
+    private void removePreOptimizationRangeLockConstraintsAt(final int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
             assignment.removePreOptimizationRangeLockConstraint();

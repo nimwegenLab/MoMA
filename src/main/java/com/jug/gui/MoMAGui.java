@@ -124,8 +124,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             JSlider slider = (JSlider) changeEvent.getSource();
             if (!slider.getValueIsAdjusting()) {
                 if (model.getCurrentGL().getIlp().isReady()) {
-                    model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
-                    model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
+                    model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
+                    model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
                 }
                 updateGui();
             }
@@ -796,10 +796,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         panelWithSliders.setTrackingRangeStart(0);
 
-        model.getCurrentGL().getIlp().freezeBefore(panelWithSliders.getTrackingRangeStart());
+        model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
         if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
-            // this is needed because of the duplication of the last time-point
-            model.getCurrentGL().getIlp().ignoreBeyond(panelWithSliders.getTrackingRangeEnd());
+            model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
         }
 
         System.out.println("Finding optimal result...");
@@ -1041,8 +1040,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * This method must be used, when reloading a previous curation state. It does not introduce any additional
      * modifications to the ILP state before running the optimization. In particular, it does not introduce any
      * locking constraints or optimization using the methods:
-     *             model.getCurrentGL().getIlp().freezeBefore();
-     *             model.getCurrentGL().getIlp().ignoreBeyond();
+     *             model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore();
+     *             model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter();
      * as is the case, when calling e.g. buttonOptimizeMore.doClick(); see the action callback stargin with:
      * if (e.getSource().equals(buttonOptimizeMore)) { ... }
      */

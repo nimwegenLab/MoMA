@@ -752,9 +752,7 @@ public class GrowthlaneTrackingILP {
             final C ctNode,
             final int t) throws GRBException {
 
-        // if ctNode is a leave node -> add constraint (by going up the list of
-        // parents and building up the constraint)
-        if (ctNode.getChildren().size() == 0) {
+        if (ctNode.getChildren().size() == 0) { /* If ctNode is leaf-node -> add constraint (by going up the list of parents and building up the constraint) */
             C runnerNode = ctNode;
 
             final GRBLinExpr exprR = new GRBLinExpr();
@@ -790,8 +788,6 @@ public class GrowthlaneTrackingILP {
      * finding an active assignment towards t+1.
      */
     private void addContinuityConstraints() throws GRBException {
-        int eccId = 0;
-
         // For each time-point
         for (int t = 1; t < gl.size(); t++) {
             for (final Hypothesis<AdvancedComponent<FloatType>> hyp : nodes.getHypothesesAt(t)) {
@@ -818,8 +814,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrAtT" + t + "_Id" + eccId);
-                eccId++;
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrAtT" + t + "_" + hyp.getStringId());
             }
         }
     }

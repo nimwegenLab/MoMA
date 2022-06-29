@@ -3,6 +3,7 @@ package com.jug.exploration;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static com.jug.exploration.ExplorationTestHelpers.deleteDirectory;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class ExploreResultLoading {
@@ -13,8 +14,8 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
     }
 
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties() {
@@ -55,6 +56,7 @@ public class ExploreResultLoading {
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
         Integer tmin = 1;
         Integer tmax = 10;
+        deleteDirectory(outputPath);
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }

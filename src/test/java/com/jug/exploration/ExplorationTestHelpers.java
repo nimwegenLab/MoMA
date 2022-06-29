@@ -1,9 +1,12 @@
 package com.jug.exploration;
 
 import com.jug.MoMA;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
@@ -25,6 +28,14 @@ public class ExplorationTestHelpers {
      */
     public static void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
         startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
+    }
+
+    public static void deleteDirectory(Path outputPath) {
+        try {
+            FileUtils.deleteDirectory(outputPath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

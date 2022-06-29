@@ -224,14 +224,18 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private int minTime = -1;
     private int maxTime = -1;
 
-    public String datasetVersion ="";
+    public String datasetMomaVersion = "";
+
+    public void setSatasetMomaVersion(String version) {
+        datasetMomaVersion = version;
+    }
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
     public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
-        datasetVersion = props.getProperty("MOMA_VERSION", datasetVersion);
+        datasetMomaVersion = props.getProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);
         minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
         maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_END", Integer.toString(maxTime)));
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
@@ -369,7 +373,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         try {
             final OutputStream out = new FileOutputStream(f);
 
-            props.setProperty("MOMA_VERSION", datasetVersion);
+            props.setProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);
             props.setProperty("TIME_RANGE_START", Integer.toString(minTime));
             props.setProperty("TIME_RANGE_END", Integer.toString(maxTime));
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
@@ -555,7 +559,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Returns the MoMA version that generated the dataset that is being loaded.
      * @return MoMA version that generated dataset
      */
-    public String getDatasetVersion() {
-        return datasetVersion;
+    public String getDatasetMomaVersion() {
+        return datasetMomaVersion;
     }
 }

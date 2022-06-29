@@ -38,6 +38,14 @@ public class ExplorationTestHelpers {
         }
     }
 
+    public static void createEmptyDirectory(Path pathToDirectory){
+        File f = pathToDirectory.toFile();
+        if (!f.exists()) {
+            f.mkdirs();
+        }
+        deleteDirectoryContent(pathToDirectory);
+    }
+
     public static void deleteDirectoryContent(Path pathToDirectory){
         File f = pathToDirectory.toFile();
         for (File c : f.listFiles())

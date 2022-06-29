@@ -93,8 +93,8 @@ public class MoMA {
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
-			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetVersion(), dic.getGitVersionProvider().getVersionString())) {
-				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetVersion(), dic.getGitVersionProvider().getVersionString()));
+			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
+				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
 				return;
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
@@ -130,6 +130,7 @@ public class MoMA {
 			}
 			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
 		}
+		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset Moma version that will be written to future exported dataset */
 
 		loggerWindow = dic.getLoggerWindow();
 

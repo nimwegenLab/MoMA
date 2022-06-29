@@ -11,15 +11,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class GitVersionProvider {
-    public GitVersionProvider() {
-    }
-
     public String getVersionString() {
         String versionString;
         try {
             versionString = getGitVersionInfo();
         } catch (IOException e) {
-            return "Error: Git version could not be parsed";
+            return "git_version_could_not_be_read";
         }
         return versionString;
 //        throw new NotImplementedException();

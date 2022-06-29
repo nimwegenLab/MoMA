@@ -35,7 +35,6 @@ public class GlDataLoader {
     private ComponentTreeGenerator componentTreeGenerator;
     private IDialogManager dialogManager;
     private FilePaths filePaths;
-    private File mmPropertiesPath;
 
     public GlDataLoader(File mmPropertiesPath,
                         UnetProcessor unetProcessor,
@@ -44,7 +43,6 @@ public class GlDataLoader {
                         ComponentTreeGenerator componentTreeGenerator,
                         IDialogManager dialogManager,
                         FilePaths filePaths) {
-        this.mmPropertiesPath = mmPropertiesPath;
         this.glDataPath = mmPropertiesPath.getParent();
         this.unetProcessor = unetProcessor;
         this.configurationManager = configurationManager;

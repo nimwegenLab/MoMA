@@ -93,6 +93,10 @@ public class MoMA {
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetVersion(), dic.getGitVersionProvider().getVersionString())) {
+				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetVersion(), dic.getGitVersionProvider().getVersionString()));
+				return;
+			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());

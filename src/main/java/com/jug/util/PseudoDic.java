@@ -8,6 +8,7 @@ import com.jug.config.IUnetProcessingConfiguration;
 import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
+import com.jug.datahandling.VersionCompatibilityChecker;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
@@ -264,6 +265,10 @@ public class PseudoDic {
             gitVersionProvider = new GitVersionProvider();
         }
         return gitVersionProvider;
+    }
+
+    public VersionCompatibilityChecker getVersionCompatibilityChecker(){
+        return new VersionCompatibilityChecker();
     }
 
     private MoMAModel momaModel;

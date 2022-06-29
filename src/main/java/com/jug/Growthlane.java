@@ -152,4 +152,14 @@ public class Growthlane {
 			listener.stateChanged(new ChangeEvent(this));
 		}
 	}
+
+	public void generateSegmentationHypotheses() {
+		int numberOfFrames = getFrames().size();
+		getFrames().parallelStream().forEach((glf) -> {
+			int currentFrame = glf.getFrameIndex() + 1;
+			glf.generateSimpleSegmentationHypotheses();
+			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
+		});
+		System.out.println( " ...done!" );
+	}
 }

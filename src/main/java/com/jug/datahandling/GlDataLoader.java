@@ -21,8 +21,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.apache.commons.io.FilenameUtils.removeExtension;
-
 /***
  * This class handles the loading of previously curated GLs. It helps in loading the files needed for restoring the
  * previous curation result.
@@ -78,15 +76,20 @@ public class GlDataLoader {
      * doing the preprocessing, so that we can simplify this method, the way we did.
      */
     private void addGrowthlanes() {
-        this.setGrowthlanes(new ArrayList<>() );
-        getGrowthlanes().add( new Growthlane(imageProvider, dialogManager, filePaths) );
+        setGrowthlanes(new ArrayList<>());
+        getGrowthlanes().add(getGrowthlane());
+    }
 
-        for ( long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension( 2 ); frameIdx++ ) {
+    @NotNull
+    private Growthlane getGrowthlane() {
+        Growthlane newGl = new Growthlane(imageProvider, dialogManager, filePaths);
+        for (long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension(2); frameIdx++) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentTreeGenerator, configurationManager, imageProvider);
-            final IntervalView< FloatType > ivFrame = Views.hyperSlice( imageProvider.getImgRaw(), 2, frameIdx );
+            final IntervalView<FloatType> ivFrame = Views.hyperSlice(imageProvider.getImgRaw(), 2, frameIdx);
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
-            getGrowthlanes().get(0).add(currentFrame);
+            newGl.add(currentFrame);
         }
+        return newGl;
     }
 
     /**
@@ -94,16 +97,10 @@ public class GlDataLoader {
      * Growthlane.findGapHypotheses(Img). Note that this function always uses
      * the image data in 'imgTemp'.
      */
-    private void generateAllSimpleSegmentationHypotheses() {
+    private void generateSegmentationHypothesesForAllGls() {
         imageProvider.setImgProbs(getProbabilityImage());
         for ( final Growthlane gl : getGrowthlanes() ) {
-            int numberOfFrames = gl.getFrames().size();
-            gl.getFrames().parallelStream().forEach((glf) -> {
-                int currentFrame = glf.getFrameIndex() + 1;
-                glf.generateSimpleSegmentationHypotheses();
-                System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
-            });
-            System.out.println( " ...done!" );
+            gl.generateSegmentationHypotheses();
         }
     }
 
@@ -117,7 +114,7 @@ public class GlDataLoader {
         System.out.println( " done!" );
 
         System.out.println( "Generating Segmentation Hypotheses..." );
-        generateAllSimpleSegmentationHypotheses();
+        generateSegmentationHypothesesForAllGls();
         System.out.println( " done!" );
     }
 

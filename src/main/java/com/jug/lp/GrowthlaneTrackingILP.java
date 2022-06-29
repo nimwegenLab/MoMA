@@ -65,7 +65,6 @@ public class GrowthlaneTrackingILP {
     private IConfiguration configurationManager;
     private CostFactory costFactory;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
-    private int pbcId = 0;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
 
@@ -753,6 +752,7 @@ public class GrowthlaneTrackingILP {
             final int t) throws GRBException {
 
         if (ctNode.getChildren().size() == 0) { /* If ctNode is leaf-node -> add constraint (by going up the list of parents and building up the constraint) */
+            String leafNodeHypId = nodes.findHypothesisContaining(ctNode).getStringId();
             C runnerNode = ctNode;
 
             final GRBLinExpr exprR = new GRBLinExpr();
@@ -767,10 +767,8 @@ public class GrowthlaneTrackingILP {
                 }
                 runnerNode = runnerNode.getParent();
             }
-            pbcId++;
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrAtT" + t + "_Id" + pbcId);
-        } else {
-            // if ctNode is a inner node -> recursion
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrAtT" + t + "_" + leafNodeHypId);
+        } else {  /* If ctNode is not a leaf-node -> recurse */
             for (final C ctChild : ctNode.getChildren()) {
                 recursivelyAddPathBlockingConstraints(ctChild, t);
             }

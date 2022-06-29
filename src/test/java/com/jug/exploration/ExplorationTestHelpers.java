@@ -30,12 +30,26 @@ public class ExplorationTestHelpers {
         startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
     }
 
-    public static void deleteDirectory(Path outputPath) {
+    public static void deleteDirectory(Path pathToDirectory) {
         try {
-            FileUtils.deleteDirectory(outputPath.toFile());
+            FileUtils.deleteDirectory(pathToDirectory.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void deleteDirectoryContent(Path pathToDirectory){
+        File f = pathToDirectory.toFile();
+        for (File c : f.listFiles())
+            deleteRecursively(c);
+    }
+
+    private static void deleteRecursively(File f) {
+        if (f.isDirectory()) {
+            for (File c : f.listFiles())
+                deleteRecursively(c);
+        }
+        f.delete();
     }
 
     /**

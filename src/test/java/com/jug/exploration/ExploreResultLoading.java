@@ -3,8 +3,7 @@ package com.jug.exploration;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.jug.exploration.ExplorationTestHelpers.deleteDirectory;
-import static com.jug.exploration.ExplorationTestHelpers.startMoma;
+import static com.jug.exploration.ExplorationTestHelpers.*;
 
 public class ExploreResultLoading {
     String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/";
@@ -56,7 +55,7 @@ public class ExploreResultLoading {
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
         Integer tmin = 1;
         Integer tmax = 10;
-        deleteDirectory(outputPath);
+        deleteDirectoryContent(outputPath);
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }

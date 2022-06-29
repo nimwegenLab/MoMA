@@ -28,7 +28,6 @@ import static org.apache.commons.io.FilenameUtils.removeExtension;
  * previous curation result.
  */
 public class GlDataLoader {
-    private final String glDataPath;
     private UnetProcessor unetProcessor;
     private ConfigurationManager configurationManager;
     private IImageProvider imageProvider;
@@ -36,14 +35,12 @@ public class GlDataLoader {
     private IDialogManager dialogManager;
     private FilePaths filePaths;
 
-    public GlDataLoader(File mmPropertiesPath,
-                        UnetProcessor unetProcessor,
+    public GlDataLoader(UnetProcessor unetProcessor,
                         ConfigurationManager configurationManager,
                         IImageProvider imageProvider,
                         ComponentTreeGenerator componentTreeGenerator,
                         IDialogManager dialogManager,
                         FilePaths filePaths) {
-        this.glDataPath = mmPropertiesPath.getParent();
         this.unetProcessor = unetProcessor;
         this.configurationManager = configurationManager;
         this.imageProvider = imageProvider;

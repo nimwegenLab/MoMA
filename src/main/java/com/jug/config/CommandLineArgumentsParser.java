@@ -19,7 +19,6 @@ public class CommandLineArgumentsParser {
     // - - - - - - - - - - - - - -
     // Info about loaded data
     // - - - - - - - - - - - - - -
-    private Integer initialOptimizationRange = -1;
     private Path outputPath;
     private boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* variable GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY is a hack to allow loading/reading mm.properties first and then initialize */
     private boolean HEADLESS;
@@ -54,9 +53,6 @@ public class CommandLineArgumentsParser {
         final Option timeLast = new Option( "tmax", "max_time", true, "last time-point to be processed" );
         timeLast.setRequired( false );
 
-        final Option optRange = new Option( "optrange", "optimization_range", true, "initial optimization range" );
-        optRange.setRequired( false );
-
         final Option infolder = new Option( "i", "infolder", true, "folder to read data from" );
         infolder.setRequired( false );
 
@@ -72,7 +68,6 @@ public class CommandLineArgumentsParser {
         options.addOption(groundTruthGeneration);
         options.addOption(timeFirst);
         options.addOption(timeLast);
-        options.addOption(optRange);
         options.addOption(infolder);
         options.addOption(outfolder);
         options.addOption(userProps);
@@ -83,7 +78,7 @@ public class CommandLineArgumentsParser {
         } catch ( final ParseException e1 ) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp(
-                    "... [-p props-file] [-i in-folder] [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-optrange num-frames] [-headless]",
+                    "... [-p props-file] [-i in-folder] [-o out-folder] [-c <num-channels>] [-tmin idx] [-tmax idx] [-headless]",
                     "",
                     options,
                     "Error: " + e1.getMessage() );
@@ -194,10 +189,6 @@ public class CommandLineArgumentsParser {
         if ( cmd.hasOption( "tmax" ) ) {
             userDefinedMaxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
         }
-
-        if ( cmd.hasOption( "optrange" ) ) {
-            initialOptimizationRange = Integer.parseInt( cmd.getOptionValue( "optrange" ) );
-        }
     }
 
     public Path getInputFolder() {
@@ -220,13 +211,6 @@ public class CommandLineArgumentsParser {
 
     public boolean getShowGroundTruthFunctionality(){
         return GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY;
-    }
-
-    /**
-     * @return the initial optimization range, -1 if it is infinity.
-     */
-    public int getInitialOptimizationRange() {
-        return initialOptimizationRange;
     }
 
     public Path getOutputPath() {

@@ -323,8 +323,7 @@ public class PseudoDic {
         if (glDataLoader != null) {
             return glDataLoader;
         }
-        glDataLoader = new GlDataLoader(configurationManager.getCurrentPropertyFile(),
-                getUnetProcessor(),
+        glDataLoader = new GlDataLoader(getUnetProcessor(),
                 getConfigurationManager(),
                 getImageProvider(),
                 getComponentTreeGenerator(),

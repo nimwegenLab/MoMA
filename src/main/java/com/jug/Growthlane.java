@@ -101,15 +101,10 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( true );
 		}
 
-//		boolean loadModelFromDisk = false;
 		GRBModelAdapter model = null;
-//		modelGurobi = null;
 		if (!isNull(filePaths.getGurobiMpsFilePath()))
 			try {
-//				String basePath = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
-//				String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
 				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
-//				GRBModel grbModel = new GRBModel(env, basePath + "/ilpModel.mps");
 				GRBModel grbModel = new GRBModel(env, filePaths.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
@@ -119,12 +114,6 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
-//		try {
-////			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp");
-//			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps");
-//		} catch (GRBException e) {
-//			e.printStackTrace();
-//		}
 		ilp = new GrowthlaneTrackingILP(this, model, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );

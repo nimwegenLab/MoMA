@@ -1,7 +1,6 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
-import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
@@ -188,7 +187,7 @@ public class GrowthlaneTrackingILP {
     public void buildILP() {
         try {
             // add Hypothesis and Assignments
-            createHypsAndAssignments();
+            createHypothesesAndAssignments();
 
             HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
             sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
@@ -278,7 +277,7 @@ public class GrowthlaneTrackingILP {
     /**
      * @throws GRBException
      */
-    private void createHypsAndAssignments() throws GRBException {
+    private void createHypothesesAndAssignments() throws GRBException {
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);
         }

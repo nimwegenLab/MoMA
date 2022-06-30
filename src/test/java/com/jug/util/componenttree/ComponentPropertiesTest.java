@@ -73,7 +73,7 @@ public class ComponentPropertiesTest {
 
         ImageJFunctions.show(currentImage);
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
@@ -101,7 +101,7 @@ public class ComponentPropertiesTest {
     }
 
     @NotNull
-    private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
+    private ComponentForestGenerator getComponentForestGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
@@ -169,7 +169,7 @@ public class ComponentPropertiesTest {
 
 //        ImageJFunctions.show(currentImage);
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
         return tree;

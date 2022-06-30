@@ -13,7 +13,7 @@ import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
-import com.jug.util.componenttree.SimpleComponentTree;
+import com.jug.util.componenttree.AdvancedComponentForest;
 import gurobi.*;
 import net.imglib2.Localizable;
 import net.imglib2.Point;
@@ -168,7 +168,7 @@ public class GrowthlaneTrackingILP {
      * @return
      */
     public List<ComponentInterface> getAllComponentsInIlp() {
-        ArrayList<ComponentInterface> ret = new ArrayList<ComponentInterface>();
+        ArrayList<ComponentInterface> ret = new ArrayList<>();
         List<List<Hypothesis<AdvancedComponent<FloatType>>>> result = nodes.getAllHypotheses();
         for (List<Hypothesis<AdvancedComponent<FloatType>>> timestepList : result) {
             for (Hypothesis<AdvancedComponent<FloatType>> hyp : timestepList) {
@@ -341,13 +341,13 @@ public class GrowthlaneTrackingILP {
      */
     private void enumerateAndAddAssignments(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
+                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
+                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
-        addMappingAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
-        addDivisionAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
+        addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+        addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
@@ -406,18 +406,18 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Add mapping-assignments between source components in {@param sourceComponentTree} and target components in
-     * {@param targetComponentTree}.
+     * Add mapping-assignments between source components in {@param sourceComponentForest} and target components in
+     * {@param targetComponentForest}.
      *
      * @param sourceTimeStep                   the time-point from which the <code>curHyps</code> originate.
-     * @param sourceComponentTree the component tree containing source components of the mapping-assignments.
-     * @param targetComponentTree the component tree containing target components of the mapping-assignments.
+     * @param sourceComponentForest the component tree containing source components of the mapping-assignments.
+     * @param targetComponentForest the component tree containing target components of the mapping-assignments.
      * @throws GRBException
      */
     public void addMappingAssignments(final int sourceTimeStep,
-                                      SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
-                                      SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree) throws GRBException {
-        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
+                                      AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest,
+                                      AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest) throws GRBException {
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
             if (sourceTimeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
@@ -427,13 +427,13 @@ public class GrowthlaneTrackingILP {
 
             List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
-                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentTree.getAllComponents(), sourceTimeStep, configurationManager.getMaximumShrinkagePerFrame(), configurationManager.getMaximumGrowthPerFrame());
+                targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentForest.getAllComponents(), sourceTimeStep, configurationManager.getMaximumShrinkagePerFrame(), configurationManager.getMaximumGrowthPerFrame());
             } else {
-                targetComponents = targetComponentTree.getAllComponents();
+                targetComponents = targetComponentForest.getAllComponents();
             }
 
             for (final AdvancedComponent<FloatType> targetComponent : targetComponents) {
-//            for (final AdvancedComponent<FloatType> targetComponent : targetComponentTree.getAllComponents()) {
+//            for (final AdvancedComponent<FloatType> targetComponent : targetComponentForest.getAllComponents()) {
                 if (trackingConfiguration.filterAssignmentsByMaximalGrowthRate()) {
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
                         continue;
@@ -588,22 +588,22 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Add a division-assignment for given timestep between component in {@param sourceComponentTree} and
-     * {@param targetComponentTree}. This function also looks for suitable pairs of components in
-     * {@param targetComponentTree}, since division-assignments need two target component. The hypotheses of the
+     * Add a division-assignment for given timestep between component in {@param sourceComponentForest} and
+     * {@param targetComponentForest}. This function also looks for suitable pairs of components in
+     * {@param targetComponentForest}, since division-assignments need two target component. The hypotheses of the
      * components, which are needed for the assignments, are created on the fly as needed.
      *
      * @param sourceTimeStep            the time-point from which the <code>curHyps</code> originate.
-     * @param sourceComponentTree the component tree containing source components of the division assignments.
-     * @param targetComponentTree the component tree containing target components at the next time-point of the division assignments.
+     * @param sourceComponentForest the component tree containing source components of the division assignments.
+     * @param targetComponentForest the component tree containing target components at the next time-point of the division assignments.
      * @throws GRBException
      */
     private void addDivisionAssignments(final int sourceTimeStep,
-                                        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree,
-                                        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree)
+                                        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest,
+                                        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest)
             throws GRBException {
 
-        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentTree.getAllComponents()) {
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
 
             if (sourceTimeStep > 0) {
                 if (nodes.findHypothesisContaining(sourceComponent) == null)
@@ -612,7 +612,7 @@ public class GrowthlaneTrackingILP {
 
             float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
-            for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentTree.getAllComponents()) {
+            for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
                 if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, configurationManager.getMaxCellDrop())) {
                     continue;
                 }

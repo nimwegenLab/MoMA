@@ -3,7 +3,6 @@ package com.jug.util.componenttree;
 import com.jug.util.ComponentTreeUtils;
 import net.imagej.ops.OpService;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
@@ -39,7 +38,7 @@ public class RecursiveComponentWatershedder<T extends Type<T>> {
      * @param tree
      * @return
      */
-    public SimpleComponentTree<T, AdvancedComponent<T>> recursivelyWatershedComponents(SimpleComponentTree<T, AdvancedComponent<T>> tree) {
+    public AdvancedComponentForest<T, AdvancedComponent<T>> recursivelyWatershedComponents(AdvancedComponentForest<T, AdvancedComponent<T>> tree) {
         Consumer<Pair<List<AdvancedComponent<T>>, Integer>> levelComponentsConsumer = (levelComponentsListAndLevel) -> {
             List<AdvancedComponent<T>> componentsOfLevel = levelComponentsListAndLevel.getValue0();
             {

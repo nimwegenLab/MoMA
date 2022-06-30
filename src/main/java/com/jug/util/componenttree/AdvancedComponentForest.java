@@ -24,7 +24,7 @@ import java.util.Set;
  * @param <T> value type of the input image.
  * @author Michael Mell
  */
-public final class SimpleComponentTree<T extends Type<T>, C extends Component<T, C>>
+public final class AdvancedComponentForest<T extends Type<T>, C extends Component<T, C>>
         implements
         ComponentForest<AdvancedComponent<T>> {
     final ImgLabeling<Integer, IntType> labeling;
@@ -38,7 +38,7 @@ public final class SimpleComponentTree<T extends Type<T>, C extends Component<T,
     private ComponentProperties componentPropertiesCalculator;
 
 
-    public SimpleComponentTree(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
+    public AdvancedComponentForest(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
         this.sourceImage = sourceImage;
         this.frame = frame;
         this.tester = tester;

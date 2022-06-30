@@ -23,21 +23,11 @@ import static java.util.Objects.isNull;
  * @author jug
  */
 public class Growthlane {
-
-	// -------------------------------------------------------------------------------------
-	// fields
-	// -------------------------------------------------------------------------------------
 	private final List<GrowthlaneFrame> frames;
 	private GrowthlaneTrackingILP ilp;
 	private IDialogManager dialogManager;
 	private FilePaths filePaths;
 
-	// Hypothesis< Component< FloatType, ? > >,
-	// AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > ilp;
-
-	// -------------------------------------------------------------------------------------
-	// setters and getters
-	// -------------------------------------------------------------------------------------
 	/**
 	 * @return the frames
 	 */

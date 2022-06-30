@@ -16,7 +16,7 @@ import static java.util.Objects.isNull;
  * @author jug
  */
 @SuppressWarnings( "restriction" )
-public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
+public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private final int sourceTimeStep;
 	private int type;

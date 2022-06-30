@@ -1,6 +1,6 @@
 package com.jug.util;
 
-import com.jug.config.ComponentTreeGeneratorConfigurationMock;
+import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
@@ -111,7 +111,7 @@ public class TestUtils {
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
         ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentForestGenerator;
     }

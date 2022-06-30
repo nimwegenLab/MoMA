@@ -114,7 +114,7 @@ public class PseudoDic {
         return momaInstance;
     }
 
-    public ComponentForestGenerator getComponentTreeGenerator() {
+    public ComponentForestGenerator getComponentForestGenerator() {
         if (componentForestGenerator == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
         }
@@ -326,7 +326,7 @@ public class PseudoDic {
         glDataLoader = new GlDataLoader(getUnetProcessor(),
                 getConfigurationManager(),
                 getImageProvider(),
-                getComponentTreeGenerator(),
+                getComponentForestGenerator(),
                 getDialogManager(),
                 getFilePaths());
         return glDataLoader;

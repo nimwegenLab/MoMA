@@ -89,7 +89,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         if (ilp != null) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
-        Plotting.drawComponentTree(glf.getComponentTree(), optimalSegs, timeStep);
+        Plotting.drawComponentTree(glf.getComponentForest(), optimalSegs, timeStep);
     }
 
     private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {

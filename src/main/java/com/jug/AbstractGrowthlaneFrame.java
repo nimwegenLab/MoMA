@@ -33,7 +33,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Growthlane.
      */
     private Growthlane parent;
-    private ComponentForest<C> componentTree;
+    private ComponentForest<C> componentForest;
     private Img<FloatType> image;
 
     public Img<FloatType> getImage() {
@@ -61,8 +61,8 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     /**
      * @return the componentTree
      */
-    public ComponentForest<C> getComponentTree() { // MM-2019-06-10: This should probably be called getComponentForest?!
-        return componentTree;
+    public ComponentForest<C> getComponentForest() { // MM-2019-06-10: This should probably be called getComponentForest?!
+        return componentForest;
     }
 
     /**
@@ -96,7 +96,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * (bacteria).
      */
     public void generateSimpleSegmentationHypotheses() {
-        componentTree = buildComponentForest();
+        componentForest = buildComponentForest();
     }
 
     /**

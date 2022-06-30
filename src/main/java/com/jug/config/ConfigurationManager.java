@@ -15,7 +15,7 @@ import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMa
 import static java.util.Objects.isNull;
 
 
-public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration, IConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration {
     /**
      * Properties to configure app (loaded and saved to properties file!).
      */

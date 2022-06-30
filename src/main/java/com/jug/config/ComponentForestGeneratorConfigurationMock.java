@@ -1,10 +1,10 @@
 package com.jug.config;
 
-public class ComponentTreeGeneratorConfigurationMock implements IComponentTreeGeneratorConfiguration {
+public class ComponentForestGeneratorConfigurationMock implements IComponentForestGeneratorConfiguration {
     private int sizeMinimumOfLeafComponent;
     private int sizeMinimumOfParentComponent;
 
-    public ComponentTreeGeneratorConfigurationMock(int sizeMinimumOfLeafComponent, int sizeMinimumOfParentComponent) {
+    public ComponentForestGeneratorConfigurationMock(int sizeMinimumOfLeafComponent, int sizeMinimumOfParentComponent) {
 
         this.sizeMinimumOfLeafComponent = sizeMinimumOfLeafComponent;
         this.sizeMinimumOfParentComponent = sizeMinimumOfParentComponent;

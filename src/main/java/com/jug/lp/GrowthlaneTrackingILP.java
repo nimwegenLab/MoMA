@@ -5,7 +5,6 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
-import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -301,7 +300,7 @@ public class GrowthlaneTrackingILP {
     private void createSegmentationHypotheses(final int t) {
         final GrowthlaneFrame glf = gl.getFrames().get(t);
 
-        for (final AdvancedComponent<FloatType> ctRoot : glf.getComponentTree().roots()) {
+        for (final AdvancedComponent<FloatType> ctRoot : glf.getComponentForest().roots()) {
             recursivelyAddCTNsAsHypotheses(t, ctRoot); //, glf.isParaMaxFlowComponentTree()
         }
 
@@ -343,9 +342,9 @@ public class GrowthlaneTrackingILP {
     private void enumerateAndAddAssignments(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentTree();
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
         SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetComponentTree =
-                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentTree();
+                (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
         addMappingAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
         addDivisionAssignments(sourceTimeStep, sourceComponentTree, targetComponentTree);
@@ -721,7 +720,7 @@ public class GrowthlaneTrackingILP {
         // For each time-point
         for (int t = 0; t < gl.size(); t++) {
             // Get the full component tree
-            final ComponentForest<?> ct = gl.get(t).getComponentTree();
+            final ComponentForest<?> ct = gl.get(t).getComponentForest();
             // And call the function adding all the path-blocking-constraints...
             recursivelyAddPathBlockingConstraints(ct, t);
         }

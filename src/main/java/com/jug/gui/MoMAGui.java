@@ -814,7 +814,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void prepareOptimization() {
         System.out.println("Filling in CT hypotheses where needed...");
         for (final GrowthlaneFrame glf : model.getCurrentGL().getFrames()) {
-            if (glf.getComponentTree() == null) {
+            if (glf.getComponentForest() == null) {
                 glf.generateSimpleSegmentationHypotheses();
             }
         }

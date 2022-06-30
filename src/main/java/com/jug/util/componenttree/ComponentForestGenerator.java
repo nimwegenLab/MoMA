@@ -1,9 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.config.IComponentTreeGeneratorConfiguration;
-import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
-import com.moma.auxiliary.Plotting;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
@@ -18,18 +16,18 @@ import java.util.function.Predicate;
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
-public class ComponentTreeGenerator {
+public class ComponentForestGenerator {
     private IComponentTreeGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
     private WatershedMaskGenerator watershedMaskGenerator;
     private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(IComponentTreeGeneratorConfiguration configuration,
-                                  RecursiveComponentWatershedder recursiveComponentWatershedder,
-                                  ComponentProperties componentPropertiesCalculator,
-                                  WatershedMaskGenerator watershedMaskGenerator,
-                                  Imglib2Utils imglib2Utils) {
+    public ComponentForestGenerator(IComponentTreeGeneratorConfiguration configuration,
+                                    RecursiveComponentWatershedder recursiveComponentWatershedder,
+                                    ComponentProperties componentPropertiesCalculator,
+                                    WatershedMaskGenerator watershedMaskGenerator,
+                                    Imglib2Utils imglib2Utils) {
         this.configuration = configuration;
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
@@ -37,7 +35,7 @@ public class ComponentTreeGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
 

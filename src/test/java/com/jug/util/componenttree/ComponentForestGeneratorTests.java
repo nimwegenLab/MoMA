@@ -27,21 +27,21 @@ import java.util.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class ComponentTreeGeneratorTests {
+public class ComponentForestGeneratorTests {
     private final TestUtils testUtils;
 
-    public ComponentTreeGeneratorTests() {
+    public ComponentForestGeneratorTests() {
         testUtils = new TestUtils();
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-//        new ComponentTreeGeneratorTests().testWatershedding();
-//        new ComponentTreeGeneratorTests().testSegmentAreaCalculationOfChildren();
-//        new ComponentTreeGeneratorTests().testPrintRankOfSegment();
-//        new ComponentTreeGeneratorTests().root_components__return__correct_hash_code();
-//        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation();
-//        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
-        new ComponentTreeGeneratorTests().debugThreeWayComponentSegmentation__test_new_tree_generation_method();
+//        new ComponentForestGeneratorTests().testWatershedding();
+//        new ComponentForestGeneratorTests().testSegmentAreaCalculationOfChildren();
+//        new ComponentForestGeneratorTests().testPrintRankOfSegment();
+//        new ComponentForestGeneratorTests().root_components__return__correct_hash_code();
+//        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation();
+//        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
+        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation__test_new_tree_generation_method();
     }
 
     public void debugThreeWayComponentSegmentation__test_new_tree_generation_method() throws IOException {

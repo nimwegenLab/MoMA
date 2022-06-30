@@ -3,7 +3,7 @@ package com.jug;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentTreeGenerator;
+import com.jug.util.componenttree.ComponentForestGenerator;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -19,7 +19,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<FloatType>> {
 
     private int frameIndex;
-    private ComponentTreeGenerator componentTreeGenerator;
+    private ComponentForestGenerator componentForestGenerator;
     private ConfigurationManager configurationManager;
     private IImageProvider imageProvider;
 
@@ -27,9 +27,9 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
         return frameIndex;
     }
 
-    public GrowthlaneFrame(int frameIndex, ComponentTreeGenerator componentTreeGenerator, ConfigurationManager configurationManager, IImageProvider imageProvider) {
+    public GrowthlaneFrame(int frameIndex, ComponentForestGenerator componentForestGenerator, ConfigurationManager configurationManager, IImageProvider imageProvider) {
         this.frameIndex = frameIndex;
-        this.componentTreeGenerator = componentTreeGenerator;
+        this.componentForestGenerator = componentForestGenerator;
         this.configurationManager = configurationManager;
         this.imageProvider = imageProvider;
     }
@@ -38,7 +38,7 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
      * @see AbstractGrowthlaneFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
      */
     @Override
-    protected ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree() {
-        return componentTreeGenerator.buildIntensityTree(imageProvider.getImgProbsAt(frameIndex), frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+    protected ComponentForest<AdvancedComponent<FloatType>> buildComponentForest() {
+        return componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
     }
 }

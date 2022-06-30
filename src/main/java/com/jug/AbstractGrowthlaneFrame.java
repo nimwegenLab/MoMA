@@ -1,6 +1,5 @@
 package com.jug;
 
-import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -97,14 +96,14 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * (bacteria).
      */
     public void generateSimpleSegmentationHypotheses() {
-        componentTree = buildIntensityTree();
+        componentTree = buildComponentForest();
     }
 
     /**
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    protected abstract ComponentForest<C> buildIntensityTree();
+    protected abstract ComponentForest<C> buildComponentForest();
 
     /**
      * @return the average X coordinate of the center line of this

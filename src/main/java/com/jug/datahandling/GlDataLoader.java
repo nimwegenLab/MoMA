@@ -4,7 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IDialogManager;
-import com.jug.util.componenttree.ComponentTreeGenerator;
+import com.jug.util.componenttree.ComponentForestGenerator;
 import com.jug.util.componenttree.UnetProcessor;
 import ij.IJ;
 import ij.ImagePlus;
@@ -29,20 +29,20 @@ public class GlDataLoader {
     private UnetProcessor unetProcessor;
     private ConfigurationManager configurationManager;
     private IImageProvider imageProvider;
-    private ComponentTreeGenerator componentTreeGenerator;
+    private ComponentForestGenerator componentForestGenerator;
     private IDialogManager dialogManager;
     private FilePaths filePaths;
 
     public GlDataLoader(UnetProcessor unetProcessor,
                         ConfigurationManager configurationManager,
                         IImageProvider imageProvider,
-                        ComponentTreeGenerator componentTreeGenerator,
+                        ComponentForestGenerator componentForestGenerator,
                         IDialogManager dialogManager,
                         FilePaths filePaths) {
         this.unetProcessor = unetProcessor;
         this.configurationManager = configurationManager;
         this.imageProvider = imageProvider;
-        this.componentTreeGenerator = componentTreeGenerator;
+        this.componentForestGenerator = componentForestGenerator;
         this.dialogManager = dialogManager;
         this.filePaths = filePaths;
     }
@@ -84,7 +84,7 @@ public class GlDataLoader {
     private Growthlane getGrowthlane() {
         Growthlane newGl = new Growthlane(imageProvider, dialogManager, filePaths);
         for (long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension(2); frameIdx++) {
-            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentTreeGenerator, configurationManager, imageProvider);
+            GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentForestGenerator, configurationManager, imageProvider);
             final IntervalView<FloatType> ivFrame = Views.hyperSlice(imageProvider.getImgRaw(), 2, frameIdx);
             currentFrame.setImage(ImgView.wrap(ivFrame, new ArrayImgFactory(new FloatType())));
             newGl.add(currentFrame);

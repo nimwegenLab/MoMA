@@ -53,7 +53,6 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private AdvancedComponent<T> parent;
     private double[] mean;
     private double[] sumPos;
-    private final ImgLabeling<Integer, IntType> labeling;
     private final Integer label;
     private LabelRegion<Integer> region;
     private double[] firstMomentPixelCoordinates = null;
@@ -63,10 +62,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * Constructor for fully connected component-node (with parent or children).
      */
     public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties, int frame) {
-        this.labeling = labeling;
         this.label = label;
         this.frame = frame;
-        RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
+        RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : wrappedComponent) {
             pixelList.add(new Point(val));
             accessor.setPosition(val);

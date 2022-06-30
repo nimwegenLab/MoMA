@@ -150,16 +150,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
                 this.getTime()).values()) {
 
             for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ora : optRightAssmnt) {
-                Hypothesis<AdvancedComponent<FloatType>> srcHyp = null;
-                if (ora instanceof MappingAssignment) {
-                    srcHyp = ((MappingAssignment) ora).getSourceHypothesis();
-                }
-                if (ora instanceof DivisionAssignment) {
-                    srcHyp = ((DivisionAssignment) ora).getSourceHypothesis();
-                }
-                if (ora instanceof ExitAssignment) {
-                    srcHyp = ((ExitAssignment) ora).getAssociatedHypothesis();
-                }
+                Hypothesis<AdvancedComponent<FloatType>> srcHyp = ora.getSourceHypothesis();
                 if (srcHyp != null) {
                     if (ComponentTreeUtils.isAbove(hyp, srcHyp)) {
                         pos++;

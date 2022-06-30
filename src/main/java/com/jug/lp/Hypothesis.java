@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Objects.isNull;
@@ -26,13 +27,13 @@ import static java.util.Objects.isNull;
  * @author jug
  */
 @SuppressWarnings("restriction")
-public class Hypothesis<T extends AdvancedComponent<FloatType>> {
+public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
-    private final T wrappedComponent;
+    private final C wrappedComponent;
     private final float cost;
     private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
-    public ArrayList<String> labels = new ArrayList<>();
+    public List<String> labels = new ArrayList<>();
 
     public boolean isForced() {
         GRBConstr grbConstr = getSegmentInSolutionConstraint();
@@ -175,12 +176,11 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     private boolean isPruneRoot = false;
     private boolean isPruned = false;
 
-    public Hypothesis(final int t, final T elementToWrap, final float cost, GrowthlaneTrackingILP ilp) {
-        // setSegmentHypothesis( elementToWrap );
-        this.wrappedComponent = elementToWrap;
+    public Hypothesis(final int t, final C wrappedComponent, final float cost, GrowthlaneTrackingILP ilp) {
+        this.wrappedComponent = wrappedComponent;
         this.cost = cost;
         this.ilp = ilp;
-        location = new HypLoc(t, elementToWrap);
+        location = new HypLoc(t, wrappedComponent);
     }
 
     public int getId() {
@@ -194,7 +194,7 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     /**
      * @return the wrapped segmentHypothesis
      */
-    public T getWrappedComponent() {
+    public C getWrappedComponent() {
         return wrappedComponent;
     }
 
@@ -308,9 +308,9 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         final int t;
         final ValuePair<Integer, Integer> limits;
 
-        HypLoc(final int t, final T segment) {
+        HypLoc(final int t, final C wrappedComponent) {
             this.t = t;
-            this.limits = ComponentTreeUtils.getTreeNodeInterval(segment);
+            this.limits = ComponentTreeUtils.getTreeNodeInterval(wrappedComponent);
         }
     }
 }

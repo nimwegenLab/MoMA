@@ -34,9 +34,6 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
         this.imageProvider = imageProvider;
     }
 
-    /**
-     * @see AbstractGrowthlaneFrame#buildIntensityTree(net.imglib2.RandomAccessibleInterval)
-     */
     @Override
     protected ComponentForest<AdvancedComponent<FloatType>> buildComponentForest() {
         return componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);

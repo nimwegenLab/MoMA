@@ -32,7 +32,7 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, int sourceTimeStep) {
 		this.sourceTimeStep = sourceTimeStep;
-		this.setType( type );
+		this.type = type;
 		setGRBVar( ilpVariable );
 		setGrowthlaneTrackingILP( ilp );
 	}
@@ -44,14 +44,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public int getType() {
 		return type;
-	}
-
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	void setType(final int type) {
-		this.type = type;
 	}
 
 	abstract public H getSourceHypothesis();

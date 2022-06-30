@@ -37,16 +37,6 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     private ComponentForest<C> componentTree;
     private Img<FloatType> image;
 
-    // -------------------------------------------------------------------------------------
-    // setters and getters
-    // -------------------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------------------
-    // constructors
-    // -------------------------------------------------------------------------------------
-    AbstractGrowthlaneFrame() {
-    }
-
     public Img<FloatType> getImage() {
         return image.copy();
     }

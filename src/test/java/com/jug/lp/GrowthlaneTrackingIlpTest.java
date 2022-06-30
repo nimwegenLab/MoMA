@@ -48,14 +48,13 @@ public class GrowthlaneTrackingIlpTest {
 
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
 
-
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
-        Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock, new FilePaths());
+        Growthlane gl = new Growthlane(dialogManagerMock, new FilePaths());
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), configMock, "mockVersionString", new CostFactory(configMock));

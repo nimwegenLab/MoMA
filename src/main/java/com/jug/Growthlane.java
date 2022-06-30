@@ -29,7 +29,6 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	private final List<GrowthlaneFrame> frames;
 	private GrowthlaneTrackingILP ilp;
-	private IImageProvider imageProvider;
 	private IDialogManager dialogManager;
 	private FilePaths filePaths;
 
@@ -56,8 +55,7 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IImageProvider imageProvider, IDialogManager dialogManager, FilePaths filePaths) {
-		this.imageProvider = imageProvider;
+	public Growthlane(IDialogManager dialogManager, FilePaths filePaths) {
 		this.dialogManager = dialogManager;
 		this.filePaths = filePaths;
 		this.frames = new ArrayList<>();

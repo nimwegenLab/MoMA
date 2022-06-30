@@ -217,14 +217,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             minLikelihoodLargerThanZeroCol.addValue(likelihoodExtrema.getA());
             maxLikelihoodLowerThanOneCol.addValue(likelihoodExtrema.getB());
 
-//            List<AdvancedComponent<FloatType>> compatibleChildComponents = sourceHypothesis.getWrappedComponent().getCompatibleChildNodes();
-//
-//            double onLogLikelihoodForCompatibleChildNodes = costFactory.getOnLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
-//            onLogLikelihoodForCompatibleChildNodesCol.addValue(onLogLikelihoodForCompatibleChildNodes);
-//
-//            double offLogLikelihoodForCompatibleChildNodes = costFactory.getOffLogLikelihoodForComponents(compatibleChildComponents, minMaxTuple);
-//            offLogLikelihoodForCompatibleChildNodesCol.addValue(offLogLikelihoodForCompatibleChildNodes);
-
             int cellRank;
             if (assignmentInIlpSolution) {
                 cellRank = glf.getSolutionStats_cellRank(sourceHypothesis); /* output the cell-rank, if assignment is part of the ILP solution */

@@ -233,14 +233,6 @@ public class CostFactory {
 		return calculateSumOfLogValues(probabilities);
 	}
 
-	public double getOnLogLikelihoodForComponents(List<ComponentInterface> components, Pair<Double, Double> valueRange) {
-		double acc = 0.;
-		for (ComponentInterface component : components){
-			acc += getOnLogLikelihoodForComponent(component, valueRange);
-		}
-		return acc;
-	}
-
 	/**
 	 * Calculate the likelihood value for the component being OFF.
 	 *

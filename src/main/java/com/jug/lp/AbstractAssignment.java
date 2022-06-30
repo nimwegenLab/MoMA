@@ -100,14 +100,14 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	public float getCost() {
 		float cost = 0;
 		try {
-			cost = ( float ) getGRBVar().get( GRB.DoubleAttr.Obj );
-		} catch ( final GRBException e ) {
-			System.err.println( "CRITICAL: cost could not be read out of Gurobi ILP!" );
+			cost = (float) getGRBVar().get(GRB.DoubleAttr.Obj);
+		} catch (final GRBException e) {
+			System.err.println("CRITICAL: cost could not be read out of Gurobi ILP!");
 		}
 		return cost;
 	}
 
-    /**
+	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;

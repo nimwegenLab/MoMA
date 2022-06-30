@@ -279,47 +279,11 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void createHypsAndAssignments() throws GRBException {
-//        for (int t = 0; t < gl.size(); t++) {
-//            createSegmentationHypotheses( t );
-//        }
-
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);
         }
-        // add exit assignments to last (hidden/duplicated) timepoint					 - MM-2019-06-04: Apparently the duplicate frame that MoMA adds is on purpose!
-        // in order have some right assignment for LP hypotheses variable substitution.
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.size() - 1);
-        addExitAssignments(gl.size() - 1, curHyps); // might be obsolete, because we already duplicate the last image and therefore do this in enumerateAndAddAssignments(t-1); CHECK THIS!
-    }
-
-    /**
-     * Adds all component-tree-nodes, wrapped in instances of
-     * <code>Hypothesis</code> at time-point t
-     * This method calls <code>recursivelyAddCTNsAsHypotheses(...)</code>.
-     */
-    private void createSegmentationHypotheses(final int t) {
-        final GrowthlaneFrame glf = gl.getFrames().get(t);
-
-        for (final AdvancedComponent<FloatType> ctRoot : glf.getComponentForest().roots()) {
-            recursivelyAddCTNsAsHypotheses(t, ctRoot); //, glf.isParaMaxFlowComponentTree()
-        }
-
-        this.reportProgress();
-    }
-
-    /**
-     * Adds all hypothesis given by the nodes in the component tree to
-     * <code>nodes</code>.
-     *
-     * @param component a node in a <code>ComponentTree</code>.
-     * @param t         the time-index the ctNode comes from.
-     */
-    private void recursivelyAddCTNsAsHypotheses(final int t, final AdvancedComponent<FloatType> component) { //, final boolean isForParaMaxFlowSumImg
-        float componentCost = getComponentCost(t, component);
-        nodes.addHypothesis(t, new Hypothesis<>(t, component, componentCost, this));
-        for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
-            recursivelyAddCTNsAsHypotheses(t, ctChild);
-        }
+        addExitAssignments(gl.size() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
     }
 
     /**

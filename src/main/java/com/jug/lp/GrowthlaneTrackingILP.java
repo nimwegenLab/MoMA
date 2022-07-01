@@ -360,11 +360,10 @@ public class GrowthlaneTrackingILP {
             cost = costModulationForSubstitutedILP(hyp.getCost());
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp));
-//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^EXIT--%d", sourceTimeStep, hyp.getStringId()));
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); // LpUtils.getHup: get all nodes above ctn-hyps. CTN: component-tree-node
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
-            edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
+            edgeSets.addToRightNeighborhood(hyp, ea);
         }
     }
 

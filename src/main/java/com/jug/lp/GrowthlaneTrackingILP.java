@@ -325,17 +325,14 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
-        if (hyps == null) return; // edge case?!
-
         float cost;
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = configurationManager.getLysisAssignmentCost();
 
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp));
-//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, String.format("a_%d^LYSIS--%d", sourceTimeStep, hyp.getStringId()));
             final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
-            edgeSets.addToRightNeighborhood(hyp, ea); // relevant for continuity constraint (and probably other things(?))
+            edgeSets.addToRightNeighborhood(hyp, ea);
         }
     }
 
@@ -353,8 +350,6 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
-        if (hyps == null) return; // edge case?!
-
         float cost;
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             cost = costModulationForSubstitutedILP(hyp.getCost());

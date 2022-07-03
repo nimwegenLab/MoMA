@@ -70,8 +70,7 @@ public class ExploreResultLoading {
         Integer tmin = 1;
         Integer tmax = 10;
         createEmptyDirectory(outputPath);
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"});
-//        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
+        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading() {

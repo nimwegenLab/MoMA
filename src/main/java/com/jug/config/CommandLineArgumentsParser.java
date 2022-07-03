@@ -24,6 +24,7 @@ public class CommandLineArgumentsParser {
     private boolean HEADLESS;
 
     private boolean reloadingData;
+    private boolean trackOnly;
 
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
@@ -46,7 +47,8 @@ public class CommandLineArgumentsParser {
         headless.setRequired( false );
 
         final Option reloadOption = new Option( "rl", "reload", true, "reloads previously curated data; any additional arguments will be ignored" );
-        headless.setRequired( false );
+
+        final Option trackOnlyOption = new Option("trk", "trackonly", false, "run and save tracking without exporting cell measurement; must be combined with option -headless");
 
         final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
         groundTruthGeneration.setRequired( false );
@@ -69,6 +71,7 @@ public class CommandLineArgumentsParser {
         options.addOption(help);
         options.addOption(headless);
         options.addOption(reloadOption);
+        options.addOption(trackOnlyOption);
         options.addOption(groundTruthGeneration);
         options.addOption(timeFirst);
         options.addOption(timeLast);
@@ -125,6 +128,14 @@ public class CommandLineArgumentsParser {
             reloadingData = true;
             reloadFolderPath = cmd.getOptionValue("reload");
             return; /* if we are reloading previous analysis we do not need to read the cmd arguments below, which are mutually exclusive to reloading */
+        }
+
+        if (cmd.hasOption("trackonly")) {
+            if (!cmd.hasOption("headless")) {
+                System.out.println("Error: Option -trackonly must be combined with -headless.");
+                System.exit(-1);
+            }
+            trackOnly = true;
         }
 
         if ( cmd.hasOption( "i" ) ) {
@@ -223,6 +234,10 @@ public class CommandLineArgumentsParser {
 
     public boolean isReloadingData() {
         return reloadingData;
+    }
+
+    public boolean isTrackOnly() {
+        return trackOnly;
     }
 
     public String getReloadFolderPath() {

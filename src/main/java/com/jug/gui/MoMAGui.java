@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
+import com.jug.commands.ICommand;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.IImageProvider;
@@ -38,6 +39,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private static final long serialVersionUID = -1008974839249784873L;
 
     private JFrame guiFrame;
+    private ICommand closeCommand;
     public final MoMAModel model;
     private IDialogManager dialogManager;
     private PanelWithSliders panelWithSliders;
@@ -89,6 +91,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * @param model the MotherMachineModel to show
      */
     public MoMAGui(JFrame guiFrame,
+                   ICommand closeCommand,
                    final MoMAModel model,
                    IImageProvider imageProvider,
                    boolean showGroundTruthExportFunctionality,
@@ -99,6 +102,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    PanelWithSliders panelWithSliders) {
         super(new BorderLayout());
         this.guiFrame = guiFrame;
+        this.closeCommand = closeCommand;
 
         this.model = model;
         this.imageProvider = imageProvider;
@@ -779,7 +783,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             File folderToUse = queryUserForFolderToUse();
             final Thread t = new Thread(() -> {
                 this.exportTrackingData(folderToUse);
-
+                closeCommand.run();
             });
             t.start();
         }

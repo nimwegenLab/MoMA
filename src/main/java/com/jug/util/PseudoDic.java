@@ -1,6 +1,8 @@
 package com.jug.util;
 
 import com.jug.MoMA;
+import com.jug.commands.CloseCommand;
+import com.jug.commands.ICommand;
 import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
@@ -315,7 +317,7 @@ public class PseudoDic {
 
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getGuiFrame(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
+            gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
         }
         return gui;
     }
@@ -324,29 +326,33 @@ public class PseudoDic {
 
     public JFrame getGuiFrame() {
         if (isNull(guiFrame)) {
-            guiFrame = new JFrame();
+            guiFrame = buildGuiFrame();
         }
-        initMainWindow(guiFrame);
         return guiFrame;
     }
 
     /**
      * Initializes the MotherMachine main app. This method contains platform
      * specific code like setting icons, etc.
-     *
-     * @param guiFrame
-     *            the JFrame containing the MotherMachine.
      */
-    private void initMainWindow(final JFrame guiFrame) {
-        guiFrame.addWindowListener(new WindowAdapter() {
+    private JFrame buildGuiFrame() {
+        JFrame myGuiFrame = new JFrame();
+        myGuiFrame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(final WindowEvent we) {
-                configurationManager.saveParams(guiFrame);
-                if (!getCommandLineArgumentParser().getRunningAsFijiPlugin()) {
-                    System.exit(0);
-                }
+                getCloseCommand().run();
             }
         });
+        return myGuiFrame;
+    }
+
+    private ICommand closeCommand;
+
+    public ICommand getCloseCommand() {
+        if (isNull(closeCommand)) {
+            closeCommand = new CloseCommand(getGuiFrame(), getConfigurationManager(), getCommandLineArgumentParser());
+        }
+        return closeCommand;
     }
 
     /**

@@ -37,6 +37,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private static final long serialVersionUID = -1008974839249784873L;
 
+    private JFrame guiFrame;
     public final MoMAModel model;
     private IDialogManager dialogManager;
     private PanelWithSliders panelWithSliders;
@@ -68,6 +69,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private JButton buttonSaveTracking;
 
+    private JButton buttonSaveTrackingAndExit;
+
     private JComboBox comboboxWhichImgToShow;
 
     private JButton buttonFreezePreviousTimeSteps;
@@ -85,7 +88,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      *
      * @param model the MotherMachineModel to show
      */
-    public MoMAGui(final MoMAModel model,
+    public MoMAGui(JFrame guiFrame,
+                   final MoMAModel model,
                    IImageProvider imageProvider,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
@@ -94,6 +98,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    IDialogManager dialogManager,
                    PanelWithSliders panelWithSliders) {
         super(new BorderLayout());
+        this.guiFrame = guiFrame;
 
         this.model = model;
         this.imageProvider = imageProvider;
@@ -143,11 +148,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void buildGui() {
         final MenuBar menuBar = new MenuBar();
         final Menu menuFile = new Menu("File");
-        menuProps = new MenuItem("Preferences...");
+        menuProps = new MenuItem("Preferences");
         menuProps.addActionListener(this);
-        menuLoad = new MenuItem("Load tracking...");
+        menuLoad = new MenuItem("Load tracking");
         menuLoad.addActionListener(this);
-        menuSave = new MenuItem("Save tracking...");
+        menuSave = new MenuItem("Save tracking");
         menuSave.addActionListener(this);
         menuFile.add(menuProps);
         menuFile.addSeparator();
@@ -168,7 +173,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);
         if (!configurationManager.getIfRunningHeadless()) {
-            MoMA.getGuiFrame().setMenuBar(menuBar);
+            guiFrame.setMenuBar(menuBar);
         }
 
         final JPanel panelContent = new JPanel(new BorderLayout());
@@ -229,10 +234,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);
-        buttonExportData = new JButton("Export Data");
+        buttonExportData = new JButton("Export data");
         buttonExportData.addActionListener(this);
-        buttonSaveTracking = new JButton("Save Tracking");
+        buttonSaveTracking = new JButton("Save tracking");
         buttonSaveTracking.addActionListener(this);
+        buttonSaveTrackingAndExit = new JButton("Save tracking & exit");
+        buttonSaveTrackingAndExit.addActionListener(this);
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
         panelHorizontalHelper.add(checkboxAutosave);
@@ -242,6 +249,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(buttonExportHtml);
         panelHorizontalHelper.add(buttonExportData);
         panelHorizontalHelper.add(buttonSaveTracking);
+        panelHorizontalHelper.add(buttonSaveTrackingAndExit);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
 
         // --- Final adding and layout steps -------------
@@ -669,7 +677,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(menuViewShowConsole)) {
             loggerWindow.showConsoleWindow(!loggerWindow.isConsoleVisible());
-            MoMA.getGuiFrame().setVisible(true);
+            guiFrame.setVisible(true);
         }
         if (e.getSource().equals(menuShowImgRaw)) {
             new ImageJ();
@@ -765,6 +773,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(buttonSaveTracking)) {
             File folderToUse = queryUserForFolderToUse();
             final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
+            t.start();
+        }
+        if (e.getSource().equals(buttonSaveTrackingAndExit)) {
+            File folderToUse = queryUserForFolderToUse();
+            final Thread t = new Thread(() -> {
+                this.exportTrackingData(folderToUse);
+
+            });
             t.start();
         }
         requestFocusOnTimeStepSlider();

@@ -24,6 +24,7 @@ import net.miginfocom.swing.MigLayout;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -312,9 +313,18 @@ public class PseudoDic {
 
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
+            gui = new MoMAGui(getGuiFrame(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
         }
         return gui;
+    }
+
+    JFrame guiFrame;
+
+    public JFrame getGuiFrame() {
+        if (isNull(guiFrame)) {
+            guiFrame = new JFrame();
+        }
+        return guiFrame;
     }
 
     private GlDataLoader glDataLoader;
@@ -361,7 +371,7 @@ public class PseudoDic {
     }
 
     public ResultExporterInterface getMMPropertiesExporter() {
-        return new MMPropertiesExporter(getConfigurationManager());
+        return new MMPropertiesExporter(getGuiFrame(), getConfigurationManager());
     }
 
     public ResultExporterInterface getCurationStatsExporter() {

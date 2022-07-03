@@ -56,7 +56,7 @@ public class ExploreResultLoading {
         Integer tmin = 1;
         Integer tmax = 10;
         createEmptyDirectory(outputPath);
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
+        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 

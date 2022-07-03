@@ -46,6 +46,7 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
 
+    private JFrame guiFrame;
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -69,13 +70,15 @@ public class GrowthlaneTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthlaneTrackingILP(final Growthlane gl,
+    public GrowthlaneTrackingILP(JFrame guiFrame,
+                                 final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  ITrackingConfiguration trackingConfiguration,
                                  IConfiguration configurationManager,
                                  String versionString,
                                  CostFactory costFactory) {
+        this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
         this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
@@ -799,7 +802,7 @@ public class GrowthlaneTrackingILP {
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 
-            final DialogGurobiProgress dialog = new DialogGurobiProgress(MoMA.getGuiFrame());
+            final DialogGurobiProgress dialog = new DialogGurobiProgress(guiFrame);
             final GurobiCallback gcb = new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap());
             model.setCallback(gcb);
             if (!configurationManager.getIfRunningHeadless()) {

@@ -21,6 +21,7 @@ import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -57,7 +58,7 @@ public class GrowthlaneTrackingIlpTest {
         Growthlane gl = new Growthlane(dialogManagerMock, new FilePaths());
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), configMock, "mockVersionString", new CostFactory(configMock));
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(), gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }

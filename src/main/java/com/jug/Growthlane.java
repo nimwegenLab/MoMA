@@ -102,7 +102,7 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
-		ilp = new GrowthlaneTrackingILP(this, model, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
+		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}

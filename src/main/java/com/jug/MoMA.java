@@ -137,8 +137,8 @@ public class MoMA {
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
-			guiFrame = new JFrame();
-			dic.getMomaInstance().initMainWindow( guiFrame );
+			guiFrame = dic.getGuiFrame();
+			dic.getMomaInstance().initMainWindow(guiFrame);
 
 			// Iterate over all currently attached monitors and check if sceen
 			// position is actually possible,
@@ -178,7 +178,7 @@ public class MoMA {
 		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
 		final File folder = dic.getFilePaths().getInputImagePath().toFile();
-		dic.getMomaInstance().setDatasetName( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
+		dic.getMomaInstance().setDatasetNameInWindowTitle( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
 		ImageProvider imageProvider = new ImageProvider();
 		dic.setImageProvider(imageProvider);
 		try {
@@ -213,7 +213,7 @@ public class MoMA {
 		// show loaded and annotated data
 		if (showIJ) {
 			new ImageJ();
-			ImageJFunctions.show( dic.getImageProvider().getImgRaw(), "Rotated & cropped raw data" );
+			ImageJFunctions.show(dic.getImageProvider().getImgRaw(), "Rotated & cropped raw data");
 		}
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
@@ -239,7 +239,7 @@ public class MoMA {
 			dic.getMomaGui().exportHtmlOverview();
 			dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
 
-			configurationManager.saveParams(getGuiFrame());
+			configurationManager.saveParams(dic.getGuiFrame());
 
 			if (!running_as_Fiji_plugin) {
 				System.exit( 11 );
@@ -259,20 +259,18 @@ public class MoMA {
 	 * @param guiFrame
 	 *            the JFrame containing the MotherMachine.
 	 */
-	private void initMainWindow( final JFrame guiFrame ) {
-		setDatasetName( datasetName );
+	private void initMainWindow(final JFrame guiFrame) {
+		setDatasetNameInWindowTitle(datasetName);
 
-		guiFrame.addWindowListener( new WindowAdapter() {
-
+		guiFrame.addWindowListener(new WindowAdapter() {
 			@Override
-			public void windowClosing( final WindowEvent we ) {
-				configurationManager.saveParams(getGuiFrame());
+			public void windowClosing(final WindowEvent we) {
+				configurationManager.saveParams(dic.getGuiFrame());
 				if (!running_as_Fiji_plugin) {
 					System.exit(0);
 				}
 			}
-		} );
-
+		});
 	}
 
 	/**
@@ -363,13 +361,6 @@ public class MoMA {
 	}
 
 	/**
-	 * @return the guiFrame
-	 */
-	public static JFrame getGuiFrame() {
-		return guiFrame;
-	}
-
-	/**
 	 * @return the MotherMachineGui instance.
 	 */
 	public static MoMAGui getGui() {
@@ -386,10 +377,10 @@ public class MoMA {
 	/**
 	 * @param datasetName the datasetName to set
 	 */
-	private void setDatasetName(final String datasetName) {
+	private void setDatasetNameInWindowTitle(final String datasetName) {
 		this.datasetName = datasetName;
-		if ( MoMA.getGuiFrame() != null ) {
-			MoMA.getGuiFrame().setTitle( String.format( "MoMA %s -- %s", dic.getGitVersionProvider().getVersionString(), this.datasetName ) );
+		if ( dic.getGuiFrame() != null ) {
+			dic.getGuiFrame().setTitle( String.format( "MoMA %s -- %s", dic.getGitVersionProvider().getVersionString(), this.datasetName ) );
 		}
 	}
 }

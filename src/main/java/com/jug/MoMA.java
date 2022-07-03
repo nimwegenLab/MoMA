@@ -17,8 +17,6 @@ import org.apache.commons.lang3.SystemUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -45,7 +43,7 @@ public class MoMA {
 	 */
 	static boolean showIJ = false;
 
-	public static boolean running_as_Fiji_plugin = false;
+	public static boolean runningAsFijiPlugin = false;
 
 	/**
 	 * The <code>JFrame</code> containing the main GUI.
@@ -78,10 +76,10 @@ public class MoMA {
 
 		/* parse command line arguments */
 		commandLineArgumentParser = dic.getCommandLineArgumentParser();
-		commandLineArgumentParser.setrunning_as_Fiji_plugin(running_as_Fiji_plugin);
+		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
-		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), running_as_Fiji_plugin)) return;
+		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) return;
 
 		/* setup configuration manager and read configuration */
 		configurationManager = dic.getConfigurationManager();
@@ -138,7 +136,6 @@ public class MoMA {
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = dic.getGuiFrame();
-			dic.getMomaInstance().initMainWindow(guiFrame);
 
 			// Iterate over all currently attached monitors and check if sceen
 			// position is actually possible,
@@ -178,7 +175,7 @@ public class MoMA {
 		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
 		final File folder = dic.getFilePaths().getInputImagePath().toFile();
-		dic.getMomaInstance().setDatasetNameInWindowTitle( String.format( "%s >> %s", folder.getParentFile().getName(), folder.getName() ) );
+		dic.setDatasetNameInWindowTitle(String.format("%s >> %s", folder.getParentFile().getName(), folder.getName()));
 		ImageProvider imageProvider = new ImageProvider();
 		dic.setImageProvider(imageProvider);
 		try {
@@ -203,7 +200,7 @@ public class MoMA {
 			}
 		} catch ( final Exception e ) {
 			e.printStackTrace();
-			if (!running_as_Fiji_plugin) {
+			if (!runningAsFijiPlugin) {
 				System.exit( 11 );
 			} else {
 				return;
@@ -241,36 +238,10 @@ public class MoMA {
 
 			configurationManager.saveParams(dic.getGuiFrame());
 
-			if (!running_as_Fiji_plugin) {
+			if (!runningAsFijiPlugin) {
 				System.exit( 11 );
 			}
 		}
-	}
-
-	/**
-	 * String denoting the name of the loaded dataset (e.g. used in GUI)
-	 */
-	private String datasetName;
-
-	/**
-	 * Initializes the MotherMachine main app. This method contains platform
-	 * specific code like setting icons, etc.
-	 *
-	 * @param guiFrame
-	 *            the JFrame containing the MotherMachine.
-	 */
-	private void initMainWindow(final JFrame guiFrame) {
-		setDatasetNameInWindowTitle(datasetName);
-
-		guiFrame.addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(final WindowEvent we) {
-				configurationManager.saveParams(dic.getGuiFrame());
-				if (!running_as_Fiji_plugin) {
-					System.exit(0);
-				}
-			}
-		});
 	}
 
 	/**
@@ -372,15 +343,5 @@ public class MoMA {
 	 */
 	public static String getDefaultFilenameDecoration() {
 		return defaultFilenameDecoration;
-	}
-
-	/**
-	 * @param datasetName the datasetName to set
-	 */
-	private void setDatasetNameInWindowTitle(final String datasetName) {
-		this.datasetName = datasetName;
-		if ( dic.getGuiFrame() != null ) {
-			dic.getGuiFrame().setTitle( String.format( "MoMA %s -- %s", dic.getGitVersionProvider().getVersionString(), this.datasetName ) );
-		}
 	}
 }

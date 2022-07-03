@@ -26,6 +26,8 @@ import org.scijava.convert.ConvertService;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -324,7 +326,36 @@ public class PseudoDic {
         if (isNull(guiFrame)) {
             guiFrame = new JFrame();
         }
+        initMainWindow(guiFrame);
         return guiFrame;
+    }
+
+    /**
+     * Initializes the MotherMachine main app. This method contains platform
+     * specific code like setting icons, etc.
+     *
+     * @param guiFrame
+     *            the JFrame containing the MotherMachine.
+     */
+    private void initMainWindow(final JFrame guiFrame) {
+        guiFrame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(final WindowEvent we) {
+                configurationManager.saveParams(guiFrame);
+                if (!getCommandLineArgumentParser().getRunningAsFijiPlugin()) {
+                    System.exit(0);
+                }
+            }
+        });
+    }
+
+    /**
+     * @param datasetName the datasetName to set
+     */
+    public void setDatasetNameInWindowTitle(final String datasetName) {
+        if (getGuiFrame() != null) {
+            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getGitVersionProvider().getVersionString(), datasetName));
+        }
     }
 
     private GlDataLoader glDataLoader;

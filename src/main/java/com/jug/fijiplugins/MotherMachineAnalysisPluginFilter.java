@@ -54,7 +54,7 @@ class MotherMachineAnalysisPluginFilter implements PlugInFilter {
         };
 
 
-        MoMA.running_as_Fiji_plugin = true;
+        MoMA.runningAsFijiPlugin = true;
         MoMA.main(args);
 
 

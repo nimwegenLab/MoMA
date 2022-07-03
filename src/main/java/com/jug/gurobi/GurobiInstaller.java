@@ -27,7 +27,7 @@ import javax.swing.*;
 public class GurobiInstaller {
     public static boolean checkInstallation()
     {
-        if (!MoMA.running_as_Fiji_plugin) {
+        if (!MoMA.runningAsFijiPlugin) {
             return true;
         }
 

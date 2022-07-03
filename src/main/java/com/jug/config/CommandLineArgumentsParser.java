@@ -7,7 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class CommandLineArgumentsParser {
-    private boolean running_as_Fiji_plugin;
+    private boolean runningAsFijiPlugin;
     private Path inputFolder;
     /**
      * Property file provided by user through as command-line option.
@@ -25,8 +25,12 @@ public class CommandLineArgumentsParser {
 
     private boolean reloadingData;
 
-    public void setrunning_as_Fiji_plugin(boolean running_as_Fiji_plugin){
-        this.running_as_Fiji_plugin = running_as_Fiji_plugin;
+    public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
+        this.runningAsFijiPlugin = runningAsFijiPlugin;
+    }
+
+    public boolean getRunningAsFijiPlugin() {
+        return runningAsFijiPlugin;
     }
 
     public void parse(final String[] args){
@@ -82,7 +86,7 @@ public class CommandLineArgumentsParser {
                     "",
                     options,
                     "Error: " + e1.getMessage() );
-            if (!running_as_Fiji_plugin) {
+            if (!runningAsFijiPlugin) {
                 System.exit( 0 );
             } else {
                 return;
@@ -92,7 +96,7 @@ public class CommandLineArgumentsParser {
         if ( cmd.hasOption( "help" ) ) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp( "... -i <in-folder> -o [out-folder] [-headless]", options );
-            if (!running_as_Fiji_plugin) {
+            if (!runningAsFijiPlugin) {
                 System.exit( 0 );
             } else {
                 return;
@@ -105,7 +109,7 @@ public class CommandLineArgumentsParser {
             if ( !cmd.hasOption( "i" ) ) {
                 final HelpFormatter formatter = new HelpFormatter();
                 formatter.printHelp( "Headless-mode requires option '-i <in-folder>'...", options );
-                if (!running_as_Fiji_plugin) {
+                if (!runningAsFijiPlugin) {
                     System.exit( 0 );
                 } else {
                     return;
@@ -136,7 +140,7 @@ public class CommandLineArgumentsParser {
 			}*/
             if ( !Files.isReadable(inputFolder) ) {
                 System.out.println( "Error: Input folder cannot be read!" );
-                if (!running_as_Fiji_plugin) {
+                if (!runningAsFijiPlugin) {
                     System.exit( 2 );
                 } else {
                     return;
@@ -148,7 +152,7 @@ public class CommandLineArgumentsParser {
         if ( !cmd.hasOption( "o" ) ) {
             if ( inputFolder == null ) {
                 System.out.println( "Error: Input folder not specified. Please use the -i argument to do so and check your command line arguments." );
-                if (!running_as_Fiji_plugin) {
+                if (!runningAsFijiPlugin) {
                     System.exit( 3 );
                 } else {
                     return;
@@ -161,7 +165,7 @@ public class CommandLineArgumentsParser {
 
             if ( !Files.isDirectory(outputFolder) ) {
                 System.out.println( "Error: Output folder is not a directory." );
-                if (!running_as_Fiji_plugin) {
+                if (!runningAsFijiPlugin) {
                     System.exit( 3 );
                 } else {
                     return;
@@ -169,7 +173,7 @@ public class CommandLineArgumentsParser {
             }
             if ( !Files.isWritable(outputFolder) ) {
                 System.out.println( "Error: Output folder cannot be written to." );
-                if (!running_as_Fiji_plugin) {
+                if (!runningAsFijiPlugin) {
                     System.exit( 3 );
                 } else {
                     return;

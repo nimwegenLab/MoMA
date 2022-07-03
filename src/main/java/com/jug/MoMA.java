@@ -179,7 +179,9 @@ public class MoMA {
 		ImageProvider imageProvider = new ImageProvider();
 		dic.setImageProvider(imageProvider);
 		try {
-			if ( datasetProperties.getNumChannels() == 0 ) { throw new Exception( "At least one color channel must be loaded!" ); }
+			if (datasetProperties.getNumChannels() == 0) {
+				throw new Exception("At least one color channel must be loaded!");
+			}
 
 			imageProvider.loadTiffsFromFileOrFolder(dic.getFilePaths().getInputImagePath().toString(),
 					configurationManager.getMinTime(),
@@ -189,14 +191,14 @@ public class MoMA {
 
 			dic.getGlDataLoader().restartFromGLSegmentation();
 
-			if ( commandLineArgumentParser.getIfRunningHeadless() ) {
-				System.out.println( "Generating Integer Linear Program(s)..." );
+			if (commandLineArgumentParser.getIfRunningHeadless()) {
+				System.out.println("Generating Integer Linear Program(s)...");
 				dic.getGlDataLoader().generateILPs();
-				System.out.println( " done!" );
+				System.out.println(" done!");
 
-				System.out.println( "Running Integer Linear Program(s)..." );
+				System.out.println("Running Integer Linear Program(s)...");
 				dic.getGlDataLoader().runILPs();
-				System.out.println( " done!" );
+				System.out.println(" done!");
 			}
 		} catch ( final Exception e ) {
 			e.printStackTrace();
@@ -213,9 +215,9 @@ public class MoMA {
 			ImageJFunctions.show(dic.getImageProvider().getImgRaw(), "Rotated & cropped raw data");
 		}
 
-		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
+		if (!commandLineArgumentParser.getIfRunningHeadless()) {
 			SwingUtilities.invokeLater(() -> {
-				System.out.print( "Build GUI..." );
+				System.out.print("Build GUI...");
 				loggerWindow.showConsoleWindow(false);
 
 				guiFrame.add(dic.getMomaGui());
@@ -224,7 +226,7 @@ public class MoMA {
 				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(dic.getMomaGui()));
 
 				guiFrame.setVisible(true);
-				System.out.println( " done!" );
+				System.out.println(" done!");
 			});
 
 			if (commandLineArgumentParser.isReloadingData()) {
@@ -233,13 +235,16 @@ public class MoMA {
 				});
 			}
 		} else {
-			dic.getMomaGui().exportHtmlOverview();
-			dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
-
 			configurationManager.saveParams(dic.getGuiFrame());
+			if (commandLineArgumentParser.isTrackOnly()) {
+				dic.getMomaGui().exportTrackingData(dic.getFilePaths().getOutputPath().toFile());
+			} else {
+				dic.getMomaGui().exportHtmlOverview();
+				dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
+			}
 
 			if (!runningAsFijiPlugin) {
-				System.exit( 11 );
+				System.exit(11);
 			}
 		}
 	}

@@ -3,7 +3,8 @@ package com.jug.exploration;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static com.jug.exploration.ExplorationTestHelpers.*;
+import static com.jug.exploration.ExplorationTestHelpers.createEmptyDirectory;
+import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class ExploreResultLoading {
     String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/";
@@ -13,7 +14,8 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
     }
 
@@ -57,6 +59,18 @@ public class ExploreResultLoading {
         Integer tmax = 10;
         createEmptyDirectory(outputPath);
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
+//        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
+    }
+
+    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly() {
+        String subfolder = "lis_20211026__Pos7_GL12";
+        Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
+        Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
+        Integer tmin = 1;
+        Integer tmax = 10;
+        createEmptyDirectory(outputPath);
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 

@@ -325,6 +325,9 @@ public class PseudoDic {
     JFrame guiFrame;
 
     public JFrame getGuiFrame() {
+        if (getConfigurationManager().getIfRunningHeadless()) {
+            return null; /* TODO-MM-20220704: We are running headless, so return null as guiFrame, this is how Florian implemented it; it is hacky and should be refactored */
+        }
         if (isNull(guiFrame)) {
             guiFrame = buildGuiFrame();
         }

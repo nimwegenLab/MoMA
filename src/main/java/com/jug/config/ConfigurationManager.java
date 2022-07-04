@@ -394,7 +394,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT));
             props.setProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP));
 
-            if (guiFrame != null) {
+            if (!runningHeadless) { /* only get the guiFrame position and size, if MoMA is running with GUI */
                 GUI_POS_X = guiFrame.getX();
                 GUI_POS_Y = guiFrame.getY();
                 GUI_WIDTH = guiFrame.getWidth();

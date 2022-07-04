@@ -243,9 +243,9 @@ public class MoMA {
 				dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
 			}
 
-			if (!runningAsFijiPlugin) {
-				System.exit(11);
-			}
+//			if (!runningAsFijiPlugin) {
+//				System.exit(11);
+//			}
 		}
 	}
 

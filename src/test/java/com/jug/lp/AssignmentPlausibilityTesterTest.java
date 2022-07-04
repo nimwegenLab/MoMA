@@ -41,11 +41,6 @@ public class AssignmentPlausibilityTesterTest {
         }
 
         @Override
-        public boolean filterAssignmentsByMaximalGrowthRate() {
-            return false;
-        }
-
-        @Override
         public double getMaximumGrowthRate() {
             return maximumGrowthRate;
         }

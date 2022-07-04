@@ -390,10 +390,8 @@ public class GrowthlaneTrackingILP {
 
             for (final AdvancedComponent<FloatType> targetComponent : targetComponents) {
 //            for (final AdvancedComponent<FloatType> targetComponent : targetComponentForest.getAllComponents()) {
-                if (trackingConfiguration.filterAssignmentsByMaximalGrowthRate()) {
-                    if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
-                        continue;
-                    }
+                if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
+                    continue;
                 }
 
                 float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
@@ -577,10 +575,8 @@ public class GrowthlaneTrackingILP {
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (trackingConfiguration.filterAssignmentsByMaximalGrowthRate()) {
-                        if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
-                            continue;
-                        }
+                    if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
+                        continue;
                     }
 
                     @SuppressWarnings("unchecked")

@@ -5,13 +5,6 @@ package com.jug.config;
  */
 public interface ITrackingConfiguration {
     /**
-     * If this setting is true segment assignments will between components that exceed the maximal growth-rate will not
-     * be added to the ILP.
-     * @return
-     */
-    boolean filterAssignmentsByMaximalGrowthRate();
-
-    /**
      * Return the maximal growth-rate that is allowed between the source and target component(s) in an assignment.
      * @return
      */

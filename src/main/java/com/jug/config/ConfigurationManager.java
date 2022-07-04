@@ -449,10 +449,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      *
      * @return
      */
-    public boolean filterAssignmentsByMaximalGrowthRate() {
-        return !GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* If we are using the GT export functionality, we do not want to filter by size difference, because this might remove relevant components. */
-    }
-
     public double getMaximumGrowthRate() {
         return MAXIMUM_GROWTH_RATE;
     }

@@ -76,12 +76,6 @@ public class GrowthlaneTrackingIlpTest {
     }
 
     class TrackingConfigMock implements ITrackingConfiguration {
-
-        @Override
-        public boolean filterAssignmentsByMaximalGrowthRate() {
-            return false;
-        }
-
         @Override
         public double getMaximumGrowthRate() {
             return 0;

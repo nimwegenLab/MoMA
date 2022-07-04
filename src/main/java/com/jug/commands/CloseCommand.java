@@ -4,6 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 
 import javax.swing.*;
+import java.awt.event.WindowEvent;
 
 public class CloseCommand implements ICommand {
     private final ConfigurationManager configurationManager;
@@ -18,8 +19,6 @@ public class CloseCommand implements ICommand {
 
     public void run() {
         configurationManager.saveParams(guiFrame);
-//        if (!commandLineArgumentParser.getRunningAsFijiPlugin()) {
-//            System.exit(0);
-//        }
+        guiFrame.dispatchEvent(new WindowEvent(guiFrame, WindowEvent.WINDOW_CLOSING));
     }
 }

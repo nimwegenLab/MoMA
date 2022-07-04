@@ -219,16 +219,12 @@ public class MoMA {
 
 		if (!commandLineArgumentParser.getIfRunningHeadless()) {
 			SwingUtilities.invokeLater(() -> {
-				System.out.print("Build GUI...");
 				loggerWindow.showConsoleWindow(false);
-
 				guiFrame.add(dic.getMomaGui());
 				guiFrame.setSize(configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT);
 				guiFrame.setLocation(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y);
 				guiFrame.addWindowFocusListener(new WindowFocusListenerImplementation(dic.getMomaGui()));
-
 				guiFrame.setVisible(true);
-				System.out.println(" done!");
 			});
 
 			if (commandLineArgumentParser.isReloadingData()) {
@@ -245,7 +241,6 @@ public class MoMA {
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
-					System.out.println("Working now");
 				}
 			});
 			t.start();
@@ -262,7 +257,7 @@ public class MoMA {
 
 			try {
 				t.join();
-				System.out.println("GUI was closed. Continuing main thread.");
+				System.exit(0);
 			} catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}

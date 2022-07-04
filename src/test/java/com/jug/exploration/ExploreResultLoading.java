@@ -83,6 +83,8 @@ public class ExploreResultLoading {
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export() throws Exception {
+        int statusCode;
+
         String subfolder = "lis_20211026__Pos7_GL12";
         Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
@@ -93,16 +95,15 @@ public class ExploreResultLoading {
 
 //        createEmptyDirectory(outputPath);
 //
-//        int statusCode;
 //        /* this runs tracking only */
 //        statusCode = catchSystemExit(() -> startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"}));
 //        assertEquals(11, statusCode);
 
         /* this reloads the dataset for manual curation */
-        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
-//        statusCode = catchSystemExit(() -> startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()}));
-//        assertEquals(11, statusCode);
-//        System.out.println("Waiting for the JFrame to close worked.");
+//        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
+        statusCode = catchSystemExit(() -> startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()}));
+        assertEquals(0, statusCode);
+        System.out.println("Waiting for the JFrame to close worked.");
 
         /* this reloads the dastaset in headless to export the tracking results */
 //        startMoma(true, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});

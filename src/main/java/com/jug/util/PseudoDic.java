@@ -342,12 +342,6 @@ public class PseudoDic {
      */
     private JFrame buildGuiFrame() {
         JFrame myGuiFrame = new JFrame();
-        myGuiFrame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(final WindowEvent we) {
-                getCloseCommand().run();
-            }
-        });
         return myGuiFrame;
     }
 

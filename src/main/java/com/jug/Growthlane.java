@@ -48,7 +48,7 @@ public class Growthlane {
 	public Growthlane(IDialogManager dialogManager, FilePaths filePaths) {
 		this.dialogManager = dialogManager;
 		this.filePaths = filePaths;
-		this.frames = new ArrayList<>();
+		this.frames = new ConcurrentArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------

@@ -148,6 +148,5 @@ public class Growthlane {
 			glf.generateSimpleSegmentationHypotheses();
 			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
-		System.out.println( " ...done!" );
 	}
 }

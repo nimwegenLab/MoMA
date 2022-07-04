@@ -15,10 +15,6 @@ public class ImageProvider implements IImageProvider {
     private Img<FloatType> imgRaw;
     private Img<FloatType> imgProbs;
 
-    // -------------------------------------------------------------------------------------
-    // setters and getters
-    // -------------------------------------------------------------------------------------
-
     public void loadTiffsFromFileOrFolder(String path, int minTime, int maxTime, int minChannelIdx, int numChannels) throws FileNotFoundException {
         rawChannelImgs = FloatTypeImgLoader.loadTiffsFromFileOrFolder(path, minTime, maxTime, minChannelIdx, numChannels + minChannelIdx - 1);
         imgRaw = rawChannelImgs.get( 0 );
@@ -36,7 +32,7 @@ public class ImageProvider implements IImageProvider {
      * @return the rawChannelImgs
      */
     @Override
-    public List< Img< FloatType >> getRawChannelImgs() {
+    public List<Img<FloatType>> getRawChannelImgs() {
         return rawChannelImgs;
     }
 
@@ -44,7 +40,7 @@ public class ImageProvider implements IImageProvider {
      * @return the imgProbs
      */
     @Override
-    public Img< FloatType > getImgProbs() {
+    public Img<FloatType> getImgProbs() {
         return imgProbs;
     }
 
@@ -57,9 +53,9 @@ public class ImageProvider implements IImageProvider {
     }
 
     @Override
-    public Img<FloatType> getImgProbsAt(int timeStep) {
+    public synchronized Img<FloatType> getImgProbsAt(int timeStep) {
         Img<FloatType> img = this.getImgProbs();
-        return ImgView.wrap(Views.hyperSlice(img, 2, timeStep));
+        return ImgView.wrap(Views.hyperSlice(img, 2, timeStep)).copy(); /* return copy so that we do not accidentally modify the source image */
     }
 
     @Override

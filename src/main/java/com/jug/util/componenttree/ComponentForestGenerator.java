@@ -48,7 +48,6 @@ public class ComponentForestGenerator {
         Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
         raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
 
-
         final double delta = 0.0001;
 //        final double delta = 0.02;
         final int minSize = 5; // this sets the minimum size of components during component generation for root components as well as child components. We set this to a low value to ensure a deep segmentation of our components. The minimum size of root and child components is then filtered using LeafComponentSizeTester and RootComponentSizeTester (see below).

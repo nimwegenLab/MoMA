@@ -1320,13 +1320,6 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * @return the Growthlane this is the ILP for.
-     */
-    protected Growthlane getGrowthlane() {
-        return gl;
-    }
-
-    /**
      * Collects and returns all inactive right-assignments given the optimal
      * segmentation.
      * An assignment in inactive, when it was NOT chosen by the ILP.
@@ -2076,10 +2069,6 @@ public class GrowthlaneTrackingILP {
 
     public void addChangeListener(ChangeListener l) {
         listenerList.add(l);
-    }
-
-    public void removeChangeListener(ChangeListener l) {
-        listenerList.remove(l);
     }
 
     public void fireStateChanged() {

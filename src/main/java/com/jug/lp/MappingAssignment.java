@@ -79,6 +79,6 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis target) {
-        return "MapAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
+        return "MapT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
     }
 }

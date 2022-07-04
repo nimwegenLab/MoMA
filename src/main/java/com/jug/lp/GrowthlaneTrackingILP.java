@@ -722,7 +722,7 @@ public class GrowthlaneTrackingILP {
                 }
                 runnerNode = runnerNode.getParent();
             }
-            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrAtT" + t + "_" + leafNodeHypId);
+            model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrT" + t + "_" + leafNodeHypId);
         } else {  /* If ctNode is not a leaf-node -> recurse */
             for (final C ctChild : ctNode.getChildren()) {
                 recursivelyAddPathBlockingConstraints(ctChild, t);
@@ -767,7 +767,7 @@ public class GrowthlaneTrackingILP {
                 }
 
                 // add the constraint for this hypothesis
-                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrAtT" + t + "_" + hyp.getStringId());
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrT" + t + "_" + hyp.getStringId());
             }
         }
     }

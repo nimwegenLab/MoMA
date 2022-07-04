@@ -78,7 +78,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         }
 
         if (add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS) {
-            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstrAtT" + getSourceTimeStep() + "_" + getStringId());
+            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstrT" + getSourceTimeStep() + "_" + getStringId());
         }
     }
 
@@ -101,6 +101,6 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "ExitAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+        return "ExitT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

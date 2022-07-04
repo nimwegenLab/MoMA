@@ -98,6 +98,6 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis upperTarget, Hypothesis lowerTarget) {
-        return "DivAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
+        return "DivT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
     }
 }

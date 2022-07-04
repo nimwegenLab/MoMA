@@ -15,8 +15,9 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export();
     }
 
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties() {
@@ -77,5 +78,26 @@ public class ExploreResultLoading {
         String subfolder = "lis_20211026__Pos7_GL12";
         Path reload_folder_path = Paths.get(datasets_base_path, subfolder, "output");
         startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
+    }
+
+    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export() {
+        String subfolder = "lis_20211026__Pos7_GL12";
+        Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
+        Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
+        Integer tmin = 1;
+        Integer tmax = 10;
+
+//        createEmptyDirectory(outputPath);
+
+        /* this runs tracking only */
+//        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"});
+
+        /* this reloads the dataset for manual curation */
+        Path reload_folder_path = outputPath;
+        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
+
+        /* this reloads the dastaset in headless to export the tracking results */
+        startMoma(true, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
     }
 }

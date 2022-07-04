@@ -330,6 +330,8 @@ public class PseudoDic {
         }
         if (isNull(guiFrame)) {
             guiFrame = buildGuiFrame();
+            guiFrame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            guiFrame.setVisible(true);
         }
         return guiFrame;
     }

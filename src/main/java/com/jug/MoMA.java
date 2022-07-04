@@ -17,6 +17,8 @@ import org.apache.commons.lang3.SystemUtils;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -234,6 +236,36 @@ public class MoMA {
 					dic.getMomaGui().startOptimizationWhenReloadingPreviousCuration(); /* if we are reloading data, we want to directly optimize to see the previous results in the GUI */
 				});
 			}
+
+			Thread t = new Thread(() -> {
+				synchronized(lock) {
+					while (guiFrame.isVisible())
+						try {
+							lock.wait();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					System.out.println("Working now");
+				}
+			});
+			t.start();
+
+			guiFrame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent arg0) {
+					synchronized (lock) {
+						guiFrame.setVisible(false);
+						lock.notify();
+					}
+				}
+			});
+
+			try {
+				t.join();
+				System.out.println("GUI was closed. Continuing main thread.");
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
 		} else {
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
@@ -248,6 +280,8 @@ public class MoMA {
 			}
 		}
 	}
+
+	private static Object lock = new Object();
 
 	/**
 	 *

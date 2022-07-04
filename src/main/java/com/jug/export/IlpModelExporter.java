@@ -22,8 +22,8 @@ public class IlpModelExporter implements ResultExporterInterface {
 
         IGRBModelAdapter model = resultData.getIlpModel();
 
-        int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);
-        System.out.println(String.format("ignoreNamesVal: %d", ignoreNamesVal));
+//        int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);
+//        System.out.println(String.format("ignoreNamesVal: %d", ignoreNamesVal));
 
         String outputPath = outputFolder.getAbsolutePath() + "/gurobi_model.lp";
         model.write(outputPath);

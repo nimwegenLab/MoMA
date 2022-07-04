@@ -18,8 +18,8 @@ public class CloseCommand implements ICommand {
 
     public void run() {
         configurationManager.saveParams(guiFrame);
-        if (!commandLineArgumentParser.getRunningAsFijiPlugin()) {
-            System.exit(0);
-        }
+//        if (!commandLineArgumentParser.getRunningAsFijiPlugin()) {
+//            System.exit(0);
+//        }
     }
 }

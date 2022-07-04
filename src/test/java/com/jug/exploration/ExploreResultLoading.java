@@ -103,7 +103,6 @@ public class ExploreResultLoading {
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
         statusCode = catchSystemExit(() -> startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()}));
         assertEquals(0, statusCode);
-        System.out.println("Waiting for the JFrame to close worked.");
 
         /* this reloads the dastaset in headless to export the tracking results */
 //        startMoma(true, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});

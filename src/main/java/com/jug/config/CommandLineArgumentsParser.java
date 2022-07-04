@@ -109,9 +109,9 @@ public class CommandLineArgumentsParser {
         if ( cmd.hasOption( "h" ) ) {
             System.out.println( ">>> Starting MM in headless mode." );
             HEADLESS = true;
-            if ( !cmd.hasOption( "i" ) ) {
+            if (!(cmd.hasOption("i") || cmd.hasOption("reload"))) {
                 final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp( "Headless-mode requires option '-i <in-folder>'...", options );
+                formatter.printHelp( "Headless-mode requires option '-i <in-folder>' or '-reload <in-folder>'", options );
                 if (!runningAsFijiPlugin) {
                     System.exit( 0 );
                 } else {

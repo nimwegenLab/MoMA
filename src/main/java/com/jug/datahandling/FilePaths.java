@@ -21,7 +21,7 @@ public class FilePaths {
         propertiesFile = Paths.get(directoryPath, "mm.properties");
         outputPath = Paths.get(directoryPath);
         Files.exists(propertiesFile);
-        gurobiMpsFilePath = Paths.get(directoryPath, "ilpModel.mps");
+        gurobiMpsFilePath = Paths.get(directoryPath, "gurobi_model.mps");
     }
 
     public void setPropertiesFile(Path propertiesFile) {

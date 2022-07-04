@@ -106,8 +106,6 @@ public class TestGurobiVariableSettingAndRetrieval {
 //        model.update();
 //        model.write(modelFilePath);
 
-//        String modelFilePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp";
-//        String modelFilePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps";
         String modelFilePath = new File("").getAbsolutePath() + "/src/test/resources/gurobi_api_test_data/test_data_1/ilpModel.mps";
 
         /* load model and retrieve variables */

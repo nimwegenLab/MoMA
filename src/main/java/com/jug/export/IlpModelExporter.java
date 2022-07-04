@@ -25,15 +25,15 @@ public class IlpModelExporter implements ResultExporterInterface {
         int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);
         System.out.println(String.format("ignoreNamesVal: %d", ignoreNamesVal));
 
-        String outputPath = outputFolder.getAbsolutePath() + "/ilpModel.lp";
+        String outputPath = outputFolder.getAbsolutePath() + "/gurobi_model.lp";
         model.write(outputPath);
-        String outputPath2 = outputFolder.getAbsolutePath() + "/ilpModel.mps";
+        String outputPath2 = outputFolder.getAbsolutePath() + "/gurobi_model.mps";
         model.write(outputPath2);
-        String outputPath3 = outputFolder.getAbsolutePath() + "/ilpModel.sol";
+        String outputPath3 = outputFolder.getAbsolutePath() + "/gurobi_model.sol";
         model.write(outputPath3);
-//        String outputPath4 = outputFolder.getAbsolutePath() + "/ilpModel.json";
+//        String outputPath4 = outputFolder.getAbsolutePath() + "/gurobi_model.json";
 //        model.write(outputPath4);
-        String outputPath5 = outputFolder.getAbsolutePath() + "/ilpModel.mst";
+        String outputPath5 = outputFolder.getAbsolutePath() + "/gurobi_model.mst";
         model.write(outputPath5);
 //        System.out.println("stop");
         resultData.getGrowthlaneTrackingILP().removeStorageLockConstraintsFromAssignments();

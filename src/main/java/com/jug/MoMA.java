@@ -271,7 +271,7 @@ public class MoMA {
 			}
 
 			if (!runningAsFijiPlugin) {
-				System.exit(11);
+				System.exit(0);
 			}
 		}
 	}

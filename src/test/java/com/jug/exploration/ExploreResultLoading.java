@@ -97,13 +97,14 @@ public class ExploreResultLoading {
 
         /* this runs tracking only */
         statusCode = catchSystemExit(() -> startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"}));
-        assertEquals(11, statusCode);
+        assertEquals(0, statusCode);
 
         /* this reloads the dataset for manual curation */
         statusCode = catchSystemExit(() -> startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()}));
         assertEquals(0, statusCode);
 
         /* this reloads the dastaset in headless to export the tracking results */
-        startMoma(true, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
+        statusCode = catchSystemExit(() -> startMoma(true, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()}));
+        assertEquals(0, statusCode);
     }
 }

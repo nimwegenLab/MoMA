@@ -81,12 +81,14 @@ public class ExplorationTestHelpers {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
         } else if (tmin != null && tmax == null) {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString()};
-        } else if (tmin == null && tmax != null) {
+        } else if (tmin == null && tmax != null && outputPath != null) {
             args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
+        } else if (tmin == null && tmax != null) {
+            args = new String[]{"-i", inputPath, "-tmax", tmax.toString()};
         } else if (outputPath != null) { // both tmin and tmax are null
             args = new String[]{"-i", inputPath, "-o", outputPath};
         } else if (inputPath != null) {
-            args = new String[]{"-i", };
+            args = new String[]{"-i", inputPath};
         } else {
             args = new String[]{};
         }

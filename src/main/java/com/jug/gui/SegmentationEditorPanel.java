@@ -4,6 +4,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
+import com.jug.lp.CellCountConstraint;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -141,12 +142,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
                 txtNumCells.setText("-");
-                ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
+                ilp.removeCellCountConstraint(timeStepToDisplay());
             }
             if (numCells != -1) {
                 try {
-                    ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
-                    ilp.addSegmentsInFrameCountConstraint(timeStepToDisplay(), numCells);
+                    ilp.removeCellCountConstraint(timeStepToDisplay());
+                    ilp.addCellCountConstraint(timeStepToDisplay(), numCells);
                 } catch (final GRBException e1) {
                     e1.printStackTrace();
                 }
@@ -211,13 +212,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
 
-        final int rhs = momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
+        CellCountConstraint constraint = momaModel.getCurrentGL().getIlp().getCellCountConstraintNew(timeStepToDisplay());
+        final int numberOfCells = constraint.getNumberOfCells();
         txtNumCells.setEnabled(true);
-        if (rhs == -1) {
+        if (numberOfCells == -1) {
             txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
         } else {
-            txtNumCells.setText("" + rhs);
+            txtNumCells.setText("" + numberOfCells);
             txtNumCells.setBackground(Color.ORANGE);
         }
     }

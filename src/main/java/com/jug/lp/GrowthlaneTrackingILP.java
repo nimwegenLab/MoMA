@@ -21,6 +21,7 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -1467,7 +1468,12 @@ public class GrowthlaneTrackingILP {
             }
         }
 
-        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, "CellCountConstraintAtT_" + t);
+        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, getCellCountConstraintName(t));
+    }
+
+    @NotNull
+    private String getCellCountConstraintName(int t) {
+        return "CellCountConstraintAtT_" + t;
     }
 
     /**

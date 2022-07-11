@@ -1697,6 +1697,14 @@ public class GrowthlaneTrackingILP {
                 }
             }
         }
+        reader.close();
+
+//        try {
+//            model.update();
+//            run();
+//        } catch (final GRBException e) {
+//            e.printStackTrace();
+//        }
 
         // Activate all PruneRoots
         for (final Hypothesis<?> hyp : pruneRoots) {
@@ -1704,6 +1712,151 @@ public class GrowthlaneTrackingILP {
         }
         MoMA.getGui().dataToDisplayChanged();
     }
+
+    public void loadPruneRootsNew(final File file) throws IOException {
+        final BufferedReader reader = new BufferedReader(new FileReader(file));
+
+        final List<Hypothesis<?>> pruneRoots = new ArrayList<>();
+
+        final int timeOffset = configurationManager.getMinTime();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            // ignore comments and empty lines
+            if (line.trim().startsWith("#") || line.trim().length() == 0) continue;
+
+            final String[] columns = line.split(",");
+            if (columns.length > 1) {
+                final String constraintType = columns[0].trim();
+
+                // DataProperties (to see if this load makes any sense)
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("TIME")) {
+                    final int readNumT = Integer.parseInt(columns[1].trim());
+                    final int readTmin = Integer.parseInt(columns[2].trim());
+                    final int readTmax = Integer.parseInt(columns[3].trim());
+
+                    if (configurationManager.getMinTime() != readTmin || configurationManager.getMaxTime() != readTmax) {
+                        if (!configurationManager.getIfRunningHeadless()) {
+                            JOptionPane.showMessageDialog(
+                                    MoMA.getGui(),
+                                    "Tracking to be loaded is at best a partial fit.\nMatching data will be loaded whereever possible...",
+                                    "Warning",
+                                    JOptionPane.WARNING_MESSAGE);
+                        } else {
+                            System.out.println("Tracking to be loaded is at most a partial fit. Continue to load matching data...");
+                            System.exit(946);
+                        }
+                    }
+                }
+                if (constraintType.equals("SIZE")) {
+                    final int readNumH = Integer.parseInt(columns[1].trim());
+                    final int readNumA = Integer.parseInt(columns[2].trim());
+                }
+
+                // SegmentsInFrameCountConstraints
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("SIFCC")) {
+                    try {
+                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
+                        final int numCells = Integer.parseInt(columns[2].trim());
+                        try {
+                            System.out.println(String.format("SIFCC %d %d", t, numCells));
+                            this.addCellCountConstraint(t, numCells);
+                        } catch (final GRBException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // SegmentationConstraints
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("SSC")) {
+                    try {
+                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
+                        final int id = Integer.parseInt(columns[2].trim());
+                        final double rhs = Double.parseDouble(columns[3].trim());
+                        try {
+                            System.out.println(String.format("SSC %d %d %f", t, id, rhs));
+                            final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
+                                    nodes.getHypothesesAt(t);
+                            for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+                                if (hyp.getId() == id) {
+                                    if (1 == (int) rhs) {
+                                        addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp, null);
+                                    } else {
+                                        addSegmentNotInSolutionConstraint(hyp);
+                                    }
+                                }
+                            }
+                        } catch (final GRBException e) {
+                            e.printStackTrace();
+                        }
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // AssignmentConstraints
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("ASC")) {
+                    try {
+                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
+                        final int id = Integer.parseInt(columns[2].trim());
+                        final double rhs = Double.parseDouble(columns[3].trim());
+                        System.out.println(String.format("ASC %d %d %f", t, id, rhs));
+                        final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assmnts =
+                                nodes.getAssignmentsAt(t);
+                        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : assmnts) {
+                            if (assmnt.getId() == id) {
+                                if (1 == (int) rhs) {
+                                    assmnt.setGroundTruth(true);
+                                } else {
+                                    assmnt.setGroundUntruth(true);
+                                }
+                            }
+                        }
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+                // Pruning Roots
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("PR")) {
+                    try {
+                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
+                        final int id = Integer.parseInt(columns[2].trim());
+                        System.out.println(String.format("PR %d %d", t, id));
+                        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
+                                nodes.getHypothesesAt(t);
+                        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+                            if (hyp.getId() == id) {
+                                pruneRoots.add(hyp);
+                            }
+                        }
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        reader.close();
+
+        try {
+            model.update();
+            run();
+        } catch (final GRBException e) {
+            e.printStackTrace();
+        }
+
+        // Activate all PruneRoots
+        for (final Hypothesis<?> hyp : pruneRoots) {
+            hyp.setPruneRoot(true, this);
+        }
+        MoMA.getGui().dataToDisplayChanged();
+    }
+
+
 
     /**
      * @param file

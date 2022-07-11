@@ -58,11 +58,12 @@ public class FileUtils {
     }
 
     public static List<Path> getMatchingFilesInDirectory(Path parentFolder, String globExpression) {
+//        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + globExpression);
         PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + globExpression);
         List<Path> matchingFiles = new ArrayList<>();
         String[] pathnames = new File(parentFolder.toString()).list();
         for (String name : pathnames) {
-            Path filePath = Paths.get(parentFolder + "/" + name);
+            Path filePath = Paths.get(parentFolder.toString(), name);
             if (matcher.matches(filePath)) {
                 matchingFiles.add(filePath);
             }

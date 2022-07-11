@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.nio.file.*;
+import java.util.List;
 
+import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 public class FilePaths {
@@ -15,8 +17,6 @@ public class FilePaths {
     private String directoryPath;
     private String modelFile;
     private Path gurobiMpsFilePath;
-
-    private Path dotMomaFilePath;
 
     public void setLoadingDirectoryPath(String directoryPath) {
         this.directoryPath = directoryPath;
@@ -77,19 +77,13 @@ public class FilePaths {
     }
 
     public Path getDotMomaFilePath() {
-        dotMomaFilePath = Paths.get(this.directoryPath, "*.moma");
-
-//        String glob = "glob:" + this.directoryPath + "/*.moma";
-        String glob = "glob:**/*.moma";
-//        String path = "D:/";
-//        match(glob, path);
-        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
-//        Path path = null;
-        if (pathMatcher.matches(Paths.get(this.directoryPath))) {
-            int bla = 1;
+        List<Path> matchingFiles = getMatchingFilesInDirectory(Paths.get(this.directoryPath), "**/*.moma");
+        if (matchingFiles.size() > 1) {
+            if (matchingFiles.size() == 0) {
+                throw new RuntimeException("Error: Could not find *.moma file in GL-directory: " + this.directoryPath);
+            }
+            throw new RuntimeException("Error: It is unclear, which *.moma file should be loaded. The number of *.moma files >1 in GL-directory: " + this.directoryPath);
         }
-        return dotMomaFilePath;
+        return matchingFiles.get(0);
     }
-
-
 }

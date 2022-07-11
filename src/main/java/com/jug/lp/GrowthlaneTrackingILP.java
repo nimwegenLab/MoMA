@@ -1697,6 +1697,12 @@ public class GrowthlaneTrackingILP {
                 }
             }
         }
+
+        // Activate all PruneRoots
+        for (final Hypothesis<?> hyp : pruneRoots) {
+            hyp.setPruneRoot(true, this);
+        }
+        MoMA.getGui().dataToDisplayChanged();
     }
 
     /**

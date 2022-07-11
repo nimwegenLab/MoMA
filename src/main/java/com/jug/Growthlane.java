@@ -1,6 +1,5 @@
 package com.jug;
 
-import com.jug.config.ConfigurationManager;
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.FilePaths;
 import com.jug.gui.IDialogManager;
@@ -106,8 +105,8 @@ public class Growthlane {
 		}
 
 		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), configurationManager, MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
-		if ( guiProgressReceiver != null ) {
-			ilp.addProgressListener( guiProgressReceiver );
+		if (guiProgressReceiver != null) {
+			ilp.addProgressListener(guiProgressReceiver);
 		}
 		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();

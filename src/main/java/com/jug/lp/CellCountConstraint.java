@@ -36,6 +36,7 @@ public class CellCountConstraint {
 
         try {
             model.addConstr(expr, GRB.EQUAL, numberOfCells, CellCountConstraint.getCellCountConstraintName(timeStep));
+            model.update();
         } catch (GRBException e) {
             throw new RuntimeException("Error: Failed to add CellCountConstraint: " + getCellCountConstraintName(timeStep), e);
         }
@@ -47,9 +48,10 @@ public class CellCountConstraint {
 
     public void remove(){
         GRBConstr constraint = getGurobiConstraint();
-        if (!isNull(getGurobiConstraint())) {
+        if (!isNull(constraint)) {
             try {
                 model.remove(constraint);
+                model.update();
             } catch (GRBException e) {
                 throw new RuntimeException("Failed to remove CellNumberConstraint: " + getCellCountConstraintName(getTimeStep()), e);
             }
@@ -62,7 +64,7 @@ public class CellCountConstraint {
 
     public int getNumberOfCells() {
         GRBConstr constraint = getGurobiConstraint();
-        if (!isNull(getGurobiConstraint())) {
+        if (!isNull(constraint)) {
             try {
                 return (int) constraint.get(GRB.DoubleAttr.RHS);
             } catch (GRBException e) {
@@ -73,14 +75,16 @@ public class CellCountConstraint {
     }
 
     private GRBConstr getGurobiConstraint() {
-        GRBConstr cellCountConstraint;
+//        GRBConstr cellCountConstraint;
         try {
-            cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
-            if (!isNull(cellCountConstraint)) {
-                return cellCountConstraint;
-            } else {
-                return null;
-            }
+            GRBConstr cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
+            return cellCountConstraint;
+//            cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
+//            if (!isNull(cellCountConstraint)) {
+//                return cellCountConstraint;
+//            } else {
+//                return null;
+//            }
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }

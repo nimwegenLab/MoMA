@@ -220,7 +220,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
         } else {
-            txtNumCells.setText("" + numberOfCells);
+            txtNumCells.setText(Integer.toString(numberOfCells));
             txtNumCells.setBackground(Color.ORANGE);
         }
     }

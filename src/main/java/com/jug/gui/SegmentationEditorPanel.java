@@ -211,8 +211,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
 
-        final int rhs =
-                momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
+        final int rhs = momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
         txtNumCells.setEnabled(true);
         if (rhs == -1) {
             txtNumCells.setText("-");

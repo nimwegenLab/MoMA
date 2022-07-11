@@ -1460,36 +1460,6 @@ public class GrowthlaneTrackingILP {
         CellCountConstraint.addCellCountConstraint(t, numCells, model, nodes, edgeSets);
     }
 
-    /**
-     * Removes an constraint on the number of cells at a given time-point (in
-     * case such a constraint was ever added).
-     *
-     * @param t
-     */
-    public void removeCellCountConstraint(final int t) {
-        GRBConstr cellCountConstraint;
-        try {
-            cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(t));
-        } catch (GRBException e) {
-            throw new RuntimeException(e);
-        }
-        if(!isNull(cellCountConstraint)){
-            try {
-                model.remove(cellCountConstraint);
-            } catch (GRBException e) {
-                throw new RuntimeException("Failed to remove CellCountConstraint: " + CellCountConstraint.getCellCountConstraintName(t), e);
-            }
-        }
-//        if (segmentInFrameCountConstraint[t] != null) {
-//            try {
-//                model.remove(segmentInFrameCountConstraint[t]);
-//                segmentInFrameCountConstraint[t] = null;
-//            } catch (final GRBException e) {
-//                e.printStackTrace();
-//            }
-//        }
-    }
-
     public CellCountConstraint getCellCountConstraint(int timeStep) {
         return CellCountConstraint.getCellCountConstraint(timeStep, model);
     }

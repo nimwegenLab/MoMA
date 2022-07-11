@@ -75,16 +75,8 @@ public class CellCountConstraint {
     }
 
     private GRBConstr getGurobiConstraint() {
-//        GRBConstr cellCountConstraint;
         try {
-            GRBConstr cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
-            return cellCountConstraint;
-//            cellCountConstraint = model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
-//            if (!isNull(cellCountConstraint)) {
-//                return cellCountConstraint;
-//            } else {
-//                return null;
-//            }
+            return model.getConstrByName(CellCountConstraint.getCellCountConstraintName(timeStep));
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }

@@ -1056,14 +1056,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelWithSliders.setTimeStepSliderPosition(timestep);
     }
 
-    /***
-     * This method must be used, when reloading a previous curation state. It does not introduce any additional
-     * modifications to the ILP state before running the optimization. In particular, it does not introduce any
-     * locking constraints or optimization using the methods:
-     *             model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore();
-     *             model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter();
-     * as is the case, when calling e.g. buttonOptimizeMore.doClick(); see the action callback stargin with:
-     * if (e.getSource().equals(buttonOptimizeMore)) { ... }
+    /**
+     * This method is run, when loading a GL curation, in order to perform the optimization of the ILP and initialize
+     * MoMA to the previous curation state.
      */
     public void startOptimizationWhenReloadingPreviousCuration() {
         final Thread t = new Thread(() -> {
@@ -1071,7 +1066,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 prepareOptimization();
             }
             System.out.println("Loading previous tracking state...");
-            model.getCurrentGL().getIlp().runImmediately();
+            GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
+            ilp.runImmediately();
+            if (configurationManager.getIsReloading()) {
+                try {
+                    ilp.loadPruneRoots(filePaths.getDotMomaFilePath().toFile());
+                } catch (IOException e) {
+                    throw new RuntimeException("Error: Could load prune-roots from file: " + filePaths.getDotMomaFilePath(), e);
+                }
+            }
             System.out.println("...done!");
             buttonOptimizeMore.setForeground(Color.BLACK);
             dataToDisplayChanged();

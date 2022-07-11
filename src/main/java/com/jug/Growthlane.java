@@ -110,13 +110,6 @@ public class Growthlane {
 		}
 		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();
-		if (configurationManager.getIsReloading()) {
-			try {
-				ilp.loadPruneRoots(filePaths.getDotMomaFilePath().toFile());
-			} catch (IOException e) {
-				throw new RuntimeException("Error: Could load prune-roots from file: " + filePaths.getDotMomaFilePath(), e);
-			}
-		}
 		ilp.setRemoveStorageLockConstraintAfterFirstOptimization();
 
 		if ( guiProgressReceiver != null ) {

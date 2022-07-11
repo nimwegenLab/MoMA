@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author jug
  */
@@ -781,11 +783,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(buttonSaveTrackingAndExit)) {
             File folderToUse = queryUserForFolderToUse();
-            final Thread t = new Thread(() -> {
-                this.exportTrackingData(folderToUse);
-                closeCommand.run();
-            });
-            t.start();
+            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
+                final Thread t = new Thread(() -> {
+                    this.exportTrackingData(folderToUse);
+                    closeCommand.run();
+                });
+                t.start();
+            }
         }
         requestFocusOnTimeStepSlider();
     }

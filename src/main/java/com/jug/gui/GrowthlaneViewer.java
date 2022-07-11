@@ -347,9 +347,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
-            Hypothesis<AdvancedComponent<FloatType>> hyp = getSelectedHypothesis();
-            if (isNull(hyp)) return;
-            hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
+            if (isNull(getSelectedHypothesis())) return;
+            getSelectedHypothesis().toggleIsPrunedRoot();
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
         }

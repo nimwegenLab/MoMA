@@ -303,6 +303,10 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         this.isPruned = value;
     }
 
+    public void toggleIsPrunedRoot() {
+        this.setPruneRoot(!this.isPruneRoot(), ilp);
+    }
+
     public class HypLoc {
 
         final int t;

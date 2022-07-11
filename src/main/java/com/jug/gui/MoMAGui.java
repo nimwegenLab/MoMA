@@ -773,13 +773,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         if (e.getSource().equals(buttonExportData)) {
             File folderToUse = queryUserForFolderToUse();
-            final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
-            t.start();
+            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
+                final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
+                t.start();
+            }
         }
         if (e.getSource().equals(buttonSaveTracking)) {
             File folderToUse = queryUserForFolderToUse();
-            final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
-            t.start();
+            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
+                final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
+                t.start();
+            }
         }
         if (e.getSource().equals(buttonSaveTrackingAndExit)) {
             File folderToUse = queryUserForFolderToUse();

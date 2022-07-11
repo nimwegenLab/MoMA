@@ -14,8 +14,6 @@ import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
-import net.imglib2.Localizable;
-import net.imglib2.Point;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
@@ -55,11 +53,9 @@ public class GrowthlaneTrackingILP {
             new AssignmentsAndHypotheses<>();  // all variables of FG
     public final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets =
             new HypothesisNeighborhoods<>();  // incoming and outgoing assignments per hypothesis
-    private final GRBConstr[] segmentInFrameCountConstraint;
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
-    private ITrackingConfiguration trackingConfiguration;
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
@@ -74,25 +70,18 @@ public class GrowthlaneTrackingILP {
                                  final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
-                                 ITrackingConfiguration trackingConfiguration,
                                  IConfiguration configurationManager,
                                  String versionString,
                                  CostFactory costFactory) {
         this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
-        this.segmentInFrameCountConstraint = new GRBConstr[gl.size()];
-        this.trackingConfiguration = trackingConfiguration;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
-
-    // -------------------------------------------------------------------------------------
-    // getters & setters
-    // -------------------------------------------------------------------------------------
 
     /**
      * Returns only the active assignments in this the data.
@@ -220,10 +209,6 @@ public class GrowthlaneTrackingILP {
             // UPDATE GUROBI-MODEL
             // - - - - - - - - - -
             model.update();
-//			System.out.println( "Constraints added: " + model.getConstrs().length );
-
-//			String modelPath = "/home/micha/Documents/01_work/git/MoMA/test_datasets/Dany_20190515/20190515_hi1_med1_med2_rpmB_glu_gly_7_chr_hi1_deepmoma_2020-01-06_d6845a45/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos0_preproc_GL06_deepmoma/";
-//			model.write(modelPath + "/gurobi_model.rew");
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);
@@ -322,9 +307,9 @@ public class GrowthlaneTrackingILP {
     /**
      * Add an lysis-assignment at time t to a bunch of segmentation hypotheses.
      *
-     * @param sourceTimeStep    the time-point.
-     * @param hyps a list of hypothesis for which an <code>ExitAssignment</code>
-     *             should be added.
+     * @param sourceTimeStep the time-point.
+     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
+     *                       should be added.
      * @throws GRBException
      */
     private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
@@ -345,9 +330,9 @@ public class GrowthlaneTrackingILP {
      * that has an active exit-assignment are also assigned with an
      * exit-assignment.
      *
-     * @param sourceTimeStep    the time-point.
-     * @param hyps a list of hypothesis for which an <code>ExitAssignment</code>
-     *             should be added.
+     * @param sourceTimeStep the time-point.
+     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
+     *                       should be added.
      * @throws GRBException
      */
     private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
@@ -365,7 +350,7 @@ public class GrowthlaneTrackingILP {
      * Add mapping-assignments between source components in {@param sourceComponentForest} and target components in
      * {@param targetComponentForest}.
      *
-     * @param sourceTimeStep                   the time-point from which the <code>curHyps</code> originate.
+     * @param sourceTimeStep        the time-point from which the <code>curHyps</code> originate.
      * @param sourceComponentForest the component tree containing source components of the mapping-assignments.
      * @param targetComponentForest the component tree containing target components of the mapping-assignments.
      * @throws GRBException
@@ -547,7 +532,7 @@ public class GrowthlaneTrackingILP {
      * {@param targetComponentForest}, since division-assignments need two target component. The hypotheses of the
      * components, which are needed for the assignments, are created on the fly as needed.
      *
-     * @param sourceTimeStep            the time-point from which the <code>curHyps</code> originate.
+     * @param sourceTimeStep        the time-point from which the <code>curHyps</code> originate.
      * @param sourceComponentForest the component tree containing source components of the division assignments.
      * @param targetComponentForest the component tree containing target components at the next time-point of the division assignments.
      * @throws GRBException
@@ -869,8 +854,7 @@ public class GrowthlaneTrackingILP {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             fireStateChanged();
         }
     }
@@ -1149,6 +1133,7 @@ public class GrowthlaneTrackingILP {
 
     /**
      * Return all assignments at t.
+     *
      * @param t
      * @return
      */
@@ -1674,6 +1659,43 @@ public class GrowthlaneTrackingILP {
             out.close();
         } catch (final IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void loadPruneRoots(final File file) throws IOException {
+        final BufferedReader reader = new BufferedReader(new FileReader(file));
+
+        final List<Hypothesis<?>> pruneRoots = new ArrayList<>();
+
+        final int timeOffset = configurationManager.getMinTime();
+
+        String line;
+        while ((line = reader.readLine()) != null) {
+            // ignore comments and empty lines
+            if (line.trim().startsWith("#") || line.trim().length() == 0) continue;
+
+            final String[] columns = line.split(",");
+            if (columns.length > 1) {
+                final String constraintType = columns[0].trim();
+                // Pruning Roots
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                if (constraintType.equals("PR")) {
+                    try {
+                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
+                        final int id = Integer.parseInt(columns[2].trim());
+                        System.out.println(String.format("PR %d %d", t, id));
+                        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
+                                nodes.getHypothesesAt(t);
+                        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+                            if (hyp.getId() == id) {
+                                pruneRoots.add(hyp);
+                            }
+                        }
+                    } catch (final NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 

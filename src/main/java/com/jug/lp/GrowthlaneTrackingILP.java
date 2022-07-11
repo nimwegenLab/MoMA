@@ -3,7 +3,6 @@ package com.jug.lp;
 import com.jug.Growthlane;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
-import com.jug.config.ITrackingConfiguration;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -1662,22 +1661,17 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    public void loadPruneRootsNew(final File file) throws IOException {
+    public void loadPruneRoots(final File file) throws IOException {
         final BufferedReader reader = new BufferedReader(new FileReader(file));
-
         final List<Hypothesis<?>> pruneRoots = new ArrayList<>();
-
         final int timeOffset = configurationManager.getMinTime();
-
         String line;
         while ((line = reader.readLine()) != null) {
-            // ignore comments and empty lines
             if (line.trim().startsWith("#") || line.trim().length() == 0) continue;
-
             final String[] columns = line.split(",");
             if (columns.length > 1) {
                 final String constraintType = columns[0].trim();
-                // Pruning Roots
+                // Read Pruning Roots
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
                 if (constraintType.equals("PR")) {
                     try {
@@ -1706,7 +1700,6 @@ public class GrowthlaneTrackingILP {
             e.printStackTrace();
         }
 
-        // Activate all PruneRoots
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true, this);
         }

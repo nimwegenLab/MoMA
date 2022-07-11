@@ -1,10 +1,16 @@
 package com.jug.lp;
 
 import com.jug.lp.GRBModel.IGRBModelAdapter;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
+import gurobi.GRBLinExpr;
+import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Objects.isNull;
 
@@ -15,6 +21,24 @@ public class CellCountConstraint {
     private CellCountConstraint(int timeStep, IGRBModelAdapter model) {
         this.timeStep = timeStep;
         this.model = model;
+    }
+
+    public static void addCellCountConstraint(int timeStep, int numberOfCells, IGRBModelAdapter model, AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edgeSets) {
+        final GRBLinExpr expr = new GRBLinExpr();
+
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(timeStep);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp);
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+                expr.addTerm(1.0, assmnt.getGRBVar());
+            }
+        }
+
+        try {
+            model.addConstr(expr, GRB.EQUAL, numberOfCells, CellCountConstraint.getCellCountConstraintName(timeStep));
+        } catch (GRBException e) {
+            throw new RuntimeException("Error: Failed to add CellCountConstraint: " + getCellCountConstraintName(timeStep), e);
+        }
     }
 
     public String getName(){

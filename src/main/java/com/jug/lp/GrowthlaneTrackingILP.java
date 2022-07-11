@@ -1457,23 +1457,8 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     public void addCellCountConstraint(final int t, final int numCells) throws GRBException {
-        final GRBLinExpr expr = new GRBLinExpr();
-
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = edgeSets.getRightNeighborhood(hyp);
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
-                expr.addTerm(1.0, assmnt.getGRBVar());
-            }
-        }
-
-        segmentInFrameCountConstraint[t] = model.addConstr(expr, GRB.EQUAL, numCells, CellCountConstraint.getCellCountConstraintName(t));
+        CellCountConstraint.addCellCountConstraint(t, numCells, model, nodes, edgeSets);
     }
-
-//    @NotNull
-//    private String getCellCountConstraintName(int t) {
-//        return "CellCountConstraintAtT_" + t;
-//    }
 
     /**
      * Removes an constraint on the number of cells at a given time-point (in
@@ -1505,27 +1490,8 @@ public class GrowthlaneTrackingILP {
 //        }
     }
 
-    public CellCountConstraint getCellCountConstraintNew(int timeStep) {
+    public CellCountConstraint getCellCountConstraint(int timeStep) {
         return CellCountConstraint.getCellCountConstraint(timeStep, model);
-    }
-
-    /**
-     * Returns the right hand side of the segment-count constraint the given
-     * time-point.
-     *
-     * @param t time-point index.
-     * @return the RHS of the constraint if one such constraint is set, -1
-     * otherwise.
-     */
-    public int getCellCountConstraint(final int t) {
-        if (segmentInFrameCountConstraint[t] != null) {
-            try {
-                return (int) segmentInFrameCountConstraint[t].get(GRB.DoubleAttr.RHS);
-            } catch (final GRBException e) {
-                e.printStackTrace();
-            }
-        }
-        return -1;
     }
 
     /**
@@ -1708,7 +1674,7 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# SegmentsInFrameCountConstraints\n");
             for (int t = 0; t < gl.size(); t++) {
-                CellCountConstraint constraint = getCellCountConstraintNew(t);
+                CellCountConstraint constraint = getCellCountConstraint(t);
                 final int value = constraint.getNumberOfCells();
                 if (value >= 0) {
                     out.write(String.format("\tSIFCC, %d, %d\n", t + timeOffset, value));

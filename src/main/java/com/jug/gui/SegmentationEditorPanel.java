@@ -142,11 +142,12 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
                 txtNumCells.setText("-");
-                ilp.removeCellCountConstraint(timeStepToDisplay());
+                CellCountConstraint constraint = ilp.getCellCountConstraint(timeStepToDisplay());
+                constraint.remove();
             }
             if (numCells != -1) {
                 try {
-                    ilp.removeCellCountConstraint(timeStepToDisplay());
+                    ilp.getCellCountConstraint(timeStepToDisplay()).remove();
                     ilp.addCellCountConstraint(timeStepToDisplay(), numCells);
                 } catch (final GRBException e1) {
                     e1.printStackTrace();
@@ -212,7 +213,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
 
-        CellCountConstraint constraint = momaModel.getCurrentGL().getIlp().getCellCountConstraintNew(timeStepToDisplay());
+        CellCountConstraint constraint = momaModel.getCurrentGL().getIlp().getCellCountConstraint(timeStepToDisplay());
         final int numberOfCells = constraint.getNumberOfCells();
         txtNumCells.setEnabled(true);
         if (numberOfCells == -1) {

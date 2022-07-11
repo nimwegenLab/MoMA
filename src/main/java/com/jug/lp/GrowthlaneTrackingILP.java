@@ -1662,57 +1662,6 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    public void loadPruneRoots(final File file) throws IOException {
-        final BufferedReader reader = new BufferedReader(new FileReader(file));
-
-        final List<Hypothesis<?>> pruneRoots = new ArrayList<>();
-
-        final int timeOffset = configurationManager.getMinTime();
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            // ignore comments and empty lines
-            if (line.trim().startsWith("#") || line.trim().length() == 0) continue;
-
-            final String[] columns = line.split(",");
-            if (columns.length > 1) {
-                final String constraintType = columns[0].trim();
-                // Pruning Roots
-                // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                if (constraintType.equals("PR")) {
-                    try {
-                        final int t = Integer.parseInt(columns[1].trim()) - timeOffset;
-                        final int id = Integer.parseInt(columns[2].trim());
-                        System.out.println(String.format("PR %d %d", t, id));
-                        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
-                                nodes.getHypothesesAt(t);
-                        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-                            if (hyp.getId() == id) {
-                                pruneRoots.add(hyp);
-                            }
-                        }
-                    } catch (final NumberFormatException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        reader.close();
-
-        try {
-            model.update();
-            run();
-        } catch (final GRBException e) {
-            e.printStackTrace();
-        }
-
-        // Activate all PruneRoots
-        for (final Hypothesis<?> hyp : pruneRoots) {
-            hyp.setPruneRoot(true, this);
-        }
-        MoMA.getGui().dataToDisplayChanged();
-    }
-
     public void loadPruneRootsNew(final File file) throws IOException {
         final BufferedReader reader = new BufferedReader(new FileReader(file));
 

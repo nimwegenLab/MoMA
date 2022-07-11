@@ -112,9 +112,7 @@ public class Growthlane {
 		ilp.buildILP();
 		if (configurationManager.getIsReloading()) {
 			try {
-//				ilp.loadPruneRoots(filePaths.getDotMomaFilePath().toFile());
 				ilp.loadPruneRootsNew(filePaths.getDotMomaFilePath().toFile());
-//				ilp.loadState(filePaths.getDotMomaFilePath().toFile());
 			} catch (IOException e) {
 				throw new RuntimeException("Error: Could load prune-roots from file: " + filePaths.getDotMomaFilePath(), e);
 			}

@@ -1032,7 +1032,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporter.run();
 
         System.out.println("...done!");
-
     }
 
     /**

@@ -55,9 +55,9 @@ public class GrowthlaneTrackingIlpTest {
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
-        Growthlane gl = new Growthlane(dialogManagerMock, new FilePaths());
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
+        Growthlane gl = new Growthlane(dialogManagerMock, configMock, new FilePaths());
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(), gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);

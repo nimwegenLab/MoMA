@@ -1,7 +1,8 @@
 package com.jug;
 
+import com.jug.config.ConfigurationManager;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.FilePaths;
-import com.jug.datahandling.IImageProvider;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
@@ -14,7 +15,7 @@ import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -26,6 +27,7 @@ public class Growthlane {
 	private final List<GrowthlaneFrame> frames;
 	private GrowthlaneTrackingILP ilp;
 	private IDialogManager dialogManager;
+	private IConfiguration configurationManager;
 	private FilePaths filePaths;
 
 	/**
@@ -45,8 +47,9 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IDialogManager dialogManager, FilePaths filePaths) {
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, FilePaths filePaths) {
 		this.dialogManager = dialogManager;
+		this.configurationManager = configurationManager;
 		this.filePaths = filePaths;
 		this.frames = new ConcurrentArrayList<>();
 	}
@@ -102,12 +105,19 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
-		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getConfigurationManager(), MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
+		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), configurationManager, MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
 		if ( guiProgressReceiver != null ) {
 			ilp.addProgressListener( guiProgressReceiver );
 		}
 		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();
+		if (configurationManager.getIsReloading()) {
+			try {
+				ilp.loadPruneRoots(filePaths.getDotMomaFilePath().toFile());
+			} catch (IOException e) {
+				throw new RuntimeException("Error: Could load prune-roots from file: " + filePaths.getDotMomaFilePath(), e);
+			}
+		}
 		ilp.setRemoveStorageLockConstraintAfterFirstOptimization();
 
 		if ( guiProgressReceiver != null ) {

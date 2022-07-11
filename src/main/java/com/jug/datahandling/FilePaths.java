@@ -14,14 +14,18 @@ public class FilePaths {
     Path propertiesFile;
     private Path inputImagePath;
     private Path outputPath;
+    private String directoryPath;
     private String modelFile;
     private Path gurobiMpsFilePath;
 
+    private Path dotMomaFilePath;
+
     public void setLoadingDirectoryPath(String directoryPath) {
-        propertiesFile = Paths.get(directoryPath, "mm.properties");
-        outputPath = Paths.get(directoryPath);
+        this.directoryPath = directoryPath;
+        propertiesFile = Paths.get(this.directoryPath, "mm.properties");
+        outputPath = Paths.get(this.directoryPath);
         Files.exists(propertiesFile);
-        gurobiMpsFilePath = Paths.get(directoryPath, "gurobi_model.mps");
+        gurobiMpsFilePath = Paths.get(this.directoryPath, "gurobi_model.mps");
     }
 
     public void setPropertiesFile(Path propertiesFile) {
@@ -73,4 +77,11 @@ public class FilePaths {
     public Path getGurobiMpsFilePath() {
         return gurobiMpsFilePath;
     }
+
+    public Path getDotMomaFilePath() {
+        dotMomaFilePath = Paths.get(this.directoryPath, "*.moma");
+        return dotMomaFilePath;
+    }
+
+
 }

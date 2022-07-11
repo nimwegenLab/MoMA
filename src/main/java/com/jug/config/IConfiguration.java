@@ -2,6 +2,11 @@ package com.jug.config;
 
 public interface IConfiguration {
     /**
+     * Return a GL is being load. This modifies the startup behavior of MoMA.
+     */
+    boolean getIsReloading();
+
+    /**
      * Get the maximum value of the time-range that will be analyzed.
      */
     int getMaxTime();

@@ -82,7 +82,7 @@ public class GlDataLoader {
 
     @NotNull
     private Growthlane getGrowthlane() {
-        Growthlane newGl = new Growthlane(dialogManager, filePaths);
+        Growthlane newGl = new Growthlane(dialogManager, configurationManager, filePaths);
         for (long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension(2); frameIdx++) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentForestGenerator, configurationManager, imageProvider);
             final IntervalView<FloatType> ivFrame = Views.hyperSlice(imageProvider.getImgRaw(), 2, frameIdx);

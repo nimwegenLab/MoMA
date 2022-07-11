@@ -5,6 +5,11 @@ import com.jug.config.IConfiguration;
 public class ConfigMock implements IConfiguration {
 
     @Override
+    public boolean getIsReloading() {
+        return false;
+    }
+
+    @Override
     public int getMaxTime() {
         return 0;
     }

@@ -1695,7 +1695,7 @@ public class GrowthlaneTrackingILP {
 
         try {
             model.update();
-            run();
+            runImmediately();
         } catch (final GRBException e) {
             e.printStackTrace();
         }

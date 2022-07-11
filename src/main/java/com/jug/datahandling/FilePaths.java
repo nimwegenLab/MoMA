@@ -4,9 +4,7 @@ import com.jug.util.Hash;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
@@ -80,6 +78,16 @@ public class FilePaths {
 
     public Path getDotMomaFilePath() {
         dotMomaFilePath = Paths.get(this.directoryPath, "*.moma");
+
+//        String glob = "glob:" + this.directoryPath + "/*.moma";
+        String glob = "glob:**/*.moma";
+//        String path = "D:/";
+//        match(glob, path);
+        final PathMatcher pathMatcher = FileSystems.getDefault().getPathMatcher(glob);
+//        Path path = null;
+        if (pathMatcher.matches(Paths.get(this.directoryPath))) {
+            int bla = 1;
+        }
         return dotMomaFilePath;
     }
 

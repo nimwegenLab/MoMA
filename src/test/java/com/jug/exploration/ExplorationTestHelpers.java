@@ -11,6 +11,7 @@ import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 
 import static com.jug.util.JavaUtils.concatenateWithCollection;
+import static com.jug.util.io.FileUtils.createDirectory;
 
 /**
  * This class provides adapter methods to enable testing MoMA from within test-code. This includes an adapter to start
@@ -28,36 +29,6 @@ public class ExplorationTestHelpers {
      */
     public static void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
         startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
-    }
-
-    public static void deleteDirectory(Path pathToDirectory) {
-        try {
-            FileUtils.deleteDirectory(pathToDirectory.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static void createEmptyDirectory(Path pathToDirectory){
-        File f = pathToDirectory.toFile();
-        if (!f.exists()) {
-            f.mkdirs();
-        }
-        deleteDirectoryContent(pathToDirectory);
-    }
-
-    public static void deleteDirectoryContent(Path pathToDirectory){
-        File f = pathToDirectory.toFile();
-        for (File c : f.listFiles())
-            deleteRecursively(c);
-    }
-
-    private static void deleteRecursively(File f) {
-        if (f.isDirectory()) {
-            for (File c : f.listFiles())
-                deleteRecursively(c);
-        }
-        f.delete();
     }
 
     /**
@@ -98,7 +69,7 @@ public class ExplorationTestHelpers {
         }
 
         if (outputPath != null){
-            create_output_folder(outputPath);
+            createDirectory(outputPath);
         }
 
 //        MoMA.HEADLESS = headless;
@@ -106,11 +77,6 @@ public class ExplorationTestHelpers {
             args = concatenateWithCollection(args, new String[]{"-headless"});
         }
         MoMA.main(args);
-    }
-
-    private static void create_output_folder(String outputPath) {
-        File file = new File(outputPath);
-        file.mkdir();
     }
 
     /**
@@ -121,8 +87,7 @@ public class ExplorationTestHelpers {
      * @param path
      */
     private static void remove_probability_maps(String path) {
-        PathMatcher matcher =
-                FileSystems.getDefault().getPathMatcher("glob:*__model_*.tif*");
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*__model_*.tif*");
         File f = new File(path);
         File parentFolder = new File(f.getParent());
 
@@ -132,9 +97,8 @@ public class ExplorationTestHelpers {
             if (matcher.matches(Paths.get(name))) {
                 System.out.print(filePath);
                 File f2 = new File(filePath);
-                if (f2.delete())                      //returns Boolean value
-                {
-                    System.out.println("Deleted: " + f.getName());   //getting and printing the file name
+                if (f2.delete()) {
+                    System.out.println("Deleted: " + f.getName());
                 } else {
                     System.out.println("Failed to delete: " + f.getName());
                 }

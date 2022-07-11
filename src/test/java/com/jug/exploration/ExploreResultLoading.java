@@ -4,8 +4,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
-import static com.jug.exploration.ExplorationTestHelpers.createEmptyDirectory;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
+import static com.jug.util.io.FileUtils.createEmptyDirectory;
 import static org.junit.Assert.assertEquals;
 
 public class ExploreResultLoading {

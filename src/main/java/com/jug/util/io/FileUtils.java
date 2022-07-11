@@ -2,7 +2,12 @@ package com.jug.util.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileUtils {
     public static void createDirectory(String outputPath) {
@@ -38,5 +43,30 @@ public class FileUtils {
                 deleteRecursively(c);
         }
         f.delete();
+    }
+
+    public static void deleteFiles(List<Path> filesToDelete) {
+        for (Path file : filesToDelete) {
+            deleteFile(file);
+        }
+    }
+
+    public static void deleteFile(Path file) {
+        if (!file.toFile().delete()) {
+            new RuntimeException("Failed to delete: " + file.toFile().getName());
+        }
+    }
+
+    public static List<Path> getMatchingFilesInDirectory(Path parentFolder, String globExpression) {
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + globExpression);
+        List<Path> matchingFiles = new ArrayList<>();
+        String[] pathnames = new File(parentFolder.toString()).list();
+        for (String name : pathnames) {
+            Path filePath = Paths.get(parentFolder + "/" + name);
+            if (matcher.matches(filePath)) {
+                matchingFiles.add(filePath);
+            }
+        }
+        return matchingFiles;
     }
 }

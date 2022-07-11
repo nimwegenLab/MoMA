@@ -1,17 +1,16 @@
 package com.jug.exploration;
 
 import com.jug.MoMA;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static com.jug.util.JavaUtils.concatenateWithCollection;
-import static com.jug.util.io.FileUtils.createDirectory;
+import static com.jug.util.io.FileUtils.*;
 
 /**
  * This class provides adapter methods to enable testing MoMA from within test-code. This includes an adapter to start
@@ -43,7 +42,7 @@ public class ExplorationTestHelpers {
      */
     public static void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
         if (deleteProbabilityMaps) {
-            remove_probability_maps(inputPath);
+            removeProbabilityMaps(Paths.get(inputPath));
         }
 
         String[] args;
@@ -86,23 +85,9 @@ public class ExplorationTestHelpers {
      *
      * @param path
      */
-    private static void remove_probability_maps(String path) {
-        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:*__model_*.tif*");
-        File f = new File(path);
-        File parentFolder = new File(f.getParent());
-
-        String[] pathnames = parentFolder.list();
-        for (String name : pathnames) {
-            String filePath = parentFolder + "/" + name;
-            if (matcher.matches(Paths.get(name))) {
-                System.out.print(filePath);
-                File f2 = new File(filePath);
-                if (f2.delete()) {
-                    System.out.println("Deleted: " + f.getName());
-                } else {
-                    System.out.println("Failed to delete: " + f.getName());
-                }
-            }
-        }
+    private static void removeProbabilityMaps(Path path) {
+        File parentFolder = new File(path.toFile().getParent());
+        List<Path> matchingFiles = getMatchingFilesInDirectory(parentFolder.toPath(), "*__model_*.tif*");
+        deleteFiles(matchingFiles);
     }
 }

@@ -1465,47 +1465,6 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Returns the hypothesis at a given position {@param testPosition}.
-     * If there are more then one hypothesis at given location only the lowest
-     * in the hypotheses tree will be returned.
-     * (This is also the "shortest" one!)
-     *
-     * @param t
-     * @param testPosition
-     * @return
-     */
-    public Hypothesis<AdvancedComponent<FloatType>> getLowestInTreeHypAt(final int t, final Point testPosition) {
-        Hypothesis<AdvancedComponent<FloatType>> ret = null;
-        long min = Long.MAX_VALUE;
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final AdvancedComponent<FloatType> comp = hyp.getWrappedComponent();
-            int componentSize = ComponentTreeUtils.getComponentSize(comp, 1);
-            if (ComponentTreeUtils.componentContainsYPosition(comp, testPosition)) {
-                if (componentSize < min) {
-                    min = componentSize;
-                    ret = hyp;
-                }
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * @param comp
-     * @param gapSepYPos
-     * @return
-     */
-    private boolean isComponentContainingYpos(final AdvancedComponent<FloatType> comp, final int gapSepYPos) {
-        for (Localizable localizable : comp) {
-            if (gapSepYPos == localizable.getIntPosition(0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Adds a constraint that forces a solution of this ILP to contain a certain
      * segment hypothesis.
      * To avoid requesting solutions that conflict with the tree constraints,

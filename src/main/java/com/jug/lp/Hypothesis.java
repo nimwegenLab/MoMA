@@ -237,7 +237,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return location.t;
     }
 
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildren() {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
         try {
             AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
             return assmnt.getTargetHypotheses();
@@ -246,7 +246,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
-    public Hypothesis<AdvancedComponent<FloatType>> getParent() {
+    public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
         try {
             AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
             return assmnt.getSourceHypothesis();
@@ -257,17 +257,17 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     public void setPruneRoot(final boolean value) {
         this.isPruneRoot = value;
-        if(getParent().isPruned()){
+        if(getSourceHypothesis().isPruned()){
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
         this.setPruned(value);
-        this.setPruneStateRecursively(this.getChildren(), value);
+        this.setPruneStateRecursively(this.getTargetHypotheses(), value);
     }
 
     private static void setPruneStateRecursively(List<Hypothesis<AdvancedComponent<FloatType>>> childNodes, boolean value){
         for (Hypothesis<?> child : childNodes) {
             child.setPruned(value);
-            setPruneStateRecursively(child.getChildren(), value);
+            setPruneStateRecursively(child.getTargetHypotheses(), value);
         }
     }
 

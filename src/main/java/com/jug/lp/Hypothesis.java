@@ -238,20 +238,61 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     /**
-     * This method returns the next parent component within the component-tree for which a hypothesis was generated.
-     * @return
+     * Get the next parent component within the component-tree for which a hypothesis was generated.
+     * It returns NULL, if no such component exists.
+     * @return the parent component
      */
-    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesisWithInComponentTree() {
+    private AdvancedComponent<FloatType> getParentComponentWithExistingHypothesis() {
         AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
-        Hypothesis<AdvancedComponent<FloatType>> parentHypothesis = null;
         AdvancedComponent<FloatType> parentComponent = this.getWrappedComponent().getParent();
         while (!nodes.containsKey(parentComponent)) {
             parentComponent = parentComponent.getParent();
-            if (nodes.containsKey(parentComponent)) {
-                parentHypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(this.getWrappedComponent());
+        }
+        return parentComponent;
+    }
+
+    /**
+     * Returns the parent hypothesis of this hypothesis. Returns null, if it does not exist.
+     * @return
+     */
+    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesis() {
+        AdvancedComponent<FloatType> component = getParentComponentWithExistingHypothesis();
+        if (isNull(component)) {
+            return null;
+        }
+        return (Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(component);
+    }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypotheses() {
+        List<AdvancedComponent<FloatType>> childComponents = getChildComponentsWithExistingHypotheses();
+        List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
+        for (AdvancedComponent child : childComponents) {
+            childHypotheses.add((Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(child));
+        }
+        return childHypotheses;
+    }
+
+    /**
+     * Returns a list of child-components within the component-tree for which hypotheses were created. This does not
+     * have to be a binary tree, because it is possible that on any level of the component-tree a sibling node, was
+     * omitted during hypothesis-generation, while on the next-down level of the tree both child-nodes were created
+     * (which would yield three child-nodes).
+     * @return
+     */
+    private List<AdvancedComponent<FloatType>> getChildComponentsWithExistingHypotheses() {
+        ArrayList<AdvancedComponent<FloatType>> listOfChildren = new ArrayList<>();
+        addChildComponentsWithExistingHypothesesRecursively(this.getWrappedComponent().getChildren(), listOfChildren);
+        return listOfChildren;
+    }
+
+    private void addChildComponentsWithExistingHypothesesRecursively(List<AdvancedComponent<FloatType>> children, List<AdvancedComponent<FloatType>> listOfChildren) {
+        for (AdvancedComponent child : children) {
+            if (ilp.getNodes().containsKey(child)) {
+                listOfChildren.add(child);
+            } else {
+                addChildComponentsWithExistingHypothesesRecursively(child.getChildren(), listOfChildren);
             }
         }
-        return parentHypothesis; /* returns null, if there is no parent hypothesis; so this is the parent hypothesis */
     }
 
 //    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypothesesInComponentTree(){

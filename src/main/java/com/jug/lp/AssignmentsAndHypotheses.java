@@ -214,6 +214,10 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         return h;
     }
 
+    public boolean containsKey(final Object something) {
+        return hmap.containsKey(something);
+    }
+
     /**
      * @return the number of entries in the outer lists of <code>h_t</code> and
      * <code>a_t</code>.

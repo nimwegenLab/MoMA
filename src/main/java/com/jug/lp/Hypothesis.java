@@ -237,25 +237,35 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return location.t;
     }
 
-//    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesisInComponentTree(){
+    /**
+     * This method returns the next parent component within the component-tree for which a hypothesis was generated.
+     * @return
+     */
+    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesisWithInComponentTree() {
+        AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
+        Hypothesis<AdvancedComponent<FloatType>> parentHypothesis = null;
+        AdvancedComponent<FloatType> parentComponent = this.getWrappedComponent().getParent();
+        while (!nodes.containsKey(parentComponent)) {
+            parentComponent = parentComponent.getParent();
+            if (nodes.containsKey(parentComponent)) {
+                parentHypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(this.getWrappedComponent());
+            }
+        }
+        return parentHypothesis; /* returns null, if there is no parent hypothesis; so this is the parent hypothesis */
+    }
+
+//    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypothesesInComponentTree(){
 //        AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
-//        Hypothesis<AdvancedComponent<FloatType>> parentHypothesis = null;
-//        C component = this.getWrappedComponent();
-//        while(isNull(parentHypothesis)){
-////            component.getParent();
-//            nodes.findHypothesisContaining(component);
+//        List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
+//        List<AdvancedComponent<FloatType>> childComponents = this.getWrappedComponent().getChildren();
+//        for (AdvancedComponent<FloatType> component : childComponents) {
+//            Hypothesis<AdvancedComponent<FloatType>> childHypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(this.getWrappedComponent());
 //        }
-//
-//
-//        ilp.getNodes()
-////        String leafNodeHypId = nodes.findHypothesisContaining(ctNode).getStringId();
-////        C runnerNode = ctNode;
-////
-////        final GRBLinExpr exprR = new GRBLinExpr();
-////        while (runnerNode != null) {
-////            @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(runnerNode);
-////        ilp.getNodes()
 //    }
+
+    private void getChildHypothesesRecursively() {
+
+    }
 
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
         try {

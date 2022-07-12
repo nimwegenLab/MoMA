@@ -13,7 +13,10 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import gurobi.*;
+import gurobi.GRB;
+import gurobi.GRBException;
+import gurobi.GRBLinExpr;
+import gurobi.GRBVar;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
@@ -182,8 +185,8 @@ public class GrowthlaneTrackingILP {
             createHypothesesAndAssignments();
 
             HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
-            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
-            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
+//            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
+//            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 
             printIlpProperties();
 
@@ -203,7 +206,8 @@ public class GrowthlaneTrackingILP {
             // Add the remaining ILP constraints
             // (those would be (i) and (ii) of 'Default Solution')
             // - - - - - - - - - - - - - - - - - - - - - - - - - -
-            addPathBlockingConstraints();
+//            addPathBlockingConstraints();
+            addPathBlockingConstraintsNew();
             addContinuityConstraints();
 
             // UPDATE GUROBI-MODEL
@@ -695,6 +699,34 @@ public class GrowthlaneTrackingILP {
             // And call the function adding all the path-blocking-constraints...
             recursivelyAddPathBlockingConstraints(ct, t);
         }
+    }
+
+    private void addPathBlockingConstraintsNew(){
+        for (int t = 0; t < gl.size(); t++) {
+            List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getLeafHypothesesAt(t);
+            for(Hypothesis<AdvancedComponent<FloatType>> hyp : hypotheses){
+                try {
+                    addPathBlockingConstraintForLeafHypothesis(hyp);
+                } catch (GRBException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void addPathBlockingConstraintForLeafHypothesis(Hypothesis<AdvancedComponent<FloatType>> hyp) throws GRBException {
+        final GRBLinExpr exprR = new GRBLinExpr();
+        Hypothesis<AdvancedComponent<FloatType>> runnerHyp = hyp;
+        while (runnerHyp != null) {
+            if (isNull(edgeSets.getRightNeighborhood(runnerHyp)) || edgeSets.getRightNeighborhood(runnerHyp).isEmpty()) {
+                throw new RuntimeException("Error: There are no outgoing assignments for hypothesis: " + runnerHyp.getStringId());
+            }
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : edgeSets.getRightNeighborhood(runnerHyp)) {
+                exprR.addTerm(1.0, a.getGRBVar());  // again we build the constraints for the assignments, because we do not optimize for nodes; we therefore need to add *all* right-assignments to the constraint of a given node
+            }
+            runnerHyp = runnerHyp.getParentHypothesis();
+        }
+        model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrT" + hyp.getTime() + "_" + hyp.getStringId());
     }
 
     private <C extends Component<?, C>> void recursivelyAddPathBlockingConstraints(

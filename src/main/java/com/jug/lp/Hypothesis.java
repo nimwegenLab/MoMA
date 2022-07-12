@@ -245,7 +245,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     private AdvancedComponent<FloatType> getParentComponentWithExistingHypothesis() {
         AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
         AdvancedComponent<FloatType> parentComponent = this.getWrappedComponent().getParent();
-        while (!nodes.containsKey(parentComponent)) {
+        while (!isNull(parentComponent) && !nodes.containsKey(parentComponent)) {
             parentComponent = parentComponent.getParent();
         }
         return parentComponent;

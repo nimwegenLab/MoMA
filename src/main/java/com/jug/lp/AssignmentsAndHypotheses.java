@@ -196,6 +196,17 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         }
     }
 
+    public List<H> getLeafHypothesesAt(final int t) {
+        List<H> hyps = getHypothesesAt(t);
+        List<H> leaves = new ArrayList<>();
+        for (H hyp : hyps) {
+            if (hyp.getChildHypotheses().isEmpty()) {
+                leaves.add(hyp);
+            }
+        }
+        return leaves;
+    }
+
     /**
      * Finds an <code>Hypothesis</code> that wraps the given <code>Object</code>
      * .

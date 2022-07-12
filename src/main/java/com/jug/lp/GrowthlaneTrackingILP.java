@@ -1701,12 +1701,10 @@ public class GrowthlaneTrackingILP {
         }
 
         for (final Hypothesis<?> hyp : pruneRoots) {
-            hyp.setPruneRoot(true, this);
+            hyp.setPruneRoot(true);
         }
         MoMA.getGui().dataToDisplayChanged();
     }
-
-
 
     /**
      * @param file
@@ -1850,7 +1848,7 @@ public class GrowthlaneTrackingILP {
 
         // Activate all PruneRoots
         for (final Hypothesis<?> hyp : pruneRoots) {
-            hyp.setPruneRoot(true, this);
+            hyp.setPruneRoot(true);
         }
         MoMA.getGui().dataToDisplayChanged();
     }

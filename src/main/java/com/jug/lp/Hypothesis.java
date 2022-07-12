@@ -2,7 +2,6 @@ package com.jug.lp;
 
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
@@ -256,9 +255,8 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
-    public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
+    public void setPruneRoot(final boolean value) {
         this.isPruneRoot = value;
-
         if(getParent().isPruned()){
             throw new PruningException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
@@ -295,7 +293,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public void toggleIsPrunedRoot() {
-        this.setPruneRoot(!this.isPruneRoot(), ilp);
+        this.setPruneRoot(!this.isPruneRoot());
     }
 
     public class HypLoc {

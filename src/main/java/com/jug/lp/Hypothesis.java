@@ -237,6 +237,26 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return location.t;
     }
 
+//    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesisInComponentTree(){
+//        AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
+//        Hypothesis<AdvancedComponent<FloatType>> parentHypothesis = null;
+//        C component = this.getWrappedComponent();
+//        while(isNull(parentHypothesis)){
+////            component.getParent();
+//            nodes.findHypothesisContaining(component);
+//        }
+//
+//
+//        ilp.getNodes()
+////        String leafNodeHypId = nodes.findHypothesisContaining(ctNode).getStringId();
+////        C runnerNode = ctNode;
+////
+////        final GRBLinExpr exprR = new GRBLinExpr();
+////        while (runnerNode != null) {
+////            @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(runnerNode);
+////        ilp.getNodes()
+//    }
+
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
         try {
             AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);

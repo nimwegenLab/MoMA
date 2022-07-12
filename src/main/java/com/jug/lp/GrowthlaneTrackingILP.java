@@ -718,12 +718,12 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private <C extends Component<?, C>> void recursivelyAddPathBlockingConstraints(
-            final C ctNode,
+            final C component,
             final int t) throws GRBException {
 
-        if (ctNode.getChildren().size() == 0) { /* If ctNode is leaf-node -> add constraint (by going up the list of parents and building up the constraint) */
-            String leafNodeHypId = nodes.findHypothesisContaining(ctNode).getStringId();
-            C runnerNode = ctNode;
+        if (component.getChildren().size() == 0) { /* If ctNode is leaf-node -> add constraint (by going up the list of parents and building up the constraint) */
+            String leafNodeHypId = nodes.findHypothesisContaining(component).getStringId();
+            C runnerNode = component;
 
             final GRBLinExpr exprR = new GRBLinExpr();
             while (runnerNode != null) {
@@ -739,8 +739,8 @@ public class GrowthlaneTrackingILP {
             }
             model.addConstr(exprR, GRB.LESS_EQUAL, 1.0, "PathBlockConstrT" + t + "_" + leafNodeHypId);
         } else {  /* If ctNode is not a leaf-node -> recurse */
-            for (final C ctChild : ctNode.getChildren()) {
-                recursivelyAddPathBlockingConstraints(ctChild, t);
+            for (final C childComponents : component.getChildren()) {
+                recursivelyAddPathBlockingConstraints(childComponents, t);
             }
         }
     }

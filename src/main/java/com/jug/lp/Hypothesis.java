@@ -238,10 +238,11 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return location.t;
     }
 
-    /**
-     *
-     */
-    public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
+//    public List<Hypothesis> getTargetHypotheses(){
+//        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment(this);
+//    }
+
+   public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
         this.isPruneRoot = value;
 
         final LinkedList<Hypothesis<AdvancedComponent<FloatType>>> queue = new LinkedList<>();

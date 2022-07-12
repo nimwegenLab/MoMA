@@ -16,9 +16,9 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__debug_issue_with_headless_run();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__component_tree_generation_stability_test();
@@ -60,8 +60,8 @@ public class ExploreResultLoading {
         Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path outputPath = Paths.get(datasets_base_path, subfolder, "output");
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
-        Integer tmin = 1;
-        Integer tmax = 10;
+        Integer tmin = null;
+        Integer tmax = null;
         createEmptyDirectory(outputPath);
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});

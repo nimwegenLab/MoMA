@@ -266,9 +266,9 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void createHypothesesAndAssignments() throws GRBException {
-        for (int t = 0; t < gl.size(); t++) {
-            createSegmentationHypotheses( t );
-        }
+//        for (int t = 0; t < gl.size(); t++) {
+//            createSegmentationHypotheses( t );
+//        }
 
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);

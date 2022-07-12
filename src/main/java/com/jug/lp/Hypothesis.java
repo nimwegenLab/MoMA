@@ -258,7 +258,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     public void setPruneRoot(final boolean value) {
         this.isPruneRoot = value;
         if(getParent().isPruned()){
-            throw new PruningException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
+            throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
         this.setPruned(value);
         this.setPruneStateRecursively(this.getChildren(), value);

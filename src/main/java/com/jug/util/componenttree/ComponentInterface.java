@@ -49,4 +49,6 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
     C getParent();
 
     double getPixelValueAverage();
+
+    String getStringId();
 }

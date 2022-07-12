@@ -136,6 +136,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public String getStringId() {
+        return null;
+    }
+
+    @Override
     public List getChildren() {
         return null;
     }

@@ -1,12 +1,15 @@
 package com.jug.lp;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
@@ -204,7 +207,11 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * not wrapped by any of the stored hypotheses.
      */
     public Hypothesis<?> findHypothesisContaining(final Object something) {
-        return hmap.get(something);
+        final H h = hmap.get(something);
+        if (isNull(h)) {
+            throw new RuntimeException("No hypothesis found for component: " + ((ComponentInterface) something).getStringId());
+        }
+        return h;
     }
 
     /**

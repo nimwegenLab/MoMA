@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
+import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.gui.IDialogManager;
@@ -265,11 +266,45 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void createHypothesesAndAssignments() throws GRBException {
+        for (int t = 0; t < gl.size(); t++) {
+            createSegmentationHypotheses( t );
+        }
+
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.size() - 1);
         addExitAssignments(gl.size() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+    }
+
+    /**
+     * Adds all component-tree-nodes, wrapped in instances of
+     * <code>Hypothesis</code> at time-point t
+     * This method calls <code>recursivelyAddCTNsAsHypotheses(...)</code>.
+     */
+    private void createSegmentationHypotheses(final int t) {
+        final GrowthlaneFrame glf = gl.getFrames().get(t);
+
+        for (final AdvancedComponent<FloatType> ctRoot : glf.getComponentForest().roots()) {
+            recursivelyAddCTNsAsHypotheses(t, ctRoot); //, glf.isParaMaxFlowComponentTree()
+        }
+
+        this.reportProgress();
+    }
+
+    /**
+     * Adds all hypothesis given by the nodes in the component tree to
+     * <code>nodes</code>.
+     *
+     * @param component a node in a <code>ComponentTree</code>.
+     * @param t         the time-index the ctNode comes from.
+     */
+    private void recursivelyAddCTNsAsHypotheses(final int t, final AdvancedComponent<FloatType> component) { //, final boolean isForParaMaxFlowSumImg
+        float componentCost = getComponentCost(t, component);
+        nodes.addHypothesis(t, new Hypothesis<>(t, component, componentCost, this));
+        for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
+            recursivelyAddCTNsAsHypotheses(t, ctChild);
+        }
     }
 
     /**

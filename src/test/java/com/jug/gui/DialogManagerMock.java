@@ -1,5 +1,7 @@
 package com.jug.gui;
 
+import com.jug.exceptions.GuiInteractionException;
+
 public class DialogManagerMock implements IDialogManager {
 
     @Override
@@ -9,6 +11,11 @@ public class DialogManagerMock implements IDialogManager {
 
     @Override
     public void showPropertiesEditor() {
+
+    }
+
+    @Override
+    public void showUserInteractionError(GuiInteractionException exception) {
 
     }
 }

@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.GrowthlaneFrame;
+import com.jug.exceptions.GuiInteractionException;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -45,6 +46,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     protected EventListenerList listenerList = new EventListenerList();
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
     private final LabelEditorDialog labelEditorDialog;
+    private IDialogManager dialogManager;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -61,11 +63,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int myWidth, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h) {
         super();
 
         this.mmgui = mmgui;
         this.labelEditorDialog = labelEditorDialog;
+        this.dialogManager = dialogManager;
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -348,7 +351,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             if (isNull(getSelectedHypothesis())) return;
-            getSelectedHypothesis().toggleIsPrunedRoot();
+            try {
+                getSelectedHypothesis().toggleIsPrunedRoot();
+            } catch (GuiInteractionException exception) {
+                dialogManager.showUserInteractionError(exception);
+            }
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
         }

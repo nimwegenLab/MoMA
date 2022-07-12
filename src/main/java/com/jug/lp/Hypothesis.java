@@ -2,6 +2,7 @@ package com.jug.lp;
 
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
@@ -12,7 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -238,46 +238,38 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return location.t;
     }
 
-//    public List<Hypothesis> getTargetHypotheses(){
-//        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment(this);
-//    }
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildren() {
+        try {
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+            return assmnt.getTargetHypotheses();
+        } catch (GRBException e) {
+            throw new RuntimeException("Unable to get the optimal right assignment for hypothesis: " + this.getStringId());
+        }
+    }
 
-   public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
+    public Hypothesis<AdvancedComponent<FloatType>> getParent() {
+        try {
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+            return assmnt.getSourceHypothesis();
+        } catch (GRBException e) {
+            throw new RuntimeException("Unable to get the optimal right assignment for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
         this.isPruneRoot = value;
 
-        final LinkedList<Hypothesis<AdvancedComponent<FloatType>>> queue = new LinkedList<>();
-        // TODO there will be no time, but this is of course not nice...
-        queue.add((Hypothesis<AdvancedComponent<FloatType>>) this);
-        while (!queue.isEmpty()) {
-            final Hypothesis<AdvancedComponent<FloatType>> node = queue.removeFirst();
-            node.setPruned(value);
+        if(getParent().isPruned()){
+            throw new PruningException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
+        }
+        this.setPruned(value);
+        this.setPruneStateRecursively(this.getChildren(), value);
+    }
 
-            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt;
-            try {
-                assmnt = ilp.getOptimalRightAssignment(node);
-
-                if (assmnt != null) {
-                    assmnt.setPruned(value);
-
-                    switch (assmnt.getType()) {
-                        case GrowthlaneTrackingILP.ASSIGNMENT_DIVISION:
-                            if (!((DivisionAssignment) assmnt).getUpperDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getUpperDestinationHypothesis());
-                            }
-                            if (!((DivisionAssignment) assmnt).getLowerDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getLowerDestinationHypothesis());
-                            }
-                            break;
-                        case GrowthlaneTrackingILP.ASSIGNMENT_MAPPING:
-                            if (!((MappingAssignment) assmnt).getDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((MappingAssignment) assmnt).getDestinationHypothesis());
-                            }
-                            break;
-                    }
-                }
-            } catch (final GRBException e) {
-//				e.printStackTrace();
-            }
+    private static void setPruneStateRecursively(List<Hypothesis<AdvancedComponent<FloatType>>> childNodes, boolean value){
+        for (Hypothesis<?> child : childNodes) {
+            child.setPruned(value);
+            setPruneStateRecursively(child.getChildren(), value);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.jug.gui;
 
+import com.jug.exceptions.GuiInteractionException;
+
 import javax.swing.*;
 import java.util.function.Supplier;
 
@@ -38,5 +40,10 @@ public class DialogManager implements IDialogManager {
     public void showPropertiesEditor() {
         propertiesEditorSupplier.get().setVisible(true);
 //        propertiesEditor.setVisible(true);
+    }
+
+    @Override
+    public void showUserInteractionError(GuiInteractionException exception) {
+        showErrorDialogWithTextArea(exception.getDialogTitle(), exception.getDialogMessage());
     }
 }

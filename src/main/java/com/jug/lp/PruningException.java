@@ -1,8 +1,8 @@
 package com.jug.lp;
 
-import com.jug.exceptions.GuiMessageException;
+import com.jug.exceptions.GuiInteractionException;
 
-public class PruningException extends GuiMessageException {
+public class PruningException extends GuiInteractionException {
     private final String dialogTitle;
     private final String dialogMessage;
 

@@ -398,7 +398,7 @@ public class GrowthlaneTrackingILP {
                                       AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest) throws GRBException {
         for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
             if (sourceTimeStep > 0) {
-                if (nodes.findHypothesisContaining(sourceComponent) == null)
+                if (!nodes.containsKey(sourceComponent))
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
@@ -583,7 +583,7 @@ public class GrowthlaneTrackingILP {
         for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
 
             if (sourceTimeStep > 0) {
-                if (nodes.findHypothesisContaining(sourceComponent) == null)
+                if (!nodes.containsKey(sourceComponent))
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 

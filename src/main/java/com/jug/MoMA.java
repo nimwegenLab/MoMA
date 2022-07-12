@@ -194,11 +194,11 @@ public class MoMA {
 			dic.getGlDataLoader().restartFromGLSegmentation();
 
 			if (commandLineArgumentParser.getIfRunningHeadless()) {
-				System.out.println("Generating Integer Linear Program(s)...");
+				System.out.println("Generating Integer Linear Program...");
 				dic.getGlDataLoader().generateILPs();
 				System.out.println(" done!");
 
-				System.out.println("Running Integer Linear Program(s)...");
+				System.out.println("Running Integer Linear Program...");
 				dic.getGlDataLoader().runILPs();
 				System.out.println(" done!");
 			}

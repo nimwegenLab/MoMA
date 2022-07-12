@@ -16,13 +16,13 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_from_mm_properties();
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
-//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__debug_issue_with_headless_run();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__component_tree_generation_stability_test();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__debug_NullPointerException__in__GrowthlaneTrackingILP_recursivelyAddPathBlockingConstraints();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__debug_NullPointerException__in__GrowthlaneTrackingILP_recursivelyAddPathBlockingConstraints();
     }
 
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties() {
@@ -64,7 +64,7 @@ public class ExploreResultLoading {
         Integer tmin = null;
         Integer tmax = null;
         createEmptyDirectory(outputPath);
-        startMoma(true, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString()});
 //        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path});
     }
 

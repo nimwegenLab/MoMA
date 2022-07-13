@@ -299,19 +299,6 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
-//    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypothesesInComponentTree(){
-//        AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
-//        List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
-//        List<AdvancedComponent<FloatType>> childComponents = this.getWrappedComponent().getChildren();
-//        for (AdvancedComponent<FloatType> component : childComponents) {
-//            Hypothesis<AdvancedComponent<FloatType>> childHypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(this.getWrappedComponent());
-//        }
-//    }
-
-    private void getChildHypothesesRecursively() {
-
-    }
-
     public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);

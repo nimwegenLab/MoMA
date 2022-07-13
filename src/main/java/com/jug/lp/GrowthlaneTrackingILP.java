@@ -184,7 +184,7 @@ public class GrowthlaneTrackingILP {
             // add Hypothesis and Assignments
             createHypothesesAndAssignments();
 
-            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+//            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
 //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 
@@ -206,8 +206,12 @@ public class GrowthlaneTrackingILP {
             // Add the remaining ILP constraints
             // (those would be (i) and (ii) of 'Default Solution')
             // - - - - - - - - - - - - - - - - - - - - - - - - - -
-//            addPathBlockingConstraints();
-            addPathBlockingConstraintsNew();
+            long start = System.nanoTime();
+            addPathBlockingConstraints();
+//            addPathBlockingConstraintsNew();
+            long stop = System.nanoTime();
+            final double v = ((double) (stop - start)) / 1E9;
+            System.out.println("Running time: " + v);
             addContinuityConstraints();
 
             // UPDATE GUROBI-MODEL
@@ -270,9 +274,9 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void createHypothesesAndAssignments() throws GRBException {
-//        for (int t = 0; t < gl.size(); t++) {
-//            createSegmentationHypotheses( t );
-//        }
+        for (int t = 0; t < gl.size(); t++) {
+            createSegmentationHypotheses( t );
+        }
 
         for (int t = 0; t < gl.size() - 1; t++) {
             enumerateAndAddAssignments(t);

@@ -312,7 +312,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     }
 
-    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
         } catch (GRBException e) {
@@ -324,7 +324,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             return getOutgoingAssignment().getTargetHypotheses();
     }
 
-    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getIncomingAssignment() {
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getIncomingAssignment() {
         try {
             return ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
         } catch (GRBException e) {

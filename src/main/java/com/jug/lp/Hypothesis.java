@@ -312,28 +312,37 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     }
 
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
+    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
         try {
-            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
-            return assmnt.getTargetHypotheses();
+            return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
         } catch (GRBException e) {
             throw new RuntimeException("Unable to get the optimal right assignment for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
+            return getOutgoingAssignment().getTargetHypotheses();
+    }
+
+    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getIncomingAssignment() {
+        try {
+            return ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Unable to get the optimal left assignment for hypothesis: " + this.getStringId());
         }
     }
 
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        try {
-            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt = ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
-            return assmnt.getSourceHypothesis();
-        } catch (GRBException e) {
-            throw new RuntimeException("Unable to get the optimal right assignment for hypothesis: " + this.getStringId());
-        }
+        return getIncomingAssignment().getSourceHypothesis();
     }
 
     public void setPruneRoot(final boolean value) {
         this.isPruneRoot = value;
-        if(getSourceHypothesis().isPruned()){
+        if (getSourceHypothesis().isPruned()) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
+        }
+        if (getIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+            throw new InvalidPruningInteractionException("Cannot prune this segment", "You cannot prune segments that are targets of a division assignment, because this would break lineage information. To prune this segment, please first force a mapping assignment to it.");
         }
         this.setPruned(value);
         this.setPruneStateRecursively(this.getTargetHypotheses(), value);

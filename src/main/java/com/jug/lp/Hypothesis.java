@@ -337,21 +337,22 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public void setPruneRoot(final boolean value) {
-        this.isPruneRoot = value;
         if (getSourceHypothesis().isPruned()) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
         if (getIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "You cannot prune segments that are targets of a division assignment, because this would break lineage information. To prune this segment, please first force a mapping assignment to it.");
         }
-        this.setPruned(value);
-        this.setPruneStateRecursively(this.getTargetHypotheses(), value);
+        this.isPruneRoot = value;
+        setPruneStateRecursively(this, value);
     }
 
-    private static void setPruneStateRecursively(List<Hypothesis<AdvancedComponent<FloatType>>> childNodes, boolean value){
+    private static void setPruneStateRecursively(Hypothesis<?> hypothesis, boolean value) {
+        hypothesis.setPruned(value);
+        hypothesis.getOutgoingAssignment().setPruned(value);
+        List<Hypothesis<AdvancedComponent<FloatType>>> childNodes = hypothesis.getTargetHypotheses();
         for (Hypothesis<?> child : childNodes) {
-            child.setPruned(value);
-            setPruneStateRecursively(child.getTargetHypotheses(), value);
+            setPruneStateRecursively(child, value);
         }
     }
 

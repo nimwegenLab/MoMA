@@ -238,7 +238,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     /**
-     * Get the next parent component within the component-tree for which a hypothesis was generated.
+     * Get ancestor component within the component-tree (i.e. parent or further up) for which a hypothesis was generated.
      * It returns NULL, if no such component exists.
      * @return the parent component
      */
@@ -263,6 +263,10 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return (Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(component);
     }
 
+    /**
+     * Get child hypothesis of this hypothesis. Returns an empty list, if it does not exist.
+     * @return
+     */
     public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypotheses() {
         List<AdvancedComponent<FloatType>> childComponents = getChildComponentsWithExistingHypotheses();
         List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();

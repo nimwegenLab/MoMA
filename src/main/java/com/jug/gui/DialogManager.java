@@ -1,5 +1,7 @@
 package com.jug.gui;
 
+import com.jug.exceptions.GuiInteractionException;
+
 import javax.swing.*;
 import java.util.function.Supplier;
 
@@ -9,9 +11,13 @@ import java.util.function.Supplier;
  */
 public class DialogManager implements IDialogManager {
     private Supplier<MoMAGui> guiSupplier;
+    private Supplier<DialogPropertiesEditor> propertiesEditorSupplier;
+    private DialogPropertiesEditor propertiesEditor;
 
-    public DialogManager(Supplier<MoMAGui> guiSupplier){
+    public DialogManager(Supplier<MoMAGui> guiSupplier, Supplier<DialogPropertiesEditor> propertiesEditorSupplier){
         this.guiSupplier = guiSupplier;
+        this.propertiesEditorSupplier = propertiesEditorSupplier;
+        this.propertiesEditor = propertiesEditor;
     }
 
     /**
@@ -28,5 +34,16 @@ public class DialogManager implements IDialogManager {
             JScrollPane scrollPane = new JScrollPane(textArea);
             JOptionPane.showMessageDialog(gui, scrollPane, title, JOptionPane.ERROR_MESSAGE);
         });
+    }
+
+    @Override
+    public void showPropertiesEditor() {
+        propertiesEditorSupplier.get().setVisible(true);
+//        propertiesEditor.setVisible(true);
+    }
+
+    @Override
+    public void showUserInteractionError(GuiInteractionException exception) {
+        showErrorDialogWithTextArea(exception.getDialogTitle(), exception.getDialogMessage());
     }
 }

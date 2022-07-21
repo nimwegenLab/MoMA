@@ -1,6 +1,5 @@
 package com.jug;
 
-import com.jug.datahandling.IImageProvider;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -34,18 +33,8 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Growthlane.
      */
     private Growthlane parent;
-    private ComponentForest<C> componentTree;
+    private ComponentForest<C> componentForest;
     private Img<FloatType> image;
-
-    // -------------------------------------------------------------------------------------
-    // setters and getters
-    // -------------------------------------------------------------------------------------
-
-    // -------------------------------------------------------------------------------------
-    // constructors
-    // -------------------------------------------------------------------------------------
-    AbstractGrowthlaneFrame() {
-    }
 
     public Img<FloatType> getImage() {
         return image.copy();
@@ -72,8 +61,8 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     /**
      * @return the componentTree
      */
-    public ComponentForest<C> getComponentTree() { // MM-2019-06-10: This should probably be called getComponentForest?!
-        return componentTree;
+    public ComponentForest<C> getComponentForest() { // MM-2019-06-10: This should probably be called getComponentForest?!
+        return componentForest;
     }
 
     /**
@@ -106,15 +95,15 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    public void generateSimpleSegmentationHypotheses(final IImageProvider imageProvider, int frameIndex) {
-        componentTree = buildIntensityTree(imageProvider, frameIndex);
+    public void generateSimpleSegmentationHypotheses() {
+        componentForest = buildComponentForest();
     }
 
     /**
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    protected abstract ComponentForest<C> buildIntensityTree(final IImageProvider imageProvider, int frameIndex);
+    protected abstract ComponentForest<C> buildComponentForest();
 
     /**
      * @return the average X coordinate of the center line of this
@@ -161,16 +150,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
                 this.getTime()).values()) {
 
             for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ora : optRightAssmnt) {
-                Hypothesis<AdvancedComponent<FloatType>> srcHyp = null;
-                if (ora instanceof MappingAssignment) {
-                    srcHyp = ((MappingAssignment) ora).getSourceHypothesis();
-                }
-                if (ora instanceof DivisionAssignment) {
-                    srcHyp = ((DivisionAssignment) ora).getSourceHypothesis();
-                }
-                if (ora instanceof ExitAssignment) {
-                    srcHyp = ((ExitAssignment) ora).getAssociatedHypothesis();
-                }
+                Hypothesis<AdvancedComponent<FloatType>> srcHyp = ora.getSourceHypothesis();
                 if (srcHyp != null) {
                     if (ComponentTreeUtils.isAbove(hyp, srcHyp)) {
                         pos++;

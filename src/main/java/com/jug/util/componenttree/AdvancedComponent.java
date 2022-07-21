@@ -28,6 +28,8 @@ import java.util.Iterator;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
@@ -51,7 +53,6 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private AdvancedComponent<T> parent;
     private double[] mean;
     private double[] sumPos;
-    private final ImgLabeling<Integer, IntType> labeling;
     private final Integer label;
     private LabelRegion<Integer> region;
     private double[] firstMomentPixelCoordinates = null;
@@ -60,10 +61,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties) {
-        this.labeling = labeling;
+    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties, int frame) {
         this.label = label;
-        RandomAccess<LabelingType<Integer>> accessor = this.labeling.randomAccess();
+        this.frame = frame;
+        RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : wrappedComponent) {
             pixelList.add(new Point(val));
             accessor.setPosition(val);
@@ -213,6 +214,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     void addChild(AdvancedComponent<T> child) {
         this.children.add(child);
+        if (children.size() > 2) {
+//            throw new RuntimeException("component" + getStringId() + " has >2 child-nodes.");
+        }
     }
 
 //    public void setRegion(LabelRegion<Integer> region) {
@@ -296,15 +300,18 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private ValuePair<Integer, Integer> verticalComponentLimits;
 
     public ValuePair<Integer, Integer> getVerticalComponentLimits() {
-        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getTreeNodeInterval(this);
+        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 1);
         return verticalComponentLimits;
     }
 
-    private int frame;
+    private ValuePair<Integer, Integer> horizontalComponentLimits;
 
-    public void setFrameNumber(int frame) {
-        this.frame = frame;
+    public ValuePair<Integer, Integer> getHorizontalComponentLimits() {
+        if (horizontalComponentLimits == null) horizontalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 0);
+        return horizontalComponentLimits;
     }
+
+    private int frame;
 
     public int getFrameNumber() {
          return frame;
@@ -312,8 +319,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public String getStringId(){
         frame = getFrameNumber();
-        ValuePair<Integer, Integer> verticalLimits = getVerticalComponentLimits();
-        String id = "HypAtT" + getFrameNumber() + "Top" + verticalLimits.getA() + "Bottom" + verticalLimits.getB();
+        String id = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         return id;
     }
 
@@ -327,7 +333,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getLowerNeighbors() {
-        if (Objects.isNull(lowerNeighbors)){
+        if (isNull(lowerNeighbors)){
             lowerNeighbors = calculateLowerNeighbors();
         }
         return lowerNeighbors;
@@ -359,7 +365,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return the lower neighbor node
      */
     public AdvancedComponent<T> getLowerNeighborClosestToRootLevel() {
-        if (Objects.isNull(lowerNeighborClosestToRootLevel)) {
+        if (isNull(lowerNeighborClosestToRootLevel)) {
             lowerNeighborClosestToRootLevel = calculateLowerNeighborClosestToRootLevel();
         }
         return lowerNeighborClosestToRootLevel;
@@ -398,7 +404,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getUpperNeighbors() {
-        if (Objects.isNull(upperNeighbors)){
+        if (isNull(upperNeighbors)){
             upperNeighbors = calculateUpperNeighbors();
         }
         return upperNeighbors;
@@ -429,7 +435,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return the lower neighbor node
      */
     public AdvancedComponent<T> getUpperNeighborClosestToRootLevel() {
-        if (Objects.isNull(upperNeighborClosestToRootLevel)) {
+        if (isNull(upperNeighborClosestToRootLevel)) {
             upperNeighborClosestToRootLevel = calculateUpperNeighborClosestToRootLevel();
         }
         return upperNeighborClosestToRootLevel;
@@ -813,5 +819,29 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             c.fwd();
             return c;
         }
+    }
+
+    Integer hashCode = null;
+
+    public int hashCode() {
+        if (!isNull(hashCode)) {
+            return hashCode;
+        }
+        hashCode = calculateHashCode();
+        return hashCode;
+    }
+
+    private int calculateHashCode() {
+        int result = 777;
+        int t = 11;
+        for(Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {
+            Localizable v = (Localizable)var3.next();
+
+            for(int d = 0; d < v.numDimensions(); ++d) {
+                int p = v.getIntPosition(d);
+                result = result + t * p * p;
+            }
+        }
+        return result;
     }
 }

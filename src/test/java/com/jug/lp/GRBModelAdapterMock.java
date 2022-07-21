@@ -5,6 +5,11 @@ import gurobi.*;
 
 public class GRBModelAdapterMock implements IGRBModelAdapter {
     @Override
+    public GRBConstr getConstrByName(String name) throws GRBException {
+        return null;
+    }
+
+    @Override
     public GRBVar getVarByName(String name) throws GRBException {
         return null;
     }

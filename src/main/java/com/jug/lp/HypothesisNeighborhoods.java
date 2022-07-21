@@ -11,32 +11,22 @@ import java.util.Set;
  *
  * @author jug
  */
-class HypothesisNeighborhoods< H extends Hypothesis< ? >, A extends AbstractAssignment< H > > {
-
-	// -------------------------------------------------------------------------------------
-	// fields
-	// -------------------------------------------------------------------------------------
+class HypothesisNeighborhoods<H extends Hypothesis<?>, A extends AbstractAssignment<H>> {
 	/**
 	 * This structure corresponds to $A_{b_i->}$ for some time-point.
 	 */
-	private final HashMap< H, Set< A > > rightNeighborhoods;
+	private final HashMap<H, Set<A>> rightNeighborhoods;
 
 	/**
 	 * This structure corresponds to $A_{->b_i}$ for some time-point.
 	 */
-	private final HashMap< H, Set< A > > leftNeighborhoods;
+	private final HashMap<H, Set<A>> leftNeighborhoods;
 
-	// -------------------------------------------------------------------------------------
-	// construction
-	// -------------------------------------------------------------------------------------
 	public HypothesisNeighborhoods() {
 		rightNeighborhoods = new HashMap<>();
 		leftNeighborhoods = new HashMap<>();
 	}
 
-	// -------------------------------------------------------------------------------------
-	// getters and setters
-	// -------------------------------------------------------------------------------------
 	/**
 	 * Gets the leftNeighborhood of a hypothesis <code>h</code>.
 	 *

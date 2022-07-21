@@ -1,5 +1,6 @@
 package com.jug.gui;
 
+import com.jug.config.ConfigurationManager;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.lp.GrowthlaneTrackingILP;
 
@@ -11,9 +12,9 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     int sourceTimeStepOffset;
     private final MoMAModel momaModel;
 
-    public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset) {
+    public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset, ConfigurationManager configurationManager) {
         this.momaModel = momaModel;
-        assignmentView = new AssignmentsEditorViewer(viewHeight);
+        assignmentView = new AssignmentsEditorViewer(viewHeight, configurationManager);
         assignmentView.addChangeListener(mmgui);
         this.addAssignmentView(assignmentView);
         this.setAppearanceAndLayout();
@@ -48,6 +49,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         checkboxIsSelected.setEnabled(currentTimeStepIsValid());
     }
 
+    @Override
     public void display() {
         GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         updateSelectionCheckbox();

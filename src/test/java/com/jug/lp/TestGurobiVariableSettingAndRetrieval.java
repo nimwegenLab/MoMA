@@ -6,6 +6,7 @@ import gurobi.*;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -105,8 +106,7 @@ public class TestGurobiVariableSettingAndRetrieval {
 //        model.update();
 //        model.write(modelFilePath);
 
-//        String modelFilePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp";
-        String modelFilePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps";
+        String modelFilePath = new File("").getAbsolutePath() + "/src/test/resources/gurobi_api_test_data/test_data_1/ilpModel.mps";
 
         /* load model and retrieve variables */
         GRBEnv envLoaded = new GRBEnv(pathToTempDir.toAbsolutePath() + "/ilp_loaded.log");
@@ -139,5 +139,26 @@ public class TestGurobiVariableSettingAndRetrieval {
 //        System.out.println("stop");
 //        String.format("a_%d^LYSIS--%d", t, hyp.getId())
 
+    }
+
+    @Test
+    public void loadModelAndSolutionFromMoma() throws IOException, GRBException {
+        Path pathToTempDir = Files.createTempDirectory("java-");
+        String modelFilePath = new File("").getAbsolutePath() + "/src/test/resources/gurobi_api_test_data/test_data_1/";
+        GRBEnv envLoaded = new GRBEnv(pathToTempDir.toAbsolutePath() + "/ilp_loaded.log");
+        GRBModel modelLoaded = new GRBModel(envLoaded, modelFilePath + "/ilpModel.mps");
+        modelLoaded.update();
+        modelLoaded.read(modelFilePath + "/ilpModel.sol");
+        modelLoaded.update();
+        int optimstatus = modelLoaded.get(GRB.IntAttr.Status); /* see https://www.gurobi.com/documentation/9.1/refman/status.html#attr:Status AND https://www.gurobi.com/documentation/9.1/refman/optimization_status_codes.html#sec:StatusCodes */
+        GRBVar[] vars = modelLoaded.getVars();
+//        modelLoaded.sync();
+//        double[] res = modelLoaded.get(GRB.DoubleAttr.X, vars);
+//        String[] res = modelLoaded.get(GRB.StringAttr.VarName, vars);
+        for (int ind = 0; ind < vars.length; ind++) {
+            GRBVar var = vars[ind];
+            System.out.println("VarName: " + var.get(GRB.StringAttr.VarName));
+            System.out.println("GRB.DoubleAttr.X: " + var.get(GRB.DoubleAttr.X));
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.jug.util.componenttree;
 
-import com.jug.config.ComponentTreeGeneratorConfigurationMock;
+import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -73,9 +73,9 @@ public class ComponentPropertiesTest {
 
         ImageJFunctions.show(currentImage);
 
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
         ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
 
@@ -96,20 +96,20 @@ public class ComponentPropertiesTest {
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), roots.get(0).getSourceImage());
         assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
     }
 
     @NotNull
-    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
+    private ComponentForestGenerator getComponentForestGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentTreeGenerator;
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        return componentForestGenerator;
     }
 
     /**
@@ -141,7 +141,7 @@ public class ComponentPropertiesTest {
 
         ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
         componentList.add(component);
-        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>());
+        RandomAccessibleInterval<ARGBType> image = Plotting.createImageWithComponents(componentList, new ArrayList<>(), component.getSourceImage());
         List<MaskPredicate< ? >> rois = Arrays.asList(
 //                poly,
 //                polyHull
@@ -169,9 +169,9 @@ public class ComponentPropertiesTest {
 
 //        ImageJFunctions.show(currentImage);
 
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
         return tree;
     }
 

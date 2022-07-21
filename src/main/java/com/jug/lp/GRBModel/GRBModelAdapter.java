@@ -2,8 +2,16 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
+import java.util.HashMap;
+import java.util.HashSet;
+
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
+
+    @Override
+    public GRBConstr getConstrByName(String name) throws GRBException {
+        return this.model.getConstrByName(name);
+    }
 
     @Override
     public GRBVar getVarByName(String name) throws GRBException {
@@ -23,24 +31,30 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.update();
     }
 
-    @Override
-    public void remove(GRBConstr var) throws GRBException {
-        model.remove(var);
-    }
+    HashMap<GRBConstr, String> constraintNames = new HashMap<>();
 
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
-        return model.addConstr(lhsExpr, sense, rhs, name);
-//        GRBConstr res = null;
-//        try {
-//            res = model.getConstrByName(name);
-//        } catch (GRBException err) {
-//            System.out.println("Error reading requested variable.");
-//        }
-//        if(res == null){
-//            res = model.addConstr(lhsExpr, sense, rhs, name);
-//        }
-//        return res;
+        if (constraintNames.containsValue(name)) {
+            throw new RuntimeException("gurobi constraint already exists: " + name);
+        }
+        GRBConstr res = null;
+        try {
+            res = model.getConstrByName(name);
+        } catch (GRBException err) {
+//            throw new RuntimeException("Failed while adding Gurobi constraint: " + name);
+        }
+        if(res == null){
+            res = model.addConstr(lhsExpr, sense, rhs, name);
+        }
+        constraintNames.put(res, name);
+        return res;
+    }
+
+    @Override
+    public void remove(GRBConstr var) throws GRBException {
+        model.remove(var);
+        constraintNames.remove(var);
     }
 
     @Override
@@ -68,15 +82,24 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.set(param, newval);
     }
 
+    HashSet<String> variableNames = new HashSet<>();
+
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
-//        try {
-//            GRBVar res = model.getVarByName(name);
-//            return res;
-//        } catch (GRBException err) {
+        if(variableNames.contains(name)){
+            throw new RuntimeException("gurobi variable already exists: " + name);
+        }
+        variableNames.add(name);
+        GRBVar res = null;
+        try {
+            res = model.getVarByName(name);
+        } catch (GRBException err) {
 //            System.out.println("Error reading requested variable.");
-//        }
-        return model.addVar(lb, ub, obj, type, name);
+        }
+        if(res == null){
+            res = model.addVar(lb, ub, obj, type, name);
+        }
+        return res;
     }
 
     @Override
@@ -91,6 +114,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public void optimize() throws GRBException {
+//        model.update();
+//        String basePath = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/dany_20200730__Pos3_GL16/output/";
+////        String basePath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_development/feature/20220121-fix-loading-of-curated-datasets/lis_20211026__Pos7_GL12/output/";
+//        model.read(basePath + "/ilpModel.sol");
+        model.update();
         model.optimize();
     }
 

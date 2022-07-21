@@ -1,12 +1,15 @@
 package com.jug.lp;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
@@ -113,7 +116,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         if (t >= 0 && t < a_t.size()) {
             return a_t.get(t);
         } else {
-            return new ArrayList<A>(); // if hypotheses for time t do not exist return empty array
+            return new ArrayList<>(); // if hypotheses for time t do not exist return empty array
         }
     }
 
@@ -193,6 +196,17 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         }
     }
 
+    public List<H> getLeafHypothesesAt(final int t) {
+        List<H> hyps = getHypothesesAt(t);
+        List<H> leaves = new ArrayList<>();
+        for (H hyp : hyps) {
+            if (hyp.getChildHypotheses().isEmpty()) {
+                leaves.add(hyp);
+            }
+        }
+        return leaves;
+    }
+
     /**
      * Finds an <code>Hypothesis</code> that wraps the given <code>Object</code>
      * .
@@ -204,7 +218,15 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * not wrapped by any of the stored hypotheses.
      */
     public Hypothesis<?> findHypothesisContaining(final Object something) {
-        return hmap.get(something);
+        final H h = hmap.get(something);
+        if (isNull(h)) {
+            throw new RuntimeException("No hypothesis found for component: " + ((ComponentInterface) something).getStringId());
+        }
+        return h;
+    }
+
+    public boolean containsKey(final Object something) {
+        return hmap.containsKey(something);
     }
 
     /**

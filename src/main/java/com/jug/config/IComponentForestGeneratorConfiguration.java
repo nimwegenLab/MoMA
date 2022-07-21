@@ -1,6 +1,6 @@
 package com.jug.config;
 
-public interface IComponentTreeGeneratorConfiguration {
+public interface IComponentForestGeneratorConfiguration {
     /**
      * Returns the minimal size of leaf components in [px].
      * Leaf components with size lower than this are not considered.

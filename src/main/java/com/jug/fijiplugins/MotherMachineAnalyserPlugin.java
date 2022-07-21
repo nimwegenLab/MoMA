@@ -69,7 +69,7 @@ public class MotherMachineAnalyserPlugin implements PlugIn {
 			IJ.log("moma params " + param);
 		}
 
-		MoMA.running_as_Fiji_plugin = true;
+		MoMA.runningAsFijiPlugin = true;
 		MoMA.main(args);
 
     }

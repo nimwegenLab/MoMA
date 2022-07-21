@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
+import com.jug.datahandling.GlDataLoader;
 
 
 /**
@@ -18,7 +19,7 @@ public class MoMAModel {
     /**
      * The MotherMachine instance we wrap here
      */
-    final MoMA mm;
+    final GlDataLoader mm;
 
     private int currentGLidx;
     private int currentGLFidx;
@@ -30,10 +31,10 @@ public class MoMAModel {
     /**
      * Construction
      *
-     * @param mm the instance of MotherMachine to be wrapped by this GUI model
+     * @param glDataLoader the instance of GlDataLoader, which provides access to loaded data.
      */
-    public MoMAModel(final MoMA mm) {
-        this.mm = mm;
+    public MoMAModel(final GlDataLoader glDataLoader) {
+        this.mm = glDataLoader;
         currentGLidx = 0;
         currentGLFidx = 0;
     }

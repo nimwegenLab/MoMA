@@ -1,7 +1,6 @@
 package com.jug.lp;
 
 import com.jug.config.ConfigurationManager;
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRB;
 import gurobi.GRBException;
@@ -10,35 +9,29 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug
  */
 @SuppressWarnings("restriction")
 public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
-
-    private static int dcId = 0;
-    private int sourceTimeStep;
     private final List<Hypothesis<AdvancedComponent<FloatType>>> Hup;
     private final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges;
-    private final Hypothesis<AdvancedComponent<FloatType>> who;
+    private final Hypothesis<AdvancedComponent<FloatType>> sourceHyp;
 
     /**
      * Creates an ExitAssignment.
      *
      * @param nodes
      * @param edges
-     * @param who
+     * @param sourceHyp
      */
-    public ExitAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> who) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp);
-        this.sourceTimeStep = sourceTimeStep;
+    public ExitAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> sourceHyp) {
+        super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp, sourceTimeStep);
         this.Hup = Hup;
         this.edges = edges;
-        this.who = who;
+        this.sourceHyp = sourceHyp;
     }
 
     /**
@@ -49,7 +42,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      */
     @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        return who;
+        return sourceHyp;
     }
 
     /**
@@ -85,68 +78,8 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         }
 
         if (add && !ConfigurationManager.DISABLE_EXIT_CONSTRAINTS) {
-            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstraintAtT" + sourceTimeStep + "_" + this.getId() + "_Id" + dcId);
+            ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "ExitConstrT" + getSourceTimeStep() + "_" + getStringId());
         }
-        dcId++;
-    }
-
-    /**
-     * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        final ArrayList<String> ret = new ArrayList<>();
-
-        StringBuilder constraint = new StringBuilder();
-        constraint.append(String.format("(%d,%d,1)", Hup.size(), this.getVarIdx()));
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
-            if (edges.getRightNeighborhood(upperHyp) != null) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood(upperHyp)) {
-                    if (a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
-                        continue;
-                    }
-                    // add term if assignment is NOT another exit-assignment
-                    constraint.append(String.format("+(1,%d,1)", a_j.getVarIdx()));
-                }
-            }
-        }
-
-        constraint.append(String.format(" <= %d", Hup.size()));
-
-        ret.add(constraint.toString());
-        return ret;
-    }
-
-    /**
-     * Adds a list of constraints and factors as strings.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
-        final List<Integer> varIds = new ArrayList<>();
-        final List<Integer> coeffs = new ArrayList<>();
-
-        // expr.addTerm( Hup.size(), this.getGRBVar() );
-        coeffs.add(Hup.size());
-//		varIds.add( new Integer( this.getVarIdx() ) );
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
-            if (edges.getRightNeighborhood(upperHyp) != null) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getRightNeighborhood(upperHyp)) {
-                    if (a_j.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
-                        continue;
-                    }
-                    // add term if assignment is NOT another exit-assignment
-                    // expr.addTerm( 1.0, a_j.getGRBVar() );
-                    coeffs.add(1);
-//					varIds.add( new Integer( a_j.getVarIdx() ) );
-                }
-            }
-        }
-
-        // model.addConstr( expr, GRB.LESS_EQUAL, Hup.size(), "dc_" + dcId );
-        final int fkt_id = fgFile.addConstraintFkt(coeffs, "<=", Hup.size());
-        fgFile.addFactor(fkt_id, varIds, regionIds);
     }
 
     /**
@@ -156,7 +89,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      * @return the associated segmentation-hypothesis.
      */
     public Hypothesis<AdvancedComponent<FloatType>> getAssociatedHypothesis() {
-        return who;
+        return sourceHyp;
     }
 
     /**
@@ -164,10 +97,10 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      */
     @Override
     public int getId() {
-        return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
+        return sourceHyp.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "ExitAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+        return "ExitT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
     }
 }

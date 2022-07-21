@@ -1,6 +1,7 @@
 package com.jug;
 
-import com.jug.datahandling.IImageProvider;
+import com.jug.config.IConfiguration;
+import com.jug.datahandling.FilePaths;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
@@ -9,29 +10,25 @@ import com.jug.lp.GrowthlaneTrackingILP;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
+import org.threadly.concurrent.collections.ConcurrentArrayList;
 
-import java.util.ArrayList;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.io.IOException;
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
  */
 public class Growthlane {
-
-	// -------------------------------------------------------------------------------------
-	// fields
-	// -------------------------------------------------------------------------------------
 	private final List<GrowthlaneFrame> frames;
-	private GrowthlaneTrackingILP ilp; //<
-	private IImageProvider imageProvider;
+	private GrowthlaneTrackingILP ilp;
 	private IDialogManager dialogManager;
+	private IConfiguration configurationManager;
+	private FilePaths filePaths;
 
-	// Hypothesis< Component< FloatType, ? > >,
-	// AbstractAssignment< Hypothesis< Component< FloatType, ? > > > > ilp;
-
-	// -------------------------------------------------------------------------------------
-	// setters and getters
-	// -------------------------------------------------------------------------------------
 	/**
 	 * @return the frames
 	 */
@@ -49,10 +46,11 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IImageProvider imageProvider, IDialogManager dialogManager) {
-		this.imageProvider = imageProvider;
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, FilePaths filePaths) {
 		this.dialogManager = dialogManager;
-		this.frames = new ArrayList<>();
+		this.configurationManager = configurationManager;
+		this.filePaths = filePaths;
+		this.frames = new ConcurrentArrayList<>();
 	}
 
 	// -------------------------------------------------------------------------------------
@@ -93,40 +91,64 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( true );
 		}
 
-//		boolean loadModelFromDisk = false;
-//		GRBModelAdapter model = null;
-////		modelGurobi = null;
-//		if (loadModelFromDisk)
-//			try {
-////			String modelPath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp";
-//				String modelPath = "/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps";
-//
-//				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
-//				GRBModel grbModel = new GRBModel(env, modelPath);
-//				model = new GRBModelAdapter(grbModel);
-//			} catch (GRBException e) {
-//				e.printStackTrace();
-//			}
-//		else {
-		GRBModelAdapter model = GRBModelFactory.getModel();
-//		}
+		GRBModelAdapter model = null;
+		if (!isNull(filePaths.getGurobiMpsFilePath()))
+			try {
+				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+				GRBModel grbModel = new GRBModel(env, filePaths.getGurobiMpsFilePath().toString());
+				model = new GRBModelAdapter(grbModel);
+			} catch (GRBException e) {
+				e.printStackTrace();
+			}
+		else {
+			model = GRBModelFactory.getModel();
+		}
 
-//		try {
-////			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.lp");
-//			model.read("/media/micha/T7/20210816_test_data_michael/Moma/MM_Testing/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/ilpModel.mps");
-//		} catch (GRBException e) {
-//			e.printStackTrace();
-//		}
-		ilp = new GrowthlaneTrackingILP(this, model, imageProvider, MoMA.dic.getAssignmentPlausibilityTester(), MoMA.dic.getTrackingConfiguration(), MoMA.dic.getGitVersionProvider().getVersionString());
-		if ( guiProgressReceiver != null ) {
-			ilp.addProgressListener( guiProgressReceiver );
+		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), configurationManager, MoMA.dic.getGitVersionProvider().getVersionString(), MoMA.dic.getCostFactory());
+		if (guiProgressReceiver != null) {
+			ilp.addProgressListener(guiProgressReceiver);
 		}
 		ilp.addDialogManger(this.dialogManager);
 		ilp.buildILP();
+		ilp.setRemoveStorageLockConstraintAfterFirstOptimization();
 
 		if ( guiProgressReceiver != null ) {
 			guiProgressReceiver.setVisible( false );
 			guiProgressReceiver.dispose();
 		}
+
+		ilp.addChangeListener((e) -> fireStateChanged());
+	}
+
+	public boolean ilpIsReady() {
+		if (isNull(ilp)) {
+			return false;
+		}
+		return ilp.isReady();
+	}
+
+	private List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from with in the callback without a concurrent modification error; this seems hacky */
+
+	public void addChangeListener(ChangeListener l) {
+		listenerList.add(l);
+	}
+
+	public void removeChangeListener(ChangeListener l) {
+		listenerList.remove(l);
+	}
+
+	public void fireStateChanged() {
+		for (ChangeListener listener : listenerList) {
+			listener.stateChanged(new ChangeEvent(this));
+		}
+	}
+
+	public void generateSegmentationHypotheses() {
+		int numberOfFrames = getFrames().size();
+		getFrames().parallelStream().forEach((glf) -> {
+			int currentFrame = glf.getFrameIndex() + 1;
+			glf.generateSimpleSegmentationHypotheses();
+			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
+		});
 	}
 }

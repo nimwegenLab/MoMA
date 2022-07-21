@@ -4,22 +4,51 @@ import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static com.jug.MoMA.*;
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
+import static java.util.Objects.isNull;
 
 
-public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentTreeGeneratorConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration {
+    /**
+     * Properties to configure app (loaded and saved to properties file!).
+     */
+    public Properties props = null;
+
+    /**
+     * The maximum time in seconds GUROBI is allowed to search for a good
+     * tracking solution. (After that period of time GUROBI will stop and best
+     * solution found so far will be used.)
+     */
+    public double GUROBI_TIME_LIMIT = 15.0;
+    public double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
+
+    public boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
+
+    /**
+     * The path to usually open JFileChoosers at (except for initial load
+     * dialog).
+     */
+    public String DEFAULT_PATH = System.getProperty( "user.home" );
+
+    /**
+     * The path to save ground truth and time statistics to (yes, we write
+     * papers!).
+     */
+    public String outputPath = DEFAULT_PATH;
+
     /**
      * Controls the total width of the GL image as shown in GUI. The total width is is given by:
      * ConfigurationManager.GL_WIDTH_IN_PIXELS + 2 * ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS
      * See also its usage in GrowthlaneViewer.java and MoMAGui.java
      */
-    public static final int GL_PIXEL_PADDING_IN_VIEWS = 5;
+    public final int GL_PIXEL_PADDING_IN_VIEWS = 5;
 
     /**
      * One of the test for paper:
@@ -28,116 +57,145 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
 
     /*********************************** CONFIG VALUES DEFINITION START ***********************************************/
-    public static final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
-    public static final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
-    public static int DEFAULT_GUI_POS_X = 100;
+    public float getMaximumGrowthPerFrame(){
+        return MAXIMUM_GROWTH_PER_FRAME;
+    }
+    public final float MAXIMUM_GROWTH_PER_FRAME = 0.2f;
+    public float getMaximumShrinkagePerFrame(){
+        return MAXIMUM_SHRINKAGE_PER_FRAME;
+    }
+    public final float MAXIMUM_SHRINKAGE_PER_FRAME = 0.2f;
+    public int DEFAULT_GUI_POS_X = 100;
     /**
      * Parameter: how many pixels wide is the image containing the selected
      * Growthlane?
      */
-    public static int GL_WIDTH_IN_PIXELS = 20;
-    public static int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
-    public static List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
-    public static String CELL_LABELS = "dead;dying;fading";
+    public int GL_WIDTH_IN_PIXELS = 20;
+    public int INTENSITY_FIT_RANGE_IN_PIXELS = 100;
+    public List<String> CELL_LABEL_LIST = new ArrayList<>(Arrays.asList("dead", "dying", "fading"));
+    public String CELL_LABELS = "dead;dying;fading";
     /**
      * This value is critical(!): Assignments with costs higher than this value will be ignored.
      */
-    public static float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
+
+    @Override
+    public float getAssignmentCostCutoff() {
+        return ASSIGNMENT_COST_CUTOFF;
+    }
+    public float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
     /**
      * This value sets the fixed cost for lysis assignments. It is set so high, that it will not be considered for
      * assignment during optimization. However, it can be manually forced during curation.
      */
-    public static float LYSIS_ASSIGNMENT_COST = 10.0f;
+    @Override
+    public float getLysisAssignmentCost() {
+        return LYSIS_ASSIGNMENT_COST;
+    }
+    public float LYSIS_ASSIGNMENT_COST = 10.0f;
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
-    public static int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
      */
-    public static int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
     /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
-    public static int GL_OFFSET_TOP = 65;
+    public int GL_OFFSET_TOP = 65;
+
+    @Override
+    public int getGlOffsetTop(){
+        return GL_OFFSET_TOP;
+    }
+
     /**
      * The number of pixels between adjacent components for which the two components will still be merged in that pixel
      * column.
      */
-    public static float THRESHOLD_FOR_COMPONENT_MERGING = 0;
+    public float THRESHOLD_FOR_COMPONENT_MERGING = 0;
     /**
      * Global threshold value for creating the mask for component generation from the probability mask.
      */
-    public static float THRESHOLD_FOR_COMPONENT_GENERATION = 0.5f;
+    public float THRESHOLD_FOR_COMPONENT_GENERATION = 0.5f;
     /**
      * Threshold value above which probability values will be set to one and hence components will not be split.
      */
-    public static float THRESHOLD_FOR_COMPONENT_SPLITTING = 1.0f;
+    public float THRESHOLD_FOR_COMPONENT_SPLITTING = 1.0f;
     /**
      * Sets the vertical position at the top of the image up to where U-Net will process the image.
      */
-    public static int CELL_DETECTION_ROI_OFFSET_TOP = 0;
+    public int CELL_DETECTION_ROI_OFFSET_TOP = 0;
     /**
      * Range over which the component cost is increased, when exiting the growthlane. This range is centered on
      * at the vertical position defined by GL_OFFSET_TOP.
      */
-    public static float COMPONENT_EXIT_RANGE = 50;
+    public float COMPONENT_EXIT_RANGE = 50;
+    @Override
+    public double getComponentExitRange(){
+        return COMPONENT_EXIT_RANGE;
+    }
     /**
      * String pointing at the U-Net TensorFlow model file that should be used for
      * classification during segmentation.
      */
-    public static String SEGMENTATION_MODEL_PATH = "";
+    public String SEGMENTATION_MODEL_PATH = "";
     /**
      *
      */
-    public static int OPTIMISATION_INTERVAL_LENGTH = -1;
+    public int OPTIMISATION_INTERVAL_LENGTH = -1;
     /**
      * Properties for fitting the Cauchy/Mixture model to the intensity profile.
      */
-    public static int INTENSITY_FIT_ITERATIONS = 1000; /* Number of iterations performed during fit. */
-    public static double INTENSITY_FIT_PRECISION = 1e-3; /* Precision for which fitting will be finished. */
-    public static double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
-    public static int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
+    public int INTENSITY_FIT_ITERATIONS = 1000; /* Number of iterations performed during fit. */
+    public double INTENSITY_FIT_PRECISION = 1e-3; /* Precision for which fitting will be finished. */
+    public double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
+
+    public int getMaxCellDrop(){
+        return MAX_CELL_DROP;
+    }
+    public int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
     /**
      * X-position of the main GUI-window. This value will be loaded from and
      * stored in the properties file!
      */
-    public static int GUI_POS_X;
+    public int GUI_POS_X;
     /**
      * Y-position of the main GUI-window. This value will be loaded from and
      * stored in the properties file!
      */
-    public static int GUI_POS_Y;
+    public int GUI_POS_Y;
     /**
      * Width (in pixels) of the main GUI-window. This value will be loaded from
      * and stored in the properties file!
      */
-    public static int GUI_WIDTH = 620;
+    public int GUI_WIDTH = 620;
     /**
      * Width (in pixels) of the main GUI-window. This value will be loaded from
      * and stored in the properties file!
      */
-    public static int GUI_HEIGHT = 740;
+    public int GUI_HEIGHT = 740;
     /**
      * Width (in pixels) of the console window. This value will be loaded from
      * and stored in the properties file!
      */
-    public static int GUI_CONSOLE_WIDTH = 600;
+    public int GUI_CONSOLE_WIDTH = 600;
     /**
      * Defines the number of time steps that will be shown side-by-side in the GUI.
      */
-    public static int GUI_NUMBER_OF_SHOWN_TIMESTEPS = 7;
+    public int GUI_NUMBER_OF_SHOWN_TIMESTEPS = 7;
     /**
      * Shortest time in which we can expect a cell-doubling provided as number of frames.
      */
-    public static double MAXIMUM_GROWTH_RATE = 1.5; /* Note: This value is used through the interface ITrackingConfiguration. */
-    public static boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = false;
-    private static File currentPropertyFile;
+    public double MAXIMUM_GROWTH_RATE = 1.5; /* Note: This value is used through the interface ITrackingConfiguration. */
+    public boolean GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = false;
+    private File currentPropertyFile;
 
     /**
      * Determine if assignment costs should be exported.
      */
-    public static boolean EXPORT_ASSIGNMENT_COSTS = false;
+    public boolean EXPORT_ASSIGNMENT_COSTS = false;
 
     /**
      * One of the test for paper:
@@ -147,27 +205,39 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Settings related to the measurement and export of the spine length.
      */
-    public static boolean EXPORT_SPINE_MEASUREMENT = false; /* set whether to perform the spine length measurement */
-    public static int SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = 5;
-    public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = 5;
-    public static int SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = 21;
-    public static double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
+    public boolean EXPORT_SPINE_MEASUREMENT = false; /* set whether to perform the spine length measurement */
+    public int SPINE_MEASUREMENT_ENDPOINT_ORIENTATION_AVERAGING_WINDOWSIZE = 5;
+    public int SPINE_MEASUREMENT_POSITION_AVERAGING_MINIMUM_WINDOWSIZE = 5;
+    public int SPINE_MEASUREMENT_POSITION_AVERAGING_MAXIMUM_WINDOWSIZE = 21;
+    public double SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = 3.5;
 
     /**
      * Set if the area calculation based on the probability map should be exported.
      */
-    public static boolean EXPORT_PROBABILITY_AREA_MEASUREMENT = true; /* set whether to perform the spine length measurement */
+    public boolean EXPORT_PROBABILITY_AREA_MEASUREMENT = true; /* set whether to perform the spine length measurement */
 
     /**
      * Setting related to the measurement and export of the oriented bounding box length measurement.
      */
-    public static boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
+    public boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
+
+    private int minTime = -1;
+    private int maxTime = -1;
+
+    public String datasetMomaVersion = "";
+
+    public void setSatasetMomaVersion(String version) {
+        datasetMomaVersion = version;
+    }
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
-    public static void load(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
-        props = loadParams(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+    public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+        props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
+        datasetMomaVersion = props.getProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);
+        minTime = Integer.parseInt(props.getProperty("TIME_RANGE_START", Integer.toString(minTime)));
+        maxTime = Integer.parseInt(props.getProperty("TIME_RANGE_END", Integer.toString(maxTime)));
         GL_WIDTH_IN_PIXELS = Integer.parseInt(props.getProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS)));
         INTENSITY_FIT_RANGE_IN_PIXELS = Integer.parseInt(props.getProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS)));
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
@@ -219,9 +289,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
         /* process feature flags */
         if (featureFlagDisableMaxCellDrop) {
-            ConfigurationManager.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+            this.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
         } else {
-            ConfigurationManager.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
+            this.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
         }
 
     }
@@ -233,7 +303,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * @return instance of {@link Properties} containing the key-value pairs
      * found in that file.
      */
-    private static Properties loadParams(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+    private Properties loadParams(File optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         if (optionalPropertyFile != null) {
             if (optionalPropertyFile.exists() && optionalPropertyFile.isFile()) {
                 try {
@@ -281,7 +351,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * @return
      * @throws IOException
      */
-    private static Properties loadParameters(File configFile) throws IOException {
+    private Properties loadParameters(File configFile) throws IOException {
         FileInputStream is = new FileInputStream(configFile);
         final Properties props = new Properties();
         props.load(is);
@@ -291,7 +361,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Save parameters to the currently used config file.
      */
-    public static void saveParams(JFrame guiFrame) {
+    public void saveParams(JFrame guiFrame) {
         saveParams(currentPropertyFile, guiFrame);
     }
 
@@ -299,10 +369,13 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Saves a file 'mm.properties' in the current folder. This file contains
      * all MotherMachine specific properties as key-value pairs.
      */
-    public static void saveParams(final File f, JFrame guiFrame) {
+    public void saveParams(final File f, JFrame guiFrame) {
         try {
             final OutputStream out = new FileOutputStream(f);
 
+            props.setProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);
+            props.setProperty("TIME_RANGE_START", Integer.toString(minTime));
+            props.setProperty("TIME_RANGE_END", Integer.toString(maxTime));
             props.setProperty("GL_WIDTH_IN_PIXELS", Integer.toString(GL_WIDTH_IN_PIXELS));
             props.setProperty("INTENSITY_FIT_RANGE_IN_PIXELS", Integer.toString(INTENSITY_FIT_RANGE_IN_PIXELS));
             props.setProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP));
@@ -321,7 +394,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT));
             props.setProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP));
 
-            if (guiFrame != null) {
+            if (!runningHeadless) { /* only get the guiFrame position and size, if MoMA is running with GUI */
                 GUI_POS_X = guiFrame.getX();
                 GUI_POS_Y = guiFrame.getY();
                 GUI_WIDTH = guiFrame.getWidth();
@@ -360,12 +433,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         }
     }
 
-    private static boolean parseBooleanFromIntegerValue(String key, boolean defaultValue) {
+    private boolean parseBooleanFromIntegerValue(String key, boolean defaultValue) {
         int defaultValueAsInt = defaultValue ? 1 : 0;
         return Integer.parseInt(props.getProperty(key, Integer.toString(defaultValueAsInt))) == 1;
     }
 
-    private static void setBooleanAsIntegerValue(Properties props, String key, boolean value) {
+    private void setBooleanAsIntegerValue(Properties props, String key, boolean value) {
         props.setProperty(key, Integer.toString(value ? 1 : 0));
     }
 
@@ -376,16 +449,18 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      *
      * @return
      */
-    public boolean filterAssignmentsByMaximalGrowthRate() {
-        return !GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY; /* If we are using the GT export functionality, we do not want to filter by size difference, because this might remove relevant components. */
-    }
-
     public double getMaximumGrowthRate() {
         return MAXIMUM_GROWTH_RATE;
     }
 
+    @Override
     public int getCellDetectionRoiOffsetTop() {
         return CELL_DETECTION_ROI_OFFSET_TOP;
+    }
+
+    @Override
+    public Path getModelFilePath() {
+        return Paths.get(SEGMENTATION_MODEL_PATH);
     }
 
     public int getSizeMinimumOfLeafComponent() {
@@ -394,5 +469,93 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public int getSizeMinimumOfParentComponent() {
         return SIZE_MINIMUM_FOR_ROOT_COMPONENTS;
+    }
+
+    public File getCurrentPropertyFile() {
+        return currentPropertyFile;
+    }
+
+    public String getInputImagePath(){
+        return props.getProperty( "import_path", System.getProperty( "user.home" ) );
+    }
+
+    public void setImagePath(String imagePath){
+        props.setProperty( "import_path", imagePath);
+    }
+
+    /**
+     * Set the minimum value of the time-range that will be analyzed.
+     * @param minTime
+     */
+    public void setMinTime(int minTime) {
+        this.minTime = minTime;
+    }
+
+    @Override
+    public int getMinTime() {
+        return minTime;
+    }
+
+    /**
+     * Set the maximum value of the time-range that will be analyzed.
+     * @param maxTime
+     */
+    public void setMaxTime(int maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    @Override
+    public int getMaxTime() {
+        return maxTime;
+    }
+
+    @Override
+    public boolean getRunIlpOnChange() {
+        return GUI_OPTIMIZE_ON_ILP_CHANGE;
+    }
+
+    @Override
+    public void setRunIlpOnChange(boolean runOnChange) {
+        GUI_OPTIMIZE_ON_ILP_CHANGE = runOnChange;
+    }
+
+    @Override
+    public String getPathForAutosaving() {
+        return props.getProperty("import_path") + "/--autosave.moma";
+    }
+
+    @Override
+    public double getGurobiTimeLimit() {
+        return GUROBI_TIME_LIMIT;
+    }
+
+    @Override
+    public double getGurobiMaxOptimalityGap() {
+        return GUROBI_MAX_OPTIMALITY_GAP;
+    }
+
+    boolean runningHeadless;
+    public void setIfRunningHeadless(boolean runningHeadless){
+        this.runningHeadless = runningHeadless;
+    }
+
+    @Override
+    public boolean getIfRunningHeadless() {
+        return runningHeadless;
+    }
+
+    private boolean isReloading = false;
+    public boolean getIsReloading(){ return isReloading;}
+
+    public void setIsReloading(boolean isReloading) {
+        this.isReloading = isReloading;
+    }
+
+    /**
+     * Returns the MoMA version that generated the dataset that is being loaded.
+     * @return MoMA version that generated dataset
+     */
+    public String getDatasetMomaVersion() {
+        return datasetMomaVersion;
     }
 }

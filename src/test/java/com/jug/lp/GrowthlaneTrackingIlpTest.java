@@ -1,11 +1,14 @@
 package com.jug.lp;
 
 import com.jug.Growthlane;
-import com.jug.config.ComponentTreeGeneratorConfigurationMock;
+import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.ITrackingConfiguration;
+import com.jug.datahandling.FilePaths;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
+import com.jug.lp.costs.CostFactory;
+import com.jug.mocks.ConfigMock;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import gurobi.GRBException;
@@ -18,6 +21,7 @@ import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,39 +49,33 @@ public class GrowthlaneTrackingIlpTest {
 
         IImageProvider imageProviderMock = new ImageProviderMock(currentImageStack);
 
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
 
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> sourceTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> targetTree = (SimpleComponentTree<FloatType, AdvancedComponent<FloatType>>) componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
-        Growthlane gl = new Growthlane(imageProviderMock, dialogManagerMock);
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl, mockGrbModel, imageProviderMock, new AssignmentPlausibilityTester(new TrackingConfigMock()), new TrackingConfigMock(), "mockVersionString");
+        ConfigMock configMock = new ConfigMock();
+        Growthlane gl = new Growthlane(dialogManagerMock, configMock, new FilePaths());
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(), gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }
 
     @NotNull
-    private ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
+    private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentTreeGenerator;
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        return componentForestGenerator;
     }
 
     class TrackingConfigMock implements ITrackingConfiguration {
-
-        @Override
-        public boolean filterAssignmentsByMaximalGrowthRate() {
-            return false;
-        }
-
         @Override
         public double getMaximumGrowthRate() {
             return 0;

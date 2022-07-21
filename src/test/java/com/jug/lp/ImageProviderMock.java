@@ -17,6 +17,11 @@ public class ImageProviderMock implements IImageProvider {
     }
 
     @Override
+    public void setImgProbs(Img<FloatType> imgProbs) {
+
+    }
+
+    @Override
     public Img<FloatType> getImgProbs() {
         return this.probabilityImage;
     }

@@ -1,7 +1,6 @@
 package com.jug.util.componenttree;
 
-import com.jug.config.IComponentTreeGeneratorConfiguration;
-import com.jug.datahandling.IImageProvider;
+import com.jug.config.IComponentForestGeneratorConfiguration;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -10,7 +9,6 @@ import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.view.Views;
 
 import java.util.ArrayList;
 import java.util.function.Predicate;
@@ -18,18 +16,18 @@ import java.util.function.Predicate;
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
-public class ComponentTreeGenerator {
-    private IComponentTreeGeneratorConfiguration configuration;
+public class ComponentForestGenerator {
+    private IComponentForestGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;
     private WatershedMaskGenerator watershedMaskGenerator;
     private Imglib2Utils imglib2Utils;
 
-    public ComponentTreeGenerator(IComponentTreeGeneratorConfiguration configuration,
-                                  RecursiveComponentWatershedder recursiveComponentWatershedder,
-                                  ComponentProperties componentPropertiesCalculator,
-                                  WatershedMaskGenerator watershedMaskGenerator,
-                                  Imglib2Utils imglib2Utils) {
+    public ComponentForestGenerator(IComponentForestGeneratorConfiguration configuration,
+                                    RecursiveComponentWatershedder recursiveComponentWatershedder,
+                                    ComponentProperties componentPropertiesCalculator,
+                                    WatershedMaskGenerator watershedMaskGenerator,
+                                    Imglib2Utils imglib2Utils) {
         this.configuration = configuration;
         this.recursiveComponentWatershedder = recursiveComponentWatershedder;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
@@ -37,9 +35,7 @@ public class ComponentTreeGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildIntensityTree(final IImageProvider imageProvider, int frameIndex, float componentSplittingThreshold) {
-        Img<FloatType> raiFkt = imageProvider.getImgProbsAt(frameIndex);
-
+    public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
 
@@ -51,7 +47,6 @@ public class ComponentTreeGenerator {
         /* set values >componentSplittingThreshold to 1; this avoids over segmentation during component generation */
         Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
         raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
-
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
@@ -71,21 +66,23 @@ public class ComponentTreeGenerator {
         testers.add(widthLimit);
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-        // filter components that do not have siblings
-        SimpleComponentTree<FloatType, AdvancedComponent<FloatType>> tree = new SimpleComponentTree(componentTree, raiFkt, tester, componentPropertiesCalculator);
-        HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new SimpleComponentTree(tree, raiFkt, siblingTester, componentPropertiesCalculator);
-
-        // watershed components into their parent-components
-        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = new AdvancedComponentForest(componentTree, raiFkt, frameIndex, tester, componentPropertiesCalculator);
+        tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree); /* IMPORTANT: this step watersheds components into their parent-components, which yields the final size of components; this needs to be done before performing the following filter-steps on component-size, etc. */
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
-        tree = new SimpleComponentTree(tree, raiFkt, rootSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, rootSizeTester , componentPropertiesCalculator);
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
-        tree = new SimpleComponentTree(tree, raiFkt, leafSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, leafSizeTester , componentPropertiesCalculator);
 
-        tree.getAllComponents().stream().forEach(c -> c.setFrameNumber(frameIndex));
+        HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
+        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
+
+//        for (AdvancedComponent component : tree.getAllComponents()) {
+//            if (component.getChildren().size() > 2) {
+//                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
+//            }
+//        }
 
         return tree;
     }

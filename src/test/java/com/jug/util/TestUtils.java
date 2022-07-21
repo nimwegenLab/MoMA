@@ -1,6 +1,6 @@
 package com.jug.util;
 
-import com.jug.config.ComponentTreeGeneratorConfigurationMock;
+import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.util.componenttree.*;
@@ -32,6 +32,8 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +43,10 @@ public class TestUtils {
     private final ImageJ ij;
     private ImageProviderMock imageProviderMock;
     private int frameIndex;
+
+    public TestUtils() {
+        this(new ImageJ());
+    }
 
     public TestUtils(ImageJ ij) {
         this.ij = ij;
@@ -70,7 +76,7 @@ public class TestUtils {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         AdvancedComponent<FloatType> res = roots.get(0);
-        Plotting.drawComponentTree2(tree, new ArrayList<>());
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), res.getSourceImage());
     }
 
     public <T extends NativeType> ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<T>> getComponentWithImage(String imageFile,
@@ -93,21 +99,21 @@ public class TestUtils {
         imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
-        ComponentTreeGenerator componentTreeGenerator = getComponentTreeGenerator(ij);
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentTreeGenerator.buildIntensityTree(imageProviderMock, frameIndex, 1.0f);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
         return tree;
     }
 
     @NotNull
-    public ComponentTreeGenerator getComponentTreeGenerator(ImageJ ij) {
+    public ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentTreeGeneratorConfigurationMock config = new ComponentTreeGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentTreeGenerator componentTreeGenerator = new ComponentTreeGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentTreeGenerator;
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
+        return componentForestGenerator;
     }
 
     public <T extends NumericType<T>> void showImageWithOverlays2(RandomAccessibleInterval<T> image, List<Vector2DPolyline> polylines) {
@@ -157,5 +163,27 @@ public class TestUtils {
         } else {
             return !(Math.abs(d1 - d2) <= delta);
         }
+    }
+
+    public static Path getPathToResourcesDirectory(){
+        String pathToMomaGitRepo = new File("").getAbsolutePath();
+        Path pathToResources = Paths.get(pathToMomaGitRepo, "src/test/resources");
+        return pathToResources;
+    }
+
+
+    public ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProvider(imageFile);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        return tree;
+    }
+
+    public IImageProvider getImageProvider(String imageFile) throws IOException {
+        assertTrue(new File(imageFile).exists());
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+
+        return new ImageProviderMock(input);
     }
 }

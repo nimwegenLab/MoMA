@@ -2,13 +2,20 @@ package com.jug.lp;
 
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import gurobi.GRB;
 import gurobi.GRBConstr;
 import gurobi.GRBException;
+import gurobi.GRBLinExpr;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Objects.isNull;
 
 /**
  * This class is used to wrap away whatever object that represents one of the
@@ -19,31 +26,160 @@ import java.util.LinkedList;
  * @author jug
  */
 @SuppressWarnings("restriction")
-public class Hypothesis<T extends AdvancedComponent<FloatType>> {
+public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
-    private final T wrappedComponent;
+    private final C wrappedComponent;
     private final float cost;
+    private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
-    public ArrayList<String> labels = new ArrayList<>();
-    public boolean isForced = false;
-    public boolean isIgnored = false;
-    /**
-     * Used to store a 'segment in solution constraint' after it was added to
-     * the ILP. If such a constraint does not exist for this hypothesis, this
-     * value is null.
-     */
-    private GRBConstr segmentSpecificConstraint = null;
+    public List<String> labels = new ArrayList<>();
+
+    public boolean isForced() {
+        GRBConstr grbConstr = getSegmentInSolutionConstraint();
+        if (isNull(grbConstr)) {
+            return false;  /* no variable was found so this assignment is not forced */
+        }
+        return true;
+    }
+
+    public void setIsForced(boolean targetStateIsTrue) {
+        if (targetStateIsTrue == isForced()) {
+            return;
+        }
+
+        if (isForceIgnored()) {
+            setIsForceIgnored(false);
+        }
+
+        if (!targetStateIsTrue) {
+            removeSegmentInSolutionConstraint();
+            return;
+        }
+
+        if (targetStateIsTrue) {
+            addSegmentInSolutionConstraint();
+            return;
+        }
+        throw new RuntimeException("We should not reach here. Something went wrong.");
+    }
+
+    private void addSegmentInSolutionConstraint() {
+        addSegmentConstraint(1.0, getSegmentInSolutionConstraintName());
+    }
+
+    private void removeSegmentInSolutionConstraint() {
+        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
+        removeSegmentConstraint(segmentInSolutionConstraint);
+    }
+
+    private void removeSegmentConstraint(GRBConstr segmentInSolutionConstraint) {
+        if (isNull(segmentInSolutionConstraint)) {
+            return;
+        }
+        try {
+            ilp.model.remove(segmentInSolutionConstraint);
+            ilp.model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void removeSegmentNotInSolutionConstraint() {
+        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
+        removeSegmentConstraint(segmentNotInSolutionConstraint);
+    }
+
+    public void setIsForceIgnored(boolean targetStateIsTrue) {
+        if (targetStateIsTrue == isForceIgnored()) {
+            return;
+        }
+        if (isForced()) {
+            setIsForced(false);
+        }
+        if (!targetStateIsTrue) {
+            removeSegmentNotInSolutionConstraint();
+            return;
+        }
+        if (targetStateIsTrue) {
+            addSegmentNotInSolutionConstraint();
+            return;
+        }
+        throw new RuntimeException("We should not reach here. Something went wrong.");
+    }
+
+    private void addSegmentNotInSolutionConstraint() {
+        addSegmentConstraint(0.0, getSegmentNotInSolutionConstraintName());
+    }
+
+    private void addSegmentConstraint(double rhs, String segmentConstraintName) {
+        Hypothesis<AdvancedComponent<FloatType>> hyp = (Hypothesis<AdvancedComponent<FloatType>>) this;
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> rightNeighbors = ilp.edgeSets.getRightNeighborhood(hyp);
+        try {
+            final GRBLinExpr expr = new GRBLinExpr();
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : rightNeighbors) {
+                expr.addTerm(1.0, assmnt.getGRBVar());
+            }
+            ilp.model.addConstr(expr, GRB.EQUAL, rhs, segmentConstraintName);
+            ilp.model.update();
+        } catch (final GRBException e) {
+            throw new RuntimeException("Failed to add constraint: " + segmentConstraintName);
+        }
+    }
+
+    @NotNull
+    private String getSegmentNotInSolutionConstraintName() {
+        return "HypIgnoreConstr_" + getStringId();
+    }
+
+    @Nullable
+    private GRBConstr getSegmentInSolutionConstraint() {
+        GRBConstr grbConstr;
+        try {
+            grbConstr = ilp.model.getConstrByName(getSegmentInSolutionConstraintName());
+        } catch (GRBException e) {
+            return null;
+        }
+        return grbConstr;
+    }
+
+    @NotNull
+    private String getSegmentInSolutionConstraintName() {
+        return "HypEnforceConstr_" + getStringId();
+    }
+
+    public boolean isForceIgnored() {
+        GRBConstr grbConstr = getSegmentNotInSolutionConstraint();
+        if (isNull(grbConstr)) {
+            return false;  /* no variable was found so this assignment is not forced */
+        }
+        return true;
+    }
+
+    @Nullable
+    private GRBConstr getSegmentNotInSolutionConstraint() {
+        GRBConstr grbConstr;
+        try {
+            grbConstr = ilp.model.getConstrByName(getSegmentNotInSolutionConstraintName());
+        } catch (GRBException e) {
+            System.out.println(e);
+            return null;
+        }
+        return grbConstr;
+    }
+
+
     /**
      * Used to store track-branch pruning sources. This is a way to easily
      * exclude branches from data export etc.
      */
     private boolean isPruneRoot = false;
     private boolean isPruned = false;
-    public Hypothesis(final int t, final T elementToWrap, final float cost) {
-        // setSegmentHypothesis( elementToWrap );
-        this.wrappedComponent = elementToWrap;
+
+    public Hypothesis(final int t, final C wrappedComponent, final float cost, GrowthlaneTrackingILP ilp) {
+        this.wrappedComponent = wrappedComponent;
         this.cost = cost;
-        location = new HypLoc(t, elementToWrap);
+        this.ilp = ilp;
+        location = new HypLoc(t, wrappedComponent);
     }
 
     public int getId() {
@@ -51,13 +187,13 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     public String getStringId() {
-        return "HypAtT" + location.t + "Top" + location.limits.getA() + "Bottom" + location.limits.getB();
+        return wrappedComponent.getStringId();
     }
 
     /**
      * @return the wrapped segmentHypothesis
      */
-    public T getWrappedComponent() {
+    public C getWrappedComponent() {
         return wrappedComponent;
     }
 
@@ -68,15 +204,6 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         return cost;
     }
 
-    // /**
-    // * @param elementToWrap
-    // * the segmentHypothesis to wrap inside this
-    // * {@link Hypothesis}
-    // */
-    // public void setSegmentHypothesis( final T elementToWrap ) {
-    // this.wrappedHypothesis = elementToWrap;
-    // }
-
     /**
      * @return the stored gurobi constraint that either forces this hypothesis
      * to be part of any solution to the ILP or forces this hypothesis
@@ -84,25 +211,26 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
      * constraint was never created.
      */
     public GRBConstr getSegmentSpecificConstraint() {
-        return this.segmentSpecificConstraint;
+        GRBConstr segmentNotInSolutionConstraint = getSegmentNotInSolutionConstraint();
+        GRBConstr segmentInSolutionConstraint = getSegmentInSolutionConstraint();
+        if (!isNull(segmentInSolutionConstraint) && !isNull(segmentNotInSolutionConstraint)) {
+            throw new RuntimeException("conflicting segment constraints have occurred; this should not have happened");
+        }
+        if (!isNull(segmentNotInSolutionConstraint)) {
+            return segmentNotInSolutionConstraint;
+        }
+        if (!isNull(segmentInSolutionConstraint)) {
+            return segmentInSolutionConstraint;
+        }
+        return null;
     }
 
     /**
      * Used to store a 'segment in solution constraint' or a 'segment not in
      * solution constraint' after it was added to the ILP.
-     *
-     * @param constr the installed constraint.
      */
-    public void setSegmentSpecificConstraint(final GRBConstr constr) {
-        this.segmentSpecificConstraint = constr;
-    }
-
     public ValuePair<Integer, Integer> getLocation() {
         return location.limits;
-    }
-
-    public HypLoc getHypLoc() {
-        return location;
     }
 
     public int getTime() {
@@ -110,46 +238,108 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
     }
 
     /**
-     *
+     * Get ancestor component within the component-tree (i.e. parent or further up) for which a hypothesis was generated.
+     * It returns NULL, if no such component exists.
+     * @return the parent component
      */
-    public void setPruneRoot(final boolean value, final GrowthlaneTrackingILP ilp) {
+    private AdvancedComponent<FloatType> getParentComponentWithExistingHypothesis() {
+        AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes = ilp.getNodes();
+        AdvancedComponent<FloatType> parentComponent = this.getWrappedComponent().getParent();
+        while (!isNull(parentComponent) && !nodes.containsKey(parentComponent)) {
+            parentComponent = parentComponent.getParent();
+        }
+        return parentComponent;
+    }
 
-        this.isPruneRoot = value;
+    /**
+     * Returns the parent hypothesis of this hypothesis. Returns null, if it does not exist.
+     * @return
+     */
+    public Hypothesis<AdvancedComponent<FloatType>> getParentHypothesis() {
+        AdvancedComponent<FloatType> component = getParentComponentWithExistingHypothesis();
+        if (isNull(component)) {
+            return null;
+        }
+        return (Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(component);
+    }
 
-        final LinkedList<Hypothesis<AdvancedComponent<FloatType>>> queue =
-                new LinkedList<>();
-        // TODO there will be no time, but this is of course not nice...
-        queue.add((Hypothesis<AdvancedComponent<FloatType>>) this);
-        while (!queue.isEmpty()) {
-            final Hypothesis<AdvancedComponent<FloatType>> node = queue.removeFirst();
-            node.setPruned(value);
+    /**
+     * Get child hypothesis of this hypothesis. Returns an empty list, if it does not exist.
+     * @return
+     */
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getChildHypotheses() {
+        List<AdvancedComponent<FloatType>> childComponents = getChildComponentsWithExistingHypotheses();
+        List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
+        for (AdvancedComponent child : childComponents) {
+            childHypotheses.add((Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(child));
+        }
+        return childHypotheses;
+    }
 
-            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt;
-            try {
-                assmnt = ilp.getOptimalRightAssignment(node);
+    /**
+     * Returns a list of child-components within the component-tree for which hypotheses were created. This does not
+     * have to be a binary tree, because it is possible that on any level of the component-tree a sibling node, was
+     * omitted during hypothesis-generation, while on the next-down level of the tree both child-nodes were created
+     * (which would yield three child-nodes).
+     * @return
+     */
+    private List<AdvancedComponent<FloatType>> getChildComponentsWithExistingHypotheses() {
+        ArrayList<AdvancedComponent<FloatType>> listOfChildren = new ArrayList<>();
+        addChildComponentsWithExistingHypothesesRecursively(this.getWrappedComponent().getChildren(), listOfChildren);
+        return listOfChildren;
+    }
 
-                if (assmnt != null) {
-                    assmnt.setPruned(value);
-
-                    switch (assmnt.getType()) {
-                        case GrowthlaneTrackingILP.ASSIGNMENT_DIVISION:
-                            if (!((DivisionAssignment) assmnt).getUpperDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getUpperDestinationHypothesis());
-                            }
-                            if (!((DivisionAssignment) assmnt).getLowerDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((DivisionAssignment) assmnt).getLowerDestinationHypothesis());
-                            }
-                            break;
-                        case GrowthlaneTrackingILP.ASSIGNMENT_MAPPING:
-                            if (!((MappingAssignment) assmnt).getDestinationHypothesis().isPruneRoot()) {
-                                queue.add(((MappingAssignment) assmnt).getDestinationHypothesis());
-                            }
-                            break;
-                    }
-                }
-            } catch (final GRBException e) {
-//				e.printStackTrace();
+    private void addChildComponentsWithExistingHypothesesRecursively(List<AdvancedComponent<FloatType>> children, List<AdvancedComponent<FloatType>> listOfChildren) {
+        for (AdvancedComponent child : children) {
+            if (ilp.getNodes().containsKey(child)) {
+                listOfChildren.add(child);
+            } else {
+                addChildComponentsWithExistingHypothesesRecursively(child.getChildren(), listOfChildren);
             }
+        }
+    }
+
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
+        try {
+            return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Unable to get the optimal right assignment for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
+            return getOutgoingAssignment().getTargetHypotheses();
+    }
+
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getIncomingAssignment() {
+        try {
+            return ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Unable to get the optimal left assignment for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
+        return getIncomingAssignment().getSourceHypothesis();
+    }
+
+    public void setPruneRoot(final boolean value) {
+        if (getSourceHypothesis().isPruned()) {
+            throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
+        }
+        if (getIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+            throw new InvalidPruningInteractionException("Cannot prune this segment", "You cannot prune segments that are targets of a division assignment, because this would break lineage information. To prune this segment, please first force a mapping assignment to it.");
+        }
+        this.isPruneRoot = value;
+        setPruneStateRecursively(this, value);
+    }
+
+    private static void setPruneStateRecursively(Hypothesis<?> hypothesis, boolean value) {
+        hypothesis.setPruned(value);
+        hypothesis.getOutgoingAssignment().setPruned(value);
+        List<Hypothesis<AdvancedComponent<FloatType>>> childNodes = hypothesis.getTargetHypotheses();
+        for (Hypothesis<?> child : childNodes) {
+            setPruneStateRecursively(child, value);
         }
     }
 
@@ -174,14 +364,18 @@ public class Hypothesis<T extends AdvancedComponent<FloatType>> {
         this.isPruned = value;
     }
 
+    public void toggleIsPrunedRoot() {
+        this.setPruneRoot(!this.isPruneRoot());
+    }
+
     public class HypLoc {
 
         final int t;
         final ValuePair<Integer, Integer> limits;
 
-        HypLoc(final int t, final T segment) {
+        HypLoc(final int t, final C wrappedComponent) {
             this.t = t;
-            this.limits = ComponentTreeUtils.getTreeNodeInterval(segment);
+            this.limits = ComponentTreeUtils.getTreeNodeInterval(wrappedComponent);
         }
     }
 }

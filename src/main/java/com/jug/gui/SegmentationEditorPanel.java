@@ -4,6 +4,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.GroundTruthFramesExporter;
+import com.jug.lp.CellCountConstraint;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.Util;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -26,6 +27,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
     private final int timeStepOffset;
     private GroundTruthFramesExporter groundTruthFramesExporter;
+    private ConfigurationManager configurationManager;
     private final IImageProvider imageProvider;
     public ColorChannel colorChannelToDisplay = ColorChannel.CHANNEL0;
     GrowthlaneViewer growthlaneViewer;
@@ -37,13 +39,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private Color groundTruthCheckboxDefaultColor;
     private MoMAGui mmgui;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter, ConfigurationManager configurationManager) {
         this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
         this.groundTruthFramesExporter = groundTruthFramesExporter;
-        growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, viewWidth, viewHeight);
+        this.configurationManager = configurationManager;
+        growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, dialogManager, viewWidth, viewHeight);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addCheckboxForSettingIlpConstraints(mmgui);
@@ -87,7 +90,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         if (ilp != null) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
-        Plotting.drawComponentTree(glf.getComponentTree(), optimalSegs, timeStep);
+        Plotting.drawComponentTree(glf.getComponentForest(), optimalSegs, timeStep);
     }
 
     private void addGrowthlaneViewer(GrowthlaneViewer growthlaneViewer) {
@@ -139,12 +142,13 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             } catch (final NumberFormatException nfe) {
                 numCells = -1;
                 txtNumCells.setText("-");
-                ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
+                CellCountConstraint constraint = ilp.getCellCountConstraint(timeStepToDisplay());
+                constraint.remove();
             }
             if (numCells != -1) {
                 try {
-                    ilp.removeSegmentsInFrameCountConstraint(timeStepToDisplay());
-                    ilp.addSegmentsInFrameCountConstraint(timeStepToDisplay(), numCells);
+                    ilp.getCellCountConstraint(timeStepToDisplay()).remove();
+                    ilp.addCellCountConstraint(timeStepToDisplay(), numCells);
                 } catch (final GRBException e1) {
                     e1.printStackTrace();
                 }
@@ -152,8 +156,8 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
             final Thread t = new Thread(() -> {
                 momaModel.getCurrentGL().getIlp().run();
-                mmgui.dataToDisplayChanged();
-                mmgui.sliderTime.requestFocus();
+                mmgui.updateGui();
+                mmgui.requestFocusOnTimeStepSlider();
             });
             t.start();
         });
@@ -209,14 +213,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
 
-        final int rhs =
-                momaModel.getCurrentGL().getIlp().getSegmentsInFrameCountConstraintRHS(timeStepToDisplay());
+        CellCountConstraint constraint = momaModel.getCurrentGL().getIlp().getCellCountConstraint(timeStepToDisplay());
+        final int numberOfCells = constraint.getNumberOfCells();
         txtNumCells.setEnabled(true);
-        if (rhs == -1) {
+        if (numberOfCells == -1) {
             txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
         } else {
-            txtNumCells.setText("" + rhs);
+            txtNumCells.setText(Integer.toString(numberOfCells));
             txtNumCells.setBackground(Color.ORANGE);
         }
     }
@@ -238,7 +242,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             else{
                 unselectGroundTruthSelectionCheckbox();
             }
-            mmgui.sliderTime.requestFocus();
+            mmgui.requestFocusOnTimeStepSlider();
         });
         checkboxIsSelectedAsGroundTruth.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedAsGroundTruth);
@@ -252,6 +256,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         return momaModel.getCurrentTime() + this.timeStepOffset;
     }
 
+    @Override
     public void display() {
         updateTitleLabel();
         updateCellNumberInputField();
@@ -285,7 +290,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(2), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else { // default value to ColorChannel.CHANNEL0
-            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
+            viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - configurationManager.GL_WIDTH_IN_PIXELS / 2 - configurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());
         }
         return viewImgCenterActive;
     }
@@ -302,7 +307,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
                                 (RandomAccessibleInterval<FloatType>) viewToShow,
                                 new RealFloatNormalizeConverter(max.get()),
                                 new FloatType()),
-                        glf.getOffsetX() - ConfigurationManager.GL_WIDTH_IN_PIXELS / 2 - ConfigurationManager.GL_PIXEL_PADDING_IN_VIEWS,
+                        glf.getOffsetX() - configurationManager.GL_WIDTH_IN_PIXELS / 2 - configurationManager.GL_PIXEL_PADDING_IN_VIEWS,
                         glf.getOffsetY());
         return viewImgCenterActive;
     }

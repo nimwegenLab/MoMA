@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> {
 
-    private int sourceTimeStep;
     private final Hypothesis<AdvancedComponent<FloatType>> from;
     private final Hypothesis<AdvancedComponent<FloatType>> to;
 
@@ -26,8 +25,7 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      * @param to
      */
     public MappingAssignment(final int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final Hypothesis<AdvancedComponent<FloatType>> from, final Hypothesis<AdvancedComponent<FloatType>> to) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp);
-        this.sourceTimeStep = sourceTimeStep;
+        super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp, sourceTimeStep);
         this.from = from;
         this.to = to;
     }
@@ -38,13 +36,6 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
      */
     @Override
     public void addConstraintsToILP() {
-    }
-
-    /**
-     * Mapping assignments do not come with constraints.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
     }
 
     /**
@@ -88,15 +79,6 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis target) {
-        return "MappingAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
+        return "MapT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
     }
-
-    /**
-     * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        return new ArrayList<>();
-    }
-
 }

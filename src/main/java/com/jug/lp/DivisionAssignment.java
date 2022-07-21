@@ -28,8 +28,9 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
                               final GrowthlaneTrackingILP ilp,
                               final Hypothesis<AdvancedComponent<FloatType>> from,
                               final Hypothesis<AdvancedComponent<FloatType>> toUpper,
-                              final Hypothesis<AdvancedComponent<FloatType>> toLower) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp);
+                              final Hypothesis<AdvancedComponent<FloatType>> toLower,
+                              int sourceTimeStep) {
+        super(GrowthlaneTrackingILP.ASSIGNMENT_DIVISION, ilpVariable, ilp, sourceTimeStep);
         this.from = from;
         this.toUpper = toUpper;
         this.toLower = toLower;
@@ -41,13 +42,6 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
      */
     @Override
     public void addConstraintsToILP() {
-    }
-
-    /**
-     * Division assignments do not come with constraints.
-     */
-    @Override
-    public void addFunctionsAndFactors(final FactorGraphFileBuilder_SCALAR fgFile, final List<Integer> regionIds) {
     }
 
     /**
@@ -104,14 +98,6 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
     }
 
     public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis upperTarget, Hypothesis lowerTarget) {
-        return "DivisionAtT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
-    }
-
-    /**
-     * @see com.jug.lp.AbstractAssignment#getConstraintsToSave_PASCAL()
-     */
-    @Override
-    public List<String> getConstraintsToSave_PASCAL() {
-        return new ArrayList<>();
+        return "DivT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
     }
 }

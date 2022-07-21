@@ -1,12 +1,10 @@
 package com.jug.export;
 
-import com.jug.config.ConfigurationManager;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.componenttree.AdvancedComponent;
-import gurobi.GRBException;
 import net.imglib2.IterableInterval;
 import net.imglib2.histogram.Histogram1d;
 import net.imglib2.histogram.Real1dBinMapper;
@@ -150,29 +148,21 @@ public final class SegmentRecord {
      */
     SegmentRecord nextSegmentInTime() {
         SegmentRecord ret = this;
-
         exists = true;
-        try {
-            final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(this.hyp);
-            if (timestep == ilp.getNodes().getNumberOfTimeSteps() - 1) {
-                exists = false;
-                terminated_by = SegmentRecord.ENDOFTRACKING;
-            } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
-                final MappingAssignment ma = (MappingAssignment) rightAssmt;
-                if (!ma.isPruned()) {
-                    ret = new SegmentRecord(this, 1, ilp);
-                    ret.hyp = ma.getDestinationHypothesis();
-                } else {
-                    terminated_by = SegmentRecord.USER_PRUNING;
-                    exists = false;
-                }
-            } else {
-                terminated_by = rightAssmt.getType();
-                exists = false;
-            }
-        } catch (final GRBException ge) {
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = this.hyp.getOutgoingAssignment();
+        if (timestep == ilp.getNodes().getNumberOfTimeSteps() - 1) {
             exists = false;
-            System.err.println(ge.getMessage());
+            terminated_by = SegmentRecord.ENDOFTRACKING;
+        } else if (rightAssmt.isPruned()) {
+            terminated_by = SegmentRecord.USER_PRUNING;
+            exists = false;
+        } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
+            final MappingAssignment ma = (MappingAssignment) rightAssmt;
+            ret = new SegmentRecord(this, 1, ilp);
+            ret.hyp = ma.getDestinationHypothesis();
+        } else {
+            terminated_by = rightAssmt.getType();
+            exists = false;
         }
         return ret;
     }
@@ -216,10 +206,6 @@ public final class SegmentRecord {
      * @return
      */
     float[] computeChannelColumnIntensities(final IntervalView<FloatType> columnBoxInChannel) {
-        if (ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS != columnBoxInChannel.dimension(0)) {
-            System.out.println("EXPORT WARNING: intensity columns to be exported are " + columnBoxInChannel.dimension(0) + " instead of " + ConfigurationManager.INTENSITY_FIT_RANGE_IN_PIXELS);
-        }
-
         final float[] ret = new float[(int) columnBoxInChannel.dimension(0)];
         int idx = 0;
         for (int i = (int) columnBoxInChannel.min(0); i <= columnBoxInChannel.max(0); i++) {

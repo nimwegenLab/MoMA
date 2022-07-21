@@ -18,8 +18,6 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
 import java.util.*;
 
-import static com.jug.config.ConfigurationManager.ASSIGNMENT_COST_CUTOFF;
-
 /**
  * @author jug
  */
@@ -73,12 +71,14 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // getters and setters
     // -------------------------------------------------------------------------------------
     private Color strokeColor;
+    private ConfigurationManager configurationManager;
 
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public AssignmentsEditorCanvasView(final int height) {
-        this(height, -ASSIGNMENT_COST_CUTOFF, ASSIGNMENT_COST_CUTOFF);
+    public AssignmentsEditorCanvasView(final int height, ConfigurationManager configurationManager) {
+        this(height, -configurationManager.ASSIGNMENT_COST_CUTOFF, configurationManager.ASSIGNMENT_COST_CUTOFF);
+        this.configurationManager = configurationManager;
     }
 
     /**
@@ -195,7 +195,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      * @param g
      */
     private void drawGlOffsetTop(final Graphics2D g) {
-        double componentExitRange = ConfigurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
+        double componentExitRange = configurationManager.COMPONENT_EXIT_RANGE / 2.0f; // defines the range, over which the cost increases.
 
         final float centeringOffset = .5f;
         final float xLeftSide = 0 + centeringOffset;
@@ -205,32 +205,32 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         BasicStroke solidStroke = new BasicStroke(1);
 
         GeneralPath polygon = new GeneralPath();
-        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP);
-        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP);
+        polygon.moveTo(xLeftSide, configurationManager.GL_OFFSET_TOP);
+        polygon.lineTo(xRightSide, configurationManager.GL_OFFSET_TOP);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(solidStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
-        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP - componentExitRange);
+        polygon.moveTo(xLeftSide, configurationManager.GL_OFFSET_TOP - componentExitRange);
+        polygon.lineTo(xRightSide, configurationManager.GL_OFFSET_TOP - componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(xLeftSide, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
-        polygon.lineTo(xRightSide, ConfigurationManager.GL_OFFSET_TOP + componentExitRange);
+        polygon.moveTo(xLeftSide, configurationManager.GL_OFFSET_TOP + componentExitRange);
+        polygon.lineTo(xRightSide, configurationManager.GL_OFFSET_TOP + componentExitRange);
         polygon.closePath();
         g.setPaint(strokeColor);
         g.setStroke(dashedStroke);
         g.draw(polygon);
 
         polygon = new GeneralPath();
-        polygon.moveTo(xLeftSide, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
-        polygon.lineTo(xRightSide, ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.moveTo(xLeftSide, configurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
+        polygon.lineTo(xRightSide, configurationManager.CELL_DETECTION_ROI_OFFSET_TOP + ASSIGNMENT_DISPLAY_OFFSET);
         polygon.closePath();
         g.setPaint(Color.BLUE.darker());
         g.setStroke(solidStroke);
@@ -499,6 +499,9 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent e) {
+        if (hoveredAssignments.isEmpty()) {
+            return; /* no entries in the list of hovered assignments that we could scroll through */
+        }
         resetSelectedAssignments();
         int increment = -e.getWheelRotation();
 

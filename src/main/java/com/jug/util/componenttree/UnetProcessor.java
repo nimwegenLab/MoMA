@@ -40,19 +40,6 @@ public class UnetProcessor {
         datasetService = context.service(DatasetService.class);
     }
 
-    public String getModelChecksum() {
-        return calculateModelChecksum(modelFile);
-    }
-
-    public void setModelFilePath(String modelFilePath) {
-        modelFile = modelFilePath;
-    }
-
-    private String calculateModelChecksum(String modelFile) {
-        byte[] hash = Hash.SHA256.checksum(new File(modelFile));
-        return Hash.toHex(hash).toLowerCase();
-    }
-
     /**
      * Load and run the Tensor-Flow network on the images to create probability maps
      * of the cell-location.
@@ -68,7 +55,7 @@ public class UnetProcessor {
             final CommandModule module = commandService.run(
                     GenericNetwork.class, false,
                     "input", dataset,
-                    "modelFile", modelFile,
+                    "modelFile", unetProcessingConfiguration.getModelFilePath().toString(),
                     "normalizeInput", false,
                     "blockMultiple", 8,
                     "nTiles", 1,

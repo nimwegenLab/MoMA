@@ -1,13 +1,6 @@
-package com.jug;
+package com.jug.exploration;
 
-import org.junit.Test;
-
-import java.io.File;
-import java.nio.file.FileSystems;
-import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
-
-import static com.jug.util.JavaUtils.concatenateWithCollection;
+import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class MoMATest {
     //    String datasets_base_path = "/home/micha/Documents/01_work/git/MoMA/test_datasets";
@@ -22,7 +15,7 @@ public class MoMATest {
 
     public static void main(String[] args) {
         MoMATest tests = new MoMATest();
-        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL22();
+//        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL22();
 //        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL5();
 
 //        tests._theo_20210923_glu_batch_1_MMStack_Pos0_GL38();
@@ -32,7 +25,7 @@ public class MoMATest {
 //        tests._cell_fragments__thomas_20200922__Pos16_GL19(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl12(); /* test-case for new cost calculation */
 //        tests._cell_fragments__lis_20210521__Pos0_Gl10(); /* test-case for new cost calculation */
-//        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
+        tests._filamenting_cell__lis_20201119__Pos5_GL17(); /* test-case for new cost calculation */
 //        tests._debug_mapping_assignment_issue_when_using_only_plausible_assignments();
 //        tests._missing_mapping_assignment__lis_20201119__Pos14_GL30();
 //        tests._exception_when_loading_gl__thomas_20200910__Pos3_GL33();
@@ -101,9 +94,9 @@ public class MoMATest {
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16() {
         String inputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16.tif";
         String outputPath = datasets_base_path + "/000_moma_benchmarking/other_test_data/dany_20200730__Pos3_GL16/output/";
-        Integer tmin = 0;
-        Integer tmax = 10;
-        startMoma(true, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
+        Integer tmin = null;
+        Integer tmax = null;
+        startMoma(false, inputPath, outputPath, tmin, tmax, true, new String[]{"-ground_truth_export"});
     }
 
 
@@ -155,14 +148,16 @@ public class MoMATest {
 
     
     public void _filamenting_cell__lis_20201119__Pos5_GL17() {
-        String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
-        String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/filamenting_cells/CIP/lis_20201119/Pos5_GL17/output/";
+        String inputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CIP/lis_20201119/Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17.tif";
+        String outputPath = datasets_base_path + "/000_moma_benchmarking/problem_cases/lysing_cell_inside_gl/CIP/lis_20201119/Pos5_GL17/output/";
 //        Integer tmin = 120;
 //        Integer tmax = 140;
 //        Integer tmin = 160;
 //        Integer tmax = 303;
-        Integer tmin = 0;
-        Integer tmax = 480;
+        Integer tmin = 436;
+        Integer tmax = 437;
+//        Integer tmin = 265;
+//        Integer tmax = 269;
         startMoma(false, inputPath, outputPath, tmin, tmax, true);
     }
 
@@ -415,9 +410,7 @@ public class MoMATest {
     public void headless_20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400_450() {
         String inputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01__frames_400-450.tif";
         String outputPath = datasets_base_path + "/20190515_hi1_med1_med2_rpmB_glu_gly_7_MMStack_Pos25_preproc_GL01/output_headless/";
-        MoMA moma = new MoMA();
-        MoMA.HEADLESS = true;
-        MoMA.main(new String[]{"-i", inputPath, "-o", outputPath});
+        startMoma(true, inputPath, outputPath, null, null, true);
     }
 
     
@@ -447,67 +440,5 @@ public class MoMATest {
         String inputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/cropped_20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15.tif";
         String outputPath = datasets_base_path + "/20191105_glc_spcm_1_MMStack_Pos7_preproc_GL15/output/";
         startMoma(false, inputPath, outputPath, null, null, true);
-    }
-
-    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps) {
-        startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
-    }
-
-    private void startMoma(boolean headless, String inputPath, String outputPath, Integer tmin, Integer tmax, boolean deleteProbabilityMaps, String[] additionalArgs) {
-        if (deleteProbabilityMaps) {
-            remove_probability_maps(inputPath);
-        }
-        create_output_folder(outputPath);
-
-        String[] args;
-
-        if (tmin != null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
-        } else if (tmin != null && tmax == null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString()};
-        } else if (tmin == null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
-        } else { // both tmin and tmax are null
-            args = new String[]{"-i", inputPath, "-o", outputPath};
-        }
-        if (additionalArgs != null) {
-            args = concatenateWithCollection(args, additionalArgs);
-        }
-        MoMA.HEADLESS = headless;
-        MoMA.main(args);
-    }
-
-    private void create_output_folder(String outputPath) {
-        File file = new File(outputPath);
-        file.mkdir();
-    }
-
-    /**
-     * Delete preexisting probability maps. During testing, we often want to test the generation
-     * of the probability maps, which are cached to disk and loaded, if they exist for a given model.
-     * This function removes those cached files to always run the U-Net preprocessing.
-     *
-     * @param path
-     */
-    private void remove_probability_maps(String path) {
-        PathMatcher matcher =
-                FileSystems.getDefault().getPathMatcher("glob:*__model_*.tif*");
-        File f = new File(path);
-        File parentFolder = new File(f.getParent());
-
-        String[] pathnames = parentFolder.list();
-        for (String name : pathnames) {
-            String filePath = parentFolder + "/" + name;
-            if (matcher.matches(Paths.get(name))) {
-                System.out.print(filePath);
-                File f2 = new File(filePath);
-                if (f2.delete())                      //returns Boolean value
-                {
-                    System.out.println("Deleted: " + f.getName());   //getting and printing the file name
-                } else {
-                    System.out.println("Failed to delete: " + f.getName());
-                }
-            }
-        }
     }
 }

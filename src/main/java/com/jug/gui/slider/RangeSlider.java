@@ -55,19 +55,17 @@ public class RangeSlider extends JSlider {
      * Sets the lower value in the range.
      */
     @Override
-    public void setValue(int value) {
-        int oldValue = getValue();
-        if (oldValue == value) {
+    public void setValue(int newRangeStart) {
+        int oldRangeStart = getValue();
+        if (oldRangeStart == newRangeStart) {
             return;
         }
 
-        // Compute new value and extent to maintain upper value.
-        int oldExtent = getExtent();
-        int newValue = Math.min(Math.max(getMinimum(), value), oldValue + oldExtent);
-        int newExtent = oldExtent + oldValue - newValue;
+        int oldEndValue = getExtent() + oldRangeStart;
+        int newExtent = oldEndValue - newRangeStart;
 
         // Set new value and extent, and fire a single change event.
-        getModel().setRangeProperties(newValue, newExtent, getMinimum(), 
+        getModel().setRangeProperties(newRangeStart, newExtent, getMinimum(),
             getMaximum(), getValueIsAdjusting());
     }
 

@@ -43,7 +43,7 @@ public class HypothesesAndAssignmentsSanityChecker {
             }
         };
         final GrowthlaneFrame glf = gl.getFrames().get(t);
-        ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentTree(), levelComponentsConsumer);
+        ComponentTreeUtils.doForEachComponentInTreeLevel(glf.getComponentForest(), levelComponentsConsumer);
     }
 
     public void checkIfAllComponentsHaveMappingAssignmentsBetweenThem() {
@@ -55,8 +55,8 @@ public class HypothesesAndAssignmentsSanityChecker {
     private void allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(int t) {
         if (t + 1 >= gl.getFrames().size())
             return;
-        ComponentForest<AdvancedComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentTree();
-        ComponentForest<AdvancedComponent<FloatType>> targetComponentTree = gl.getFrames().get(t + 1).getComponentTree();
+        ComponentForest<AdvancedComponent<FloatType>> sourceComponentTree = gl.getFrames().get(t).getComponentForest();
+        ComponentForest<AdvancedComponent<FloatType>> targetComponentTree = gl.getFrames().get(t + 1).getComponentForest();
         List<AdvancedComponent<FloatType>> allSourceComponents = ComponentTreeUtils.getListOfNodes(sourceComponentTree);
         List<AdvancedComponent<FloatType>> allTargetComponents = ComponentTreeUtils.getListOfNodes(targetComponentTree);
 

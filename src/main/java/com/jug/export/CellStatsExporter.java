@@ -36,7 +36,6 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     private final MoMAGui gui;
     private final IImageProvider imageProvider;
-    private final String loadedDataFolder;
     private String versionString;
     private List<SegmentMeasurementInterface> measurements;
     private ConfigurationManager configurationManager;
@@ -57,7 +56,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         this.imageProvider = imageProvider;
         this.versionString = versionString;
         this.measurements = measurements;
-        loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting cell statistics...");
     }
 
     @Override
@@ -67,24 +65,12 @@ public class CellStatsExporter implements ResultExporterInterface {
         /* Export cell tracks */
         exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 
-        /* Export user inputs to the tracking algorithm */
-        final int tmin = MoMA.getMinTime();
-        final int tmax = MoMA.getMaxTime();
-        final File file =
-                new File(outputFolder, String.format(
-                        "[%d-%d]__%s.moma",
-                        tmin,
-                        tmax,
-                        MoMA.getDefaultFilenameDecoration()));
-        MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
-
         final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
         long avgXpos = firstGLF.getAvgXpos();
+        /* Export cell stats */
         exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
                 cellTrackStartingPoints,
                 avgXpos);
-        // always export mmproperties
-        configurationManager.saveParams(new File(outputFolder, "mm.properties"), MoMA.getGuiFrame());
     }
 
     /**
@@ -112,7 +98,7 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         // INITIALIZE PROGRESS-BAR if not run headless
         final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
-        if (!MoMA.HEADLESS) {
+        if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(true);
         }
 
@@ -159,19 +145,19 @@ public class CellStatsExporter implements ResultExporterInterface {
         measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
         Pattern positionPattern = Pattern.compile("Pos(\\d+)");
-        Matcher positionMatcher = positionPattern.matcher(loadedDataFolder);
+        Matcher positionMatcher = positionPattern.matcher(configurationManager.getInputImagePath());
         positionMatcher.find();
         String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
 
         Pattern growthlanePattern = Pattern.compile("GL(\\d+)");
-        Matcher growthlaneMatcher = growthlanePattern.matcher(loadedDataFolder);
+        Matcher growthlaneMatcher = growthlanePattern.matcher(configurationManager.getInputImagePath());
         growthlaneMatcher.find();
         String growthlaneNumber = growthlaneMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
 
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
         writer.write(String.format("moma_version=\"%s\"\n", versionString));
-        writer.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+        writer.write(String.format("input_image=\"%s\"\n", configurationManager.getInputImagePath()));
         writer.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
@@ -202,7 +188,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 boundingBoxTopCol.addValue(cellBboxTop);
                 boundingBoxBottomCol.addValue(limits.getB());
 
-                if (cellBboxTop <= ConfigurationManager.CELL_DETECTION_ROI_OFFSET_TOP){
+                if (cellBboxTop <= configurationManager.CELL_DETECTION_ROI_OFFSET_TOP){
                     touchesCellDetectionRoiTopCol.addValue(1);
                 }
                 else{
@@ -238,7 +224,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                     cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
                     backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
 
-                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, avgXpos);
+                    final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, avgXpos, configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS, configurationManager.GL_WIDTH_IN_PIXELS);
                     double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));
                     intensityFitCellIntensityCols.get(columnIndex).addValue(estimates[0]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */
                     intensityFitBackgroundIntensityCols.get(columnIndex).addValue(estimates[1]); /* estimates: {cMax - cMin, cMin, muStart, wStart}; // parameters corresponding to Kaiser paper (step 2): {A, B, i_mid, w} */
@@ -261,13 +247,13 @@ public class CellStatsExporter implements ResultExporterInterface {
             while (segmentRecord.exists());
 
             // REPORT PROGRESS if need be
-            if (!MoMA.HEADLESS) {
+            if (!configurationManager.getIfRunningHeadless()) {
                 dialogProgress.hasProgressed();
             }
         }
 
         // Dispose ProgressBar in need be
-        if (!MoMA.HEADLESS) {
+        if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(false);
             dialogProgress.dispose();
         }
@@ -286,7 +272,7 @@ public class CellStatsExporter implements ResultExporterInterface {
             out = new OutputStreamWriter(new FileOutputStream(file));
 
             out.write(String.format("moma_version=\"%s\"\n", versionString));
-            out.write(String.format("input_image=\"%s\"\n", loadedDataFolder));
+            out.write(String.format("input_image=\"%s\"\n", configurationManager.getInputImagePath()));
             out.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
             out.write("\n");
 
@@ -298,12 +284,12 @@ public class CellStatsExporter implements ResultExporterInterface {
             }
             out.close();
         } catch (final FileNotFoundException e1) {
-            if (!MoMA.HEADLESS)
+            if (!configurationManager.getIfRunningHeadless())
                 JOptionPane.showMessageDialog(gui, "File not found!", "Error!", JOptionPane.ERROR_MESSAGE);
             System.err.println("Export Error: File not found!");
             e1.printStackTrace();
         } catch (final IOException e1) {
-            if (!MoMA.HEADLESS)
+            if (!configurationManager.getIfRunningHeadless())
                 JOptionPane.showMessageDialog(gui, "Selected file could not be written!", "Error!", JOptionPane.ERROR_MESSAGE);
             System.err.println("Export Error: Selected file could not be written!");
             e1.printStackTrace();

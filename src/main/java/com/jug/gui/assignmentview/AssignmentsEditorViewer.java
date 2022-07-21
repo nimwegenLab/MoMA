@@ -1,5 +1,6 @@
 package com.jug.gui.assignmentview;
 
+import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEventListener;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
@@ -27,6 +28,8 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     // -------------------------------------------------------------------------------------
     private static final long serialVersionUID = 6588846114839723373L;
 
+    private ConfigurationManager configurationManager;
+
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -47,7 +50,8 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     /**
      *
      */
-    public AssignmentsEditorViewer(final int height) {
+    public AssignmentsEditorViewer(final int height, ConfigurationManager configurationManager) {
+        this.configurationManager = configurationManager;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
     }
@@ -75,11 +79,11 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
                 switchToNextTab();
             }
         });
-        activeAssignments = new AssignmentsEditorCanvasView(height);
-        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height);
-        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height);
-        inactiveExitAssignments = new AssignmentsEditorCanvasView(height);
-        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height);
+        activeAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveMappingAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveExitAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
 
         tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
         namesToRoll = new String[]{"O", "M", "D", "E", "L"};

@@ -1,9 +1,11 @@
 package com.jug.lp;
 
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import gurobi.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+
+import static java.util.Objects.isNull;
 
 /**
  * Partially implemented class for everything that wants to be an assignment.
@@ -14,39 +16,28 @@ import java.util.List;
  * @author jug
  */
 @SuppressWarnings( "restriction" )
-public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
+public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
+	private final int sourceTimeStep;
 	private int type;
 
 	GrowthlaneTrackingILP ilp;
 
-	private int exportVarIdx = -1;
 	private GRBVar ilpVar;
-
-	private boolean isGroundTruth = false;
-	private boolean isGroundUntruth = false;
-	private GRBConstr constrGroundTruth;
 
 	private boolean isPruned = false;
 
 	/**
 	 * Creates an assignment...
 	 */
-	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp) {
-		this.setType( type );
+	AbstractAssignment(final int type, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, int sourceTimeStep) {
+		this.sourceTimeStep = sourceTimeStep;
+		this.type = type;
 		setGRBVar( ilpVariable );
 		setGrowthlaneTrackingILP( ilp );
 	}
 
 	abstract public int getId();
-
-	public String getStringId() {
-		try {
-			return getGrbVarName();
-		} catch (GRBException err) {
-			return "AssignmentNameUndefined";
-		}
-	}
 
 	/**
 	 * @return the type
@@ -55,32 +46,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return type;
 	}
 
-	/**
-	 * @param type
-	 *            the type to set
-	 */
-	void setType(final int type) {
-		this.type = type;
-	}
-
 	abstract public H getSourceHypothesis();
 
 	abstract public List<H> getTargetHypotheses();
-
-	//	/**
-//	 * This function is for example used when exporting a FactorGraph
-//	 * that describes the entire optimization problem at hand.
-//	 *
-//	 * @return a variable index that is unique for the indicator
-//	 *         variable used for this assignment.
-//	 * @throws Exception
-//	 */
-	public int getVarIdx() {
-		if ( exportVarIdx == -1 ) {
-			System.out.println( "AAAAACHTUNG!!! Variable index not initialized before export was attempted!" );
-		}
-		return exportVarIdx;
-	}
 
 	/**
 	 * @return the ilpVar
@@ -89,8 +57,27 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		return ilpVar;
 	}
 
-	public String getGrbVarName() throws GRBException {
-		return getGRBVar().get(GRB.StringAttr.VarName);
+	public String getStringId() {
+		try {
+			return getGRBVar().get(GRB.StringAttr.VarName);
+		} catch (GRBException err) {
+			throw new RuntimeException("Could not retrieve name of the Gurobi variable of assignment.");
+		}
+	}
+
+	@NotNull
+	private String getStorageLockConstraintName() {
+		return "StoreLockConstr_" + getStringId();
+	}
+
+	@NotNull
+	private String getPreOptimizationRangeConstraintName(){
+		return "PreOptimRangeLockConstr_" + getStringId();
+	}
+
+	@NotNull
+	private String getPostOptimizationRangeLockConstraintName(){
+		return "PostOptimRangeLockConstr_" + getStringId();
 	}
 
 	/**
@@ -99,17 +86,6 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	private void setGRBVar(final GRBVar ilpVar) {
 		this.ilpVar = ilpVar;
-	}
-
-//	/**
-//	 * One can set a variable id.
-//	 * This is used for exporting purposes like e.g. by
-//	 * <code>FactorGraphFileBuilder</code>.
-//	 *
-//	 * @param varId
-//	 */
-	public void setVarId( final int varId ) {
-		this.exportVarIdx = varId;
 	}
 
 	/**
@@ -124,15 +100,14 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	public float getCost() {
 		float cost = 0;
 		try {
-			cost = ( float ) getGRBVar().get( GRB.DoubleAttr.Obj );
-		} catch ( final GRBException e ) {
-			System.err.println( "CRITICAL: cost could not be read out of Gurobi ILP!" );
-//			e.printStackTrace();
+			cost = (float) getGRBVar().get(GRB.DoubleAttr.Obj);
+		} catch (final GRBException e) {
+			System.err.println("CRITICAL: cost could not be read out of Gurobi ILP!");
 		}
 		return cost;
 	}
 
-    /**
+	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;
@@ -143,7 +118,8 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 			return previousIsChoosen;
 		}
 		try {
-			long binary_selection_variable_value_rounded = Math.round(getGRBVar().get(GRB.DoubleAttr.X));
+			GRBVar grbVarOfAssignment = getGRBVar();
+			long binary_selection_variable_value_rounded = Math.round(grbVarOfAssignment.get(GRB.DoubleAttr.X));
 			previousIsChoosen = (binary_selection_variable_value_rounded == 1);
 			return previousIsChoosen;
 		} catch (GRBException err) {
@@ -157,37 +133,77 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public abstract void addConstraintsToILP() throws GRBException;
 
-	/**
-	 * Abstract method that will, once implemented, build the constraint
-	 * representations needed to save the FG.
-	 */
-	public abstract List< String > getConstraintsToSave_PASCAL();
-
-	/**
-	 * Adds a list of functions and factors to the FactorGraphFileBuilder.
-	 * This fkt and fac is used to save a FactorGraph describing the
-	 * optimization problem at hand.
-	 */
-	public abstract void addFunctionsAndFactors( FactorGraphFileBuilder_SCALAR fgFile, final List< Integer > regionIds );
-
 	public boolean isGroundTruth() {
-		return isGroundTruth;
+		GRBConstr grbConstr = getGroundTruthConstraint();
+		if (isNull(grbConstr)) {
+			return false; /* no variable was found so this assignment is not forced */
+		}
+
+		Double constraintValue;
+		try {
+			constraintValue = grbConstr.get(GRB.DoubleAttr.RHS);
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		return constraintValue > 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
+	}
+
+	@NotNull
+	private String getGroundTruthConstraintName() {
+		return "GroundTruthConstr_" + getStringId();
 	}
 
 	public boolean isGroundUntruth() {
-		return isGroundUntruth;
+		GRBConstr grbConstr = getGroundTruthConstraint();
+		if (isNull(grbConstr)) {
+			return false; /* no variable was found so this assignment is not forced */
+		}
+
+		Double constraintValue;
+		try {
+			constraintValue = grbConstr.get(GRB.DoubleAttr.RHS);
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		return constraintValue < 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
-	public void setGroundTruth( final boolean groundTruth ) {
-		this.isGroundTruth = groundTruth;
-		this.isGroundUntruth = false;
-		addOrRemoveGroundTruthConstraint( groundTruth );
+	public void setGroundTruth(final boolean targetStateIsTrue) {
+		try {
+			if (targetStateIsTrue) {
+				if (isGroundUntruth()) {
+					removeGroundTruthConstraint();
+				}
+				addGroundTruthConstraint();
+				return;
+			}
+			if (!targetStateIsTrue && isGroundTruth()) {
+				removeGroundTruthConstraint();
+				return;
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
-	public void setGroundUntruth( final boolean groundUntruth ) {
-		this.isGroundTruth = false;
-		this.isGroundUntruth = groundUntruth;
-		addOrRemoveGroundTruthConstraint( groundUntruth );
+	public void setGroundUntruth(final boolean targetStateIsTrue) {
+		try {
+			if (targetStateIsTrue) {
+				if (isGroundTruth()) {
+					removeGroundTruthConstraint();
+				}
+				addGroundUntruthConstraint();
+				return;
+			}
+			if (!targetStateIsTrue && isGroundUntruth()) {
+				removeGroundTruthConstraint();
+				return;
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
 	public void reoptimize() {
@@ -200,26 +216,88 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 		}
 	}
 
-	/**
-	 *
-	 */
-	private void addOrRemoveGroundTruthConstraint(final boolean add) {
-		try {
-			if (add) {
-				final float value = (this.isGroundUntruth) ? 0f : 1f; /* sets whether the assignment will be added as ground-truth or ground-untruth */
+	private void addGroundTruthConstraint() throws GRBException {
+		addConstraint(1.0, getGroundTruthConstraintName());
+	}
 
-				final GRBLinExpr exprGroundTruth = new GRBLinExpr();
-				exprGroundTruth.addTerm(1.0, getGRBVar());
-				constrGroundTruth = ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, value, "AssignmentGtConstraint_" + getGrbVarName());
-			} else {
-				if (constrGroundTruth != null) {
-					ilp.model.remove(constrGroundTruth);
-					constrGroundTruth = null;
-				}
-			}
-		} catch (final GRBException e) {
-			e.printStackTrace();
+	private void addGroundUntruthConstraint() throws GRBException {
+		addConstraint(0.0, getGroundTruthConstraintName());
+	}
+
+	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
+		if (constraintExistsWithName(constraintName)) {
+			return;
 		}
+		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
+		exprGroundTruth.addTerm(1.0, getGRBVar());
+		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
+	}
+
+	private void addFreezeConstraintWithName(String constraintName) {
+		try {
+			if (this.isChoosen()) {
+				addConstraint(1.0, constraintName);
+			} else {
+				addConstraint(0.0, constraintName);
+			}
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private boolean constraintExistsWithName(String constraintName){
+		try {
+			return !isNull(ilp.model.getConstrByName(constraintName));
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void removeGroundTruthConstraint() throws GRBException {
+		removeConstraintWithName(getGroundTruthConstraintName());
+	}
+
+	private void removeConstraintWithName(String constraintName) {
+		GRBConstr constraint = getConstraint(constraintName);
+		if (!isNull(constraint)) {
+			try {
+				ilp.model.remove(constraint);
+			} catch (GRBException e) {
+				throw new RuntimeException(e);
+			}
+		}
+	}
+
+	public void addStorageLockConstraint() {
+		addFreezeConstraintWithName(getStorageLockConstraintName());
+	}
+
+	public void removeStorageLockConstraint() {
+		removeConstraintWithName(getStorageLockConstraintName());
+	}
+
+	public boolean hasPreOptimizationRangeLockConstraint() {
+		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
+	}
+
+	public void addPreOptimizationRangeLockConstraint() {
+		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
+	}
+
+	public void removePreOptimizationRangeLockConstraint() {
+		removeConstraintWithName(getPreOptimizationRangeConstraintName());
+	}
+
+	public void addPostOptimizationRangeLockConstraint() {
+		addFreezeConstraintWithName(getPostOptimizationRangeLockConstraintName());
+	}
+
+	public void removePostOptimizationRangeLockConstraint() {
+		removeConstraintWithName(getPostOptimizationRangeLockConstraintName());
+	}
+
+	public boolean hasPostOptimizationRangeLockConstraint() {
+		return constraintExistsWithName(getPostOptimizationRangeLockConstraintName());
 	}
 
 	/**
@@ -227,7 +305,17 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 * @return null if not set, otherwise the GRBConstr.
 	 */
 	public GRBConstr getGroundTruthConstraint() {
-		return constrGroundTruth;
+		return getConstraint(getGroundTruthConstraintName());
+	}
+
+	private GRBConstr getConstraint(String constraintName) {
+		GRBConstr grbConstr;
+		try {
+			grbConstr = ilp.model.getConstrByName(constraintName);
+		} catch (GRBException e) {
+			return null;
+		}
+		return grbConstr;
 	}
 
 	/**
@@ -243,5 +331,9 @@ public abstract class AbstractAssignment< H extends Hypothesis< ? > > {
 	 */
 	public boolean isPruned() {
 		return isPruned;
+	}
+
+	public int getSourceTimeStep() {
+		return sourceTimeStep;
 	}
 }

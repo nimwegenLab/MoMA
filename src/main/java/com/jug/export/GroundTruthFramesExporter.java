@@ -1,11 +1,11 @@
 package com.jug.export;
 
+import com.jug.config.ConfigurationManager;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
-
-import static com.jug.MoMA.IMAGE_PATH;
 
 /**
  * Exporter for the list of frames that were selected as ground truth frames.
@@ -15,9 +15,11 @@ import static com.jug.MoMA.IMAGE_PATH;
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
     private Supplier<String> defaultFilenameDecorationSupplier;
+    private ConfigurationManager configurationManager;
 
-    public GroundTruthFramesExporter(Supplier<String> defaultFilenameDecorationSupplier) {
+    public GroundTruthFramesExporter(Supplier<String> defaultFilenameDecorationSupplier, ConfigurationManager configurationManager) {
         this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
+        this.configurationManager = configurationManager;
         listOfFrameNumbers = new ArrayList<>();
     }
 
@@ -74,7 +76,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
             String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks__" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
-            writeImagePaths(out, IMAGE_PATH, cellMaskImagePath);
+            writeImagePaths(out, configurationManager.getInputImagePath(), cellMaskImagePath);
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

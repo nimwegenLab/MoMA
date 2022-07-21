@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.GrowthlaneFrame;
+import com.jug.exceptions.GuiInteractionException;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -30,6 +31,7 @@ import java.util.List;
 
 import static com.jug.util.ArgbDrawingUtils.drawOptionalSegmentation;
 import static com.jug.util.ArgbDrawingUtils.drawSegments;
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
@@ -44,6 +46,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     protected EventListenerList listenerList = new EventListenerList();
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
     private final LabelEditorDialog labelEditorDialog;
+    private IDialogManager dialogManager;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -60,11 +63,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, final int myWidth, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h) {
         super();
 
         this.mmgui = mmgui;
         this.labelEditorDialog = labelEditorDialog;
+        this.dialogManager = dialogManager;
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -118,22 +122,30 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
     @Override
     public void paintComponent(final Graphics g) {
-        if (glf == null)
+        if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         try {
-            if (projector != null) {
+            if (!isNull(projector)) {
                 projector.map();
                 LoopBuilder.setImages(screenImage, screenImageUnaltered).forEachPixel((src, dest) -> dest.set(src)); /* copy original image data, which will act as source for calculating overlay pixel values */
             }
 
             if (showSegmentationAnnotations) {
                 final int t = glf.getParent().getFrames().indexOf(glf);
-                if (glf.getParent().getIlp() != null) {
+                if (glf.getParent().ilpIsReady()) {
                     long xOffset = view.min(0);
                     long yOffset = view.min(1);
-                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-                    drawSegments(screenImage, screenImageUnaltered, xOffset, yOffset, glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage,
+                            screenImageUnaltered,
+                            xOffset,
+                            yOffset,
+                            glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage,
+                            screenImageUnaltered,
+                            xOffset,
+                            yOffset,
+                            glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 
@@ -163,7 +175,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     void drawString(Graphics g, String text, int x, int y) {
         for (String line : text.split("\n")) {
             g.setFont(textFont);
-            g.drawString(line, x-1, y += g.getFontMetrics().getHeight());
+            g.drawString(line, x - 1, y += g.getFontMetrics().getHeight());
         }
     }
 
@@ -178,21 +190,21 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private Color optimalHypothesisTextColor = Color.GREEN.darker();
     private Color noHypothesisTextColor = Color.RED.brighter();
 
-    private Color getStringColor(){
+    private Color getStringColor() {
         Hypothesis<AdvancedComponent<FloatType>> optimalHyp = getHoveredOptimalHypothesis();
         Hypothesis<AdvancedComponent<FloatType>> optionalHyp = getHoveredOptionalHypothesis();
 
-        if (optimalHyp != null && optionalHyp == null) {
+        if (!isNull(optimalHyp) && isNull(optionalHyp)) {
             return optimalHypothesisTextColor;
         }
-        if (optimalHyp == null && optionalHyp != null) {
+        if (isNull(optimalHyp) && !isNull(optionalHyp)) {
             return optionalHypothesisTextColor;
         }
-        if (optimalHyp != null && optionalHyp != null) {
-            if(optionalHyp == optimalHyp){
+        if (!isNull(optimalHyp) && !isNull(optionalHyp)) {
+            if (optionalHyp == optimalHyp) {
                 return optimalHypothesisTextColor;
             }
-            if(optionalHyp != optimalHyp){
+            if (optionalHyp != optimalHyp) {
                 return optionalHypothesisTextColor;
             }
         }
@@ -202,17 +214,17 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private DecimalFormat costFormat = new DecimalFormat(".##");
 
     private void updateHypothesisInfoTooltip() {
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             if (getHoveredOptionalHypothesis() != null) {
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
                 componentInfoString = "C:" + costFormat.format(optionalCost) +
-                                    "\nT:" + limits.getA() +
-                                    "\nB:" + limits.getB() +
-                                    "\nL:" + (limits.getB() - limits.getA()) +
-                                    "\nA:" + component.size() +
-                                    "\nN:" + component.getNodeLevel();
+                        "\nT:" + limits.getA() +
+                        "\nB:" + limits.getB() +
+                        "\nL:" + (limits.getB() - limits.getA()) +
+                        "\nA:" + component.size() +
+                        "\nN:" + component.getNodeLevel();
             } else {
                 componentInfoString = "---";
             }
@@ -234,7 +246,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private void updateHoveredOptimalHypothesis() {
         hoveredOptimalHypothesis = null;
         final int t = glf.getTime();
-        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             hoveredOptimalHypothesis = glf.getParent().getIlp().getOptimalSegmentationAtLocation(t, this.mousePosY);
         }
     }
@@ -256,9 +268,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
-        if (glf == null)
+        if (isNull(glf)) {
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
-
+        }
+        if (hypothesesAtHoverPosition.isEmpty()) {
+            return; /* no entries in the list of hovered hypothesis that we could scroll through */
+        }
         int increment = e.getWheelRotation();
 
         if (indexOfCurrentHoveredHypothesis + increment >= getHypothesesAtHoverPosition().size()) {
@@ -290,7 +305,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
-        if (glf == null)
+        if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
         final int t = glf.getTime();
@@ -303,7 +318,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
-            mmgui.focusOnSliderTime();
+            mmgui.requestFocusOnTimeStepSlider();
             return;
         }
 
@@ -314,26 +329,18 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2avoid = ilp.getConflictingChildSegments(t, selectedParentHypothesis);
             hyps2avoid.add(selectedParentHypothesis); /* add hypothesis of parent segment itself */
 
-            if (hyps2avoid == null) return;
+            if (isNull(hyps2avoid)) return;
 
-            try {
-                if (!selectedParentHypothesis.isIgnored) {
-                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.removeSegmentConstraints(hyp2avoid);
-                        }
-                        ilp.addSegmentNotInSolutionConstraint(hyp2avoid);
-                    }
-                } else {
-                    for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                        if (hyp2avoid.getSegmentSpecificConstraint() != null) {
-                            ilp.removeSegmentConstraints(hyp2avoid);
-                        }
-                    }
+            if (!selectedParentHypothesis.isForceIgnored()) {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
+                    hyp2avoid.setIsForceIgnored(true);
                 }
-            } catch (final GRBException e1) {
-                e1.printStackTrace();
+            } else {
+                for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
+                    ilp.removeSegmentConstraints(hyp2avoid);
+                }
             }
+
             mmgui.dataToDisplayChanged();
             fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
             runIlpAndFocusSlider(ilp);
@@ -343,9 +350,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
-            Hypothesis<AdvancedComponent<FloatType>> hyp = getSelectedHypothesis();
-            if (hyp == null) return;
-            hyp.setPruneRoot(!hyp.isPruneRoot(), ilp);
+            if (isNull(getSelectedHypothesis())) return;
+            try {
+                getSelectedHypothesis().toggleIsPrunedRoot();
+            } catch (GuiInteractionException exception) {
+                dialogManager.showUserInteractionError(exception);
+            }
             mmgui.dataToDisplayChanged();
             return; // avoid re-optimization!
         }
@@ -353,9 +363,9 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         // simple CLICK: ADD/REMOVE ENFORCING CONSTRAINT HYPOTHESIS
         // -------------------------
         Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
-        if (hyp2add == null) return; /* failed to get a non-null hypothesis, so return */
+        if (isNull(hyp2add)) return; /* failed to get a non-null hypothesis, so return */
 
-        if (hyp2add.isForced) {
+        if (hyp2add.isForced()) {
             ilp.removeSegmentConstraints(hyp2add);
         } else {
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getOptimalSegmentationsInConflict(t, hyp2add);
@@ -364,7 +374,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 if (hyp2add.getSegmentSpecificConstraint() != null) {
                     ilp.removeSegmentConstraints(hyp2add);
                 }
-                ilp.addSegmentInSolutionConstraint(hyp2add, hyps2remove);
+                ilp.addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }
@@ -384,7 +394,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         }
         final IlpThread thread = new IlpThread();
         thread.start();
-        mmgui.focusOnSliderTime();
+        mmgui.requestFocusOnTimeStepSlider();
     }
 
     private Hypothesis<AdvancedComponent<FloatType>> getSelectedHypothesis() {
@@ -396,17 +406,17 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (!this.isMouseOver) {
             hypothesesAtHoverPosition = new ArrayList<>();
             indexOfCurrentHoveredHypothesis = -1;
-        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().getIlp() != null) {
+        } else if (!this.isDragging && this.isMouseOver && glf != null && glf.getParent().ilpIsReady()) {
             List<Hypothesis<AdvancedComponent<FloatType>>> newHypothesesAtHoverPosition = glf.getParent().getIlp().getSegmentsAtLocation(t, this.mousePosY);
             if (!hypothesesAtHoverPosition.equals(newHypothesesAtHoverPosition)) {
                 hypothesesAtHoverPosition = newHypothesesAtHoverPosition;
                 GrowthlaneTrackingILP ilp = glf.getParent().getIlp();
 
-                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced) // FIRST TRY TO GET A FORCED HYPOTHESIS
+                selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForced()) // FIRST TRY TO GET A FORCED HYPOTHESIS
                         .findFirst()
                         .orElse(null);
                 if (selectedHypothesis == null) {
-                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isIgnored) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
+                    selectedHypothesis = hypothesesAtHoverPosition.stream().filter((hyp) -> hyp.isForceIgnored()) // SECOND TRY TO GET AN IGNORED HYPOTHESIS
                             .findFirst()
                             .orElse(null);
                 }
@@ -493,7 +503,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.isDragging = false;
         repaint();
-        mmgui.focusOnSliderTime();
+        mmgui.requestFocusOnTimeStepSlider();
     }
 
     /**

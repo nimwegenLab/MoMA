@@ -62,11 +62,11 @@ public class ExplorationTestHelpers {
             Collections.addAll(args, additionalArgs);
         }
 
-        if(headless){
-            Collections.addAll(args, new String[]{"-headless"});
+        if (headless) {
+            Collections.addAll(args, "-headless");
         }
 
-        if (outputPath != null){
+        if (outputPath != null) {
             createDirectory(outputPath);
         }
         MoMA.main(args.toArray(new String[0]));

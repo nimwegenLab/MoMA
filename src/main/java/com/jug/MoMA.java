@@ -104,7 +104,7 @@ public class MoMA {
 			dic.getFilePaths().setPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
-			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputFolder());
+			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			configurationManager.setMinTime(datasetProperties.getMinTime());

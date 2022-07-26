@@ -8,7 +8,11 @@ import java.nio.file.Paths;
 
 public class CommandLineArgumentsParser {
     private boolean runningAsFijiPlugin;
-    private Path inputFolder;
+
+    /**
+     * This can be a either a path to the input TIFF file or the folder containing the TIFF-file.
+     */
+    private Path inputImagePath;
     /**
      * Property file provided by user through as command-line option.
      */
@@ -139,7 +143,7 @@ public class CommandLineArgumentsParser {
         }
 
         if ( cmd.hasOption( "i" ) ) {
-            inputFolder = Paths.get(cmd.getOptionValue("i"));
+            inputImagePath = Paths.get(cmd.getOptionValue("i"));
 			/*
 			if ( !inputFolder.isDirectory() ) {
 				System.out.println( "Error: Input folder is not a directory!" );
@@ -149,7 +153,7 @@ public class CommandLineArgumentsParser {
 					return;
 				}
 			}*/
-            if ( !Files.isReadable(inputFolder) ) {
+            if ( !Files.isReadable(inputImagePath) ) {
                 System.out.println( "Error: Input folder cannot be read!" );
                 if (!runningAsFijiPlugin) {
                     System.exit( 2 );
@@ -161,7 +165,7 @@ public class CommandLineArgumentsParser {
 
         Path outputFolder;
         if ( !cmd.hasOption( "o" ) ) {
-            if ( inputFolder == null ) {
+            if ( inputImagePath == null ) {
                 System.out.println( "Error: Input folder not specified. Please use the -i argument to do so and check your command line arguments." );
                 if (!runningAsFijiPlugin) {
                     System.exit( 3 );
@@ -169,7 +173,7 @@ public class CommandLineArgumentsParser {
                     return;
                 }
             }
-            outputFolder = inputFolder;
+            outputFolder = inputImagePath;
             outputPath = outputFolder.toAbsolutePath();
         } else {
             outputFolder = Paths.get( cmd.getOptionValue( "o" ) );
@@ -206,8 +210,8 @@ public class CommandLineArgumentsParser {
         }
     }
 
-    public Path getInputFolder() {
-        return inputFolder;
+    public Path getInputImagePath() {
+        return inputImagePath;
     }
 
     public boolean getIfRunningHeadless() {

@@ -75,8 +75,9 @@ public class ExploreResultLoading {
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
         Integer tmin = 1;
         Integer tmax = 10;
+        String analysisName = "test_analysis";
         createEmptyDirectory(outputPath);
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-trackonly"});
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading() {

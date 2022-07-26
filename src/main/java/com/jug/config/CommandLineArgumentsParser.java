@@ -29,6 +29,7 @@ public class CommandLineArgumentsParser {
 
     private boolean reloadingData;
     private boolean trackOnly;
+    private String analysisName;
 
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
@@ -69,6 +70,9 @@ public class CommandLineArgumentsParser {
         final Option outfolder = new Option( "o", "outfolder", true, "folder to write preprocessed data to (equals infolder if not given)" );
         outfolder.setRequired( false );
 
+        final Option analysisNameOption = new Option( "a", "analysis", true, "name of the analysis; name will be prepended to the corresponding output folder; mutually exclusive with option -o/-outfolder" );
+        analysisNameOption.setRequired( false );
+
         final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
         userProps.setRequired( false );
 
@@ -81,6 +85,7 @@ public class CommandLineArgumentsParser {
         options.addOption(timeLast);
         options.addOption(infolder);
         options.addOption(outfolder);
+        options.addOption(analysisNameOption);
         options.addOption(userProps);
         // get the commands parsed
         CommandLine cmd = null;
@@ -144,15 +149,6 @@ public class CommandLineArgumentsParser {
 
         if ( cmd.hasOption( "i" ) ) {
             inputImagePath = Paths.get(cmd.getOptionValue("i"));
-			/*
-			if ( !inputFolder.isDirectory() ) {
-				System.out.println( "Error: Input folder is not a directory!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 2 );
-				} else {
-					return;
-				}
-			}*/
             if ( !Files.isReadable(inputImagePath) ) {
                 System.out.println( "Error: Input folder cannot be read!" );
                 if (!runningAsFijiPlugin) {
@@ -163,38 +159,39 @@ public class CommandLineArgumentsParser {
             }
         }
 
+        if(!cmd.hasOption("a") && !cmd.hasOption("outfolder")) {
+            System.out.println("Error: You must specify option 'analysis' or 'outfolder' (they are mutually exclusive).");
+            System.exit(-1);
+        }
+        if(cmd.hasOption("analysis") && cmd.hasOption("outfolder")){
+            System.out.println("Error: Options 'analysis' and 'outfolder' are mutually exclusive.");
+            System.exit(-1);
+        }
+
+        if(cmd.hasOption("analysis")){
+            analysisName = cmd.getOptionValue("analysis");
+            outputPath = Paths.get(getInputDirectory().normalize().toString(), getAnalysisName());
+        }
+
         Path outputFolder;
-        if ( !cmd.hasOption( "o" ) ) {
-            if ( inputImagePath == null ) {
-                System.out.println( "Error: Input folder not specified. Please use the -i argument to do so and check your command line arguments." );
+        if (cmd.hasOption("o")) {
+            outputFolder = Paths.get(cmd.getOptionValue("o"));
+            if (!Files.isDirectory(outputFolder)) {
+                System.out.println("Error: Output folder is not a directory.");
                 if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
+                    System.exit(3);
                 } else {
                     return;
                 }
             }
-            outputFolder = inputImagePath;
-            outputPath = outputFolder.toAbsolutePath();
-        } else {
-            outputFolder = Paths.get( cmd.getOptionValue( "o" ) );
-
-            if ( !Files.isDirectory(outputFolder) ) {
-                System.out.println( "Error: Output folder is not a directory." );
+            if (!Files.isWritable(outputFolder)) {
+                System.out.println("Error: Output folder cannot be written to.");
                 if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
+                    System.exit(3);
                 } else {
                     return;
                 }
             }
-            if ( !Files.isWritable(outputFolder) ) {
-                System.out.println( "Error: Output folder cannot be written to." );
-                if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
-                } else {
-                    return;
-                }
-            }
-
             outputPath = outputFolder.toAbsolutePath();
         }
 
@@ -208,6 +205,10 @@ public class CommandLineArgumentsParser {
         if ( cmd.hasOption( "tmax" ) ) {
             userDefinedMaxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
         }
+    }
+
+    public Path getInputDirectory() {
+        return inputImagePath.getParent();
     }
 
     public Path getInputImagePath() {
@@ -246,5 +247,9 @@ public class CommandLineArgumentsParser {
 
     public String getReloadFolderPath() {
         return reloadFolderPath;
+    }
+
+    public String getAnalysisName() {
+        return analysisName;
     }
 }

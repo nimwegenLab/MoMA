@@ -56,6 +56,10 @@ public class GlFileManager {
         return outputPath;
     }
 
+    private void makeOutputDirectory() {
+        getOutputPath().toFile().mkdirs();
+    }
+
     public String getModelChecksum() {
         return calculateModelChecksum(modelFile);
     }
@@ -80,6 +84,7 @@ public class GlFileManager {
     }
 
     public void saveProbabilityImage(Img<FloatType> probabilityMap) {
+        makeOutputDirectory();
         ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
         IJ.saveAsTiff(tmp_image, getProbabilityImageFilePath());
     }

@@ -7,7 +7,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
 import com.jug.datahandling.VersionCompatibilityChecker;
@@ -28,8 +28,6 @@ import org.scijava.convert.ConvertService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -397,13 +395,13 @@ public class PseudoDic {
         return commandLineArgumentParser;
     }
 
-    FilePaths filePaths;
+    GlFileManager glFileManager;
 
-    public FilePaths getFilePaths() {
-        if (isNull(filePaths)) {
-            filePaths = new FilePaths();
+    public GlFileManager getFilePaths() {
+        if (isNull(glFileManager)) {
+            glFileManager = new GlFileManager();
         }
-        return filePaths;
+        return glFileManager;
     }
 
     public ResultExporterInterface getMMPropertiesExporter() {

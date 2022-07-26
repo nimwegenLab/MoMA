@@ -4,7 +4,7 @@ import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.commands.ICommand;
 import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.HtmlOverviewExporter;
 import com.jug.export.ResultExporter;
@@ -53,7 +53,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final List<SegmentationEditorPanel> segmentationEditorPanels = new ArrayList<>();
     private final boolean showGroundTruthExportFunctionality;
     private ConfigurationManager configurationManager;
-    private FilePaths filePaths;
+    private GlFileManager glFileManager;
     private LoggerWindow loggerWindow;
     private final IImageProvider imageProvider;
     public JSlider sliderGL;
@@ -98,7 +98,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    IImageProvider imageProvider,
                    boolean showGroundTruthExportFunctionality,
                    ConfigurationManager configurationManager,
-                   FilePaths filePaths,
+                   GlFileManager glFileManager,
                    LoggerWindow loggerWindow,
                    IDialogManager dialogManager,
                    PanelWithSliders panelWithSliders) {
@@ -110,7 +110,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.imageProvider = imageProvider;
         this.showGroundTruthExportFunctionality = showGroundTruthExportFunctionality;
         this.configurationManager = configurationManager;
-        this.filePaths = filePaths;
+        this.glFileManager = glFileManager;
         this.loggerWindow = loggerWindow;
 
         this.dialogManager = dialogManager;
@@ -642,7 +642,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
                 final File file = OsDependentFileChooser.showLoadFileChooser(
                         self,
-                        filePaths.getOutputPath().toString(),
+                        glFileManager.getOutputPath().toString(),
                         "Choose tracking to load...",
                         new ExtensionFileFilter("moma", "Curated MoMA tracking"));
                 System.out.println("File to load tracking from: " + file.getAbsolutePath());
@@ -668,7 +668,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (ilp != null) { // && ilp.getStatus() != GrowthlaneTrackingILP.OPTIMIZATION_NEVER_PERFORMED
                 final File file = OsDependentFileChooser.showSaveFileChooser(
                         this,
-                        filePaths.getOutputPath().toString(),
+                        glFileManager.getOutputPath().toString(),
                         "Save current tracking to...",
                         new ExtensionFileFilter("moma", "Curated MOMA tracking"));
                 System.out.println("File to save tracking to: " + file.getAbsolutePath());
@@ -928,7 +928,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
             folderToUse = OsDependentFileChooser.showSaveFolderChooser(this,
-                    filePaths.getOutputPath().toString(),
+                    glFileManager.getOutputPath().toString(),
                     "Choose export folder...");
             if (folderToUse == null) {
                 JOptionPane.showMessageDialog(
@@ -939,7 +939,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 return null;
             }
         } else { /* if running headless: use default output path */
-            folderToUse = filePaths.getOutputPath().toFile();
+            folderToUse = glFileManager.getOutputPath().toFile();
         }
         return folderToUse;
     }
@@ -972,7 +972,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int startFrame = 1;
         int endFrame = panelWithSliders.getTimeStepSliderMaximum() + 1;
 
-        File file = new File(filePaths.getOutputPath().toString() + "/index.html");
+        File file = new File(glFileManager.getOutputPath().toString() + "/index.html");
 
         if (!configurationManager.getIfRunningHeadless()) {
             final JFileChooser fc = new JFileChooser();
@@ -1077,9 +1077,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             ilp.runImmediately();
             if (configurationManager.getIsReloading()) {
                 try {
-                    ilp.loadPruneRoots(filePaths.getDotMomaFilePath().toFile());
+                    ilp.loadPruneRoots(glFileManager.getDotMomaFilePath().toFile());
                 } catch (IOException e) {
-                    throw new RuntimeException("Error: Could load prune-roots from file: " + filePaths.getDotMomaFilePath(), e);
+                    throw new RuntimeException("Error: Could load prune-roots from file: " + glFileManager.getDotMomaFilePath(), e);
                 }
             }
             System.out.println("...done!");

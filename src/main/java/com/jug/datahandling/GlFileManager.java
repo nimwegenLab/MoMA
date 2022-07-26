@@ -1,16 +1,23 @@
 package com.jug.datahandling;
 
 import com.jug.util.Hash;
+import ij.IJ;
+import ij.ImagePlus;
+import net.imglib2.img.Img;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
-public class FilePaths {
+public class GlFileManager {
     Path propertiesFile;
     private Path inputImagePath;
     private Path outputPath;
@@ -70,6 +77,11 @@ public class FilePaths {
         String outputFolderPath = getOutputPath().toString();
         String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
         return processedImageFileName;
+    }
+
+    public void saveProbabilityImage(Img<FloatType> probabilityMap) {
+        ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
+        IJ.saveAsTiff(tmp_image, getProbabilityImageFilePath());
     }
 
     public Path getGurobiMpsFilePath() {

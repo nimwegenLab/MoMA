@@ -1,7 +1,7 @@
 package com.jug;
 
 import com.jug.config.IConfiguration;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.GlFileManager;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
@@ -14,7 +14,6 @@ import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.io.IOException;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -27,7 +26,7 @@ public class Growthlane {
 	private GrowthlaneTrackingILP ilp;
 	private IDialogManager dialogManager;
 	private IConfiguration configurationManager;
-	private FilePaths filePaths;
+	private GlFileManager glFileManager;
 
 	/**
 	 * @return the frames
@@ -46,10 +45,10 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, FilePaths filePaths) {
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, GlFileManager glFileManager) {
 		this.dialogManager = dialogManager;
 		this.configurationManager = configurationManager;
-		this.filePaths = filePaths;
+		this.glFileManager = glFileManager;
 		this.frames = new ConcurrentArrayList<>();
 	}
 
@@ -92,10 +91,10 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = null;
-		if (!isNull(filePaths.getGurobiMpsFilePath()))
+		if (!isNull(glFileManager.getGurobiMpsFilePath()))
 			try {
 				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
-				GRBModel grbModel = new GRBModel(env, filePaths.getGurobiMpsFilePath().toString());
+				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
 				e.printStackTrace();

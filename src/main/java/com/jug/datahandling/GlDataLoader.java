@@ -31,20 +31,20 @@ public class GlDataLoader {
     private IImageProvider imageProvider;
     private ComponentForestGenerator componentForestGenerator;
     private IDialogManager dialogManager;
-    private FilePaths filePaths;
+    private GlFileManager glFileManager;
 
     public GlDataLoader(UnetProcessor unetProcessor,
                         ConfigurationManager configurationManager,
                         IImageProvider imageProvider,
                         ComponentForestGenerator componentForestGenerator,
                         IDialogManager dialogManager,
-                        FilePaths filePaths) {
+                        GlFileManager glFileManager) {
         this.unetProcessor = unetProcessor;
         this.configurationManager = configurationManager;
         this.imageProvider = imageProvider;
         this.componentForestGenerator = componentForestGenerator;
         this.dialogManager = dialogManager;
-        this.filePaths = filePaths;
+        this.glFileManager = glFileManager;
     }
 
     /**
@@ -82,7 +82,7 @@ public class GlDataLoader {
 
     @NotNull
     private Growthlane getGrowthlane() {
-        Growthlane newGl = new Growthlane(dialogManager, configurationManager, filePaths);
+        Growthlane newGl = new Growthlane(dialogManager, configurationManager, glFileManager);
         for (long frameIdx = 0; frameIdx < imageProvider.getImgRaw().dimension(2); frameIdx++) {
             GrowthlaneFrame currentFrame = new GrowthlaneFrame((int) frameIdx, componentForestGenerator, configurationManager, imageProvider);
             final IntervalView<FloatType> ivFrame = Views.hyperSlice(imageProvider.getImgRaw(), 2, frameIdx);
@@ -141,7 +141,7 @@ public class GlDataLoader {
     }
 
     private Img<FloatType> getProbabilityImage() {
-        String processedImageFileName = filePaths.getProbabilityImageFilePath();
+        String processedImageFileName = glFileManager.getProbabilityImageFilePath();
 
         /**
          *  create or load probability maps
@@ -152,8 +152,7 @@ public class GlDataLoader {
             probabilityMap = ImageJFunctions.convertFloat(imp);
         } else {
             probabilityMap = unetProcessor.process(imageProvider.getImgRaw());
-            ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
-            IJ.saveAsTiff(tmp_image, processedImageFileName);
+            glFileManager.saveProbabilityImage(probabilityMap);
         }
         return probabilityMap;
     }

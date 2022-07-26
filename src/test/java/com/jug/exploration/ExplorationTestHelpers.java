@@ -3,14 +3,14 @@ package com.jug.exploration;
 import com.jug.MoMA;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
-import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static com.jug.util.JavaUtils.concatenateWithCollection;
 import static com.jug.util.io.FileUtils.*;
+import static java.util.Objects.isNull;
 
 /**
  * This class provides adapter methods to enable testing MoMA from within test-code. This includes an adapter to start
@@ -30,6 +30,13 @@ public class ExplorationTestHelpers {
         startMoma(headless, inputPath, outputPath, tmin, tmax, deleteProbabilityMaps, null);
     }
 
+    public static <T> void addToArgsIfNotNull(T argVal, String argName, List<String> args) {
+        if (!isNull(argVal)) {
+            args.add("-" + argName);
+            args.add(argVal.toString());
+        }
+    }
+
     /**
      * Method to start MoMA with command-line arguments from test-code.
      * @param headless start MoMA in headless mode, if true; corresponds to command line argument -headless
@@ -45,37 +52,24 @@ public class ExplorationTestHelpers {
             removeProbabilityMaps(Paths.get(inputPath));
         }
 
-        String[] args;
-
-        if (tmin != null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString(), "-tmax", tmax.toString()};
-        } else if (tmin != null && tmax == null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmin", tmin.toString()};
-        } else if (tmin == null && tmax != null && outputPath != null) {
-            args = new String[]{"-i", inputPath, "-o", outputPath, "-tmax", tmax.toString()};
-        } else if (tmin == null && tmax != null) {
-            args = new String[]{"-i", inputPath, "-tmax", tmax.toString()};
-        } else if (outputPath != null) { // both tmin and tmax are null
-            args = new String[]{"-i", inputPath, "-o", outputPath};
-        } else if (inputPath != null) {
-            args = new String[]{"-i", inputPath};
-        } else {
-            args = new String[]{};
-        }
+        List<String> args = new ArrayList<>();
+        addToArgsIfNotNull(inputPath, "i", args);
+        addToArgsIfNotNull(outputPath, "o", args);
+        addToArgsIfNotNull(tmin, "tmin", args);
+        addToArgsIfNotNull(tmax, "tmax", args);
 
         if (additionalArgs != null) {
-            args = concatenateWithCollection(args, additionalArgs);
+            Collections.addAll(args, additionalArgs);
+        }
+
+        if(headless){
+            Collections.addAll(args, new String[]{"-headless"});
         }
 
         if (outputPath != null){
             createDirectory(outputPath);
         }
-
-//        MoMA.HEADLESS = headless;
-        if(headless){
-            args = concatenateWithCollection(args, new String[]{"-headless"});
-        }
-        MoMA.main(args);
+        MoMA.main(args.toArray(new String[0]));
     }
 
     /**

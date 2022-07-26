@@ -88,6 +88,7 @@ public class MoMA {
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
+		dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {

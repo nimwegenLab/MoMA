@@ -24,6 +24,7 @@ public class GlFileManager {
     private String directoryPath;
     private String modelFile;
     private Path gurobiMpsFilePath;
+    private String analysisName;
 
     public void setLoadingDirectoryPath(String directoryPath) {
         this.directoryPath = directoryPath;
@@ -31,6 +32,14 @@ public class GlFileManager {
         outputPath = Paths.get(this.directoryPath);
         Files.exists(propertiesFile);
         gurobiMpsFilePath = Paths.get(this.directoryPath, "gurobi_model.mps");
+    }
+
+    public void setAnalysisName(String analysisName) {
+        this.analysisName = analysisName;
+    }
+
+    public String getAnalysisName() {
+        return analysisName;
     }
 
     public void setPropertiesFile(Path propertiesFile) {
@@ -42,6 +51,10 @@ public class GlFileManager {
 
     public void setInputImagePath(Path inputImagePath) {
         this.inputImagePath = inputImagePath;
+    }
+
+    public Path getInputImageParentDirectory() {
+        return getInputImagePath().getParent();
     }
 
     public Path getInputImagePath() {
@@ -56,8 +69,18 @@ public class GlFileManager {
         return outputPath;
     }
 
-    private void makeOutputDirectory() {
-        getOutputPath().toFile().mkdirs();
+    public Path getTrackingDataOutputPath() {
+        Path path = Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__track_data");
+        return path;
+    }
+
+    public Path getExportOutputPath() {
+        Path path = Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__export_data");
+        return path;
+    }
+
+    private void makeTrackingDataOutputDirectory() {
+        getTrackingDataOutputPath().toFile().mkdirs();
     }
 
     public String getModelChecksum() {
@@ -75,16 +98,22 @@ public class GlFileManager {
 
     @NotNull
     public String getProbabilityImageFilePath() {
+        String filename = getInputFileName();
         String checksum = getModelChecksum();
-        File file = new File(getInputImagePath().toString());
-        String filename = removeExtension(file.getName());
-        String outputFolderPath = getOutputPath().toString();
+        Path outputFolderPath = getTrackingDataOutputPath();
         String processedImageFileName = outputFolderPath + "/" + filename + "__model_" + checksum + ".tif";
         return processedImageFileName;
     }
 
+    @NotNull
+    private String getInputFileName() {
+        File file = new File(getInputImagePath().toString());
+        String filename = removeExtension(file.getName());
+        return filename;
+    }
+
     public void saveProbabilityImage(Img<FloatType> probabilityMap) {
-        makeOutputDirectory();
+        makeTrackingDataOutputDirectory();
         ImagePlus tmp_image = ImageJFunctions.wrap(probabilityMap, "probability_maps");
         IJ.saveAsTiff(tmp_image, getProbabilityImageFilePath());
     }

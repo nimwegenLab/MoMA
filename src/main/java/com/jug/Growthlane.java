@@ -150,4 +150,8 @@ public class Growthlane {
 			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
 	}
+
+	public int getTimeStepMaximum() {
+		return getFrames().size() - 1;
+	}
 }

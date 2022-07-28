@@ -23,7 +23,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     }
 
     public int getTimeStepToDisplay() {
-        return momaModel.getCurrentTime() + sourceTimeStepOffset;
+        return momaModel.getCurrentTimeOfCurrentGl() + sourceTimeStepOffset;
     }
 
     private void addAssignmentView(AssignmentsEditorViewer assignmentView) {
@@ -67,7 +67,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     private boolean currentTimeStepIsValid() {
         int timeStepToDisplay = getTimeStepToDisplay();
-        boolean timeStepIsInvalid = timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximum();
+        boolean timeStepIsInvalid = timeStepToDisplay < 0 || timeStepToDisplay > momaModel.getTimeStepMaximumOfCurrentGl();
         return !timeStepIsInvalid;
     }
 

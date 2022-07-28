@@ -253,7 +253,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private int timeStepToDisplay() {
-        return momaModel.getCurrentTime() + this.timeStepOffset;
+        return momaModel.getCurrentTimeOfCurrentGl() + this.timeStepOffset;
     }
 
     @Override
@@ -313,7 +313,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private boolean currentTimeStepIsValid() {
-        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximum();
+        boolean timeStepIsInvalid = timeStepToDisplay() < 0 || timeStepToDisplay() > momaModel.getTimeStepMaximumOfCurrentGl();
         return !timeStepIsInvalid;
     }
 

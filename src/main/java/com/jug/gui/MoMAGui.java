@@ -852,7 +852,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             model.getCurrentGL().generateILP(null);
         } else {
             model.getCurrentGL().generateILP(
-                    new DialogProgress(this, "Building tracking model...", model.getTimeStepMaximum()));
+                    new DialogProgress(this, "Building tracking model...", model.getTimeStepMaximumOfCurrentGl()));
         }
     }
 

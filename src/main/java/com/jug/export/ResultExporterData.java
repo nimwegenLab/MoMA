@@ -1,5 +1,6 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.GrowthlaneTrackingILP;
 
@@ -12,11 +13,11 @@ public class ResultExporterData {
     private IGRBModelAdapter ilpModel;
     private GrowthlaneTrackingILP growthlaneTrackingILP;
 
-    public ResultExporterData(File outputFolder, List<SegmentRecord> cellTrackStartingPoints, IGRBModelAdapter ilpModel, GrowthlaneTrackingILP growthlaneTrackingILP) {
+    public ResultExporterData(Growthlane gl, File outputFolder) {
         this.outputFolder = outputFolder;
-        this.cellTrackStartingPoints = cellTrackStartingPoints;
-        this.ilpModel = ilpModel;
-        this.growthlaneTrackingILP = growthlaneTrackingILP;
+        this.cellTrackStartingPoints = gl.getCellTrackStartingPoints();
+        this.growthlaneTrackingILP = gl.getIlp();
+        this.ilpModel = this.growthlaneTrackingILP.model;
     }
 
     public File getOutputFolder() {

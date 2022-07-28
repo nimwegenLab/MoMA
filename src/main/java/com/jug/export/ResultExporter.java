@@ -14,10 +14,9 @@ public class ResultExporter {
         this.exporters = exporters;
     }
 
-    public void export(Growthlane gl, File outputFolder, GrowthlaneFrame firstGLF) {
+    public void export(Growthlane gl, File outputFolder) {
         try {
-            List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
-            ResultExporterData resultData = new ResultExporterData(outputFolder, cellTrackStartingPoints, firstGLF.getParent().getIlp().model, firstGLF.getParent().getIlp());
+            ResultExporterData resultData = new ResultExporterData(gl, outputFolder);
             for(ResultExporterInterface exporter: exporters){
                 exporter.export(resultData);
             }

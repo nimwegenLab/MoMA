@@ -161,14 +161,19 @@ public class Growthlane {
 		return getFrames().get(0);
 	}
 
-	public List<SegmentRecord> getCellTrackStartingPoints() throws GRBException {
-		GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
-		CellTrackBuilder trackBuilder = new CellTrackBuilder();
-		trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
-				firstGLF,
-				firstGLF.getParent().getIlp(),
-				getTimeStepMaximum());
-		List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-		return startingPoints;
+	public List<SegmentRecord> getCellTrackStartingPoints() {
+		try {
+			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
+			CellTrackBuilder trackBuilder = new CellTrackBuilder();
+			trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+					firstGLF,
+					firstGLF.getParent().getIlp(),
+					getTimeStepMaximum());
+			List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
+			return startingPoints;
+		}
+		catch (GRBException grbException){
+			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);
+		}
 	}
 }

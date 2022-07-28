@@ -22,12 +22,7 @@ public class CurationStatsExporter implements ResultExporterInterface {
         /* Export user inputs to the tracking algorithm */
         final int tmin = configurationManager.getMinTime();
         final int tmax = configurationManager.getMaxTime();
-        final File file =
-                new File(outputFolder, String.format(
-                        "[%d-%d]__%s.moma",
-                        tmin,
-                        tmax,
-                        MoMA.getDefaultFilenameDecoration()));
+        final File file = new File(outputFolder, String.format( "[%d-%d]__%s.moma", tmin, tmax, MoMA.getDefaultFilenameDecoration()));
         MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
     }
 }

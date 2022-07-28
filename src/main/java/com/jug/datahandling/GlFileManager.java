@@ -151,4 +151,9 @@ public class GlFileManager implements IGlExportFilePaths {
     public Path getGurobiMstFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString(), modelFileName + ".mst");
     }
+
+    @Override
+    public Path getMmPropertiesOutputFilePath() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "mm.properties");
+    }
 }

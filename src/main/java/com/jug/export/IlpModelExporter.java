@@ -1,5 +1,7 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
+import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import gurobi.GRB;
 import gurobi.GRBException;
@@ -15,12 +17,12 @@ public class IlpModelExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) throws GRBException {
-        File outputFolder = resultData.getOutputFolder();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) throws GRBException {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
 
-        resultData.getGrowthlaneTrackingILP().addStorageLockConstraintsToAssignments();
+        gl.getIlp().addStorageLockConstraintsToAssignments();
 
-        IGRBModelAdapter model = resultData.getIlpModel();
+        IGRBModelAdapter model = gl.getIlp().model;
 
 //        int ignoreNamesVal = model.get(GRB.IntParam.IgnoreNames);
 //        System.out.println(String.format("ignoreNamesVal: %d", ignoreNamesVal));
@@ -36,6 +38,6 @@ public class IlpModelExporter implements ResultExporterInterface {
         String outputPath5 = outputFolder.getAbsolutePath() + "/gurobi_model.mst";
         model.write(outputPath5);
 //        System.out.println("stop");
-        resultData.getGrowthlaneTrackingILP().removeStorageLockConstraintsFromAssignments();
+        gl.getIlp().removeStorageLockConstraintsFromAssignments();
     }
 }

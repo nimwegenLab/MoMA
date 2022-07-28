@@ -1,6 +1,8 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IGlExportFilePaths;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -52,8 +54,8 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * @param resultData
      */
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
         listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;

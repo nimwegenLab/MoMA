@@ -2,6 +2,7 @@ package com.jug.export;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
+import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -124,8 +125,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
 
         System.out.println("Exporting assignment costs...");
 

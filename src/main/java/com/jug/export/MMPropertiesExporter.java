@@ -1,7 +1,9 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IGlExportFilePaths;
 import gurobi.GRBException;
 
 import javax.swing.*;
@@ -17,8 +19,8 @@ public class MMPropertiesExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) throws GRBException {
-        File outputFolder = resultData.getOutputFolder();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) throws GRBException {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
         configurationManager.saveParams(new File(outputFolder, "mm.properties"), guiFrame);
     }
 }

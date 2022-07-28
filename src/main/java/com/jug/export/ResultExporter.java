@@ -1,7 +1,7 @@
 package com.jug.export;
 
 import com.jug.Growthlane;
-import com.jug.GrowthlaneFrame;
+import com.jug.datahandling.IGlExportFilePaths;
 import gurobi.GRBException;
 
 import java.io.File;
@@ -14,11 +14,11 @@ public class ResultExporter {
         this.exporters = exporters;
     }
 
-    public void export(Growthlane gl) {
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
         try {
-            ResultExporterData resultData = new ResultExporterData(gl);
+//            ResultExporterData resultData = new ResultExporterData(gl);
             for(ResultExporterInterface exporter: exporters){
-                exporter.export(resultData);
+                exporter.export(gl, exportFilePaths);
             }
         } catch (GRBException e) {
             e.printStackTrace();

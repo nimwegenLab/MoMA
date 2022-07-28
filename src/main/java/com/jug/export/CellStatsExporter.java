@@ -1,8 +1,10 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
@@ -59,9 +61,9 @@ public class CellStatsExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
+        List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         /* Export cell tracks */
         exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
 

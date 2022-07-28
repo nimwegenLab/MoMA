@@ -1,6 +1,8 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.MoMA;
+import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -54,9 +56,9 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
+    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+        File outputFolder = exportFilePaths.getOutputPath().toFile();
+        List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         SegmentRecord firstEntry = cellTrackStartingPoints.get(0);
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());

@@ -157,7 +157,12 @@ public class Growthlane {
 		return getFrames().size() - 1;
 	}
 
-	public List<SegmentRecord> getCellTrackStartingPoints(GrowthlaneFrame firstGLF) throws GRBException {
+	private GrowthlaneFrame getFirstGrowthlaneFrame() {
+		return getFrames().get(0);
+	}
+
+	public List<SegmentRecord> getCellTrackStartingPoints() throws GRBException {
+		GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
 		CellTrackBuilder trackBuilder = new CellTrackBuilder();
 		trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
 				firstGLF,

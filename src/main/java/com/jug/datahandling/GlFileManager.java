@@ -23,7 +23,6 @@ public class GlFileManager implements IGlExportFilePaths {
     private Path outputPath;
     private String directoryPath;
     private String modelFile;
-    private Path gurobiMpsFilePath;
     private String analysisName;
 
     public void setLoadingDirectoryPath(String directoryPath) {
@@ -31,7 +30,6 @@ public class GlFileManager implements IGlExportFilePaths {
         propertiesFile = Paths.get(this.directoryPath, "mm.properties");
         outputPath = Paths.get(this.directoryPath);
         Files.exists(propertiesFile);
-        gurobiMpsFilePath = Paths.get(this.directoryPath, "gurobi_model.mps");
     }
 
     public void setAnalysisName(String analysisName) {
@@ -118,10 +116,6 @@ public class GlFileManager implements IGlExportFilePaths {
         IJ.saveAsTiff(tmp_image, getProbabilityImageFilePath());
     }
 
-    public Path getGurobiMpsFilePath() {
-        return gurobiMpsFilePath;
-    }
-
     public Path getDotMomaFilePath() {
         List<Path> matchingFiles = getMatchingFilesInDirectory(Paths.get(this.directoryPath), "**/*.moma");
         if (matchingFiles.size() > 1) {
@@ -131,5 +125,32 @@ public class GlFileManager implements IGlExportFilePaths {
             throw new RuntimeException("Error: It is unclear, which *.moma file should be loaded. The number of *.moma files >1 in GL-directory: " + this.directoryPath);
         }
         return matchingFiles.get(0);
+    }
+
+    private String modelFileName = "gurobi_model";
+
+    @Override
+    public Path getGurobiMpsFilePath() {
+        return Paths.get(this.directoryPath, modelFileName + ".mps");
+    }
+
+    @Override
+    public Path getGurobiLpFilePath() {
+        return Paths.get(this.directoryPath, modelFileName + ".lp");
+    }
+
+    @Override
+    public Path getGurobiSolFilePath() {
+        return Paths.get(this.directoryPath, modelFileName + ".sol");
+    }
+
+    @Override
+    public Path getGurobiMstFilePath() {
+        return Paths.get(this.directoryPath, modelFileName + ".mst");
+    }
+
+    @Override
+    public Path getGurobiJsonFilePath() {
+        return Paths.get(this.directoryPath, modelFileName + ".json");
     }
 }

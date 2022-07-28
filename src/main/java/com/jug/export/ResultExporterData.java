@@ -13,8 +13,8 @@ public class ResultExporterData {
     private IGRBModelAdapter ilpModel;
     private GrowthlaneTrackingILP growthlaneTrackingILP;
 
-    public ResultExporterData(Growthlane gl, File outputFolder) {
-        this.outputFolder = outputFolder;
+    public ResultExporterData(Growthlane gl) {
+        this.outputFolder = gl.getExportPaths().getOutputPath().toFile();
         this.cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         this.growthlaneTrackingILP = gl.getIlp();
         this.ilpModel = this.growthlaneTrackingILP.model;

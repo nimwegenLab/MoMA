@@ -14,9 +14,9 @@ public class ResultExporter {
         this.exporters = exporters;
     }
 
-    public void export(Growthlane gl, File outputFolder) {
+    public void export(Growthlane gl) {
         try {
-            ResultExporterData resultData = new ResultExporterData(gl, outputFolder);
+            ResultExporterData resultData = new ResultExporterData(gl);
             for(ResultExporterInterface exporter: exporters){
                 exporter.export(resultData);
             }

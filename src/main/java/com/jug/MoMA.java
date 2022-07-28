@@ -265,10 +265,10 @@ public class MoMA {
 		} else {
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
-				dic.getMomaGui().exportTrackingData(dic.getFilePaths().getOutputPath().toFile());
+				dic.getMomaGui().exportTrackingData();
 			} else {
 				dic.getMomaGui().exportHtmlOverview();
-				dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
+				dic.getMomaGui().exportDataFiles();
 			}
 
 			if (!runningAsFijiPlugin) {

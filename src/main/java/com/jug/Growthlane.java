@@ -2,6 +2,7 @@ package com.jug;
 
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.GlFileManager;
+import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.export.CellTrackBuilder;
 import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
@@ -16,6 +17,7 @@ import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import java.nio.file.Path;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -175,5 +177,13 @@ public class Growthlane {
 		catch (GRBException grbException){
 			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);
 		}
+	}
+
+	public IGlExportFilePaths getExportPaths() {
+		return glFileManager;
+	}
+
+	public void setOutputPath(Path outputPath) {
+		glFileManager.setOutputPath(outputPath);
 	}
 }

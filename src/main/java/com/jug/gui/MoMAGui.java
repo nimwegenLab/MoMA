@@ -28,6 +28,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -772,30 +773,37 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonExportData)) {
-            File folderToUse = queryUserForFolderToUse();
-            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
-                final Thread t = new Thread(() -> this.exportDataFiles(folderToUse));
+            Path outputPath = queryUserForOutputPath();
+            if (outputPathIsValid(outputPath)) {
+                model.getCurrentGL().setOutputPath(outputPath);
+                final Thread t = new Thread(() -> this.exportDataFiles());
                 t.start();
             }
         }
         if (e.getSource().equals(buttonSaveTracking)) {
-            File folderToUse = queryUserForFolderToUse();
-            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
-                final Thread t = new Thread(() -> this.exportTrackingData(folderToUse));
+            Path folderToUse = queryUserForOutputPath();
+            if (outputPathIsValid(folderToUse)) {
+                model.getCurrentGL().setOutputPath(folderToUse);
+                final Thread t = new Thread(() -> this.exportTrackingData());
                 t.start();
             }
         }
         if (e.getSource().equals(buttonSaveTrackingAndExit)) {
-            File folderToUse = queryUserForFolderToUse();
-            if (!isNull(folderToUse) && folderToUse.exists() && folderToUse.isDirectory()) {
+            Path folderToUse = queryUserForOutputPath();
+            if (outputPathIsValid(folderToUse)) {
+                model.getCurrentGL().setOutputPath(folderToUse);
                 final Thread t = new Thread(() -> {
-                    this.exportTrackingData(folderToUse);
+                    this.exportTrackingData();
                     closeCommand.run();
                 });
                 t.start();
             }
         }
         requestFocusOnTimeStepSlider();
+    }
+
+    private boolean outputPathIsValid(Path folderToUse) {
+        return !isNull(folderToUse) && folderToUse.toFile().exists() && folderToUse.toFile().isDirectory();
     }
 
 
@@ -880,9 +888,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     /**
      * Export data to specified folder.
      */
-    public void exportDataFiles(File folderToUse) {
-        if (folderToUse == null) return;
-
+    public void exportDataFiles() {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
@@ -897,18 +903,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(this.model.getCurrentGL(), folderToUse);
+        resultExporter.export(this.model.getCurrentGL());
     }
 
-    public void exportTrackingData(File folderToUse) {
-        if (folderToUse == null) return;
-
+    public void exportTrackingData() {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(this.model.getCurrentGL(), folderToUse);
+        resultExporter.export(this.model.getCurrentGL());
     }
 
     /**
@@ -917,19 +921,19 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * @return File folder that the user selected.
      */
     @Nullable
-    private File queryUserForFolderToUse() {
+    private Path queryUserForOutputPath() {
         if (model.getCurrentGL().getIlp() == null) {
             JOptionPane.showMessageDialog(this, "The current GL can only be exported after being tracked (optimized)!");
             return null;
         }
 
-        File folderToUse;
+        Path folderToUse;
         if (!configurationManager.getIfRunningHeadless()) {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
             folderToUse = OsDependentFileChooser.showSaveFolderChooser(this,
                     glFileManager.getOutputPath().toString(),
-                    "Choose export folder...");
+                    "Choose export folder...").toPath();
             if (folderToUse == null) {
                 JOptionPane.showMessageDialog(
                         this,
@@ -939,7 +943,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 return null;
             }
         } else { /* if running headless: use default output path */
-            folderToUse = glFileManager.getOutputPath().toFile();
+            folderToUse = glFileManager.getOutputPath();
         }
         return folderToUse;
     }

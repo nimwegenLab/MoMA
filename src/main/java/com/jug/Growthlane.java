@@ -2,6 +2,8 @@ package com.jug;
 
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.GlFileManager;
+import com.jug.export.CellTrackBuilder;
+import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
@@ -153,5 +155,15 @@ public class Growthlane {
 
 	public int getTimeStepMaximum() {
 		return getFrames().size() - 1;
+	}
+
+	public List<SegmentRecord> getCellTrackStartingPoints(GrowthlaneFrame firstGLF) throws GRBException {
+		CellTrackBuilder trackBuilder = new CellTrackBuilder();
+		trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+				firstGLF,
+				firstGLF.getParent().getIlp(),
+				getTimeStepMaximum());
+		List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
+		return startingPoints;
 	}
 }

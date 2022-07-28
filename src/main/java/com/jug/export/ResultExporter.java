@@ -1,5 +1,6 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import gurobi.GRBException;
 
@@ -13,9 +14,9 @@ public class ResultExporter {
         this.exporters = exporters;
     }
 
-    public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {
+    public void export(Growthlane gl, File outputFolder, GrowthlaneFrame firstGLF) {
         try {
-            List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
+            List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints(firstGLF);
             ResultExporterData resultData = new ResultExporterData(outputFolder, cellTrackStartingPoints, firstGLF.getParent().getIlp().model, firstGLF.getParent().getIlp());
             for(ResultExporterInterface exporter: exporters){
                 exporter.export(resultData);
@@ -23,15 +24,5 @@ public class ResultExporter {
         } catch (GRBException e) {
             e.printStackTrace();
         }
-    }
-
-    private List<SegmentRecord> getCellTrackStartingPoints(GrowthlaneFrame firstGLF, int tmax) throws GRBException {
-        CellTrackBuilder trackBuilder = new CellTrackBuilder();
-        trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
-                firstGLF,
-                firstGLF.getParent().getIlp(),
-                tmax);
-        List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-        return startingPoints;
     }
 }

@@ -897,7 +897,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(folderToUse, panelWithSliders.getTimeStepSliderMaximum(), this.model.getCurrentGL().getFrames().get(0));
+        resultExporter.export(this.model.getCurrentGL(), folderToUse, this.model.getCurrentGL().getFrames().get(0));
     }
 
     public void exportTrackingData(File folderToUse) {
@@ -908,7 +908,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         final ResultExporter resultExporter = new ResultExporter(exporters);
-        resultExporter.export(folderToUse, this.panelWithSliders.getTimeStepSliderMaximum(), this.model.getCurrentGL().getFrames().get(0));
+        resultExporter.export(this.model.getCurrentGL(), folderToUse, this.model.getCurrentGL().getFrames().get(0));
     }
 
     /**

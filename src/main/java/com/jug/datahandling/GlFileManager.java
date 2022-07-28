@@ -28,7 +28,6 @@ public class GlFileManager implements IGlExportFilePaths {
     public void setLoadingDirectoryPath(String directoryPath) {
         this.directoryPath = directoryPath;
         propertiesFile = Paths.get(this.directoryPath, "mm.properties");
-        outputPath = Paths.get(this.directoryPath);
         Files.exists(propertiesFile);
     }
 
@@ -45,7 +44,7 @@ public class GlFileManager implements IGlExportFilePaths {
     }
     public Path getPropertiesFile(){
         return propertiesFile;
-    }
+    } /* TODO-MM-20220728: Most likely, we need to distinguish here between the path to the default properties file in the user-home and the one that we will store to...: */
 
     public void setInputImagePath(Path inputImagePath) {
         this.inputImagePath = inputImagePath;
@@ -68,7 +67,7 @@ public class GlFileManager implements IGlExportFilePaths {
     }
 
     public Path getTrackingDataOutputPath() {
-        Path path = Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__track_data");
+        Path path = Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
         return path;
     }
 
@@ -129,28 +128,27 @@ public class GlFileManager implements IGlExportFilePaths {
 
     private String modelFileName = "gurobi_model";
 
+    public boolean gurobiMpsFileExists() {
+        return getGurobiMpsFilePath().toFile().exists();
+    }
+
     @Override
     public Path getGurobiMpsFilePath() {
-        return Paths.get(this.directoryPath, modelFileName + ".mps");
+        return Paths.get(getTrackingDataOutputPath().toString(), modelFileName + ".mps");
     }
 
     @Override
     public Path getGurobiLpFilePath() {
-        return Paths.get(this.directoryPath, modelFileName + ".lp");
+        return Paths.get(getTrackingDataOutputPath().toString(), modelFileName + ".lp");
     }
 
     @Override
     public Path getGurobiSolFilePath() {
-        return Paths.get(this.directoryPath, modelFileName + ".sol");
+        return Paths.get(getTrackingDataOutputPath().toString(), modelFileName + ".sol");
     }
 
     @Override
     public Path getGurobiMstFilePath() {
-        return Paths.get(this.directoryPath, modelFileName + ".mst");
-    }
-
-    @Override
-    public Path getGurobiJsonFilePath() {
-        return Paths.get(this.directoryPath, modelFileName + ".json");
+        return Paths.get(getTrackingDataOutputPath().toString(), modelFileName + ".mst");
     }
 }

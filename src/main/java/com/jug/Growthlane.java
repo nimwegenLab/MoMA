@@ -95,7 +95,7 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = null;
-		if (!isNull(glFileManager.getGurobiMpsFilePath()))
+		if (glFileManager.gurobiMpsFileExists())
 			try {
 				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
 				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());

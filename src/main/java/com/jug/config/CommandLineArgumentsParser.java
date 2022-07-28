@@ -170,7 +170,6 @@ public class CommandLineArgumentsParser {
 
         if(cmd.hasOption("analysis")){
             analysisName = cmd.getOptionValue("analysis");
-            outputPath = Paths.get(getInputDirectory().normalize().toString(), getAnalysisName());
         }
 
         Path outputFolder;
@@ -249,7 +248,7 @@ public class CommandLineArgumentsParser {
         return reloadFolderPath;
     }
 
-    public String getAnalysisName() {
+    public String getAnalysisName() { /* TODO-MM-20220728: If this 'analysisName' is null, then we should return a generated name here */
         return analysisName;
     }
 }

@@ -106,6 +106,8 @@ public class MoMA {
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getInputImagePath().getParent());
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			configurationManager.setMinTime(datasetProperties.getMinTime());
@@ -129,7 +131,6 @@ public class MoMA {
 					throw new RuntimeException("maximum value of user-specified time range is invalid.");
 				}
 			}
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
 		}
 		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset Moma version that will be written to future exported dataset */
 

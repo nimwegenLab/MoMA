@@ -12,6 +12,4 @@ public interface IGlExportFilePaths {
     Path getGurobiSolFilePath();
 
     Path getGurobiMstFilePath();
-
-    Path getGurobiJsonFilePath();
 }

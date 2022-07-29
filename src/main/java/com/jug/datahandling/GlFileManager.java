@@ -104,13 +104,13 @@ public class GlFileManager implements IGlExportFilePaths {
 
     @Override
     public Path getCellTracksFilePath() {
-        String filename = "ExportedTracks__" + getInputTiffFileName() + ".csv";
+        String filename = "CellTracks__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @Override
     public Path getCellStatsFilePath() {
-        String filename = "ExportedCellStats__" + getInputTiffFileName() + ".csv";
+        String filename = "CellStats__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
@@ -122,7 +122,7 @@ public class GlFileManager implements IGlExportFilePaths {
 
     @Override
     public Path getCellMaskImageFilePath() {
-        String filename = "ExportedCellMasks__" + getInputTiffFileName() + ".tif";
+        String filename = "CellMasks__" + getInputTiffFileName() + ".tif";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 

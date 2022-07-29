@@ -104,44 +104,44 @@ public class GlFileManager implements IGlExportFilePaths {
 
     @Override
     public Path getCellTracksFilePath() {
-        String filename = "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        String filename = "ExportedTracks__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @Override
     public Path getCellStatsFilePath() {
-        String filename = "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        String filename = "ExportedCellStats__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @Override
     public Path getAssignmentCostsFilePath() {
-        String filename = "AssignmentCosts__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        String filename = "AssignmentCosts__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @Override
     public Path getCellMaskImageFilePath() {
-        String filename = "ExportedCellMasks__" + MoMA.getDefaultFilenameDecoration() + ".tif";
+        String filename = "ExportedCellMasks__" + getInputTiffFileName() + ".tif";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @Override
     public Path getGroundTruthFrameListFilePath() {
-        String filename = "GroundTruthFrames__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        String filename = "GroundTruthFrames__" + getInputTiffFileName() + ".csv";
         return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @NotNull
     public String getProbabilityImageFilePath() {
-        String filename = getInputFileName();
+        String filename = getInputTiffFileName();
         Path outputFolderPath = getTrackingDataOutputPath();
         String processedImageFileName = outputFolderPath + "/" + filename + "__probability_maps.tif";
         return processedImageFileName;
     }
 
     @NotNull
-    private String getInputFileName() {
+    private String getInputTiffFileName() {
         File file = new File(getInputImagePath().toString());
         String filename = removeExtension(file.getName());
         return filename;
@@ -192,11 +192,7 @@ public class GlFileManager implements IGlExportFilePaths {
 
     @Override
     public Path getCurationStatsFilePath() {
-        return Paths.get(getTrackingDataOutputPath().toString() + "/" + getInputFileName() + "__curation.moma");
-    }
-
-    private String getDefaultFilenameDecoration() {
-        return getInputImagePath().getFileName().toString();
+        return Paths.get(getTrackingDataOutputPath().toString() + "/" + getInputTiffFileName() + "__curation.moma");
     }
 
     @Override

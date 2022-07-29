@@ -484,26 +484,32 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     }
 
     /**
-     * Set the minimum value of the time-range that will be analyzed.
+     * Set minimum value of the time-range that will be analyzed.
      * @param minTime
      */
     public void setMinTime(int minTime) {
         this.minTime = minTime;
     }
 
+    /**
+     * Get minimum value of the time-range that will be analyzed.
+     */
     @Override
     public int getMinTime() {
         return minTime;
     }
 
     /**
-     * Set the maximum value of the time-range that will be analyzed.
+     * Set maximum value of the time-range that will be analyzed.
      * @param maxTime
      */
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
     }
 
+    /**
+     * Get maximum value of the time-range that will be analyzed.
+     */
     @Override
     public int getMaxTime() {
         return maxTime;

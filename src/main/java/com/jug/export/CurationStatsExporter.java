@@ -17,12 +17,8 @@ public class CurationStatsExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) throws GRBException {
-        File outputFolder = exportFilePaths.getOutputPath().toFile();
-
-        /* Export user inputs to the tracking algorithm */
         final int tmin = configurationManager.getMinTime();
         final int tmax = configurationManager.getMaxTime();
-        final File file = new File(outputFolder, String.format( "[%d-%d]__%s.moma", tmin, tmax, MoMA.getDefaultFilenameDecoration()));
-        MoMA.getGui().model.getCurrentGL().getIlp().saveState(file);
+        gl.getIlp().saveState(exportFilePaths.getCurationStatsFilePath(tmin, tmax).toFile());
     }
 }

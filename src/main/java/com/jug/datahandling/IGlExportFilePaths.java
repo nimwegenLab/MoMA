@@ -14,4 +14,6 @@ public interface IGlExportFilePaths {
     Path getGurobiSolFilePath();
 
     Path getGurobiMstFilePath();
+
+    Path getCurationStatsFilePath(int tmin, int tmax);
 }

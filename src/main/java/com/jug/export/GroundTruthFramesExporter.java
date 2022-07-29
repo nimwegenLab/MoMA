@@ -7,7 +7,6 @@ import com.jug.datahandling.IGlExportFilePaths;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Exporter for the list of frames that were selected as ground truth frames.
@@ -16,10 +15,7 @@ import java.util.function.Supplier;
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
-    private ConfigurationManager configurationManager;
-
-    public GroundTruthFramesExporter(ConfigurationManager configurationManager) {
-        this.configurationManager = configurationManager;
+    public GroundTruthFramesExporter() {
         listOfFrameNumbers = new ArrayList<>();
     }
 
@@ -53,6 +49,9 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      */
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+        if (listOfFrameNumbers.isEmpty()) { /* there are no ground truth frames specified, so we do not do anything */
+            return;
+        }
         listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;
@@ -74,7 +73,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            writeImagePaths(out, configurationManager.getInputImagePath(), exportFilePaths.getCellMaskImageFilePath().toString());
+            writeImagePaths(out, exportFilePaths.getInputImagePath().toString(), exportFilePaths.getCellMaskImageFilePath().toString());
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

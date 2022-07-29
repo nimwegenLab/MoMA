@@ -218,7 +218,7 @@ public class PseudoDic {
         if (groundTruthFramesExporter != null) {
             return groundTruthFramesExporter;
         }
-        groundTruthFramesExporter = new GroundTruthFramesExporter(getConfigurationManager()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        groundTruthFramesExporter = new GroundTruthFramesExporter(); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
         return groundTruthFramesExporter;
     }
 

@@ -1,6 +1,5 @@
 package com.jug.datahandling;
 
-import com.jug.MoMA;
 import com.jug.util.Hash;
 import ij.IJ;
 import ij.ImagePlus;
@@ -58,6 +57,7 @@ public class GlFileManager implements IGlExportFilePaths {
         return getInputImagePath().getParent();
     }
 
+    @Override
     public Path getInputImagePath() {
         return inputImagePath;
     }

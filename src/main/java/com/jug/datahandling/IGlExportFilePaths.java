@@ -3,6 +3,8 @@ package com.jug.datahandling;
 import java.nio.file.Path;
 
 public interface IGlExportFilePaths {
+    Path getInputImagePath();
+
     Path getOutputPath();
 
     Path getMmPropertiesOutputFilePath();

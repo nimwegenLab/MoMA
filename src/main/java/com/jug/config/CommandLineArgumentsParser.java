@@ -17,7 +17,7 @@ public class CommandLineArgumentsParser {
      * Property file provided by user through as command-line option.
      */
     private Path optionalPropertyFile = null;
-    private String reloadFolderPath = null;
+    private Path reloadFolderPath = null;
     private int userDefinedMinTime = -1;
     private int userDefinedMaxTime = -1;
     // - - - - - - - - - - - - - -
@@ -135,11 +135,14 @@ public class CommandLineArgumentsParser {
 
         if (cmd.hasOption("reload")) {
             reloadingData = true;
-            reloadFolderPath = cmd.getOptionValue("reload");
-            return; /* if we are reloading previous analysis we do not need to read the cmd arguments below, which are mutually exclusive to reloading */
+            reloadFolderPath = Paths.get(cmd.getOptionValue("reload"));
         }
 
         if (cmd.hasOption("trackonly")) {
+            if(cmd.hasOption("reload")){
+                System.out.println("Error: Options 'reload' and 'trackonly' are mutually exclusive.");
+                System.exit(-1);
+            }
             if (!cmd.hasOption("headless")) {
                 System.out.println("Error: Option -trackonly must be combined with -headless.");
                 System.exit(-1);
@@ -160,7 +163,7 @@ public class CommandLineArgumentsParser {
         }
 
         if(!cmd.hasOption("a") && !cmd.hasOption("outfolder")) {
-            System.out.println("Error: You must specify option 'analysis' or 'outfolder' (they are mutually exclusive).");
+            System.out.println("Error: Options 'analysis' and 'outfolder' are mutually exclusive.");
             System.exit(-1);
         }
         if(cmd.hasOption("analysis") && cmd.hasOption("outfolder")){
@@ -244,11 +247,11 @@ public class CommandLineArgumentsParser {
         return trackOnly;
     }
 
-    public String getReloadFolderPath() {
+    public Path getReloadFolderPath() {
         return reloadFolderPath;
     }
 
-    public String getAnalysisName() { /* TODO-MM-20220728: If this 'analysisName' is null, then we should return a generated name here */
+    public String getAnalysisName() {
         return analysisName;
     }
 }

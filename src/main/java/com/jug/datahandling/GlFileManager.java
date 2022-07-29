@@ -9,7 +9,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -18,32 +17,36 @@ import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 public class GlFileManager implements IGlExportFilePaths {
-    private Path propertiesFile;
+    private Path globalPropertiesFile;
     private Path inputImagePath;
     private Path outputPath;
-    private String directoryPath;
     private String modelFile;
     private String analysisName;
 
-    public void setLoadingDirectoryPath(String directoryPath) {
-        this.directoryPath = directoryPath;
-        propertiesFile = Paths.get(this.directoryPath, "mm.properties");
-        Files.exists(propertiesFile);
+    public void setLoadingDirectoryPath(Path directoryPath) {
+        outputPath = directoryPath;
     }
 
     public void setAnalysisName(String analysisName) {
         this.analysisName = analysisName;
     }
 
-    public String getAnalysisName() {
+    public String getAnalysisName() { /* TODO-MM-20220728: If this 'analysisName' is null, then we should return a generated name here; I still need to think about how to best do this */
         return analysisName;
     }
 
-    public void setPropertiesFile(Path propertiesFile) {
-        this.propertiesFile = propertiesFile;
+    public void setGlobalPropertiesFile(Path globalPropertiesFile) {
+        this.globalPropertiesFile = globalPropertiesFile;
     }
-    public Path getPropertiesFile(){
-        return propertiesFile;
+
+    public Path getGlobalPropertiesFile(){
+        return globalPropertiesFile;
+    } /* TODO-MM-20220728: Most likely, we need to distinguish here between the path to the default properties file in the user-home and the one that we will store to...: */
+
+    public Path getAnalysisPropertiesFile() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "mm.properties");
+//        throw new NotImplementedException("This should return the properties file of the current GL analysis.");
+//        return globalPropertiesFile;
     } /* TODO-MM-20220728: Most likely, we need to distinguish here between the path to the default properties file in the user-home and the one that we will store to...: */
 
     public void setInputImagePath(Path inputImagePath) {
@@ -115,12 +118,12 @@ public class GlFileManager implements IGlExportFilePaths {
     }
 
     public Path getDotMomaFilePath() {
-        List<Path> matchingFiles = getMatchingFilesInDirectory(Paths.get(this.directoryPath), "**/*.moma");
+        List<Path> matchingFiles = getMatchingFilesInDirectory(getTrackingDataOutputPath(), "**/*.moma");
         if (matchingFiles.size() > 1) {
             if (matchingFiles.size() == 0) {
-                throw new RuntimeException("Error: Could not find *.moma file in GL-directory: " + this.directoryPath);
+                throw new RuntimeException("Error: Could not find *.moma file in GL-directory: " + getTrackingDataOutputPath());
             }
-            throw new RuntimeException("Error: It is unclear, which *.moma file should be loaded. The number of *.moma files >1 in GL-directory: " + this.directoryPath);
+            throw new RuntimeException("Error: It is unclear, which *.moma file should be loaded. The number of *.moma files >1 in GL-directory: " + getTrackingDataOutputPath());
         }
         return matchingFiles.get(0);
     }

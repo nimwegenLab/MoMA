@@ -92,12 +92,14 @@ public class MoMA {
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
-		dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
-			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
+			checkPropertiesFileExists(prop_file);
+			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
 				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
 				System.exit(-1);;
@@ -106,16 +108,11 @@ public class MoMA {
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
-			Path optionalPropertiesFilePath = commandLineArgumentParser.getOptionalPropertyFile();
-			if (!isNull(optionalPropertiesFilePath) && !optionalPropertiesFilePath.toFile().exists()) {
-				System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates user-inputs/command-line argument combinations and values */
-				System.exit(-1);
-			}
-			dic.getFilePaths().setPropertiesFile(optionalPropertiesFilePath);
-			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			checkPropertiesFileExists(commandLineArgumentParser.getOptionalPropertyFile());
+			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
+			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getInputImagePath().getParent());
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
@@ -284,6 +281,13 @@ public class MoMA {
 			if (!runningAsFijiPlugin) {
 				System.exit(0);
 			}
+		}
+	}
+
+	private static void checkPropertiesFileExists(Path optionalPropertiesFilePath) {
+		if (!isNull(optionalPropertiesFilePath) && !optionalPropertiesFilePath.toFile().exists()) {
+			System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates user-inputs/command-line argument combinations and values */
+			System.exit(-1);
 		}
 	}
 

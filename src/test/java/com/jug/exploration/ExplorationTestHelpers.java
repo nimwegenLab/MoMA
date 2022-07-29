@@ -66,9 +66,6 @@ public class ExplorationTestHelpers {
             Collections.addAll(args, "-headless");
         }
 
-        if (outputPath != null) {
-            createDirectory(outputPath);
-        }
         MoMA.main(args.toArray(new String[0]));
     }
 

@@ -108,7 +108,7 @@ public class MoMA {
 		} else {
 			Path optionalPropertiesFilePath = commandLineArgumentParser.getOptionalPropertyFile();
 			if (!isNull(optionalPropertiesFilePath) && !optionalPropertiesFilePath.toFile().exists()) {
-				System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates command-line argument combinations and values */
+				System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates user-inputs/command-line argument combinations and values */
 				System.exit(-1);
 			}
 			dic.getFilePaths().setPropertiesFile(optionalPropertiesFilePath);

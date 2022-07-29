@@ -40,14 +40,12 @@ import java.util.function.Supplier;
 public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
     private OverlayUtils overlayUtils;
-    private Supplier<String> defaultFilenameDecorationSupplier;
     Img<IntType> imgResult;
     private HashMap<String, Color> featureColors;
 
-    public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils, Supplier<String> defaultFilenameDecorationSupplier) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils) {
         this.imglib2Utils = imglib2Utils;
         this.overlayUtils = overlayUtils;
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         featureColors = new HashMap<>();
         featureColors.put("contour", Color.BLUE);
         featureColors.put("spine", Color.RED);

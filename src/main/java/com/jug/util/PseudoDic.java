@@ -205,11 +205,11 @@ public class PseudoDic {
     }
 
     public CellMaskExporter getCellMaskExporter() {
-        return new CellMaskExporter(getImglib2utils(), getOverlayUtils(), () -> MoMA.getDefaultFilenameDecoration());
+        return new CellMaskExporter(getImglib2utils(), getOverlayUtils());
     }
 
     public IlpModelExporter getIlpModelExporter() {
-        return new IlpModelExporter(() -> MoMA.getDefaultFilenameDecoration());
+        return new IlpModelExporter();
     }
 
     private GroundTruthFramesExporter groundTruthFramesExporter;
@@ -218,7 +218,7 @@ public class PseudoDic {
         if (groundTruthFramesExporter != null) {
             return groundTruthFramesExporter;
         }
-        groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration(), getConfigurationManager()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        groundTruthFramesExporter = new GroundTruthFramesExporter(getConfigurationManager()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
         return groundTruthFramesExporter;
     }
 
@@ -235,7 +235,7 @@ public class PseudoDic {
 
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
-            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties(), getCostFactory());
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), getComponentProperties(), getCostFactory());
         }
         return assignmentCostExporter;
     }

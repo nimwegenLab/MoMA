@@ -16,11 +16,9 @@ import java.util.function.Supplier;
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
-    private Supplier<String> defaultFilenameDecorationSupplier;
     private ConfigurationManager configurationManager;
 
-    public GroundTruthFramesExporter(Supplier<String> defaultFilenameDecorationSupplier, ConfigurationManager configurationManager) {
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
+    public GroundTruthFramesExporter(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
         listOfFrameNumbers = new ArrayList<>();
     }

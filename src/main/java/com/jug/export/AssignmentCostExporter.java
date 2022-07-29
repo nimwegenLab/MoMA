@@ -70,14 +70,12 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     ResultTableColumn<Double> target2CenterYCol;
     private GrowthlaneTrackingILP ilp;
     private Growthlane growthlane;
-    private Supplier<String> defaultFilenameDecorationSupplier;
     private ComponentProperties componentProperties;
     private CostFactory costFactory;
 
-    public AssignmentCostExporter(Growthlane growthlane, Supplier<String> defaultFilenameDecorationSupplier, ComponentProperties componentProperties, CostFactory costFactory) {
+    public AssignmentCostExporter(Growthlane growthlane, ComponentProperties componentProperties, CostFactory costFactory) {
         this.ilp = growthlane.getIlp();
         this.growthlane = growthlane;
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         this.componentProperties = componentProperties;
         this.costFactory = costFactory;
         this.resultTable = new ResultTable(",");

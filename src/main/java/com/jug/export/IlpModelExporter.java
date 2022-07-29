@@ -10,12 +10,6 @@ import java.io.File;
 import java.util.function.Supplier;
 
 public class IlpModelExporter implements ResultExporterInterface {
-    private final Supplier<String> defaultFilenameDecorationSupplier;
-
-    public IlpModelExporter(Supplier<String> defaultFilenameDecorationSupplier) {
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
-    }
-
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) throws GRBException {
         gl.getIlp().addStorageLockConstraintsToAssignments();

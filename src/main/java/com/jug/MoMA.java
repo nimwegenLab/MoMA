@@ -386,11 +386,4 @@ public class MoMA {
 	public static MoMAGui getGui() {
 		return dic.getMomaGui();
 	}
-
-	/**
-	 * @return the defaultFilenameDecoration
-	 */
-	public static String getDefaultFilenameDecoration() {
-		return defaultFilenameDecoration;
-	}
 }

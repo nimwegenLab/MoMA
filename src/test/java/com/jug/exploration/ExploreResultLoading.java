@@ -77,13 +77,14 @@ public class ExploreResultLoading {
         Integer tmax = 10;
         String analysisName = "test_analysis";
         createEmptyDirectory(outputPath);
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-ground_truth_export", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading() {
         String subfolder = "lis_20211026__Pos7_GL12";
+        String analysisName = "test_analysis";
         Path reload_folder_path = Paths.get(datasets_base_path, subfolder, "output");
-        startMoma(false, null, null, null, null, false, new String[]{"-ground_truth_export", "-reload", reload_folder_path.toString()});
+        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export() throws Exception {

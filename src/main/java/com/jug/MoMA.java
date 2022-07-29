@@ -23,6 +23,8 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author jug
  */
@@ -81,7 +83,9 @@ public class MoMA {
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
-		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) return;
+		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
+			System.exit(-1);
+		}
 
 		/* setup configuration manager and read configuration */
 		configurationManager = dic.getConfigurationManager();
@@ -96,13 +100,18 @@ public class MoMA {
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
 				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
-				return;
+				System.exit(-1);;
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
-			dic.getFilePaths().setPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
+			Path optionalPropertiesFilePath = commandLineArgumentParser.getOptionalPropertyFile();
+			if (!isNull(optionalPropertiesFilePath) && !optionalPropertiesFilePath.toFile().exists()) {
+				System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates command-line argument combinations and values */
+				System.exit(-1);
+			}
+			dic.getFilePaths().setPropertiesFile(optionalPropertiesFilePath);
 			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());

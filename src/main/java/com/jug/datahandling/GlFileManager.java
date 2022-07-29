@@ -1,5 +1,6 @@
 package com.jug.datahandling;
 
+import com.jug.MoMA;
 import com.jug.util.Hash;
 import ij.IJ;
 import ij.ImagePlus;
@@ -83,6 +84,11 @@ public class GlFileManager implements IGlExportFilePaths {
         getTrackingDataOutputPath().toFile().mkdirs();
     }
 
+    @Override
+    public void makeExportDataOutputDirectory() {
+        getExportOutputPath().toFile().mkdirs();
+    }
+
     public String getModelChecksum() {
         return calculateModelChecksum(modelFile);
     }
@@ -94,6 +100,36 @@ public class GlFileManager implements IGlExportFilePaths {
     private String calculateModelChecksum(String modelFile) {
         byte[] hash = Hash.SHA256.checksum(new File(modelFile));
         return Hash.toHex(hash).toLowerCase();
+    }
+
+    @Override
+    public Path getCellTracksFilePath() {
+        String filename = "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        return Paths.get(getExportOutputPath().toString(), filename);
+    }
+
+    @Override
+    public Path getCellStatsFilePath() {
+        String filename = "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        return Paths.get(getExportOutputPath().toString(), filename);
+    }
+
+    @Override
+    public Path getAssignmentCostsFilePath() {
+        String filename = "AssignmentCosts__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        return Paths.get(getExportOutputPath().toString(), filename);
+    }
+
+    @Override
+    public Path getCellMaskImageFilePath() {
+        String filename = "ExportedCellMasks__" + MoMA.getDefaultFilenameDecoration() + ".tif";
+        return Paths.get(getExportOutputPath().toString(), filename);
+    }
+
+    @Override
+    public Path getGroundTruthFrameListFilePath() {
+        String filename = "GroundTruthFrames__" + MoMA.getDefaultFilenameDecoration() + ".csv";
+        return Paths.get(getExportOutputPath().toString(), filename);
     }
 
     @NotNull
@@ -155,7 +191,7 @@ public class GlFileManager implements IGlExportFilePaths {
     }
 
     @Override
-    public Path getCurationStatsFilePath(int tmin, int tmax) {
+    public Path getCurationStatsFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString() + "/" + getInputFileName() + "__curation.moma");
     }
 

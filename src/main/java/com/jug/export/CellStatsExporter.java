@@ -62,17 +62,12 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
-        File outputFolder = exportFilePaths.getOutputPath().toFile();
         List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
-        /* Export cell tracks */
-        exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
-
-        final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+        exportFilePaths.makeExportDataOutputDirectory();
+        exportCellTracks(exportFilePaths.getCellTracksFilePath().toFile()); /* Export cell tracks */
+        final GrowthlaneFrame firstGLF = gl.getFrames().get(0);
         long avgXpos = firstGLF.getAvgXpos();
-        /* Export cell stats */
-        exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
-                cellTrackStartingPoints,
-                avgXpos);
+        exportCellStats(exportFilePaths.getCellStatsFilePath().toFile(), cellTrackStartingPoints, avgXpos);
     }
 
     /**
@@ -264,7 +259,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         resultTable.writeTable(writer);
     }
 
-    private void exportTracks(final File file) {
+    private void exportCellTracks(final File file) {
 
         final Vector<Vector<String>> dataToExport = getTracksExportData();
 

@@ -16,7 +16,6 @@ public class ResultExporter {
 
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
         try {
-//            ResultExporterData resultData = new ResultExporterData(gl);
             for(ResultExporterInterface exporter: exporters){
                 exporter.export(gl, exportFilePaths);
             }

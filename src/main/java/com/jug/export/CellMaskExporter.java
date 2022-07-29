@@ -57,15 +57,13 @@ public class CellMaskExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
-        File outputFolder = exportFilePaths.getOutputPath().toFile();
         List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         SegmentRecord firstEntry = cellTrackStartingPoints.get(0);
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
 //        copySliceOfParentComponents();
-        String defaultFileNameDecoration = defaultFilenameDecorationSupplier.get();
-        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks__" + defaultFileNameDecoration + ".tif"));
+        saveResultImageToFile(exportFilePaths.getCellMaskImageFilePath().toFile());
     }
 
     private void copySliceOfParentComponents() {

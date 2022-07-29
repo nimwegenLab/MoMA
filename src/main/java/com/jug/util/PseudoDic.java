@@ -409,6 +409,6 @@ public class PseudoDic {
     }
 
     public ResultExporterInterface getCurationStatsExporter() {
-        return new CurationStatsExporter(getConfigurationManager());
+        return new CurationStatsExporter();
     }
 }

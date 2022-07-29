@@ -126,8 +126,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
-        File outputFolder = exportFilePaths.getOutputPath().toFile();
-
         System.out.println("Exporting assignment costs...");
 
         int tmax = growthlane.getFrames().size();
@@ -135,7 +133,8 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
         }
-        File outputCsvFile = new File(outputFolder, "AssignmentCosts__" + defaultFilenameDecorationSupplier.get() + ".csv");
+        exportFilePaths.makeExportDataOutputDirectory();
+        File outputCsvFile = exportFilePaths.getAssignmentCostsFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {

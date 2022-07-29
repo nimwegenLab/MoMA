@@ -7,6 +7,18 @@ public interface IGlExportFilePaths {
 
     Path getMmPropertiesOutputFilePath();
 
+    void makeExportDataOutputDirectory();
+
+    Path getCellTracksFilePath();
+
+    Path getCellStatsFilePath();
+
+    Path getAssignmentCostsFilePath();
+
+    Path getCellMaskImageFilePath();
+
+    Path getGroundTruthFrameListFilePath();
+
     Path getGurobiMpsFilePath();
 
     Path getGurobiLpFilePath();
@@ -15,5 +27,5 @@ public interface IGlExportFilePaths {
 
     Path getGurobiMstFilePath();
 
-    Path getCurationStatsFilePath(int tmin, int tmax);
+    Path getCurationStatsFilePath();
 }

@@ -55,7 +55,6 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      */
     @Override
     public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
-        File outputFolder = exportFilePaths.getOutputPath().toFile();
         listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;
@@ -72,13 +71,12 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
             timeStepColumn.addValue(frameNumber);
         }
 
-        File outputFile = new File(outputFolder, "GroundTruthFrames__" + defaultFilenameDecorationSupplier.get() + ".csv");
+        File outputFile = exportFilePaths.getGroundTruthFrameListFilePath().toFile();
         String path = outputFile.getAbsolutePath();
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks__" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
-            writeImagePaths(out, configurationManager.getInputImagePath(), cellMaskImagePath);
+            writeImagePaths(out, configurationManager.getInputImagePath(), exportFilePaths.getCellMaskImageFilePath().toString());
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

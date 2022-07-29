@@ -154,7 +154,7 @@ public class GlFileManager implements IGlExportFilePaths {
 
     @Override
     public Path getCurationStatsFilePath(int tmin, int tmax) {
-        return Paths.get(getTrackingDataOutputPath().toString(), String.format( "[%d-%d]__%s.moma", tmin, tmax, getDefaultFilenameDecoration()));
+        return Paths.get(getTrackingDataOutputPath().toString() + "/" + getInputFileName() + ".moma");
     }
 
     private String getDefaultFilenameDecoration() {

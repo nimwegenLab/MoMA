@@ -304,7 +304,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         // use US-style number formats! (e.g. '.' as decimal point)
         Locale.setDefault(new Locale("en", "US"));
 
-//        final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting tracks...");
         final int numCurrGL = gui.sliderGL.getValue();
         final int numGLFs = gui.model.getCurrentGL().getFrames().size();
         final Vector<Vector<String>> dataToExport = new Vector<>();

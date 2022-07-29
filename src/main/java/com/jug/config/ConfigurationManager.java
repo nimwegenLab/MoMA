@@ -476,11 +476,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     }
 
     public String getInputImagePath(){
-        return props.getProperty( "import_path", System.getProperty( "user.home" ) );
+        return props.getProperty( "IMPORT_PATH", System.getProperty( "user.home" ) );
     }
 
     public void setImagePath(String imagePath){
-        props.setProperty( "import_path", imagePath);
+        props.setProperty( "IMPORT_PATH", imagePath);
     }
 
     /**
@@ -527,7 +527,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     @Override
     public String getPathForAutosaving() {
-        return props.getProperty("import_path") + "/--autosave.moma";
+        return props.getProperty("IMPORT_PATH") + "/--autosave.moma";
     }
 
     @Override

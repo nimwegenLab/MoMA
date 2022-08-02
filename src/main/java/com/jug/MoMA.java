@@ -81,9 +81,9 @@ public class MoMA {
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getLogger().println("");
 			dic.getLogger().println("######################################################");
-			dic.getLogger().println("Reloading previous analysis:");
-			dic.getLogger().println("path: " + commandLineArgumentParser.getReloadFolderPath());
-			dic.getLogger().println("analysis: " + commandLineArgumentParser.getAnalysisName());
+			dic.getLogger().printlnWithTimeStamp("Reloading previous analysis:");
+			dic.getLogger().println("input path: " + commandLineArgumentParser.getReloadFolderPath());
+			dic.getLogger().println("analysis name: " + commandLineArgumentParser.getAnalysisName());
 			dic.getLogger().println("######################################################");
 			dic.getLogger().println("");
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
@@ -104,10 +104,10 @@ public class MoMA {
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			dic.getLogger().println("");
 			dic.getLogger().println("######################################################");
-			dic.getLogger().println("Running first time analysis:");
-			dic.getLogger().println("path: " + commandLineArgumentParser.getInputImagePath());
+			dic.getLogger().printlnWithTimeStamp("Running first time analysis:");
+			dic.getLogger().println("input path: " + commandLineArgumentParser.getInputImagePath());
 			String analysisName = isNull(commandLineArgumentParser.getAnalysisName()) ? "Not specified by user." : commandLineArgumentParser.getAnalysisName();
-			dic.getLogger().println("analysis: " + analysisName);
+			dic.getLogger().println("analysis name: " + analysisName);
 			dic.getLogger().println("######################################################");
 			dic.getLogger().println("");
 			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());

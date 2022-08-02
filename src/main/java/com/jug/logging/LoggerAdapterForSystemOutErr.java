@@ -43,14 +43,14 @@ public class LoggerAdapterForSystemOutErr {
             @Override
             public void write(final int b) {
                 loggerWindow.updateConsoleTextArea(String.valueOf((char) b));
-                fileLogger.print(String.valueOf((char) b));
+                fileLogger.printWithDateTime(String.valueOf((char) b));
                 originalSystemOutputStream.print((char) b);
             }
 
             @Override
             public void write(@NotNull final byte[] b, final int off, final int len) {
                 loggerWindow.updateConsoleTextArea(new String(b, off, len));
-                fileLogger.print(new String(b, off, len));
+                fileLogger.printWithDateTime(new String(b, off, len));
                 originalSystemOutputStream.print(new String(b, off, len));
             }
 
@@ -65,12 +65,18 @@ public class LoggerAdapterForSystemOutErr {
     }
 
     public void print(String toPrint) {
-        fileLogger.print(toPrint);
+        fileLogger.printWithDateTime(toPrint);
         loggerWindow.updateConsoleTextArea(toPrint);
         getSystemOutputStream().print(toPrint);
     }
 
     public void println(String toPrint) {
-        print(toPrint + "\n");
+        fileLogger.printlnWithDateTime(toPrint);
+        loggerWindow.updateConsoleTextArea(toPrint + "\n");
+        getSystemOutputStream().print(toPrint + "\n");
+    }
+
+    public void printlnWithTimeStamp(String toPrint) {
+        print(DateTimeProvider.getDateTime() + "\t" + toPrint + "\n");
     }
 }

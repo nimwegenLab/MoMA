@@ -30,7 +30,6 @@ import static java.util.Objects.isNull;
  */
 public class MoMA {
 	private static ConfigurationManager configurationManager;
-	private static LoggerWindow loggerWindow;
 
 	static {
 		LegacyInjector.preinit();
@@ -124,8 +123,6 @@ public class MoMA {
 		}
 		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
 
-		loggerWindow = dic.getLoggerWindow();
-
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
@@ -156,8 +153,8 @@ public class MoMA {
 			}
 
 			// Setting up console window...
-			loggerWindow.initConsoleWindow();
-			loggerWindow.showConsoleWindow( true );
+			dic.getLoggerWindow().initConsoleWindow();
+			dic.getLoggerWindow().showConsoleWindow( true );
 		}
 
 		if (dic.getFilePaths().getInputImagePath() == null) {
@@ -209,7 +206,7 @@ public class MoMA {
 
 		if (!commandLineArgumentParser.getIfRunningHeadless()) {
 			SwingUtilities.invokeLater(() -> {
-				loggerWindow.showConsoleWindow(false);
+				dic.getLoggerWindow().showConsoleWindow(false);
 				guiFrame.add(dic.getMomaGui());
 				guiFrame.setSize(configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT);
 				guiFrame.setLocation(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y);

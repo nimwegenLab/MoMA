@@ -2,6 +2,7 @@ package com.jug;
 
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.GlFileManager;
+import com.jug.datahandling.IExportFilePathSetter;
 import com.jug.datahandling.IGlExportFilePaths;
 import com.jug.export.CellTrackBuilder;
 import com.jug.export.SegmentRecord;
@@ -19,6 +20,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
@@ -30,7 +32,8 @@ public class Growthlane {
 	private GrowthlaneTrackingILP ilp;
 	private IDialogManager dialogManager;
 	private IConfiguration configurationManager;
-	private GlFileManager glFileManager;
+	private IGlExportFilePaths glFileManager;
+	private IExportFilePathSetter exportFilePathSetter;
 
 	/**
 	 * @return the frames
@@ -49,10 +52,11 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, GlFileManager glFileManager) {
-		this.dialogManager = dialogManager;
-		this.configurationManager = configurationManager;
-		this.glFileManager = glFileManager;
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, IGlExportFilePaths glFileManager, IExportFilePathSetter exportFilePathSetter) {
+		this.dialogManager = Objects.requireNonNull(dialogManager);
+		this.configurationManager = Objects.requireNonNull(configurationManager);
+		this.glFileManager = Objects.requireNonNull(glFileManager);
+		this.exportFilePathSetter = Objects.requireNonNull(exportFilePathSetter);
 		this.frames = new ConcurrentArrayList<>();
 	}
 
@@ -97,7 +101,7 @@ public class Growthlane {
 		GRBModelAdapter model = null;
 		if (glFileManager.gurobiMpsFileExists())
 			try {
-				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvionmentLogFilePath().toString());
 				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
@@ -184,6 +188,6 @@ public class Growthlane {
 	}
 
 	public void setOutputPath(Path outputPath) {
-		glFileManager.setOutputPath(outputPath);
+		exportFilePathSetter.setOutputPath(outputPath);
 	}
 }

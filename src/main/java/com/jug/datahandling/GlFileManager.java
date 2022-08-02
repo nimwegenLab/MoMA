@@ -16,7 +16,7 @@ import java.util.List;
 import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
-public class GlFileManager implements IGlExportFilePaths {
+public class GlFileManager implements IGlExportFilePaths, IExportFilePathSetter {
     private Path globalPropertiesFile;
     private Path inputImagePath;
     private Path outputPath;
@@ -62,6 +62,7 @@ public class GlFileManager implements IGlExportFilePaths {
         return inputImagePath;
     }
 
+    @Override
     public void setOutputPath(Path outputPath) {
         this.outputPath = outputPath;
     }
@@ -166,8 +167,14 @@ public class GlFileManager implements IGlExportFilePaths {
 
     private String modelFileName = "gurobi_model";
 
+    @Override
     public boolean gurobiMpsFileExists() {
         return getGurobiMpsFilePath().toFile().exists();
+    }
+
+    @Override
+    public Path getGurobiEnvionmentLogFilePath() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "gurobi_environment.log");
     }
 
     @Override

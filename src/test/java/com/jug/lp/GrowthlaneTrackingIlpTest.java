@@ -57,7 +57,8 @@ public class GrowthlaneTrackingIlpTest {
         IDialogManager dialogManagerMock = new DialogManagerMock();
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
-        Growthlane gl = new Growthlane(dialogManagerMock, configMock, new GlFileManager());
+        GlFileManager glFileManagerMock = new GlFileManager();
+        Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(), gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);

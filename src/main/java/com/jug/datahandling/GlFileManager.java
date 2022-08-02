@@ -72,22 +72,24 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getTrackingDataOutputPath() {
-        Path path = Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
-        return path;
+        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
     }
 
     public Path getExportOutputPath() {
-        Path path = Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__export_data");
-        return path;
+        return Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__export_data");
     }
 
     private void makeTrackingDataOutputDirectory() {
-        getTrackingDataOutputPath().toFile().mkdirs();
+        if(!getTrackingDataOutputPath().toFile().mkdirs()){
+            throw new RuntimeException("Could not create the output directory: " + getTrackingDataOutputPath());
+        }
     }
 
     @Override
     public void makeExportDataOutputDirectory() {
-        getExportOutputPath().toFile().mkdirs();
+        if(!getExportOutputPath().toFile().mkdirs()){
+            throw new RuntimeException("Could not create the output directory: " + getExportOutputPath());
+        }
     }
 
     public String getModelChecksum() {
@@ -137,15 +139,13 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     public String getProbabilityImageFilePath() {
         String filename = getInputTiffFileName();
         Path outputFolderPath = getTrackingDataOutputPath();
-        String processedImageFileName = outputFolderPath + "/" + filename + "__probability_maps.tif";
-        return processedImageFileName;
+        return outputFolderPath + "/" + filename + "__probability_maps.tif";
     }
 
     @NotNull
     private String getInputTiffFileName() {
         File file = new File(getInputImagePath().toString());
-        String filename = removeExtension(file.getName());
-        return filename;
+        return removeExtension(file.getName());
     }
 
     public void saveProbabilityImage(Img<FloatType> probabilityMap) {
@@ -156,16 +156,16 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     public Path getDotMomaFilePath() {
         List<Path> matchingFiles = getMatchingFilesInDirectory(getTrackingDataOutputPath(), "**/*.moma");
+        if (matchingFiles.size() == 0) {
+            throw new RuntimeException("Error: Could not find *.moma file in GL-directory: " + getTrackingDataOutputPath());
+        }
         if (matchingFiles.size() > 1) {
-            if (matchingFiles.size() == 0) {
-                throw new RuntimeException("Error: Could not find *.moma file in GL-directory: " + getTrackingDataOutputPath());
-            }
             throw new RuntimeException("Error: It is unclear, which *.moma file should be loaded. The number of *.moma files >1 in GL-directory: " + getTrackingDataOutputPath());
         }
         return matchingFiles.get(0);
     }
 
-    private String modelFileName = "gurobi_model";
+    private final String modelFileName = "gurobi_model";
 
     @Override
     public boolean gurobiMpsFileExists() {
@@ -173,7 +173,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
-    public Path getGurobiEnvionmentLogFilePath() {
+    public Path getGurobiEnvironmentLogFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString(), "gurobi_environment.log");
     }
 

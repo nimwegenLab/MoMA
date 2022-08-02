@@ -33,5 +33,5 @@ public interface IGlExportFilePathGetter {
 
     boolean gurobiMpsFileExists();
 
-    Path getGurobiEnvionmentLogFilePath();
+    Path getGurobiEnvironmentLogFilePath();
 }

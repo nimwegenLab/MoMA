@@ -100,7 +100,7 @@ public class Growthlane {
 		GRBModelAdapter model = null;
 		if (glFileManager.gurobiMpsFileExists())
 			try {
-				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvionmentLogFilePath().toString());
+				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvironmentLogFilePath().toString());
 				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {

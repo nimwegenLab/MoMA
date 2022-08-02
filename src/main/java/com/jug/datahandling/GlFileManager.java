@@ -152,7 +152,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     public String getProbabilityImageFilePath() {
         String filename = getInputTiffFileName();
         Path outputFolderPath = getTrackingDataOutputPath();
-        return outputFolderPath + "/" + filename + "__probability_maps.tif";
+        return outputFolderPath + "/probability_maps__" + filename + ".tif";
     }
 
     @NotNull

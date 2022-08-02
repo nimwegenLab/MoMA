@@ -79,6 +79,13 @@ public class MoMA {
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
+			dic.getLogger().println("");
+			dic.getLogger().println("######################################################");
+			dic.getLogger().println("Reloading previous analysis:");
+			dic.getLogger().println("path: " + commandLineArgumentParser.getReloadFolderPath());
+			dic.getLogger().println("analysis: " + commandLineArgumentParser.getAnalysisName());
+			dic.getLogger().println("######################################################");
+			dic.getLogger().println("");
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
@@ -93,11 +100,19 @@ public class MoMA {
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
 			checkPropertiesFileExists(commandLineArgumentParser.getOptionalPropertyFile());
+			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
+			dic.getLogger().println("");
+			dic.getLogger().println("######################################################");
+			dic.getLogger().println("Running first time analysis:");
+			dic.getLogger().println("path: " + commandLineArgumentParser.getInputImagePath());
+			String analysisName = isNull(commandLineArgumentParser.getAnalysisName()) ? "Not specified by user." : commandLineArgumentParser.getAnalysisName();
+			dic.getLogger().println("analysis: " + analysisName);
+			dic.getLogger().println("######################################################");
+			dic.getLogger().println("");
 			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
 			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
-			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
-			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			configurationManager.setMinTime(datasetProperties.getMinTime());

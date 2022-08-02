@@ -1,6 +1,7 @@
 package com.jug.logging;
 
 import com.jug.gui.LoggerWindow;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.OutputStream;
@@ -27,32 +28,49 @@ public class LoggerAdapterForSystemOutErr {
         this.fileLogger = Objects.requireNonNull(fileLogger);
     }
 
+    private PrintStream getSystemOutputStream() {
+        return originalSystemOutputStream;
+    }
+
+    PrintStream originalSystemOutputStream;
+
+    private OutputStream out;
+
     public void initialize() {
-        final OutputStream out = new OutputStream() {
+        originalSystemOutputStream = new PrintStream(System.out);
 
-            private final PrintStream original = new PrintStream(System.out);
-
+        out = new OutputStream() {
             @Override
             public void write(final int b) {
                 loggerWindow.updateConsoleTextArea(String.valueOf((char) b));
                 fileLogger.print(String.valueOf((char) b));
-                original.print((char) b);
+                originalSystemOutputStream.print((char) b);
             }
 
             @Override
             public void write(@NotNull final byte[] b, final int off, final int len) {
                 loggerWindow.updateConsoleTextArea(new String(b, off, len));
                 fileLogger.print(new String(b, off, len));
-                original.print(new String(b, off, len));
+                originalSystemOutputStream.print(new String(b, off, len));
             }
 
             @Override
             public void write(@NotNull final byte[] b) {
-                write(b, 0, b.length);
+                throw new NotImplementedException();
             }
         };
 
         System.setOut(new PrintStream(out, true));
         System.setErr(new PrintStream(out, true));
+    }
+
+    public void print(String toPrint) {
+        fileLogger.print(toPrint);
+        loggerWindow.updateConsoleTextArea(toPrint);
+        getSystemOutputStream().print(toPrint);
+    }
+
+    public void println(String toPrint) {
+        print(toPrint + "\n");
     }
 }

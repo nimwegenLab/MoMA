@@ -79,11 +79,11 @@ public class Growthlane {
     }
 
 	/**
-	 * @return
+	 * @return returns GrowthlaneFrame instance belonging to timeStep
 	 */
-	public GrowthlaneFrame get(final int i) {
+	public GrowthlaneFrame get(final int timeStep) {
 		try {
-			return this.getFrames().get(i);
+			return this.getFrames().get(timeStep);
 		} catch (IndexOutOfBoundsException err) {
 			return null;
 		}
@@ -133,7 +133,7 @@ public class Growthlane {
 		return ilp.isReady();
 	}
 
-	private List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from with in the callback without a concurrent modification error; this seems hacky */
+	private final List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from within the callback without a concurrent modification error; this seems hacky */
 
 	public void addChangeListener(ChangeListener l) {
 		listenerList.add(l);
@@ -174,8 +174,7 @@ public class Growthlane {
 					firstGLF,
 					firstGLF.getParent().getIlp(),
 					getTimeStepMaximum());
-			List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-			return startingPoints;
+			return trackBuilder.getStartingPoints();
 		}
 		catch (GRBException grbException){
 			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);

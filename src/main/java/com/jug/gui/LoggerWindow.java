@@ -1,13 +1,10 @@
 package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
-import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.io.Assert;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.Objects;
 
 public class LoggerWindow {
@@ -22,6 +19,7 @@ public class LoggerWindow {
      * TextArea hosting the console output within the JFrame frameConsoleWindow.
      */
     private JTextArea consoleWindowTextArea;
+    private boolean isInitialized;
 
     public LoggerWindow(String momaVersionString, ConfigurationManager configurationManager) {
         Assert.notNull(momaVersionString, "momaVersionString is null");
@@ -33,7 +31,7 @@ public class LoggerWindow {
      * Creates and shows the console window and redirects 'System.out' and
      * 'System.err' to it.
      */
-    public void initConsoleWindow() {
+    public void initializeConsoleWindow() {
         frameConsoleWindow = new JFrame(windowTitle);
         // frameConsoleWindow.setResizable( false );
         consoleWindowTextArea = new JTextArea();
@@ -47,35 +45,14 @@ public class LoggerWindow {
 //		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
         scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         frameConsoleWindow.getContentPane().add(scrollPane);
-
-        final OutputStream out = new OutputStream() {
-
-            private final PrintStream original = new PrintStream(System.out);
-
-            @Override
-            public void write(final int b) {
-                updateConsoleTextArea(String.valueOf((char) b));
-                original.print((char) b);
-            }
-
-            @Override
-            public void write(@NotNull final byte[] b, final int off, final int len) {
-                updateConsoleTextArea(new String(b, off, len));
-                original.print(new String(b, off, len));
-            }
-
-            @Override
-            public void write(@NotNull final byte[] b) {
-                write(b, 0, b.length);
-            }
-        };
-
-        System.setOut(new PrintStream(out, true));
-        System.setErr(new PrintStream(out, true));
+        isInitialized = true;
     }
 
-    private void updateConsoleTextArea(final String text) {
-        SwingUtilities.invokeLater(() -> consoleWindowTextArea.append(text));
+    public void updateConsoleTextArea(final String text) {
+        SwingUtilities.invokeLater(() -> {
+            Assert.isTrue(isInitialized, "LoggerWindow has not been initialized.");
+            consoleWindowTextArea.append(text);
+        });
     }
 
     /**

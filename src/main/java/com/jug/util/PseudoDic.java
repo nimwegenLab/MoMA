@@ -14,6 +14,7 @@ import com.jug.datahandling.VersionCompatibilityChecker;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
+import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
@@ -66,10 +67,18 @@ public class PseudoDic {
         return context;
     }
 
-    public OpService getImageJOpService() {
-        if (ops == null) {
-            ops = getSciJavaContext().service(OpService.class);
+    private LoggerAdapterForSystemOutErr logger;
 
+    public LoggerAdapterForSystemOutErr getLogger() {
+        if (isNull(logger)) {
+            logger = new LoggerAdapterForSystemOutErr(getLoggerWindow());
+        }
+        return logger;
+    }
+
+    public OpService getImageJOpService() {
+        if (isNull(ops)) {
+            ops = getSciJavaContext().service(OpService.class);
         }
         return ops;
     }

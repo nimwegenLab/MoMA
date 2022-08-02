@@ -58,6 +58,10 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
+		/* initialize logging */
+		dic.getLogger().initialize();
+		dic.getLoggerWindow().initializeConsoleWindow();
+
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
@@ -150,8 +154,7 @@ public class MoMA {
 			}
 
 			// Setting up console window...
-			dic.getLoggerWindow().initConsoleWindow();
-			dic.getLoggerWindow().showConsoleWindow( true );
+			dic.getLoggerWindow().showConsoleWindow(true);
 		}
 
 		if (dic.getFilePaths().getInputImagePath() == null) {

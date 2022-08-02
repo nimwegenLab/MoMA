@@ -26,7 +26,7 @@ public class LoggerWindow {
     public LoggerWindow(String momaVersionString, ConfigurationManager configurationManager) {
         Assert.notNull(momaVersionString, "momaVersionString is null");
         this.configurationManager = Objects.requireNonNull(configurationManager, "configurationManager is null");
-        windowTitle = String.format( "%s Console Window", momaVersionString );
+        windowTitle = String.format("%s Console Window", momaVersionString);
     }
 
     /**
@@ -37,52 +37,52 @@ public class LoggerWindow {
         frameConsoleWindow = new JFrame(windowTitle);
         // frameConsoleWindow.setResizable( false );
         consoleWindowTextArea = new JTextArea();
-        consoleWindowTextArea.setLineWrap( true );
-        consoleWindowTextArea.setWrapStyleWord( true );
+        consoleWindowTextArea.setLineWrap(true);
+        consoleWindowTextArea.setWrapStyleWord(true);
 
-        final int centerX = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
-        final int centerY = ( int ) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2;
+        final int centerX = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2;
+        final int centerY = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2;
         frameConsoleWindow.setBounds(centerX - configurationManager.GUI_CONSOLE_WIDTH / 2, centerY - configurationManager.GUI_HEIGHT / 2, configurationManager.GUI_CONSOLE_WIDTH, configurationManager.GUI_HEIGHT);
-        final JScrollPane scrollPane = new JScrollPane( consoleWindowTextArea );
+        final JScrollPane scrollPane = new JScrollPane(consoleWindowTextArea);
 //		scrollPane.setHorizontalScrollBarPolicy( ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER );
-        scrollPane.setBorder( BorderFactory.createEmptyBorder( 0, 15, 0, 0 ) );
-        frameConsoleWindow.getContentPane().add( scrollPane );
+        scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
+        frameConsoleWindow.getContentPane().add(scrollPane);
 
         final OutputStream out = new OutputStream() {
 
-            private final PrintStream original = new PrintStream( System.out );
+            private final PrintStream original = new PrintStream(System.out);
 
             @Override
-            public void write( final int b ) {
-                updateConsoleTextArea( String.valueOf( ( char ) b ) );
+            public void write(final int b) {
+                updateConsoleTextArea(String.valueOf((char) b));
                 original.print((char) b);
             }
 
             @Override
-            public void write(@NotNull final byte[] b, final int off, final int len ) {
-                updateConsoleTextArea( new String( b, off, len ) );
-                original.print( new String( b, off, len ) );
+            public void write(@NotNull final byte[] b, final int off, final int len) {
+                updateConsoleTextArea(new String(b, off, len));
+                original.print(new String(b, off, len));
             }
 
             @Override
-            public void write(@NotNull final byte[] b ) {
-                write( b, 0, b.length );
+            public void write(@NotNull final byte[] b) {
+                write(b, 0, b.length);
             }
         };
 
-        System.setOut( new PrintStream( out, true ) );
-        System.setErr( new PrintStream( out, true ) );
+        System.setOut(new PrintStream(out, true));
+        System.setErr(new PrintStream(out, true));
     }
 
-    private void updateConsoleTextArea( final String text ) {
-        SwingUtilities.invokeLater(() -> consoleWindowTextArea.append( text ));
+    private void updateConsoleTextArea(final String text) {
+        SwingUtilities.invokeLater(() -> consoleWindowTextArea.append(text));
     }
 
     /**
      * Shows the LoggerWindow
      */
-    public void showConsoleWindow( final boolean show ) {
-        frameConsoleWindow.setVisible( show );
+    public void showConsoleWindow(final boolean show) {
+        frameConsoleWindow.setVisible(show);
     }
 
     /**

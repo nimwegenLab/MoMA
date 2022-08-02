@@ -4,7 +4,6 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
-import com.jug.gui.LoggerWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -29,8 +28,6 @@ import static java.util.Objects.isNull;
  * @author jug
  */
 public class MoMA {
-	private static ConfigurationManager configurationManager;
-
 	static {
 		LegacyInjector.preinit();
 	}
@@ -71,7 +68,7 @@ public class MoMA {
 		}
 
 		/* setup configuration manager and read configuration */
-		configurationManager = dic.getConfigurationManager();
+		ConfigurationManager configurationManager = dic.getConfigurationManager();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 

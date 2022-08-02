@@ -37,7 +37,7 @@ public class MoMA {
 	}
 
 	/**
-	 * This is the pseudo dependency injection container, which we use to clean-up and initialize our instances.
+	 * This is the pseudo dependency injection container, which we use to clean up and initialize our instances.
 	 */
 	public static PseudoDic dic;
 
@@ -53,16 +53,11 @@ public class MoMA {
 	 */
 	public static JFrame guiFrame;
 
-	/**
-	 * Stores a string used to decorate filenames e.g. before export.
-	 */
-	private static String defaultFilenameDecoration;
-
 
 	/**
 	 * PROJECT MAIN
 	 *
-	 * @param args
+	 * @param args command line arguments, which are used when running MoMA as stand-alone.
 	 */
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
@@ -91,7 +86,7 @@ public class MoMA {
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
 				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
-				System.exit(-1);;
+				System.exit(-1);
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
@@ -127,7 +122,7 @@ public class MoMA {
 				}
 			}
 		}
-		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset Moma version that will be written to future exported dataset */
+		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
 
 		loggerWindow = dic.getLoggerWindow();
 
@@ -136,7 +131,7 @@ public class MoMA {
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = dic.getGuiFrame();
 
-			// Iterate over all currently attached monitors and check if sceen
+			// Iterate over all currently attached monitors and check if screen
 			// position is actually possible,
 			// otherwise fall back to the DEFAULT values and ignore the ones
 			// coming from the properties-file.
@@ -157,8 +152,7 @@ public class MoMA {
 				  values in the properties file are not fitting on any of the currently
 				  attached screens.
 				 */
-				int DEFAULT_GUI_POS_Y = 100;
-				configurationManager.GUI_POS_Y = DEFAULT_GUI_POS_Y;
+				configurationManager.GUI_POS_Y = 100;
 			}
 
 			// Setting up console window...
@@ -169,8 +163,7 @@ public class MoMA {
 		if (dic.getFilePaths().getInputImagePath() == null) {
 			dic.getFilePaths().setInputImagePath(dic.getMomaInstance().showStartupDialog(guiFrame, configurationManager.getInputImagePath()));
 		}
-		defaultFilenameDecoration = dic.getFilePaths().getInputImagePath().getFileName().toString();
-		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
+
 		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
 		final File folder = dic.getFilePaths().getInputImagePath().toFile();
@@ -280,33 +273,31 @@ public class MoMA {
 		}
 	}
 
-	private static Object lock = new Object();
+	private static final Object lock = new Object();
 
 	/**
 	 *
 	 * @param guiFrame
 	 *            parent frame
-	 * @param datapath
+	 * @param inputImagePath
 	 *            path to be suggested to open
-	 * @return
+	 * @return user-selected output path
 	 */
-	private Path showStartupDialog( final JFrame guiFrame, final String datapath ) {
+	private Path showStartupDialog( final JFrame guiFrame, final String inputImagePath ) {
 
 		File file;
-		final String parentFolder = datapath.substring( 0, datapath.lastIndexOf( File.separatorChar ) );
-
-		// DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED
+		final String parentFolder = inputImagePath.substring( 0, inputImagePath.lastIndexOf( File.separatorChar ) );
 
 		int decision;
-		if ( datapath.equals( System.getProperty( "user.home" ) ) ) {
+		if ( inputImagePath.equals( System.getProperty( "user.home" ) ) ) {
 			decision = JOptionPane.NO_OPTION;
 		} else {
-			final String message = "Should MoMA be opened with the data found in:\n" + datapath + "\n\nIn case you want to choose a folder please select 'No'...";
+			final String message = "Should MoMA be opened with the data found in:\n" + inputImagePath + "\n\nIn case you want to choose a folder please select 'No'...";
 			final String title = "MoMA Data Folder Selection";
 			decision = JOptionPane.showConfirmDialog( guiFrame, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
 		}
 		if ( decision == JOptionPane.YES_OPTION ) {
-			file = new File( datapath );
+			file = new File( inputImagePath );
 		} else {
 			file = showFolderChooser( guiFrame, parentFolder );
 		}

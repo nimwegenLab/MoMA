@@ -29,11 +29,11 @@ import static java.util.Objects.isNull;
  */
 public class Growthlane {
 	private final List<GrowthlaneFrame> frames;
+	private final IDialogManager dialogManager;
+	private final IConfiguration configurationManager;
+	private final IGlExportFilePaths glFileManager;
+	private final IExportFilePathSetter exportFilePathSetter;
 	private GrowthlaneTrackingILP ilp;
-	private IDialogManager dialogManager;
-	private IConfiguration configurationManager;
-	private IGlExportFilePaths glFileManager;
-	private IExportFilePathSetter exportFilePathSetter;
 
 	/**
 	 * @return the frames

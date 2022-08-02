@@ -1,9 +1,8 @@
 package com.jug;
 
 import com.jug.config.IConfiguration;
-import com.jug.datahandling.GlFileManager;
-import com.jug.datahandling.IExportFilePathSetter;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathSetter;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.export.CellTrackBuilder;
 import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
@@ -31,8 +30,8 @@ public class Growthlane {
 	private final List<GrowthlaneFrame> frames;
 	private final IDialogManager dialogManager;
 	private final IConfiguration configurationManager;
-	private final IGlExportFilePaths glFileManager;
-	private final IExportFilePathSetter exportFilePathSetter;
+	private final IGlExportFilePathGetter glFileManager;
+	private final IGlExportFilePathSetter exportFilePathSetter;
 	private GrowthlaneTrackingILP ilp;
 
 	/**
@@ -52,7 +51,7 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, IGlExportFilePaths glFileManager, IExportFilePathSetter exportFilePathSetter) {
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, IGlExportFilePathGetter glFileManager, IGlExportFilePathSetter exportFilePathSetter) {
 		this.dialogManager = Objects.requireNonNull(dialogManager);
 		this.configurationManager = Objects.requireNonNull(configurationManager);
 		this.glFileManager = Objects.requireNonNull(glFileManager);
@@ -183,7 +182,7 @@ public class Growthlane {
 		}
 	}
 
-	public IGlExportFilePaths getExportPaths() {
+	public IGlExportFilePathGetter getExportPaths() {
 		return glFileManager;
 	}
 

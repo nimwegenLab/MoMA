@@ -16,7 +16,7 @@ import java.util.List;
 import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
-public class GlFileManager implements IGlExportFilePaths, IExportFilePathSetter {
+public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePathSetter {
     private Path globalPropertiesFile;
     private Path inputImagePath;
     private Path outputPath;

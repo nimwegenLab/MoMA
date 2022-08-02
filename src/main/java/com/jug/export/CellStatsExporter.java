@@ -4,7 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
@@ -61,7 +61,7 @@ public class CellStatsExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         exportFilePaths.makeExportDataOutputDirectory();
         exportCellTracks(exportFilePaths.getCellTracksFilePath().toFile()); /* Export cell tracks */

@@ -1,7 +1,7 @@
 package com.jug.export;
 
 import com.jug.Growthlane;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import gurobi.GRBException;
 
 import java.util.List;
@@ -14,7 +14,7 @@ public class ResultExporter {
         this.exporters = Objects.requireNonNull(exporters);
     }
 
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         try {
             for(ResultExporterInterface exporter: exporters){
                 exporter.export(gl, exportFilePaths);

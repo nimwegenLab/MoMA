@@ -2,19 +2,17 @@ package com.jug.export;
 
 import com.jug.Growthlane;
 import com.jug.MoMA;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
-import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.process.LUT;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -23,14 +21,12 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
-import net.imglib2.view.Views;
 
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * This class store the resulting cell masks to a TIFF stack with axes [XYZT]. The slices in Z are as follows:
@@ -54,7 +50,7 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         SegmentRecord firstEntry = cellTrackStartingPoints.get(0);
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);

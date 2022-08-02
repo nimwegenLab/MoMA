@@ -1,8 +1,7 @@
 package com.jug.export;
 
 import com.jug.Growthlane;
-import com.jug.config.ConfigurationManager;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * @param resultData
      */
     @Override
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         if (listOfFrameNumbers.isEmpty()) { /* there are no ground truth frames specified, so we do not do anything */
             return;
         }

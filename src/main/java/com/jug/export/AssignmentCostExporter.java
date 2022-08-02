@@ -2,7 +2,7 @@ package com.jug.export;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -14,12 +14,10 @@ import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.io.*;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * This class exports the cost values for all assignments that belong to the segments that were selected as part of the
@@ -123,7 +121,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         System.out.println("Exporting assignment costs...");
 
         int tmax = growthlane.getFrames().size();

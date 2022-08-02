@@ -1,17 +1,13 @@
 package com.jug.export;
 
 import com.jug.Growthlane;
-import com.jug.datahandling.IGlExportFilePaths;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
-import gurobi.GRB;
 import gurobi.GRBException;
-
-import java.io.File;
-import java.util.function.Supplier;
 
 public class IlpModelExporter implements ResultExporterInterface {
     @Override
-    public void export(Growthlane gl, IGlExportFilePaths exportFilePaths) throws GRBException {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
         gl.getIlp().addStorageLockConstraintsToAssignments();
         IGRBModelAdapter model = gl.getIlp().model;
         model.write(exportFilePaths.getGurobiLpFilePath().toString());

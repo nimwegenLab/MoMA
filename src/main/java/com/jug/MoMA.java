@@ -203,7 +203,7 @@ public class MoMA {
 
 		if (!commandLineArgumentParser.getIfRunningHeadless()) {
 			SwingUtilities.invokeLater(() -> {
-				dic.getLoggerWindow().showConsoleWindow(false);
+				dic.getLoggerWindow().showConsoleWindow(true);
 				guiFrame.add(dic.getMomaGui());
 				guiFrame.setSize(configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT);
 				guiFrame.setLocation(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y);

@@ -29,8 +29,8 @@ public class LoggerWindow {
     }
 
     /**
-     * Created and shows the console window and redirects System.out and
-     * System.err to it.
+     * Creates and shows the console window and redirects 'System.out' and
+     * 'System.err' to it.
      */
     public void initConsoleWindow() {
         frameConsoleWindow = new JFrame(windowTitle);
@@ -69,30 +69,8 @@ public class LoggerWindow {
             }
         };
 
-        final OutputStream err = new OutputStream() {
-
-            private final PrintStream original = new PrintStream( System.out );
-
-            @Override
-            public void write( final int b ) {
-                updateConsoleTextArea( String.valueOf( ( char ) b ) );
-                original.print((char) b);
-            }
-
-            @Override
-            public void write( final byte[] b, final int off, final int len ) {
-                updateConsoleTextArea( new String( b, off, len ) );
-                original.print( new String( b, off, len ) );
-            }
-
-            @Override
-            public void write( final byte[] b ) {
-                write( b, 0, b.length );
-            }
-        };
-
         System.setOut( new PrintStream( out, true ) );
-        System.setErr( new PrintStream( err, true ) );
+        System.setErr( new PrintStream( out, true ) );
     }
 
     private void updateConsoleTextArea( final String text ) {
@@ -107,7 +85,7 @@ public class LoggerWindow {
     }
 
     /**
-     * @return
+     * @return indicates if the log-window is currently visible.
      */
     public boolean isConsoleVisible() {
         return this.frameConsoleWindow.isVisible();

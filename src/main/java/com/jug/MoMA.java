@@ -30,7 +30,6 @@ import static java.util.Objects.isNull;
  */
 public class MoMA {
 	private static ConfigurationManager configurationManager;
-	private static CommandLineArgumentsParser commandLineArgumentParser;
 	private static LoggerWindow loggerWindow;
 
 	static {
@@ -55,16 +54,6 @@ public class MoMA {
 	public static JFrame guiFrame;
 
 	/**
-	 * Path to Moma setting directory
-	 */
-	private static File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
-
-	/**
-	 * Property file in the moma directory the user.
-	 */
-	private static final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
-
-	/**
 	 * Stores a string used to decorate filenames e.g. before export.
 	 */
 	private static String defaultFilenameDecoration;
@@ -79,7 +68,7 @@ public class MoMA {
 		dic = new PseudoDic();
 
 		/* parse command line arguments */
-		commandLineArgumentParser = dic.getCommandLineArgumentParser();
+		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
@@ -99,7 +88,7 @@ public class MoMA {
 			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
-			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
 				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
 				System.exit(-1);;
@@ -110,7 +99,7 @@ public class MoMA {
 		} else {
 			checkPropertiesFileExists(commandLineArgumentParser.getOptionalPropertyFile());
 			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
-			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());

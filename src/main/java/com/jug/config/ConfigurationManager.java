@@ -232,7 +232,21 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
-    public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+    /**
+     * Path to Moma setting directory
+     */
+    private final File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
+
+    /**
+     * Property file in the moma directory the user.
+     */
+    private final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
+
+    public void load(Path optionalPropertyFile) {
+        load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+    }
+
+    private void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
         datasetMomaVersion = props.getProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);

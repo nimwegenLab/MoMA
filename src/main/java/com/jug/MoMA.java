@@ -58,10 +58,6 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
-		/* initialize logging */
-		dic.getLogger().initialize();
-		dic.getLoggerWindow().initializeConsoleWindow();
-
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
@@ -70,6 +66,10 @@ public class MoMA {
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
 			System.exit(-1);
 		}
+
+		/* initialize logging */
+		dic.getLogger().initialize();
+		dic.getLoggerWindow().initializeConsoleWindow();
 
 		/* setup configuration manager and read configuration */
 		ConfigurationManager configurationManager = dic.getConfigurationManager();

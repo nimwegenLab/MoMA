@@ -34,4 +34,8 @@ public interface IGlExportFilePathGetter {
     boolean gurobiMpsFileExists();
 
     Path getGurobiEnvironmentLogFilePath();
+
+    Path getMomaLogFile();
+
+    void makeTrackingDataOutputDirectory();
 }

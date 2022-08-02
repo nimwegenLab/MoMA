@@ -20,9 +20,11 @@ import java.util.Objects;
  */
 public class LoggerAdapterForSystemOutErr {
     private LoggerWindow loggerWindow;
+    private LoggerToFile fileLogger;
 
-    public LoggerAdapterForSystemOutErr(LoggerWindow loggerWindow) {
+    public LoggerAdapterForSystemOutErr(LoggerWindow loggerWindow, LoggerToFile fileLogger) {
         this.loggerWindow = Objects.requireNonNull(loggerWindow, "loggerWindow is null");
+        this.fileLogger = Objects.requireNonNull(fileLogger);
     }
 
     public void initialize() {
@@ -33,12 +35,14 @@ public class LoggerAdapterForSystemOutErr {
             @Override
             public void write(final int b) {
                 loggerWindow.updateConsoleTextArea(String.valueOf((char) b));
+                fileLogger.print(String.valueOf((char) b));
                 original.print((char) b);
             }
 
             @Override
             public void write(@NotNull final byte[] b, final int off, final int len) {
                 loggerWindow.updateConsoleTextArea(new String(b, off, len));
+                fileLogger.print(new String(b, off, len));
                 original.print(new String(b, off, len));
             }
 

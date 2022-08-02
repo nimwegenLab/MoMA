@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
+import static java.util.Objects.isNull;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
 
 public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePathSetter {
@@ -71,6 +72,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         return outputPath;
     }
 
+
     public Path getTrackingDataOutputPath() {
         return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
     }
@@ -79,7 +81,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         return Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__export_data");
     }
 
-    private void makeTrackingDataOutputDirectory() {
+    public void makeTrackingDataOutputDirectory() {
         if(!getTrackingDataOutputPath().toFile().mkdirs()){
             throw new RuntimeException("Could not create the output directory: " + getTrackingDataOutputPath());
         }
@@ -175,6 +177,11 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     @Override
     public Path getGurobiEnvironmentLogFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString(), "gurobi_environment.log");
+    }
+
+    @Override
+    public Path getMomaLogFile() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "moma.log");
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
+import com.jug.logging.LoggerToFile;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
@@ -67,13 +68,22 @@ public class PseudoDic {
         return context;
     }
 
-    private LoggerAdapterForSystemOutErr logger;
+    private LoggerToFile fileLogger;
+
+    private LoggerToFile getFileLogger() {
+        if (isNull(fileLogger)) {
+            fileLogger = new LoggerToFile(getFilePaths());
+        }
+        return fileLogger;
+    }
+
+    private LoggerAdapterForSystemOutErr loggerAdapter;
 
     public LoggerAdapterForSystemOutErr getLogger() {
-        if (isNull(logger)) {
-            logger = new LoggerAdapterForSystemOutErr(getLoggerWindow());
+        if (isNull(loggerAdapter)) {
+            loggerAdapter = new LoggerAdapterForSystemOutErr(getLoggerWindow(), getFileLogger());
         }
-        return logger;
+        return loggerAdapter;
     }
 
     public OpService getImageJOpService() {

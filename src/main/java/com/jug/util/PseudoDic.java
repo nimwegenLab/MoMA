@@ -382,7 +382,7 @@ public class PseudoDic {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new LoggerWindow(this, getConfigurationManager());
+        loggerWindow = new LoggerWindow(getGitVersionProvider().getVersionString(), getConfigurationManager());
         return loggerWindow;
     }
 

@@ -1,16 +1,17 @@
 package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
-import com.jug.util.PseudoDic;
+import org.nd4j.linalg.io.Assert;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.Objects;
 
 public class LoggerWindow {
     private final String windowTitle;
-    private ConfigurationManager configurationManager;
+    private final ConfigurationManager configurationManager;
     /**
      * Frame hosting the console output.
      */
@@ -21,9 +22,10 @@ public class LoggerWindow {
      */
     private JTextArea consoleWindowTextArea;
 
-    public LoggerWindow(PseudoDic dic, ConfigurationManager configurationManager) {
-        windowTitle = String.format( "%s Console Window", dic.getGitVersionProvider().getVersionString() );
-        this.configurationManager = configurationManager;
+    public LoggerWindow(String momaVersionString, ConfigurationManager configurationManager) {
+        Assert.notNull(momaVersionString, "momaVersionString is null");
+        this.configurationManager = Objects.requireNonNull(configurationManager, "configurationManager is null");
+        windowTitle = String.format( "%s Console Window", momaVersionString );
     }
 
     /**

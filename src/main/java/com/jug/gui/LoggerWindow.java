@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
+import org.jetbrains.annotations.NotNull;
 import org.nd4j.linalg.io.Assert;
 
 import javax.swing.*;
@@ -58,13 +59,13 @@ public class LoggerWindow {
             }
 
             @Override
-            public void write( final byte[] b, final int off, final int len ) {
+            public void write(@NotNull final byte[] b, final int off, final int len ) {
                 updateConsoleTextArea( new String( b, off, len ) );
                 original.print( new String( b, off, len ) );
             }
 
             @Override
-            public void write( final byte[] b ) {
+            public void write(@NotNull final byte[] b ) {
                 write( b, 0, b.length );
             }
         };

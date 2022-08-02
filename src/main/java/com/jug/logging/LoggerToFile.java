@@ -2,24 +2,23 @@ package com.jug.logging;
 
 import com.jug.datahandling.IGlExportFilePathGetter;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public class LoggerToFile {
-    private IGlExportFilePathGetter exportFilePaths;
+    private Supplier<File> logFileSupplier;
 
-    public LoggerToFile(IGlExportFilePathGetter exportFilePaths) {
-        this.exportFilePaths = Objects.requireNonNull(exportFilePaths, "exportFilePaths is null");
+    public LoggerToFile(Supplier<File> logFileSupplier) {
+        this.logFileSupplier = Objects.requireNonNull(logFileSupplier, "exportFilePaths is null");
     }
 
     public void print(String toPrint) {
         try {
-            exportFilePaths.makeTrackingDataOutputDirectory();
-            exportFilePaths.getMomaLogFile().toFile().createNewFile();
-            PrintWriter fileStream = new PrintWriter(exportFilePaths.getMomaLogFile().toFile());
+//            exportFilePaths.makeTrackingDataOutputDirectory();
+//            exportFilePaths.getMomaLogFile().toFile().createNewFile();
+            File logFile = logFileSupplier.get();
+            PrintWriter fileStream = new PrintWriter(logFile);
             fileStream.append("this is some test output\n");
 //            fileStream.append(toPrint);
         } catch (FileNotFoundException e) {

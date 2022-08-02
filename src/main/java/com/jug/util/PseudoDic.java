@@ -72,7 +72,7 @@ public class PseudoDic {
 
     private LoggerToFile getFileLogger() {
         if (isNull(fileLogger)) {
-            fileLogger = new LoggerToFile(getFilePaths());
+            fileLogger = new LoggerToFile(() -> getFilePaths().getMomaLogFile());
         }
         return fileLogger;
     }

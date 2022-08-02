@@ -9,6 +9,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -33,6 +34,9 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public String getAnalysisName() { /* TODO-MM-20220728: If this 'analysisName' is null, then we should return a generated name here; I still need to think about how to best do this */
+        if(isNull(analysisName)){
+            return temporaryAnalysisName;
+        }
         return analysisName;
     }
 
@@ -54,7 +58,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         this.inputImagePath = inputImagePath;
     }
 
-    public Path getInputImageParentDirectory() {
+    public Path getInputImageParentDirectoryPath() {
         return getInputImagePath().getParent();
     }
 
@@ -69,19 +73,26 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getOutputPath() {
+        if(isNull(outputPath)){
+            return getInputImageParentDirectoryPath();
+        }
         return outputPath;
     }
 
+    private String temporaryAnalysisName = ".~analysisTmp";
 
     public Path getTrackingDataOutputPath() {
         return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
     }
 
     public Path getExportOutputPath() {
-        return Paths.get(getInputImageParentDirectory().normalize().toString(), getAnalysisName() + "__export_data");
+        return Paths.get(getInputImageParentDirectoryPath().normalize().toString(), getAnalysisName() + "__export_data");
     }
 
     public void makeTrackingDataOutputDirectory() {
+        if (getTrackingDataOutputPath().toFile().exists()) {
+            return;
+        }
         if(!getTrackingDataOutputPath().toFile().mkdirs()){
             throw new RuntimeException("Could not create the output directory: " + getTrackingDataOutputPath());
         }
@@ -180,8 +191,18 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
-    public Path getMomaLogFile() {
-        return Paths.get(getTrackingDataOutputPath().toString(), "moma.log");
+    public File getMomaLogFile() {
+        makeTrackingDataOutputDirectory();
+        File file = Paths.get(getTrackingDataOutputPath().toString(), "moma.log").toFile();
+        if(file.exists()){
+            return file;
+        }
+        try {
+            file.createNewFile();
+            return file;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create log-file: " + file.getAbsolutePath(), e);
+        }
     }
 
     @Override

@@ -80,7 +80,7 @@ public class MoMA {
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
-			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());

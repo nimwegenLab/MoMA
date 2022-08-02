@@ -1,5 +1,6 @@
 package com.jug.datahandling;
 
+import java.io.File;
 import java.nio.file.Path;
 
 public interface IGlExportFilePathGetter {
@@ -35,7 +36,7 @@ public interface IGlExportFilePathGetter {
 
     Path getGurobiEnvironmentLogFilePath();
 
-    Path getMomaLogFile();
+    File getMomaLogFile();
 
     void makeTrackingDataOutputDirectory();
 }

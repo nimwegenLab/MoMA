@@ -5,13 +5,13 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 public class LoggerToFile {
-    private Supplier<File> logFileSupplier;
+    private final Supplier<File> logFileSupplier;
 
     public LoggerToFile(Supplier<File> logFileSupplier) {
         this.logFileSupplier = Objects.requireNonNull(logFileSupplier, "exportFilePaths is null");
     }
 
-    public void printlnWithDateTime(String toPrint){
+    public void printlnWithDateTime(String toPrint) {
         if (toPrint.isEmpty()) {
             print(toPrint + "\n"); /* do not prepend date-time to empty lines */
             return;
@@ -19,7 +19,7 @@ public class LoggerToFile {
         print(DateTimeProvider.getDateTime() + "\t" + toPrint + "\n");
     }
 
-    public void printWithDateTime(String toPrint){
+    public void printWithDateTime(String toPrint) {
         if (toPrint.isEmpty()) {
             print(toPrint); /* do not prepend date-time to empty lines */
             return;
@@ -27,7 +27,7 @@ public class LoggerToFile {
         print(DateTimeProvider.getDateTime() + "\t" + toPrint);
     }
 
-    public void println(String toPrint){
+    public void println(String toPrint) {
         print(toPrint + "\n");
     }
 

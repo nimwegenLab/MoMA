@@ -9,7 +9,7 @@ import java.io.PrintStream;
 import java.util.Objects;
 
 /**
- * This is a hacky adapter class to allow for logging output to 'System.out' and 'System.err' to disk and the
+ * This adapter class allows logging output to 'System.out' and 'System.err' to disk and the
  * logger-window (implemented in LoggerWindow.class).
  *
  * Currently, there is no logging framework in place to allow for decent handling of logging. Instead, everything is
@@ -17,7 +17,7 @@ import java.util.Objects;
  * of the logs to disk is implemented.
  *
  * The goal of this class is to improve on the situation (as a stop gap) by making the output to
- * 'System.out' and 'System.err' available to other classes.
+ * 'System.out' and 'System.err' available to other logging classes (and hence write it to disk).
  */
 public class LoggerAdapterForSystemOutErr {
     private LoggerWindow loggerWindow;
@@ -25,7 +25,7 @@ public class LoggerAdapterForSystemOutErr {
 
     public LoggerAdapterForSystemOutErr(LoggerWindow loggerWindow, LoggerToFile fileLogger) {
         this.loggerWindow = Objects.requireNonNull(loggerWindow, "loggerWindow is null");
-        this.fileLogger = Objects.requireNonNull(fileLogger);
+        this.fileLogger = Objects.requireNonNull(fileLogger, "fileLogger is null");
     }
 
     private PrintStream getSystemOutputStream() {

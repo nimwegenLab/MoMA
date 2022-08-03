@@ -79,6 +79,8 @@ public class MoMA {
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
 			dic.getLogger().println("");
 			dic.getLogger().println("######################################################");
 			dic.getLogger().printlnWithTimeStamp("Reloading previous analysis:");
@@ -86,8 +88,6 @@ public class MoMA {
 			dic.getLogger().println("analysis name: " + commandLineArgumentParser.getAnalysisName());
 			dic.getLogger().println("######################################################");
 			dic.getLogger().println("");
-			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());

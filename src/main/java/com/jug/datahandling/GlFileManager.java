@@ -98,6 +98,25 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         }
     }
 
+    String htmlOutputFileBaseName = "CellTracksOverview";
+
+    @Override
+    public File getHtmlIndexFilePath() {
+        return Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName + ".html").toFile();
+    }
+
+    @Override
+    public File getHtmlImageDirectoryPath() {
+        File file = Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName).toFile();
+        if (file.exists()) {
+            return file;
+        }
+        if (!file.mkdirs()) {
+            throw new RuntimeException("Could not create the output directory: " + file.getAbsolutePath());
+        }
+        return file;
+    }
+
     @Override
     public void makeExportDataOutputDirectory() {
         if (getExportOutputPath().toFile().exists()) {

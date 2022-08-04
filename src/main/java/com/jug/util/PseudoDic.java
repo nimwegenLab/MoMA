@@ -430,4 +430,13 @@ public class PseudoDic {
     public ResultExporterInterface getCurationStatsExporter() {
         return new CurationStatsExporter();
     }
+
+    HtmlOverviewExporter htmlOverviewExporter;
+
+    public HtmlOverviewExporter getHtmlOverviewExporterWrapper() {
+        if (isNull(htmlOverviewExporter)) {
+            htmlOverviewExporter = new HtmlOverviewExporter(getMomaGui());
+        }
+        return htmlOverviewExporter;
+    }
 }

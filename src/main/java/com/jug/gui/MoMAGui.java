@@ -6,7 +6,7 @@ import com.jug.commands.ICommand;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
-import com.jug.export.HtmlOverviewExporter;
+import com.jug.export.HtmlOverviewExporterWriter;
 import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
@@ -895,6 +895,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporters.add(MoMA.dic.getCurationStatsExporter());
         exporters.add(MoMA.dic.getCellStatsExporter());
         exporters.add(MoMA.dic.getCellMaskExporter());
+        exporters.add(MoMA.dic.getHtmlOverviewExporterWrapper());
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
@@ -1040,7 +1041,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final String path = htmlFileToSaveTo.getParent();
         final String imgpath = path + "/imgs";
 
-        final HtmlOverviewExporter exporter = new HtmlOverviewExporter(this, htmlFileToSaveTo, imgpath, startFrame, endFrame);
+        final HtmlOverviewExporterWriter exporter = new HtmlOverviewExporterWriter(this, htmlFileToSaveTo, imgpath, startFrame, endFrame);
         exporter.run();
 
         System.out.println("...done!");

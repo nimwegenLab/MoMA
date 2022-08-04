@@ -268,7 +268,6 @@ public class MoMA {
 			if (commandLineArgumentParser.isTrackOnly()) {
 				dic.getMomaGui().exportTrackingData();
 			} else {
-				dic.getMomaGui().exportHtmlOverview();
 				dic.getMomaGui().exportDataFiles();
 			}
 

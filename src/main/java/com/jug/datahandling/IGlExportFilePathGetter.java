@@ -39,4 +39,8 @@ public interface IGlExportFilePathGetter {
     File getMomaLogFile();
 
     void makeTrackingDataOutputDirectory();
+
+    File getHtmlIndexFilePath();
+
+    File getHtmlImageDirectoryPath();
 }

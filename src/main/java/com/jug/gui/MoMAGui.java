@@ -59,7 +59,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private final IImageProvider imageProvider;
     public JSlider sliderGL;
 
-    public GrowthlaneViewer growthLaneViewerCenter;
+    private GrowthlaneViewer centeredGrowthLaneViewer;
     public AssignmentsEditorViewer assignmentsEditorViewerUsedForHtmlExport;
     private SegmentationEditorPanel segmentationEditorPanelCenter;
     private boolean showSegmentationAnnotations = true; /* show helper lines in IntervalViews? */
@@ -507,7 +507,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             assignmentEditorPanels.add(assignmentEditorPanel);
 
             if (time_offset == 0) {
-                growthLaneViewerCenter = segmentationEditorPanel.getGrowthlaneViewer();
+                centeredGrowthLaneViewer = segmentationEditorPanel.getGrowthlaneViewer();
                 segmentationEditorPanelCenter = segmentationEditorPanel;
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
@@ -1091,5 +1091,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             dataToDisplayChanged();
         });
         t.start();
+    }
+
+    public GrowthlaneViewer getCenteredGrowthLaneViewer() {
+        return centeredGrowthLaneViewer;
     }
 }

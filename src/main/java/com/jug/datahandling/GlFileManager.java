@@ -100,6 +100,9 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @Override
     public void makeExportDataOutputDirectory() {
+        if (getExportOutputPath().toFile().exists()) {
+            return;
+        }
         if(!getExportOutputPath().toFile().mkdirs()){
             throw new RuntimeException("Could not create the output directory: " + getExportOutputPath());
         }

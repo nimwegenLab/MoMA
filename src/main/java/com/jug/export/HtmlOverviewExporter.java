@@ -58,7 +58,7 @@ public class HtmlOverviewExporter {
                 gui.setCenterTime(i);
                 try {
                     String fn1 = String.format("/" + basename + "_gl_%02d_glf_%03d.png", gui.sliderGL.getValue(), i);
-                    gui.growthLaneViewerCenter.exportScreenImage(imgpath + fn1);
+                    gui.getCenteredGrowthLaneViewer().exportScreenImage(imgpath + fn1);
 //					final String fn2 = String.format( "/" + basename + "_gl_%02d_glf_%03d_segmentation.png", gui.sliderGL.getValue(), i );
 //					gui.imgCanvasActiveCenter.exportSegmentationImage( imgpath + fn2 );
                     row1.append("			<th><font size='+2'>t=").append(i).append("</font></th>\n");
@@ -67,7 +67,7 @@ public class HtmlOverviewExporter {
 
                     if (i < endFrame) {
                         fn1 = String.format("/" + basename + "_gl_%02d_assmnts_%03d.png", gui.sliderGL.getValue(), i);
-                        Util.saveImage(Util.getImageOf(gui.assignmentsEditorViewerUsedForHtmlExport.getActiveAssignmentsForHtmlExport(), gui.growthLaneViewerCenter.getWidth(), gui.growthLaneViewerCenter.getHeight()), imgpath + fn1);
+                        Util.saveImage(Util.getImageOf(gui.assignmentsEditorViewerUsedForHtmlExport.getActiveAssignmentsForHtmlExport(), gui.getCenteredGrowthLaneViewer().getWidth(), gui.getCenteredGrowthLaneViewer().getHeight()), imgpath + fn1);
                         row1.append("			<th></th>\n");
                         row2.append("			<td><img src='./imgs").append(fn1).append("'></td>\n"); // + "' width='10' height='" + this.imgCanvasActiveCenter.getHeight()
 //						row3 += "			<td><img src='./imgs" + fn1 + "'></td>\n"; // + "' width='10' height='" + this.imgCanvasActiveCenter.getHeight()

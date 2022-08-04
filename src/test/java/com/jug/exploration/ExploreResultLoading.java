@@ -18,7 +18,8 @@ public class ExploreResultLoading {
 //        tests._dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__test_reloading();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__run_without_mm_properties();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
-        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
+        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading_headless();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__debug_issue_with_headless_run();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__component_tree_generation_stability_test();
@@ -83,6 +84,13 @@ public class ExploreResultLoading {
         String analysisName = "test_output";
         Path reload_folder_path = Paths.get(datasets_base_path, subfolder);
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading_headless() {
+        String subfolder = "lis_20211026__Pos7_GL12";
+        String analysisName = "test_output";
+        Path reload_folder_path = Paths.get(datasets_base_path, subfolder);
+        startMoma(false, null, null, null, null, false, new String[]{"-headless", "-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_full_cycle_of_trackonly_then_curation_then_export() throws Exception {

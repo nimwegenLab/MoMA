@@ -66,17 +66,7 @@ public class LoggerAdapterForSystemOutErr {
 
     public void print(String toPrint) {
         fileLogger.printWithDateTime(toPrint);
-        loggerWindow.updateConsoleTextArea(toPrint);
-        getSystemOutputStream().print(toPrint);
-    }
-
-    public void println(String toPrint) {
-        fileLogger.printlnWithDateTime(toPrint);
         loggerWindow.updateConsoleTextArea(toPrint + "\n");
         getSystemOutputStream().print(toPrint + "\n");
-    }
-
-    public void printlnWithTimeStamp(String toPrint) {
-        print(DateTimeProvider.getDateTime() + "\t" + toPrint + "\n");
     }
 }

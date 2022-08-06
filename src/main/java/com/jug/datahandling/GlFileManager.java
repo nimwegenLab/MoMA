@@ -102,12 +102,12 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @Override
     public File getHtmlIndexFilePath() {
-        return Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName + ".html").toFile();
+        return Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName + "__" + getInputTiffFileName() + ".html").toFile();
     }
 
     @Override
     public File getHtmlImageDirectoryPath() {
-        File file = Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName).toFile();
+        File file = Paths.get(getExportOutputPath().toString(), htmlOutputFileBaseName + "__" + getInputTiffFileName()).toFile();
         if (file.exists()) {
             return file;
         }
@@ -172,9 +172,8 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @NotNull
     public String getProbabilityImageFilePath() {
-        String filename = getInputTiffFileName();
         Path outputFolderPath = getTrackingDataOutputPath();
-        return outputFolderPath + "/probability_maps__" + filename + ".tif";
+        return outputFolderPath + "/probability_maps.tif";
     }
 
     @NotNull
@@ -249,7 +248,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @Override
     public Path getCurationStatsFilePath() {
-        return Paths.get(getTrackingDataOutputPath().toString(), "curation__" + getInputTiffFileName() + ".moma");
+        return Paths.get(getTrackingDataOutputPath().toString(), "curation.moma");
     }
 
     @Override

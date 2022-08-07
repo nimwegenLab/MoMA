@@ -8,12 +8,16 @@ import java.nio.file.Paths;
 
 public class CommandLineArgumentsParser {
     private boolean runningAsFijiPlugin;
-    private Path inputFolder;
+
+    /**
+     * This can be a either a path to the input TIFF file or the folder containing the TIFF-file.
+     */
+    private Path inputImagePath;
     /**
      * Property file provided by user through as command-line option.
      */
     private Path optionalPropertyFile = null;
-    private String reloadFolderPath = null;
+    private Path reloadFolderPath = null;
     private int userDefinedMinTime = -1;
     private int userDefinedMaxTime = -1;
     // - - - - - - - - - - - - - -
@@ -25,6 +29,7 @@ public class CommandLineArgumentsParser {
 
     private boolean reloadingData;
     private boolean trackOnly;
+    private String analysisName;
 
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
@@ -65,6 +70,9 @@ public class CommandLineArgumentsParser {
         final Option outfolder = new Option( "o", "outfolder", true, "folder to write preprocessed data to (equals infolder if not given)" );
         outfolder.setRequired( false );
 
+        final Option analysisNameOption = new Option( "a", "analysis", true, "name of the analysis; name will be prepended to the corresponding output folder; mutually exclusive with option -o/-outfolder" );
+        analysisNameOption.setRequired( false );
+
         final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
         userProps.setRequired( false );
 
@@ -77,6 +85,7 @@ public class CommandLineArgumentsParser {
         options.addOption(timeLast);
         options.addOption(infolder);
         options.addOption(outfolder);
+        options.addOption(analysisNameOption);
         options.addOption(userProps);
         // get the commands parsed
         CommandLine cmd = null;
@@ -126,11 +135,14 @@ public class CommandLineArgumentsParser {
 
         if (cmd.hasOption("reload")) {
             reloadingData = true;
-            reloadFolderPath = cmd.getOptionValue("reload");
-            return; /* if we are reloading previous analysis we do not need to read the cmd arguments below, which are mutually exclusive to reloading */
+            reloadFolderPath = Paths.get(cmd.getOptionValue("reload"));
         }
 
         if (cmd.hasOption("trackonly")) {
+            if(cmd.hasOption("reload")){
+                System.out.println("Error: Options 'reload' and 'trackonly' are mutually exclusive.");
+                System.exit(-1);
+            }
             if (!cmd.hasOption("headless")) {
                 System.out.println("Error: Option -trackonly must be combined with -headless.");
                 System.exit(-1);
@@ -139,17 +151,8 @@ public class CommandLineArgumentsParser {
         }
 
         if ( cmd.hasOption( "i" ) ) {
-            inputFolder = Paths.get(cmd.getOptionValue("i"));
-			/*
-			if ( !inputFolder.isDirectory() ) {
-				System.out.println( "Error: Input folder is not a directory!" );
-				if (!running_as_Fiji_plugin) {
-					System.exit( 2 );
-				} else {
-					return;
-				}
-			}*/
-            if ( !Files.isReadable(inputFolder) ) {
+            inputImagePath = Paths.get(cmd.getOptionValue("i"));
+            if ( !Files.isReadable(inputImagePath) ) {
                 System.out.println( "Error: Input folder cannot be read!" );
                 if (!runningAsFijiPlugin) {
                     System.exit( 2 );
@@ -159,38 +162,38 @@ public class CommandLineArgumentsParser {
             }
         }
 
+        if(!cmd.hasOption("a") && !cmd.hasOption("outfolder")) {
+            System.out.println("Error: Options 'analysis' and 'outfolder' are mutually exclusive.");
+            System.exit(-1);
+        }
+        if(cmd.hasOption("analysis") && cmd.hasOption("outfolder")){
+            System.out.println("Error: Options 'analysis' and 'outfolder' are mutually exclusive.");
+            System.exit(-1);
+        }
+
+        if(cmd.hasOption("analysis")){
+            analysisName = cmd.getOptionValue("analysis");
+        }
+
         Path outputFolder;
-        if ( !cmd.hasOption( "o" ) ) {
-            if ( inputFolder == null ) {
-                System.out.println( "Error: Input folder not specified. Please use the -i argument to do so and check your command line arguments." );
+        if (cmd.hasOption("o")) {
+            outputFolder = Paths.get(cmd.getOptionValue("o"));
+            if (!Files.isDirectory(outputFolder)) {
+                System.out.println("Error: Output folder is not a directory.");
                 if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
+                    System.exit(3);
                 } else {
                     return;
                 }
             }
-            outputFolder = inputFolder;
-            outputPath = outputFolder.toAbsolutePath();
-        } else {
-            outputFolder = Paths.get( cmd.getOptionValue( "o" ) );
-
-            if ( !Files.isDirectory(outputFolder) ) {
-                System.out.println( "Error: Output folder is not a directory." );
+            if (!Files.isWritable(outputFolder)) {
+                System.out.println("Error: Output folder cannot be written to.");
                 if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
+                    System.exit(3);
                 } else {
                     return;
                 }
             }
-            if ( !Files.isWritable(outputFolder) ) {
-                System.out.println( "Error: Output folder cannot be written to." );
-                if (!runningAsFijiPlugin) {
-                    System.exit( 3 );
-                } else {
-                    return;
-                }
-            }
-
             outputPath = outputFolder.toAbsolutePath();
         }
 
@@ -206,8 +209,12 @@ public class CommandLineArgumentsParser {
         }
     }
 
-    public Path getInputFolder() {
-        return inputFolder;
+    public Path getInputDirectory() {
+        return inputImagePath.getParent();
+    }
+
+    public Path getInputImagePath() {
+        return inputImagePath;
     }
 
     public boolean getIfRunningHeadless() {
@@ -240,7 +247,11 @@ public class CommandLineArgumentsParser {
         return trackOnly;
     }
 
-    public String getReloadFolderPath() {
+    public Path getReloadFolderPath() {
         return reloadFolderPath;
+    }
+
+    public String getAnalysisName() {
+        return analysisName;
     }
 }

@@ -1,14 +1,11 @@
 package com.jug.lp;
 
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author jug

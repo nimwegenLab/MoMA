@@ -4,7 +4,6 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
-import com.jug.gui.LoggerWindow;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -23,20 +22,18 @@ import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author jug
  */
 public class MoMA {
-	private static ConfigurationManager configurationManager;
-	private static CommandLineArgumentsParser commandLineArgumentParser;
-	private static LoggerWindow loggerWindow;
-
 	static {
 		LegacyInjector.preinit();
 	}
 
 	/**
-	 * This is the pseudo dependency injection container, which we use to clean-up and initialize our instances.
+	 * This is the pseudo dependency injection container, which we use to clean up and initialize our instances.
 	 */
 	public static PseudoDic dic;
 
@@ -52,59 +49,70 @@ public class MoMA {
 	 */
 	public static JFrame guiFrame;
 
-	/**
-	 * Path to Moma setting directory
-	 */
-	private static File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
-
-	/**
-	 * Property file in the moma directory the user.
-	 */
-	private static final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
-
-	/**
-	 * Stores a string used to decorate filenames e.g. before export.
-	 */
-	private static String defaultFilenameDecoration;
-
 
 	/**
 	 * PROJECT MAIN
 	 *
-	 * @param args
+	 * @param args command line arguments, which are used when running MoMA as stand-alone.
 	 */
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
 		/* parse command line arguments */
-		commandLineArgumentParser = dic.getCommandLineArgumentParser();
+		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
-		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) return;
+		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
+			System.exit(-1);
+		}
+
+		/* initialize logging */
+		dic.getLogger().initialize();
+		dic.getLoggerWindow().initializeConsoleWindow();
 
 		/* setup configuration manager and read configuration */
-		configurationManager = dic.getConfigurationManager();
+		ConfigurationManager configurationManager = dic.getConfigurationManager();
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
 		final DatasetProperties datasetProperties = new DatasetProperties();
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
-			dic.getFilePaths().setLoadingDirectoryPath(commandLineArgumentParser.getReloadFolderPath());
-			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
+			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
+			dic.getLogger().print("");
+			dic.getLogger().print("######################################################");
+			dic.getLogger().print("Reloading previous analysis:");
+			dic.getLogger().print("input path: " + commandLineArgumentParser.getReloadFolderPath());
+			dic.getLogger().print("analysis name: " + commandLineArgumentParser.getAnalysisName());
+			dic.getLogger().print("######################################################");
+			dic.getLogger().print("");
+			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
+			checkPropertiesFileExists(prop_file);
+			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
 				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
-				return;
+				System.exit(-1);
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
-			dic.getFilePaths().setPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
-			configurationManager.load(dic.getFilePaths().getPropertiesFile(), userMomaHomePropertyFile, momaUserDirectory);
+			checkPropertiesFileExists(commandLineArgumentParser.getOptionalPropertyFile());
+			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputImagePath());
+			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
+			dic.getLogger().print("");
+			dic.getLogger().print("######################################################");
+			dic.getLogger().print("Running first time analysis:");
+			dic.getLogger().print("input path: " + commandLineArgumentParser.getInputImagePath());
+			String analysisName = isNull(commandLineArgumentParser.getAnalysisName()) ? "Not specified by user." : commandLineArgumentParser.getAnalysisName();
+			dic.getLogger().print("analysis name: " + analysisName);
+			dic.getLogger().print("######################################################");
+			dic.getLogger().print("");
+			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
+			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
-			dic.getFilePaths().setInputImagePath(commandLineArgumentParser.getInputFolder());
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			configurationManager.setMinTime(datasetProperties.getMinTime());
@@ -128,18 +136,15 @@ public class MoMA {
 					throw new RuntimeException("maximum value of user-specified time range is invalid.");
 				}
 			}
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getOutputPath());
 		}
-		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset Moma version that will be written to future exported dataset */
-
-		loggerWindow = dic.getLoggerWindow();
+		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
 
 		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = dic.getGuiFrame();
 
-			// Iterate over all currently attached monitors and check if sceen
+			// Iterate over all currently attached monitors and check if screen
 			// position is actually possible,
 			// otherwise fall back to the DEFAULT values and ignore the ones
 			// coming from the properties-file.
@@ -160,20 +165,17 @@ public class MoMA {
 				  values in the properties file are not fitting on any of the currently
 				  attached screens.
 				 */
-				int DEFAULT_GUI_POS_Y = 100;
-				configurationManager.GUI_POS_Y = DEFAULT_GUI_POS_Y;
+				configurationManager.GUI_POS_Y = 100;
 			}
 
 			// Setting up console window...
-			loggerWindow.initConsoleWindow();
-			loggerWindow.showConsoleWindow( true );
+			dic.getLoggerWindow().showConsoleWindow(true);
 		}
 
 		if (dic.getFilePaths().getInputImagePath() == null) {
 			dic.getFilePaths().setInputImagePath(dic.getMomaInstance().showStartupDialog(guiFrame, configurationManager.getInputImagePath()));
 		}
-		defaultFilenameDecoration = dic.getFilePaths().getInputImagePath().getFileName().toString();
-		System.out.println( "Default filename decoration = " + defaultFilenameDecoration );
+
 		configurationManager.setImagePath(dic.getFilePaths().getInputImagePath().toAbsolutePath().toString());
 
 		final File folder = dic.getFilePaths().getInputImagePath().toFile();
@@ -219,7 +221,7 @@ public class MoMA {
 
 		if (!commandLineArgumentParser.getIfRunningHeadless()) {
 			SwingUtilities.invokeLater(() -> {
-				loggerWindow.showConsoleWindow(false);
+				dic.getLoggerWindow().showConsoleWindow(false);
 				guiFrame.add(dic.getMomaGui());
 				guiFrame.setSize(configurationManager.GUI_WIDTH, configurationManager.GUI_HEIGHT);
 				guiFrame.setLocation(configurationManager.GUI_POS_X, configurationManager.GUI_POS_Y);
@@ -264,10 +266,9 @@ public class MoMA {
 		} else {
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
-				dic.getMomaGui().exportTrackingData(dic.getFilePaths().getOutputPath().toFile());
+				dic.getMomaGui().exportTrackingData();
 			} else {
-				dic.getMomaGui().exportHtmlOverview();
-				dic.getMomaGui().exportDataFiles(dic.getFilePaths().getOutputPath().toFile());
+				dic.getMomaGui().exportDataFiles();
 			}
 
 			if (!runningAsFijiPlugin) {
@@ -276,33 +277,38 @@ public class MoMA {
 		}
 	}
 
-	private static Object lock = new Object();
+	private static void checkPropertiesFileExists(Path optionalPropertiesFilePath) {
+		if (!isNull(optionalPropertiesFilePath) && !optionalPropertiesFilePath.toFile().exists()) {
+			System.out.println("ERROR: Properties file does not exist (check argument -p): " + optionalPropertiesFilePath); /* TODO-MM-20220729: create a class that validates user-inputs/command-line argument combinations and values */
+			System.exit(-1);
+		}
+	}
+
+	private static final Object lock = new Object();
 
 	/**
 	 *
 	 * @param guiFrame
 	 *            parent frame
-	 * @param datapath
+	 * @param inputImagePath
 	 *            path to be suggested to open
-	 * @return
+	 * @return user-selected output path
 	 */
-	private Path showStartupDialog( final JFrame guiFrame, final String datapath ) {
+	private Path showStartupDialog( final JFrame guiFrame, final String inputImagePath ) {
 
 		File file;
-		final String parentFolder = datapath.substring( 0, datapath.lastIndexOf( File.separatorChar ) );
-
-		// DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED --- DATA TO BE LOADED
+		final String parentFolder = inputImagePath.substring( 0, inputImagePath.lastIndexOf( File.separatorChar ) );
 
 		int decision;
-		if ( datapath.equals( System.getProperty( "user.home" ) ) ) {
+		if ( inputImagePath.equals( System.getProperty( "user.home" ) ) ) {
 			decision = JOptionPane.NO_OPTION;
 		} else {
-			final String message = "Should MoMA be opened with the data found in:\n" + datapath + "\n\nIn case you want to choose a folder please select 'No'...";
+			final String message = "Should MoMA be opened with the data found in:\n" + inputImagePath + "\n\nIn case you want to choose a folder please select 'No'...";
 			final String title = "MoMA Data Folder Selection";
 			decision = JOptionPane.showConfirmDialog( guiFrame, message, title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE );
 		}
 		if ( decision == JOptionPane.YES_OPTION ) {
-			file = new File( datapath );
+			file = new File( inputImagePath );
 		} else {
 			file = showFolderChooser( guiFrame, parentFolder );
 		}
@@ -370,12 +376,5 @@ public class MoMA {
 	 */
 	public static MoMAGui getGui() {
 		return dic.getMomaGui();
-	}
-
-	/**
-	 * @return the defaultFilenameDecoration
-	 */
-	public static String getDefaultFilenameDecoration() {
-		return defaultFilenameDecoration;
 	}
 }

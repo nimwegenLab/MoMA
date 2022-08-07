@@ -1,6 +1,5 @@
 package com.jug.lp;
 
-import com.jug.export.FactorGraphFileBuilder_SCALAR;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;

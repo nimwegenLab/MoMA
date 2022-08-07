@@ -7,13 +7,15 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.GlDataLoader;
 import com.jug.datahandling.IImageProvider;
 import com.jug.datahandling.VersionCompatibilityChecker;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
+import com.jug.logging.LoggerAdapterForSystemOutErr;
+import com.jug.logging.LoggerToFile;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
@@ -28,8 +30,6 @@ import org.scijava.convert.ConvertService;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -68,10 +68,27 @@ public class PseudoDic {
         return context;
     }
 
-    public OpService getImageJOpService() {
-        if (ops == null) {
-            ops = getSciJavaContext().service(OpService.class);
+    private LoggerToFile fileLogger;
 
+    private LoggerToFile getFileLogger() {
+        if (isNull(fileLogger)) {
+            fileLogger = new LoggerToFile(() -> getFilePaths().getMomaLogFile());
+        }
+        return fileLogger;
+    }
+
+    private LoggerAdapterForSystemOutErr loggerAdapter;
+
+    public LoggerAdapterForSystemOutErr getLogger() {
+        if (isNull(loggerAdapter)) {
+            loggerAdapter = new LoggerAdapterForSystemOutErr(getLoggerWindow(), getFileLogger());
+        }
+        return loggerAdapter;
+    }
+
+    public OpService getImageJOpService() {
+        if (isNull(ops)) {
+            ops = getSciJavaContext().service(OpService.class);
         }
         return ops;
     }
@@ -207,11 +224,11 @@ public class PseudoDic {
     }
 
     public CellMaskExporter getCellMaskExporter() {
-        return new CellMaskExporter(getImglib2utils(), getOverlayUtils(), () -> MoMA.getDefaultFilenameDecoration());
+        return new CellMaskExporter(getImglib2utils(), getOverlayUtils());
     }
 
     public IlpModelExporter getIlpModelExporter() {
-        return new IlpModelExporter(() -> MoMA.getDefaultFilenameDecoration());
+        return new IlpModelExporter();
     }
 
     private GroundTruthFramesExporter groundTruthFramesExporter;
@@ -220,7 +237,7 @@ public class PseudoDic {
         if (groundTruthFramesExporter != null) {
             return groundTruthFramesExporter;
         }
-        groundTruthFramesExporter = new GroundTruthFramesExporter(() -> MoMA.getDefaultFilenameDecoration(), getConfigurationManager()); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
+        groundTruthFramesExporter = new GroundTruthFramesExporter(); /* we pass a supplier here, because at this point in the instantiation MoMA.getDefaultFilenameDecoration() still Null; once instantiation is clean up, this should not be necessary anymore */
         return groundTruthFramesExporter;
     }
 
@@ -237,7 +254,7 @@ public class PseudoDic {
 
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
-            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), () -> MoMA.getDefaultFilenameDecoration(), getComponentProperties(), getCostFactory());
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), getComponentProperties(), getCostFactory());
         }
         return assignmentCostExporter;
     }
@@ -384,7 +401,7 @@ public class PseudoDic {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new LoggerWindow(this, getConfigurationManager());
+        loggerWindow = new LoggerWindow(getGitVersionProvider().getVersionString(), getConfigurationManager());
         return loggerWindow;
     }
 
@@ -397,13 +414,13 @@ public class PseudoDic {
         return commandLineArgumentParser;
     }
 
-    FilePaths filePaths;
+    GlFileManager glFileManager;
 
-    public FilePaths getFilePaths() {
-        if (isNull(filePaths)) {
-            filePaths = new FilePaths();
+    public GlFileManager getFilePaths() {
+        if (isNull(glFileManager)) {
+            glFileManager = new GlFileManager();
         }
-        return filePaths;
+        return glFileManager;
     }
 
     public ResultExporterInterface getMMPropertiesExporter() {
@@ -411,6 +428,15 @@ public class PseudoDic {
     }
 
     public ResultExporterInterface getCurationStatsExporter() {
-        return new CurationStatsExporter(getConfigurationManager());
+        return new CurationStatsExporter();
+    }
+
+    HtmlOverviewExporter htmlOverviewExporter;
+
+    public HtmlOverviewExporter getHtmlOverviewExporterWrapper() {
+        if (isNull(htmlOverviewExporter)) {
+            htmlOverviewExporter = new HtmlOverviewExporter(getMomaGui());
+        }
+        return htmlOverviewExporter;
     }
 }

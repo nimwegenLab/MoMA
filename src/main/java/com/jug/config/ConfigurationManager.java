@@ -232,7 +232,21 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
 
-    public void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
+    /**
+     * Path to Moma setting directory
+     */
+    private final File momaUserDirectory = new File(System.getProperty("user.home") + "/.moma");
+
+    /**
+     * Property file in the moma directory the user.
+     */
+    private final File userMomaHomePropertyFile = new File(momaUserDirectory.getPath() + "/mm.properties");
+
+    public void load(Path optionalPropertyFile) {
+        load(optionalPropertyFile, userMomaHomePropertyFile, momaUserDirectory);
+    }
+
+    private void load(Path optionalPropertyFile, File userMomaHomePropertyFile, File momaUserDirectory) {
         props = loadParams(isNull(optionalPropertyFile) ? null : optionalPropertyFile.toFile(), userMomaHomePropertyFile, momaUserDirectory);
 
         datasetMomaVersion = props.getProperty("GENERATED_BY_MOMA_VERSION", datasetMomaVersion);
@@ -476,34 +490,40 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     }
 
     public String getInputImagePath(){
-        return props.getProperty( "import_path", System.getProperty( "user.home" ) );
+        return props.getProperty( "IMPORT_PATH", System.getProperty( "user.home" ) );
     }
 
     public void setImagePath(String imagePath){
-        props.setProperty( "import_path", imagePath);
+        props.setProperty( "IMPORT_PATH", imagePath);
     }
 
     /**
-     * Set the minimum value of the time-range that will be analyzed.
+     * Set minimum value of the time-range that will be analyzed.
      * @param minTime
      */
     public void setMinTime(int minTime) {
         this.minTime = minTime;
     }
 
+    /**
+     * Get minimum value of the time-range that will be analyzed.
+     */
     @Override
     public int getMinTime() {
         return minTime;
     }
 
     /**
-     * Set the maximum value of the time-range that will be analyzed.
+     * Set maximum value of the time-range that will be analyzed.
      * @param maxTime
      */
     public void setMaxTime(int maxTime) {
         this.maxTime = maxTime;
     }
 
+    /**
+     * Get maximum value of the time-range that will be analyzed.
+     */
     @Override
     public int getMaxTime() {
         return maxTime;
@@ -521,7 +541,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     @Override
     public String getPathForAutosaving() {
-        return props.getProperty("import_path") + "/--autosave.moma";
+        return props.getProperty("IMPORT_PATH") + "/--autosave.moma";
     }
 
     @Override

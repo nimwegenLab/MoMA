@@ -1,7 +1,10 @@
 package com.jug;
 
 import com.jug.config.IConfiguration;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.IGlExportFilePathSetter;
+import com.jug.datahandling.IGlExportFilePathGetter;
+import com.jug.export.CellTrackBuilder;
+import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
@@ -14,8 +17,9 @@ import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Objects.isNull;
 
@@ -24,10 +28,11 @@ import static java.util.Objects.isNull;
  */
 public class Growthlane {
 	private final List<GrowthlaneFrame> frames;
+	private final IDialogManager dialogManager;
+	private final IConfiguration configurationManager;
+	private final IGlExportFilePathGetter glFileManager;
+	private final IGlExportFilePathSetter exportFilePathSetter;
 	private GrowthlaneTrackingILP ilp;
-	private IDialogManager dialogManager;
-	private IConfiguration configurationManager;
-	private FilePaths filePaths;
 
 	/**
 	 * @return the frames
@@ -46,10 +51,11 @@ public class Growthlane {
 	// -------------------------------------------------------------------------------------
 	// constructors
 	// -------------------------------------------------------------------------------------
-	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, FilePaths filePaths) {
-		this.dialogManager = dialogManager;
-		this.configurationManager = configurationManager;
-		this.filePaths = filePaths;
+	public Growthlane(IDialogManager dialogManager, IConfiguration configurationManager, IGlExportFilePathGetter glFileManager, IGlExportFilePathSetter exportFilePathSetter) {
+		this.dialogManager = Objects.requireNonNull(dialogManager);
+		this.configurationManager = Objects.requireNonNull(configurationManager);
+		this.glFileManager = Objects.requireNonNull(glFileManager);
+		this.exportFilePathSetter = Objects.requireNonNull(exportFilePathSetter);
 		this.frames = new ConcurrentArrayList<>();
 	}
 
@@ -73,11 +79,11 @@ public class Growthlane {
     }
 
 	/**
-	 * @return
+	 * @return returns GrowthlaneFrame instance belonging to timeStep
 	 */
-	public GrowthlaneFrame get(final int i) {
+	public GrowthlaneFrame get(final int timeStep) {
 		try {
-			return this.getFrames().get(i);
+			return this.getFrames().get(timeStep);
 		} catch (IndexOutOfBoundsException err) {
 			return null;
 		}
@@ -92,10 +98,10 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = null;
-		if (!isNull(filePaths.getGurobiMpsFilePath()))
+		if (glFileManager.gurobiMpsFileExists())
 			try {
-				GRBEnv env = new GRBEnv("MotherMachineILPs.log");
-				GRBModel grbModel = new GRBModel(env, filePaths.getGurobiMpsFilePath().toString());
+				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvironmentLogFilePath().toString());
+				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
 				e.printStackTrace();
@@ -127,7 +133,7 @@ public class Growthlane {
 		return ilp.isReady();
 	}
 
-	private List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from with in the callback without a concurrent modification error; this seems hacky */
+	private final List<ChangeListener> listenerList = new ConcurrentArrayList<>(); /* MM-20220628: use concurrent array listeners so that we can remove listener-callback from within the callback without a concurrent modification error; this seems hacky */
 
 	public void addChangeListener(ChangeListener l) {
 		listenerList.add(l);
@@ -150,5 +156,36 @@ public class Growthlane {
 			glf.generateSimpleSegmentationHypotheses();
 			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
+	}
+
+	public int getTimeStepMaximum() {
+		return getFrames().size() - 1;
+	}
+
+	private GrowthlaneFrame getFirstGrowthlaneFrame() {
+		return getFrames().get(0);
+	}
+
+	public List<SegmentRecord> getCellTrackStartingPoints() {
+		try {
+			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
+			CellTrackBuilder trackBuilder = new CellTrackBuilder();
+			trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+					firstGLF,
+					firstGLF.getParent().getIlp(),
+					getTimeStepMaximum());
+			return trackBuilder.getStartingPoints();
+		}
+		catch (GRBException grbException){
+			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);
+		}
+	}
+
+	public IGlExportFilePathGetter getExportPaths() {
+		return glFileManager;
+	}
+
+	public void setOutputPath(Path outputPath) {
+		exportFilePathSetter.setOutputPath(outputPath);
 	}
 }

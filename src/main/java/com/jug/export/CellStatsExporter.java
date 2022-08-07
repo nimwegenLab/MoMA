@@ -1,8 +1,10 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.ConfigurationManager;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
@@ -59,18 +61,13 @@ public class CellStatsExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
-        /* Export cell tracks */
-        exportTracks(new File(outputFolder, "ExportedTracks__" + MoMA.getDefaultFilenameDecoration() + ".csv"));
-
-        final GrowthlaneFrame firstGLF = gui.model.getCurrentGL().getFrames().get(0);
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
+        List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
+        exportFilePaths.makeExportDataOutputDirectory();
+        exportCellTracks(exportFilePaths.getCellTracksFilePath().toFile()); /* Export cell tracks */
+        final GrowthlaneFrame firstGLF = gl.getFrames().get(0);
         long avgXpos = firstGLF.getAvgXpos();
-        /* Export cell stats */
-        exportCellStats(new File(outputFolder, "ExportedCellStats__" + MoMA.getDefaultFilenameDecoration() + ".csv"),
-                cellTrackStartingPoints,
-                avgXpos);
+        exportCellStats(exportFilePaths.getCellStatsFilePath().toFile(), cellTrackStartingPoints, avgXpos);
     }
 
     /**
@@ -262,7 +259,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         resultTable.writeTable(writer);
     }
 
-    private void exportTracks(final File file) {
+    private void exportCellTracks(final File file) {
 
         final Vector<Vector<String>> dataToExport = getTracksExportData();
 
@@ -302,7 +299,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         // use US-style number formats! (e.g. '.' as decimal point)
         Locale.setDefault(new Locale("en", "US"));
 
-//        final String loadedDataFolder = MoMA.props.getProperty("import_path", "BUG -- could not get property 'import_path' while exporting tracks...");
         final int numCurrGL = gui.sliderGL.getValue();
         final int numGLFs = gui.model.getCurrentGL().getFrames().size();
         final Vector<Vector<String>> dataToExport = new Vector<>();

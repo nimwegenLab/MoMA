@@ -1,37 +1,26 @@
 package com.jug.export;
 
-import com.jug.GrowthlaneFrame;
+import com.jug.Growthlane;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import gurobi.GRBException;
 
-import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 public class ResultExporter {
     private List<ResultExporterInterface> exporters;
 
     public ResultExporter(List<ResultExporterInterface> exporters) {
-        this.exporters = exporters;
+        this.exporters = Objects.requireNonNull(exporters);
     }
 
-    public void export(File outputFolder, int tmax, GrowthlaneFrame firstGLF) {
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
         try {
-            List<SegmentRecord> cellTrackStartingPoints = getCellTrackStartingPoints(firstGLF, tmax);
-            ResultExporterData resultData = new ResultExporterData(outputFolder, cellTrackStartingPoints, firstGLF.getParent().getIlp().model, firstGLF.getParent().getIlp());
             for(ResultExporterInterface exporter: exporters){
-                exporter.export(resultData);
+                exporter.export(gl, exportFilePaths);
             }
         } catch (GRBException e) {
             e.printStackTrace();
         }
-    }
-
-    private List<SegmentRecord> getCellTrackStartingPoints(GrowthlaneFrame firstGLF, int tmax) throws GRBException {
-        CellTrackBuilder trackBuilder = new CellTrackBuilder();
-        trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
-                firstGLF,
-                firstGLF.getParent().getIlp(),
-                tmax);
-        List<SegmentRecord> startingPoints = trackBuilder.getStartingPoints();
-        return startingPoints;
     }
 }

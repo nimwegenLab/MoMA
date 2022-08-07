@@ -1,11 +1,11 @@
 package com.jug.export;
 
-import com.jug.config.ConfigurationManager;
+import com.jug.Growthlane;
+import com.jug.datahandling.IGlExportFilePathGetter;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Exporter for the list of frames that were selected as ground truth frames.
@@ -14,12 +14,7 @@ import java.util.function.Supplier;
  */
 public class GroundTruthFramesExporter implements ResultExporterInterface {
     private final List<Integer> listOfFrameNumbers;
-    private Supplier<String> defaultFilenameDecorationSupplier;
-    private ConfigurationManager configurationManager;
-
-    public GroundTruthFramesExporter(Supplier<String> defaultFilenameDecorationSupplier, ConfigurationManager configurationManager) {
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
-        this.configurationManager = configurationManager;
+    public GroundTruthFramesExporter() {
         listOfFrameNumbers = new ArrayList<>();
     }
 
@@ -52,8 +47,10 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
      * @param resultData
      */
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
+        if (listOfFrameNumbers.isEmpty()) { /* there are no ground truth frames specified, so we do not do anything */
+            return;
+        }
         listOfFrameNumbers.sort((x, y) -> {
             if (x > y) {
                 return 1;
@@ -70,13 +67,12 @@ public class GroundTruthFramesExporter implements ResultExporterInterface {
             timeStepColumn.addValue(frameNumber);
         }
 
-        File outputFile = new File(outputFolder, "GroundTruthFrames__" + defaultFilenameDecorationSupplier.get() + ".csv");
+        File outputFile = exportFilePaths.getGroundTruthFrameListFilePath().toFile();
         String path = outputFile.getAbsolutePath();
         OutputStreamWriter out = null;
         try {
             out = new OutputStreamWriter(new FileOutputStream(path));
-            String cellMaskImagePath = new File(outputFolder, "ExportedCellMasks__" + defaultFilenameDecorationSupplier.get() + ".tif").getAbsolutePath();
-            writeImagePaths(out, configurationManager.getInputImagePath(), cellMaskImagePath);
+            writeImagePaths(out, exportFilePaths.getInputImagePath().toString(), exportFilePaths.getCellMaskImageFilePath().toString());
             resultTable.writeTable(out);
         } catch (FileNotFoundException e) {
             e.printStackTrace();

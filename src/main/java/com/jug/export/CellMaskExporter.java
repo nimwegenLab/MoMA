@@ -1,18 +1,18 @@
 package com.jug.export;
 
+import com.jug.Growthlane;
 import com.jug.MoMA;
+import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
-import com.jug.util.math.Vector2D;
 import com.jug.util.math.Vector2DPolyline;
 import com.moma.auxiliary.Plotting;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
-import ij.process.LUT;
 import net.imglib2.FinalInterval;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
@@ -21,14 +21,12 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
-import net.imglib2.view.Views;
 
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 /**
  * This class store the resulting cell masks to a TIFF stack with axes [XYZT]. The slices in Z are as follows:
@@ -38,14 +36,12 @@ import java.util.function.Supplier;
 public class CellMaskExporter implements ResultExporterInterface {
     private final Imglib2Utils imglib2Utils;
     private OverlayUtils overlayUtils;
-    private Supplier<String> defaultFilenameDecorationSupplier;
     Img<IntType> imgResult;
     private HashMap<String, Color> featureColors;
 
-    public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils, Supplier<String> defaultFilenameDecorationSupplier) {
+    public CellMaskExporter(Imglib2Utils imglib2Utils, OverlayUtils overlayUtils) {
         this.imglib2Utils = imglib2Utils;
         this.overlayUtils = overlayUtils;
-        this.defaultFilenameDecorationSupplier = defaultFilenameDecorationSupplier;
         featureColors = new HashMap<>();
         featureColors.put("contour", Color.BLUE);
         featureColors.put("spine", Color.RED);
@@ -54,16 +50,14 @@ public class CellMaskExporter implements ResultExporterInterface {
     }
 
     @Override
-    public void export(ResultExporterData resultData) {
-        File outputFolder = resultData.getOutputFolder();
-        List<SegmentRecord> cellTrackStartingPoints = resultData.getCellTrackStartingPoints();
+    public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) {
+        List<SegmentRecord> cellTrackStartingPoints = gl.getCellTrackStartingPoints();
         SegmentRecord firstEntry = cellTrackStartingPoints.get(0);
         int nrOfFrames = getNumberOfFrames(cellTrackStartingPoints);
         imgResult = createGroundTruthTiffStacks(nrOfFrames, firstEntry.hyp.getWrappedComponent());
         writeSegmentsToResultImage(cellTrackStartingPoints);
 //        copySliceOfParentComponents();
-        String defaultFileNameDecoration = defaultFilenameDecorationSupplier.get();
-        saveResultImageToFile(new File(outputFolder, "ExportedCellMasks__" + defaultFileNameDecoration + ".tif"));
+        saveResultImageToFile(exportFilePaths.getCellMaskImageFilePath().toFile());
     }
 
     private void copySliceOfParentComponents() {

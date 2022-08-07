@@ -3,7 +3,7 @@ package com.jug.lp;
 import com.jug.Growthlane;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.ITrackingConfiguration;
-import com.jug.datahandling.FilePaths;
+import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
@@ -57,7 +57,8 @@ public class GrowthlaneTrackingIlpTest {
         IDialogManager dialogManagerMock = new DialogManagerMock();
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
-        Growthlane gl = new Growthlane(dialogManagerMock, configMock, new FilePaths());
+        GlFileManager glFileManagerMock = new GlFileManager();
+        Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(), gl, mockGrbModel, new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock));
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);

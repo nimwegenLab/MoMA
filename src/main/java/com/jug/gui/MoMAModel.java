@@ -2,7 +2,6 @@ package com.jug.gui;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
-import com.jug.MoMA;
 import com.jug.datahandling.GlDataLoader;
 
 
@@ -113,11 +112,11 @@ public class MoMAModel {
     /**
      * @return the time-point of the current GLF within the current GL.
      */
-    public int getCurrentTime() {
+    public int getCurrentTimeOfCurrentGl() {
         return getCurrentGL().getFrames().indexOf(getCurrentGLF());
     }
 
-    public int getTimeStepMaximum() {
-        return getCurrentGL().getFrames().size() - 1;
+    public int getTimeStepMaximumOfCurrentGl() {
+        return getCurrentGL().getTimeStepMaximum();
     }
 }

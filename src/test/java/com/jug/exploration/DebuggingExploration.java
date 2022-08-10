@@ -26,8 +26,8 @@ public class DebuggingExploration {
         }
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         Integer tmin = 24;
-        Integer tmax = 25;
-        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p",mmPropertiesPath.toString()});
+        Integer tmax = 27;
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-p",mmPropertiesPath.toString()});
     }
 
     public void _20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1() {

@@ -20,7 +20,7 @@ public class DebuggingExploration {
     public void _20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering() {
         String datasetSubPath = "20220810-fix-issue-with-missing-assignments-when-using-growthrate-filtering/";
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos1_GL2", "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos1_GL2.tif");
-        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output_1/");
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output");
         if (!outputPath.toFile().exists()) {
             outputPath.toFile().mkdir();
         }

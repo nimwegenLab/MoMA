@@ -11,9 +11,23 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
+        tests._20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering();
+//        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
+    }
+
+    public void _20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering() {
+        String datasetSubPath = "20220810-fix-issue-with-missing-assignments-when-using-growthrate-filtering/";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos1_GL2", "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos1_GL2.tif");
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output_1/");
+        if (!outputPath.toFile().exists()) {
+            outputPath.toFile().mkdir();
+        }
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        Integer tmin = 1;
+        Integer tmax = 30;
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p",mmPropertiesPath.toString()});
     }
 
     public void _20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1() {

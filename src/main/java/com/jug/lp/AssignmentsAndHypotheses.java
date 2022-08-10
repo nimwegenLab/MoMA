@@ -161,8 +161,9 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
             hmap.put(h.getWrappedComponent(), h); /* hypothesis does not exist; add and return it */
             return h;
         } else {
-            System.out.print(String.format("ERROR: Failed to add hypothesis at time-step: t=%d", t));
-            return h;
+            throw new RuntimeException(String.format("ERROR: Failed to add hypothesis at time-step: t=%d", t));
+//            System.out.print(String.format("ERROR: Failed to add hypothesis at time-step: t=%d", t));
+//            return h;
         }
     }
 

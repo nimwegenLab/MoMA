@@ -25,8 +25,8 @@ public class DebuggingExploration {
             outputPath.toFile().mkdir();
         }
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
-        Integer tmin = 1;
-        Integer tmax = 30;
+        Integer tmin = 24;
+        Integer tmax = 25;
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-ground_truth_export","-p",mmPropertiesPath.toString()});
     }
 

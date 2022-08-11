@@ -9,12 +9,26 @@ public class DebuggingExploration {
     String datasets_base_path = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/";
 
     public static void main(String[] args) {
-        DebuggingExploration tests = new DebuggingExploration();
+            DebuggingExploration tests = new DebuggingExploration();
 
-        tests._20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering();
+//        tests._20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering();
+        tests._20220811_fix_issue_with_continuity_constraint_violation();
 //        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
+    }
+
+    public void _20220811_fix_issue_with_continuity_constraint_violation() {
+        String datasetSubPath = "20220811-fix-issue-with-continuity-constraint-violation/";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos1_GL2", "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos1_GL2.tif");
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output");
+        if (!outputPath.toFile().exists()) {
+            outputPath.toFile().mkdir();
+        }
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        Integer tmin = 24;
+        Integer tmax = 26;
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-p",mmPropertiesPath.toString()});
     }
 
     public void _20220810_fix_issue_with_missing_assignments_when_using_growthrate_filtering() {

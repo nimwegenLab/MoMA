@@ -592,14 +592,14 @@ public class GrowthlaneTrackingILP {
             float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
-                if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, configurationManager.getMaxCellDrop())) {
-                    continue;
-                }
-
                 float upperTargetComponentCost = getComponentCost(sourceTimeStep + 1, upperTargetComponent);
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+                        continue;
+                    }
+
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                         continue;
                     }

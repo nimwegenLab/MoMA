@@ -39,8 +39,10 @@ public class DebuggingExploration {
             outputPath.toFile().mkdir();
         }
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
-        Integer tmin = 244;
-        Integer tmax = 245;
+//        Integer tmin = 244;
+//        Integer tmax = 245;
+        Integer tmin = null;
+        Integer tmax = null;
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-p",mmPropertiesPath.toString()});
     }
 

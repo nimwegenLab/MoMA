@@ -11,8 +11,8 @@ public class DebuggingExploration {
     public static void main(String[] args) {
             DebuggingExploration tests = new DebuggingExploration();
 
-//        tests._20220811_fix_issue_with_continuity_constraint_violation();
-        tests._20220810_fix_issue_with_missing_assignments();
+        tests._20220811_fix_issue_with_continuity_constraint_violation();
+//        tests._20220810_fix_issue_with_missing_assignments();
 //        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();

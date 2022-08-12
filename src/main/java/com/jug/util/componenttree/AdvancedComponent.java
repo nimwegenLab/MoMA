@@ -514,7 +514,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         int totalCellAreaPixels = 0;
         for (AdvancedComponent<T> component : componentsBelow) {
-            totalCellAreaPixels += component.size();
+            totalCellAreaPixels += component.getMajorAxisLength();
         }
         return totalCellAreaPixels;
     }

@@ -38,10 +38,10 @@ public class CostFactory {
 		float exponent;
 		float migrationCost;
 		if (scaledPositionDifference > 0) { // upward migration
-			scaledPositionDifference = Math.max(0, scaledPositionDifference - 0.05f); // going upwards for up to 5% is for free...
+//			scaledPositionDifference = Math.max(0, scaledPositionDifference - 0.05f); // going upwards for up to 5% is for free...
 			exponent = 3.0f;
 		} else { // downward migration
-			Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
+//			Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
 			exponent = 6.0f;
 		}
 		scaledPositionDifference = Math.abs(scaledPositionDifference);
@@ -53,7 +53,7 @@ public class CostFactory {
 		float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
 		float exponent;
 		if (scaledSizeDifference > 0) { // growth
-			scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
+//			scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
 			exponent = 4.0f;
 		} else { // shrinkage
 			if (touchesCellDetectionRoiTop) {

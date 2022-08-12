@@ -1,16 +1,33 @@
 package com.jug.exploration;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class ExplorationForImprovingCostFunctions {
 //    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/";
-    String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/20220209_cost_function_improvements/";
+    String datasets_base_path = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/exploration/";
 
     public static void main(String[] args) {
         ExplorationForImprovingCostFunctions tests = new ExplorationForImprovingCostFunctions();
 
-        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
+        tests._20220812_test_using_cell_area_below_component_for_migration_cost();
+//        tests._lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12();
 //        tests._dany_20200812_8proms_ace_1_MMStack_Pos25_GL7();
+    }
+
+    public void _20220812_test_using_cell_area_below_component_for_migration_cost() {
+        String datasetSubPath = "20220812-test-using-cell-area-below-component-for-migration-cost";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos1_GL2", "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos1_GL2.tif");
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output");
+        if (!outputPath.toFile().exists()) {
+            outputPath.toFile().mkdir();
+        }
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        Integer tmin = null;
+        Integer tmax = null;
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-p",mmPropertiesPath.toString()});
     }
 
     public void _lis_20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12() {

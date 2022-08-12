@@ -42,7 +42,8 @@ public class CostFactory {
 			exponent = 3.0f;
 		} else { // downward migration
 //			Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
-			exponent = 6.0f;
+//			exponent = 6.0f;
+			exponent = 3.0f;
 		}
 		scaledPositionDifference = Math.abs(scaledPositionDifference);
 		migrationCost = scaledPositionDifference * (float) Math.pow(1 + scaledPositionDifference, exponent);
@@ -59,7 +60,8 @@ public class CostFactory {
 			if (touchesCellDetectionRoiTop) {
 				return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
 			}
-			exponent = 40.0f;
+			exponent = 4.0f;
+//			exponent = 40.0f;
 		}
 		scaledSizeDifference = Math.abs(scaledSizeDifference);
 

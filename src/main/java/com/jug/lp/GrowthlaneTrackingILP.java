@@ -419,9 +419,9 @@ public class GrowthlaneTrackingILP {
 
                 float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
 
-                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
-                    continue;
-                }
+//                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
+//                    continue;
+//                }
 
                 final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
                 float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
@@ -599,9 +599,9 @@ public class GrowthlaneTrackingILP {
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
-                        continue;
-                    }
+//                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+//                        continue;
+//                    }
 
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                         continue;

@@ -444,10 +444,12 @@ public class GrowthlaneTrackingILP {
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
-                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
+//                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
                 }
                 if (!edgeSets.addToLeftNeighborhood(to, ma)) {
-                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
+//                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
                 }
             }
         }
@@ -590,14 +592,14 @@ public class GrowthlaneTrackingILP {
             float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
 
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
-                if (ComponentTreeUtils.isBelowByMoreThen(upperTargetComponent, sourceComponent, configurationManager.getMaxCellDrop())) {
-                    continue;
-                }
-
                 float upperTargetComponentCost = getComponentCost(sourceTimeStep + 1, upperTargetComponent);
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+                        continue;
+                    }
+
                     if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), upperTargetComponent.getMajorAxisLength() + lowerTargetComponent.getMajorAxisLength())) {
                         continue;
                     }

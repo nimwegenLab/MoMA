@@ -134,12 +134,12 @@ public class ComponentTreeUtils {
             final AdvancedComponent<?> sourceComponent,
             final AdvancedComponent<?> targetComponent,
             final int maximumAllowedDownwardMovement) {
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = targetComponent.getVerticalComponentLimits();
-        final ValuePair<Integer, Integer> targetComponentBoundaries = sourceComponent.getVerticalComponentLimits();
-        final float targetUpperBoundary = targetComponentBoundaries.getA();
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
+        final float targetLowerBoundary = targetComponentBoundaries.getB();
         final float sourceLowerBoundary = sourceComponentBoundaries.getB();
 
-        return (targetUpperBoundary - sourceLowerBoundary) > maximumAllowedDownwardMovement;
+        return (targetLowerBoundary - sourceLowerBoundary) > maximumAllowedDownwardMovement;
     }
 
     /**

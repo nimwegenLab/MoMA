@@ -207,6 +207,13 @@ public class CommandLineArgumentsParser {
         if ( cmd.hasOption( "tmax" ) ) {
             userDefinedMaxTime = Integer.parseInt( cmd.getOptionValue( "tmax" ) ); /* this has to be a user-setting in mm.properties for reproducibility, when loading previous curations */
         }
+
+        if (userDefinedMinTime != -1 && userDefinedMaxTime != -1) {
+            if (userDefinedMinTime >= userDefinedMaxTime) {
+                System.out.println("Error: Options 'tmin' and 'tmax' were set with 'tmin' >='tmax'.");
+                System.exit(-1);
+            }
+        }
     }
 
     public Path getInputDirectory() {

@@ -26,7 +26,7 @@ public class ExplorationForImprovingCostFunctions {
             outputPath.toFile().mkdir();
         }
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
-        Integer tmin = 400;
+        Integer tmin = 1;
         Integer tmax = 450;
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, true, new String[]{"-p",mmPropertiesPath.toString()});
     }

@@ -483,7 +483,7 @@ public class GrowthlaneTrackingILP {
 //        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
 //        final float averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalAreaOfComponentsBelow(), targetComponent.getTotalAreaOfComponentsBelow());
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), targetComponent.getTotalLengthOfComponentsBelow());
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
@@ -664,16 +664,16 @@ public class GrowthlaneTrackingILP {
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
         final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-        final float sourceUpperBoundary = sourceBoundaries.getA();
-        final float sourceLowerBoundary = sourceBoundaries.getB();
-        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
-        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
+//        final float sourceUpperBoundary = sourceBoundaries.getA();
+//        final float sourceLowerBoundary = sourceBoundaries.getB();
+//        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
+//        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
 
 //        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
 //        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
 //        final float averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalAreaOfComponentsBelow(), lowerTargetComponent.getTotalAreaOfComponentsBelow());
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), lowerTargetComponent.getTotalLengthOfComponentsBelow());
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
 
 

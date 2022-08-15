@@ -10,7 +10,9 @@ public class DebuggingExploration {
 
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
+        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
 //        tests._20220811_fix_issue_with_continuity_constraint_violation();
 //        tests._20220810_fix_issue_with_missing_assignments();
 //        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
@@ -18,9 +20,30 @@ public class DebuggingExploration {
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
     }
 
-    public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading() {
+    public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly() {
         String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "debug_test_analysis";
+        startMoma(true, inputPath.toString(), null, null, null, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading() {
+        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
+//        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
+        String analysisName = "debug_test_analysis";
+//        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output");
+//        if (!outputPath.toFile().exists()) {
+//            outputPath.toFile().mkdir();
+//        }
+//        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        startMoma(false, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+    }
+
+    public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result() {
+        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
+//        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
         Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
 //        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "output");
 //        if (!outputPath.toFile().exists()) {

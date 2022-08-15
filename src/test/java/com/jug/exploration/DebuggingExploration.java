@@ -11,9 +11,9 @@ public class DebuggingExploration {
 
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
-//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
+        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
 //        tests._20220811_fix_issue_with_continuity_constraint_violation();
@@ -47,7 +47,9 @@ public class DebuggingExploration {
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "debug_test_analysis_1";
-        startMoma(true, inputPath.toString(), null, null, null, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+        Integer tmin = null;
+        Integer tmax = null;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading() {

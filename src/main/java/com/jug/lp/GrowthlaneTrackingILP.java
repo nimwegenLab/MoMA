@@ -1762,13 +1762,6 @@ public class GrowthlaneTrackingILP {
         }
         reader.close();
 
-        try {
-            model.update();
-            runImmediately();
-        } catch (final GRBException e) {
-            e.printStackTrace();
-        }
-
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }

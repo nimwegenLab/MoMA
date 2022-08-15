@@ -31,6 +31,8 @@ public class CommandLineArgumentsParser {
     private boolean trackOnly;
     private String analysisName;
 
+    private boolean forceOperation;
+
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
     }
@@ -73,6 +75,9 @@ public class CommandLineArgumentsParser {
         final Option analysisNameOption = new Option( "a", "analysis", true, "name of the analysis; name will be prepended to the corresponding output folder; mutually exclusive with option -o/-outfolder" );
         analysisNameOption.setRequired( false );
 
+        final Option forceOperationOption = new Option( "f", "force", false, "force the operation; target files will be overwritten, if the analysis folder exists" );
+        forceOperationOption.setRequired( false );
+
         final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
         userProps.setRequired( false );
 
@@ -86,6 +91,7 @@ public class CommandLineArgumentsParser {
         options.addOption(infolder);
         options.addOption(outfolder);
         options.addOption(analysisNameOption);
+        options.addOption(forceOperationOption);
         options.addOption(userProps);
         // get the commands parsed
         CommandLine cmd = null;
@@ -175,6 +181,10 @@ public class CommandLineArgumentsParser {
             analysisName = cmd.getOptionValue("analysis");
         }
 
+        if(cmd.hasOption("force")){
+            forceOperation = true;
+        }
+
         Path outputFolder;
         if (cmd.hasOption("o")) {
             outputFolder = Paths.get(cmd.getOptionValue("o"));
@@ -253,5 +263,9 @@ public class CommandLineArgumentsParser {
 
     public String getAnalysisName() {
         return analysisName;
+    }
+
+    public boolean isForcedOperation() {
+        return forceOperation;
     }
 }

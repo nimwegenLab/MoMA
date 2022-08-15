@@ -1762,13 +1762,6 @@ public class GrowthlaneTrackingILP {
         }
         reader.close();
 
-        try {
-            model.update();
-            runImmediately();
-        } catch (final GRBException e) {
-            e.printStackTrace();
-        }
-
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }
@@ -2011,11 +2004,21 @@ public class GrowthlaneTrackingILP {
      * @param tStart: time step after which assignments will be ignored
      */
     public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
-        for (int i = 0; i < tStart; i++) {
+        for (int i = 0; i <= tStart; i++) {
             removePostOptimizationRangeLockConstraintsAt(i);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
         for (int i = tStart; i < gl.size(); i++) {
             addPostOptimizationRangeLockConstraintsAt(i);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -2045,11 +2048,21 @@ public class GrowthlaneTrackingILP {
      * @param tEnd: time step before which to freeze
      */
     public void addPreOptimizationRangeLockConstraintsBefore(final int tEnd) {
-        for (int t = 0; t < tEnd; t++) {
+        for (int t = 0; t < gl.size(); t++) {
+            removePreOptimizationRangeLockConstraintsAt(t);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        for (int t = 0; t <= tEnd; t++) {
             addPreOptimizationRangeLockConstraintsAt(t);
         }
-        for (int t = tEnd; t < gl.size(); t++) {
-            removePreOptimizationRangeLockConstraintsAt(t);
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -2098,16 +2111,20 @@ public class GrowthlaneTrackingILP {
     }
 
     private int getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint() {
-        for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
-            if (!assignmentsHavePreOptimizationRangeConstraintAt(t)) {
-                return t;
+        int tStart = 0;
+        for (int t = 0; t <= gl.getTimeStepMaximum(); t++) {
+            if (assignmentsHavePreOptimizationRangeConstraintAt(t)) {
+                tStart = t;
             }
         }
-        return 0;
+        return tStart;
     }
 
     private boolean assignmentsHavePreOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        if (assignments.isEmpty()) {
+            return false; /* if no assignments exist for this time-step, then no constraints exist */
+        }
         for (AbstractAssignment<?> assignment : assignments) {
             if (assignment.hasPreOptimizationRangeLockConstraint()) {
                 return true;
@@ -2121,16 +2138,20 @@ public class GrowthlaneTrackingILP {
     }
 
     private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
-        for (int t = nodes.getNumberOfTimeSteps() - 1; t >= 0; t--) {
-            if (!assignmentsHavePostOptimizationRangeConstraintAt(t)) {
-                return t+1; /* prior iteration contained the last assignment with a constraint; hence return t+1 */
+        int tEnd = gl.getTimeStepMaximum();
+        for (int t = gl.getTimeStepMaximum(); t >= 0; t--) {
+            if (assignmentsHavePostOptimizationRangeConstraintAt(t)) {
+                tEnd = t + 1;
             }
         }
-        return 0;
+        return tEnd;
     }
 
     private boolean assignmentsHavePostOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        if (assignments.isEmpty()) {
+            return false; /* if no assignments exist for this time-step, then no constraints exist */
+        }
         for (AbstractAssignment<?> assignment : assignments) {
             if (assignment.hasPostOptimizationRangeLockConstraint()) {
                 return true;

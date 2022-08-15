@@ -2011,11 +2011,21 @@ public class GrowthlaneTrackingILP {
      * @param tStart: time step after which assignments will be ignored
      */
     public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
-        for (int i = 0; i < gl.size(); i++) {
+        for (int i = 0; i <= tStart; i++) {
             removePostOptimizationRangeLockConstraintsAt(i);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
         for (int i = tStart; i < gl.size(); i++) {
             addPostOptimizationRangeLockConstraintsAt(i);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -2045,11 +2055,21 @@ public class GrowthlaneTrackingILP {
      * @param tEnd: time step before which to freeze
      */
     public void addPreOptimizationRangeLockConstraintsBefore(final int tEnd) {
-        for (int t = 0; t < tEnd; t++) {
+        for (int t = 0; t < gl.size(); t++) {
+            removePreOptimizationRangeLockConstraintsAt(t);
+        }
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        for (int t = 0; t <= tEnd; t++) {
             addPreOptimizationRangeLockConstraintsAt(t);
         }
-        for (int t = tEnd; t < gl.size(); t++) {
-            removePreOptimizationRangeLockConstraintsAt(t);
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
         }
     }
 

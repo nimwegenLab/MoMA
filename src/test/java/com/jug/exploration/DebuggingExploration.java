@@ -13,8 +13,8 @@ public class DebuggingExploration {
         DebuggingExploration tests = new DebuggingExploration();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
-//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
+        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
 //        tests._20220811_fix_issue_with_continuity_constraint_violation();
 //        tests._20220810_fix_issue_with_missing_assignments();

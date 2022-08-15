@@ -124,7 +124,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         requestFocusOnTimeStepSlider();
     }
 
-    int callbackCounter = 0;
     private void registerSliderListeners() {
         this.panelWithSliders.addListenerToTimeSlider((changeEvent) -> {
             if (spaceBarIsBeingHeld.isActive()) {
@@ -136,8 +135,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
             JSlider slider = (JSlider) changeEvent.getSource();
             if (!slider.getValueIsAdjusting()) {
-                callbackCounter++;
-                System.out.println("callbackCounter: " + callbackCounter);
                 if (model.getCurrentGL().getIlp().isReady()) {
                     model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
                     model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());

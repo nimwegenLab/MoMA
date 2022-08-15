@@ -2011,7 +2011,7 @@ public class GrowthlaneTrackingILP {
      * @param tStart: time step after which assignments will be ignored
      */
     public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
-        for (int i = 0; i < tStart; i++) {
+        for (int i = 0; i < gl.size(); i++) {
             removePostOptimizationRangeLockConstraintsAt(i);
         }
         for (int i = tStart; i < gl.size(); i++) {

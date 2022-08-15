@@ -113,6 +113,17 @@ public class MoMA {
 			dic.getFilePaths().setGlobalPropertiesFile(commandLineArgumentParser.getOptionalPropertyFile());
 			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
+
+			if (dic.getFilePaths().trackingDataOutputPathExists()) {
+				if (!commandLineArgumentParser.isForcedOperation()) {
+					dic.getLogger().print("ERROR: The tracking-data folder exists. Aborting to not overwrite files. Use option -rl/-reload to load the existing tracking-data or -f/--force to overwrite it. Path to tracking-data folder: " + dic.getFilePaths().getTrackingDataOutputPath());
+					System.exit(-1);
+				} else {
+					dic.getLogger().print("WARNING: The tracking-data folder exists and operation is forced (i.e. option -f/--force was selected). Deleting tracking-data folder and continuing: " + dic.getFilePaths().getTrackingDataOutputPath());
+					dic.getFilePaths().deleteTrackingDataOutputPath();
+				}
+			}
+
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 
 			configurationManager.setMinTime(datasetProperties.getMinTime());

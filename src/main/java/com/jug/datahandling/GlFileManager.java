@@ -17,6 +17,7 @@ import java.util.List;
 import static com.jug.util.io.FileUtils.getMatchingFilesInDirectory;
 import static java.util.Objects.isNull;
 import static org.apache.commons.io.FilenameUtils.removeExtension;
+import static org.scijava.util.FileUtils.deleteRecursively;
 
 public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePathSetter {
     private Path globalPropertiesFile;
@@ -83,6 +84,10 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     public Path getTrackingDataOutputPath() {
         return Paths.get(getOutputPath().normalize().toString(), getAnalysisName(), getAnalysisName() + "__track_data");
+    }
+
+    public boolean trackingDataOutputPathExists() {
+        return getTrackingDataOutputPath().toFile().exists();
     }
 
     public Path getExportOutputPath() {
@@ -254,5 +259,9 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     @Override
     public Path getMmPropertiesOutputFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString(), "mm.properties");
+    }
+
+    public void deleteTrackingDataOutputPath() {
+        deleteRecursively(getTrackingDataOutputPath().toFile());
     }
 }

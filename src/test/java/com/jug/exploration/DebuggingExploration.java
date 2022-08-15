@@ -49,7 +49,7 @@ public class DebuggingExploration {
         String analysisName = "debug_test_analysis_1";
         Integer tmin = null;
         Integer tmax = null;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly", "-force"});
     }
 
     public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading() {

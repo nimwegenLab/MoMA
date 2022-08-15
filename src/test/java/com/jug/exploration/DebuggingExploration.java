@@ -26,7 +26,9 @@ public class DebuggingExploration {
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "debug_test_analysis_2";
-        startMoma(false, inputPath.toString(), null, null, null, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName});
+        int tmin = 250;
+        int tmax = 300;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName});
     }
 
     public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly() {

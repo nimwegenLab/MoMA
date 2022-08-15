@@ -74,6 +74,10 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * @param a the assignment to be added.
      */
     public void addAssignment(final int t, final A a) {
+        /* TODO-MM-20220815: initialize a_t to the number of time-steps before-hand and throw here, if we try to access an out-of-bounds time-step */
+//        if (t >= a_t.size()) {
+//            throw new RuntimeException("Time step not available.");
+//    }
         while (t >= a_t.size()) {
             addTimeStep();
         }

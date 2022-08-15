@@ -2098,16 +2098,20 @@ public class GrowthlaneTrackingILP {
     }
 
     private int getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint() {
-        for (int t = 0; t < nodes.getNumberOfTimeSteps(); t++) {
-            if (!assignmentsHavePreOptimizationRangeConstraintAt(t)) {
-                return t;
+        int tStart = 0;
+        for (int t = 0; t <= gl.getTimeStepMaximum(); t++) {
+            if (assignmentsHavePreOptimizationRangeConstraintAt(t)) {
+                tStart = t;
             }
         }
-        return 0;
+        return tStart;
     }
 
     private boolean assignmentsHavePreOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        if (assignments.isEmpty()) {
+            return false; /* if no assignments exist for this time-step, then no constraints exist */
+        }
         for (AbstractAssignment<?> assignment : assignments) {
             if (assignment.hasPreOptimizationRangeLockConstraint()) {
                 return true;
@@ -2121,16 +2125,20 @@ public class GrowthlaneTrackingILP {
     }
 
     private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
-        for (int t = nodes.getNumberOfTimeSteps() - 1; t >= 0; t--) {
-            if (!assignmentsHavePostOptimizationRangeConstraintAt(t)) {
-                return t+1; /* prior iteration contained the last assignment with a constraint; hence return t+1 */
+        int tEnd = gl.getTimeStepMaximum();
+        for (int t = gl.getTimeStepMaximum(); t >= 0; t--) {
+            if (assignmentsHavePostOptimizationRangeConstraintAt(t)) {
+                tEnd = t + 1;
             }
         }
-        return 0;
+        return tEnd;
     }
 
     private boolean assignmentsHavePostOptimizationRangeConstraintAt(int t){
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+        if (assignments.isEmpty()) {
+            return false; /* if no assignments exist for this time-step, then no constraints exist */
+        }
         for (AbstractAssignment<?> assignment : assignments) {
             if (assignment.hasPostOptimizationRangeLockConstraint()) {
                 return true;

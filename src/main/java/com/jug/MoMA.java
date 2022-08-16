@@ -119,7 +119,7 @@ public class MoMA {
 			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 
-			if (dic.getFilePaths().trackingDataOutputPathExists()) {
+			if (dic.getFilePaths().gurobiMpsFileExists()) { /* we take the existence of the MPS file to indicate a successful previous saving of tracking results */
 				if (!commandLineArgumentParser.isForcedOperation()) {
 					dic.getLogger().print("ERROR: The tracking-data folder exists. Aborting to not overwrite files. Use option -rl/-reload to load the existing tracking-data or -f/--force to overwrite it. Path to tracking-data folder: " + dic.getFilePaths().getTrackingDataOutputPath());
 					System.exit(-1);

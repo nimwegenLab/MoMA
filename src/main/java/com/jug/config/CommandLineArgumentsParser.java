@@ -121,6 +121,11 @@ public class CommandLineArgumentsParser {
             }
         }
 
+        if (!(cmd.hasOption("reload") && cmd.hasOption("analysis"))) {
+            System.out.println("Error: Options 'reload' and 'analysis' must be used together.");
+            System.exit(-1);
+        }
+
         if ( cmd.hasOption( "h" ) ) {
             System.out.println( ">>> Starting MM in headless mode." );
             HEADLESS = true;

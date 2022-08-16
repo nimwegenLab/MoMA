@@ -80,7 +80,7 @@ public class MoMA {
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
+			dic.getFilePaths().setOutputPath(Paths.get(commandLineArgumentParser.getReloadFolderPath().toString(), commandLineArgumentParser.getAnalysisName()));
 			dic.getLogger().print("");
 			dic.getLogger().print("######################################################");
 			dic.getLogger().print("Reloading previous analysis:");

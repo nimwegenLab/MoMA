@@ -13,10 +13,7 @@ import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import gurobi.GRB;
-import gurobi.GRBException;
-import gurobi.GRBLinExpr;
-import gurobi.GRBVar;
+import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
@@ -703,10 +700,10 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private void addPathBlockingConstraintsNew(){
+    private void addPathBlockingConstraintsNew() {
         for (int t = 0; t < gl.size(); t++) {
             List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getLeafHypothesesAt(t);
-            for(Hypothesis<AdvancedComponent<FloatType>> hyp : hypotheses){
+            for (Hypothesis<AdvancedComponent<FloatType>> hyp : hypotheses) {
                 try {
                     addPathBlockingConstraintForLeafHypothesis(hyp);
                 } catch (GRBException e) {
@@ -2042,6 +2039,35 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private int getNumberAssignmentsUptoAndIncluding(int timeStep) {
+        int total = 0;
+        for (int t = 0; t <= timeStep; t++) {
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
+            total += assignments.size();
+//            for (AbstractAssignment<?> assignment : assignments) {
+//                assignment.removePreOptimizationRangeLockConstraint();
+//            }
+        }
+        return total;
+    }
+
+    private int getNumberOfPreOptimRangeLockConstraints(){
+        int numberOfConstraints = 0;
+        GRBConstr[] constraintList = model.getConstrs();
+        try {
+            for (GRBConstr constr : constraintList) {
+                String constrName = null;
+                constrName = constr.get(GRB.StringAttr.ConstrName);
+                if (constrName.contains("PreOptimRangeLockConstr_")) {
+                    numberOfConstraints++;
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return numberOfConstraints;
+    }
+
     /***
      * Freezes all assignments before time step t, so that they will not change during optimization.
      *
@@ -2064,6 +2090,9 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
+        int numberOfPreOptimRangeLockConstraints = getNumberOfPreOptimRangeLockConstraints();
+        int numberOfAssignments = getNumberAssignmentsUptoAndIncluding(tEnd);
+        assert(numberOfPreOptimRangeLockConstraints == numberOfAssignments) : String.format("numberOfPreOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) up to and including the time step tEnd=%d", numberOfPreOptimRangeLockConstraints,numberOfAssignments,tEnd);
     }
 
     /**

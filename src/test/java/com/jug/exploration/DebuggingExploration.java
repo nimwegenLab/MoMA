@@ -33,8 +33,8 @@ public class DebuggingExploration {
         String analysisName = "debug_test_analysis";
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
         createEmptyDirectory(outputPath);
-        int tmin = 1;
-        int tmax = 10;
+        Integer tmin = null;
+        Integer tmax = null;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
     }
 

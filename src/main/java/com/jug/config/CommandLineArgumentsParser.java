@@ -32,6 +32,7 @@ public class CommandLineArgumentsParser {
     private String analysisName;
 
     private boolean forceOperation;
+    private boolean versionRequested;
 
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
@@ -49,6 +50,8 @@ public class CommandLineArgumentsParser {
         final CommandLineParser parser = new DefaultParser();
         // defining command line options
         final Option help = new Option( "help", "print this message" );
+
+        final Option versionOption = new Option( "v", "version", false, "print version" );
 
         final Option headless = new Option( "h", "headless", false, "start without user interface (note: input-folder must be given!)" );
         headless.setRequired( false );
@@ -81,6 +84,7 @@ public class CommandLineArgumentsParser {
         final Option userProps = new Option( "p", "props", true, "properties file to be loaded (mm.properties)" );
         userProps.setRequired( false );
 
+        options.addOption(versionOption);
         options.addOption(help);
         options.addOption(headless);
         options.addOption(reloadOption);
@@ -111,6 +115,10 @@ public class CommandLineArgumentsParser {
             }
         }
 
+        if (cmd.hasOption("version")) {
+            versionRequested = true;
+        }
+
         if ( cmd.hasOption( "help" ) ) {
             final HelpFormatter formatter = new HelpFormatter();
             formatter.printHelp( "... -i <in-folder> -o [out-folder] [-headless]", options );
@@ -119,11 +127,6 @@ public class CommandLineArgumentsParser {
             } else {
                 return;
             }
-        }
-
-        if (!(cmd.hasOption("reload") && cmd.hasOption("analysis"))) {
-            System.out.println("Error: Options 'reload' and 'analysis' must be used together.");
-            System.exit(-1);
         }
 
         if ( cmd.hasOption( "h" ) ) {
@@ -142,6 +145,11 @@ public class CommandLineArgumentsParser {
 
         if ( cmd.hasOption( "ground_truth_export" ) ) {
             GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = true;
+        }
+
+        if (cmd.hasOption("reload") && !cmd.hasOption("analysis")) {
+            System.out.println("Error: Option 'reload' must be used with option 'analysis'.");
+            System.exit(-1);
         }
 
         if (cmd.hasOption("reload")) {
@@ -173,7 +181,7 @@ public class CommandLineArgumentsParser {
             }
         }
 
-        if(!cmd.hasOption("a") && !cmd.hasOption("outfolder")) {
+        if(cmd.hasOption("a") && cmd.hasOption("outfolder")) {
             System.out.println("Error: Options 'analysis' and 'outfolder' are mutually exclusive.");
             System.exit(-1);
         }
@@ -272,5 +280,9 @@ public class CommandLineArgumentsParser {
 
     public boolean isForcedOperation() {
         return forceOperation;
+    }
+
+    public boolean isVersionRequested() {
+        return versionRequested;
     }
 }

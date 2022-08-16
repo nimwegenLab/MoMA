@@ -63,6 +63,11 @@ public class MoMA {
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
+		if (commandLineArgumentParser.isVersionRequested()) {
+			System.out.println(dic.getGitVersionProvider().getVersionString());
+			System.exit(0);
+		}
+
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
 			System.exit(-1);
 		}

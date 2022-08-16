@@ -12,10 +12,11 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
+        tests._test_version_output();
 //        tests._20220816_fix_opt_range_slider();
 //        tests._20220815_debug_missing_assignment();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
@@ -24,6 +25,10 @@ public class DebuggingExploration {
 //        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
+    }
+
+    public void _test_version_output() {
+        startMoma(false, null, null, null, null, false, new String[]{"-version"});
     }
 
     public void _20220816_fix_opt_range_slider() {

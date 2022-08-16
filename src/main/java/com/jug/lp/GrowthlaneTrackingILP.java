@@ -271,11 +271,11 @@ public class GrowthlaneTrackingILP {
 //            createSegmentationHypotheses( t );
 //        }
 
-        for (int t = 0; t < gl.size() - 1; t++) {
+        for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             enumerateAndAddAssignments(t);
         }
-        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.size() - 1);
-        addExitAssignments(gl.size() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
+        addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
     }
 
     /**
@@ -692,7 +692,7 @@ public class GrowthlaneTrackingILP {
      */
     private void addPathBlockingConstraints() throws GRBException {
         // For each time-point
-        for (int t = 0; t < gl.size(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             // Get the full component tree
             final ComponentForest<?> ct = gl.get(t).getComponentForest();
             // And call the function adding all the path-blocking-constraints...
@@ -701,7 +701,7 @@ public class GrowthlaneTrackingILP {
     }
 
     private void addPathBlockingConstraintsNew() {
-        for (int t = 0; t < gl.size(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = nodes.getLeafHypothesesAt(t);
             for (Hypothesis<AdvancedComponent<FloatType>> hyp : hypotheses) {
                 try {
@@ -788,7 +788,7 @@ public class GrowthlaneTrackingILP {
      */
     private void addContinuityConstraints() throws GRBException {
         // For each time-point
-        for (int t = 1; t < gl.size(); t++) {
+        for (int t = 1; t < gl.numberOfFrames(); t++) {
             for (final Hypothesis<AdvancedComponent<FloatType>> hyp : nodes.getHypothesesAt(t)) {
                 final GRBLinExpr expr = new GRBLinExpr();
 
@@ -1629,7 +1629,7 @@ public class GrowthlaneTrackingILP {
 
             // Write characteristics of dataset
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            final int numT = gl.size() - 1;
+            final int numT = gl.numberOfFrames() - 1;
             int numH = 0;
             for (final List<Hypothesis<AdvancedComponent<FloatType>>> innerList : nodes.getAllHypotheses()) {
                 for (@SuppressWarnings("unused") final Hypothesis<AdvancedComponent<FloatType>> hypothesis : innerList) {
@@ -1652,7 +1652,7 @@ public class GrowthlaneTrackingILP {
             // SegmentsInFrameCountConstraints
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# SegmentsInFrameCountConstraints\n");
-            for (int t = 0; t < gl.size(); t++) {
+            for (int t = 0; t < gl.numberOfFrames(); t++) {
                 CellCountConstraint constraint = getCellCountConstraint(t);
                 final int value = constraint.getNumberOfCells();
                 if (value >= 0) {
@@ -1663,7 +1663,7 @@ public class GrowthlaneTrackingILP {
             // Include/Exclude Segment Constraints
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# SegmentSelectionConstraints (SSC)\n");
-            for (int t = 0; t < gl.size(); t++) {
+            for (int t = 0; t < gl.numberOfFrames(); t++) {
                 final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                         nodes.getHypothesesAt(t);
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
@@ -1687,7 +1687,7 @@ public class GrowthlaneTrackingILP {
             // Include/Exclude Assignment Constraints
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# AssignmentSelectionConstraints (ASC)\n");
-            for (int t = 0; t < gl.size(); t++) {
+            for (int t = 0; t < gl.numberOfFrames(); t++) {
                 final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assmnts =
                         nodes.getAssignmentsAt(t);
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : assmnts) {
@@ -1711,7 +1711,7 @@ public class GrowthlaneTrackingILP {
             // Pruning Roots
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
             out.write("# PruningRoots (PR)\n");
-            for (int t = 0; t < gl.size(); t++) {
+            for (int t = 0; t < gl.numberOfFrames(); t++) {
                 final List<Hypothesis<AdvancedComponent<FloatType>>> hyps =
                         nodes.getHypothesesAt(t);
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
@@ -2009,7 +2009,7 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
-        for (int i = tStart + 1; i < gl.size(); i++) {
+        for (int i = tStart + 1; i < gl.numberOfFrames(); i++) {
             addPostOptimizationRangeLockConstraintsAt(i);
         }
         try {
@@ -2023,7 +2023,7 @@ public class GrowthlaneTrackingILP {
         if(numberOfPostOptimRangeLockConstraints != numberOfAssignments){
             throw new AssertionError(String.format("numberOfPostOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) after the time step tStart=%d", numberOfPostOptimRangeLockConstraints, numberOfAssignments, tStart));
         }
-        if ((tStart + 1 == gl.size()) && (numberOfPostOptimRangeLockConstraints != 0)) {
+        if ((tStart + 1 == gl.numberOfFrames()) && (numberOfPostOptimRangeLockConstraints != 0)) {
             throw new AssertionError(String.format("numberOfPostOptimRangeLockConstraints (=%d) is not zero", numberOfPostOptimRangeLockConstraints));
         }
     }
@@ -2050,7 +2050,7 @@ public class GrowthlaneTrackingILP {
 
     private int getNumberAssignmentsAfter(int timeStep) {
         int total = 0;
-        for (int t = timeStep+1; t < gl.size(); t++) {
+        for (int t = timeStep+1; t < gl.numberOfFrames(); t++) {
             total += getNumberOfAssignmentsAt(t);
         }
         return total;
@@ -2098,7 +2098,7 @@ public class GrowthlaneTrackingILP {
      * @param tEnd: time step before which to freeze
      */
     public void addPreOptimizationRangeLockConstraintsBefore(final int tEnd) {
-        for (int t = 0; t < gl.size(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             removePreOptimizationRangeLockConstraintsAt(t);
         }
         try {
@@ -2171,7 +2171,7 @@ public class GrowthlaneTrackingILP {
 
     private int getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint() {
         int tStart = 0;
-        for (int t = 0; t <= gl.getTimeStepMaximum(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             if (assignmentsHavePreOptimizationRangeConstraintAt(t)) {
                 tStart = t;
             }
@@ -2197,8 +2197,8 @@ public class GrowthlaneTrackingILP {
     }
 
     private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
-        int tEnd = gl.getTimeStepMaximum();
-        for (int t = gl.getTimeStepMaximum(); t >= 0; t--) {
+        int tEnd = gl.numberOfFrames() - 1;
+        for (int t = gl.numberOfFrames() - 1; t >= 0; t--) {
             if (assignmentsHavePostOptimizationRangeConstraintAt(t)) {
                 tEnd = t + 1;
             }

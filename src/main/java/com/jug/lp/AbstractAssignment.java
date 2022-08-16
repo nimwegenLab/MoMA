@@ -70,14 +70,22 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return "StoreLockConstr_" + getStringId();
 	}
 
-	@NotNull
-	private String getPreOptimizationRangeConstraintName(){
-		return "PreOptimRangeLockConstr_" + getStringId();
+	public static String getPreOptimizationRangeConstraintNamePrefix(){
+		return "PreOptimRangeLockConstr_";
 	}
 
 	@NotNull
-	private String getPostOptimizationRangeLockConstraintName(){
-		return "PostOptimRangeLockConstr_" + getStringId();
+	private String getPreOptimizationRangeConstraintName() {
+		return getPreOptimizationRangeConstraintNamePrefix() + getStringId();
+	}
+
+	public static String getPostOptimizationRangeConstraintNamePrefix() {
+		return "PostOptimRangeLockConstr_";
+	}
+
+	@NotNull
+	private String getPostOptimizationRangeLockConstraintName() {
+		return getPostOptimizationRangeConstraintNamePrefix() + getStringId();
 	}
 
 	/**

@@ -2051,44 +2051,38 @@ public class GrowthlaneTrackingILP {
     private int getNumberAssignmentsAfter(int timeStep) {
         int total = 0;
         for (int t = timeStep+1; t < gl.size(); t++) {
-            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
-            total += assignments.size();
+            total += getNumberOfAssignmentsAt(t);
         }
         return total;
-    }
-
-    private int getNumberOfPostOptimRangeLockConstraints() {
-        int numberOfConstraints = 0;
-        GRBConstr[] constraintList = model.getConstrs();
-        try {
-            for (GRBConstr constr : constraintList) {
-                String constrName = constr.get(GRB.StringAttr.ConstrName);
-                if (constrName.contains("PostOptimRangeLockConstr_")) {
-                    numberOfConstraints++;
-                }
-            }
-        } catch (GRBException e) {
-            throw new RuntimeException(e);
-        }
-        return numberOfConstraints;
     }
 
     private int getNumberAssignmentsBefore(int timeStep) {
         int total = 0;
         for (int t = 0; t < timeStep; t++) {
-            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
-            total += assignments.size();
+            total += getNumberOfAssignmentsAt(t);
         }
         return total;
     }
 
+    private int getNumberOfAssignmentsAt(int timeStep){
+        return nodes.getAssignmentsAt(timeStep).size();
+    }
+
+    private int getNumberOfPostOptimRangeLockConstraints() {
+        return getNumberConstraintsContaining(AbstractAssignment.getPostOptimizationRangeConstraintNamePrefix());
+    }
+
     private int getNumberOfPreOptimRangeLockConstraints() {
+        return getNumberConstraintsContaining(AbstractAssignment.getPreOptimizationRangeConstraintNamePrefix());
+    }
+
+    private int getNumberConstraintsContaining(String substring) {
         int numberOfConstraints = 0;
         GRBConstr[] constraintList = model.getConstrs();
         try {
             for (GRBConstr constr : constraintList) {
                 String constrName = constr.get(GRB.StringAttr.ConstrName);
-                if (constrName.contains("PreOptimRangeLockConstr_")) {
+                if (constrName.contains(substring)) {
                     numberOfConstraints++;
                 }
             }

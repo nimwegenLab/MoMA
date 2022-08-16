@@ -11,7 +11,8 @@ public class DebuggingExploration {
 
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
+        tests._20220815_debug_missing_assignment();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
@@ -21,6 +22,18 @@ public class DebuggingExploration {
 //        tests._20220525_endoftracking_terminator_not_being_written_to_cell_stats_csv_file_1();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
+    }
+
+    public void _20220815_debug_missing_assignment() {
+        String datasetSubPath = "20220815-debug-missing-assignment";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "debug_test_analysis";
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
+        createEmptyDirectory(outputPath);
+        int tmin = 194;
+        int tmax = 195;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
     }
 
     public void _20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload() {

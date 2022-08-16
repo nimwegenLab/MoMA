@@ -2001,7 +2001,7 @@ public class GrowthlaneTrackingILP {
      * @param tStart: time step after which assignments will be ignored
      */
     public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
-        for (int i = 0; i <= tStart; i++) {
+        for (int i = 0; i < tStart + 1; i++) {
             removePostOptimizationRangeLockConstraintsAt(i);
         }
         try {
@@ -2009,7 +2009,7 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
-        for (int i = tStart; i < gl.size(); i++) {
+        for (int i = tStart + 1; i < gl.size(); i++) {
             addPostOptimizationRangeLockConstraintsAt(i);
         }
         try {
@@ -2017,9 +2017,15 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
+
         int numberOfPostOptimRangeLockConstraints = getNumberOfPostOptimRangeLockConstraints();
-        int numberOfAssignments = getNumberAssignmentsFollowingAndIncluding(tStart);
-        assert (numberOfPostOptimRangeLockConstraints == numberOfAssignments) : String.format("numberOfPostOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) after and including the time step tEnd=%d", numberOfPostOptimRangeLockConstraints, numberOfAssignments, tStart);
+        int numberOfAssignments = getNumberAssignmentsAfter(tStart);
+        if(numberOfPostOptimRangeLockConstraints != numberOfAssignments){
+            throw new AssertionError(String.format("numberOfPostOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) after the time step tStart=%d", numberOfPostOptimRangeLockConstraints, numberOfAssignments, tStart));
+        }
+        if ((tStart + 1 == gl.size()) && (numberOfPostOptimRangeLockConstraints != 0)) {
+            throw new AssertionError(String.format("numberOfPostOptimRangeLockConstraints (=%d) is not zero", numberOfPostOptimRangeLockConstraints));
+        }
     }
 
     /**
@@ -2042,9 +2048,9 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private int getNumberAssignmentsFollowingAndIncluding(int timeStep) {
+    private int getNumberAssignmentsAfter(int timeStep) {
         int total = 0;
-        for (int t = timeStep; t < gl.size(); t++) {
+        for (int t = timeStep+1; t < gl.size(); t++) {
             List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
             total += assignments.size();
         }
@@ -2067,9 +2073,9 @@ public class GrowthlaneTrackingILP {
         return numberOfConstraints;
     }
 
-    private int getNumberAssignmentsUptoAndIncluding(int timeStep) {
+    private int getNumberAssignmentsBefore(int timeStep) {
         int total = 0;
-        for (int t = 0; t <= timeStep; t++) {
+        for (int t = 0; t < timeStep; t++) {
             List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
             total += assignments.size();
         }
@@ -2106,7 +2112,7 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
-        for (int t = 0; t <= tEnd; t++) {
+        for (int t = 0; t < tEnd; t++) {
             addPreOptimizationRangeLockConstraintsAt(t);
         }
         try {
@@ -2114,9 +2120,15 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
+
         int numberOfPreOptimRangeLockConstraints = getNumberOfPreOptimRangeLockConstraints();
-        int numberOfAssignments = getNumberAssignmentsUptoAndIncluding(tEnd);
-        assert(numberOfPreOptimRangeLockConstraints == numberOfAssignments) : String.format("numberOfPreOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) up to and including the time step tEnd=%d", numberOfPreOptimRangeLockConstraints,numberOfAssignments,tEnd);
+        int numberOfAssignments = getNumberAssignmentsBefore(tEnd);
+        if(numberOfPreOptimRangeLockConstraints != numberOfAssignments){
+            throw new AssertionError(String.format("numberOfPreOptimRangeLockConstraints (=%d) does not equal numberOfAssignments (=%d) before time step tEnd=%d", numberOfPreOptimRangeLockConstraints,numberOfAssignments,tEnd));
+        }
+        if ((tEnd == 0) && (numberOfPreOptimRangeLockConstraints != 0)) {
+            throw new AssertionError(String.format("numberOfPreOptimRangeLockConstraints (=%d) is not zero", numberOfPreOptimRangeLockConstraints));
+        }
     }
 
     /**

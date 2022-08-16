@@ -2026,9 +2026,9 @@ public class GrowthlaneTrackingILP {
         if ((tStart + 1 == gl.numberOfFrames()) && (numberOfPostOptimRangeLockConstraints != 0)) {
             throw new AssertionError(String.format("numberOfPostOptimRangeLockConstraints (=%d) is not zero", numberOfPostOptimRangeLockConstraints));
         }
-        int retrievedTimeStep = getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint();
+        int retrievedTimeStep = getLastTimeStepWithoutPostOptimizationRangeConstraint();
         if (tStart != retrievedTimeStep) {
-            throw new AssertionError(String.format("method getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tStart));
+            throw new AssertionError(String.format("method getLastTimeStepWithoutPostOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tStart));
         }
     }
 
@@ -2127,9 +2127,9 @@ public class GrowthlaneTrackingILP {
         if ((tEnd == 0) && (numberOfPreOptimRangeLockConstraints != 0)) {
             throw new AssertionError(String.format("numberOfPreOptimRangeLockConstraints (=%d) is not zero", numberOfPreOptimRangeLockConstraints));
         }
-        int retrievedTimeStep = getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint();
+        int retrievedTimeStep = getFirstTimeStepWithoutPreOptimizationRangeConstraint();
         if (tEnd != retrievedTimeStep) {
-            throw new AssertionError(String.format("method getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tEnd));
+            throw new AssertionError(String.format("method getFirstTimeStepWithoutPreOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tEnd));
         }
     }
 
@@ -2174,10 +2174,10 @@ public class GrowthlaneTrackingILP {
     }
 
     public int getOptimizationRangeStart() {
-        return getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint();
+        return getFirstTimeStepWithoutPreOptimizationRangeConstraint();
     }
 
-    private int getTimeStepOfLastAssignmentWithPreOptimizationRangeConstraint() {
+    private int getFirstTimeStepWithoutPreOptimizationRangeConstraint() {
         int tStart = 0;
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             if (assignmentsHavePreOptimizationRangeConstraintAt(t)) {
@@ -2201,10 +2201,10 @@ public class GrowthlaneTrackingILP {
     }
 
     public int getOptimizationRangeEnd() {
-        return getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint();
+        return getLastTimeStepWithoutPostOptimizationRangeConstraint();
     }
 
-    private int getTimeStepOfFirstAssignmentWithPostOptimizationRangeConstraint() {
+    private int getLastTimeStepWithoutPostOptimizationRangeConstraint() {
         int tEnd = gl.numberOfFrames() - 1;
         for (int t = gl.numberOfFrames() - 1; t >= 0; t--) {
             if (assignmentsHavePostOptimizationRangeConstraintAt(t)) {

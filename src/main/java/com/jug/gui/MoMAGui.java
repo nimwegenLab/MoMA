@@ -136,13 +136,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             JSlider slider = (JSlider) changeEvent.getSource();
             if (!slider.getValueIsAdjusting()) {
                 if (model.getCurrentGL().getIlp().isReady()) {
-                    model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
-                    model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
+                    if(panelWithSliders.getTrackingRangeStart() != previousTrackingRangeStart){
+                        model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
+                        previousTrackingRangeStart = panelWithSliders.getTrackingRangeStart();
+                    }
+                    if(panelWithSliders.getTrackingRangeEnd() != previousTrackingRangeEnd) {
+                        model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
+                        previousTrackingRangeEnd = panelWithSliders.getTrackingRangeEnd();
+                    }
                 }
                 updateGui();
             }
         });
     }
+
+    int previousTrackingRangeStart = -1;
+    int previousTrackingRangeEnd = -1;
 
     public void updateGui() {
         dataToDisplayChanged();

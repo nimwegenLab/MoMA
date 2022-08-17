@@ -75,7 +75,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	@NotNull
-	private String getPreOptimizationRangeConstraintName() {
+	private String getPreOptimizationRangeLockConstraintName() {
 		return getPreOptimizationRangeConstraintNamePrefix() + getStringId();
 	}
 
@@ -286,15 +286,15 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	public boolean hasPreOptimizationRangeLockConstraint() {
-		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
+		return constraintExistsWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void addPreOptimizationRangeLockConstraint() {
-		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
+		addFreezeConstraintWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void removePreOptimizationRangeLockConstraint() {
-		removeConstraintWithName(getPreOptimizationRangeConstraintName());
+		removeConstraintWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void addPostOptimizationRangeLockConstraint() {

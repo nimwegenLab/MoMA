@@ -66,13 +66,13 @@ public class PanelWithSliders extends JPanel {
         initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
             Growthlane gl = ((Growthlane) e.getSource());
             if (gl.ilpIsReady()) {
-                trackingRangeSlider.setEnabled(true);
-                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
-                setTrackingRangeStart(optimizationRangeStart);
-                timestepSlider.setValue(optimizationRangeStart);
-                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
-                setTrackingRangeEnd(optimizationRangeEnd);
                 currentGL.removeChangeListener(initializationCallback);
+                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
+                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
+                setTrackingRangeStart(optimizationRangeStart);
+                setTrackingRangeEnd(optimizationRangeEnd);
+                timestepSlider.setValue(optimizationRangeStart);
+                trackingRangeSlider.setEnabled(true);
             }
         };
         currentGL.addChangeListener(initializationCallback);

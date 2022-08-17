@@ -36,13 +36,8 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         model.update();
     }
 
-    HashMap<GRBConstr, String> constraintNames = new HashMap<>();
-
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
-        if (constraintNames.containsValue(name)) {
-            throw new RuntimeException("gurobi constraint already exists: " + name);
-        }
         GRBConstr res = null;
         try {
             res = model.getConstrByName(name);
@@ -52,14 +47,12 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
         }
-        constraintNames.put(res, name);
         return res;
     }
 
     @Override
     public void remove(GRBConstr var) throws GRBException {
         model.remove(var);
-        constraintNames.remove(var);
     }
 
     @Override

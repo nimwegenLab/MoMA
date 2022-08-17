@@ -2001,7 +2001,6 @@ public class GrowthlaneTrackingILP {
      * @param tStart: time step after which assignments will be ignored
      */
     public void addPostOptimizationRangeLockConstraintsAfter(final int tStart) {
-        long start = System.currentTimeMillis();
         for (int i = 0; i < tStart + 1; i++) {
             removePostOptimizationRangeLockConstraintsAt(i);
         }
@@ -2018,10 +2017,7 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
-        long end = System.currentTimeMillis();
-        System.out.println("Exec time for modifying post-constraints [ms]: " + (end - start));
 
-        start = System.currentTimeMillis();
         int numberOfPostOptimRangeLockConstraints = getNumberOfPostOptimRangeLockConstraints();
         int numberOfAssignments = getNumberAssignmentsAfter(tStart);
         if(numberOfPostOptimRangeLockConstraints != numberOfAssignments){
@@ -2034,8 +2030,6 @@ public class GrowthlaneTrackingILP {
         if (tStart != retrievedTimeStep) {
             throw new AssertionError(String.format("method getLastTimeStepWithoutPostOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tStart));
         }
-        end = System.currentTimeMillis();
-        System.out.println("Exec time for asserting number of post-constraints [ms]: " + (end - start));
     }
 
     /**
@@ -2111,7 +2105,6 @@ public class GrowthlaneTrackingILP {
      * @param tEnd: time step before which to freeze
      */
     public void addPreOptimizationRangeLockConstraintsBefore(final int tEnd) {
-        long start = System.currentTimeMillis();
         for (int t = tEnd-1; t < gl.numberOfFrames(); t++) {
             removePreOptimizationRangeLockConstraintsAt(t);
         }
@@ -2128,10 +2121,7 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
-        long end = System.currentTimeMillis();
-        System.out.println("Exec time for modifying pre-constraints [ms]: " + (end - start));
 
-        start = System.currentTimeMillis();
         int numberOfPreOptimRangeLockConstraints = getNumberOfPreOptimRangeLockConstraints();
         int numberOfAssignments = getNumberAssignmentsBefore(tEnd);
         if(numberOfPreOptimRangeLockConstraints != numberOfAssignments){
@@ -2144,8 +2134,6 @@ public class GrowthlaneTrackingILP {
         if (tEnd != retrievedTimeStep) {
             throw new AssertionError(String.format("method getFirstTimeStepWithoutPreOptimizationRangeConstraint reported a value (=%d) that differs from the expected time step (=%d).", retrievedTimeStep, tEnd));
         }
-        end = System.currentTimeMillis();
-        System.out.println("Exec time for asserting number of pre-constraints [ms]: " + (end - start));
     }
 
     /**

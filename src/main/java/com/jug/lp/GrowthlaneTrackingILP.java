@@ -2054,9 +2054,10 @@ public class GrowthlaneTrackingILP {
     public void addPostOptimizationRangeLockConstraintsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if(!assignment.hasPostOptimizationRangeLockConstraint()){
-                assignment.addPostOptimizationRangeLockConstraint();
+            if (assignment.hasPostOptimizationRangeLockConstraint()) {
+                return; /* if one assignment has an optimization-range constraint lock, then all will have it; we can therefore return immediately */
             }
+            assignment.addPostOptimizationRangeLockConstraint();
         }
     }
 
@@ -2156,9 +2157,10 @@ public class GrowthlaneTrackingILP {
     public void addPreOptimizationRangeLockConstraintsAt(int t) {
         List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = nodes.getAssignmentsAt(t);
         for (AbstractAssignment<?> assignment : assignments) {
-            if (!assignment.hasPreOptimizationRangeLockConstraint()) {
-                assignment.addPreOptimizationRangeLockConstraint();
+            if (assignment.hasPreOptimizationRangeLockConstraint()) {
+                return; /* if one assignment has an optimization-range constraint lock, then all will have it; we can therefore return immediately */
             }
+            assignment.addPreOptimizationRangeLockConstraint();
         }
     }
 

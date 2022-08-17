@@ -234,6 +234,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
 		if (constraintExistsWithName(constraintName)) {
+			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
 			return;
 		}
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();

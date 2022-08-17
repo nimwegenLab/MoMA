@@ -16,8 +16,8 @@ public class DebuggingExploration {
 //        tests._20220816_fix_opt_range_slider();
 //        tests._20220815_debug_missing_assignment();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
-//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
-        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
+        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
+//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
 //        tests._20220811_fix_issue_with_continuity_constraint_violation();
@@ -70,7 +70,7 @@ public class DebuggingExploration {
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
         createEmptyDirectory(outputPath);
         int tmin = 130;
-        int tmax = 150;
+        int tmax = 160;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
     }
 

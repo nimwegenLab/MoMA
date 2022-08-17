@@ -27,7 +27,7 @@ public class HypothesesAndAssignmentsSanityChecker {
     }
 
     public void checkIfAllComponentsHaveCorrespondingHypothesis() {
-        for (int t = 0; t < gl.size(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             allHypothesisForComponentsExistAtTime(t);
         }
     }
@@ -47,7 +47,7 @@ public class HypothesesAndAssignmentsSanityChecker {
     }
 
     public void checkIfAllComponentsHaveMappingAssignmentsBetweenThem() {
-        for (int t = 0; t < gl.size(); t++) {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
             allMappingAssignmentsForComponentsWithExistingHypothesesExistAtTime(t);
         }
     }

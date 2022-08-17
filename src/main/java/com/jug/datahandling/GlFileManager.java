@@ -74,8 +74,8 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getOutputPath() {
-        if(isNull(outputPath)){
-            return getInputImageParentDirectoryPath();
+        if (isNull(outputPath)) {
+            outputPath = Paths.get(getInputImageParentDirectoryPath().toString(), getAnalysisName());
         }
         return outputPath;
     }
@@ -83,7 +83,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     private String temporaryAnalysisName = ".~analysisTmp";
 
     public Path getTrackingDataOutputPath() {
-        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName(), getAnalysisName() + "__track_data");
+        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
     }
 
     public boolean trackingDataOutputPathExists() {
@@ -91,7 +91,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getExportOutputPath() {
-        return Paths.get(getInputImageParentDirectoryPath().normalize().toString(), getAnalysisName(), getAnalysisName() + "__export_data");
+        return Paths.get(getInputImageParentDirectoryPath().normalize().toString(), getAnalysisName() + "__export_data");
     }
 
     public void makeTrackingDataOutputDirectory() {

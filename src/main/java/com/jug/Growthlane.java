@@ -65,7 +65,7 @@ public class Growthlane {
 	/**
 	 * @return the number of frames (time-steps) in this <code>Growthlane</code>
 	 */
-	public int size() {
+	public int numberOfFrames() {
 		return frames.size();
 	}
 

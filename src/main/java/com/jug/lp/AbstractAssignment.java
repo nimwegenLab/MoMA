@@ -57,12 +57,17 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return ilpVar;
 	}
 
+	private String stringId;
+
 	public String getStringId() {
 		try {
-			return getGRBVar().get(GRB.StringAttr.VarName);
+			if(isNull(stringId)){
+				stringId = getGRBVar().get(GRB.StringAttr.VarName);
+			}
 		} catch (GRBException err) {
 			throw new RuntimeException("Could not retrieve name of the Gurobi variable of assignment.");
 		}
+		return stringId;
 	}
 
 	@NotNull
@@ -70,14 +75,31 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return "StoreLockConstr_" + getStringId();
 	}
 
-	@NotNull
-	private String getPreOptimizationRangeConstraintName(){
-		return "PreOptimRangeLockConstr_" + getStringId();
+	public static String getPreOptimizationRangeConstraintNamePrefix(){
+		return "PreOptimRangeLockConstr_";
 	}
 
+	private String preOptimizationRangeLockConstraintName;
+
 	@NotNull
-	private String getPostOptimizationRangeLockConstraintName(){
-		return "PostOptimRangeLockConstr_" + getStringId();
+	private String getPreOptimizationRangeLockConstraintName() {
+		if (isNull(preOptimizationRangeLockConstraintName)) {
+			preOptimizationRangeLockConstraintName = getPreOptimizationRangeConstraintNamePrefix() + getStringId();
+		}
+		return preOptimizationRangeLockConstraintName;
+	}
+
+	public static String getPostOptimizationRangeConstraintNamePrefix() {
+		return "PostOptimRangeLockConstr_";
+	}
+
+	private String postOptimizationRangeLockConstraintName;
+	@NotNull
+	private String getPostOptimizationRangeLockConstraintName() {
+		if(isNull(postOptimizationRangeLockConstraintName)){
+			postOptimizationRangeLockConstraintName = getPostOptimizationRangeConstraintNamePrefix() + getStringId();
+		}
+		return postOptimizationRangeLockConstraintName;
 	}
 
 	/**
@@ -226,6 +248,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
 		if (constraintExistsWithName(constraintName)) {
+			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
 			return;
 		}
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
@@ -277,15 +300,15 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	public boolean hasPreOptimizationRangeLockConstraint() {
-		return constraintExistsWithName(getPreOptimizationRangeConstraintName());
+		return constraintExistsWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void addPreOptimizationRangeLockConstraint() {
-		addFreezeConstraintWithName(getPreOptimizationRangeConstraintName());
+		addFreezeConstraintWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void removePreOptimizationRangeLockConstraint() {
-		removeConstraintWithName(getPreOptimizationRangeConstraintName());
+		removeConstraintWithName(getPreOptimizationRangeLockConstraintName());
 	}
 
 	public void addPostOptimizationRangeLockConstraint() {

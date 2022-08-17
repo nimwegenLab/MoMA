@@ -41,13 +41,13 @@ public class IlpSolutionSanityChecker {
         finalErrorMessage = new StringBuilder();
         continuityConstraintViolationFound = false;
         finalErrorMessage.append("--------- Start: CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses ---------\n");
-        for (int t = 1; t < gl.size(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
+        for (int t = 1; t < gl.numberOfFrames(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
             continuityConstraintViolationFound = continuityConstraintViolationFound | CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses(t, finalErrorMessage);
         }
         finalErrorMessage.append("--------- End: CheckSolutionContinuityConstraintForTimestepBaseOnOptimalHypotheses ---------\n");
 
         finalErrorMessage.append("--------- Start: CheckContinuityConstraintForAllOptimalAssignments ---------\n");
-        for (int t = 1; t < gl.size(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
+        for (int t = 1; t < gl.numberOfFrames(); t++) { /* we start at t=1 to have incoming defined assignments from previous time step */
             continuityConstraintViolationFound = continuityConstraintViolationFound | CheckContinuityConstraintForAllOptimalAssignments(t, finalErrorMessage);
         }
         finalErrorMessage.append("--------- End: CheckContinuityConstraintForAllOptimalAssignments ---------\n");

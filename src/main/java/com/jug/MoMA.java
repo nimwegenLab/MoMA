@@ -63,6 +63,11 @@ public class MoMA {
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
 
+		if (commandLineArgumentParser.isVersionRequested()) {
+			System.out.println(dic.getGitVersionProvider().getVersionString());
+			System.exit(0);
+		}
+
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
 			System.exit(-1);
 		}
@@ -80,7 +85,7 @@ public class MoMA {
 		configurationManager.setIsReloading(commandLineArgumentParser.isReloadingData());
 		if (commandLineArgumentParser.isReloadingData()) {
 			dic.getFilePaths().setAnalysisName(commandLineArgumentParser.getAnalysisName());
-			dic.getFilePaths().setOutputPath(commandLineArgumentParser.getReloadFolderPath());
+			dic.getFilePaths().setOutputPath(Paths.get(commandLineArgumentParser.getReloadFolderPath().toString(), commandLineArgumentParser.getAnalysisName()));
 			dic.getLogger().print("");
 			dic.getLogger().print("######################################################");
 			dic.getLogger().print("Reloading previous analysis:");
@@ -114,7 +119,7 @@ public class MoMA {
 			configurationManager.load(dic.getFilePaths().getGlobalPropertiesFile());
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 
-			if (dic.getFilePaths().trackingDataOutputPathExists()) {
+			if (dic.getFilePaths().gurobiMpsFileExists()) { /* we take the existence of the MPS file to indicate a successful previous saving of tracking results */
 				if (!commandLineArgumentParser.isForcedOperation()) {
 					dic.getLogger().print("ERROR: The tracking-data folder exists. Aborting to not overwrite files. Use option -rl/-reload to load the existing tracking-data or -f/--force to overwrite it. Path to tracking-data folder: " + dic.getFilePaths().getTrackingDataOutputPath());
 					System.exit(-1);

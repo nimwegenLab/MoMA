@@ -70,7 +70,7 @@ public class MoMAModel {
 
     public void setCurrentGLF(final int idx) {
         assert (idx >= 0);
-        assert (idx <= getCurrentGL().size());
+        assert (idx <= getCurrentGL().numberOfFrames());
         currentGLFidx = idx;
     }
 
@@ -95,7 +95,7 @@ public class MoMAModel {
 
     public GrowthlaneFrame switchToNextGLF() {
         currentGLFidx++;
-        if (currentGLFidx >= getCurrentGL().size()) {
+        if (currentGLFidx >= getCurrentGL().numberOfFrames()) {
             currentGLidx = 0;
         }
         return getCurrentGLF();
@@ -104,7 +104,7 @@ public class MoMAModel {
     public GrowthlaneFrame switchToPrevGLF() {
         currentGLFidx--;
         if (currentGLFidx < 0) {
-            currentGLFidx = getCurrentGL().size() - 1;
+            currentGLFidx = getCurrentGL().numberOfFrames() - 1;
         }
         return getCurrentGLF();
     }

@@ -101,6 +101,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      */
     public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
     /**
+     * The maximal width allow for a component in pixels. Components with a width larger than this value will be removed.
+     */
+    public int MAXIMUM_COMPONENT_WIDTH = 50;
+    /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
     public int GL_OFFSET_TOP = 65;
@@ -259,6 +263,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
         SIZE_MINIMUM_FOR_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS)));
         SIZE_MINIMUM_FOR_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS)));
+        MAXIMUM_COMPONENT_WIDTH = Integer.parseInt(props.getProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH)));
         CELL_DETECTION_ROI_OFFSET_TOP = Integer.parseInt(props.getProperty("CELL_DETECTION_ROI_OFFSET_TOP", Integer.toString(CELL_DETECTION_ROI_OFFSET_TOP)));
         THRESHOLD_FOR_COMPONENT_MERGING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING)));
         THRESHOLD_FOR_COMPONENT_GENERATION = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Float.toString(THRESHOLD_FOR_COMPONENT_GENERATION)));
@@ -399,6 +404,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
             props.setProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS));
             props.setProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS));
+            props.setProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH));
             props.setProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE));
             props.setProperty("THRESHOLD_FOR_COMPONENT_GENERATION", Double.toString(THRESHOLD_FOR_COMPONENT_GENERATION));
             props.setProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Double.toString(THRESHOLD_FOR_COMPONENT_SPLITTING));
@@ -483,6 +489,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public int getSizeMinimumOfParentComponent() {
         return SIZE_MINIMUM_FOR_ROOT_COMPONENTS;
+    }
+
+    public int getMaximumComponentWidth() {
+        return MAXIMUM_COMPONENT_WIDTH;
     }
 
     public File getCurrentPropertyFile() {

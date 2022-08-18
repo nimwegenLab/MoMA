@@ -60,7 +60,7 @@ public class ComponentForestGenerator {
         MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
         // filter components by width
-        Predicate<Integer> widthCondition = (width) -> (width <= 20);
+        Predicate<Integer> widthCondition = (width) -> (width <= configuration.getMaximumComponentWidth());
         ILocationTester widthLimit = new ComponentExtentTester(0, widthCondition);
         ArrayList<ILocationTester> testers = new ArrayList<>();
         testers.add(widthLimit);

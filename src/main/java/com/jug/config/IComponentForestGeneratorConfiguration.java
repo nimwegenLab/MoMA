@@ -16,4 +16,9 @@ public interface IComponentForestGeneratorConfiguration {
      * @return minimal size of root components in [px]
      */
     int getSizeMinimumOfParentComponent();
+
+    /**
+     * The maximal width allow for a component in pixels. Components with a width larger than this value will be removed.
+     */
+    int getMaximumComponentWidth();
 }

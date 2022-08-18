@@ -12,7 +12,9 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-        tests._20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7();
+//        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
+        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
+//        tests._20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7();
 //        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
 //        tests._test_version_output();
 //        tests._20220816_fix_opt_range_slider();
@@ -28,8 +30,32 @@ public class DebuggingExploration {
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
     }
 
+    public void _20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16() {
+        String datasetSubPath = "20220817-debug-missing-assignments-and-components/gl_test_case_3";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos27_GL16", "20220810_glc_scpm_1_MMStack_Pos27_GL16.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "debug_test_analysis";
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos27_GL16", analysisName);
+        createEmptyDirectory(outputPath);
+        Integer tmin = null;
+        Integer tmax = null;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+    }
+
+    public void _20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31() {
+        String datasetSubPath = "20220817-debug-missing-assignments-and-components/gl_test_case_2";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos17_GL31", "20220810_glc_scpm_1_MMStack_Pos17_GL31.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "debug_test_analysis";
+        Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos17_GL31", analysisName);
+        createEmptyDirectory(outputPath);
+        Integer tmin = null;
+        Integer tmax = null;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+    }
+
     public void _20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7() {
-        String datasetSubPath = "20220817-debug-missing-assignments-and-components";
+        String datasetSubPath = "20220817-debug-missing-assignments-and-components/gl_test_case_1";
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "debug_test_analysis";
@@ -41,7 +67,7 @@ public class DebuggingExploration {
     }
 
     public void _20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7() {
-        String datasetSubPath = "20220817-debug-missing-assignments-and-components";
+        String datasetSubPath = "20220817-debug-missing-assignments-and-components/gl_test_case_1";
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "debug_test_analysis";

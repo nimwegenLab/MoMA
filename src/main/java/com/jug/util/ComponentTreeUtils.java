@@ -20,13 +20,43 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static java.util.Objects.isNull;
+
 /**
  * @author jug
  */
 public class ComponentTreeUtils {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
-    private static int currentTime = -1;
+
+    /**
+     * This method recursively adds all child components below {@param component} to {@param listOfChildren}.
+     *
+     * @param component component below which we want to get all child components in the component-tree
+     * @param listOfChildren list of child components to which the parents will be added
+     */
+    public static void recursivelyAddChildrenToList(final ComponentInterface component, List<ComponentInterface> listOfChildren) {
+        List<ComponentInterface> children = component.getChildren();
+        for (ComponentInterface child : children) {
+            listOfChildren.add(child);
+            recursivelyAddChildrenToList(child, listOfChildren);
+        }
+    }
+
+    /**
+     * This method recursively adds all parent components above {@param component} to {@param listOfParents}.
+     *
+     * @param component component above which we want to all parents components in the component-tree
+     * @param listOfParents list of parent components to which the parents will be added
+     */
+    public static void recursivelyAddParentsToList(final ComponentInterface component, List<ComponentInterface> listOfParents) {
+        if (isNull(component)) {
+            return;
+        }
+        ComponentInterface parent = component.getParent();
+        listOfParents.add(parent);
+        recursivelyAddParentsToList(parent, listOfParents);
+    }
 
     /**
      * Get all leaf nodes under the specified component in component forest.
@@ -238,7 +268,6 @@ public class ComponentTreeUtils {
                     System.out.println("totalAreaTarget: " + targetComponent.getTotalAreaOfRootComponents());
                     System.out.println("differenceOfTotalArea: " + differenceOfTotalArea);
                     System.out.println();
-                    currentTime = sourceTime;
                 }
             }
         }

@@ -76,8 +76,8 @@ public class DebuggingExploration__20220817_debug_missing_assignments_and_compon
         String analysisName = "debug_test_analysis";
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
         createEmptyDirectory(outputPath);
-        int tmin = 192;
-        int tmax = 195;
+        int tmin = 193;
+        int tmax = 194;
 //        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
         startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString()});
     }

@@ -19,6 +19,7 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -1014,22 +1015,35 @@ public class GrowthlaneTrackingILP {
     public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> ret = new ArrayList<>();
 
-        final ValuePair<Integer, Integer> interval =
-                ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
-        final int startpos = interval.getA();
-        final int endpos = interval.getB();
+        AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
+        List<ComponentInterface> conflictingComponents = new ArrayList<>();
+        ComponentTreeUtils.recursivelyAddChildrenToList(component, conflictingComponents);
+        recursivelyAddParentsToList(component, conflictingComponents);
 
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
-            final ValuePair<Integer, Integer> ctnLimits =
-                    ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
-            if ((ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos) || // overlap at top
-                    (ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos) ||    // overlap at bottom
-                    (ctnLimits.getA() >= startpos && ctnLimits.getB() <= endpos)) {  // fully contained inside
-                ret.add(h);
+        for (ComponentInterface comp : conflictingComponents){
+            if(nodes.containsKey(comp)){
+                ret.add(nodes.findHypothesisContaining(comp));
             }
         }
         return ret;
+
+//        final ValuePair<Integer, Integer> interval =
+//                ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
+//        final int startpos = interval.getA();
+//        final int endpos = interval.getB();
+//
+//        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
+//        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
+//            final ValuePair<Integer, Integer> ctnLimits =
+//                    ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
+////            if ((ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos) || // overlap at top
+////                    (ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos) ||    // overlap at bottom
+////                    (ctnLimits.getA() >= startpos && ctnLimits.getB() <= endpos)) {  // fully contained inside
+////                ret.add(h);
+////            }
+//        }
+//        return ret;
+//        throw new NotImplementedException();
     }
 
     /**

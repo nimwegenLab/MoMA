@@ -12,8 +12,8 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-//        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
-        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
+        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
+//        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
 //        tests._20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7();
 //        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
 //        tests._test_version_output();

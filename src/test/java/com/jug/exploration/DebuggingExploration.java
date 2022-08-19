@@ -12,10 +12,10 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
+//        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
 //        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
 //        tests._20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7();
-//        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
+        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
 //        tests._test_version_output();
 //        tests._20220816_fix_opt_range_slider();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
@@ -73,8 +73,8 @@ public class DebuggingExploration {
         String analysisName = "debug_test_analysis";
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
         createEmptyDirectory(outputPath);
-        int tmin = 192;
-        int tmax = 195;
+        Integer tmin = null;
+        Integer tmax = null;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
     }
 

@@ -203,8 +203,8 @@ public class GrowthlaneTrackingILP {
             // Add the remaining ILP constraints
             // (those would be (i) and (ii) of 'Default Solution')
             // - - - - - - - - - - - - - - - - - - - - - - - - - -
-            addPathBlockingConstraints();
-//            addPathBlockingConstraintsNew();
+//            addPathBlockingConstraints();
+            addPathBlockingConstraintsNew();
             addContinuityConstraints();
 
             // UPDATE GUROBI-MODEL

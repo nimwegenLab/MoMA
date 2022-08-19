@@ -222,7 +222,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * <code>Object</code>, or <code>null</code> in case this object was
      * not wrapped by any of the stored hypotheses.
      */
-    public Hypothesis<?> findHypothesisContaining(final Object something) {
+    public H findHypothesisContaining(final Object something) {
         final H h = hmap.get(something);
         if (isNull(h)) {
             throw new RuntimeException("No hypothesis found for component: " + ((ComponentInterface) something).getStringId());

@@ -18,4 +18,9 @@ public class ComponentForestGeneratorConfigurationMock implements IComponentFore
     public int getSizeMinimumOfParentComponent() {
         return sizeMinimumOfParentComponent;
     }
+
+    @Override
+    public int getMaximumComponentWidth() {
+        return 30;
+    }
 }

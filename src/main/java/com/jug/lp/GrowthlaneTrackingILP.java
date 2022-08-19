@@ -1002,31 +1002,23 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Returns all active segmentations at time t that conflict with the given
-     * hypothesis.
+     * Returns a list of the hypotheses which conflict with {@param hypothesis} base on its component-tree structure.
+     * Note that not all components must have a corresponding hypothesis, so we only return the hypotheses that exist.
      *
-     * @param t          the time-point at which to look for the optimal segmentation.
-     * @param hypothesis another hypothesis conflicts have to be queried for.
-     * @return a list of <code>Hypothesis< Component< FloatType, ? >></code>
-     * that
-     * conflict with the given hypothesis. (Overlap in space!)
+     * @param hypothesis for which we want to find conflicting hypotheses in the component-tree.
+     * @return list of conflicting hypotheses in the component-tree
      */
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentationsInConflict(final int t, final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getConflictingHypotheses(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
         final List<Hypothesis<AdvancedComponent<FloatType>>> ret = new ArrayList<>();
 
-        final ValuePair<Integer, Integer> interval =
-                ComponentTreeUtils.getTreeNodeInterval(hypothesis.getWrappedComponent());
-        final int startpos = interval.getA();
-        final int endpos = interval.getB();
+        AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
+        List<ComponentInterface> conflictingComponents = new ArrayList<>();
+        ComponentTreeUtils.recursivelyAddChildrenToList(component, conflictingComponents);
+        recursivelyAddParentsToList(component, conflictingComponents);
 
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getOptimalHypotheses(t);
-        for (final Hypothesis<AdvancedComponent<FloatType>> h : hyps) {
-            final ValuePair<Integer, Integer> ctnLimits =
-                    ComponentTreeUtils.getTreeNodeInterval(h.getWrappedComponent());
-            if ((ctnLimits.getA() <= startpos && ctnLimits.getB() >= startpos) || // overlap at top
-                    (ctnLimits.getA() <= endpos && ctnLimits.getB() >= endpos) ||    // overlap at bottom
-                    (ctnLimits.getA() >= startpos && ctnLimits.getB() <= endpos)) {  // fully contained inside
-                ret.add(h);
+        for (ComponentInterface comp : conflictingComponents){
+            if(nodes.containsKey(comp)){
+                ret.add(nodes.findHypothesisContaining(comp));
             }
         }
         return ret;

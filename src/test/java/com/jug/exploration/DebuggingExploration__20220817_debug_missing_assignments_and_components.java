@@ -6,11 +6,11 @@ import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 import static com.jug.util.io.FileUtils.createEmptyDirectory;
 
-public class DebuggingExploration {
+public class DebuggingExploration__20220817_debug_missing_assignments_and_components {
     String datasets_base_path = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/";
 
     public static void main(String[] args) {
-        DebuggingExploration tests = new DebuggingExploration();
+        DebuggingExploration__20220817_debug_missing_assignments_and_components tests = new DebuggingExploration__20220817_debug_missing_assignments_and_components();
 
 //        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
 //        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
@@ -39,7 +39,8 @@ public class DebuggingExploration {
         createEmptyDirectory(outputPath);
         Integer tmin = null;
         Integer tmax = null;
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+//        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString()});
     }
 
     public void _20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31() {
@@ -51,7 +52,8 @@ public class DebuggingExploration {
         createEmptyDirectory(outputPath);
         Integer tmin = null;
         Integer tmax = null;
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+//        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString()});
     }
 
     public void _20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7() {
@@ -63,7 +65,8 @@ public class DebuggingExploration {
         createEmptyDirectory(outputPath);
         int tmin = 130;
         int tmax = 180;
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+//        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString()});
     }
 
     public void _20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7() {
@@ -73,9 +76,10 @@ public class DebuggingExploration {
         String analysisName = "debug_test_analysis";
         Path outputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", analysisName);
         createEmptyDirectory(outputPath);
-        Integer tmin = null;
-        Integer tmax = null;
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+        int tmin = 193;
+        int tmax = 194;
+//        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-force"});
+        startMoma(false, inputPath.toString(), outputPath.toString(), tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString()});
     }
 
     public void _test_version_output() {

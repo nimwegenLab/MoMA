@@ -91,7 +91,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getExportOutputPath() {
-        return Paths.get(getInputImageParentDirectoryPath().normalize().toString(), getAnalysisName() + "__export_data");
+        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__export_data");
     }
 
     public void makeTrackingDataOutputDirectory() {

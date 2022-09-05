@@ -83,7 +83,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     private String temporaryAnalysisName = ".~analysisTmp";
 
     public Path getTrackingDataOutputPath() {
-        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__track_data");
+        return Paths.get(getOutputPath().normalize().toString(), "track_data__" + getAnalysisName());
     }
 
     public boolean trackingDataOutputPathExists() {
@@ -91,7 +91,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     public Path getExportOutputPath() {
-        return Paths.get(getOutputPath().normalize().toString(), getAnalysisName() + "__export_data");
+        return Paths.get(getOutputPath().normalize().toString(), "export_data__" + getAnalysisName());
     }
 
     public void makeTrackingDataOutputDirectory() {

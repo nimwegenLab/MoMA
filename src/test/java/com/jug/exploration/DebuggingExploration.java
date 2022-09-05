@@ -15,12 +15,12 @@ public class DebuggingExploration {
 //        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
 //        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
 //        tests._20220817_debug_missing_assignments_and_components__test_2__Pos0_GL7();
-        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
+//        tests._20220817_debug_missing_assignments_and_components__test_1__Pos0_GL7();
 //        tests._test_version_output();
 //        tests._20220816_fix_opt_range_slider();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_interactive_tracking_reload();
-//        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
+        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_trackonly();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading();
 //        tests._20220815_fix_moma_fails_does_not_correctly_restore_ilp_state__test_reloading_scicore_tracking_result();
 //        tests._20220811_fix_issue_with_continuity_constraint_violation();

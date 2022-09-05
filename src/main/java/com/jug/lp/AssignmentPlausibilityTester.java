@@ -21,13 +21,13 @@ public class AssignmentPlausibilityTester {
      * @param totalTargetComponentSize
      * @return
      */
-    int minSizeForFiltering = 300; /* The value 300 corresponds to a typical cell-size in pixels. */
+    int minSizeForFiltering = 15; /* length of cells in [px] below which we will not apply filtering */
 
-    public boolean sizeDifferenceIsPlausible(double sourceComponentSize, double totalTargetComponentSize) {
-        if (sourceComponentSize < minSizeForFiltering && totalTargetComponentSize < minSizeForFiltering) {
+    public boolean sizeDifferenceIsPlausible(double sourceComponentLength, double totalTargetComponentLength) {
+        if (sourceComponentLength < minSizeForFiltering && totalTargetComponentLength < minSizeForFiltering) {
             return true; /* The relative size-fluctuations for small components can be very large and noisy. This ensures, that we do not accidentally filter them. */
         }
-        double foldChange = totalTargetComponentSize / sourceComponentSize;
+        double foldChange = totalTargetComponentLength / sourceComponentLength;
         boolean res = foldChange <= trackingConfiguration.getMaximumGrowthRate();
         return res;
     }

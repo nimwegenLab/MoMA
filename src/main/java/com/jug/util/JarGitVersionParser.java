@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 
+/***
+ * This class parses the version from Git version-information stored in the JSON file inside the JAR of build.
+ */
 public class JarGitVersionParser implements IVersionProvider {
     private String jsonGitInformationString;
 

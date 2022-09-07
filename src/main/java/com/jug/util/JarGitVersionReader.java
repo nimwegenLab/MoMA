@@ -5,6 +5,9 @@ package com.jug.util;
         import java.io.InputStream;
         import java.io.InputStreamReader;
 
+/***
+ * This class reads the Git version-information stored in the JSON file inside the JAR of build.
+ */
 public class JarGitVersionReader {
     public boolean canReadJsonGitInformation() {
         ClassLoader classLoader = getClass().getClassLoader();

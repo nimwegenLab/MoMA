@@ -4,6 +4,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/***
+ * This class gets a version directly from Git to show a version when running from the IDE during development.
+ */
 public class DevelopmentGitVersionProvider implements IVersionProvider {
     @Override
     public String getVersionString() {
@@ -21,16 +24,5 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         Process p = Runtime.getRuntime().exec(command);
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
         return input.readLine();
-//        String line;
-//        String text = command + "\n";
-//        System.out.println(text);
-//        line = input.readLine();
-//        return line;
-//        while ((line = input.readLine()) != null)
-//        {
-//            text += line;
-////            System.out.println("Line: " + line);
-//        }
-//        return text;
     }
 }

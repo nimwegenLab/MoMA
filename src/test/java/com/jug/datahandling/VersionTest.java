@@ -1,6 +1,5 @@
 package com.jug.datahandling;
 
-import org.apache.maven.artifact.versioning.ComparableVersion;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -52,46 +51,5 @@ public class VersionTest {
         Version sut = new Version("1.2.3-alpha.2+77305e1f");
         String actual = sut.getQualifier();
         Assert.assertEquals("alpha.2", actual);
-    }
-
-
-
-    /*******************************************************************************/
-
-
-    @Test
-    public void Semver__test_2(){
-        Semver ver1 = new Semver("1.2.3-beta1-11e34534");
-        Semver ver2 = new Semver("1.2.3+1231241");
-//        System.out.println("");
-        Assert.assertTrue(ver1.isEqualTo(ver2));
-    }
-
-    @Test
-    public void ComparableVersion__test_1(){
-        ComparableVersion ver1 = new ComparableVersion("1.2.3");
-        ComparableVersion ver2 = new ComparableVersion("1.2.3");
-        Assert.assertTrue(ver1.compareTo(ver2) == 0);
-    }
-
-    @Test
-    public void ComparableVersion__test_2(){
-        ComparableVersion olderVersion = new ComparableVersion("1.2.3");
-        ComparableVersion newerVersion = new ComparableVersion("1.2.4");
-        Assert.assertTrue(olderVersion.compareTo(newerVersion) < 0);
-    }
-
-    @Test
-    public void ComparableVersion__test_3(){
-        ComparableVersion olderVersion = new ComparableVersion("1.2.3-beta1");
-        ComparableVersion newerVersion = new ComparableVersion("1.2.3");
-        Assert.assertTrue(newerVersion.compareTo(olderVersion) > 0);
-    }
-
-    @Test
-    public void ComparableVersion__test_4(){
-        ComparableVersion olderVersion = new ComparableVersion("1.2.3+119408e2");
-        ComparableVersion newerVersion = new ComparableVersion("1.2.3+219408e2");
-        Assert.assertTrue(newerVersion.compareTo(olderVersion) > 0);
     }
 }

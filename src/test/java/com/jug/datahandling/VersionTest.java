@@ -3,17 +3,7 @@ package com.jug.datahandling;
 import org.junit.Test;
 import org.junit.Assert;
 
-import com.vdurmont.semver4j.Semver;
-
 public class VersionTest {
-    @Test
-    public void Semver__test_1(){
-        Semver ver1 = new Semver("1.2.3+1231241");
-        Semver ver2 = new Semver("1.2.3+1231241");
-//        System.out.println("");
-        Assert.assertTrue(ver1.isEqualTo(ver2));
-    }
-
     @Test
     public void getMajor__returns_correct_value(){
         Version sut = new Version("1.2.3");

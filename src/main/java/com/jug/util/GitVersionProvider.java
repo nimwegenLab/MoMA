@@ -3,7 +3,6 @@ package com.jug.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jug.datahandling.Version;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.io.BufferedReader;
@@ -24,16 +23,6 @@ public class GitVersionProvider {
 //        return readGitVersion();
     }
 
-    public Version getVersion() {
-        String versionString;
-        try {
-            versionString = getGitVersionInfo();
-            return new Version(versionString);
-        } catch (IOException e) {
-            return new Version("0.0.0-dev");
-        }
-    }
-
     private String getGitVersionInfo() throws IOException {
         String jsonString = readGitVersion();
         ObjectMapper mapper = new ObjectMapper();
@@ -41,7 +30,7 @@ public class GitVersionProvider {
         String version = rootNode.get("git.closest.tag.name").asText();
         version = version.substring(1);
         String commitId = rootNode.get("git.commit.id").asText().substring(0, 8);
-        return version + "+" + commitId;
+        return version + "-" + commitId;
     }
 
     private String readGitVersion() {

@@ -284,15 +284,23 @@ public class PseudoDic {
 
     public IVersionProvider getVersionProvider() {
         if (isNull(versionProvider)) {
-            JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
-            if(jarGitVersionReader.canReadJsonGitInformation()){
-                versionProvider = new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
-            }
-            else{
-                throw new RuntimeException("Could not get a version provider");
-            }
+            versionProvider = buildVersionProvider();
         }
         return versionProvider;
+    }
+
+    private IVersionProvider buildVersionProvider() {
+        JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
+        if(jarGitVersionReader.canReadJsonGitInformation()){
+            return new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
+        }
+        DevelopmentGitVersionProvider developmentGitVersionProvider = new DevelopmentGitVersionProvider();
+        if(developmentGitVersionProvider.canReadGitVersionInformation()){
+            return developmentGitVersionProvider;
+        }
+        else{
+            throw new RuntimeException("Could not get a version provider");
+        }
     }
 
     public VersionCompatibilityChecker getVersionCompatibilityChecker(){

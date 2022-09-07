@@ -64,7 +64,7 @@ public class MoMA {
 		commandLineArgumentParser.parse(args);
 
 		if (commandLineArgumentParser.isVersionRequested()) {
-			System.out.println(dic.getGitVersionProvider().getVersionString());
+			System.out.println(dic.getVersionProvider().getVersionString());
 			System.exit(0);
 		}
 
@@ -96,8 +96,8 @@ public class MoMA {
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
-			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString())) {
-				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getGitVersionProvider().getVersionString()));
+			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersionString())) {
+				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersionString()));
 				System.exit(-1);
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
@@ -153,9 +153,9 @@ public class MoMA {
 				}
 			}
 		}
-		configurationManager.setSatasetMomaVersion(dic.getGitVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
+		configurationManager.setSatasetMomaVersion(dic.getVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
 
-		System.out.println( "VERSION: " + dic.getGitVersionProvider().getVersionString() );
+		System.out.println( "VERSION: " + dic.getVersionProvider().getVersionString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = dic.getGuiFrame();

@@ -53,7 +53,7 @@ public class PseudoDic {
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private UnetProcessor unetProcessor;
     private WatershedMaskGenerator watershedMaskGenerator;
-    private GitVersionProvider gitVersionProvider;
+    private IVersionProvider versionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
     private ConvertService convertService;
     private IImageProvider imageProvider;
@@ -158,7 +158,7 @@ public class PseudoDic {
     }
 
     public CellStatsExporter getCellStatsExporter() {
-        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getGitVersionProvider().getVersionString(), getMeasurements());
+        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersionString(), getMeasurements());
     }
 
     private List<SegmentMeasurementInterface> getMeasurements() {
@@ -282,11 +282,14 @@ public class PseudoDic {
         return watershedMaskGenerator;
     }
 
-    public GitVersionProvider getGitVersionProvider() {
-        if (isNull(gitVersionProvider)) {
-            gitVersionProvider = new GitVersionProvider();
+    public IVersionProvider getVersionProvider() {
+        if (isNull(versionProvider)) {
+            JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
+            if(jarGitVersionReader.canReadJsonGitInformation()){
+                versionProvider = new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
+            }
         }
-        return gitVersionProvider;
+        return versionProvider;
     }
 
     public VersionCompatibilityChecker getVersionCompatibilityChecker(){
@@ -376,7 +379,7 @@ public class PseudoDic {
      */
     public void setDatasetNameInWindowTitle(final String datasetName) {
         if (getGuiFrame() != null) {
-            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getGitVersionProvider().getVersionString(), datasetName));
+            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getVersionProvider().getVersionString(), datasetName));
         }
     }
 
@@ -401,7 +404,7 @@ public class PseudoDic {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new LoggerWindow(getGitVersionProvider().getVersionString(), getConfigurationManager());
+        loggerWindow = new LoggerWindow(getVersionProvider().getVersionString(), getConfigurationManager());
         return loggerWindow;
     }
 

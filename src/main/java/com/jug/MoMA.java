@@ -97,7 +97,7 @@ public class MoMA {
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
 			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersionString())) {
-				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersionString()));
+				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(dic.getVersionProvider().getVersionString(), configurationManager.getDatasetMomaVersion()));
 				System.exit(-1);
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);

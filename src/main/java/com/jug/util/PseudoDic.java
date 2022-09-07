@@ -288,6 +288,9 @@ public class PseudoDic {
             if(jarGitVersionReader.canReadJsonGitInformation()){
                 versionProvider = new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
             }
+            else{
+                throw new RuntimeException("Could not get a version provider");
+            }
         }
         return versionProvider;
     }

@@ -8,7 +8,6 @@ public class JarGitVersionParser implements IVersionProvider {
     private String jsonGitInformationString;
 
     public JarGitVersionParser(String jsonGitInformationString) {
-
         this.jsonGitInformationString = jsonGitInformationString;
     }
 

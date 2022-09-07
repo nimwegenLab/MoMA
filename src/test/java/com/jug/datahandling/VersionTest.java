@@ -64,4 +64,11 @@ public class VersionTest {
         Assert.assertTrue(version_1_2_3.compareTo(version_1_2_3__with_qualifier) > 0);
         Assert.assertTrue(version_1_2_3__with_qualifier.compareTo(version_1_2_3) < 0);
     }
+
+    @Test
+    public void toString__returns_original_version_string(){
+        String expected = "1.2.3-beta.1-dirty+77305e1f";
+        Version version = new Version(expected);
+        Assert.assertEquals(expected, version.toString());
+    }
 }

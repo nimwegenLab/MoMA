@@ -32,4 +32,8 @@ public class Version {
     public int compareTo(Version version_1_2_3__instance_2) {
         return semver.compareTo(version_1_2_3__instance_2.semver);
     }
+
+    public String toString() {
+        return semver.toString();
+    }
 }

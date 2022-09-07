@@ -8,7 +8,6 @@ public class DevelopmentGitVersionProviderTest {
     public void getVersionString__returns_a_value(){
         DevelopmentGitVersionProvider sut = new DevelopmentGitVersionProvider();
         String actual = sut.getVersionString();
-        System.out.println(actual);
-//        Assert.assertNotNull(actual);
+        Assert.assertNotNull(actual);
     }
 }

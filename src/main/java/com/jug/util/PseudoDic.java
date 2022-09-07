@@ -25,6 +25,7 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 
@@ -289,10 +290,11 @@ public class PseudoDic {
         return versionProvider;
     }
 
-    private boolean runningFromJarFile() {
-        return PseudoDic.class.getResource("PseudoDic.class").toString().contains("jar");
-    }
-
+    /***
+     * Returns builds a provider depending on whether we are running from within a JAR or the development environment.
+     * @return
+     */
+    @NotNull
     private IVersionProvider buildVersionProvider() {
         if (runningFromJarFile()) {
             JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
@@ -309,6 +311,10 @@ public class PseudoDic {
         else{
             throw new RuntimeException("Could not get a version provider");
         }
+    }
+
+    private boolean runningFromJarFile() {
+        return PseudoDic.class.getResource("PseudoDic.class").toString().contains("jar");
     }
 
     public VersionCompatibilityChecker getVersionCompatibilityChecker(){

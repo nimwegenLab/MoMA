@@ -15,8 +15,8 @@ public class DebuggingExploration {
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();
 
-//        tests._20220905_fix_incorrect_export_folder_path__test_trackonly();
-        tests._20220905_fix_incorrect_export_folder_path__test_exporting();
+        tests._20220905_fix_incorrect_export_folder_path__test_trackonly();
+//        tests._20220905_fix_incorrect_export_folder_path__test_exporting();
 
 //        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
 //        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();

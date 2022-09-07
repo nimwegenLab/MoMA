@@ -6,13 +6,13 @@ import org.junit.Assert;
 public class JarGitVersionParserTest {
     @Test
     public void getVersion__returns_correct_version() {
-        JarGitVersionParser sut = new JarGitVersionParser(getJsonJarGitVersionString());
+        IVersionProvider sut = new JarGitVersionParser(getJsonJarGitVersionString());
         String versionString = sut.getVersionString();
-        Assert.assertEquals("0.6.0-beta4-bbf9f630", versionString);
+        Assert.assertEquals("0.6.0-beta4+bbf9f630", versionString);
     }
 
-    private String getJsonJarGitVersionString(){
-        return new String("{\n" +
+    private String getJsonJarGitVersionString() {
+        return "{\n" +
                 "    \"git.branch\": \"feature/20220905-implement-version-checking\",\n" +
                 "    \"git.build.host\": \"ierbert2\",\n" +
                 "    \"git.build.time\": \"20220907-114736\",\n" +
@@ -38,6 +38,6 @@ public class JarGitVersionParserTest {
                 "    \"git.remote.origin.url\": \"git@github.com:michaelmell/MoMA.git\",\n" +
                 "    \"git.tags\": \"\",\n" +
                 "    \"git.total.commit.count\": \"2048\"\n" +
-                "}");
+                "}";
     }
 }

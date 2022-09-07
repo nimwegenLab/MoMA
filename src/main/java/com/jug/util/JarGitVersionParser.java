@@ -27,6 +27,6 @@ public class JarGitVersionParser implements IVersionProvider {
         String version = rootNode.get("git.closest.tag.name").asText();
         version = version.substring(1);
         String commitId = rootNode.get("git.commit.id").asText().substring(0, 8);
-        return version + "-" + commitId;
+        return version + "+" + commitId;
     }
 }

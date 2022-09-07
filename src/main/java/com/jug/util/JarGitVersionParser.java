@@ -2,6 +2,8 @@ package com.jug.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jug.datahandling.Version;
+
 import java.io.IOException;
 
 /***
@@ -22,6 +24,11 @@ public class JarGitVersionParser implements IVersionProvider {
             throw new RuntimeException(e);
         }
         return versionString;
+    }
+
+    @Override
+    public Version getVersion() {
+        return new Version(getVersionString());
     }
 
     private String getGitVersionInfo(String jsonString) throws IOException {

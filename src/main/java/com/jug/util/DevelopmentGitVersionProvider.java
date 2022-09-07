@@ -30,6 +30,11 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         }
     }
 
+    @Override
+    public Version getVersion() {
+        return new Version(getVersionString());
+    }
+
     private String formatVersionString(String versionString){
         versionString = versionString.substring(1);
         String[] p = versionString.split("-");

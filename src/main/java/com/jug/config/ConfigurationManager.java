@@ -1,5 +1,6 @@
 package com.jug.config;
 
+import com.jug.datahandling.Version;
 import org.apache.commons.io.FileUtils;
 
 import javax.swing.*;
@@ -585,7 +586,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Returns the MoMA version that generated the dataset that is being loaded.
      * @return MoMA version that generated dataset
      */
-    public String getDatasetMomaVersion() {
+    public String getDatasetMomaVersionString() {
         return datasetMomaVersion;
+    }
+
+    public Version getDatasetMomaVersion() {
+        return new Version(getDatasetMomaVersionString());
     }
 }

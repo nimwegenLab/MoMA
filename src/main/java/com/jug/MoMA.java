@@ -4,6 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
+import com.jug.datahandling.Version;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -96,8 +97,8 @@ public class MoMA {
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
-			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersionString())) {
-				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(dic.getVersionProvider().getVersionString(), configurationManager.getDatasetMomaVersion()));
+			if (!dic.getVersionCompatibilityChecker().versionAreCompatible(configurationManager.getDatasetMomaVersion(), dic.getVersionProvider().getVersion())) {
+				System.out.println(dic.getVersionCompatibilityChecker().getErrorMessage(dic.getVersionProvider().getVersionString(), configurationManager.getDatasetMomaVersionString()));
 				System.exit(-1);
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);

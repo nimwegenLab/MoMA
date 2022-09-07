@@ -28,4 +28,8 @@ public class Version {
     public String getQualifier() {
         return String.join(".", semver.getSuffixTokens());
     }
+
+    public int compareTo(Version version_1_2_3__instance_2) {
+        return semver.compareTo(version_1_2_3__instance_2.semver);
+    }
 }

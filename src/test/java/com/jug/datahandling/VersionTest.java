@@ -42,4 +42,26 @@ public class VersionTest {
         String actual = sut.getQualifier();
         Assert.assertEquals("alpha.2", actual);
     }
+
+    @Test
+    public void compareTo__for_same_versions__returns_equality(){
+        Version version_1_2_3__instance_1 = new Version("1.2.3+77305e1f");
+        Version version_1_2_3__instance_2 = new Version("1.2.3+77305e1f");
+        Assert.assertEquals(0, version_1_2_3__instance_1.compareTo(version_1_2_3__instance_2));
+    }
+
+    @Test
+    public void compareTo__for_same_versions_with_and_without_build_id__returns_equality(){
+        Version version_1_2_3 = new Version("1.2.3");
+        Version version_1_2_3__with_build_id = new Version("1.2.3+77305e1f");
+        Assert.assertEquals(0, version_1_2_3.compareTo(version_1_2_3__with_build_id));
+    }
+
+    @Test
+    public void compareTo__for_version_with_qualifier__returns_lower_version(){
+        Version version_1_2_3 = new Version("1.2.3");
+        Version version_1_2_3__with_qualifier = new Version("1.2.3-beta.1");
+        Assert.assertTrue(version_1_2_3.compareTo(version_1_2_3__with_qualifier) > 0);
+        Assert.assertTrue(version_1_2_3__with_qualifier.compareTo(version_1_2_3) < 0);
+    }
 }

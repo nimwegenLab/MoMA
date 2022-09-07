@@ -289,10 +289,18 @@ public class PseudoDic {
         return versionProvider;
     }
 
+    private boolean runningFromJarFile() {
+        return PseudoDic.class.getResource("PseudoDic.class").toString().contains("jar");
+    }
+
     private IVersionProvider buildVersionProvider() {
-        JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
-        if(jarGitVersionReader.canReadJsonGitInformation()){
-            return new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
+        if (runningFromJarFile()) {
+            JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
+            if (jarGitVersionReader.canReadJsonGitInformation()) {
+                return new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
+            } else {
+                throw new RuntimeException("ERROR: Running from JAR, but JarGitVersionReader is unable to read the MoMA version.");
+            }
         }
         DevelopmentGitVersionProvider developmentGitVersionProvider = new DevelopmentGitVersionProvider();
         if(developmentGitVersionProvider.canReadGitVersionInformation()){

@@ -159,7 +159,7 @@ public class PseudoDic {
     }
 
     public CellStatsExporter getCellStatsExporter() {
-        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersionString(), getMeasurements());
+        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersion().toString(), getMeasurements());
     }
 
     private List<SegmentMeasurementInterface> getMeasurements() {
@@ -404,7 +404,7 @@ public class PseudoDic {
      */
     public void setDatasetNameInWindowTitle(final String datasetName) {
         if (getGuiFrame() != null) {
-            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getVersionProvider().getVersionString(), datasetName));
+            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getVersionProvider().getVersion().toString(), datasetName));
         }
     }
 
@@ -429,7 +429,7 @@ public class PseudoDic {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new LoggerWindow(getVersionProvider().getVersionString(), getConfigurationManager());
+        loggerWindow = new LoggerWindow(getVersionProvider().getVersion().toString(), getConfigurationManager());
         return loggerWindow;
     }
 

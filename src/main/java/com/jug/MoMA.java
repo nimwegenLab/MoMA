@@ -4,7 +4,6 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
-import com.jug.datahandling.Version;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -65,7 +64,7 @@ public class MoMA {
 		commandLineArgumentParser.parse(args);
 
 		if (commandLineArgumentParser.isVersionRequested()) {
-			System.out.println(dic.getVersionProvider().getVersionString());
+			System.out.println(dic.getVersionProvider().getVersion().toString());
 			System.exit(0);
 		}
 
@@ -154,9 +153,9 @@ public class MoMA {
 				}
 			}
 		}
-		configurationManager.setSatasetMomaVersion(dic.getVersionProvider().getVersionString()); /* update the dataset MoMA version that will be written to future exported dataset */
+		configurationManager.setDatasetMomaVersion(dic.getVersionProvider().getVersion()); /* update the dataset MoMA version that will be written to future exported dataset */
 
-		System.out.println( "VERSION: " + dic.getVersionProvider().getVersionString() );
+		System.out.println( "VERSION: " + dic.getVersionProvider().getVersion().toString() );
 
 		if ( !commandLineArgumentParser.getIfRunningHeadless() ) {
 			guiFrame = dic.getGuiFrame();

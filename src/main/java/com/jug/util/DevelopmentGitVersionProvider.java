@@ -19,8 +19,7 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         return true;
     }
 
-    @Override
-    public String getVersionString() {
+    private String getVersionString() {
         try {
             String var = formatVersionString(readGitVersion());
             return var;

@@ -7,7 +7,7 @@ public class JarGitVersionParserTest {
     @Test
     public void getVersion__returns_correct_version() {
         IVersionProvider sut = new JarGitVersionParser(getJsonJarGitVersionString());
-        String versionString = sut.getVersionString();
+        String versionString = sut.getVersion().toString();
         Assert.assertEquals("0.6.0-beta4+bbf9f630", versionString);
     }
 

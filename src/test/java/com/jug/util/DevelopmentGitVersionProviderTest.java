@@ -5,9 +5,8 @@ import org.junit.Assert;
 
 public class DevelopmentGitVersionProviderTest {
     @Test
-    public void getVersionString__returns_a_value(){
+    public void getVersion__returns_non_null_value(){
         DevelopmentGitVersionProvider sut = new DevelopmentGitVersionProvider();
-        String actual = sut.getVersionString();
-        Assert.assertNotNull(actual);
+        Assert.assertNotNull(sut.getVersion());
     }
 }

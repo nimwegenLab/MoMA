@@ -231,8 +231,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public String datasetMomaVersion = "";
 
-    public void setSatasetMomaVersion(String version) {
-        datasetMomaVersion = version;
+    public void setDatasetMomaVersion(Version version) {
+        datasetMomaVersion = version.toString();
     }
 
     /*********************************** CONFIG VALUES DEFINITION END *************************************************/
@@ -586,7 +586,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * Returns the MoMA version that generated the dataset that is being loaded.
      * @return MoMA version that generated dataset
      */
-    public String getDatasetMomaVersionString() {
+    private String getDatasetMomaVersionString() {
         return datasetMomaVersion;
     }
 

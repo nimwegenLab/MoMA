@@ -279,8 +279,7 @@ public class GrowthlaneTrackingILP {
             loadAssignmentsForTimeStep(t);
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
-        throw new NotImplementedException("need to use loadExitAssignments below instead of addExitAssignments");
-//        addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+        loadExitAssignments(gl.numberOfFrames() - 1, curHyps);
     }
 
     /**

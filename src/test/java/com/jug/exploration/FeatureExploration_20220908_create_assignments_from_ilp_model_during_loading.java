@@ -13,8 +13,8 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading tests = new FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading();
 
 //        tests._feature_exploration_20220908_create_assignments__test_interactively();
-//        tests._feature_exploration_20220908_create_assignments__test_trackonly();
-        tests._feature_exploration_20220908_create_assignments__test_exporting();
+        tests._feature_exploration_20220908_create_assignments__test_trackonly();
+//        tests._feature_exploration_20220908_create_assignments__test_exporting();
     }
 
     public void _feature_exploration_20220908_create_assignments__test_exporting() {
@@ -22,7 +22,7 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
         String analysisName = "feature_20220908_create_assignments";
 //        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
-        startMoma(false, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        startMoma(true, null, null, null, null, false, new String[]{"-reload", glPath.toString(), "-analysis", analysisName});
     }
 
     public void _feature_exploration_20220908_create_assignments__test_trackonly() {
@@ -31,8 +31,8 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "feature_20220908_create_assignments";
         Integer tmin = null;
-        Integer tmax = 10;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+        Integer tmax = null;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void _feature_exploration_20220908_create_assignments__test_interactively() {

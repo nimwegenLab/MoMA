@@ -1,5 +1,6 @@
 package com.jug.datahandling;
 
+import com.google.gson.Gson;
 import com.vdurmont.semver4j.Semver;
 
 public class Version {
@@ -35,5 +36,22 @@ public class Version {
 
     public String toString() {
         return semver.toString();
+    }
+
+    public String toJson() {
+        return new Gson().toJson(new VersionSerializationClass(this));
+    }
+
+    static Version fromJson(String jsonInput) {
+        VersionSerializationClass versionSerializationClass = new Gson().fromJson(jsonInput, VersionSerializationClass.class);
+        return new Version(versionSerializationClass.versionString);
+    }
+
+    private class VersionSerializationClass {
+        private final String versionString;
+
+        public VersionSerializationClass(Version version) {
+            versionString = version.toString();
+        }
     }
 }

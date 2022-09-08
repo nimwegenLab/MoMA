@@ -1,5 +1,6 @@
 package com.jug.datahandling;
 
+import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.Assert;
 
@@ -70,5 +71,13 @@ public class VersionTest {
         String expected = "1.2.3-beta.1-dirty+77305e1f";
         Version version = new Version(expected);
         Assert.assertEquals(expected, version.toString());
+    }
+
+    @Test
+    public void round_trip_conversion_through_json_gives_same_result() {
+        String expected = "1.2.3-beta.1-dirty+77305e1f";
+        Version version = new Version(expected);
+        Version versionDeserialized = Version.fromJson(version.toJson());
+        Assert.assertEquals(0, version.compareTo(versionDeserialized));
     }
 }

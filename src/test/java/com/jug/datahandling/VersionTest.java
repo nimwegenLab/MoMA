@@ -1,6 +1,5 @@
 package com.jug.datahandling;
 
-import com.google.gson.Gson;
 import org.junit.Test;
 import org.junit.Assert;
 

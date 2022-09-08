@@ -10,6 +10,11 @@ public class GRBModelAdapterMock implements IGRBModelAdapter {
     }
 
     @Override
+    public GRBVar[] getVars() {
+        return new GRBVar[0];
+    }
+
+    @Override
     public GRBConstr getConstrByName(String name) throws GRBException {
         return null;
     }

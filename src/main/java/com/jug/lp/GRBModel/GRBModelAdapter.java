@@ -19,6 +19,11 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     }
 
     @Override
+    public GRBVar[] getVars() {
+        return this.model.getVars();
+    }
+
+    @Override
     public GRBVar getVarByName(String name) throws GRBException {
         return this.model.getVarByName(name);
     }

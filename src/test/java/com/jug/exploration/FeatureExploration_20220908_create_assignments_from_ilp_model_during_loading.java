@@ -12,9 +12,9 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
     public static void main(String[] args) {
         FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading tests = new FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading();
 
-        tests._feature_exploration_20220908_create_assignments__test_interactively();
+//        tests._feature_exploration_20220908_create_assignments__test_interactively();
 //        tests._feature_exploration_20220908_create_assignments__test_trackonly();
-//        tests._feature_exploration_20220908_create_assignments__test_exporting();
+        tests._feature_exploration_20220908_create_assignments__test_exporting();
     }
 
     public void _feature_exploration_20220908_create_assignments__test_exporting() {

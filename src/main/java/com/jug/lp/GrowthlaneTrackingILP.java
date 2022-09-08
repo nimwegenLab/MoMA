@@ -19,6 +19,7 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -59,6 +60,7 @@ public class GrowthlaneTrackingILP {
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
+    private boolean isLoadedFromDisk;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
@@ -80,6 +82,7 @@ public class GrowthlaneTrackingILP {
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
+        this.isLoadedFromDisk = isLoadedFromDisk;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -180,8 +183,8 @@ public class GrowthlaneTrackingILP {
     public void buildILP() {
         try {
             // add Hypothesis and Assignments
-            if (gl.isLoadedFromDisk()) {
-
+            if (isLoadedFromDisk) {
+                loadAssignments();
             } else {
                 createAssignments();
             }
@@ -271,6 +274,84 @@ public class GrowthlaneTrackingILP {
     /**
      * @throws GRBException
      */
+    private void loadAssignments() throws GRBException {
+        for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
+            loadAssignmentsForTimeStep(t);
+        }
+        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
+        throw new NotImplementedException("need to use loadExitAssignments below instead of addExitAssignments");
+//        addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+    }
+
+    /**
+     * For time-points t and t+1, enumerates all potentially
+     * interesting assignments using the <code>addXXXAsignment(...)</code>
+     * methods.
+     *
+     * @throws GRBException
+     */
+    private void loadAssignmentsForTimeStep(final int sourceTimeStep) throws GRBException {
+        int targetTimeStep = sourceTimeStep + 1;
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
+                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
+                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
+
+        addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+        addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+        loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+        addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+        this.reportProgress();
+    }
+
+    private boolean modelContainsVarWithName(String targetVarName) {
+        GRBVar[] vars = model.getVars();
+        try {
+            for (GRBVar var : vars) {
+                String varName = var.get(GRB.StringAttr.VarName);
+                if (varName.contains(targetVarName)) {
+                    return true;
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    /**
+     * Add an exit-assignment at time t to a bunch of segmentation hypotheses.
+     * Note: exit-assignments cost <code>0</code>, but they come with a
+     * non-trivial construction to enforce, that an exit-assignment can only be
+     * assigned by the solver iff all active segmentation hypotheses above one
+     * that has an active exit-assignment are also assigned with an
+     * exit-assignment.
+     *
+     * @param sourceTimeStep the time-point.
+     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
+     *                       should be added.
+     * @throws GRBException
+     */
+    private void loadExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+//            float cost = costModulationForSubstitutedILP(hyp.getCost());
+//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp));
+            String varName = ExitAssignment.buildStringId(sourceTimeStep, hyp);
+//            model.getConstrs();
+//            GRBVar[] vars = model.getVars();
+            if (!modelContainsVarWithName(varName)) {
+                continue;
+            }
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    /**
+     * @throws GRBException
+     */
     private void createAssignments() throws GRBException {
 //        for (int t = 0; t < gl.size(); t++) {
 //            createSegmentationHypotheses( t );
@@ -310,16 +391,6 @@ public class GrowthlaneTrackingILP {
         for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
             recursivelyAddCTNsAsHypotheses(t, ctChild);
         }
-    }
-
-    /**
-     * @param t
-     * @param ctNode
-     * @return
-     */
-    public float getComponentCost(final int t, final Component<?, ?> ctNode) {
-//        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
-        return costFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
     }
 
     /**

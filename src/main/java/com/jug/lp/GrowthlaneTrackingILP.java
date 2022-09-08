@@ -179,10 +179,7 @@ public class GrowthlaneTrackingILP {
     public void buildILP() {
         try {
             // add Hypothesis and Assignments
-            long start = System.currentTimeMillis();
             createHypothesesAndAssignments();
-            long stop = System.currentTimeMillis();
-            System.out.println("TIMER for createHypothesesAndAssignments: " + Double.toString((stop - start) / 1000.0));
 
             HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();

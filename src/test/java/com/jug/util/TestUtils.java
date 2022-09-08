@@ -3,6 +3,7 @@ package com.jug.util;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.lp.costs.ICostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2D;
@@ -108,7 +109,7 @@ public class TestUtils {
     public ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
@@ -185,5 +186,12 @@ public class TestUtils {
         assertNotNull(input);
 
         return new ImageProviderMock(input);
+    }
+
+    class CostFactoryMock implements ICostFactory {
+        @Override
+        public float getComponentCost(ComponentInterface component) {
+            return 0;
+        }
     }
 }

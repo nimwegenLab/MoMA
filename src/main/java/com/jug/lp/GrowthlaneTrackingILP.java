@@ -59,7 +59,6 @@ public class GrowthlaneTrackingILP {
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
-    private boolean isLoadedFromDisk;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
@@ -81,7 +80,6 @@ public class GrowthlaneTrackingILP {
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
-        this.isLoadedFromDisk = isLoadedFromDisk;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }

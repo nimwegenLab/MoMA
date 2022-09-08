@@ -21,7 +21,7 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 /**
  * @author jug
  */
-public class CostFactory {
+public class CostFactory implements ICostFactory {
 	private float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
 	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
 	It should be removed in favor of having costs based on relative growth and/or movement at some point.

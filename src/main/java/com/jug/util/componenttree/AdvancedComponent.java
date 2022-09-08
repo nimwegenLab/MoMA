@@ -84,7 +84,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @param label    label that will be set for this component
      */
     public void writeLabels(ImgLabeling<Integer, IntType> labeling, Integer label) {
-        // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside of labeling!
+        // WARNING: THIS METHOD SHOULD DO BOUNDARY CHECKING! IN CASE PIXELS IN PixelList lie outside labeling!
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : pixelList) {
             accessor.setPosition(val);
@@ -739,6 +739,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         sourceImage.dimensions(dims);
         Img<T> img = new ArrayImgFactory(type).create(dims);
         return img;
+    }
+
+    public float getCost() {
+        return componentProperties.getCost(this);
     }
 
     HashMap<String,Vector2DPolyline> componentFeatures = new HashMap<>();

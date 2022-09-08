@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.lp.costs.ICostFactory;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.math.Vector2D;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -19,18 +20,30 @@ import org.apache.commons.lang.NotImplementedException;
 import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
 
+import static java.util.Objects.isNull;
+
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
     private Imglib2Utils imglib2Utils;
+    private ICostFactory costFactory;
     private CentralMomentsCalculator polygonMomentsCalculator;
 
-    public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils) {
+    public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils, ICostFactory costFactory) {
         this.imglib2Utils = imglib2Utils;
+        this.costFactory = costFactory;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         polygonMomentsCalculator = new CentralMomentsCalculator();
         this.ops = ops;
+    }
+
+    Float cost = null;
+    public float getCost(AdvancedComponent<?> component) {
+        if (isNull(cost)) {
+            cost = costFactory.getComponentCost(component);
+        }
+        return cost;
     }
 
     /**

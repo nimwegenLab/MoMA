@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
+import com.jug.lp.costs.ICostFactory;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.moma.auxiliary.Plotting;
 import ij.ImagePlus;
@@ -77,7 +78,7 @@ public class ComponentPropertiesTest {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
 
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
@@ -104,7 +105,7 @@ public class ComponentPropertiesTest {
     private ComponentForestGenerator getComponentForestGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils);
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
@@ -125,7 +126,7 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()));
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
 
         int componentIndex = 2;
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
@@ -186,5 +187,12 @@ public class ComponentPropertiesTest {
         sourceImage.dimensions(dims);
         Img<IntType> img = ArrayImgs.ints(dims);
         return new ImgLabeling<>(img);
+    }
+
+    class CostFactoryMock implements ICostFactory {
+        @Override
+        public float getComponentCost(ComponentInterface component) {
+            return 0;
+        }
     }
 }

@@ -400,8 +400,6 @@ public class GrowthlaneTrackingILP {
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
-
             List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
                 targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentForest.getAllComponents(), sourceTimeStep, configurationManager.getMaximumShrinkagePerFrame(), configurationManager.getMaximumGrowthPerFrame());
@@ -415,14 +413,12 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
-
                 if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
                     continue;
                 }
 
                 final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
+                float cost = costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
@@ -432,9 +428,9 @@ public class GrowthlaneTrackingILP {
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
                 final Hypothesis<AdvancedComponent<FloatType>> to =
-                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, targetComponentCost, this));
+                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, targetComponent.getCost(), this));
                 final Hypothesis<AdvancedComponent<FloatType>> from =
-                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost, this));
+                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponent.getCost(), this));
 
 //                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
                 final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));

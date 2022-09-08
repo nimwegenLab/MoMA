@@ -300,23 +300,8 @@ public class GrowthlaneTrackingILP {
         addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+        loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
-    }
-
-    private boolean modelContainsVarWithName(String targetVarName) {
-        GRBVar[] vars = model.getVars();
-        try {
-            for (GRBVar var : vars) {
-                String varName = var.get(GRB.StringAttr.VarName);
-                if (varName.contains(targetVarName)) {
-                    return true;
-                }
-            }
-        } catch (GRBException e) {
-            throw new RuntimeException(e);
-        }
-        return false;
     }
 
     /**
@@ -334,19 +319,50 @@ public class GrowthlaneTrackingILP {
      */
     private void loadExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-//            float cost = costModulationForSubstitutedILP(hyp.getCost());
-//            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp));
             String varName = ExitAssignment.buildStringId(sourceTimeStep, hyp);
-//            model.getConstrs();
-//            GRBVar[] vars = model.getVars();
             if (!modelContainsVarWithName(varName)) {
                 continue;
             }
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); /* TODO-MichaelMell-20220908: This could be moved inside ExitAssignment.java */
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea);
         }
+    }
+
+    /**
+     * Add lysis-assignments at time t to the list of segmentation hypotheses.
+     *
+     * @param sourceTimeStep the time-point.
+     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
+     *                       should be added.
+     * @throws GRBException
+     */
+    private void loadLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            String varName = LysisAssignment.buildStringId(sourceTimeStep, hyp);
+            if (!modelContainsVarWithName(varName)) {
+                continue;
+            }
+            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, model.getVarByName(varName), this, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    private boolean modelContainsVarWithName(String targetVarName) {
+        GRBVar[] vars = model.getVars();
+        try {
+            for (GRBVar var : vars) {
+                String varName = var.get(GRB.StringAttr.VarName);
+                if (varName.contains(targetVarName)) {
+                    return true;
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
     }
 
     /**

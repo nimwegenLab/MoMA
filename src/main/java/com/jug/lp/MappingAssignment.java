@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -77,7 +78,7 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
         return from.getId() + to.getId() + GrowthlaneTrackingILP.ASSIGNMENT_MAPPING;
     }
 
-    public static String buildStringId(int sourceTimeStep, AdvancedComponent source, AdvancedComponent target) {
+    public static String buildStringId(int sourceTimeStep, ComponentInterface source, ComponentInterface target) {
         return "MapT" + sourceTimeStep + "_" + source.getStringId() + "_" + target.getStringId();
     }
 }

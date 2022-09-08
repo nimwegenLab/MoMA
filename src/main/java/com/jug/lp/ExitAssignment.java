@@ -2,6 +2,7 @@ package com.jug.lp;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRB;
 import gurobi.GRBException;
 import gurobi.GRBLinExpr;
@@ -100,7 +101,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
         return sourceHyp.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
     }
 
-    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "ExitT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+    public static String buildStringId(int sourceTimeStep, ComponentInterface source) {
+        return "ExitT" + sourceTimeStep + "_" + source.getStringId();
     }
 }

@@ -89,6 +89,10 @@ public class Growthlane {
 		}
 	}
 
+	public boolean isLoadedFromDisk() {
+		return glFileManager.gurobiMpsFileExists();
+	}
+
 	/**
 	 * Builds up the ILP used to find the MAP-mapping.
 	 */
@@ -98,7 +102,7 @@ public class Growthlane {
 		}
 
 		GRBModelAdapter model = null;
-		if (glFileManager.gurobiMpsFileExists())
+		if (isLoadedFromDisk())
 			try {
 				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvironmentLogFilePath().toString());
 				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
@@ -110,7 +114,14 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
-		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(), this, model, MoMA.dic.getAssignmentPlausibilityTester(), configurationManager, MoMA.dic.getVersionProvider().getVersion().toString(), MoMA.dic.getCostFactory());
+		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(),
+				this,
+				model,
+				MoMA.dic.getAssignmentPlausibilityTester(),
+				configurationManager,
+				MoMA.dic.getVersionProvider().getVersion().toString(),
+				MoMA.dic.getCostFactory(),
+				isLoadedFromDisk());
 		if (guiProgressReceiver != null) {
 			ilp.addProgressListener(guiProgressReceiver);
 		}

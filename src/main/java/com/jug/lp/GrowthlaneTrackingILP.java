@@ -181,7 +181,7 @@ public class GrowthlaneTrackingILP {
             // add Hypothesis and Assignments
             createHypothesesAndAssignments();
 
-            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+//            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
 //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 

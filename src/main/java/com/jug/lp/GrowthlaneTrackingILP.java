@@ -302,8 +302,7 @@ public class GrowthlaneTrackingILP {
      * @param t         the time-index the ctNode comes from.
      */
     private void recursivelyAddCTNsAsHypotheses(final int t, final AdvancedComponent<FloatType> component) { //, final boolean isForParaMaxFlowSumImg
-        float componentCost = getComponentCost(t, component);
-        nodes.addHypothesis(t, new Hypothesis<>(t, component, componentCost, this));
+        nodes.addHypothesis(t, new Hypothesis<>(t, component, this));
         for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
             recursivelyAddCTNsAsHypotheses(t, ctChild);
         }
@@ -428,9 +427,9 @@ public class GrowthlaneTrackingILP {
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
                 final Hypothesis<AdvancedComponent<FloatType>> to =
-                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, targetComponent.getCost(), this));
+                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
                 final Hypothesis<AdvancedComponent<FloatType>> from =
-                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponent.getCost(), this));
+                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
                 final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));
@@ -609,11 +608,11 @@ public class GrowthlaneTrackingILP {
                         continue;
                     }
                     final Hypothesis<AdvancedComponent<FloatType>> to =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, upperTargetComponent.getCost(), this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, this));
                     final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, lowerTargetComponent.getCost(), this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, this));
                     final Hypothesis<AdvancedComponent<FloatType>> from =
-                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponent.getCost(), this));
+                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
@@ -671,7 +670,7 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * This function traverses all time points of the growth-line
+     * This function traverses all time-points of the growth-line
      * <code>gl</code>, retrieves the full component tree that has to be built
      * beforehand, and calls the private method
      * <code>recursivelyAddPathBlockingConstraints</code> on all those root

@@ -297,7 +297,7 @@ public class GrowthlaneTrackingILP {
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
         loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
-        addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+        loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
@@ -337,6 +337,48 @@ public class GrowthlaneTrackingILP {
                 if (!edgeSets.addToLeftNeighborhood(to, ma)) {
 //                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+            }
+        }
+    }
+
+    /**
+     * Add a division-assignment for given timestep between component in {@param sourceComponentForest} and
+     * {@param targetComponentForest}. This function also looks for suitable pairs of components in
+     * {@param targetComponentForest}, since division-assignments need two target component. The hypotheses of the
+     * components, which are needed for the assignments, are created on the fly as needed.
+     *
+     * @param sourceTimeStep        the time-point from which the <code>curHyps</code> originate.
+     * @param sourceComponentForest the component tree containing source components of the division assignments.
+     * @param targetComponentForest the component tree containing target components at the next time-point of the division assignments.
+     * @throws GRBException
+     */
+    private void loadDivisionAssignments(final int sourceTimeStep,
+                                        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest,
+                                        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest)
+            throws GRBException {
+
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
+            for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
+                final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
+                for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
+                    String varName = DivisionAssignment.buildStringId(sourceTimeStep, sourceComponent, upperTargetComponent, lowerTargetComponent);
+                    if (!modelContainsVarWithName(varName)) {
+                        continue;
+                    }
+
+                    final Hypothesis<AdvancedComponent<FloatType>> to =
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, this));
+                    final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, this));
+                    final Hypothesis<AdvancedComponent<FloatType>> from =
+                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+
+                    final DivisionAssignment da = new DivisionAssignment(model.getVarByName(varName), this, from, to, lowerNeighbor, sourceTimeStep);
+                    nodes.addAssignment(sourceTimeStep, da);
+                    edgeSets.addToRightNeighborhood(from, da);
+                    edgeSets.addToLeftNeighborhood(to, da);
+                    edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
                 }
             }
         }
@@ -744,7 +786,7 @@ public class GrowthlaneTrackingILP {
                             nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
-                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
+                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent(), lowerNeighbor.getWrappedComponent()));
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor, sourceTimeStep);
                     nodes.addAssignment(sourceTimeStep, da);

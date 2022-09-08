@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -94,7 +95,7 @@ public class DivisionAssignment extends AbstractAssignment<Hypothesis<AdvancedCo
         return from.getId() + toUpper.getId() + toLower.getId() + GrowthlaneTrackingILP.ASSIGNMENT_DIVISION;
     }
 
-    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis upperTarget, Hypothesis lowerTarget) {
-        return "DivT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
+    public static String buildStringId(int sourceTimeStep, ComponentInterface source, ComponentInterface upperTarget, ComponentInterface lowerTarget) {
+        return "DivT" + sourceTimeStep + "_" + source.getStringId() + "_" + upperTarget.getStringId() + "_" + lowerTarget.getStringId();
     }
 }

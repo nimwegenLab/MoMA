@@ -180,7 +180,11 @@ public class GrowthlaneTrackingILP {
     public void buildILP() {
         try {
             // add Hypothesis and Assignments
-            createHypothesesAndAssignments();
+            if (gl.isLoadedFromDisk()) {
+
+            } else {
+                createAssignments();
+            }
 
 //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
@@ -267,13 +271,13 @@ public class GrowthlaneTrackingILP {
     /**
      * @throws GRBException
      */
-    private void createHypothesesAndAssignments() throws GRBException {
+    private void createAssignments() throws GRBException {
 //        for (int t = 0; t < gl.size(); t++) {
 //            createSegmentationHypotheses( t );
 //        }
 
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
-            enumerateAndAddAssignments(t);
+            createAssignmentsForTimeStep(t);
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
         addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
@@ -325,7 +329,7 @@ public class GrowthlaneTrackingILP {
      *
      * @throws GRBException
      */
-    private void enumerateAndAddAssignments(final int sourceTimeStep) throws GRBException {
+    private void createAssignmentsForTimeStep(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();

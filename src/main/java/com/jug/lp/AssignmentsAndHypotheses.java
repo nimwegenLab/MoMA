@@ -197,7 +197,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         if (t >= 0 && t < h_t.size()) {
             return h_t.get(t);
         } else {
-            return new ArrayList<H>(); // if hypotheses for time t do not exist return empty array
+            return new ArrayList<>(); // if hypotheses for time t do not exist return empty array
         }
     }
 

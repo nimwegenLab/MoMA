@@ -583,10 +583,7 @@ public class GrowthlaneTrackingILP {
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
-
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
-                float upperTargetComponentCost = getComponentCost(sourceTimeStep + 1, upperTargetComponent);
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
@@ -599,25 +596,24 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    float lowerTargetComponentCost = getComponentCost(sourceTimeStep + 1, lowerTargetComponent);
                     final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
                             upperTargetComponent, lowerTargetComponent);
 
                     float cost = costModulationForSubstitutedILP(
-                            sourceComponentCost,
-                            upperTargetComponentCost,
-                            lowerTargetComponentCost,
+                            sourceComponent.getCost(),
+                            upperTargetComponent.getCost(),
+                            lowerTargetComponent.getCost(),
                             compatibilityCostOfDivision);
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
                     }
                     final Hypothesis<AdvancedComponent<FloatType>> to =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, upperTargetComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, upperTargetComponent.getCost(), this));
                     final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, lowerTargetComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, lowerTargetComponent.getCost(), this));
                     final Hypothesis<AdvancedComponent<FloatType>> from =
-                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponent.getCost(), this));
 
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));

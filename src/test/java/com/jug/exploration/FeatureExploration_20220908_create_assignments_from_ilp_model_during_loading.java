@@ -12,8 +12,9 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
     public static void main(String[] args) {
         FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading tests = new FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading();
 
+        tests._feature_exploration_20220908_create_assignments__test_interactively();
 //        tests._feature_exploration_20220908_create_assignments__test_trackonly();
-        tests._feature_exploration_20220908_create_assignments__test_exporting();
+//        tests._feature_exploration_20220908_create_assignments__test_exporting();
     }
 
     public void _feature_exploration_20220908_create_assignments__test_exporting() {
@@ -32,5 +33,15 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         Integer tmin = null;
         Integer tmax = 10;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void _feature_exploration_20220908_create_assignments__test_interactively() {
+        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "feature_20220908_create_assignments";
+        Integer tmin = null;
+        Integer tmax = 10;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName});
     }
 }

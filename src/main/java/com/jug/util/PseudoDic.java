@@ -459,6 +459,10 @@ public class PseudoDic {
         return new CurationStatsExporter();
     }
 
+    public ResultExporterInterface getMetaDataExporter() {
+        return new MetaDataExporter();
+    }
+
     HtmlOverviewExporter htmlOverviewExporter;
 
     public HtmlOverviewExporter getHtmlOverviewExporterWrapper() {

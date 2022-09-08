@@ -44,14 +44,14 @@ public class Version {
 
     static Version fromJson(String jsonInput) {
         VersionSerializationClass versionSerializationClass = new Gson().fromJson(jsonInput, VersionSerializationClass.class);
-        return new Version(versionSerializationClass.versionString);
+        return new Version(versionSerializationClass.version);
     }
 
     private class VersionSerializationClass {
-        private final String versionString;
+        private final String version;
 
         public VersionSerializationClass(Version version) {
-            versionString = version.toString();
+            this.version = version.toString();
         }
     }
 }

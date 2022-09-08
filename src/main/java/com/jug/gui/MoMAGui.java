@@ -899,6 +899,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     public void exportDataFiles() {
         List<ResultExporterInterface> exporters = new ArrayList<>();
+        exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
@@ -918,6 +919,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     public void exportTrackingData() {
         List<ResultExporterInterface> exporters = new ArrayList<>();
+        exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());

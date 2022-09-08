@@ -38,12 +38,8 @@ public class ComponentProperties {
         this.ops = ops;
     }
 
-    Float cost = null;
     public float getCost(AdvancedComponent<?> component) {
-        if (isNull(cost)) {
-            cost = costFactory.getComponentCost(component);
-        }
-        return cost;
+        return costFactory.getComponentCost(component);
     }
 
     /**

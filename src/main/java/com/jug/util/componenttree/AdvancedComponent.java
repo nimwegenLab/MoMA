@@ -741,8 +741,13 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return img;
     }
 
+    Float cost = null;
+
     public float getCost() {
-        return componentProperties.getCost(this);
+        if (isNull(cost)) {
+            cost = componentProperties.getCost(this);
+        }
+        return cost;
     }
 
     HashMap<String,Vector2DPolyline> componentFeatures = new HashMap<>();

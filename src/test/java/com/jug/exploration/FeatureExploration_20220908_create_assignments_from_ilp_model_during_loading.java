@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
-import static com.jug.util.io.FileUtils.createEmptyDirectory;
 
 public class FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading {
     String datasets_base_path = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/";
@@ -12,8 +11,8 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
     public static void main(String[] args) {
         FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading tests = new FeatureExploration_20220908_create_assignments_from_ilp_model_during_loading();
 
-//        tests._feature_exploration_20220908_create_assignments__test_trackonly();
-        tests._feature_exploration_20220908_create_assignments__test_exporting();
+        tests._feature_exploration_20220908_create_assignments__test_trackonly();
+//        tests._feature_exploration_20220908_create_assignments__test_exporting();
     }
 
     public void _feature_exploration_20220908_create_assignments__test_exporting() {
@@ -21,7 +20,10 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
         String analysisName = "feature_20220908_create_assignments";
 //        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        long start = System.currentTimeMillis();
         startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        long stop = System.currentTimeMillis();
+        System.out.println("TIMER for total execution time: " + Double.toString((stop - start) / 1000.0));
     }
 
     public void _feature_exploration_20220908_create_assignments__test_trackonly() {
@@ -30,7 +32,7 @@ public class FeatureExploration_20220908_create_assignments_from_ilp_model_durin
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "feature_20220908_create_assignments";
         Integer tmin = null;
-        Integer tmax = 10;
+        Integer tmax = null;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
     }
 }

@@ -93,6 +93,7 @@ public class Growthlane {
 	 * Builds up the ILP used to find the MAP-mapping.
 	 */
 	public void generateILP( final DialogProgress guiProgressReceiver ) {
+		long start = System.currentTimeMillis();
 		if ( guiProgressReceiver != null ) {
 			guiProgressReceiver.setVisible( true );
 		}
@@ -124,6 +125,8 @@ public class Growthlane {
 		}
 
 		ilp.addChangeListener((e) -> fireStateChanged());
+		long stop = System.currentTimeMillis();
+		System.out.println("TIMER FOR generateILP: " + Double.toString((stop - start) / 1000.0));
 	}
 
 	public boolean ilpIsReady() {

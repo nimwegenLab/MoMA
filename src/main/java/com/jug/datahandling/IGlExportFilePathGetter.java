@@ -30,6 +30,8 @@ public interface IGlExportFilePathGetter {
 
     Path getGurobiMstFilePath();
 
+    Path getFileFormatFilePath();
+
     Path getCurationStatsFilePath();
 
     boolean gurobiMpsFileExists();

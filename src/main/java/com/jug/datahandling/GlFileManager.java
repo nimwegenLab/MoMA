@@ -257,6 +257,10 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
+    public Path getFileFormatFilePath() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "file_format.json");
+    }
+
     public Path getMmPropertiesOutputFilePath() {
         return Paths.get(getTrackingDataOutputPath().toString(), "mm.properties");
     }

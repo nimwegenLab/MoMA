@@ -25,6 +25,7 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
 
@@ -53,7 +54,7 @@ public class PseudoDic {
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private UnetProcessor unetProcessor;
     private WatershedMaskGenerator watershedMaskGenerator;
-    private GitVersionProvider gitVersionProvider;
+    private IVersionProvider versionProvider;
     private SpineLengthMeasurement spineLengthMeasurement;
     private ConvertService convertService;
     private IImageProvider imageProvider;
@@ -158,7 +159,7 @@ public class PseudoDic {
     }
 
     public CellStatsExporter getCellStatsExporter() {
-        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getGitVersionProvider().getVersionString(), getMeasurements());
+        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersion().toString(), getMeasurements());
     }
 
     private List<SegmentMeasurementInterface> getMeasurements() {
@@ -282,11 +283,38 @@ public class PseudoDic {
         return watershedMaskGenerator;
     }
 
-    public GitVersionProvider getGitVersionProvider() {
-        if (isNull(gitVersionProvider)) {
-            gitVersionProvider = new GitVersionProvider();
+    public IVersionProvider getVersionProvider() {
+        if (isNull(versionProvider)) {
+            versionProvider = buildVersionProvider();
         }
-        return gitVersionProvider;
+        return versionProvider;
+    }
+
+    /***
+     * Returns builds a provider depending on whether we are running from within a JAR or the development environment.
+     * @return
+     */
+    @NotNull
+    private IVersionProvider buildVersionProvider() {
+        if (runningFromJarFile()) {
+            JarGitVersionReader jarGitVersionReader = new JarGitVersionReader();
+            if (jarGitVersionReader.canReadJsonGitInformation()) {
+                return new JarGitVersionParser(jarGitVersionReader.getJsonGitInformationString());
+            } else {
+                throw new RuntimeException("ERROR: Running from JAR, but JarGitVersionReader is unable to read the MoMA version.");
+            }
+        }
+        DevelopmentGitVersionProvider developmentGitVersionProvider = new DevelopmentGitVersionProvider();
+        if(developmentGitVersionProvider.canReadGitVersionInformation()){
+            return developmentGitVersionProvider;
+        }
+        else{
+            throw new RuntimeException("Could not get a version provider");
+        }
+    }
+
+    private boolean runningFromJarFile() {
+        return PseudoDic.class.getResource("PseudoDic.class").toString().contains("jar");
     }
 
     public VersionCompatibilityChecker getVersionCompatibilityChecker(){
@@ -376,7 +404,7 @@ public class PseudoDic {
      */
     public void setDatasetNameInWindowTitle(final String datasetName) {
         if (getGuiFrame() != null) {
-            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getGitVersionProvider().getVersionString(), datasetName));
+            getGuiFrame().setTitle(String.format("MoMA %s -- %s", getVersionProvider().getVersion().toString(), datasetName));
         }
     }
 
@@ -401,7 +429,7 @@ public class PseudoDic {
         if (loggerWindow != null) {
             return loggerWindow;
         }
-        loggerWindow = new LoggerWindow(getGitVersionProvider().getVersionString(), getConfigurationManager());
+        loggerWindow = new LoggerWindow(getVersionProvider().getVersion().toString(), getConfigurationManager());
         return loggerWindow;
     }
 
@@ -429,6 +457,10 @@ public class PseudoDic {
 
     public ResultExporterInterface getCurationStatsExporter() {
         return new CurationStatsExporter();
+    }
+
+    public ResultExporterInterface getMetaDataExporter() {
+        return new MetaDataExporter();
     }
 
     HtmlOverviewExporter htmlOverviewExporter;

@@ -297,11 +297,50 @@ public class GrowthlaneTrackingILP {
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
-        addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
+    }
+
+    /**
+     * Add mapping-assignments between source components in {@param sourceComponentForest} and target components in
+     * {@param targetComponentForest}.
+     *
+     * @param sourceTimeStep        the time-point from which the <code>curHyps</code> originate.
+     * @param sourceComponentForest the component tree containing source components of the mapping-assignments.
+     * @param targetComponentForest the component tree containing target components of the mapping-assignments.
+     * @throws GRBException
+     */
+    public void loadMappingAssignments(final int sourceTimeStep,
+                                      AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest,
+                                      AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest) throws GRBException {
+        for (final AdvancedComponent<FloatType> sourceComponent : sourceComponentForest.getAllComponents()) {
+            for (final AdvancedComponent<FloatType> targetComponent : targetComponentForest.getAllComponents()) {
+                String varName = MappingAssignment.buildStringId(sourceTimeStep, sourceComponent, targetComponent);
+                if (!modelContainsVarWithName(varName)) {
+                    continue;
+                }
+
+                final Hypothesis<AdvancedComponent<FloatType>> to =
+                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
+                final Hypothesis<AdvancedComponent<FloatType>> from =
+                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+
+                final MappingAssignment ma = new MappingAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, from, to);
+
+                nodes.addAssignment(sourceTimeStep, ma);
+                if (!edgeSets.addToRightNeighborhood(from, ma)) {
+//                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+                if (!edgeSets.addToLeftNeighborhood(to, ma)) {
+//                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+            }
+        }
     }
 
     /**
@@ -523,7 +562,7 @@ public class GrowthlaneTrackingILP {
                         nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
-                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent()));
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);

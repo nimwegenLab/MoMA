@@ -77,7 +77,7 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
         return from.getId() + to.getId() + GrowthlaneTrackingILP.ASSIGNMENT_MAPPING;
     }
 
-    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis, Hypothesis target) {
-        return "MapT" + sourceTimeStep + "_" + sourceHypothesis.getStringId() + "_" + target.getStringId();
+    public static String buildStringId(int sourceTimeStep, AdvancedComponent source, AdvancedComponent target) {
+        return "MapT" + sourceTimeStep + "_" + source.getStringId() + "_" + target.getStringId();
     }
 }

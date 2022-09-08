@@ -1,13 +1,21 @@
 package com.jug.datahandling;
 
 import com.google.gson.Gson;
+import com.google.gson.annotations.Expose;
 import com.vdurmont.semver4j.Semver;
 
 public class Version {
-    private final Semver semver;
+    private final transient Semver semver;
+
+    private String versionString;
+
+    private Version() {
+        this.semver = new Semver(this.versionString);
+    }
 
     public Version(String versionString) {
-        semver = new Semver(versionString);
+        this.versionString = versionString;
+        semver = new Semver(this.versionString);
     }
 
     public Integer getMajor() {
@@ -38,20 +46,20 @@ public class Version {
         return semver.toString();
     }
 
-    public String toJson() {
-        return new Gson().toJson(new VersionSerializationClass(this));
-    }
+//    public String toJson() {
+//        return new Gson().toJson(this);
+//    }
 
-    static Version fromJson(String jsonInput) {
-        VersionSerializationClass versionSerializationClass = new Gson().fromJson(jsonInput, VersionSerializationClass.class);
-        return new Version(versionSerializationClass.versionString);
-    }
+//    static Version fromJson(String jsonInput) {
+//        VersionSerializationClass versionSerializationClass = new Gson().fromJson(jsonInput, VersionSerializationClass.class);
+//        return new Version(versionSerializationClass.versionString);
+//    }
 
-    private class VersionSerializationClass {
-        private final String versionString;
-
-        public VersionSerializationClass(Version version) {
-            versionString = version.toString();
-        }
-    }
+//    private class VersionSerializationClass {
+//        private final String versionString;
+//
+//        public How can I convert JSON to a HashMap using Gson?(Version version) {
+//            versionString = version.toString();
+//        }
+//    }
 }

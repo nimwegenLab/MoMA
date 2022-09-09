@@ -177,11 +177,40 @@ public class GrowthlaneTrackingILP {
         return edgeSets;
     }
 
+    List<AdvancedComponent<FloatType>> allComponents = new ArrayList<>();
+
+    public void getAllComponents() {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
+//            loadAssignmentsForTimeStep(t);
+            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest =
+                    (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(t).getComponentForest();
+            allComponents.addAll(componentForest.getAllComponents());
+        }
+    }
+
+    HashMap<String, ComponentInterface> componentHashMap = new HashMap<>();
+
+    public void buildComponentHashMap() {
+        for (ComponentInterface component : allComponents) {
+            componentHashMap.put(component.getStringId(), component);
+        }
+    }
+
     // -------------------------------------------------------------------------------------
     // methods
     // -------------------------------------------------------------------------------------
     public void buildILP() {
         try {
+            long start1 = System.currentTimeMillis();
+            getAllComponents();
+            buildComponentHashMap();
+            long end1 = System.currentTimeMillis();
+            System.out.println("TIME for building component hashmap: " + (end1 - start1) / 1000.0);
+
+            if(true){
+                throw new NotImplementedException("Abort here during testing in commit: e37ab39f");
+            }
+
             // add Hypothesis and Assignments
             long start = System.currentTimeMillis();
             if (isLoadedFromDisk) {

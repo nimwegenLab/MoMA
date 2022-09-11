@@ -305,6 +305,7 @@ public class GrowthlaneTrackingILP {
         loadMappingAssignments2();
         loadDivisionAssignments2();
         loadExitAssignments2();
+        loadLysisAssignments2();
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             loadAssignmentsForTimeStep(t);
         }
@@ -329,7 +330,7 @@ public class GrowthlaneTrackingILP {
 //        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
 //        loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
 //        loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+//        loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
     }
 
@@ -445,6 +446,26 @@ public class GrowthlaneTrackingILP {
 
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); /* TODO-MichaelMell-20220908: This could be moved inside ExitAssignment.java */
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    private void loadLysisAssignments2() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("LysT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> hyp =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+
+            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, model.getVarByName(varName), this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea);
         }

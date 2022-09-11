@@ -302,13 +302,13 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void loadAssignments() throws GRBException {
-        loadMappingAssignments2();
-        loadDivisionAssignments2();
-        loadExitAssignments2();
-        loadLysisAssignments2();
+        loadMappingAssignments();
+        loadDivisionAssignments();
+        loadExitAssignments();
+        loadLysisAssignments();
     }
 
-    public void loadMappingAssignments2() throws GRBException {
+    public void loadMappingAssignments() throws GRBException {
         List<GRBVar> vars = getGrbVariablesContaining("MapT");
         for (GRBVar var : vars) {
             String varName = var.get(GRB.StringAttr.VarName);
@@ -334,7 +334,7 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    public void loadDivisionAssignments2() throws GRBException {
+    public void loadDivisionAssignments() throws GRBException {
         List<GRBVar> vars = getGrbVariablesContaining("DivT");
         for (GRBVar var : vars) {
             String varName = var.get(GRB.StringAttr.VarName);
@@ -364,7 +364,7 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private void loadExitAssignments2() throws GRBException {
+    private void loadExitAssignments() throws GRBException {
         List<GRBVar> vars = getGrbVariablesContaining("ExitT");
         for (GRBVar var : vars) {
             String varName = var.get(GRB.StringAttr.VarName);
@@ -386,7 +386,7 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private void loadLysisAssignments2() throws GRBException {
+    private void loadLysisAssignments() throws GRBException {
         List<GRBVar> vars = getGrbVariablesContaining("LysT");
         for (GRBVar var : vars) {
             String varName = var.get(GRB.StringAttr.VarName);

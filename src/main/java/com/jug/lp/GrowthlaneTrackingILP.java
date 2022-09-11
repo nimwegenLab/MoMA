@@ -304,11 +304,12 @@ public class GrowthlaneTrackingILP {
     private void loadAssignments() throws GRBException {
         loadMappingAssignments2();
         loadDivisionAssignments2();
+        loadExitAssignments2();
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             loadAssignmentsForTimeStep(t);
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
-        loadExitAssignments(gl.numberOfFrames() - 1, curHyps);
+//        loadExitAssignments(gl.numberOfFrames() - 1, curHyps);
     }
 
     /**
@@ -327,7 +328,7 @@ public class GrowthlaneTrackingILP {
 
 //        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
 //        loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
-        loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+//        loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
     }
@@ -377,11 +378,13 @@ public class GrowthlaneTrackingILP {
             String varName = var.get(GRB.StringAttr.VarName);
             String[] splits = varName.split("_");
             String mapId = splits[0];
+
             int sourceTimeStep = Integer.parseInt(mapId.substring(4));
             AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
             if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
             AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[2]);
             if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
+
             final Hypothesis<AdvancedComponent<FloatType>> from = nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
             final Hypothesis<AdvancedComponent<FloatType>> to = nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
             final MappingAssignment ma = new MappingAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, from, to);
@@ -401,9 +404,8 @@ public class GrowthlaneTrackingILP {
             String varName = var.get(GRB.StringAttr.VarName);
             String[] splits = varName.split("_");
             String mapId = splits[0];
-            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
-            System.out.println("sourceTimeStep: " + sourceTimeStep);
 
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
             AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
             if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
             AdvancedComponent<FloatType> upperTargetComponent = componentHashMap.get(splits[2]);
@@ -423,6 +425,28 @@ public class GrowthlaneTrackingILP {
             edgeSets.addToRightNeighborhood(from, da);
             edgeSets.addToLeftNeighborhood(to, da);
             edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+        }
+    }
+
+    private void loadExitAssignments2() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("ExitT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(5));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> hyp =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
+
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); /* TODO-MichaelMell-20220908: This could be moved inside ExitAssignment.java */
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
         }
     }
 

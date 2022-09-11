@@ -303,6 +303,7 @@ public class GrowthlaneTrackingILP {
      */
     private void loadAssignments() throws GRBException {
         loadMappingAssignments2();
+        loadDivisionAssignments2();
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             loadAssignmentsForTimeStep(t);
         }
@@ -325,7 +326,7 @@ public class GrowthlaneTrackingILP {
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
 //        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
-        loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+//        loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         this.reportProgress();
@@ -377,7 +378,6 @@ public class GrowthlaneTrackingILP {
             String[] splits = varName.split("_");
             String mapId = splits[0];
             int sourceTimeStep = Integer.parseInt(mapId.substring(4));
-            System.out.println("sourceTimeStep: " + sourceTimeStep);
             AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
             if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
             AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[2]);
@@ -392,6 +392,37 @@ public class GrowthlaneTrackingILP {
                 if (!edgeSets.addToLeftNeighborhood(to, ma)) {
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
                 }
+        }
+    }
+
+    public void loadDivisionAssignments2() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("DivT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            System.out.println("sourceTimeStep: " + sourceTimeStep);
+
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+            AdvancedComponent<FloatType> upperTargetComponent = componentHashMap.get(splits[2]);
+            if(isNull(upperTargetComponent)){new RuntimeException("component not found: " + upperTargetComponent.getStringId());}
+            AdvancedComponent<FloatType> lowerTargetComponent = componentHashMap.get(splits[3]);
+            if(isNull(lowerTargetComponent)){new RuntimeException("component not found: " + lowerTargetComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> from =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> to =
+                    nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
+                    nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, this));
+
+            final DivisionAssignment da = new DivisionAssignment(model.getVarByName(varName), this, from, to, lowerNeighbor, sourceTimeStep);
+            nodes.addAssignment(sourceTimeStep, da);
+            edgeSets.addToRightNeighborhood(from, da);
+            edgeSets.addToLeftNeighborhood(to, da);
+            edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
         }
     }
 

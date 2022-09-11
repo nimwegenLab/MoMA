@@ -19,7 +19,6 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -188,10 +187,10 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    HashMap<String, ComponentInterface> componentHashMap = new HashMap<>();
+    HashMap<String, AdvancedComponent<FloatType>> componentHashMap = new HashMap<>();
 
     public void buildComponentHashMap() {
-        for (ComponentInterface component : allComponents) {
+        for (AdvancedComponent<FloatType> component : allComponents) {
             componentHashMap.put(component.getStringId(), component);
         }
     }
@@ -206,10 +205,6 @@ public class GrowthlaneTrackingILP {
             buildComponentHashMap();
             long end1 = System.currentTimeMillis();
             System.out.println("TIME for building component hashmap: " + (end1 - start1) / 1000.0);
-
-            if(true){
-                throw new NotImplementedException("Abort here during testing in commit: e37ab39f");
-            }
 
             // add Hypothesis and Assignments
             long start = System.currentTimeMillis();
@@ -307,6 +302,7 @@ public class GrowthlaneTrackingILP {
      * @throws GRBException
      */
     private void loadAssignments() throws GRBException {
+        loadMappingAssignments2();
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             loadAssignmentsForTimeStep(t);
         }
@@ -328,7 +324,7 @@ public class GrowthlaneTrackingILP {
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
 
-        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
+//        loadMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         loadExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         loadLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
@@ -372,6 +368,47 @@ public class GrowthlaneTrackingILP {
                 }
             }
         }
+    }
+
+    public void loadMappingAssignments2() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("MapT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            System.out.println("sourceTimeStep: " + sourceTimeStep);
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+            AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[2]);
+            if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
+            final Hypothesis<AdvancedComponent<FloatType>> from = nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> to = nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
+            final MappingAssignment ma = new MappingAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, from, to);
+            nodes.addAssignment(sourceTimeStep, ma);
+                if (!edgeSets.addToRightNeighborhood(from, ma)) {
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+                if (!edgeSets.addToLeftNeighborhood(to, ma)) {
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+        }
+    }
+
+    private List<GRBVar> getGrbVariablesContaining(String substring) {
+        GRBVar[] vars = model.getVars();
+        List<GRBVar> ret = new ArrayList<>();
+        try {
+            for (GRBVar var : vars) {
+                String varName = var.get(GRB.StringAttr.VarName);
+                if (varName.contains(substring)) {
+                    ret.add(var);
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return ret;
     }
 
     /**

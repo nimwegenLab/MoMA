@@ -212,33 +212,33 @@ public class GrowthlaneTrackingILP {
             } else {
                 createAssignments();
 
-//            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
-//            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
-//            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
+    //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+    //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
+    //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
 
-            // UPDATE GUROBI-MODEL
-            // - - - - - - - - - -
-            model.update();
+                // UPDATE GUROBI-MODEL
+                // - - - - - - - - - -
+                model.update();
 
-            // Iterate over all assignments and ask them to add their
-            // constraints to the model
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
-                    assignment.addConstraintsToILP();
+                // Iterate over all assignments and ask them to add their
+                // constraints to the model
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
+                        assignment.addConstraintsToILP();
+                    }
                 }
-            }
 
-            // Add the remaining ILP constraints
-            // (those would be (i) and (ii) of 'Default Solution')
-            // - - - - - - - - - - - - - - - - - - - - - - - - - -
-//            addPathBlockingConstraints();
-            addPathBlockingConstraintsNew();
-            addContinuityConstraints();
+                // Add the remaining ILP constraints
+                // (those would be (i) and (ii) of 'Default Solution')
+                // - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //            addPathBlockingConstraints();
+                addPathBlockingConstraintsNew();
+                addContinuityConstraints();
 
-            // UPDATE GUROBI-MODEL
-            // - - - - - - - - - -
-            model.update();
+                // UPDATE GUROBI-MODEL
+                // - - - - - - - - - -
+                model.update();
             }
             long end = System.currentTimeMillis();
             System.out.println("TIME for creating assignments: " + (end - start) / 1000.0);

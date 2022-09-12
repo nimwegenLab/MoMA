@@ -498,4 +498,13 @@ public class PseudoDic {
         }
         return componenTreeTimer;
     }
+
+    private Timer assignmentCreationTimer;
+
+    public Timer getAssignmentCreationTimer() {
+        if (isNull(assignmentCreationTimer)) {
+            assignmentCreationTimer = new Timer();
+        }
+        return assignmentCreationTimer;
+    }
 }

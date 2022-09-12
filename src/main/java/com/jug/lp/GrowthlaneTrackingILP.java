@@ -180,7 +180,6 @@ public class GrowthlaneTrackingILP {
 
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-//            loadAssignmentsForTimeStep(t);
             AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest =
                     (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(t).getComponentForest();
             allComponents.addAll(componentForest.getAllComponents());
@@ -212,15 +211,10 @@ public class GrowthlaneTrackingILP {
                 loadAssignments();
             } else {
                 createAssignments();
-            }
-            long end = System.currentTimeMillis();
-            System.out.println("TIME for creating assignments: " + (end - start) / 1000.0);
 
 //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
 //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
 //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
-
-            printIlpProperties();
 
             // UPDATE GUROBI-MODEL
             // - - - - - - - - - -
@@ -245,6 +239,11 @@ public class GrowthlaneTrackingILP {
             // UPDATE GUROBI-MODEL
             // - - - - - - - - - -
             model.update();
+            }
+            long end = System.currentTimeMillis();
+            System.out.println("TIME for creating assignments: " + (end - start) / 1000.0);
+
+            printIlpProperties();
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);

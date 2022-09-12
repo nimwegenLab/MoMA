@@ -153,9 +153,10 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
 
-        writer.write(String.format("moma_version=\"%s\"\n", versionString));
-        writer.write(String.format("input_image=\"%s\"\n", configurationManager.getInputImagePath()));
-        writer.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
+        writer.write(String.format("# moma_version=\"%s\"\n", versionString));
+        writer.write(String.format("# input_image=\"%s\"\n", configurationManager.getInputImagePath()));
+        writer.write(String.format("# segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
+        writer.write("# \n");
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
@@ -255,7 +256,6 @@ public class CellStatsExporter implements ResultExporterInterface {
             dialogProgress.dispose();
         }
 
-        writer.write("\n");
         resultTable.writeTable(writer);
     }
 
@@ -268,10 +268,10 @@ public class CellStatsExporter implements ResultExporterInterface {
         try {
             out = new OutputStreamWriter(new FileOutputStream(file));
 
-            out.write(String.format("moma_version=\"%s\"\n", versionString));
-            out.write(String.format("input_image=\"%s\"\n", configurationManager.getInputImagePath()));
-            out.write(String.format("segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
-            out.write("\n");
+            out.write(String.format("# moma_version=\"%s\"\n", versionString));
+            out.write(String.format("# input_image=\"%s\"\n", configurationManager.getInputImagePath()));
+            out.write(String.format("# segmentation_model=\"%s\"\n", configurationManager.SEGMENTATION_MODEL_PATH));
+            out.write("# \n");
 
             for (final Vector<String> rowInData : dataToExport) {
                 for (final String datum : rowInData) {

@@ -471,4 +471,18 @@ public class PseudoDic {
         }
         return htmlOverviewExporter;
     }
+
+    private Timer loadingTimeTimer;
+    public Timer getLoadingTimer() {
+        if (isNull(loadingTimeTimer)) {
+            loadingTimeTimer = new Timer();
+        }
+        return loadingTimeTimer;
+    }
+
+    private Timer exportTimer;
+    public Timer getExportTimer(){
+        if(isNull(exportTimer)){exportTimer = new Timer();}
+        return exportTimer;
+    }
 }

@@ -5,13 +5,20 @@ import static java.util.Objects.isNull;
 public class Timer {
     Long startTime;
     Long stopTime;
+    private boolean isRunning;
 
     public void start() {
-        startTime = System.currentTimeMillis();
+        if (!isRunning) {
+            isRunning = true;
+            startTime = System.currentTimeMillis();
+        }
     }
 
     public void stop() {
-        stopTime = System.currentTimeMillis();
+        if(isRunning){
+            stopTime = System.currentTimeMillis();
+            isRunning = false;
+        }        
     }
 
     public double getExecutionTimeInSeconds() {
@@ -21,6 +28,10 @@ public class Timer {
         if (isNull(stopTime)) {
             throw new RuntimeException("endTime is null");
         }
-        return (startTime - stopTime) / 1000.0;
+        return (stopTime - startTime) / 1000.0;
+    }
+
+    public void printExecutionTime(String prependString) {
+        System.out.println(prependString + ": " + getExecutionTimeInSeconds());
     }
 }

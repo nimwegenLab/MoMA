@@ -58,6 +58,8 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
+		dic.getLoadingTimer().start();
+
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
@@ -286,6 +288,10 @@ public class MoMA {
 			} else {
 				dic.getMomaGui().exportDataFiles();
 			}
+			dic.getLoadingTimer().stop();
+			dic.getLoadingTimer().printExecutionTime("Loading time");
+			System.out.println("IsTrackOnly: " + commandLineArgumentParser.isTrackOnly());
+
 
 			if (!runningAsFijiPlugin) {
 				System.exit(0);

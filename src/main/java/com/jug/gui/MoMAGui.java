@@ -898,6 +898,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      * Export data to specified folder.
      */
     public void exportDataFiles() {
+        MoMA.dic.getExportTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
@@ -915,6 +916,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
+        MoMA.dic.getExportTimer().stop();
+        MoMA.dic.getExportTimer().printExecutionTime("Export time");
     }
 
     public void exportTrackingData() {
@@ -1101,6 +1104,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             System.out.println("...done!");
             buttonOptimizeMore.setForeground(Color.BLACK);
             dataToDisplayChanged();
+            MoMA.dic.getLoadingTimer().stop();
+            MoMA.dic.getLoadingTimer().printExecutionTime("Loading time");
+            System.out.println("IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly());
         });
         t.start();
     }

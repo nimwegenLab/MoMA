@@ -42,11 +42,11 @@ public class ComponentForestGenerator {
         /* fill holes in water shedding mask to avoid components from having holes */
         mask = ImgView.wrap(imglib2Utils.fillHoles(mask));
 
-        raiFkt = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
+        Img<FloatType> raiFktMasked = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
         /* set values >componentSplittingThreshold to 1; this avoids over segmentation during component generation */
-        Img<BitType> mask2 = Thresholder.threshold(raiFkt, new FloatType(componentSplittingThreshold), false, 1);
-        raiFkt = imglib2Utils.maskImage(raiFkt, mask2, new FloatType(1.0f));
+        Img<BitType> mask2 = Thresholder.threshold(raiFktMasked, new FloatType(componentSplittingThreshold), false, 1);
+        raiFktMasked = imglib2Utils.maskImage(raiFktMasked, mask2, new FloatType(1.0f));
 
         final double delta = 0.0001;
 //        final double delta = 0.02;
@@ -57,7 +57,7 @@ public class ComponentForestGenerator {
         final boolean darkToBright = false;
 
         // generate MSER tree
-        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFkt, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
+        MserTree<FloatType> componentTree = MserTree.buildMserTree(raiFktMasked, delta, minSize, maxSize, maxVar, minDiversity, darkToBright);
 
         // filter components by width
         Predicate<Integer> widthCondition = (width) -> (width <= configuration.getMaximumComponentWidth());
@@ -66,17 +66,17 @@ public class ComponentForestGenerator {
         testers.add(widthLimit);
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = new AdvancedComponentForest(componentTree, raiFkt, frameIndex, tester, componentPropertiesCalculator);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = new AdvancedComponentForest(componentTree, raiFktMasked, frameIndex, tester, componentPropertiesCalculator);
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree); /* IMPORTANT: this step watersheds components into their parent-components, which yields the final size of components; this needs to be done before performing the following filter-steps on component-size, etc. */
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
-        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, rootSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, rootSizeTester , componentPropertiesCalculator);
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
-        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, leafSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, leafSizeTester , componentPropertiesCalculator);
 
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new AdvancedComponentForest(tree, raiFkt, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
 //        for (AdvancedComponent component : tree.getAllComponents()) {
 //            if (component.getChildren().size() > 2) {

@@ -20,7 +20,7 @@ public class ComponentExtentTester implements ILocationTester {
     }
 
     @Override
-    public boolean IsValid(Localizable location) {
+    public synchronized boolean IsValid(Localizable location) {
         final int pos = location.getIntPosition(dim);
         min = Math.min(min, pos);
         max = Math.max(max, pos);

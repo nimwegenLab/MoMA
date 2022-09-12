@@ -38,7 +38,7 @@ public class WatershedMaskGenerator {
         this.threshold = threshold;
     }
 
-    public Img<BitType> generateMask(Img<FloatType> image) {
+    public synchronized Img<BitType> generateMask(Img<FloatType> image) {
         Img<BitType> maskForComponentGeneration = Thresholder.threshold(image, new FloatType(threshold), true, 1);
         Img<BitType> maskForComponentMerging = Thresholder.threshold(image, new FloatType(thresholdForComponentMerging), true, 1);
         Img<IntType> labelingImage = createLabelingImage(maskForComponentGeneration);

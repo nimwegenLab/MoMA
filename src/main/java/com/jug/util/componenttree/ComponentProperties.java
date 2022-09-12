@@ -38,7 +38,7 @@ public class ComponentProperties {
         this.ops = ops;
     }
 
-    public float getCost(AdvancedComponent<?> component) {
+    public synchronized float getCost(AdvancedComponent<?> component) {
         return costFactory.getComponentCost(component);
     }
 
@@ -47,13 +47,13 @@ public class ComponentProperties {
      * @param component
      * @return
      */
-    public ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
+    public synchronized ValuePair<Double, Double> getMinorMajorAxis(AdvancedComponent<?> component){
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         ValuePair<DoubleType, DoubleType> minorMajorAxis = (ValuePair<DoubleType, DoubleType>) ops.run(DefaultMinorMajorAxis.class, poly);
         return new ValuePair<>(minorMajorAxis.getA().get(), minorMajorAxis.getB().get());
     }
 
-    public Sextet<Double, Double, Double, Double, Double, Double> getCentralMoments(ComponentInterface component) {
+    public synchronized Sextet<Double, Double, Double, Double, Double, Double> getCentralMoments(ComponentInterface component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         return polygonMomentsCalculator.calculate(poly);
     }
@@ -65,7 +65,7 @@ public class ComponentProperties {
      * @param component
      * @return tilte angle in radians.
      */
-    public double getTiltAngle(AdvancedComponent<?> component) {
+    public synchronized double getTiltAngle(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         double angle = -((DoubleType) ops.run(DefaultMinimumFeretAngle.class, poly)).get();
         if (angle < -90) angle += 180;
@@ -74,13 +74,13 @@ public class ComponentProperties {
         return 2 * Math.PI * angleInRadians / 360.0f;
     }
 
-    public int getArea(AdvancedComponent<?> component){
+    public synchronized int getArea(AdvancedComponent<?> component){
         return (int) component.getRegion().size();
     }
 
 //    private DefaultConvexHull2D convexHullCalculator = new DefaultConvexHull2D();
 
-    public double getConvexHullArea(AdvancedComponent<?> component) {
+    public synchronized double getConvexHullArea(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
 //        Polygon2D hull = convexHullCalculator.calculate(poly);
 //        DoubleType res = (DoubleType) ops.run("geom.size", hull);
@@ -89,21 +89,21 @@ public class ComponentProperties {
         return result;
     }
 
-    public ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
+    public synchronized ValuePair<Double, Double> getCentroid(AdvancedComponent<?> component) {
         final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
         RealPoint tmp = (RealPoint) ops.run(CentroidPolygon.class, poly);
         return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
     }
 
-    public double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         return imglib2Utils.getTotalIntensity(component.getRegion(), img);
     }
 
-    public double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
     }
 
-    public double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
@@ -112,7 +112,7 @@ public class ComponentProperties {
         return intensity1 + intensity2;
     }
 
-    public int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval roi1 = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         FinalInterval roi2 = getRightBackgroundRoi(img, limits.getA(), limits.getB());

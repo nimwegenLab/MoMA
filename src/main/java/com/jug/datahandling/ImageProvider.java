@@ -48,7 +48,7 @@ public class ImageProvider implements IImageProvider {
      * @return the imgProbs
      */
     @Override
-    public void setImgProbs(Img<FloatType> imgProbs) {
+    public synchronized void setImgProbs(Img<FloatType> imgProbs) {
         this.imgProbs = imgProbs;
     }
 
@@ -59,7 +59,7 @@ public class ImageProvider implements IImageProvider {
     }
 
     @Override
-    public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
+    public synchronized Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
         return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
     }
 

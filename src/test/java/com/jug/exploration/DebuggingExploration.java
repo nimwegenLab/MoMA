@@ -12,7 +12,8 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
+        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
+//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
 
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();
@@ -41,20 +42,20 @@ public class DebuggingExploration {
     }
 
     public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui() {
-        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
-        Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
+        String datasetSubPath = "20220912-fix-IndexOutOfBoundsException-when-saving-tracking";
+        Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28");
         String analysisName = "20220912-fix-IndexOutOfBoundsException";
 //        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
-        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        startMoma(false, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
     }
 
     public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly() {
-        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
-        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        String datasetSubPath = "20220912-fix-IndexOutOfBoundsException-when-saving-tracking";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28", "20220817_VNG1040_AB30min_1_MMStack_Pos0_Pos0_GL28.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "20220912-fix-IndexOutOfBoundsException";
         Integer tmin = null;
-        Integer tmax = 10;
+        Integer tmax = 120;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

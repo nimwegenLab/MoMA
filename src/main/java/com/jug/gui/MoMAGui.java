@@ -1105,8 +1105,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             buttonOptimizeMore.setForeground(Color.BLACK);
             dataToDisplayChanged();
             MoMA.dic.getLoadingTimer().stop();
-            MoMA.dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
-            System.out.println("IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly());
+            MoMA.dic.getLoadingTimer().printExecutionTime("Timer result for loading GL (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
         });
         t.start();
     }

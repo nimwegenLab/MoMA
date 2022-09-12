@@ -34,47 +34,47 @@ public class Imglib2Utils {
         }
     }
 
-    public double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img) {
+    public synchronized double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img) {
         IterableInterval<FloatType> region = Views.interval(img, interval);
         return ops.stats().sum(region).getRealDouble();
     }
 
-    public double getIntensityMean(final Interval interval, final RandomAccessible<FloatType> img) {
+    public synchronized double getIntensityMean(final Interval interval, final RandomAccessible<FloatType> img) {
         IterableInterval<FloatType> region = Views.interval(img, interval);
         return ops.stats().mean(region).getRealDouble();
     }
 
-    public double getIntensityStDev(final Interval interval, final RandomAccessible<FloatType> img) {
+    public synchronized double getIntensityStDev(final Interval interval, final RandomAccessible<FloatType> img) {
         IterableInterval<FloatType> region = Views.interval(img, interval);
         return ops.stats().stdDev(region).getRealDouble();
     }
 
-    public double getIntensityCoeffVariation(final Interval interval, final RandomAccessible<FloatType> img) {
+    public synchronized double getIntensityCoeffVariation(final Interval interval, final RandomAccessible<FloatType> img) {
         IterableInterval<FloatType> region = Views.interval(img, interval);
         double std = ops.stats().stdDev(region).getRealDouble();
         double mean = ops.stats().mean(region).getRealDouble();
         return std / mean;
     }
 
-    public <T extends Type<T>> void copyImage(RandomAccessibleInterval<T> sourceImage,
+    public synchronized <T extends Type<T>> void copyImage(RandomAccessibleInterval<T> sourceImage,
                                               RandomAccessibleInterval<T> targetImage) {
         LoopBuilder.setImages(sourceImage, targetImage).forEachPixel((src, dest) -> dest.set(src));
     }
 
-    public <T extends NumericType<T>> void saveImage(RandomAccessibleInterval<T> imgResult, String path) {
+    public synchronized <T extends NumericType<T>> void saveImage(RandomAccessibleInterval<T> imgResult, String path) {
         ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
         IJ.saveAsTiff(tmp_image, path);
     }
 
     @NotNull
-    public <T extends Type<T>> IntervalView<T> getImageSlice(RandomAccessibleInterval<T> rai, int channel, int zSlice, int time) {
+    public synchronized <T extends Type<T>> IntervalView<T> getImageSlice(RandomAccessibleInterval<T> rai, int channel, int zSlice, int time) {
         IntervalView<T> slice = Views.hyperSlice(rai, 4, time);
         slice = Views.hyperSlice(slice, 3, zSlice);
         slice = Views.hyperSlice(slice, 2, channel);
         return slice;
     }
 
-    public <T extends Type<T>> Img<T> maskImage(RandomAccessibleInterval<T> source, RandomAccessibleInterval<BitType> mask, T maskedValue) {
+    public synchronized <T extends Type<T>> Img<T> maskImage(RandomAccessibleInterval<T> source, RandomAccessibleInterval<BitType> mask, T maskedValue) {
 //        long[] dimensions = new long[source.numDimensions()];
 //        source.dimensions(dimensions);
 //        T type = Util.getTypeFromInterval(source);
@@ -128,7 +128,7 @@ public class Imglib2Utils {
      * @param sourceImage
      * @return
      */
-    public static <T extends NativeType<T>> Img<T> createImageWithSameDimension(RandomAccessibleInterval sourceImage,
+    public synchronized static <T extends NativeType<T>> Img<T> createImageWithSameDimension(RandomAccessibleInterval sourceImage,
                                                                                 T type) {
         long[] dims = new long[sourceImage.numDimensions()];
         sourceImage.dimensions(dims);
@@ -136,7 +136,7 @@ public class Imglib2Utils {
         return img;
     }
 
-    public RandomAccessibleInterval<BitType> fillHoles(RandomAccessibleInterval<BitType> mask) {
+    public synchronized RandomAccessibleInterval<BitType> fillHoles(RandomAccessibleInterval<BitType> mask) {
         return ops.morphology().fillHoles(mask);
     }
 

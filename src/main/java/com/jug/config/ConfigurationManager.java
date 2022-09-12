@@ -492,7 +492,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return SIZE_MINIMUM_FOR_ROOT_COMPONENTS;
     }
 
-    public int getMaximumComponentWidth() {
+    public synchronized int getMaximumComponentWidth() {
         return MAXIMUM_COMPONENT_WIDTH;
     }
 

@@ -289,7 +289,7 @@ public class MoMA {
 				dic.getMomaGui().exportDataFiles();
 			}
 			dic.getLoadingTimer().stop();
-			dic.getLoadingTimer().printExecutionTime("Loading time");
+			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
 			System.out.println("IsTrackOnly: " + commandLineArgumentParser.isTrackOnly());
 
 

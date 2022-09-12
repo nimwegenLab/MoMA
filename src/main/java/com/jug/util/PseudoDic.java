@@ -473,6 +473,7 @@ public class PseudoDic {
     }
 
     private Timer loadingTimeTimer;
+
     public Timer getLoadingTimer() {
         if (isNull(loadingTimeTimer)) {
             loadingTimeTimer = new Timer();
@@ -481,8 +482,20 @@ public class PseudoDic {
     }
 
     private Timer exportTimer;
-    public Timer getExportTimer(){
-        if(isNull(exportTimer)){exportTimer = new Timer();}
+
+    public Timer getExportTimer() {
+        if (isNull(exportTimer)) {
+            exportTimer = new Timer();
+        }
         return exportTimer;
+    }
+
+    private Timer componenTreeTimer;
+
+    public Timer getComponentTreeTimer() {
+        if (isNull(componenTreeTimer)) {
+            componenTreeTimer = new Timer();
+        }
+        return componenTreeTimer;
     }
 }

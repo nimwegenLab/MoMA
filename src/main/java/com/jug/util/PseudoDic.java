@@ -471,4 +471,40 @@ public class PseudoDic {
         }
         return htmlOverviewExporter;
     }
+
+    private Timer loadingTimeTimer;
+
+    public Timer getLoadingTimer() {
+        if (isNull(loadingTimeTimer)) {
+            loadingTimeTimer = new Timer();
+        }
+        return loadingTimeTimer;
+    }
+
+    private Timer exportTimer;
+
+    public Timer getExportTimer() {
+        if (isNull(exportTimer)) {
+            exportTimer = new Timer();
+        }
+        return exportTimer;
+    }
+
+    private Timer componenTreeTimer;
+
+    public Timer getComponentTreeTimer() {
+        if (isNull(componenTreeTimer)) {
+            componenTreeTimer = new Timer();
+        }
+        return componenTreeTimer;
+    }
+
+    private Timer assignmentCreationTimer;
+
+    public Timer getAssignmentCreationTimer() {
+        if (isNull(assignmentCreationTimer)) {
+            assignmentCreationTimer = new Timer();
+        }
+        return assignmentCreationTimer;
+    }
 }

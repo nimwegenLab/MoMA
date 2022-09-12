@@ -199,17 +199,17 @@ public class GrowthlaneTrackingILP {
     // -------------------------------------------------------------------------------------
     public void buildILP() {
         try {
-            long start1 = System.currentTimeMillis();
             getAllComponents();
             buildComponentHashMap();
-            long end1 = System.currentTimeMillis();
-            System.out.println("TIME for building component hashmap: " + (end1 - start1) / 1000.0);
 
             // add Hypothesis and Assignments
-            long start = System.currentTimeMillis();
             if (isLoadedFromDisk) {
+                MoMA.dic.getAssignmentCreationTimer().start();
                 loadAssignments();
+                MoMA.dic.getAssignmentCreationTimer().stop();
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
             } else {
+                MoMA.dic.getAssignmentCreationTimer().start();
                 createAssignments();
 
     //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
@@ -239,9 +239,9 @@ public class GrowthlaneTrackingILP {
                 // UPDATE GUROBI-MODEL
                 // - - - - - - - - - -
                 model.update();
+                MoMA.dic.getAssignmentCreationTimer().stop();
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
             }
-            long end = System.currentTimeMillis();
-            System.out.println("TIME for creating assignments: " + (end - start) / 1000.0);
 
             printIlpProperties();
 

@@ -59,6 +59,7 @@ public class GrowthlaneTrackingILP {
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
+    private boolean isLoadedFromDisk;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
@@ -72,13 +73,15 @@ public class GrowthlaneTrackingILP {
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  IConfiguration configurationManager,
                                  String versionString,
-                                 CostFactory costFactory) {
+                                 CostFactory costFactory,
+                                 boolean isLoadedFromDisk) {
         this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
+        this.isLoadedFromDisk = isLoadedFromDisk;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -173,43 +176,74 @@ public class GrowthlaneTrackingILP {
         return edgeSets;
     }
 
+    List<AdvancedComponent<FloatType>> allComponents = new ArrayList<>();
+
+    public void getAllComponents() {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
+            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest =
+                    (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(t).getComponentForest();
+            allComponents.addAll(componentForest.getAllComponents());
+        }
+    }
+
+    HashMap<String, AdvancedComponent<FloatType>> componentHashMap = new HashMap<>();
+
+    public void buildComponentHashMap() {
+        for (AdvancedComponent<FloatType> component : allComponents) {
+            componentHashMap.put(component.getStringId(), component);
+        }
+    }
+
     // -------------------------------------------------------------------------------------
     // methods
     // -------------------------------------------------------------------------------------
     public void buildILP() {
         try {
-            // add Hypothesis and Assignments
-            createHypothesesAndAssignments();
+            long start1 = System.currentTimeMillis();
+            getAllComponents();
+            buildComponentHashMap();
+            long end1 = System.currentTimeMillis();
+            System.out.println("TIME for building component hashmap: " + (end1 - start1) / 1000.0);
 
-            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
-//            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
-//            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
+            // add Hypothesis and Assignments
+            long start = System.currentTimeMillis();
+            if (isLoadedFromDisk) {
+                loadAssignments();
+            } else {
+                createAssignments();
+
+    //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
+    //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
+    //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();
+
+                // UPDATE GUROBI-MODEL
+                // - - - - - - - - - -
+                model.update();
+
+                // Iterate over all assignments and ask them to add their
+                // constraints to the model
+                // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+                for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
+                        assignment.addConstraintsToILP();
+                    }
+                }
+
+                // Add the remaining ILP constraints
+                // (those would be (i) and (ii) of 'Default Solution')
+                // - - - - - - - - - - - - - - - - - - - - - - - - - -
+    //            addPathBlockingConstraints();
+                addPathBlockingConstraintsNew();
+                addContinuityConstraints();
+
+                // UPDATE GUROBI-MODEL
+                // - - - - - - - - - -
+                model.update();
+            }
+            long end = System.currentTimeMillis();
+            System.out.println("TIME for creating assignments: " + (end - start) / 1000.0);
 
             printIlpProperties();
-
-            // UPDATE GUROBI-MODEL
-            // - - - - - - - - - -
-            model.update();
-
-            // Iterate over all assignments and ask them to add their
-            // constraints to the model
-            // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
-                    assignment.addConstraintsToILP();
-                }
-            }
-
-            // Add the remaining ILP constraints
-            // (those would be (i) and (ii) of 'Default Solution')
-            // - - - - - - - - - - - - - - - - - - - - - - - - - -
-//            addPathBlockingConstraints();
-            addPathBlockingConstraintsNew();
-            addContinuityConstraints();
-
-            // UPDATE GUROBI-MODEL
-            // - - - - - - - - - -
-            model.update();
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);
@@ -266,13 +300,152 @@ public class GrowthlaneTrackingILP {
     /**
      * @throws GRBException
      */
-    private void createHypothesesAndAssignments() throws GRBException {
+    private void loadAssignments() throws GRBException {
+        loadMappingAssignments();
+        loadDivisionAssignments();
+        loadExitAssignments();
+        loadLysisAssignments();
+    }
+
+    public void loadMappingAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("MapT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+            AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[2]);
+            if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> from = nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> to = nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
+            final MappingAssignment ma = new MappingAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, from, to);
+            nodes.addAssignment(sourceTimeStep, ma);
+                if (!edgeSets.addToRightNeighborhood(from, ma)) {
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+                if (!edgeSets.addToLeftNeighborhood(to, ma)) {
+                    throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
+                }
+        }
+    }
+
+    public void loadDivisionAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("DivT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+            AdvancedComponent<FloatType> upperTargetComponent = componentHashMap.get(splits[2]);
+            if(isNull(upperTargetComponent)){new RuntimeException("component not found: " + upperTargetComponent.getStringId());}
+            AdvancedComponent<FloatType> lowerTargetComponent = componentHashMap.get(splits[3]);
+            if(isNull(lowerTargetComponent)){new RuntimeException("component not found: " + lowerTargetComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> from =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> to =
+                    nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, this));
+            final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
+                    nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, this));
+
+            final DivisionAssignment da = new DivisionAssignment(model.getVarByName(varName), this, from, to, lowerNeighbor, sourceTimeStep);
+            nodes.addAssignment(sourceTimeStep, da);
+            edgeSets.addToRightNeighborhood(from, da);
+            edgeSets.addToLeftNeighborhood(to, da);
+            edgeSets.addToLeftNeighborhood(lowerNeighbor, da);
+        }
+    }
+
+    private void loadExitAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("ExitT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(5));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> hyp =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+            List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
+
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps); /* TODO-MichaelMell-20220908: This could be moved inside ExitAssignment.java */
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    private void loadLysisAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("LysT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(4));
+            AdvancedComponent<FloatType> sourceComponent = componentHashMap.get(splits[1]);
+            if(isNull(sourceComponent)){new RuntimeException("component not found: " + sourceComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> hyp =
+                    nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
+
+            final LysisAssignment ea = new LysisAssignment(sourceTimeStep, model.getVarByName(varName), this, hyp);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    private List<GRBVar> getGrbVariablesContaining(String substring) {
+        GRBVar[] vars = model.getVars();
+        List<GRBVar> ret = new ArrayList<>();
+        try {
+            for (GRBVar var : vars) {
+                String varName = var.get(GRB.StringAttr.VarName);
+                if (varName.contains(substring)) {
+                    ret.add(var);
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return ret;
+    }
+
+    private boolean modelContainsVarWithName(String targetVarName) {
+        GRBVar[] vars = model.getVars();
+        try {
+            for (GRBVar var : vars) {
+                String varName = var.get(GRB.StringAttr.VarName);
+                if (varName.contains(targetVarName)) {
+                    return true;
+                }
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+        return false;
+    }
+
+    /**
+     * @throws GRBException
+     */
+    private void createAssignments() throws GRBException {
 //        for (int t = 0; t < gl.size(); t++) {
 //            createSegmentationHypotheses( t );
 //        }
 
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
-            enumerateAndAddAssignments(t);
+            createAssignmentsForTimeStep(t);
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
         addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
@@ -301,21 +474,10 @@ public class GrowthlaneTrackingILP {
      * @param t         the time-index the ctNode comes from.
      */
     private void recursivelyAddCTNsAsHypotheses(final int t, final AdvancedComponent<FloatType> component) { //, final boolean isForParaMaxFlowSumImg
-        float componentCost = getComponentCost(t, component);
-        nodes.addHypothesis(t, new Hypothesis<>(t, component, componentCost, this));
+        nodes.addHypothesis(t, new Hypothesis<>(t, component, this));
         for (final AdvancedComponent<FloatType> ctChild : component.getChildren()) {
             recursivelyAddCTNsAsHypotheses(t, ctChild);
         }
-    }
-
-    /**
-     * @param t
-     * @param ctNode
-     * @return
-     */
-    public float getComponentCost(final int t, final Component<?, ?> ctNode) {
-//        RandomAccessibleInterval<FloatType> img = Views.hyperSlice(imageProvider.getImgProbs(), 2, t);
-        return costFactory.getComponentCost((AdvancedComponent<FloatType>) ctNode);
     }
 
     /**
@@ -325,7 +487,7 @@ public class GrowthlaneTrackingILP {
      *
      * @throws GRBException
      */
-    private void enumerateAndAddAssignments(final int sourceTimeStep) throws GRBException {
+    private void createAssignmentsForTimeStep(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
                 (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
@@ -350,7 +512,7 @@ public class GrowthlaneTrackingILP {
     private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             float cost = configurationManager.getLysisAssignmentCost();
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
             final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea);
@@ -373,7 +535,7 @@ public class GrowthlaneTrackingILP {
     private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             float cost = costModulationForSubstitutedILP(hyp.getCost());
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
@@ -399,8 +561,6 @@ public class GrowthlaneTrackingILP {
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
-
             List<AdvancedComponent<FloatType>> targetComponents;
             if (featureFlagUseAssignmentPlausibilityFilter) {
                 targetComponents = getPlausibleTargetComponents(sourceComponent, targetComponentForest.getAllComponents(), sourceTimeStep, configurationManager.getMaximumShrinkagePerFrame(), configurationManager.getMaximumGrowthPerFrame());
@@ -414,14 +574,12 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                float targetComponentCost = getComponentCost(sourceTimeStep + 1, targetComponent);
-
                 if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
                     continue;
                 }
 
                 final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                float cost = costModulationForSubstitutedILP(sourceComponentCost, targetComponentCost, compatibilityCostOfMapping);
+                float cost = costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
@@ -431,12 +589,12 @@ public class GrowthlaneTrackingILP {
 //                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
                 final Hypothesis<AdvancedComponent<FloatType>> to =
-                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, targetComponentCost, this));
+                        nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
                 final Hypothesis<AdvancedComponent<FloatType>> from =
-                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost, this));
+                        nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
-                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from, to));
+                final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent()));
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);
@@ -586,10 +744,7 @@ public class GrowthlaneTrackingILP {
                     continue; /* we only want to continue paths of previously existing hypotheses; this is to fulfill the continuity constraint */
             }
 
-            float sourceComponentCost = getComponentCost(sourceTimeStep, sourceComponent);
-
             for (final AdvancedComponent<FloatType> upperTargetComponent : targetComponentForest.getAllComponents()) {
-                float upperTargetComponentCost = getComponentCost(sourceTimeStep + 1, upperTargetComponent);
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
@@ -602,28 +757,27 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    float lowerTargetComponentCost = getComponentCost(sourceTimeStep + 1, lowerTargetComponent);
                     final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
                             upperTargetComponent, lowerTargetComponent);
 
                     float cost = costModulationForSubstitutedILP(
-                            sourceComponentCost,
-                            upperTargetComponentCost,
-                            lowerTargetComponentCost,
+                            sourceComponent.getCost(),
+                            upperTargetComponent.getCost(),
+                            lowerTargetComponent.getCost(),
                             compatibilityCostOfDivision);
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
                     }
                     final Hypothesis<AdvancedComponent<FloatType>> to =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, upperTargetComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, upperTargetComponent, this));
                     final Hypothesis<AdvancedComponent<FloatType>> lowerNeighbor =
-                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, lowerTargetComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, lowerTargetComponent, this));
                     final Hypothesis<AdvancedComponent<FloatType>> from =
-                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, sourceComponentCost, this));
+                            nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
 //                    final String name = String.format("a_%d^DIVISION--(%d,%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId(), lowerNeighbor.getStringId());
-                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from, to, lowerNeighbor));
+                    final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent(), lowerNeighbor.getWrappedComponent()));
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor, sourceTimeStep);
                     nodes.addAssignment(sourceTimeStep, da);
@@ -678,7 +832,7 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * This function traverses all time points of the growth-line
+     * This function traverses all time-points of the growth-line
      * <code>gl</code>, retrieves the full component tree that has to be built
      * beforehand, and calls the private method
      * <code>recursivelyAddPathBlockingConstraints</code> on all those root

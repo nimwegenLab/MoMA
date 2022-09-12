@@ -29,7 +29,6 @@ import static java.util.Objects.isNull;
 public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     private final C wrappedComponent;
-    private final float cost;
     private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
     public List<String> labels = new ArrayList<>();
@@ -175,9 +174,8 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     private boolean isPruneRoot = false;
     private boolean isPruned = false;
 
-    public Hypothesis(final int t, final C wrappedComponent, final float cost, GrowthlaneTrackingILP ilp) {
+    public Hypothesis(final int t, final C wrappedComponent, GrowthlaneTrackingILP ilp) {
         this.wrappedComponent = wrappedComponent;
-        this.cost = cost;
         this.ilp = ilp;
         location = new HypLoc(t, wrappedComponent);
     }
@@ -201,7 +199,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
      * @return the costs
      */
     public float getCost() {
-        return cost;
+        return wrappedComponent.getCost();
     }
 
     /**

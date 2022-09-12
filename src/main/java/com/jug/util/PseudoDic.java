@@ -103,7 +103,7 @@ public class PseudoDic {
 
     public ComponentProperties getComponentProperties() {
         if (isNull(componentProperties)) {
-            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils());
+            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils(), getCostFactory());
         }
         return componentProperties;
     }

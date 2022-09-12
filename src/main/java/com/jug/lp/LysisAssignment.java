@@ -1,6 +1,7 @@
 package com.jug.lp;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBException;
 import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
@@ -71,7 +72,7 @@ public class LysisAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
         return who.getId() + GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
     }
 
-    public static String buildStringId(int sourceTimeStep, Hypothesis sourceHypothesis) {
-        return "LysT" + sourceTimeStep + "_" + sourceHypothesis.getStringId();
+    public static String buildStringId(int sourceTimeStep, ComponentInterface source) {
+        return "LysT" + sourceTimeStep + "_" + source.getStringId();
     }
 }

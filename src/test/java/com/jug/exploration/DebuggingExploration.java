@@ -12,11 +12,13 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
+        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
+
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();
 
 //        tests._20220905_fix_incorrect_export_folder_path__test_trackonly();
-        tests._20220905_fix_incorrect_export_folder_path__test_exporting();
+//        tests._20220905_fix_incorrect_export_folder_path__test_exporting();
 
 //        tests._20220817_debug_missing_assignments_and_components__test_4__Pos27_GL16();
 //        tests._20220817_debug_missing_assignments_and_components__test_3__Pos17_GL31();
@@ -37,6 +39,25 @@ public class DebuggingExploration {
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
     }
+
+    public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui() {
+        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
+        Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7");
+        String analysisName = "20220912-fix-IndexOutOfBoundsException";
+//        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+    }
+
+    public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly() {
+        String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL7", "20220530_VNG1040_AB2h_1_MMStack_Pos0_GL7.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "20220912-fix-IndexOutOfBoundsException";
+        Integer tmin = null;
+        Integer tmax = 10;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
 
     public void _20220905_force_gurobi_exception_during_model_loading__test_exporting() {
         String datasetSubPath = "20220815-fix-moma-fails-does-not-correctly-restore-ilp-state";

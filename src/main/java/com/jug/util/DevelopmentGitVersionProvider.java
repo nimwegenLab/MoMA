@@ -37,9 +37,22 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         versionString = versionString.substring(1);
         String[] p = versionString.split("-");
         if(versionString.contains("dirty")){
-            return p[0]+"-"+p[1]+"-"+p[2]+"-"+p[4]+"+"+p[3];
+            if(p.length == 3){
+                return p[0]+"-"+p[1]+"-"+p[2]; /* versionString has format: "0.6.0-beta6-dirty" */
+            } else if (p.length == 4) {
+                return p[0]+"-"+p[1]+"-"+p[2]+"-"+p[4]+"+"+p[3];
+            } else {
+                throw new RuntimeException("Could not build version string. 'versionString' is of unknown format: " + versionString);
+            }
         } else {
-            return p[0] + "-" + p[1] + "-" + p[2] + "-" + "+" + p[3];
+            if(p.length == 2) {
+                return p[0] + "-" + p[1]; /* versionString has format: "0.6.0-beta6" */
+            }
+            else if(p.length == 4) {
+                return p[0] + "-" + p[1] + "-" + p[2] + "-" + "+" + p[3];
+            } else {
+                throw new RuntimeException("Could not build version string. 'versionString' is of unknown format: " + versionString);
+            }
         }
     }
 

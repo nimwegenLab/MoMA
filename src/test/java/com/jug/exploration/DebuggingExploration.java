@@ -12,8 +12,8 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
-        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
+        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
+//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
 
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();

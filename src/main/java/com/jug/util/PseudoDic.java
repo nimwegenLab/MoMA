@@ -476,7 +476,7 @@ public class PseudoDic {
 
     public Timer getLoadingTimer() {
         if (isNull(loadingTimeTimer)) {
-            loadingTimeTimer = new Timer();
+            loadingTimeTimer = getNewTimer();
         }
         return loadingTimeTimer;
     }
@@ -485,7 +485,7 @@ public class PseudoDic {
 
     public Timer getExportTimer() {
         if (isNull(exportTimer)) {
-            exportTimer = new Timer();
+            exportTimer = getNewTimer();
         }
         return exportTimer;
     }
@@ -494,7 +494,7 @@ public class PseudoDic {
 
     public Timer getTrackingDataTimer() {
         if (isNull(trackingDataTimer)) {
-            trackingDataTimer = new Timer();
+            trackingDataTimer = getNewTimer();
         }
         return trackingDataTimer;
     }
@@ -503,7 +503,7 @@ public class PseudoDic {
 
     public Timer getComponentTreeTimer() {
         if (isNull(componentTreeTimer)) {
-            componentTreeTimer = new Timer();
+            componentTreeTimer = getNewTimer();
         }
         return componentTreeTimer;
     }
@@ -512,7 +512,7 @@ public class PseudoDic {
 
     public Timer getAssignmentCreationTimer() {
         if (isNull(assignmentCreationTimer)) {
-            assignmentCreationTimer = new Timer();
+            assignmentCreationTimer = getNewTimer();
         }
         return assignmentCreationTimer;
     }
@@ -521,7 +521,7 @@ public class PseudoDic {
 
     public Timer getTotalRuntimeTimer() {
         if (isNull(totalRuntimeTimer)) {
-            totalRuntimeTimer = new Timer();
+            totalRuntimeTimer = getNewTimer();
         }
         return totalRuntimeTimer;
     }
@@ -530,8 +530,12 @@ public class PseudoDic {
 
     public Timer getOptimizationTimer() {
         if (isNull(optimizationTimer)) {
-            optimizationTimer = new Timer();
+            optimizationTimer = getNewTimer();
         }
         return optimizationTimer;
+    }
+
+    private Timer getNewTimer(){
+        return new Timer(getCommandLineArgumentParser().isTrackOnly(), getCommandLineArgumentParser().getIfRunningHeadless());
     }
 }

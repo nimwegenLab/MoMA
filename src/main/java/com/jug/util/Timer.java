@@ -6,6 +6,13 @@ public class Timer {
     Long startTime;
     Long stopTime;
     private boolean isRunning;
+    private final boolean isHeadless;
+    private final boolean isTrackOnly;
+
+    public Timer(boolean isHeadless, boolean isTrackOnly) {
+        this.isHeadless = isHeadless;
+        this.isTrackOnly = isTrackOnly;
+    }
 
     public void start() {
         if (!isRunning) {
@@ -32,6 +39,6 @@ public class Timer {
     }
 
     public void printExecutionTime(String prependString) {
-        System.out.println(prependString + ": " + getExecutionTimeInSeconds());
+        System.out.println(prependString + " (IsTrackOnly: " + isTrackOnly + ", IsHeadless:" + isHeadless + "):" + getExecutionTimeInSeconds());
     }
 }

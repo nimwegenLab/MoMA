@@ -207,7 +207,7 @@ public class GrowthlaneTrackingILP {
                 MoMA.dic.getAssignmentCreationTimer().start();
                 loadAssignments();
                 MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
             } else {
                 MoMA.dic.getAssignmentCreationTimer().start();
                 createAssignments();
@@ -240,7 +240,7 @@ public class GrowthlaneTrackingILP {
                 // - - - - - - - - - -
                 model.update();
                 MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
             }
 
             printIlpProperties();
@@ -1015,7 +1015,7 @@ public class GrowthlaneTrackingILP {
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             model.optimize();
             MoMA.dic.getOptimizationTimer().stop();
-            MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
+            MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
             dialog.notifyGurobiTermination();
 
             // Read solution and extract interpretation

@@ -260,7 +260,7 @@ public class MoMA {
 						try {
 							lock.wait();
 							dic.getTotalRuntimeTimer().stop();
-							dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
+							dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -286,7 +286,7 @@ public class MoMA {
 			}
 		} else {
 			dic.getLoadingTimer().stop();
-			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
+			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
 
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
@@ -296,7 +296,7 @@ public class MoMA {
 			}
 
 			dic.getTotalRuntimeTimer().stop();
-			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
 
 			if (!runningAsFijiPlugin) {
 				System.exit(0);

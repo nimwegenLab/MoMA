@@ -207,7 +207,7 @@ public class GrowthlaneTrackingILP {
                 MoMA.dic.getAssignmentCreationTimer().start();
                 loadAssignments();
                 MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
             } else {
                 MoMA.dic.getAssignmentCreationTimer().start();
                 createAssignments();
@@ -240,7 +240,7 @@ public class GrowthlaneTrackingILP {
                 // - - - - - - - - - -
                 model.update();
                 MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
+                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
             }
 
             printIlpProperties();

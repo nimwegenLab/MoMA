@@ -169,7 +169,7 @@ public class Growthlane {
 			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
 		MoMA.dic.getComponentTreeTimer().stop();
-		MoMA.dic.getComponentTreeTimer().printExecutionTime("Timer result for generating components");
+		MoMA.dic.getComponentTreeTimer().printExecutionTime("Timer result for generating components (IsTrackOnly: " + MoMA.dic.getCommandLineArgumentParser().isTrackOnly() + ")");
 	}
 
 	public int getTimeStepMaximum() {

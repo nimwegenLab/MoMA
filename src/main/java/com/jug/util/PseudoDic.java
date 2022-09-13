@@ -490,6 +490,15 @@ public class PseudoDic {
         return exportTimer;
     }
 
+    private Timer trackingDataTimer;
+
+    public Timer getTrackingDataTimer() {
+        if (isNull(trackingDataTimer)) {
+            trackingDataTimer = new Timer();
+        }
+        return trackingDataTimer;
+    }
+
     private Timer componentTreeTimer;
 
     public Timer getComponentTreeTimer() {

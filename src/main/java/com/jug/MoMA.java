@@ -58,13 +58,13 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
-		dic.getLoadingTimer().start();
-		dic.getTotalRuntimeTimer().start();
-
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
+
+		dic.getLoadingTimer().start();
+		dic.getTotalRuntimeTimer().start();
 
 		if (commandLineArgumentParser.isVersionRequested()) {
 			System.out.println(dic.getVersionProvider().getVersion().toString());

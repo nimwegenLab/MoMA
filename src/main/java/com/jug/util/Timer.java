@@ -39,6 +39,6 @@ public class Timer {
     }
 
     public void printExecutionTime(String prependString) {
-        System.out.println(prependString + " (IsTrackOnly: " + isTrackOnly + ", IsHeadless:" + isHeadless + "):" + getExecutionTimeInSeconds());
+        System.out.println(prependString + " (IsTrackOnly: " + isTrackOnly + ", IsHeadless:" + isHeadless + "): " + getExecutionTimeInSeconds());
     }
 }

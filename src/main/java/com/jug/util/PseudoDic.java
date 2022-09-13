@@ -490,13 +490,13 @@ public class PseudoDic {
         return exportTimer;
     }
 
-    private Timer componenTreeTimer;
+    private Timer componentTreeTimer;
 
     public Timer getComponentTreeTimer() {
-        if (isNull(componenTreeTimer)) {
-            componenTreeTimer = new Timer();
+        if (isNull(componentTreeTimer)) {
+            componentTreeTimer = new Timer();
         }
-        return componenTreeTimer;
+        return componentTreeTimer;
     }
 
     private Timer assignmentCreationTimer;
@@ -515,5 +515,14 @@ public class PseudoDic {
             totalRuntimeTimer = new Timer();
         }
         return totalRuntimeTimer;
+    }
+
+    private Timer optimizationTimer;
+
+    public Timer getOptimizationTimer() {
+        if (isNull(optimizationTimer)) {
+            optimizationTimer = new Timer();
+        }
+        return optimizationTimer;
     }
 }

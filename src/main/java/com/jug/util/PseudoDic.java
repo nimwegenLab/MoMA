@@ -476,7 +476,7 @@ public class PseudoDic {
 
     public Timer getLoadingTimer() {
         if (isNull(loadingTimeTimer)) {
-            loadingTimeTimer = new Timer();
+            loadingTimeTimer = getNewTimer();
         }
         return loadingTimeTimer;
     }
@@ -485,26 +485,57 @@ public class PseudoDic {
 
     public Timer getExportTimer() {
         if (isNull(exportTimer)) {
-            exportTimer = new Timer();
+            exportTimer = getNewTimer();
         }
         return exportTimer;
     }
 
-    private Timer componenTreeTimer;
+    private Timer trackingDataTimer;
+
+    public Timer getTrackingDataTimer() {
+        if (isNull(trackingDataTimer)) {
+            trackingDataTimer = getNewTimer();
+        }
+        return trackingDataTimer;
+    }
+
+    private Timer componentTreeTimer;
 
     public Timer getComponentTreeTimer() {
-        if (isNull(componenTreeTimer)) {
-            componenTreeTimer = new Timer();
+        if (isNull(componentTreeTimer)) {
+            componentTreeTimer = getNewTimer();
         }
-        return componenTreeTimer;
+        return componentTreeTimer;
     }
 
     private Timer assignmentCreationTimer;
 
     public Timer getAssignmentCreationTimer() {
         if (isNull(assignmentCreationTimer)) {
-            assignmentCreationTimer = new Timer();
+            assignmentCreationTimer = getNewTimer();
         }
         return assignmentCreationTimer;
+    }
+
+    private Timer totalRuntimeTimer;
+
+    public Timer getTotalRuntimeTimer() {
+        if (isNull(totalRuntimeTimer)) {
+            totalRuntimeTimer = getNewTimer();
+        }
+        return totalRuntimeTimer;
+    }
+
+    private Timer optimizationTimer;
+
+    public Timer getOptimizationTimer() {
+        if (isNull(optimizationTimer)) {
+            optimizationTimer = getNewTimer();
+        }
+        return optimizationTimer;
+    }
+
+    private Timer getNewTimer(){
+        return new Timer(getCommandLineArgumentParser().isTrackOnly(), getCommandLineArgumentParser().getIfRunningHeadless());
     }
 }

@@ -58,12 +58,13 @@ public class MoMA {
 	public static void main( final String[] args ) {
 		dic = new PseudoDic();
 
-		dic.getLoadingTimer().start();
-
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 		commandLineArgumentParser.parse(args);
+
+		dic.getLoadingTimer().start();
+		dic.getTotalRuntimeTimer().start();
 
 		if (commandLineArgumentParser.isVersionRequested()) {
 			System.out.println(dic.getVersionProvider().getVersion().toString());
@@ -258,6 +259,8 @@ public class MoMA {
 					while (guiFrame.isVisible())
 						try {
 							lock.wait();
+							dic.getTotalRuntimeTimer().stop();
+							dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -283,7 +286,7 @@ public class MoMA {
 			}
 		} else {
 			dic.getLoadingTimer().stop();
-			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
+			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
 
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
@@ -291,6 +294,9 @@ public class MoMA {
 			} else {
 				dic.getMomaGui().exportDataFiles();
 			}
+
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
 
 			if (!runningAsFijiPlugin) {
 				System.exit(0);

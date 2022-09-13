@@ -1011,11 +1011,11 @@ public class GrowthlaneTrackingILP {
 
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
-            long startTime = System.currentTimeMillis();
+            MoMA.dic.getOptimizationTimer().start();
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             model.optimize();
-            long endTime = System.currentTimeMillis();
-            System.out.println("Optimization time: " + (endTime - startTime));
+            MoMA.dic.getOptimizationTimer().stop();
+            MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
             dialog.notifyGurobiTermination();
 
             // Read solution and extract interpretation

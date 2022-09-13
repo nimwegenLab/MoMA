@@ -59,6 +59,7 @@ public class MoMA {
 		dic = new PseudoDic();
 
 		dic.getLoadingTimer().start();
+		dic.getTotalRuntimeTimer().start();
 
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
@@ -258,6 +259,8 @@ public class MoMA {
 					while (guiFrame.isVisible())
 						try {
 							lock.wait();
+							dic.getTotalRuntimeTimer().stop();
+							dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -291,6 +294,9 @@ public class MoMA {
 			} else {
 				dic.getMomaGui().exportDataFiles();
 			}
+
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime (IsTrackOnly: " + commandLineArgumentParser.isTrackOnly() + ")");
 
 			if (!runningAsFijiPlugin) {
 				System.exit(0);

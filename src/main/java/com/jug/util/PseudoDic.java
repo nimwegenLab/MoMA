@@ -507,4 +507,13 @@ public class PseudoDic {
         }
         return assignmentCreationTimer;
     }
+
+    private Timer totalRuntimeTimer;
+
+    public Timer getTotalRuntimeTimer() {
+        if (isNull(totalRuntimeTimer)) {
+            totalRuntimeTimer = new Timer();
+        }
+        return totalRuntimeTimer;
+    }
 }

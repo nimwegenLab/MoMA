@@ -12,8 +12,8 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
-//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
-        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
+        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
+//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
 
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();
@@ -46,7 +46,7 @@ public class DebuggingExploration {
         Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28");
         String analysisName = "20220912-fix-IndexOutOfBoundsException";
 //        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
-        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        startMoma(false, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
     }
 
     public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly() {
@@ -55,7 +55,7 @@ public class DebuggingExploration {
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "20220912-fix-IndexOutOfBoundsException";
         Integer tmin = null;
-        Integer tmax = 100;
+        Integer tmax = 10;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

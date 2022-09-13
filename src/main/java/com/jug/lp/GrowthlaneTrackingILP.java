@@ -243,7 +243,7 @@ public class GrowthlaneTrackingILP {
                 MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
             }
 
-            printIlpProperties();
+            printIlpStatistics();
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);
@@ -291,10 +291,36 @@ public class GrowthlaneTrackingILP {
 
     }
 
-    private void printIlpProperties() {
-        System.out.println("########### ILP PROPERTIES START ###########");
+    private int getNumberOfLeafComponents() {
+        int counter = 0;
+        List<ComponentInterface> componentsInIlp = getAllComponentsInIlp();
+        for (ComponentInterface component : componentsInIlp) {
+            if (component.getChildren().isEmpty()) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private int getNumberOfRootComponents() {
+        int counter = 0;
+        List<ComponentInterface> componentsInIlp = getAllComponentsInIlp();
+        for (ComponentInterface component : componentsInIlp) {
+            if (isNull(component.getParent())) {
+                counter++;
+            }
+        }
+        return counter;
+    }
+
+    private void printIlpStatistics() {
+        System.out.println("########### ILP STATISTICS START ###########");
+        System.out.println("Number of all components in component-trees: " + allComponents.size());
+        System.out.println("Number of components in ILP: " + getAllComponentsInIlp().size());
+        System.out.println("Number of root components: " + getNumberOfRootComponents());
+        System.out.println("Number of leaf components: " + getNumberOfLeafComponents());
         System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
-        System.out.println("########### ILP PROPERTIES END ###########");
+        System.out.println("########### ILP STATISTICS END ###########");
     }
 
     /**

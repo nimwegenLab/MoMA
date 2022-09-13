@@ -314,12 +314,14 @@ public class GrowthlaneTrackingILP {
     }
 
     private void printIlpStatistics() {
+        boolean isTrackOnly = MoMA.dic.getCommandLineArgumentParser().isTrackOnly();
+        boolean isHeadless = MoMA.dic.getCommandLineArgumentParser().getIfRunningHeadless();
         System.out.println("########### ILP STATISTICS START ###########");
-        System.out.println("Number of all components in component-trees: " + allComponents.size());
-        System.out.println("Number of components in ILP: " + getAllComponentsInIlp().size());
-        System.out.println("Number of root components: " + getNumberOfRootComponents());
-        System.out.println("Number of leaf components: " + getNumberOfLeafComponents());
-        System.out.println("Number of assignments: " + nodes.getTotalNumberOfAssignments());
+        System.out.println("Number of all components in component-trees (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + allComponents.size());
+        System.out.println("Number of components in ILP (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + getAllComponentsInIlp().size());
+        System.out.println("Number of root components (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + getNumberOfRootComponents());
+        System.out.println("Number of leaf components (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + getNumberOfLeafComponents());
+        System.out.println("Number of assignments (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + nodes.getTotalNumberOfAssignments());
         System.out.println("########### ILP STATISTICS END ###########");
     }
 

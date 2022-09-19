@@ -116,17 +116,20 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		this.ilp = ilp;
 	}
 
+	public boolean ilpIsReady() {
+		return ilp.isReady();
+	}
+
 	/**
 	 * @return the cost
+	 * @throws RuntimeException if the underlying Gurobi model is not ready to be queried for the component cost.
 	 */
 	public float getCost() {
-		float cost = 0;
 		try {
-			cost = (float) getGRBVar().get(GRB.DoubleAttr.Obj);
+			return (float) getGRBVar().get(GRB.DoubleAttr.Obj);
 		} catch (final GRBException e) {
-			System.err.println("CRITICAL: cost could not be read out of Gurobi ILP!");
+			throw new RuntimeException("ERROR: Assignment cost could not be read from Gurobi model for assignment: " + getStringId());
 		}
-		return cost;
 	}
 
 	/**

@@ -56,11 +56,19 @@ public abstract class AssignmentView {
     }
 
     public String getCostTooltipString() {
-        return new DecimalFormat(".####").format(abstractAssignment.getCost());
+        if (abstractAssignment.ilpIsReady()) {
+            return new DecimalFormat(".####").format(abstractAssignment.getCost());
+        } else {
+            return "NA";
+        }
     }
 
-    public double getCost(){
-        return abstractAssignment.getCost();
+    public double getCost() {
+        if (abstractAssignment.ilpIsReady()) {
+            return abstractAssignment.getCost();
+        } else {
+            return Integer.MIN_VALUE; /* return place-holder value, if the ILP is not ready. TODO-MM-20220919: This is a hack: We should deactivate all relevant GUI elements during Gurobi optimization, so that the model can not even be queried through the GUI */
+        }
     }
 
     public boolean isHovered(int mousePosX, int mousePosY) {

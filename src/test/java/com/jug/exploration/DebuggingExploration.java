@@ -12,8 +12,11 @@ public class DebuggingExploration {
     public static void main(String[] args) {
         DebuggingExploration tests = new DebuggingExploration();
 
+//        tests._20220919_fix_exception_when_hovering_components_while_ilp_is_not_ready__ui_testing();
+        tests._20220919_fix_exception_when_hovering_components_while_ilp_is_not_ready__track_only();
+
 //        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui();
-        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
+//        tests._20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_trackonly();
 
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_trackonly();
 //        tests._20220905_force_gurobi_exception_during_model_loading__test_exporting();
@@ -40,6 +43,25 @@ public class DebuggingExploration {
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__reproduce_issue();
 //        tests._2020524_fix_issue_with_non_exported_cell_mask__debug_issue();
     }
+
+    public void _20220919_fix_exception_when_hovering_components_while_ilp_is_not_ready__ui_testing() {
+        String datasetSubPath = "20220919-fix-exception-when-hovering-components-while-ilp-is-not-ready";
+        Path glPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28");
+        String analysisName = "20220919-fix-exception-when-hovering-components";
+//        startMoma(true, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+        startMoma(false, null, null, null, null, false, new String[]{"-reload",glPath.toString(),"-analysis",analysisName});
+    }
+
+    public void _20220919_fix_exception_when_hovering_components_while_ilp_is_not_ready__track_only() {
+        String datasetSubPath = "20220919-fix-exception-when-hovering-components-while-ilp-is-not-ready";
+        Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28", "20220817_VNG1040_AB30min_1_MMStack_Pos0_Pos0_GL28.tif");
+        Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
+        String analysisName = "20220919-fix-exception-when-hovering-components";
+        Integer tmin = null;
+        Integer tmax = 200;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
 
     public void _20220912_fix_IndexOutOfBoundsException_when_saving_tracking__run_ui() {
         String datasetSubPath = "20220912-fix-IndexOutOfBoundsException-when-saving-tracking";

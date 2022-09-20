@@ -61,9 +61,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties, int frame) {
+    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties, int frameNumber) {
         this.label = label;
-        this.frame = frame;
+        this.frameNumber = frameNumber;
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : wrappedComponent) {
             pixelList.add(new Point(val));
@@ -92,15 +92,15 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
     }
 
-    /**
-     * Labels the center of mass of this component in image labeling with label.
-     *
-     * @param label label that will be set for this component
-     */
-    public ImgLabeling<Integer, IntType> getLabeling(Integer label) {
-        Img<T> sourceImage = ImgView.wrap(this.getSourceImage(), new ArrayImgFactory(new FloatType()));
-        return createLabelingImage(sourceImage);
-    }
+//    /**
+//     * Labels the center of mass of this component in image labeling with label.
+//     *
+//     * @param label label that will be set for this component
+//     */
+//    public ImgLabeling<Integer, IntType> getLabeling(Integer label) {
+//        Img<T> sourceImage = ImgView.wrap(this.getSourceImage(), new ArrayImgFactory(new FloatType()));
+//        return createLabelingImage(sourceImage);
+//    }
 
     private ImgLabeling<Integer, IntType> createLabelingImage(RandomAccessibleInterval<T> sourceImage) {
         long[] dims = new long[sourceImage.numDimensions()];
@@ -313,17 +313,17 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return horizontalComponentLimits;
     }
 
-    private int frame;
+    private int frameNumber;
 
     public int getFrameNumber() {
-        return frame;
+        return frameNumber;
     }
 
     String stringId;
 
     public String getStringId() {
         if (isNull(stringId)) {
-            frame = getFrameNumber();
+            frameNumber = getFrameNumber();
             stringId = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         }
         return stringId;
@@ -874,7 +874,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     public AdvancedComponentPojo getSerializableRepresentation() {
-        return new AdvancedComponentPojo(getStringId());
+        return new AdvancedComponentPojo(getStringId(), getFrameNumber());
     }
 
     static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo) {
@@ -888,6 +888,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     private AdvancedComponent(AdvancedComponentPojo pojo) {
         stringId = pojo.getStringId();
+        frameNumber = pojo.getFrameNumber();
         sourceImage = null;
         value = null;
         componentProperties = null;
@@ -903,6 +904,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             return false;
         }
         AdvancedComponent<FloatType> other = (AdvancedComponent<FloatType>) o;
-        return getStringId().equals(other.getStringId());
+        boolean isEqual = getStringId().equals(other.getStringId()) &&
+                getFrameNumber() == other.getFrameNumber();
+        return isEqual;
     }
 }

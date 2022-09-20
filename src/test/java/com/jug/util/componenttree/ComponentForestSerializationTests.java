@@ -5,6 +5,7 @@ import com.jug.util.TestUtils;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,18 +20,28 @@ public class ComponentForestSerializationTests {
         testUtils = new TestUtils();
     }
 
-    public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentForestSerializationTests().serializing_and_deserializing_component_yields_equal_component();
+//    public static void main(String... args) throws IOException, InterruptedException {
+//        new ComponentForestSerializationTests().serializing_and_deserializing_component_yields_equal_component();
+//    }
+
+    @Test
+    public void getFrameNumber__for_json_serialized_copy__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getFrameNumber(), componentDeserialized.getFrameNumber());
     }
 
-    public void serializing_and_deserializing_component_yields_equal_component() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+    @Test
+    public void getStringId__for_json_serialized_copy__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getStringId(), componentDeserialized.getStringId());
+    }
 
-        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(0);
-        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
-        String jsonString = new Gson().toJson(pojo);
-        AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
-        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new);
+    @Test
+    public void equals__for_json_serialized_copy_returns__returns_true() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent, componentDeserialized);
     }
 
@@ -45,6 +56,21 @@ public class ComponentForestSerializationTests {
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
 //            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
 //        }
+    }
+
+    @NotNull
+    private static AdvancedComponent<FloatType> serializeAndDeserialzeThroughJsonString(AdvancedComponent<FloatType> sutComponent) {
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
+        String jsonString = new Gson().toJson(pojo);
+        AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
+        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new);
+        return componentDeserialized;
+    }
+
+    private AdvancedComponent<FloatType> getSingleComponent() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(0);
+        return sutComponent;
     }
 
     @NotNull

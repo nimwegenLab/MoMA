@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 public class ComponentForestSerializationTests {
 
     private final TestUtils testUtils;
@@ -26,6 +28,13 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void getChildStringIds__for_leaf_component_node__returns_empty_list() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
+        List<String> childStringIds = sutComponent.getChildrenStringIds();
+        Assert.assertTrue(childStringIds.isEmpty());
+    }
+
+    @Test
     public void getChildStringIds__for_root_component_node_with_children__returns_correct_value() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         List<String> childStringIds = sutComponent.getChildrenStringIds();
@@ -34,7 +43,6 @@ public class ComponentForestSerializationTests {
         Assert.assertEquals("HypT5T420B429L51R60H1646872133", childStringIds.get(0));
         Assert.assertEquals("HypT5T430B458L49R59H-2058293790", childStringIds.get(1));
     }
-
 
     @Test
     public void getParentStringId__for_json_serialized_copy_of_internal_component_node__is_equal() throws IOException {
@@ -112,15 +120,27 @@ public class ComponentForestSerializationTests {
         return componentDeserialized;
     }
 
+    private AdvancedComponent<FloatType> getLeafComponentNode() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(17);
+        Assert.assertTrue(sutComponent.getChildren().isEmpty());
+        Assert.assertFalse(isNull(sutComponent.getParent()));
+        return sutComponent;
+    }
+
     private AdvancedComponent<FloatType> getInternalComponentNode() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
         AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(12);
+        Assert.assertFalse(sutComponent.getChildren().isEmpty());
+        Assert.assertFalse(isNull(sutComponent.getParent()));
         return sutComponent;
     }
 
     private AdvancedComponent<FloatType> getRootComponentNodeWithChildren() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
         AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(2);
+        Assert.assertTrue(isNull(sutComponent.getParent()));
+        Assert.assertFalse(sutComponent.getChildren().isEmpty());
         return sutComponent;
     }
 

@@ -25,29 +25,55 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void getParentStringId__for_json_serialized_copy_of_internal_component_node__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
+    }
+
+    @Test
+    public void getParentStringId__for_json_serialized_copy_of_root_component_node__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
+    }
+
+    @Test
     public void getLabel__for_json_serialized_copy__is_equal() throws IOException {
-        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent.getLabel(), componentDeserialized.getLabel());
     }
 
     @Test
+    public void getParentStringId__for_internal_component_node__returns_correct_value() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        Assert.assertEquals(sutComponent.getParentStringId(), "HypT5T280B395L47R59H725080955");
+    }
+
+    @Test
+    public void getParentStringId__for_root_component__returns_NA() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
+        Assert.assertEquals(sutComponent.getParentStringId(), "NA");
+    }
+
+    @Test
     public void getFrameNumber__for_json_serialized_copy__is_equal() throws IOException {
-        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent.getFrameNumber(), componentDeserialized.getFrameNumber());
     }
 
     @Test
     public void getStringId__for_json_serialized_copy__is_equal() throws IOException {
-        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent.getStringId(), componentDeserialized.getStringId());
     }
 
     @Test
     public void equals__for_json_serialized_copy_returns__returns_true() throws IOException {
-        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> sutComponent = getSingleRootComponent();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent, componentDeserialized);
     }
@@ -74,7 +100,13 @@ public class ComponentForestSerializationTests {
         return componentDeserialized;
     }
 
-    private AdvancedComponent<FloatType> getSingleComponent() throws IOException {
+    private AdvancedComponent<FloatType> getInternalComponentNode() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(12);
+        return sutComponent;
+    }
+
+    private AdvancedComponent<FloatType> getSingleRootComponent() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
         AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(0);
         return sutComponent;

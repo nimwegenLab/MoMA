@@ -893,4 +893,16 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         componentProperties = null;
         label = null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof AdvancedComponent)) {
+            return false;
+        }
+        AdvancedComponent<FloatType> other = (AdvancedComponent<FloatType>) o;
+        return getStringId().equals(other.getStringId());
+    }
 }

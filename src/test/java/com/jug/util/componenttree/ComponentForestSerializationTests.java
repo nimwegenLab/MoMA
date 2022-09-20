@@ -1,8 +1,10 @@
 package com.jug.util.componenttree;
 
+import com.google.gson.Gson;
 import com.jug.util.TestUtils;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,11 +20,22 @@ public class ComponentForestSerializationTests {
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentForestSerializationTests().testComponentSerialization();
+        new ComponentForestSerializationTests().serializing_and_deserializing_component_yields_equal_component();
     }
 
-    public void testComponentSerialization() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5);
+    public void serializing_and_deserializing_component_yields_equal_component() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+
+        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(0);
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
+        String jsonString = new Gson().toJson(pojo);
+        AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
+        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new);
+        Assert.assertEquals(sutComponent, componentDeserialized);
+    }
+
+    public void testComponentTreeSerialization() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 5);
 
         ComponentForestSerializer sut = new ComponentForestSerializer();
 
@@ -35,11 +48,11 @@ public class ComponentForestSerializationTests {
     }
 
     @NotNull
-    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int numberOfForests) throws IOException {
+    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int frameIndexStart, int frameIndexStop) throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif";
 
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
-        for (int frameIndex = 0; frameIndex < numberOfForests; frameIndex++) {
+        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
             componentForests.add((AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
         }
         return componentForests;

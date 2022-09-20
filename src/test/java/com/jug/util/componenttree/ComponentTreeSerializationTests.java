@@ -22,25 +22,12 @@ public class ComponentTreeSerializationTests {
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentTreeSerializationTests().testPrintRankOfSegment();
+        new ComponentTreeSerializationTests().testComponentSerialization();
     }
-    public void testPrintRankOfSegment() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
+    public void testComponentSerialization() throws IOException {
+        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 0;
-
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f);
-
-        List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
-
-        for (AdvancedComponent<FloatType> root : roots) {
-            ArrayList<AdvancedComponent<FloatType>> componentsToDraw = new ArrayList<>();
-            componentsToDraw.add(root);
-            ImagePlus imp = ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), root.getSourceImage()));
-            int rank = root.getRankRelativeToComponentsClosestToRoot();
-            TextRoi text = new TextRoi(0, 0, String.format("rank: %d", rank));
-            imp.setOverlay(text, Color.white, 0, Color.black);
-        }
-
         Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
     }
 }

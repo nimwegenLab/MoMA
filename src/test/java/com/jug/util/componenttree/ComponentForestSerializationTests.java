@@ -28,6 +28,20 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void getChildStringIds__for_json_serialized_copy_of_leaf_component_node__returns_empty_list() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
+    }
+
+    @Test
+    public void getChildStringIds__for_json_serialized_copy_of_root_component_node_with_children__returns_correct_value() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
+    }
+
+    @Test
     public void getChildStringIds__for_leaf_component_node__returns_empty_list() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
         List<String> childStringIds = sutComponent.getChildrenStringIds();

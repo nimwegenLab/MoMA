@@ -853,4 +853,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
         return result;
     }
+
+    public AdvancedComponentPojo getSerializableRepresentation() {
+        return new AdvancedComponentPojo(getStringId());
+    }
 }

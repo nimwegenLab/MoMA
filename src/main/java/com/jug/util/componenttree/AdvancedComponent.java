@@ -66,7 +66,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         this.frameNumber = frameNumber;
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         for (Localizable val : wrappedComponent) {
-            pixelList.add(new Point(val));
+            pixelList.add(new Point(val)); /* MM-20220920: We need to create instances of Point to added to pixelList, because val is a pointer that is modified in the loop */
             accessor.setPosition(val);
             accessor.get().add(label);
         }

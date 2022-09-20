@@ -61,7 +61,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling, Integer label, C wrappedComponent, RandomAccessibleInterval<T> sourceImage, ComponentProperties componentProperties, int frameNumber) {
+    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling,
+                                                         Integer label,
+                                                         C wrappedComponent,
+                                                         RandomAccessibleInterval<T> sourceImage,
+                                                         ComponentProperties componentProperties,
+                                                         int frameNumber) {
         this.label = label;
         this.frameNumber = frameNumber;
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();

@@ -48,8 +48,8 @@ public class DebuggingExploration {
         Path inputPath = Paths.get(datasets_base_path, datasetSubPath, "Pos0_GL28", "20220817_VNG1040_AB30min_1_MMStack_Pos0_Pos0_GL28.tif");
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "20220919-fix-exception-when-hovering-components";
-        Integer tmin = 200;
-        Integer tmax = null;
+        Integer tmin = null;
+        Integer tmax = 2;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName});
     }
 

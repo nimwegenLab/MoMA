@@ -2,27 +2,23 @@ package com.jug.util.componenttree;
 
 import com.jug.util.TestUtils;
 import com.moma.auxiliary.Plotting;
-import ij.ImagePlus;
-import ij.gui.TextRoi;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentTreeSerializationTests {
+public class ComponentForestSerializerTests {
 
     private final TestUtils testUtils;
 
-    public ComponentTreeSerializationTests() {
+    public ComponentForestSerializerTests() {
         testUtils = new TestUtils();
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentTreeSerializationTests().testComponentSerialization();
+        new ComponentForestSerializerTests().testComponentSerialization();
     }
 
     public void testComponentSerialization() throws IOException {

@@ -6,4 +6,8 @@ public class AdvancedComponentPojo {
     public AdvancedComponentPojo(String stringId) {
         this.stringId = stringId;
     }
+
+    public String getStringId() {
+        return stringId;
+    }
 }

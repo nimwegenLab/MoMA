@@ -1,27 +1,24 @@
 package com.jug.util.componenttree;
 
 import com.jug.util.TestUtils;
-import com.moma.auxiliary.Plotting;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.nio.file.Files;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComponentForestSerializerTests {
+public class ComponentForestSerializationTests {
 
     private final TestUtils testUtils;
 
-    public ComponentForestSerializerTests() {
+    public ComponentForestSerializationTests() {
         testUtils = new TestUtils();
     }
 
     public static void main(String... args) throws IOException, InterruptedException {
-        new ComponentForestSerializerTests().testComponentSerialization();
+        new ComponentForestSerializationTests().testComponentSerialization();
     }
 
     public void testComponentSerialization() throws IOException {
@@ -30,7 +27,7 @@ public class ComponentForestSerializerTests {
         ComponentForestSerializer sut = new ComponentForestSerializer();
 
 //        Path jsonFile = Files.createTempFile("", ".json");
-        sut.serializeToDisk(componentForests);
+        String jsonString = sut.serializeToDisk(componentForests);
 
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
 //            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());

@@ -172,7 +172,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         if (siblingBranch == null) {
             return ret;
         }
-        while(siblingBranch != null){
+        while (siblingBranch != null) {
             ret.add(siblingBranch);
             targetBranch = targetBranch.getParent();
             siblingBranch = targetBranch.getSibling();
@@ -246,7 +246,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     double majorAxisLength = -1;
     double minorAxisLength = -1;
 
-    public double getMajorAxisLength(){
+    public double getMajorAxisLength() {
         if (majorAxisLength > 0) {
             return majorAxisLength;
         }
@@ -256,7 +256,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return majorAxisLength;
     }
 
-    public double getMinorAxisLength(){
+    public double getMinorAxisLength() {
         if (minorAxisLength > 0) {
             return minorAxisLength;
         }
@@ -300,27 +300,33 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private ValuePair<Integer, Integer> verticalComponentLimits;
 
     public ValuePair<Integer, Integer> getVerticalComponentLimits() {
-        if (verticalComponentLimits == null) verticalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 1);
+        if (verticalComponentLimits == null)
+            verticalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 1);
         return verticalComponentLimits;
     }
 
     private ValuePair<Integer, Integer> horizontalComponentLimits;
 
     public ValuePair<Integer, Integer> getHorizontalComponentLimits() {
-        if (horizontalComponentLimits == null) horizontalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 0);
+        if (horizontalComponentLimits == null)
+            horizontalComponentLimits = ComponentTreeUtils.getComponentPixelLimits(this, 0);
         return horizontalComponentLimits;
     }
 
     private int frame;
 
     public int getFrameNumber() {
-         return frame;
+        return frame;
     }
 
-    public String getStringId(){
-        frame = getFrameNumber();
-        String id = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
-        return id;
+    String stringId;
+
+    public String getStringId() {
+        if (isNull(stringId)) {
+            frame = getFrameNumber();
+            stringId = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
+        }
+        return stringId;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {
@@ -333,11 +339,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getLowerNeighbors() {
-        if (isNull(lowerNeighbors)){
+        if (isNull(lowerNeighbors)) {
             lowerNeighbors = calculateLowerNeighbors();
         }
         return lowerNeighbors;
     }
+
     List<AdvancedComponent<T>> lowerNeighbors;
 
     /**
@@ -370,6 +377,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
         return lowerNeighborClosestToRootLevel;
     }
+
     AdvancedComponent<T> lowerNeighborClosestToRootLevel;
 
     /**
@@ -404,11 +412,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      * @return list of neighboring nodes
      */
     public List<AdvancedComponent<T>> getUpperNeighbors() {
-        if (isNull(upperNeighbors)){
+        if (isNull(upperNeighbors)) {
             upperNeighbors = calculateUpperNeighbors();
         }
         return upperNeighbors;
     }
+
     List<AdvancedComponent<T>> upperNeighbors;
 
     /**
@@ -440,6 +449,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
         return upperNeighborClosestToRootLevel;
     }
+
     AdvancedComponent<T> upperNeighborClosestToRootLevel;
 
     /**
@@ -469,6 +479,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     private int totalAreaOfRoots = -1;
+
     public int getTotalAreaOfRootComponents() {
         if (totalAreaOfRoots < 0) {
             totalAreaOfRoots = calculateTotalAreaOfRootComponents();
@@ -478,13 +489,14 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     private int calculateTotalAreaOfRootComponents() {
         int area = 0;
-        for (AdvancedComponent<T> root : getComponentTreeRoots()){
+        for (AdvancedComponent<T> root : getComponentTreeRoots()) {
             area += root.size();
         }
         return area;
     }
 
     private int totalComponentAreaAbove = -1;
+
     public int getTotalAreaOfComponentsAbove() {
         if (totalComponentAreaAbove < 0) {
             totalComponentAreaAbove = calculateTotalAreaOfComponentsAbove();
@@ -492,7 +504,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return totalComponentAreaAbove;
     }
 
-    private int calculateTotalAreaOfComponentsAbove(){
+    private int calculateTotalAreaOfComponentsAbove() {
         AdvancedComponent<T> neighbor = this.getUpperNeighborClosestToRootLevel();
         int cellAreaPixels = 0;
         while (neighbor != null) {
@@ -503,6 +515,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     private int totalComponentAreaBelow = -1;
+
     public int getTotalAreaOfComponentsBelow() {
         if (totalComponentAreaBelow < 0) {
             totalComponentAreaBelow = calculateTotalAreaOfComponentsBelow();
@@ -510,7 +523,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return totalComponentAreaBelow;
     }
 
-    private int calculateTotalAreaOfComponentsBelow(){
+    private int calculateTotalAreaOfComponentsBelow() {
         List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         int totalCellAreaPixels = 0;
         for (AdvancedComponent<T> component : componentsBelow) {
@@ -519,12 +532,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return totalCellAreaPixels;
     }
 
-    public int getRankRelativeToComponentsClosestToRoot(){
+    public int getRankRelativeToComponentsClosestToRoot() {
         List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
         return componentsBelow.size();
     }
 
-    public List<AdvancedComponent<T>> getComponentsBelowClosestToRoot(){
+    public List<AdvancedComponent<T>> getComponentsBelowClosestToRoot() {
         List<AdvancedComponent<T>> result = new ArrayList<>();
         AdvancedComponent<T> neighbor = this.getLowerNeighborClosestToRootLevel();
         while (neighbor != null) {
@@ -566,7 +579,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     List<T> componentPixelValues = null;
 
-    public List<Double> getComponentPixelValuesAsDouble(){
+    public List<Double> getComponentPixelValuesAsDouble() {
         List<Double> probabilities = ((AdvancedComponent<FloatType>) this).getComponentPixelValues().stream().map(value -> value.getRealDouble()).collect(Collectors.toList());
         return probabilities;
     }
@@ -592,7 +605,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             return componentPixelValues; /* there is no watershed line; return empty array */
         }
         Iterator<Localizable> it = this.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             Localizable pos = it.next();
             componentPixelValues.add(this.sourceImage.getAt(pos));
         }
@@ -603,6 +616,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     /**
      * Return the average value of the pixels of the watershed line. Returns Null if there is no watershed line.
+     *
      * @return
      */
     public Double getWatershedLinePixelValueAverage() {
@@ -653,7 +667,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             return watershedLinePixelValues; /* there is no watershed line; return empty array */
         }
         Iterator<Localizable> it = watershedLinePixelPositions.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Localizable pos = it.next();
             watershedLinePixelValues.add(this.sourceImage.getAt(pos));
         }
@@ -667,7 +681,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
      *
      * @return
      */
-    public List<Localizable> getWatershedLinePixelPositions(){
+    public List<Localizable> getWatershedLinePixelPositions() {
         List<AdvancedComponent<T>> children = this.getChildren();
         if (children.size() <= 1) {
             watershedLinePixelPositions = new ArrayList<>(); /* there exist zero or one child component and hence no watershed line. */
@@ -677,7 +691,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 //            throw new NotImplementedException("children.size() > 2, but this method requires that there can only exist two child-component.");
 //        }
 
-        if(watershedLinePixelPositions == null){
+        if (watershedLinePixelPositions == null) {
             watershedLinePixelPositions = getWatershedLineInternal(this, children);
         }
         return watershedLinePixelPositions;
@@ -750,7 +764,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return cost;
     }
 
-    HashMap<String,Vector2DPolyline> componentFeatures = new HashMap<>();
+    HashMap<String, Vector2DPolyline> componentFeatures = new HashMap<>();
+
     @Override
     public void addComponentFeature(String featureName, Vector2DPolyline feature) {
         componentFeatures.put(featureName, feature);
@@ -767,6 +782,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     MaskInterval componentBorderMask;
+
     public MaskInterval getBorderMask() {
         if (componentBorderMask != null) {
             return componentBorderMask;
@@ -778,6 +794,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     Img<BitType> erodedImg;
+
     public Img<BitType> getCoreMaskImg() {
         if (erodedImg != null) {
             return erodedImg;
@@ -789,7 +806,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     MaskInterval erodedMask;
-    public MaskInterval getErodedMask(){
+
+    public MaskInterval getErodedMask() {
         if (erodedMask != null) {
             return erodedMask;
         }
@@ -798,6 +816,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     MaskInterval dilatedMask;
+
     public MaskInterval getDilatedMask() {
         if (dilatedMask != null) {
             return dilatedMask;
@@ -843,10 +862,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private int calculateHashCode() {
         int result = 777;
         int t = 11;
-        for(Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {
-            Localizable v = (Localizable)var3.next();
+        for (Iterator var3 = pixelList.iterator(); var3.hasNext(); t += 3) {
+            Localizable v = (Localizable) var3.next();
 
-            for(int d = 0; d < v.numDimensions(); ++d) {
+            for (int d = 0; d < v.numDimensions(); ++d) {
                 int p = v.getIntPosition(d);
                 result = result + t * p * p;
             }
@@ -856,5 +875,22 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public AdvancedComponentPojo getSerializableRepresentation() {
         return new AdvancedComponentPojo(getStringId());
+    }
+
+    static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo) {
+        // we can create the region field using this from the AdvancedComponentForest and the creation of regions in the constructor of AdvancedComponent in combination with the label field.
+//        img = ArrayImgs.ints(dims);
+//        labeling = new ImgLabeling<>(img);
+        return new AdvancedComponent<>(pojo);
+//        throw new NotImplementedException();
+//        return
+    }
+
+    private AdvancedComponent(AdvancedComponentPojo pojo) {
+        stringId = pojo.getStringId();
+        sourceImage = null;
+        value = null;
+        componentProperties = null;
+        label = null;
     }
 }

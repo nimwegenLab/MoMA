@@ -155,6 +155,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return parent;
     }
 
+    public Integer getLabel() {
+        return label;
+    }
+
     private AdvancedComponent<T> root;
 
     public AdvancedComponent<T> getRoot() {
@@ -879,7 +883,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     public AdvancedComponentPojo getSerializableRepresentation() {
-        return new AdvancedComponentPojo(getStringId(), getFrameNumber());
+        return new AdvancedComponentPojo(getStringId(), getFrameNumber(), getLabel());
     }
 
     static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
@@ -894,10 +898,10 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private AdvancedComponent(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
+        this.componentProperties = componentProperties;
+        label = pojo.getLabel();
         sourceImage = null;
         value = null;
-        this.componentProperties = componentProperties;
-        label = null;
     }
 
     @Override
@@ -910,7 +914,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         }
         AdvancedComponent<FloatType> other = (AdvancedComponent<FloatType>) o;
         boolean isEqual = getStringId().equals(other.getStringId()) &&
-                getFrameNumber() == other.getFrameNumber();
+                getFrameNumber() == other.getFrameNumber() &&
+                getLabel() == other.getLabel();
         return isEqual;
     }
 }

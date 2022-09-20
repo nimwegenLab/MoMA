@@ -25,23 +25,30 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void getLabel__for_json_serialized_copy__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getSingleComponent();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.getLabel(), componentDeserialized.getLabel());
+    }
+
+    @Test
     public void getFrameNumber__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getSingleComponent();
-        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent.getFrameNumber(), componentDeserialized.getFrameNumber());
     }
 
     @Test
     public void getStringId__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getSingleComponent();
-        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent.getStringId(), componentDeserialized.getStringId());
     }
 
     @Test
     public void equals__for_json_serialized_copy_returns__returns_true() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getSingleComponent();
-        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserialzeThroughJsonString(sutComponent);
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent, componentDeserialized);
     }
 
@@ -59,7 +66,7 @@ public class ComponentForestSerializationTests {
     }
 
     @NotNull
-    private AdvancedComponent<FloatType> serializeAndDeserialzeThroughJsonString(AdvancedComponent<FloatType> sutComponent) {
+    private AdvancedComponent<FloatType> serializeAndDeserializeThroughJsonString(AdvancedComponent<FloatType> sutComponent) {
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         String jsonString = new Gson().toJson(pojo);
         AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);

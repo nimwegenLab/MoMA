@@ -882,21 +882,21 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return new AdvancedComponentPojo(getStringId(), getFrameNumber());
     }
 
-    static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo) {
+    static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
         // we can create the region field using this from the AdvancedComponentForest and the creation of regions in the constructor of AdvancedComponent in combination with the label field.
 //        img = ArrayImgs.ints(dims);
 //        labeling = new ImgLabeling<>(img);
-        return new AdvancedComponent<>(pojo);
+        return new AdvancedComponent<>(pojo, componentProperties);
 //        throw new NotImplementedException();
 //        return
     }
 
-    private AdvancedComponent(AdvancedComponentPojo pojo) {
+    private AdvancedComponent(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
         sourceImage = null;
         value = null;
-        componentProperties = null;
+        this.componentProperties = componentProperties;
         label = null;
     }
 

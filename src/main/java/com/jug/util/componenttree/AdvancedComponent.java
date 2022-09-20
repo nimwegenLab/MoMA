@@ -157,6 +157,20 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     String parentStringId;
 
+    List<String> childStringIds;
+
+    public List<String> getChildrenStringIds() {
+        if (isNull(childStringIds)) {
+            childStringIds = new ArrayList<>();
+            if (!getChildren().isEmpty()) {
+                for (AdvancedComponent<T> child : getChildren()) {
+                    childStringIds.add(child.getStringId());
+                }
+            }
+        }
+        return childStringIds;
+    }
+
     public String getParentStringId() {
         if (isNull(parentStringId)) {
             if (isNull(getParent())) {

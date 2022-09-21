@@ -910,7 +910,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     public AdvancedComponentPojo getSerializableRepresentation() {
-        return new AdvancedComponentPojo(getStringId(), getFrameNumber(), getLabel(), getParentStringId(), getChildrenStringIds(), ((FloatType)value()).getRealDouble());
+        return new AdvancedComponentPojo(getStringId(),
+                getFrameNumber(),
+                getLabel(),
+                getParentStringId(),
+                getChildrenStringIds(),
+                ((FloatType) value()).getRealDouble());
     }
 
     static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {

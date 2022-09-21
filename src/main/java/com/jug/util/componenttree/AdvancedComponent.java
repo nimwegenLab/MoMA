@@ -959,7 +959,20 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 getLabel() == other.getLabel() &&
                 getParentStringId().equals(other.getParentStringId()) &&
                 value().equals(other.value()) &&
-                hashCode() == other.hashCode();
+                hashCode() == other.hashCode() &&
+                pixelListIsEqual(other.pixelList);
         return isEqual;
+    }
+
+    private boolean pixelListIsEqual(List<LocalizableImpl> otherPixelList) {
+        if (pixelList.size() != otherPixelList.size()) {
+            return false;
+        }
+        for(int ind=0; ind<pixelList.size(); ind++){
+            if(pixelList.get(ind).equals(otherPixelList.get(ind))){
+                return false;
+            }
+        }
+        return true;
     }
 }

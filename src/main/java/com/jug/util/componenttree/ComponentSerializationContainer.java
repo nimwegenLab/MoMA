@@ -10,4 +10,8 @@ public class ComponentSerializationContainer {
         version = "0.1.0";
         this.components = components;
     }
+
+    public List<AdvancedComponentPojo> getAdvancedComponentPojos() {
+        return components;
+    }
 }

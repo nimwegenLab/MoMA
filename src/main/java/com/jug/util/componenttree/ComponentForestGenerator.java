@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * Generates a tree based on the MSER algorithm. Filters the components.
  */
-public class ComponentForestGenerator {
+public class ComponentForestGenerator implements IComponentForestGenerator {
     private IComponentForestGeneratorConfiguration configuration;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private ComponentProperties componentPropertiesCalculator;

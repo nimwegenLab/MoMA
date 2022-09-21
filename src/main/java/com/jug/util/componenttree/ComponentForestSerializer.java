@@ -1,6 +1,8 @@
 package com.jug.util.componenttree;
 
 import com.google.gson.Gson;
+import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang.NotImplementedException;
 

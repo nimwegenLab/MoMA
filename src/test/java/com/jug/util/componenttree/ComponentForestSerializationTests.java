@@ -31,8 +31,9 @@ public class ComponentForestSerializationTests {
     @Test
     public void isequal__for_json_serialized_copy_of_list_of_component_trees__is_true() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 5);
-        ComponentForestSerializer sut = new ComponentForestSerializer();
-        String jsonString = sut.serializeToJson(componentForests);
+        ComponentForestSerializer serializer = new ComponentForestSerializer();
+        String jsonString = serializer.serializeToJson(componentForests);
+        ComponentForestDeserializer deserializer = new ComponentForestDeserializer(jsonString);
         throw new NotImplementedError();
 //        Path jsonFile = Files.createTempFile("", ".json");
 

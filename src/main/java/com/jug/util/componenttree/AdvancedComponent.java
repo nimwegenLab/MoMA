@@ -36,7 +36,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Pixels in the component.
      */
-    private final List<Localizable> pixelList = new ArrayList<>();
+    private final List<LocalizableImpl> pixelList;
     private final RandomAccessibleInterval<T> sourceImage;
     /**
      * Maximum threshold value of the connected component.
@@ -70,6 +70,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         this.label = label;
         this.frameNumber = frameNumber;
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
+        pixelList = new ArrayList<>();
         for (Localizable val : wrappedComponent) {
             pixelList.add(new LocalizableImpl(val)); /* MM-20220920: We need to create copies of the Localizable to added to pixelList, because it is modified in the loop */
             accessor.setPosition(val);
@@ -261,7 +262,11 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     @Override
     public Iterator<Localizable> iterator() {
-        return pixelList.iterator();
+        List<Localizable> tmp = new ArrayList<>();
+        for (Localizable loc : pixelList) {
+            tmp.add(loc);
+        }
+        return tmp.iterator();
     }
 
     @Override
@@ -275,7 +280,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         LabelRegionCursor c = region.cursor();
         while (c.hasNext()) {
             c.fwd();
-            pixelList.add(new Point(c));
+            pixelList.add(new LocalizableImpl(c));
         }
     }
 
@@ -915,7 +920,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 getLabel(),
                 getParentStringId(),
                 getChildrenStringIds(),
-                ((FloatType) value()).getRealDouble());
+                ((FloatType) value()).getRealDouble(),
+                pixelList);
     }
 
     static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
@@ -935,6 +941,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         label = pojo.getLabel();
         childStringIds = pojo.getChildrenStringIds();
         value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
+        pixelList = pojo.getPixelList();
         sourceImage = null;
     }
 
@@ -951,7 +958,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 getFrameNumber() == other.getFrameNumber() &&
                 getLabel() == other.getLabel() &&
                 getParentStringId().equals(other.getParentStringId()) &&
-                value().equals(other.value());
+                value().equals(other.value()) &&
+                hashCode() == other.hashCode();
         return isEqual;
     }
 }

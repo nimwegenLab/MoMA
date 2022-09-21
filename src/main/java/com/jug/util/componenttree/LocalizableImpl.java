@@ -8,7 +8,7 @@ public class LocalizableImpl implements Localizable {
 
     public LocalizableImpl(Localizable localizable) {
         if (localizable.numDimensions() != 2) {
-            throw new RuntimeException("Input localizable must be two-dimensional");
+            throw new RuntimeException("Input localizable must be two-dimensional.");
         }
         numDimensions = localizable.numDimensions();
         position = new int[]{localizable.getIntPosition(0), localizable.getIntPosition(1)};
@@ -16,6 +16,9 @@ public class LocalizableImpl implements Localizable {
 
     @Override
     public long getLongPosition(int i) {
+        if (i > 2) {
+            throw new RuntimeException("LocalizableImpl is two-dimensional.");
+        }
         return position[i];
     }
 

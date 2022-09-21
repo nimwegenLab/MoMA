@@ -28,6 +28,20 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void hashCode__for_json_serialized_copy__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(sutComponent.hashCode(), componentDeserialized.hashCode());
+    }
+
+    @Test
+    public void hashCode__for_json_serialized_copy__is_not_equal_to_default_value_of_777() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertNotEquals(777, componentDeserialized.hashCode());
+    }
+
+    @Test
     public void value_field__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);

@@ -14,6 +14,11 @@ public class LocalizableImpl implements Localizable {
         position = new int[]{localizable.getIntPosition(0), localizable.getIntPosition(1)};
     }
 
+    public LocalizableImpl(int xCoordinate, int yCordinate){
+        numDimensions = 2;
+        position = new int[]{xCoordinate, yCordinate};
+    }
+
     @Override
     public long getLongPosition(int i) {
         if (i > 2) {

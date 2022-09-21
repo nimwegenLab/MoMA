@@ -1,7 +1,9 @@
 package com.jug.util.componenttree;
 
 import net.imglib2.Localizable;
+import org.apache.commons.lang.NotImplementedException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdvancedComponentPojo {
@@ -11,7 +13,8 @@ public class AdvancedComponentPojo {
     private final String parentStringId;
     private final List<String> childrenStringIds;
     private final double value;
-    private final List<LocalizableImpl> pixelList;
+    private final int[] xCoordinates;
+    private final int[] yCoordinates;
 
     public AdvancedComponentPojo(String stringId,
                                  int frameNumber,
@@ -26,7 +29,15 @@ public class AdvancedComponentPojo {
         this.parentStringId = parentStringId;
         this.childrenStringIds = childrenStringIds;
         this.value = value;
-        this.pixelList = pixelList;
+        this.xCoordinates = new int[pixelList.size()];
+        this.yCoordinates = new int[pixelList.size()];
+
+        int coordinateIndex = 0;
+        for(Localizable loc : pixelList){
+            this.xCoordinates[coordinateIndex] = loc.getIntPosition(0);
+            this.yCoordinates[coordinateIndex] = loc.getIntPosition(1);
+            coordinateIndex++;
+        }
     }
 
     public String getStringId() {
@@ -54,6 +65,10 @@ public class AdvancedComponentPojo {
     }
 
     public List<LocalizableImpl> getPixelList() {
+        List<LocalizableImpl> pixelList = new ArrayList<>();
+        for (int coordInd = 0; coordInd < xCoordinates.length; coordInd++) {
+            pixelList.add(new LocalizableImpl(xCoordinates[coordInd], yCoordinates[coordInd]));
+        }
         return pixelList;
     }
 }

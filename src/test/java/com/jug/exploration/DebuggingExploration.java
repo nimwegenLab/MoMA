@@ -49,7 +49,7 @@ public class DebuggingExploration {
         Path mmPropertiesPath = Paths.get(datasets_base_path, datasetSubPath, "mm.properties");
         String analysisName = "20220919-fix-exception-when-hovering-components";
         Integer tmin = null;
-        Integer tmax = 2;
+        Integer tmax = 20;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", mmPropertiesPath.toString(), "-analysis", analysisName});
     }
 

@@ -8,13 +8,15 @@ public class AdvancedComponentPojo {
     private int label;
     private String parentStringId;
     private List<String> childrenStringIds;
+    private double value;
 
-    public AdvancedComponentPojo(String stringId, int frameNumber, int label, String parentStringId, List<String> childrenStringIds) {
+    public AdvancedComponentPojo(String stringId, int frameNumber, int label, String parentStringId, List<String> childrenStringIds, double value) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
         this.parentStringId = parentStringId;
         this.childrenStringIds = childrenStringIds;
+        this.value = value;
     }
 
     public String getStringId() {
@@ -35,5 +37,9 @@ public class AdvancedComponentPojo {
 
     public List<String> getChildrenStringIds() {
         return childrenStringIds;
+    }
+
+    public double getValue() {
+        return value;
     }
 }

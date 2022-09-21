@@ -910,7 +910,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     public AdvancedComponentPojo getSerializableRepresentation() {
-        return new AdvancedComponentPojo(getStringId(), getFrameNumber(), getLabel(), getParentStringId(), getChildrenStringIds());
+        return new AdvancedComponentPojo(getStringId(), getFrameNumber(), getLabel(), getParentStringId(), getChildrenStringIds(), ((FloatType)value()).getRealDouble());
     }
 
     static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
@@ -929,8 +929,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         parentStringId = pojo.getParentStringId();
         label = pojo.getLabel();
         childStringIds = pojo.getChildrenStringIds();
+        value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
         sourceImage = null;
-        value = null;
     }
 
     @Override

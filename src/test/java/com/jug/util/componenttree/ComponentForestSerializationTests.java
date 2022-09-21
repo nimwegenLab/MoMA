@@ -28,6 +28,14 @@ public class ComponentForestSerializationTests {
 //    }
 
     @Test
+    public void value_field__for_json_serialized_copy__is_equal() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertNotEquals(0.0, sutComponent.value().getRealDouble()); /* make sure value is not 0.0 to make the test more expressive, because it could be that in future changes the value is set to 0 by default */
+        Assert.assertEquals(sutComponent.value(), componentDeserialized.value());
+    }
+
+    @Test
     public void getChildStringIds__for_json_serialized_copy_of_leaf_component_node__returns_empty_list() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);

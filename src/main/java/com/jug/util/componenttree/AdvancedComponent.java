@@ -945,7 +945,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         boolean isEqual = getStringId().equals(other.getStringId()) &&
                 getFrameNumber() == other.getFrameNumber() &&
                 getLabel() == other.getLabel() &&
-                getParentStringId().equals(other.getParentStringId());
+                getParentStringId().equals(other.getParentStringId()) &&
+                value().equals(other.value());
         return isEqual;
     }
 }

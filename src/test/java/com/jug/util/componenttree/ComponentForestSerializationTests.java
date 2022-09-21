@@ -6,6 +6,7 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+import scala.NotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +27,22 @@ public class ComponentForestSerializationTests {
 //    public static void main(String... args) throws IOException, InterruptedException {
 //        new ComponentForestSerializationTests().serializing_and_deserializing_component_yields_equal_component();
 //    }
+
+    @Test
+    public void isequal__for_json_serialized_copy_of_list_of_component_trees__is_true() throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 5);
+        ComponentForestSerializer sut = new ComponentForestSerializer();
+        String jsonString = sut.serializeToJson(componentForests);
+        throw new NotImplementedError();
+//        Path jsonFile = Files.createTempFile("", ".json");
+
+//        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
+//            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
+//        }
+//        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 2);
+//        String jsonString = new Gson().toJson(componentForests);
+//        AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
+    }
 
     @Test
     public void hashCode__for_json_serialized_copy__is_equal() throws IOException {
@@ -139,19 +156,6 @@ public class ComponentForestSerializationTests {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
         Assert.assertEquals(sutComponent, componentDeserialized);
-    }
-
-    public void testComponentTreeSerialization() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 5);
-
-        ComponentForestSerializer sut = new ComponentForestSerializer();
-
-//        Path jsonFile = Files.createTempFile("", ".json");
-        String jsonString = sut.serializeToDisk(componentForests);
-
-//        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
-//            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
-//        }
     }
 
     @NotNull

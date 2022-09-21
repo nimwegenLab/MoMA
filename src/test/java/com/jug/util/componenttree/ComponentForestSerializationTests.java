@@ -128,6 +128,13 @@ public class ComponentForestSerializationTests {
     }
 
     @Test
+    public void equals__for_two_different_components__returns_false() throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
+        AdvancedComponent<FloatType> leafComponent = getLeafComponentNode();
+        Assert.assertNotEquals(sutComponent, leafComponent);
+    }
+
+    @Test
     public void equals__for_json_serialized_copy_returns__returns_true() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);

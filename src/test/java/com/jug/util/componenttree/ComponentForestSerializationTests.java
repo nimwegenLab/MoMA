@@ -46,7 +46,6 @@ public class ComponentForestSerializationTests {
         ComponentForest<AdvancedComponent<FloatType>> componentForestDeserialized = deserializer.buildComponentForest(ImgView.wrap(sourceImage), frameNumber, Float.MIN_VALUE); /* the threshold-value is not used for the deserializing, because we are not thresholding anything; hence we set it to Float.MIN_VALUE */
 
         Assert.assertEquals(componentForestToSerialize, componentForestDeserialized);
-        throw new NotImplementedError();
 //        Path jsonFile = Files.createTempFile("", ".json");
 
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {

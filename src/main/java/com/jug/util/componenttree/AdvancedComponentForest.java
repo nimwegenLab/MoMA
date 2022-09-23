@@ -16,6 +16,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static java.util.Objects.isNull;
+
 /**
  * This class is a new version of {@link Component}. The goal is for all other code to depend on this class and remove
  * all dependencies for library implemenations of {@link Component} (such as e.g. MSER, FilteredComponent, etc.).
@@ -50,17 +52,19 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         img = ArrayImgs.ints(dims);
         labeling = new ImgLabeling<>(img);
         CreateTree(componentForest);
-        SortChildrenByPosition();
-        sortRootNodes();
         writeRootNodesToAllNodes();
+        sortRootNodes();
+        sortAllNodes();
+        SortChildrenByPosition();
     }
 
     public AdvancedComponentForest(List<AdvancedComponent<T>> rootComponents) {
         roots = rootComponents;
         recursivelyAddNodes(roots);
-        SortChildrenByPosition();
-        sortRootNodes();
         writeRootNodesToAllNodes();
+        sortRootNodes();
+        sortAllNodes();
+        SortChildrenByPosition();
     }
 
     void recursivelyAddNodes(List<AdvancedComponent<T>> components) {
@@ -79,6 +83,11 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
     private void sortRootNodes() {
         ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
         roots.sort(positionComparator);
+    }
+
+    private void sortAllNodes() {
+        ComponentPositionComparator positionComparator = new ComponentPositionComparator(1);
+        nodes.sort(positionComparator);
     }
 
     private void SortChildrenByPosition() {
@@ -157,6 +166,19 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
 
     public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (!(other instanceof AdvancedComponentForest)) {
+            return false;
+        }
+        boolean rootEqual = roots.equals(((AdvancedComponentForest<?, ?>) other).roots);
+        boolean nodesEqual = nodes.equals(((AdvancedComponentForest<?, ?>) other).nodes);
+        return rootEqual && nodesEqual;
     }
 }
 

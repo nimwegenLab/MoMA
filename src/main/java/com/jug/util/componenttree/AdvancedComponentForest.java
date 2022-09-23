@@ -53,17 +53,19 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         img = ArrayImgs.ints(dims);
         labeling = new ImgLabeling<>(img);
         CreateTree(componentForest);
-        SortChildrenByPosition();
-        sortRootNodes();
         writeRootNodesToAllNodes();
+        sortRootNodes();
+        sortAllNodes();
+        SortChildrenByPosition();
     }
 
     public AdvancedComponentForest(List<AdvancedComponent<T>> rootComponents) {
         roots = rootComponents;
         recursivelyAddNodes(roots);
-        SortChildrenByPosition();
-        sortRootNodes();
         writeRootNodesToAllNodes();
+        sortRootNodes();
+        sortAllNodes();
+        SortChildrenByPosition();
     }
 
     void recursivelyAddNodes(List<AdvancedComponent<T>> components) {

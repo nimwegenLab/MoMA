@@ -5,6 +5,7 @@ import com.jug.util.TestUtils;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.ImgView;
+import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -13,9 +14,7 @@ import scala.NotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -181,26 +180,35 @@ public class ComponentForestSerializationTests {
 
     private AdvancedComponent<FloatType> getLeafComponentNode() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
-        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(17);
-        Assert.assertTrue(sutComponent.getChildren().isEmpty());
-        Assert.assertFalse(isNull(sutComponent.getParent()));
-        return sutComponent;
+        AdvancedComponent<FloatType> leafComponent = getComponentWithId("HypT5T366B389L50R59H-219465477", componentForests.get(0).getAllComponents());
+        Assert.assertTrue(leafComponent.getChildren().isEmpty());
+        Assert.assertFalse(isNull(leafComponent.getParent()));
+        return leafComponent;
     }
 
     private AdvancedComponent<FloatType> getInternalComponentNode() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
-        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(12);
-        Assert.assertFalse(sutComponent.getChildren().isEmpty());
-        Assert.assertFalse(isNull(sutComponent.getParent()));
-        return sutComponent;
+        AdvancedComponent<FloatType> internalComponent = getComponentWithId("HypT5T280B354L47R59H1674282099", componentForests.get(0).getAllComponents());
+        Assert.assertFalse(internalComponent.getChildren().isEmpty());
+        Assert.assertFalse(isNull(internalComponent.getParent()));
+        return internalComponent;
     }
 
     private AdvancedComponent<FloatType> getRootComponentNodeWithChildren() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
-        AdvancedComponent<FloatType> sutComponent = componentForests.get(0).getAllComponents().get(2);
-        Assert.assertTrue(isNull(sutComponent.getParent()));
-        Assert.assertFalse(sutComponent.getChildren().isEmpty());
-        return sutComponent;
+        AdvancedComponent<FloatType> rootComponent = getComponentWithId("HypT5T420B458L49R60H-1964905642", componentForests.get(0).getAllComponents());
+        Assert.assertTrue(isNull(rootComponent.getParent()));
+        Assert.assertFalse(rootComponent.getChildren().isEmpty());
+        return rootComponent;
+    }
+
+    private static <T extends Type<T>> AdvancedComponent<T> getComponentWithId(String targetId, List<AdvancedComponent<T>> allComponents) {
+        for (AdvancedComponent<T> component : allComponents) {
+            if (component.getStringId().equals(targetId)) {
+                return component;
+            }
+        }
+        throw new RuntimeException("component not found with ID: " + targetId);
     }
 
     @NotNull

@@ -14,45 +14,75 @@ import java.util.Map;
 import static java.util.Objects.isNull;
 
 public class ComponentForestDeserializer implements IComponentForestGenerator {
+    private ComponentProperties componentProperties;
     private String jsonString;
 
-    public ComponentForestDeserializer(String jsonString) {
+    public ComponentForestDeserializer(ComponentProperties componentProperties, String jsonString) {
+        this.componentProperties = componentProperties;
         this.jsonString = jsonString;
     }
 
-
-    private Map<Integer, List<AdvancedComponentPojo>> pojoMap;
+    private Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap; /* this maps the frame-index to a Map of string-id to component */
 
     @Override
     public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
-        if(isNull(pojoMap)){
-            pojoMap = buildPojoMap();
+        if (isNull(pojoMap)) {
+            pojoMap = buildPojoMap(jsonString);
         }
-        throw new NotImplementedException();
+        Map<String, AdvancedComponentPojo> pojosInFrame = pojoMap.get(frameIndex);
+        return buildForest(pojosInFrame, raiFkt);
     }
 
-    private Map<Integer, List<AdvancedComponentPojo>> buildPojoMap() {
+    public ComponentForest<AdvancedComponent<FloatType>> buildForest(Map<String, AdvancedComponentPojo> pojosInFrame, Img<FloatType> raiFkt) {
+//        List<AdvancedComponent<?>> allComponents = new ArrayList<>();
+//        for (AdvancedComponentPojo pojo : pojosInFrame) {
+//            allComponents.add(AdvancedComponent.createFromPojo(pojo, componentProperties));
+//        }
+        List<AdvancedComponent<FloatType>> roots = new ArrayList<>();
+        for (AdvancedComponentPojo pojo : pojosInFrame.values()) {
+            if (pojo.getParentStringId().equals("NA")) {
+                AdvancedComponent<FloatType> rootComponent = AdvancedComponent.createFromPojo(pojo, componentProperties);
+                roots.add(rootComponent);
+            }
+        }
+        for (AdvancedComponent<FloatType> root : roots) {
+            recursivelyBuildTree(root, pojosInFrame);
+        }
+        return new AdvancedComponentForest<>(roots);
+//        throw new NotImplementedException();
+//        return new AdvancedComponentForest(roots);
+    }
+
+    private void recursivelyBuildTree(AdvancedComponent<FloatType> component, Map<String, AdvancedComponentPojo> pojosInFrame) {
+        if (component.getChildrenStringIds().isEmpty()) {
+            return;
+        }
+        for (String id : component.getChildrenStringIds()) {
+            AdvancedComponent<FloatType> child = AdvancedComponent.createFromPojo(pojosInFrame.get(id), componentProperties);
+            child.setParent(component);
+            component.addChild(child);
+//            System.out.println("component.getNodeLevel(): " + component.getNodeLevel());
+            recursivelyBuildTree(child, pojosInFrame);
+        }
+    }
+
+    public static Map<Integer, Map<String, AdvancedComponentPojo>> buildPojoMap(String jsonString) {
         List<AdvancedComponentPojo> pojoList = deserializeFromJson(jsonString);
-        pojoMap = new HashMap<>();
+        Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap = new HashMap<>();
         for (AdvancedComponentPojo pojo : pojoList) {
             int frame = pojo.getFrameNumber();
-            List<AdvancedComponentPojo> currentList = pojoMap.get(frame);
-            if (isNull(currentList)) {
-                currentList = new ArrayList<>();
-                pojoMap.put(frame, currentList);
+            Map<String, AdvancedComponentPojo> currentMap = pojoMap.get(frame);
+            if (isNull(currentMap)) {
+                currentMap = new HashMap<>();
+                pojoMap.put(frame, currentMap);
             }
-            currentList.add(pojo);
+            currentMap.put(pojo.getStringId(), pojo);
         }
-        throw new NotImplementedException();
+        return pojoMap;
     }
 
-    public List<AdvancedComponentPojo> deserializeFromJson(String jsonString) {
+    public static List<AdvancedComponentPojo> deserializeFromJson(String jsonString) {
         ComponentSerializationContainer componentContainer = new Gson().fromJson(jsonString, ComponentSerializationContainer.class);
         return componentContainer.getAdvancedComponentPojos();
-    }
-
-    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> rebuildComponentTrees() {
-        ArrayList<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
-        throw new NotImplementedException();
     }
 }

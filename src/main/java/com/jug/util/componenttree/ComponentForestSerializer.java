@@ -29,7 +29,8 @@ public class ComponentForestSerializer {
     private List<AdvancedComponentPojo> getSerializableRepresentations(List<AdvancedComponent<FloatType>> components){
         List<AdvancedComponentPojo> advancedComponentPojos = new ArrayList<>();
         for(AdvancedComponent<FloatType> component : components){
-            advancedComponentPojos.add(component.getSerializableRepresentation());
+            AdvancedComponentPojo tmp = component.getSerializableRepresentation();
+            advancedComponentPojos.add(tmp);
         }
         return advancedComponentPojos;
     }

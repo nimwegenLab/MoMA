@@ -8,6 +8,7 @@ import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
+import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -27,18 +28,19 @@ import java.util.Set;
 public final class AdvancedComponentForest<T extends Type<T>, C extends Component<T, C>>
         implements
         ComponentForest<AdvancedComponent<T>> {
-    final ImgLabeling<Integer, IntType> labeling;
+    private ImgLabeling<Integer, IntType> labeling;
     private final List<AdvancedComponent<T>> nodes = new ArrayList<>();
-    private final List<AdvancedComponent<T>> roots = new ArrayList<>();
-    private final RandomAccessibleInterval<T> sourceImage;
-    private final Img<IntType> img;
+    private final List<AdvancedComponent<T>> roots;
+    private RandomAccessibleInterval<T> sourceImage;
+    private Img<IntType> img;
     Integer label = 1;
     private int frame;
-    private final IComponentTester<T, C> tester;
+    private IComponentTester<T, C> tester;
     private ComponentProperties componentPropertiesCalculator;
 
 
     public AdvancedComponentForest(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
+        roots = new ArrayList<>();
         this.sourceImage = sourceImage;
         this.frame = frame;
         this.tester = tester;
@@ -51,6 +53,21 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         SortChildrenByPosition();
         sortRootNodes();
         writeRootNodesToAllNodes();
+    }
+
+    public AdvancedComponentForest(List<AdvancedComponent<T>> rootComponents) {
+        roots = rootComponents;
+        recursivelyAddNodes(roots);
+        SortChildrenByPosition();
+        sortRootNodes();
+        writeRootNodesToAllNodes();
+    }
+
+    void recursivelyAddNodes(List<AdvancedComponent<T>> components) {
+        for (AdvancedComponent<T> component : components) {
+            nodes.add(component);
+            recursivelyAddNodes(component.getChildren());
+        }
     }
 
     private void writeRootNodesToAllNodes() {

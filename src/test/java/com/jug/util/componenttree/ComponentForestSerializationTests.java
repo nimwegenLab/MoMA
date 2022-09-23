@@ -33,7 +33,7 @@ public class ComponentForestSerializationTests {
 
     @Test
     public void isequal__for_json_serialized_copy_of_list_of_component_trees__is_true() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(3, 13);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 1);
         ComponentForestSerializer serializer = new ComponentForestSerializer();
         String jsonString = serializer.serializeToJson(componentForests);
 
@@ -42,7 +42,7 @@ public class ComponentForestSerializationTests {
         RandomAccessibleInterval<FloatType> sourceImage = randomComponent.getSourceImage();
         int frameNumber = randomComponent.getFrameNumber();
 
-        ComponentForestDeserializer deserializer = new ComponentForestDeserializer(jsonString);
+        ComponentForestDeserializer deserializer = new ComponentForestDeserializer(testUtils.getComponentProperties(), jsonString);
         ComponentForest<AdvancedComponent<FloatType>> componentForestDeserialized = deserializer.buildComponentForest(ImgView.wrap(sourceImage), frameNumber, Float.MIN_VALUE); /* the threshold-value is not used for the deserializing, because we are not thresholding anything; hence we set it to Float.MIN_VALUE */
 
         Assert.assertEquals(componentForestToSerialize, componentForestDeserialized);

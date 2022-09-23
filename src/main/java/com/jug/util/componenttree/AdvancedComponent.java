@@ -924,16 +924,16 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 pixelList);
     }
 
-    static public AdvancedComponent<FloatType> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
+    public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties, RandomAccessibleInterval<T> sourceImage) {
         // we can create the region field using this from the AdvancedComponentForest and the creation of regions in the constructor of AdvancedComponent in combination with the label field.
 //        img = ArrayImgs.ints(dims);
 //        labeling = new ImgLabeling<>(img);
-        return new AdvancedComponent<>(pojo, componentProperties);
+        return new AdvancedComponent<>(pojo, componentProperties, sourceImage);
 //        throw new NotImplementedException();
 //        return
     }
 
-    private AdvancedComponent(AdvancedComponentPojo pojo, ComponentProperties componentProperties) {
+    private AdvancedComponent(AdvancedComponentPojo pojo, ComponentProperties componentProperties, RandomAccessibleInterval<T> sourceImage) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
         this.componentProperties = componentProperties;
@@ -942,7 +942,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         childStringIds = pojo.getChildrenStringIds();
         value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
         pixelList = pojo.getPixelList();
-        sourceImage = null;
+        this.sourceImage = sourceImage;
     }
 
     @Override

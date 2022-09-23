@@ -172,9 +172,10 @@ public class ComponentForestSerializationTests {
     @NotNull
     private AdvancedComponent<FloatType> serializeAndDeserializeThroughJsonString(AdvancedComponent<FloatType> sutComponent) {
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
+        RandomAccessibleInterval<FloatType> sourceImage = sutComponent.getSourceImage();
         String jsonString = new Gson().toJson(pojo);
         AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
-        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new, testUtils.getComponentProperties());
+        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new, testUtils.getComponentProperties(), sourceImage);
         return componentDeserialized;
     }
 

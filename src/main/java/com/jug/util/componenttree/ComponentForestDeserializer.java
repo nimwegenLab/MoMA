@@ -41,28 +41,28 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>();
         for (AdvancedComponentPojo pojo : pojosInFrame.values()) {
             if (pojo.getParentStringId().equals("NA")) {
-                AdvancedComponent<FloatType> rootComponent = AdvancedComponent.createFromPojo(pojo, componentProperties);
+                AdvancedComponent<FloatType> rootComponent = AdvancedComponent.createFromPojo(pojo, componentProperties, raiFkt);
                 roots.add(rootComponent);
             }
         }
         for (AdvancedComponent<FloatType> root : roots) {
-            recursivelyBuildTree(root, pojosInFrame);
+            recursivelyBuildTree(root, pojosInFrame, raiFkt);
         }
         return new AdvancedComponentForest<>(roots);
 //        throw new NotImplementedException();
 //        return new AdvancedComponentForest(roots);
     }
 
-    private void recursivelyBuildTree(AdvancedComponent<FloatType> component, Map<String, AdvancedComponentPojo> pojosInFrame) {
+    private void recursivelyBuildTree(AdvancedComponent<FloatType> component, Map<String, AdvancedComponentPojo> pojosInFrame, Img<FloatType> raiFkt) {
         if (component.getChildrenStringIds().isEmpty()) {
             return;
         }
         for (String id : component.getChildrenStringIds()) {
-            AdvancedComponent<FloatType> child = AdvancedComponent.createFromPojo(pojosInFrame.get(id), componentProperties);
+            AdvancedComponent<FloatType> child = AdvancedComponent.createFromPojo(pojosInFrame.get(id), componentProperties, raiFkt);
             child.setParent(component);
             component.addChild(child);
 //            System.out.println("component.getNodeLevel(): " + component.getNodeLevel());
-            recursivelyBuildTree(child, pojosInFrame);
+            recursivelyBuildTree(child, pojosInFrame, raiFkt);
         }
     }
 

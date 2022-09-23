@@ -61,7 +61,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     /**
      * @return the componentTree
      */
-    public ComponentForest<C> getComponentForest() { // MM-2019-06-10: This should probably be called getComponentForest?!
+    public ComponentForest<C> getComponentForest() {
         return componentForest;
     }
 

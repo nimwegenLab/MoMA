@@ -227,7 +227,21 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
             file.createNewFile();
             return file;
         } catch (IOException e) {
-            throw new RuntimeException("Could not create log-file: " + file.getAbsolutePath(), e);
+            throw new RuntimeException("Could not create file: " + file.getAbsolutePath(), e);
+        }
+    }
+
+    @Override
+    public File getComponentTreeJsonFile() {
+        File file = Paths.get(getTrackingDataOutputPath().toString(), "component_trees.json").toFile();
+        if(file.exists()){
+            return file;
+        }
+        try {
+            file.createNewFile();
+            return file;
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create file: " + file.getAbsolutePath(), e);
         }
     }
 

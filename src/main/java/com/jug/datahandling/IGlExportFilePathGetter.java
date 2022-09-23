@@ -45,4 +45,6 @@ public interface IGlExportFilePathGetter {
     File getHtmlIndexFilePath();
 
     File getHtmlImageDirectoryPath();
+
+    File getComponentTreeJsonFile();
 }

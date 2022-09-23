@@ -232,6 +232,10 @@ public class PseudoDic {
         return new IlpModelExporter();
     }
 
+    public ComponentForestExporter getComponentTreeExporter() {
+        return new ComponentForestExporter();
+    }
+
     private GroundTruthFramesExporter groundTruthFramesExporter;
 
     public GroundTruthFramesExporter getGroundTruthFramesExporter() {

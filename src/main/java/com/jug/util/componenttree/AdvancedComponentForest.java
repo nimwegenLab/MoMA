@@ -4,6 +4,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.Type;
@@ -178,6 +179,10 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         }
         boolean rootEqual = roots.equals(((AdvancedComponentForest<?, ?>) other).roots);
         boolean nodesEqual = nodes.equals(((AdvancedComponentForest<?, ?>) other).nodes);
+//        Img<T> sourceImg1 = ImgView.wrap(sourceImage);
+//        Img<T> sourceImg2 = ImgView.wrap(sourceImage);
+//        boolean sourceImageEqual2 = sourceImg1.equals(sourceImg2);
+//        boolean sourceImageEqual = sourceImage.equals(((AdvancedComponentForest<?, ?>) other).sourceImage);
         return rootEqual && nodesEqual;
     }
 }

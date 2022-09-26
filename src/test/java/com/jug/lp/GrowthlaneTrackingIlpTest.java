@@ -52,8 +52,8 @@ public class GrowthlaneTrackingIlpTest {
 
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();

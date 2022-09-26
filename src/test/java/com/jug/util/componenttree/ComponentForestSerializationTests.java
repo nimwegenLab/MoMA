@@ -218,7 +218,7 @@ public class ComponentForestSerializationTests {
 
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
         for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
-            componentForests.add((AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
+            componentForests.add(testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
         }
         return componentForests;
     }

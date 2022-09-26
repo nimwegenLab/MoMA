@@ -180,8 +180,7 @@ public class GrowthlaneTrackingILP {
 
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest =
-                    (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(t).getComponentForest();
+            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = gl.getFrames().get(t).getComponentForest();
             allComponents.addAll(componentForest.getAllComponents());
         }
     }
@@ -517,10 +516,8 @@ public class GrowthlaneTrackingILP {
      */
     private void createAssignmentsForTimeStep(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
-                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
-                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest = gl.getFrames().get(sourceTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest = gl.getFrames().get(targetTimeStep).getComponentForest();
 
         addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);

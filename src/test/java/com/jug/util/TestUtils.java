@@ -191,10 +191,10 @@ public class TestUtils {
     }
 
 
-    public ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProvider(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
         return tree;
     }
 

@@ -3,7 +3,7 @@ package com.jug;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentForestGenerator;
+import com.jug.util.componenttree.IComponentForestGenerator;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -19,7 +19,7 @@ import net.imglib2.type.numeric.real.FloatType;
 public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<FloatType>> {
 
     private int frameIndex;
-    private ComponentForestGenerator componentForestGenerator;
+    private IComponentForestGenerator componentForestGenerator;
     private ConfigurationManager configurationManager;
     private IImageProvider imageProvider;
 
@@ -27,7 +27,7 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
         return frameIndex;
     }
 
-    public GrowthlaneFrame(int frameIndex, ComponentForestGenerator componentForestGenerator, ConfigurationManager configurationManager, IImageProvider imageProvider) {
+    public GrowthlaneFrame(int frameIndex, IComponentForestGenerator componentForestGenerator, ConfigurationManager configurationManager, IImageProvider imageProvider) {
         this.frameIndex = frameIndex;
         this.componentForestGenerator = componentForestGenerator;
         this.configurationManager = configurationManager;

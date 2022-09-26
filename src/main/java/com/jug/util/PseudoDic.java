@@ -49,7 +49,7 @@ public class PseudoDic {
     private ConfigurationManager configurationManager;
     private MoMA momaInstance;
     private MixtureModelFit mixtureModelFit;
-    private ComponentForestGenerator componentForestGenerator;
+    private IComponentForestGenerator componentForestGenerator;
     private Imglib2Utils imglib2utils;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private UnetProcessor unetProcessor;
@@ -137,7 +137,7 @@ public class PseudoDic {
         return momaInstance;
     }
 
-    public ComponentForestGenerator getComponentForestGenerator() {
+    public IComponentForestGenerator getComponentForestGenerator() {
         if (componentForestGenerator == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
         }

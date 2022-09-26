@@ -4,7 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IDialogManager;
-import com.jug.util.componenttree.ComponentForestGenerator;
+import com.jug.util.componenttree.IComponentForestGenerator;
 import com.jug.util.componenttree.UnetProcessor;
 import ij.IJ;
 import ij.ImagePlus;
@@ -29,14 +29,14 @@ public class GlDataLoader {
     private UnetProcessor unetProcessor;
     private ConfigurationManager configurationManager;
     private IImageProvider imageProvider;
-    private ComponentForestGenerator componentForestGenerator;
+    private IComponentForestGenerator componentForestGenerator;
     private IDialogManager dialogManager;
     private GlFileManager glFileManager;
 
     public GlDataLoader(UnetProcessor unetProcessor,
                         ConfigurationManager configurationManager,
                         IImageProvider imageProvider,
-                        ComponentForestGenerator componentForestGenerator,
+                        IComponentForestGenerator componentForestGenerator,
                         IDialogManager dialogManager,
                         GlFileManager glFileManager) {
         this.unetProcessor = unetProcessor;

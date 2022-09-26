@@ -50,6 +50,7 @@ public class ComponentForestProvider implements IComponentForestGenerator {
         if (!jsonFile.exists()) {
             throw new RuntimeException("File does not exist: " + jsonFile);
         }
+        currentJsonFile = jsonFile;
         String jsonString = readFileAsString(jsonFile);
         return new ComponentForestDeserializer(componentProperties, jsonString);
     }
@@ -57,16 +58,11 @@ public class ComponentForestProvider implements IComponentForestGenerator {
     private File currentJsonFile;
 
     private boolean jsonFileIsLoaded(File jsonFileToLoad) {
-        if (isNull(currentJsonFile)) {
-            return false;
-        }
-        boolean isLoaded = currentJsonFile.equals(jsonFileToLoad);
-        return isLoaded;
+        return !isNull(currentJsonFile) && currentJsonFile.equals(jsonFileToLoad);
     }
 
     private String readFileAsString(File jsonFile)
     {
-        currentJsonFile = jsonFile;
         try{
             String jsonString = new String(Files.readAllBytes(jsonFile.toPath()));
             return jsonString;

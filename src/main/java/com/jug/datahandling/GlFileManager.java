@@ -233,7 +233,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @Override
     public File getComponentTreeJsonFile() {
-        File file = Paths.get(getTrackingDataOutputPath().toString(), "component_trees.json").toFile();
+        File file = Paths.get(getTrackingDataOutputPath().toString(), "component_forests.json").toFile();
         if(file.exists()){
             return file;
         }

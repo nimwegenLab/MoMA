@@ -36,7 +36,7 @@ public class ComponentForestProvider implements IComponentForestGenerator {
     }
 
     @Override
-    public synchronized ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public synchronized AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         if (configuration.getIsReloading()) {
             if (!jsonFileIsLoaded(paths.getComponentTreeJsonFile())) { /* in case the JSON file change, we need parse it again */
                 componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());

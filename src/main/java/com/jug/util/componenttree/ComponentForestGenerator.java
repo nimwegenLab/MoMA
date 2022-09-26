@@ -35,7 +35,7 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
 

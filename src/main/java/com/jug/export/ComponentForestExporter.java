@@ -21,7 +21,7 @@ public class ComponentForestExporter implements ResultExporterInterface {
         List<GrowthlaneFrame> glFrames = gl.getFrames();
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
         for (GrowthlaneFrame frame : glFrames) {
-            componentForests.add((AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) frame.getComponentForest());
+            componentForests.add(frame.getComponentForest());
         }
 
         ComponentForestSerializer serializer = new ComponentForestSerializer();

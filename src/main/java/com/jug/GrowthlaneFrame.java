@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.IComponentForestGenerator;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
@@ -35,7 +36,7 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
     }
 
     @Override
-    protected ComponentForest<AdvancedComponent<FloatType>> buildComponentForest() {
+    protected AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest() {
         return componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
     }
 }

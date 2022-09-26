@@ -25,7 +25,7 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
     private Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap; /* this maps the frame-index to a Map of string-id to component */
 
     @Override
-    public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         if (isNull(pojoMap)) {
             pojoMap = buildPojoMap(jsonString);
         }
@@ -33,11 +33,7 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
         return buildForest(pojosInFrame, raiFkt);
     }
 
-    public ComponentForest<AdvancedComponent<FloatType>> buildForest(Map<String, AdvancedComponentPojo> pojosInFrame, Img<FloatType> raiFkt) {
-//        List<AdvancedComponent<?>> allComponents = new ArrayList<>();
-//        for (AdvancedComponentPojo pojo : pojosInFrame) {
-//            allComponents.add(AdvancedComponent.createFromPojo(pojo, componentProperties));
-//        }
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildForest(Map<String, AdvancedComponentPojo> pojosInFrame, Img<FloatType> raiFkt) {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>();
         for (AdvancedComponentPojo pojo : pojosInFrame.values()) {
             if (pojo.getParentStringId().equals("NA")) {
@@ -49,8 +45,6 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
             recursivelyBuildTree(root, pojosInFrame, raiFkt);
         }
         return new AdvancedComponentForest<>(roots);
-//        throw new NotImplementedException();
-//        return new AdvancedComponentForest(roots);
     }
 
     private void recursivelyBuildTree(AdvancedComponent<FloatType> component, Map<String, AdvancedComponentPojo> pojosInFrame, Img<FloatType> raiFkt) {

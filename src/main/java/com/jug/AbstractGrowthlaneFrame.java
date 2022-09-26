@@ -3,6 +3,7 @@ package com.jug;
 import com.jug.lp.*;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.AdvancedComponentForest;
 import net.imglib2.Localizable;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -33,7 +34,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Growthlane.
      */
     private Growthlane parent;
-    private ComponentForest<C> componentForest;
+    private AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest;
     private Img<FloatType> image;
 
     public Img<FloatType> getImage() {
@@ -61,7 +62,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     /**
      * @return the componentTree
      */
-    public ComponentForest<C> getComponentForest() {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForest() {
         return componentForest;
     }
 
@@ -103,7 +104,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
      * Using the imglib2 component tree to find the most stable components
      * (bacteria).
      */
-    protected abstract ComponentForest<C> buildComponentForest();
+    protected abstract AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest();
 
     /**
      * @return the average X coordinate of the center line of this

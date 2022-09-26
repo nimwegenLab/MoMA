@@ -1,6 +1,7 @@
 package com.jug.datahandling;
 
 import com.jug.util.componenttree.AdvancedComponent;
+import com.jug.util.componenttree.ComponentForestGenerator;
 import com.jug.util.componenttree.IComponentForestGenerator;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
@@ -18,14 +19,17 @@ import net.imglib2.type.numeric.real.FloatType;
 
 public class ComponentForestProvider implements IComponentForestGenerator {
     private IGlExportFilePathGetter paths;
+    private ComponentForestGenerator componentForestGenerator;
 
-    public ComponentForestProvider(IGlExportFilePathGetter paths) {
-        this.paths = paths;
+    //    public ComponentForestProvider(IGlExportFilePathGetter paths) {
+//        this.paths = paths;
+//    }
+    public ComponentForestProvider(ComponentForestGenerator componentForestGenerator) {
+        this.componentForestGenerator = componentForestGenerator;
     }
 
     @Override
     public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
-//        paths.getComponentTreeJsonFile()
-        return null;
+        return this.componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
     }
 }

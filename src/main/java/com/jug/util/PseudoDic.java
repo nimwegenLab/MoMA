@@ -7,10 +7,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
-import com.jug.datahandling.GlFileManager;
-import com.jug.datahandling.GlDataLoader;
-import com.jug.datahandling.IImageProvider;
-import com.jug.datahandling.VersionCompatibilityChecker;
+import com.jug.datahandling.*;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
@@ -49,7 +46,7 @@ public class PseudoDic {
     private ConfigurationManager configurationManager;
     private MoMA momaInstance;
     private MixtureModelFit mixtureModelFit;
-    private IComponentForestGenerator componentForestGenerator;
+    private ComponentForestGenerator componentForestGenerator;
     private Imglib2Utils imglib2utils;
     private RecursiveComponentWatershedder recursiveComponentWatershedder;
     private UnetProcessor unetProcessor;
@@ -137,11 +134,14 @@ public class PseudoDic {
         return momaInstance;
     }
 
+    IComponentForestGenerator componentForestProvider;
+
     public IComponentForestGenerator getComponentForestGenerator() {
-        if (componentForestGenerator == null) {
+        if (componentForestProvider == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
+            componentForestProvider = new ComponentForestProvider(componentForestGenerator);
         }
-        return componentForestGenerator;
+        return componentForestProvider;
     }
 
     private RecursiveComponentWatershedder getRecursiveComponentWatershedder() {

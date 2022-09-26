@@ -27,9 +27,6 @@ public class ComponentForestProvider implements IComponentForestGenerator {
     private IConfiguration configuration;
     private ComponentForestDeserializer componentForestDeserializer;
 
-    //    public ComponentForestProvider(IGlExportFilePathGetter paths) {
-//        this.paths = paths;
-//    }
     public ComponentForestProvider(ComponentProperties componentProperties, ComponentForestGenerator componentForestGenerator, IGlExportFilePathGetter paths, IConfiguration configuration) {
         this.componentProperties = componentProperties;
         this.paths = paths;
@@ -39,21 +36,39 @@ public class ComponentForestProvider implements IComponentForestGenerator {
 
     @Override
     public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
-        if (configuration.getIsReloading() && paths.getComponentTreeJsonFile().exists()) {
-            if (isNull(componentForestDeserializer)) {
-                try {
-                    BufferedReader reader = new BufferedReader(new FileReader(paths.getComponentTreeJsonFile()));
-                    String jsonString = reader.readLine();
-                    reader.close();
-                    componentForestDeserializer = new ComponentForestDeserializer(componentProperties, jsonString);
-                } catch (FileNotFoundException e) {
-                    throw new RuntimeException(e);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        if (configuration.getIsReloading()) {
+            if (!jsonFileIsLoaded(paths.getComponentTreeJsonFile())) { /* in case the JSON file change, we need parse it again */
+                componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
             }
             return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
         }
         return this.componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
+    }
+
+    private ComponentForestDeserializer getComponentForestDeserializer(File jsonFile) {
+        if (!jsonFile.exists()) {
+            throw new RuntimeException("File does not exist: " + jsonFile);
+        }
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(jsonFile));
+            String jsonString = reader.toString();
+            reader.close();
+            currentJsonFile = jsonFile;
+            return new ComponentForestDeserializer(componentProperties, jsonString);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private File currentJsonFile;
+
+    private boolean jsonFileIsLoaded(File jsonFileToLoad) {
+        if (isNull(currentJsonFile)) {
+            return false;
+        }
+        boolean isLoaded = currentJsonFile.equals(jsonFileToLoad);
+        return isLoaded;
     }
 }

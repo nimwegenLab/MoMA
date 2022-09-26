@@ -10,8 +10,10 @@ import net.imglib2.algorithm.morphology.Erosion;
 import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
+import net.imglib2.img.array.ArrayImg;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.img.basictypeaccess.array.IntArray;
 import net.imglib2.roi.MaskInterval;
 import net.imglib2.roi.Masks;
 import net.imglib2.roi.labeling.*;
@@ -23,6 +25,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.*;
@@ -61,14 +64,14 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
-    public <C extends Component<T, C>> AdvancedComponent(ImgLabeling<Integer, IntType> labeling,
-                                                         Integer label,
+    public <C extends Component<T, C>> AdvancedComponent(Integer label,
                                                          C wrappedComponent,
                                                          RandomAccessibleInterval<T> sourceImage,
                                                          ComponentProperties componentProperties,
                                                          int frameNumber) {
         this.label = label;
         this.frameNumber = frameNumber;
+        ImgLabeling<Integer, IntType> labeling = getLabelingImage(sourceImage);
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
         pixelList = new ArrayList<>();
         for (Localizable val : wrappedComponent) {
@@ -81,6 +84,15 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
         this.componentProperties = componentProperties;
+    }
+
+    @NotNull
+    private ImgLabeling<Integer, IntType> getLabelingImage(RandomAccessibleInterval<T> sourceImage) {
+        long[] dims = new long[sourceImage.numDimensions()];
+        sourceImage.dimensions(dims);
+        ArrayImg<IntType, IntArray> img = ArrayImgs.ints(dims);
+        ImgLabeling<Integer, IntType> labeling = new ImgLabeling<>(img);
+        return labeling;
     }
 
     /**

@@ -36,23 +36,24 @@ public class ComponentForestProvider implements IComponentForestGenerator {
     }
 
     @Override
-    public synchronized AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         if (configuration.getIsReloading()) {
-            if (!jsonFileIsLoaded(paths.getComponentTreeJsonFile())) { /* in case the JSON file change, we need parse it again */
-                componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
-            }
+            componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
             return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
         }
         return componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
     }
 
-    private ComponentForestDeserializer getComponentForestDeserializer(File jsonFile) {
-        if (!jsonFile.exists()) {
-            throw new RuntimeException("File does not exist: " + jsonFile);
+    private synchronized ComponentForestDeserializer getComponentForestDeserializer(File jsonFile) {
+        if (!jsonFileIsLoaded(paths.getComponentTreeJsonFile())) { /* in case the JSON file change, we need parse it again */
+            if (!jsonFile.exists()) {
+                throw new RuntimeException("File does not exist: " + jsonFile);
+            }
+            currentJsonFile = jsonFile;
+            String jsonString = readFileAsString(jsonFile);
+            componentForestDeserializer = new ComponentForestDeserializer(componentProperties, jsonString);
         }
-        currentJsonFile = jsonFile;
-        String jsonString = readFileAsString(jsonFile);
-        return new ComponentForestDeserializer(componentProperties, jsonString);
+        return componentForestDeserializer;
     }
 
     private File currentJsonFile;

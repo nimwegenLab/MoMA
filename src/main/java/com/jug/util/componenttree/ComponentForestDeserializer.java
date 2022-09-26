@@ -25,7 +25,7 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
     private Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap; /* this maps the frame-index to a Map of string-id to component */
 
     @Override
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public synchronized AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         if (isNull(pojoMap)) {
             pojoMap = buildPojoMap(jsonString);
         }

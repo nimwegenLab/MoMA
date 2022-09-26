@@ -139,7 +139,7 @@ public class PseudoDic {
     public IComponentForestGenerator getComponentForestGenerator() {
         if (componentForestProvider == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
-            componentForestProvider = new ComponentForestProvider(componentForestGenerator);
+            componentForestProvider = new ComponentForestProvider(getComponentProperties(), componentForestGenerator, getFilePaths(), getConfigurationManager());
         }
         return componentForestProvider;
     }

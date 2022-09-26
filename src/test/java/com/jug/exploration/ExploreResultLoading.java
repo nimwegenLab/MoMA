@@ -77,8 +77,8 @@ public class ExploreResultLoading {
         String subfolder = "lis_20211026__Pos7_GL12";
         Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
-        Integer tmin = 1;
-        Integer tmax = 10;
+        Integer tmin = null;
+        Integer tmax = null;
         String analysisName = "test_analysis";
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }

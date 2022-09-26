@@ -1,11 +1,14 @@
 package com.jug.datahandling;
 
-import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentForestGenerator;
-import com.jug.util.componenttree.IComponentForestGenerator;
+import com.jug.config.IConfiguration;
+import com.jug.util.componenttree.*;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
+
+import java.io.*;
+
+import static java.util.Objects.isNull;
 
 /**
  * This class return the component-forests for the GL. It handles two cases:
@@ -20,16 +23,37 @@ import net.imglib2.type.numeric.real.FloatType;
 public class ComponentForestProvider implements IComponentForestGenerator {
     private IGlExportFilePathGetter paths;
     private ComponentForestGenerator componentForestGenerator;
+    private ComponentProperties componentProperties;
+    private IConfiguration configuration;
+    private ComponentForestDeserializer componentForestDeserializer;
 
     //    public ComponentForestProvider(IGlExportFilePathGetter paths) {
 //        this.paths = paths;
 //    }
-    public ComponentForestProvider(ComponentForestGenerator componentForestGenerator) {
+    public ComponentForestProvider(ComponentProperties componentProperties, ComponentForestGenerator componentForestGenerator, IGlExportFilePathGetter paths, IConfiguration configuration) {
+        this.componentProperties = componentProperties;
+        this.paths = paths;
+        this.configuration = configuration;
         this.componentForestGenerator = componentForestGenerator;
     }
 
     @Override
     public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+        if (configuration.getIsReloading() && paths.getComponentTreeJsonFile().exists()) {
+            if (isNull(componentForestDeserializer)) {
+                try {
+                    BufferedReader reader = new BufferedReader(new FileReader(paths.getComponentTreeJsonFile()));
+                    String jsonString = reader.readLine();
+                    reader.close();
+                    componentForestDeserializer = new ComponentForestDeserializer(componentProperties, jsonString);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
+        }
         return this.componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
     }
 }

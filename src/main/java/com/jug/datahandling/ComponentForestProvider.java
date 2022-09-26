@@ -7,6 +7,7 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.io.*;
+import java.nio.file.Files;
 
 import static java.util.Objects.isNull;
 
@@ -35,31 +36,22 @@ public class ComponentForestProvider implements IComponentForestGenerator {
     }
 
     @Override
-    public ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public synchronized ComponentForest<AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
         if (configuration.getIsReloading()) {
             if (!jsonFileIsLoaded(paths.getComponentTreeJsonFile())) { /* in case the JSON file change, we need parse it again */
                 componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
             }
             return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
         }
-        return this.componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
+        return componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
     }
 
     private ComponentForestDeserializer getComponentForestDeserializer(File jsonFile) {
         if (!jsonFile.exists()) {
             throw new RuntimeException("File does not exist: " + jsonFile);
         }
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(jsonFile));
-            String jsonString = reader.toString();
-            reader.close();
-            currentJsonFile = jsonFile;
-            return new ComponentForestDeserializer(componentProperties, jsonString);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        String jsonString = readFileAsString(jsonFile);
+        return new ComponentForestDeserializer(componentProperties, jsonString);
     }
 
     private File currentJsonFile;
@@ -70,5 +62,16 @@ public class ComponentForestProvider implements IComponentForestGenerator {
         }
         boolean isLoaded = currentJsonFile.equals(jsonFileToLoad);
         return isLoaded;
+    }
+
+    private String readFileAsString(File jsonFile)
+    {
+        currentJsonFile = jsonFile;
+        try{
+            String jsonString = new String(Files.readAllBytes(jsonFile.toPath()));
+            return jsonString;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

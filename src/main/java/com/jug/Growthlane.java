@@ -162,11 +162,11 @@ public class Growthlane {
 
 	public void generateSegmentationHypotheses() {
 		MoMA.dic.getComponentForestTimer().start();
-		int numberOfFrames = getFrames().size();
-		getFrames().parallelStream().forEach((glf) -> {
-			int currentFrame = glf.getFrameIndex() + 1;
+//		int numberOfFrames = getFrames().size();
+		getFrames().forEach((glf) -> {
+//			int currentFrame = glf.getFrameIndex() + 1;
 			glf.generateSimpleSegmentationHypotheses();
-			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
+//			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
 		MoMA.dic.getComponentForestTimer().stop();
 		MoMA.dic.getComponentForestTimer().printExecutionTime("Timer result for generating components");

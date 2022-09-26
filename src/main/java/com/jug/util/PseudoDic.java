@@ -232,7 +232,7 @@ public class PseudoDic {
         return new IlpModelExporter();
     }
 
-    public ComponentForestExporter getComponentTreeExporter() {
+    public ComponentForestExporter getComponentForestExporter() {
         return new ComponentForestExporter();
     }
 
@@ -503,13 +503,13 @@ public class PseudoDic {
         return trackingDataTimer;
     }
 
-    private Timer componentTreeTimer;
+    private Timer componentForestTimer;
 
-    public Timer getComponentTreeTimer() {
-        if (isNull(componentTreeTimer)) {
-            componentTreeTimer = getNewTimer();
+    public Timer getComponentForestTimer() {
+        if (isNull(componentForestTimer)) {
+            componentForestTimer = getNewTimer();
         }
-        return componentTreeTimer;
+        return componentForestTimer;
     }
 
     private Timer assignmentCreationTimer;

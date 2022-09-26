@@ -28,6 +28,7 @@ public class ComponentForestExporter implements ResultExporterInterface {
         String jsonString = serializer.serializeToJson(componentForests);
 
         File outputFile = exportFilePaths.getComponentTreeJsonFile();
+        exportFilePaths.createFile(outputFile);
         try {
             FileWriter writer = new FileWriter(outputFile);
             writer.write(jsonString);

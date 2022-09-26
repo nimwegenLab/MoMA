@@ -233,16 +233,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     @Override
     public File getComponentTreeJsonFile() {
-        File file = Paths.get(getTrackingDataOutputPath().toString(), "component_forests.json").toFile();
-        if(file.exists()){
-            return file;
-        }
-        try {
-            file.createNewFile();
-            return file;
-        } catch (IOException e) {
-            throw new RuntimeException("Could not create file: " + file.getAbsolutePath(), e);
-        }
+        return Paths.get(getTrackingDataOutputPath().toString(), "component_forests.json").toFile();
     }
 
     @Override
@@ -281,5 +272,17 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
 
     public void deleteTrackingDataOutputPath() {
         deleteRecursively(getTrackingDataOutputPath().toFile());
+    }
+
+    @Override
+    public void createFile(File file) {
+        if (file.exists()) {
+            return;
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException("Could not create file: " + file.getAbsolutePath(), e);
+        }
     }
 }

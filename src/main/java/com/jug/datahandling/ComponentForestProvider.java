@@ -37,7 +37,7 @@ public class ComponentForestProvider implements IComponentForestGenerator {
 
     @Override
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
-        if (configuration.getIsReloading()) {
+        if (configuration.getIsReloading() && paths.getComponentTreeJsonFile().exists()) {
             componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
             return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
         }

@@ -2311,8 +2311,8 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * This method add constraints for all outgoing assignments of hypotheses at time t, so that these assignments will
-     * be forced to their current selection-state. This done in the following way by setting the value coefficients in
+     * This method adds constraints for all outgoing assignments of hypotheses at time t, so that these assignments will
+     * be forced to their current selection-state. This is done by setting the value coefficients in
      * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
      * maintained active and inactive assignments are maintained inactive.
      */

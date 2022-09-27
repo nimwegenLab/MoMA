@@ -1,7 +1,6 @@
 package com.jug.util.componenttree;
 
 import net.imglib2.Localizable;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;

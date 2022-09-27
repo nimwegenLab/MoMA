@@ -1,10 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.google.gson.Gson;
-import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +9,7 @@ import java.util.List;
 public class ComponentForestSerializer {
     public String serializeToJson(List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests) {
         List<AdvancedComponent<FloatType>> components = getAllComponents(componentForests);
-        List<AdvancedComponentPojo> advancedComponentPojos = getSerializableRepresentations(components);
+        List<AdvancedComponentPojo> advancedComponentPojos = getAdvancedComponentPojos(components);
         ComponentSerializationContainer serializationContainer = new ComponentSerializationContainer(advancedComponentPojos);
         String jsonString = new Gson().toJson(serializationContainer);
         return jsonString;
@@ -26,11 +23,10 @@ public class ComponentForestSerializer {
         return allComponents;
     }
 
-    private List<AdvancedComponentPojo> getSerializableRepresentations(List<AdvancedComponent<FloatType>> components){
+    private List<AdvancedComponentPojo> getAdvancedComponentPojos(List<AdvancedComponent<FloatType>> components){
         List<AdvancedComponentPojo> advancedComponentPojos = new ArrayList<>();
         for(AdvancedComponent<FloatType> component : components){
-            AdvancedComponentPojo tmp = component.getSerializableRepresentation();
-            advancedComponentPojos.add(tmp);
+            advancedComponentPojos.add(component.getSerializableRepresentation());
         }
         return advancedComponentPojos;
     }

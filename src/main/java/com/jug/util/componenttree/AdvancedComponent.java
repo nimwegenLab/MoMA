@@ -947,16 +947,15 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 pixelList);
     }
 
-    public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo, ComponentProperties componentProperties, RandomAccessibleInterval<T> sourceImage) {
-        // we can create the region field using this from the AdvancedComponentForest and the creation of regions in the constructor of AdvancedComponent in combination with the label field.
-//        img = ArrayImgs.ints(dims);
-//        labeling = new ImgLabeling<>(img);
+    public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,
+                                                                          ComponentProperties componentProperties,
+                                                                          RandomAccessibleInterval<T> sourceImage) {
         return new AdvancedComponent<>(pojo, componentProperties, sourceImage);
-//        throw new NotImplementedException();
-//        return
     }
 
-    private AdvancedComponent(AdvancedComponentPojo pojo, ComponentProperties componentProperties, RandomAccessibleInterval<T> sourceImage) {
+    private AdvancedComponent(AdvancedComponentPojo pojo,
+                              ComponentProperties componentProperties,
+                              RandomAccessibleInterval<T> sourceImage) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
         this.componentProperties = componentProperties;

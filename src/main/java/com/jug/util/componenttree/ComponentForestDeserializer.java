@@ -1,10 +1,8 @@
 package com.jug.util.componenttree;
 
 import com.google.gson.Gson;
-import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,23 +11,29 @@ import java.util.Map;
 
 import static java.util.Objects.isNull;
 
-public class ComponentForestDeserializer implements IComponentForestGenerator {
+public class ComponentForestDeserializer
+        implements IComponentForestGenerator {
     private ComponentProperties componentProperties;
     private String jsonString;
 
-    public ComponentForestDeserializer(ComponentProperties componentProperties, String jsonString) {
+    public ComponentForestDeserializer(
+            ComponentProperties componentProperties,
+            String jsonString) {
         this.componentProperties = componentProperties;
         this.jsonString = jsonString;
     }
 
-    private Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap; /* this maps the frame-index to a Map of string-id to component */
+    private Map<Integer, Map<String, AdvancedComponentPojo>> frameToPojosMap; /* this maps the frame-index to a Map of string-id to component */
 
     @Override
-    public synchronized AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
-        if (isNull(pojoMap)) {
-            pojoMap = buildPojoMap(jsonString);
+    public synchronized AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>
+    buildComponentForest(Img<FloatType> raiFkt,
+                         int frameIndex,
+                         float componentSplittingThreshold) {
+        if (isNull(frameToPojosMap)) {
+            frameToPojosMap = buildMappingFrameToPojos(jsonString);
         }
-        Map<String, AdvancedComponentPojo> pojosInFrame = pojoMap.get(frameIndex);
+        Map<String, AdvancedComponentPojo> pojosInFrame = frameToPojosMap.get(frameIndex);
         return buildForest(pojosInFrame, raiFkt);
     }
 
@@ -55,12 +59,11 @@ public class ComponentForestDeserializer implements IComponentForestGenerator {
             AdvancedComponent<FloatType> child = AdvancedComponent.createFromPojo(pojosInFrame.get(id), componentProperties, raiFkt);
             child.setParent(component);
             component.addChild(child);
-//            System.out.println("component.getNodeLevel(): " + component.getNodeLevel());
             recursivelyBuildTree(child, pojosInFrame, raiFkt);
         }
     }
 
-    public static Map<Integer, Map<String, AdvancedComponentPojo>> buildPojoMap(String jsonString) {
+    public static Map<Integer, Map<String, AdvancedComponentPojo>> buildMappingFrameToPojos(String jsonString) {
         List<AdvancedComponentPojo> pojoList = deserializeFromJson(jsonString);
         Map<Integer, Map<String, AdvancedComponentPojo>> pojoMap = new HashMap<>();
         for (AdvancedComponentPojo pojo : pojoList) {

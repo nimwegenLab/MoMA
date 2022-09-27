@@ -39,7 +39,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     /**
      * Pixels in the component.
      */
-    private final List<LocalizableImpl> pixelList;
+    private List<LocalizableImpl> pixelList;
     private final RandomAccessibleInterval<T> sourceImage;
     /**
      * Maximum threshold value of the connected component.
@@ -69,21 +69,32 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                                                          RandomAccessibleInterval<T> sourceImage,
                                                          ComponentProperties componentProperties,
                                                          int frameNumber) {
+        this.value = wrappedComponent.value();
+        this.sourceImage = sourceImage;
+        this.componentProperties = componentProperties;
         this.label = label;
         this.frameNumber = frameNumber;
+        copyPixelPositions(wrappedComponent);
+        buildLabelRegion(pixelList, label, sourceImage);
+    }
+
+    private void buildLabelRegion(List<LocalizableImpl> pixelList, Integer label, RandomAccessibleInterval<T> sourceImage) {
         ImgLabeling<Integer, IntType> labeling = getLabelingImage(sourceImage);
         RandomAccess<LabelingType<Integer>> accessor = labeling.randomAccess();
-        pixelList = new ArrayList<>();
-        for (Localizable val : wrappedComponent) {
-            pixelList.add(new LocalizableImpl(val)); /* MM-20220920: We need to create copies of the Localizable to added to pixelList, because it is modified in the loop */
+        for (Localizable val : pixelList) {
             accessor.setPosition(val);
             accessor.get().add(label);
         }
-        this.value = wrappedComponent.value();
-        this.sourceImage = sourceImage;
         LabelRegions<Integer> regions = new LabelRegions<>(labeling);
         this.region = regions.getLabelRegion(this.label);
-        this.componentProperties = componentProperties;
+    }
+
+    private void copyPixelPositions(Iterable<Localizable> wrappedComponent) {
+        pixelList = new ArrayList<>();
+        for (Localizable val : wrappedComponent) {
+            LocalizableImpl myLocalizable = new LocalizableImpl(val);
+            pixelList.add(myLocalizable); /* MM-20220920: We need to create copies of the Localizable to added to pixelList, because it is modified in the loop */
+        }
     }
 
     @NotNull
@@ -955,6 +966,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
         pixelList = pojo.getPixelList();
         this.sourceImage = sourceImage;
+        buildLabelRegion(pixelList, label, sourceImage);
     }
 
     @Override

@@ -8,6 +8,7 @@ import net.imglib2.Point;
 import net.imglib2.*;
 import net.imglib2.img.Img;
 import net.imglib2.img.array.ArrayImgs;
+import net.imglib2.loops.LoopBuilder;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.ShortType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -262,35 +263,20 @@ public class Util {
         return result;
     }
 
-    static Img<FloatType> stack(List<IntervalView<FloatType>> imgs) {
-        long[] dims = new long[imgs.get(0).numDimensions() + 1];
-
-        for (int d = 0; d < dims.length - 1; d++) {
-            dims[d] = imgs.get(0).dimension(d);
+    static Img<FloatType> stack(List<IntervalView<FloatType>> slices) {
+        final Dimensions sliceDims = slices.get(0);
+        final int n = sliceDims.numDimensions();
+        long[] dims = new long[n + 1];
+        for (int d = 0; d < n; d++) {
+            dims[d] = sliceDims.dimension(d);
         }
-        dims[dims.length - 1] = imgs.size();
-
+        dims[n] = slices.size();
         Img<FloatType> result = ArrayImgs.floats(dims);
-        for (int z = 0; z < imgs.size(); z++) {
 
+        for (int z = 0; z < slices.size(); z++) {
             // copy single slice
-            IntervalView<FloatType> sliceImgSource = imgs.get(z);
-            Cursor<FloatType> sliceImgCur = sliceImgSource.cursor();
-
-            RandomAccess<FloatType> outRa = result.randomAccess();
-
-            long[] position = new long[dims.length];
-
-            while (sliceImgCur.hasNext()) {
-                sliceImgCur.next();
-                sliceImgCur.localize(position);
-                position[dims.length - 1] = z;
-
-                outRa.setPosition(position);
-                outRa.get().set(sliceImgCur.get());
-            }
+            LoopBuilder.setImages(slices.get(z), Views.hyperSlice(result, n, z)).multiThreaded().forEachPixel((in, out) -> out.set(in));
         }
 
         return result;
-    }
-}
+    }}

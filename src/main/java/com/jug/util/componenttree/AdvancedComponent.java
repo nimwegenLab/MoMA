@@ -170,12 +170,12 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     }
 
     @Override
-    public T value() {
+    public FloatType value() {
         return value;
     }
 
     @Override
-    public AdvancedComponent<T> getParent() {
+    public ComponentInterface getParent() {
         return parent;
     }
 
@@ -210,9 +210,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return label;
     }
 
-    private AdvancedComponent<T> root;
+    private ComponentInterface root;
 
-    public AdvancedComponent<T> getRoot() {
+    public ComponentInterface getRoot() {
         if (getParent() == null) {
             return null; /* this is the root component and hence it has no corresponding root */
         }

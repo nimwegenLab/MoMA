@@ -15,7 +15,7 @@ import net.imglib2.util.Pair;
 import java.util.List;
 import java.util.Set;
 
-public interface ComponentInterface<T extends Type<T>, C extends ComponentInterface<T, C>> extends Component<T, C> {
+public interface ComponentInterface extends Component<FloatType, ComponentInterface> {
     RandomAccessibleInterval<FloatType> getSourceImage();
 
     double[] firstMomentPixelCoordinates();
@@ -46,7 +46,7 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
 
     Img<BitType> getCoreMaskImg();
 
-    C getParent();
+//    C getParent();
 
     double getPixelValueAverage();
 

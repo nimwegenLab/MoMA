@@ -161,15 +161,15 @@ public class Growthlane {
 	}
 
 	public void generateSegmentationHypotheses() {
-		MoMA.dic.getComponentTreeTimer().start();
+		MoMA.dic.getComponentForestTimer().start();
 		int numberOfFrames = getFrames().size();
 		getFrames().parallelStream().forEach((glf) -> {
 			int currentFrame = glf.getFrameIndex() + 1;
 			glf.generateSimpleSegmentationHypotheses();
 			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 		});
-		MoMA.dic.getComponentTreeTimer().stop();
-		MoMA.dic.getComponentTreeTimer().printExecutionTime("Timer result for generating components");
+		MoMA.dic.getComponentForestTimer().stop();
+		MoMA.dic.getComponentForestTimer().printExecutionTime("Timer result for generating components");
 	}
 
 	public int getTimeStepMaximum() {

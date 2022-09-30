@@ -180,8 +180,7 @@ public class GrowthlaneTrackingILP {
 
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest =
-                    (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(t).getComponentForest();
+            AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = gl.getFrames().get(t).getComponentForest();
             allComponents.addAll(componentForest.getAllComponents());
         }
     }
@@ -517,10 +516,8 @@ public class GrowthlaneTrackingILP {
      */
     private void createAssignmentsForTimeStep(final int sourceTimeStep) throws GRBException {
         int targetTimeStep = sourceTimeStep + 1;
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest =
-                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(sourceTimeStep).getComponentForest();
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest =
-                (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>) gl.getFrames().get(targetTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceComponentForest = gl.getFrames().get(sourceTimeStep).getComponentForest();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetComponentForest = gl.getFrames().get(targetTimeStep).getComponentForest();
 
         addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
@@ -2311,8 +2308,8 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * This method add constraints for all outgoing assignments of hypotheses at time t, so that these assignments will
-     * be forced to their current selection-state. This done in the following way by setting the value coefficients in
+     * This method adds constraints for all outgoing assignments of hypotheses at time t, so that these assignments will
+     * be forced to their current selection-state. This is done by setting the value coefficients in
      * such a way that the equality expression of the constraint can only be fulfilled, when active assignments are
      * maintained active and inactive assignments are maintained inactive.
      */

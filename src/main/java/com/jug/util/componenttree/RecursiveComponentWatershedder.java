@@ -98,7 +98,7 @@ public class RecursiveComponentWatershedder<T extends Type<T>> {
 
     /**
      * Generates a labelling for all children components of the parent components in {@param parents}.
-     * {@param childLabelToComponentMap} holds a mapping of child components to their corresponding label.
+     * {@param childLabelToComponentMap} holds a mapping of the child label to the corresponding component.
      *
      * @param parents
      * @param childLabelToComponentMap

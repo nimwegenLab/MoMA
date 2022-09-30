@@ -100,21 +100,39 @@ public class TestUtils {
         imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
         return tree;
     }
 
-    @NotNull
-    public ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
+    public ComponentProperties getComponentProperties() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
+        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+    }
+
+    @NotNull
+    public ComponentForestGenerator getComponentTreeGenerator() {
+        Imglib2Utils imglib2Utils = getImglib2Utils();
+        ComponentProperties componentProperties = getComponentProperties();
+        RecursiveComponentWatershedder recursiveComponentWatershedder = getRecursiveComponentWatershedder();
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
         ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentForestGenerator;
+    }
+
+    @NotNull
+    private RecursiveComponentWatershedder getRecursiveComponentWatershedder() {
+        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
+        return recursiveComponentWatershedder;
+    }
+
+    @NotNull
+    private Imglib2Utils getImglib2Utils() {
+        OpService ops = ij.op();
+        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
+        return imglib2Utils;
     }
 
     public <T extends NumericType<T>> void showImageWithOverlays2(RandomAccessibleInterval<T> image, List<Vector2DPolyline> polylines) {
@@ -173,10 +191,10 @@ public class TestUtils {
     }
 
 
-    public ComponentForest<AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProvider(imageFile);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
         return tree;
     }
 

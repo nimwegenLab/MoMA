@@ -7,10 +7,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.config.IUnetProcessingConfiguration;
-import com.jug.datahandling.GlFileManager;
-import com.jug.datahandling.GlDataLoader;
-import com.jug.datahandling.IImageProvider;
-import com.jug.datahandling.VersionCompatibilityChecker;
+import com.jug.datahandling.*;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
@@ -137,11 +134,14 @@ public class PseudoDic {
         return momaInstance;
     }
 
-    public ComponentForestGenerator getComponentForestGenerator() {
-        if (componentForestGenerator == null) {
+    IComponentForestGenerator componentForestProvider;
+
+    public IComponentForestGenerator getComponentForestGenerator() {
+        if (componentForestProvider == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
+            componentForestProvider = new ComponentForestProvider(getComponentProperties(), componentForestGenerator, getFilePaths(), getConfigurationManager());
         }
-        return componentForestGenerator;
+        return componentForestProvider;
     }
 
     private RecursiveComponentWatershedder getRecursiveComponentWatershedder() {
@@ -230,6 +230,10 @@ public class PseudoDic {
 
     public IlpModelExporter getIlpModelExporter() {
         return new IlpModelExporter();
+    }
+
+    public ComponentForestExporter getComponentForestExporter() {
+        return new ComponentForestExporter();
     }
 
     private GroundTruthFramesExporter groundTruthFramesExporter;
@@ -499,13 +503,13 @@ public class PseudoDic {
         return trackingDataTimer;
     }
 
-    private Timer componentTreeTimer;
+    private Timer componentForestTimer;
 
-    public Timer getComponentTreeTimer() {
-        if (isNull(componentTreeTimer)) {
-            componentTreeTimer = getNewTimer();
+    public Timer getComponentForestTimer() {
+        if (isNull(componentForestTimer)) {
+            componentForestTimer = getNewTimer();
         }
-        return componentTreeTimer;
+        return componentForestTimer;
     }
 
     private Timer assignmentCreationTimer;

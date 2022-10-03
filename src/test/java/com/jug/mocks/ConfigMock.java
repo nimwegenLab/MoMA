@@ -45,11 +45,6 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
-    public double getGurobiMaxOptimalityGap() {
-        return 0;
-    }
-
-    @Override
     public boolean getIfRunningHeadless() {
         return false;
     }

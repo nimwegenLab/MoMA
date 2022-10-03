@@ -16,11 +16,9 @@ public class GurobiCallback extends GurobiCallbackAbstract {
 	private final IDialogGurobiProgress dialog;
 	private double latestGap;
 	private double gurobiTimeLimit;
-	private double gurobiMaxOptimalityGap;
 
-	public GurobiCallback(final IDialogGurobiProgress dialog, double gurobiTimeLimit, double gurobiMaxOptimalityGap) {
+	public GurobiCallback(final IDialogGurobiProgress dialog, double gurobiTimeLimit) {
 		this.gurobiTimeLimit = gurobiTimeLimit; // final GRBVar[] xvars,
-		this.gurobiMaxOptimalityGap = gurobiMaxOptimalityGap;
 //		lastiter = -GRB.INFINITY;
 		lastnode = -GRB.INFINITY;
 //		vars = xvars;

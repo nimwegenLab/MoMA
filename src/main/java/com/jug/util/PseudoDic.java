@@ -559,9 +559,9 @@ public class PseudoDic {
         public GurobiCallbackAbstract get() {
             if (isfirstOptimizationRun) {
                 isfirstOptimizationRun = false;
-                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap()); /* for first optimization use value of configurationManager.GUROBI_TIME_LIMIT */
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit()); /* for first optimization use value of configurationManager.GUROBI_TIME_LIMIT */
             } else {
-                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimitDuringCuration(), configurationManager.getGurobiMaxOptimalityGap()) /* for subsequent optimizations use value of configurationManager.GUROBI_TIME_LIMIT_DURING_CURATION */;
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimitDuringCuration()) /* for subsequent optimizations use value of configurationManager.GUROBI_TIME_LIMIT_DURING_CURATION */;
             }
         }
     }

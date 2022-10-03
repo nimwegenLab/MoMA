@@ -51,13 +51,6 @@ public interface IConfiguration {
     double getGurobiTimeLimitDuringCuration();
 
     /**
-     * Returns the maximum allowed optimality gap below which optimization can/will be terminated by the Gurobi
-     * optimizer.
-     * @return optimality gap in percent
-     */
-    double getGurobiMaxOptimalityGap();
-
-    /**
      * Returns if MoMA is being executed without GUI (i.e. in headless mode).
      * @return
      */

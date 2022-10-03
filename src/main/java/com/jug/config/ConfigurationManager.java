@@ -28,7 +28,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * solution found so far will be used.)
      */
     public double GUROBI_TIME_LIMIT = 15.0;
-
     public double GUROBI_TIME_LIMIT_DURING_CURATION = 15.0;
     public double GUROBI_MAX_OPTIMALITY_GAP = 0.99;
 
@@ -281,6 +280,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         EXPORT_ASSIGNMENT_COSTS = parseBooleanFromIntegerValue("EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
         GUROBI_TIME_LIMIT = Double.parseDouble(props.getProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT)));
+        GUROBI_TIME_LIMIT_DURING_CURATION = Double.parseDouble(props.getProperty("GUROBI_TIME_LIMIT_DURING_CURATION", Double.toString(GUROBI_TIME_LIMIT_DURING_CURATION)));
         GUROBI_MAX_OPTIMALITY_GAP = Double.parseDouble(props.getProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP)));
 
         EXPORT_SPINE_MEASUREMENT = parseBooleanFromIntegerValue("EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
@@ -415,6 +415,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("DEFAULT_PATH", DEFAULT_PATH);
 
             props.setProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT));
+            props.setProperty("GUROBI_TIME_LIMIT_DURING_CURATION", Double.toString(GUROBI_TIME_LIMIT_DURING_CURATION));
             props.setProperty("GUROBI_MAX_OPTIMALITY_GAP", Double.toString(GUROBI_MAX_OPTIMALITY_GAP));
 
             if (!runningHeadless) { /* only get the guiFrame position and size, if MoMA is running with GUI */
@@ -560,6 +561,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     @Override
     public double getGurobiTimeLimit() {
         return GUROBI_TIME_LIMIT;
+    }
+
+    @Override
+    public double getGurobiTimeLimitDuringCuration(){
+        return GUROBI_TIME_LIMIT_DURING_CURATION;
     }
 
     @Override

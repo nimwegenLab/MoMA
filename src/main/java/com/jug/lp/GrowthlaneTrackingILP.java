@@ -6,6 +6,7 @@ import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogGurobiProgress;
+import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
@@ -26,6 +27,7 @@ import javax.swing.event.ChangeListener;
 import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
@@ -60,6 +62,8 @@ public class GrowthlaneTrackingILP {
     private IConfiguration configurationManager;
     private CostFactory costFactory;
     private boolean isLoadedFromDisk;
+    private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
+    private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
@@ -74,7 +78,9 @@ public class GrowthlaneTrackingILP {
                                  IConfiguration configurationManager,
                                  String versionString,
                                  CostFactory costFactory,
-                                 boolean isLoadedFromDisk) {
+                                 boolean isLoadedFromDisk,
+                                 Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
+                                 Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory) {
         this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
@@ -82,6 +88,8 @@ public class GrowthlaneTrackingILP {
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
         this.isLoadedFromDisk = isLoadedFromDisk;
+        this.gurobiCallbackFactory = gurobiCallbackFactory;
+        this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
     }
@@ -1027,8 +1035,8 @@ public class GrowthlaneTrackingILP {
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);
 
-            final DialogGurobiProgress dialog = new DialogGurobiProgress(guiFrame);
-            final GurobiCallback gcb = new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap());
+            final IDialogGurobiProgress dialog = gurobiProgressDialogFactory.get();
+            final GurobiCallbackAbstract gcb = gurobiCallbackFactory.get();
             model.setCallback(gcb);
             if (!configurationManager.getIfRunningHeadless()) {
                 dialog.setVisible(true);

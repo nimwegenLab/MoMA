@@ -38,10 +38,17 @@ public interface IConfiguration {
     String getPathForAutosaving();
 
     /**
-     * Returns the time limit or maximum duration for the Gurobi optimization as set in the configuration.
+     * Returns the time limit or maximum duration for the Gurobi optimization.
      * @return the time limit in seconds
      */
     double getGurobiTimeLimit();
+
+    /**
+     * Returns the time limit or maximum duration for the Gurobi optimization during curation. This allows the curation
+     * process to be more responsive for cases, where optimization takes long.
+     * @return time limit in seconds
+     */
+    double getGurobiTimeLimitDuringCuration();
 
     /**
      * Returns the maximum allowed optimality gap below which optimization can/will be terminated by the Gurobi

@@ -28,7 +28,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * solution found so far will be used.)
      */
     public double GUROBI_TIME_LIMIT = 15.0;
-    public double GUROBI_TIME_LIMIT_DURING_CURATION = 15.0;
+    public double GUROBI_TIME_LIMIT_DURING_CURATION = 5.0;
     public boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
     /**

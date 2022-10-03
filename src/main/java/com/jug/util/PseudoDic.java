@@ -549,13 +549,20 @@ public class PseudoDic {
         return new Timer(getCommandLineArgumentParser().isTrackOnly(), getCommandLineArgumentParser().getIfRunningHeadless());
     }
 
-    private boolean isfirstOptimizationRun = true;
     public Supplier<GurobiCallbackAbstract> getGurobiCallbackFactory() {
-        if (isfirstOptimizationRun) {
-            isfirstOptimizationRun = false;
-            return () -> new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap());
-        } else {
-            return () -> new GurobiCallback(dialog, configurationManager.getGurobiTimeLimitDuringCuration(), configurationManager.getGurobiMaxOptimalityGap());
+        return new GurobiCallbackFactory();
+    }
+
+    class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{
+        private boolean isfirstOptimizationRun = true;
+        @Override
+        public GurobiCallbackAbstract get() {
+            if (isfirstOptimizationRun) {
+                isfirstOptimizationRun = false;
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit(), configurationManager.getGurobiMaxOptimalityGap()); /* for first optimization use value of configurationManager.GUROBI_TIME_LIMIT */
+            } else {
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimitDuringCuration(), configurationManager.getGurobiMaxOptimalityGap()) /* for subsequent optimizations use value of configurationManager.GUROBI_TIME_LIMIT_DURING_CURATION */;
+            }
         }
     }
 

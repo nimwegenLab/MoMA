@@ -156,9 +156,4 @@ public class GurobiCallback extends GurobiCallbackAbstract {
 	public double getLatestGap() {
 		return this.latestGap;
 	}
-
-	@Override
-	public double getOptimizationTimeout() {
-		return this.gurobiTimeLimit;
-	}
 }

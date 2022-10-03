@@ -111,11 +111,6 @@ public class GrowthlaneTrackingIlpTest {
         public double getLatestGap() {
             return 0;
         }
-
-        @Override
-        public double getOptimizationTimeout() {
-            return 0;
-        }
     }
 
     private class DialogGurobiProgressMock implements IDialogGurobiProgress {

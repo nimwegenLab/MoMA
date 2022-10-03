@@ -76,9 +76,7 @@ public class GurobiCallback extends GurobiCallbackAbstract {
 					System.out.println( nodecnt + " " + actnodes + " " + itcnt + " " + objbst + " " + objbnd + " " + solcnt + " " + cutcnt );
 				}
 				if ( runtime > gurobiTimeLimit ) {
-//					if ( Math.abs( objbst - objbnd ) < gurobiMaxOptimalityGap * ( 1.0 + Math.abs( objbst ) ) ) {
-						abort();
-//					}
+					abort();
 				}
 				//					Math.abs( objbst - objbnd )/objbnd < (1 - MoMA.GUROBI_MAX_OPTIMALITY_GAP) ## ADDED BY MICHAEL
 

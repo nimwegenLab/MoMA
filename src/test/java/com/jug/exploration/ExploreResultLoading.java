@@ -15,6 +15,7 @@ public class ExploreResultLoading {
         ExploreResultLoading tests = new ExploreResultLoading();
 
         tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_curation_optimization_timeout();
+//        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_curation_optimization_timeout_reloading();
 
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_trackonly();
 //        tests._20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_reloading();
@@ -40,6 +41,13 @@ public class ExploreResultLoading {
         Integer tmax = 600;
         String analysisName = "test_curation_optimization_timeout";
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void _20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__test_curation_optimization_timeout_reloading() {
+        String subfolder = "lis_20211026__Pos7_GL12";
+        String analysisName = "test_curation_optimization_timeout";
+        Path reload_folder_path = Paths.get(datasets_base_path, subfolder);
+        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void _dany_20200730_4proms_glu_ez1x_1_MMStack_Pos3_GL16__run_without_mm_properties() {

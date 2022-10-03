@@ -121,7 +121,9 @@ public class Growthlane {
 				configurationManager,
 				MoMA.dic.getVersionProvider().getVersion().toString(),
 				MoMA.dic.getCostFactory(),
-				isLoadedFromDisk());
+				isLoadedFromDisk(),
+				MoMA.dic.getGurobiCallbackFactory(),
+				MoMA.dic.getGurobiProgressDialogFactory());
 		if (guiProgressReceiver != null) {
 			ilp.addProgressListener(guiProgressReceiver);
 		}

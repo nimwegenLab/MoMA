@@ -9,7 +9,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- enable loading/saving of curation states using storage of Gurobi model
+- Add saving/loading of probability maps.
+- Add saving/loading of curation states using storage of Gurobi model.
+- Add saving/loading of component trees.
+- Add ability to save/load previously optimized/curated GLs.
+
+### Changed
+
+- Add setting `GUROBI_TIME_LIMIT_DURING_CURATION`, which is used during interactive curation. This can be set to a smaller value than `GUROBI_TIME_LIMIT` to enable more responsiveness during curation. 
+- Behavior of the optimization range was changed: Changing the slider for the end of the optimization range does not reset any curations made after the end of the optimization range. Previously, any changes that were made after the end of the optimization range would be lost. 
+
+### Removed
+
+- Remove setting `GUROBI_MAX_OPTIMALITY_GAP`, which was used to ensure that the ILP solution converged at least to the set value. But this confused users, when optimization took much longer than the timeout set by the user in some GLs.
 
 ## [0.5.1] - 2022-06-07
 

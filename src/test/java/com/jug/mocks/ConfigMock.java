@@ -40,7 +40,7 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
-    public double getGurobiMaxOptimalityGap() {
+    public double getGurobiTimeLimitDuringCuration() {
         return 0;
     }
 

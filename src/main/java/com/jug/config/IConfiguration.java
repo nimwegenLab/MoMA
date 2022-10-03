@@ -38,17 +38,17 @@ public interface IConfiguration {
     String getPathForAutosaving();
 
     /**
-     * Returns the time limit or maximum duration for the Gurobi optimization as set in the configuration.
+     * Returns the time limit or maximum duration for the Gurobi optimization.
      * @return the time limit in seconds
      */
     double getGurobiTimeLimit();
 
     /**
-     * Returns the maximum allowed optimality gap below which optimization can/will be terminated by the Gurobi
-     * optimizer.
-     * @return optimality gap in percent
+     * Returns the time limit or maximum duration for the Gurobi optimization during curation. This allows the curation
+     * process to be more responsive for cases, where optimization takes long.
+     * @return time limit in seconds
      */
-    double getGurobiMaxOptimalityGap();
+    double getGurobiTimeLimitDuringCuration();
 
     /**
      * Returns if MoMA is being executed without GUI (i.e. in headless mode).

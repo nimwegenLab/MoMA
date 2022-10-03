@@ -18,7 +18,7 @@ import javax.swing.KeyStroke;
 /**
  * @author jug
  */
-public class DialogGurobiProgress extends JDialog implements ActionListener {
+public class DialogGurobiProgress extends JDialog implements IDialogGurobiProgress {
 
 	private static final long serialVersionUID = -2399693327913856740L;
 

@@ -1,25 +1,24 @@
 package com.jug.lp;
 
+import com.jug.gui.progress.IDialogGurobiProgress;
 import gurobi.GRB;
 import gurobi.GRBCallback;
 import gurobi.GRBException;
 
 import com.jug.gui.progress.DialogGurobiProgress;
 
-class GurobiCallback extends GRBCallback {
+public class GurobiCallback extends GurobiCallbackAbstract {
 
 //	private final double lastiter;
 	private double lastnode;
 //	private final GRBVar[] vars;
 
-	private final DialogGurobiProgress dialog;
+	private final IDialogGurobiProgress dialog;
 	private double latestGap;
 	private double gurobiTimeLimit;
-	private double gurobiMaxOptimalityGap;
 
-	public GurobiCallback(final DialogGurobiProgress dialog, double gurobiTimeLimit, double gurobiMaxOptimalityGap) {
+	public GurobiCallback(final IDialogGurobiProgress dialog, double gurobiTimeLimit) {
 		this.gurobiTimeLimit = gurobiTimeLimit; // final GRBVar[] xvars,
-		this.gurobiMaxOptimalityGap = gurobiMaxOptimalityGap;
 //		lastiter = -GRB.INFINITY;
 		lastnode = -GRB.INFINITY;
 //		vars = xvars;
@@ -77,9 +76,7 @@ class GurobiCallback extends GRBCallback {
 					System.out.println( nodecnt + " " + actnodes + " " + itcnt + " " + objbst + " " + objbnd + " " + solcnt + " " + cutcnt );
 				}
 				if ( runtime > gurobiTimeLimit ) {
-					if ( Math.abs( objbst - objbnd ) < gurobiMaxOptimalityGap * ( 1.0 + Math.abs( objbst ) ) ) {
-						abort();
-					}
+					abort();
 				}
 				//					Math.abs( objbst - objbnd )/objbnd < (1 - MoMA.GUROBI_MAX_OPTIMALITY_GAP) ## ADDED BY MICHAEL
 

@@ -46,13 +46,6 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                                 "GUROBI_TIME_LIMIT",
                                 "" + configurationManager.GUROBI_TIME_LIMIT);
                         break;
-                    case "GUROBI_MAX_OPTIMALITY_GAP":
-                        configurationManager.GUROBI_MAX_OPTIMALITY_GAP =
-                                Double.parseDouble(evt.getNewValue().toString());
-                        props.setProperty(
-                                "GUROBI_MAX_OPTIMALITY_GAP",
-                                "" + configurationManager.GUROBI_MAX_OPTIMALITY_GAP);
-                        break;
                     case "SEGMENTATION_MODEL_PATH": {
                         String newPath = sourceProperty.getValue().toString();
                         if(newPath!=configurationManager.SEGMENTATION_MODEL_PATH) {

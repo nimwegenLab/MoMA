@@ -11,9 +11,13 @@ import com.jug.datahandling.*;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
 import com.jug.gui.*;
+import com.jug.gui.progress.DialogGurobiProgress;
+import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
 import com.jug.lp.AssignmentPlausibilityTester;
+import com.jug.lp.GurobiCallback;
+import com.jug.lp.GurobiCallbackAbstract;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -22,6 +26,7 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -31,6 +36,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.Objects.isNull;
 
@@ -541,5 +547,30 @@ public class PseudoDic {
 
     private Timer getNewTimer(){
         return new Timer(getCommandLineArgumentParser().isTrackOnly(), getCommandLineArgumentParser().getIfRunningHeadless());
+    }
+
+    public Supplier<GurobiCallbackAbstract> getGurobiCallbackFactory() {
+        return new GurobiCallbackFactory();
+    }
+
+    class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{
+        private boolean isfirstOptimizationRun = true;
+        @Override
+        public GurobiCallbackAbstract get() {
+            if (isfirstOptimizationRun) {
+                isfirstOptimizationRun = false;
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimit()); /* for first optimization use value of configurationManager.GUROBI_TIME_LIMIT */
+            } else {
+                return new GurobiCallback(dialog, configurationManager.getGurobiTimeLimitDuringCuration()) /* for subsequent optimizations use value of configurationManager.GUROBI_TIME_LIMIT_DURING_CURATION */;
+            }
+        }
+    }
+
+    DialogGurobiProgress dialog;
+    public Supplier<IDialogGurobiProgress> getGurobiProgressDialogFactory() {
+        if (isNull(dialog)) {
+            dialog = new DialogGurobiProgress(getGuiFrame());
+        }
+        return () -> dialog;
     }
 }

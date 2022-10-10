@@ -101,14 +101,19 @@ public class Growthlane {
 			guiProgressReceiver.setVisible( true );
 		}
 
-		GRBModelAdapter model = null;
+		GRBEnv grbEnv;
+		GRBModelAdapter model;
+		try {
+			grbEnv = new GRBEnv(glFileManager.getGurobiEnvironmentLogFilePath().toString());
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
 		if (isLoadedFromDisk())
 			try {
-				GRBEnv env = new GRBEnv(glFileManager.getGurobiEnvironmentLogFilePath().toString());
-				GRBModel grbModel = new GRBModel(env, glFileManager.getGurobiMpsFilePath().toString());
+				GRBModel grbModel = new GRBModel(grbEnv, glFileManager.getGurobiMpsFilePath().toString());
 				model = new GRBModelAdapter(grbModel);
 			} catch (GRBException e) {
-				e.printStackTrace();
+				throw new RuntimeException(e);
 			}
 		else {
 			model = GRBModelFactory.getModel();

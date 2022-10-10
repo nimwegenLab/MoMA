@@ -8,7 +8,7 @@ BUGFIX_CLASS_FOLDER="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/ju
 FULL_BRANCH_NAME=$(git branch --show-current)
 
 if [[ ! $FULL_BRANCH_NAME == *"bugfix/"* ]]; then
-  printf "ABORTING: You are not on a bugfix branch (i.e. a branch starting 'bugfix/').\n"
+  printf "ABORTING: You are not on a bugfix branch (i.e. a branch starting with 'bugfix/').\n"
   exit
 fi
 

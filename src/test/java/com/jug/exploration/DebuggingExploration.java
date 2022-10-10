@@ -52,11 +52,11 @@ public class DebuggingExploration {
      */
 //    public void __debug_test_method_template__() {
 //        String subfolder = "000__debug_template";
-//        Path inputPath = Paths.get(datasets_base_path, subfolder, "debug_template__gl_data", "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+//        Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
 //        Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
 //        Integer tmin = null;
 //        Integer tmax = 10;
-//        String analysisName = "20221010-fix-gurobi-log-creation";
+//        String analysisName = "CHANGE_THIS";
 //        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
 //    }
 
@@ -66,7 +66,7 @@ public class DebuggingExploration {
      */
     public void _20221010_first_run_with_trackonly_does_not_store_gurobi_log_in_analysis_folder__test_trackonly() {
         String subfolder = "20221010-first-run-with-trackonly-does-not-store-gurobi-log-in-analysis-folder";
-        Path inputPath = Paths.get(datasets_base_path, subfolder, "debug_template__gl_data", "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path inputPath = Paths.get(datasets_base_path, subfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasets_base_path, subfolder, "mm.properties");
         Integer tmin = null;
         Integer tmax = 10;

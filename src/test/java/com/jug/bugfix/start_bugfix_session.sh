@@ -18,10 +18,12 @@ BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
 DEBUG_CLASS_NAME="Bugfix__${BUGFIX_BRANCH_NAME//-/_}" # this replaces occurences of "-" with "_"
 DEBUG_DATA_FOLDER="$BUGFIX_DATA/$BUGFIX_BRANCH_NAME"
 
+mkdir -p "$DEBUG_DATA_FOLDER"
 cp "$BUGFIX_DATA/000__debug_template/"* "$DEBUG_DATA_FOLDER"
 cp "$BUGFIX_CLASS_FOLDER/Bugfix__TEMPLATE.java" "$BUGFIX_CLASS_FOLDER/$DEBUG_CLASS_NAME.java"
 sed -i "s/Bugfix__TEMPLATE/$DEBUG_CLASS_NAME/g" "$BUGFIX_CLASS_FOLDER/$DEBUG_CLASS_NAME.java"
 sed -i "s/000__debug_template/$BUGFIX_BRANCH_NAME/g" "$BUGFIX_CLASS_FOLDER/$DEBUG_CLASS_NAME.java"
+git add "$BUGFIX_CLASS_FOLDER/$DEBUG_CLASS_NAME.java"
 
 printf "The data folder for this debug session is:\n\t%s\n" "$DEBUG_DATA_FOLDER"
 printf "The class for this debug session is:\n\t%s\n" "$DEBUG_CLASS_NAME"

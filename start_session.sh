@@ -41,9 +41,12 @@ git branch "$full_topic_branch_name"
 git checkout "$full_topic_branch_name"
 
 test_folder_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug"
+#"${foo^}"
+topic_class_name="${session_type^}"__"$session_name".java
+topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name"
 devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_development"
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
-class_folder="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/INTERACTIVE_TESTS_TEMPLATE.java"
+template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/INTERACTIVE_TESTS_TEMPLATE.java"
 
 printf "Starting debug session for branch:\n\t%s\n" "$FULL_BRANCH_NAME"
 
@@ -54,13 +57,17 @@ image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 config_file_name="mm.properties"
 
 mkdir -p "$topic_branch_data_folder"
-
 cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"
 ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_folder/$image_file_name"
-#cp "$class_folder/Bugfix__TEMPLATE.java" "$class_folder/$topic_branch_test_class.java"
-#sed -i "s/Bugfix__TEMPLATE/$topic_branch_test_class/g" "$class_folder/$topic_branch_test_class.java"
+
+mkdir -p "$topic_branch_data_folder"
+echo "$topic_class_path"
+cp "$template_class_path" "$topic_class_path"
+sed -i "s/INTERACTIVE_TESTS_TEMPLATE/$topic_class_name/g" "$topic_class_path"
 #sed -i "s/000__debug_template/$BUGFIX_BRANCH_NAME/g" "$class_folder/$topic_branch_test_class.java"
 #git add "$class_folder/$topic_branch_test_class.java"
+
+echo "${session_type^}"
 
 exit
 

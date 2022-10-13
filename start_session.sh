@@ -39,4 +39,4 @@ fi
 git branch "$session_branch"
 git checkout "$session_branch"
 
-git checkout "feature/20221013-add-script-to-generate-a-topic-session"
+git checkout "feature/20221013-add-script-to-generate-a-topic-session"  # TODO: Remove this, when development has finished!

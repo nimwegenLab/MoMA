@@ -50,12 +50,13 @@ printf "Starting debug session for branch:\n\t%s\n" "$FULL_BRANCH_NAME"
 BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
 topic_branch_test_class="Bugfix__${BUGFIX_BRANCH_NAME//-/_}" # this replaces occurences of "-" with "_"
 topic_branch_data_folder="$devel_data_folder"/"$session_type"/"$session_name"
-
-echo "$topic_branch_data_folder"
+image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
+config_file_name="mm.properties"
 
 mkdir -p "$topic_branch_data_folder"
 
-cp -P "$topic_data_template_folder"/* "$topic_branch_data_folder"
+cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"
+ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_folder/$image_file_name"
 #cp "$class_folder/Bugfix__TEMPLATE.java" "$class_folder/$topic_branch_test_class.java"
 #sed -i "s/Bugfix__TEMPLATE/$topic_branch_test_class/g" "$class_folder/$topic_branch_test_class.java"
 #sed -i "s/000__debug_template/$BUGFIX_BRANCH_NAME/g" "$class_folder/$topic_branch_test_class.java"

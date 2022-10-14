@@ -54,11 +54,6 @@ printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch
 printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
 printf "The class for this debug session is:\n\t%s\n" "$topic_class_path"
 
-git branch "$full_topic_branch_name"
-git checkout "$full_topic_branch_name"
-
-#BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
-
 mkdir -p "$topic_branch_data_folder"
 cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"
 ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_folder/$image_file_name"
@@ -69,5 +64,8 @@ cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
 sed -i "s|TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER|${topic_branch_dataset_subfolder}|g" "$topic_class_path"
+
+git branch "$full_topic_branch_name"
+git checkout "$full_topic_branch_name"
 git add "$topic_class_path"
 git commit -m "\"Started new ${session_type}-session. Commiting test-class for this session: "$topic_class_name".java\""

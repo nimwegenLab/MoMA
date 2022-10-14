@@ -49,9 +49,9 @@ devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_developme
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
 template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/INTERACTIVE_TESTS_TEMPLATE.java"
 
-printf "Starting debug session for branch:\n\t%s\n" "$FULL_BRANCH_NAME"
+printf "Starting debug session on branch:\n\t%s\n" "$full_topic_branch_name"
 
-BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
+#BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
 topic_branch_data_folder="$devel_data_folder"/"$session_type"/"$session_name"
 image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 config_file_name="mm.properties"
@@ -61,10 +61,11 @@ cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder
 ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_folder/$image_file_name"
 
 mkdir -p "$topic_branch_data_folder"
-echo "$topic_class_path"
+#echo "$topic_class_path"
 cp "$template_class_path" "$topic_class_path"
 sed -i "s/INTERACTIVE_TESTS_TEMPLATE/$topic_class_name/g" "$topic_class_path"
-#sed -i "s/000__debug_template/$BUGFIX_BRANCH_NAME/g" "$class_folder/$topic_branch_test_class.java"
+
+sed -i "s|TEMPLATE_PATH_TO_BE_REPLACED_DURING_TEMPLATE_USAGE|${devel_data_folder}|g" "$topic_class_path"
 #git add "$class_folder/$topic_branch_test_class.java"
 
 echo "${session_type^}"

@@ -12,7 +12,7 @@ public class INTERACTIVE_TESTS_TEMPLATE {
     Integer tmin;
     Integer tmax;
 
-    String datasets_base_path = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/";
+    String datasets_base_path = "TEMPLATE_PATH_TO_BE_REPLACED_DURING_TEMPLATE_USAGE";
 
     public INTERACTIVE_TESTS_TEMPLATE() {
         debugFolderName = "000__debug_template"; /* change this name to the name of your debug-branch without `bugfix/`, which is where you should have created you data-folder for the debugging session */

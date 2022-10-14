@@ -42,8 +42,9 @@ git checkout "$full_topic_branch_name"
 
 test_folder_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug"
 #"${foo^}"
-topic_class_name="${session_type^}"__"$session_name".java
-topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name"
+topic_class_name="${session_type^}"__"$session_name"
+topic_class_name="${topic_class_name//-/_}" # this replaces occurences of "-" with "_"
+topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name".java
 devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_development"
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
 template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/INTERACTIVE_TESTS_TEMPLATE.java"
@@ -51,7 +52,6 @@ template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/ju
 printf "Starting debug session for branch:\n\t%s\n" "$FULL_BRANCH_NAME"
 
 BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
-topic_branch_test_class="Bugfix__${BUGFIX_BRANCH_NAME//-/_}" # this replaces occurences of "-" with "_"
 topic_branch_data_folder="$devel_data_folder"/"$session_type"/"$session_name"
 image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 config_file_name="mm.properties"

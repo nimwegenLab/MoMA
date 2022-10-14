@@ -39,12 +39,12 @@ public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
     }
 
     public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetSubfolder);
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void run_export() {
-        Path reload_folder_path = Paths.get(datasetSubfolder);
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

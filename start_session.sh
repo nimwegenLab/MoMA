@@ -3,6 +3,10 @@
 session_type=$1
 session_name=$2
 
+devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_development"
+template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING.java"
+image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
+config_file_name="mm.properties"
 
 if [[ ! $session_type ]]; then
   printf "ERROR: No session type proved.\n"
@@ -42,20 +46,18 @@ test_folder_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug"
 topic_class_name="${session_type^}"__"$session_name"
 topic_class_name="${topic_class_name//-/_}" # this replaces occurences of "-" with "_"
 topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name".java
-devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_development"
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
-template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING.java"
+topic_branch_dataset_subfolder="$session_type"/"$session_name"
+topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
 
 printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch_name"
+printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
+printf "The class for this debug session is:\n\t%s\n" "$topic_class_path"
 
 echo git branch "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
 echo git checkout "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
 
 #BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
-topic_branch_dataset_subfolder="$session_type"/"$session_name"
-topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
-image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
-config_file_name="mm.properties"
 
 mkdir -p "$topic_branch_data_folder"
 cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"
@@ -67,13 +69,6 @@ cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
 sed -i "s|TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER|${topic_branch_dataset_subfolder}|g" "$topic_class_path"
-#git add "$class_folder/$topic_branch_test_class.java"
-
-#echo "${session_type^}"
-
-exit
-
-printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
-printf "The class for this debug session is:\n\t%s\n" "$topic_branch_test_class"
+echo git add "$class_folder/$topic_branch_test_class.java"
 
 #git checkout "feature/20221013-add-script-to-generate-a-topic-session"  # TODO: Remove this, when development has finished!

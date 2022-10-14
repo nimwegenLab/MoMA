@@ -54,8 +54,8 @@ printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch
 printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
 printf "The class for this debug session is:\n\t%s\n" "$topic_class_path"
 
-echo git branch "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
-echo git checkout "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
+git branch "$full_topic_branch_name"
+git checkout "$full_topic_branch_name"
 
 #BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
 
@@ -69,6 +69,5 @@ cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
 sed -i "s|TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER|${topic_branch_dataset_subfolder}|g" "$topic_class_path"
-echo git add "$class_folder/$topic_branch_test_class.java"
-
-#git checkout "feature/20221013-add-script-to-generate-a-topic-session"  # TODO: Remove this, when development has finished!
+git add "$topic_class_path"
+git commit -m "\"Started new ${session_type}-session. Commiting test-class for this session: "$topic_class_name".java\""

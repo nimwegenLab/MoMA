@@ -28,17 +28,14 @@ fi
 
 full_topic_branch_name="$session_type"/"$session_name"
 
-printf "Session type: %s\n" "$session_type"
-printf "Session branch: %s\n" "$full_topic_branch_name"
+printf "Session type:\n\t%s\n" "$session_type"
+printf "Session name:\n\t%s\n" "$session_name"
 
 # TODO: Uncomment this, when development has finished!
 #if [[ $(git diff --stat) != '' ]]; then
 #  printf 'Cannot start a new session: The working tree is dirty. Please commit changes first.\n'
 #  exit 1
 #fi
-
-git branch "$full_topic_branch_name"
-git checkout "$full_topic_branch_name"
 
 test_folder_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug"
 #"${foo^}"
@@ -47,9 +44,12 @@ topic_class_name="${topic_class_name//-/_}" # this replaces occurences of "-" wi
 topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name".java
 devel_data_folder="/home/micha/Documents/01_work/15_moma_notes/02_moma_development"
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
-template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/INTERACTIVE_TESTS_TEMPLATE.java"
+template_class_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING.java"
 
-printf "Starting debug session on branch:\n\t%s\n" "$full_topic_branch_name"
+printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch_name"
+
+echo git branch "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
+echo git checkout "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
 
 #BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
 topic_branch_data_folder="$devel_data_folder"/"$session_type"/"$session_name"
@@ -63,16 +63,16 @@ ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_f
 mkdir -p "$topic_branch_data_folder"
 #echo "$topic_class_path"
 cp "$template_class_path" "$topic_class_path"
-sed -i "s/INTERACTIVE_TESTS_TEMPLATE/$topic_class_name/g" "$topic_class_path"
+sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 
-sed -i "s|TEMPLATE_PATH_TO_BE_REPLACED_DURING_TEMPLATE_USAGE|${devel_data_folder}|g" "$topic_class_path"
+sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
 #git add "$class_folder/$topic_branch_test_class.java"
 
-echo "${session_type^}"
+#echo "${session_type^}"
 
 exit
 
 printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
 printf "The class for this debug session is:\n\t%s\n" "$topic_branch_test_class"
 
-git checkout "feature/20221013-add-script-to-generate-a-topic-session"  # TODO: Remove this, when development has finished!
+#git checkout "feature/20221013-add-script-to-generate-a-topic-session"  # TODO: Remove this, when development has finished!

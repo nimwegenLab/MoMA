@@ -6,15 +6,15 @@ import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 
-public class INTERACTIVE_TESTS_TEMPLATE {
+public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
     private final String debugFolderName;
     private final String analysisName;
     Integer tmin;
     Integer tmax;
 
-    String datasets_base_path = "TEMPLATE_PATH_TO_BE_REPLACED_DURING_TEMPLATE_USAGE";
+    String datasets_base_path = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS";
 
-    public INTERACTIVE_TESTS_TEMPLATE() {
+    public TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING() {
         debugFolderName = "000__debug_template"; /* change this name to the name of your debug-branch without `bugfix/`, which is where you should have created you data-folder for the debugging session */
         analysisName = "debug_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
@@ -22,7 +22,7 @@ public class INTERACTIVE_TESTS_TEMPLATE {
     }
 
     public static void main(String[] args) {
-        INTERACTIVE_TESTS_TEMPLATE tests = new INTERACTIVE_TESTS_TEMPLATE();
+        TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING tests = new TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING();
 
         tests.run_trackonly();
 //        tests.run_reloading();

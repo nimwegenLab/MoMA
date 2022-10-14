@@ -34,6 +34,9 @@ public class CostFactory implements ICostFactory {
 	}
 
 	public Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
+		if (true) {
+			return new ValuePair<>(0f, new float[]{0f}); /* TODO: Remove this; I set migration cost to 0 only for this development session */
+		}
 		float scaledPositionDifference = (sourcePosition - targetPosition) / normalizer;
 		float exponent;
 		float migrationCost;

@@ -52,7 +52,8 @@ echo git branch "$full_topic_branch_name"# TODO: Remove echo, when development h
 echo git checkout "$full_topic_branch_name"# TODO: Remove echo, when development has finished!
 
 #BUGFIX_BRANCH_NAME="${FULL_BRANCH_NAME/bugfix\//}"
-topic_branch_data_folder="$devel_data_folder"/"$session_type"/"$session_name"
+topic_branch_dataset_subfolder="$session_type"/"$session_name"
+topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
 image_file_name="20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 config_file_name="mm.properties"
 
@@ -64,8 +65,8 @@ mkdir -p "$topic_branch_data_folder"
 #echo "$topic_class_path"
 cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
-
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
+sed -i "s|TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER|${topic_branch_dataset_subfolder}|g" "$topic_class_path"
 #git add "$class_folder/$topic_branch_test_class.java"
 
 #echo "${session_type^}"

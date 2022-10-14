@@ -15,7 +15,7 @@ public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
     String datasets_base_path = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS";
 
     public TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING() {
-        debugFolderName = "000__debug_template"; /* change this name to the name of your debug-branch without `bugfix/`, which is where you should have created you data-folder for the debugging session */
+        debugFolderName = "TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER"; /* change this name to the name of your debug-branch without `bugfix/`, which is where you should have created you data-folder for the debugging session */
         analysisName = "debug_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;

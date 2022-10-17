@@ -963,6 +963,41 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private void addCrossingConstraint() throws GRBException {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
+            for (final Hypothesis<AdvancedComponent<FloatType>> hyp : nodes.getHypothesesAt(t)) {
+//                List<AdvancedComponent<FloatType>> res = hyp.getWrappedComponent().getComponentsBelowClosestToRoot();
+                List<AdvancedComponent<FloatType>> componentsBelow = hyp.getWrappedComponent().getAllComponentsBelow();
+
+
+                final GRBLinExpr expr = new GRBLinExpr();
+
+                /* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
+                 * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
+                 */
+                if (edgeSets.getLeftNeighborhood(hyp) != null) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getLeftNeighborhood(hyp)) {
+                        expr.addTerm(1.0, a_j.getGRBVar());
+                    }
+                } else {
+                    System.out.println(String.format("addContinuityConstraints(): t=%d", t));
+                    System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
+                }
+                if (edgeSets.getRightNeighborhood(hyp) != null) {
+                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hyp)) {
+                        expr.addTerm(-1.0, a_j.getGRBVar());
+                    }
+                } else {
+                    System.out.println(String.format("addContinuityConstraints(): t=%d", t));
+                    System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
+                }
+
+                // add the constraint for this hypothesis
+                model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrT" + t + "_" + hyp.getStringId());
+            }
+        }
+    }
+
     /**
      * This function generates and adds the explanation-continuity-constraints
      * to the ILP model.

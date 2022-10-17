@@ -31,6 +31,8 @@ import java.util.Iterator;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.jug.util.ComponentTreeUtils.recursivelyAddChildrenToList;
+import static com.jug.util.ComponentTreeUtils.recursivelyAddChildrenToListNew;
 import static java.util.Objects.isNull;
 
 public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
@@ -607,6 +609,16 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         while (neighbor != null) {
             result.add(neighbor);
             neighbor = neighbor.getLowerNeighborClosestToRootLevel(); /* iterate over neighboring components taking only the one closest to the root-component */
+        }
+        return result;
+    }
+
+    public List<AdvancedComponent<T>> getAllComponentsBelow() {
+        List<AdvancedComponent<T>> result = new ArrayList<>();
+        List<AdvancedComponent<T>> componentsOfInterest = getComponentsBelowClosestToRoot();
+        result.addAll(componentsOfInterest);
+        for (AdvancedComponent<T> component : componentsOfInterest) {
+            recursivelyAddChildrenToListNew(component, result);
         }
         return result;
     }

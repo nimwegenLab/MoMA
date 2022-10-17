@@ -43,6 +43,14 @@ public class ComponentTreeUtils {
         }
     }
 
+    public static <T extends Type<T>> void recursivelyAddChildrenToListNew(final AdvancedComponent component, List<AdvancedComponent<T>> listOfChildren) {
+        List<AdvancedComponent<T>> children = component.getChildren();
+        for (AdvancedComponent<T> child : children) {
+            listOfChildren.add(child);
+            recursivelyAddChildrenToListNew(child, listOfChildren);
+        }
+    }
+
     /**
      * This method recursively adds all parent components above {@param component} to {@param listOfParents}.
      *

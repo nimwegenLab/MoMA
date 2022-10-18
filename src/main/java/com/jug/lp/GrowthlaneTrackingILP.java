@@ -983,58 +983,72 @@ public class GrowthlaneTrackingILP {
         return hypothesisList;
     }
 
-    private void addBoundingTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
-                                  GRBLinExpr expr) {
+    private void addTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
+                          double coeff_sign,
+                          GRBLinExpr expr) {
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
             if (assignment instanceof MappingAssignment) {
-                addBoundingTerm(((MappingAssignment) assignment).getDestinationHypothesis(), assignment, expr);
+                addBoundingTerm(((MappingAssignment) assignment).getDestinationHypothesis(), assignment, coeff_sign, expr);
             } else if (assignment instanceof DivisionAssignment) {
-                addBoundingTerm(((DivisionAssignment) assignment).getLowerDestinationHypothesis(), assignment, expr);
+                addBoundingTerm(((DivisionAssignment) assignment).getLowerDestinationHypothesis(), assignment, coeff_sign, expr);
             }
         }
     }
 
     private void addBoundingTerm(Hypothesis<AdvancedComponent<FloatType>> hyp,
                                  AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+                                 double coeff_sign,
                                  GRBLinExpr expr) {
         double ordinal = hyp.getWrappedComponent().getOrdinalValue();
-        expr.addTerm(ordinal, assignment.getGRBVar());
+        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
     }
 
     private void addCrossingConstraint(Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest, List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow) throws GRBException{
         final GRBLinExpr expr = new GRBLinExpr();
         int sourceTime = hypothesisOfInterest.getTime();
 
-        if (edgeSets.getRightNeighborhood(hypothesisOfInterest) != null) {
-            addBoundingTerms(edgeSets.getRightNeighborhood(hypothesisOfInterest), expr);
-        } else {
-            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesisOfInterest) == null; hypothesisOfInterest.getStringId(): " + hypothesisOfInterest.getStringId());
+        addTermsForHypothesis(hypothesisOfInterest, 1.0, expr);
+
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypothesesBelow){
+            addTermsForHypothesis(hypothesis, -1.0, expr);
         }
 
-        if(true) throw new NotImplementedException();
+        model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
 
-        /* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
-         * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
-         */
-        if (edgeSets.getLeftNeighborhood(hypothesisOfInterest) != null) {
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getLeftNeighborhood(hypothesisOfInterest)) {
-                expr.addTerm(1.0, a_j.getGRBVar());
-            }
-        } else {
-            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
-            System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
-        }
-        if (edgeSets.getRightNeighborhood(hypothesisOfInterest) != null) {
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hypothesisOfInterest)) {
-                expr.addTerm(-1.0, a_j.getGRBVar());
-            }
-        } else {
-            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
-            System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
-        }
+//        if(true) throw new NotImplementedException();
+//
+//        /* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
+//         * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
+//         */
+//        if (edgeSets.getLeftNeighborhood(hypothesisOfInterest) != null) {
+//            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getLeftNeighborhood(hypothesisOfInterest)) {
+//                expr.addTerm(1.0, a_j.getGRBVar());
+//            }
+//        } else {
+//            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
+//            System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
+//        }
+//        if (edgeSets.getRightNeighborhood(hypothesisOfInterest) != null) {
+//            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hypothesisOfInterest)) {
+//                expr.addTerm(-1.0, a_j.getGRBVar());
+//            }
+//        } else {
+//            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
+//            System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
+//        }
+//
+//        // add the constraint for this hypothesis
+//        model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
+    }
 
-        // add the constraint for this hypothesis
-        model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
+    private void addTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                       double coeff_sign,
+                                       GRBLinExpr expr) {
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            addTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
     }
 
     private double calculateNoneCrossingCoefficient(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j) {

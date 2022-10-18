@@ -1014,31 +1014,6 @@ public class GrowthlaneTrackingILP {
         }
 
         model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
-
-//        if(true) throw new NotImplementedException();
-//
-//        /* TODO-MM-2019-11-21: WARNING: The two separate null-checks below might cause problems in setting up ILP-constraint. If one is null and the other is not, we will have an asymmetric constraint.
-//         * Additional note: While the above is true, we will have to find a solution for t=0/t=gl.size(), which do not have incoming/outgoing assignments.
-//         */
-//        if (edgeSets.getLeftNeighborhood(hypothesisOfInterest) != null) {
-//            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getLeftNeighborhood(hypothesisOfInterest)) {
-//                expr.addTerm(1.0, a_j.getGRBVar());
-//            }
-//        } else {
-//            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
-//            System.out.println("edgeSets.getLeftNeighborhood( hyp ) == null");
-//        }
-//        if (edgeSets.getRightNeighborhood(hypothesisOfInterest) != null) {
-//            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hypothesisOfInterest)) {
-//                expr.addTerm(-1.0, a_j.getGRBVar());
-//            }
-//        } else {
-//            System.out.println(String.format("addContinuityConstraints(): t=%d", sourceTime));
-//            System.out.println("edgeSets.getRightNeighborhood( hyp ) == null");
-//        }
-//
-//        // add the constraint for this hypothesis
-//        model.addConstr(expr, GRB.EQUAL, 0.0, "ContConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
     }
 
     private void addTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,

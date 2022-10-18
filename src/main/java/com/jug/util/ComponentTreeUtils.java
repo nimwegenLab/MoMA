@@ -35,19 +35,11 @@ public class ComponentTreeUtils {
      * @param component component below which we want to get all child components in the component-tree
      * @param listOfChildren list of child components to which the parents will be added
      */
-    public static void recursivelyAddChildrenToList(final ComponentInterface component, List<ComponentInterface> listOfChildren) {
-        List<ComponentInterface> children = component.getChildren();
-        for (ComponentInterface child : children) {
+    public static <T extends ComponentInterface> void recursivelyAddChildrenToList(final T component, List<T> listOfChildren) {
+        List<T> children = component.getChildren();
+        for (T child : children) {
             listOfChildren.add(child);
             recursivelyAddChildrenToList(child, listOfChildren);
-        }
-    }
-
-    public static <T extends Type<T>> void recursivelyAddChildrenToListNew(final AdvancedComponent component, List<AdvancedComponent<T>> listOfChildren) {
-        List<AdvancedComponent<T>> children = component.getChildren();
-        for (AdvancedComponent<T> child : children) {
-            listOfChildren.add(child);
-            recursivelyAddChildrenToListNew(child, listOfChildren);
         }
     }
 

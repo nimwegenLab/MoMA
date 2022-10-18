@@ -997,7 +997,7 @@ public class GrowthlaneTrackingILP {
     private void addBoundingTerm(Hypothesis<AdvancedComponent<FloatType>> hyp,
                                  AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
                                  GRBLinExpr expr) {
-        int ordinal = hyp.getWrappedComponent().getOrdinal();
+        double ordinal = hyp.getWrappedComponent().getOrdinalValue();
         expr.addTerm(ordinal, assignment.getGRBVar());
     }
 
@@ -1007,12 +1007,6 @@ public class GrowthlaneTrackingILP {
 
         if (edgeSets.getRightNeighborhood(hypothesisOfInterest) != null) {
             addBoundingTerms(edgeSets.getRightNeighborhood(hypothesisOfInterest), expr);
-            Set<MappingAssignment> incomingDivisionAssignments = getEdgeSets().getAssignmentsOfType(edgeSets.getRightNeighborhood(hypothesisOfInterest), MappingAssignment.class);
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edgeSets.getRightNeighborhood(hypothesisOfInterest)) {
-
-                double coeff = calculateNoneCrossingCoefficient(a_j);
-                expr.addTerm(coeff, a_j.getGRBVar());
-            }
         } else {
             throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesisOfInterest) == null; hypothesisOfInterest.getStringId(): " + hypothesisOfInterest.getStringId());
         }

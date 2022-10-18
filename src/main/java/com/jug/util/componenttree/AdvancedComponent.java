@@ -622,6 +622,43 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         return result;
     }
 
+    public double getOrdinalValue() {
+        if (children.size() == 0) { /* this is a leaf component; so calculate its ordinal based on the number of leafs below */
+            return Math.pow(getRankRelativeToLeafComponent(), 2.0);
+        } else if (children.size() > 0) {
+            double ordinal = 0;
+            for (AdvancedComponent<T> child : children){
+                ordinal += child.getOrdinalValue(); /* this is not a leaf-component; its ordinal value is the sum of ordinals below it */
+            }
+            return ordinal;
+        }
+        throw new RuntimeException("ERROR: This value should never be reached, because each node should either be a leaf or not.");
+    }
+
+    private double getRankRelativeToLeafComponent() {
+        return getLeafComponentsBelow().size() + 1;
+    }
+
+    List<AdvancedComponent<T>> listOfLeafsBelow;
+
+    private List<AdvancedComponent<T>> getLeafComponentsBelow() {
+        if (isNull(listOfLeafsBelow)) {
+            listOfLeafsBelow = calculateListOfLeafsBelow();
+        }
+        return listOfLeafsBelow;
+    }
+
+    private List<AdvancedComponent<T>> calculateListOfLeafsBelow() {
+        ArrayList<AdvancedComponent<T>> listOfLeafsBelow = new ArrayList<>();
+        List<AdvancedComponent<T>> componentsBelow = getAllComponentsBelow();
+        for(AdvancedComponent<T> component : componentsBelow){
+            if(component.children.size() == 0){
+                listOfLeafsBelow.add(component);
+            }
+        }
+        return listOfLeafsBelow;
+    }
+
     double pixelValueAverage = 0;
 
     public double getPixelValueAverage() {

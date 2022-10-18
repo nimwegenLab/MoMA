@@ -1008,12 +1008,11 @@ public class GrowthlaneTrackingILP {
         return hypothesisList;
     }
 
-    private void addConstrainedTerm(List<Hypothesis<AdvancedComponent<FloatType>>> hyps,
-                                    AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+    private void addConstrainedTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
                                     double coeff_sign,
                                     GRBLinExpr expr) {
         double ordinal = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) {
             ordinal += hyp.getWrappedComponent().getOrdinalValue();
         }
         expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
@@ -1023,7 +1022,7 @@ public class GrowthlaneTrackingILP {
                                       double coeff_sign,
                                       GRBLinExpr expr) {
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-            addConstrainedTerm(assignment.getTargetHypotheses(), assignment, coeff_sign, expr);
+            addConstrainedTerm(assignment, coeff_sign, expr);
         }
     }
 
@@ -1076,18 +1075,21 @@ public class GrowthlaneTrackingILP {
                                       double coeff_sign,
                                       GRBLinExpr expr) {
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-            if (assignment instanceof MappingAssignment) {
-                addConstrainingTerm(((MappingAssignment) assignment).getDestinationHypothesis(), assignment, coeff_sign, expr);
-            } else if (assignment instanceof DivisionAssignment) {
-                addConstrainingTerm(((DivisionAssignment) assignment).getLowerDestinationHypothesis(), assignment, coeff_sign, expr);
-            }
+            addConstrainingTerm(assignment, coeff_sign, expr);
         }
     }
 
-    private void addConstrainingTerm(Hypothesis<AdvancedComponent<FloatType>> hyp,
-                                     AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+    private void addConstrainingTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
                                      double coeff_sign,
                                      GRBLinExpr expr) {
+        Hypothesis<AdvancedComponent<FloatType>> hyp;
+        if (assignment instanceof MappingAssignment) {
+            hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
+        } else if (assignment instanceof DivisionAssignment) {
+            hyp = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
+        } else {
+            return;
+        }
         double ordinal = hyp.getWrappedComponent().getOrdinalValue();
         expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
     }

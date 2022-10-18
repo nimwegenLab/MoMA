@@ -1002,6 +1002,12 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    /**
+     * Add constrained terms for assignments starting from source hypotheses below the hypothesis of interest.
+     * @param hypothesis
+     * @param coeff_sign
+     * @param expr
+     */
     private void addConstrainedTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
                                                    double coeff_sign,
                                                    GRBLinExpr expr) {
@@ -1025,6 +1031,12 @@ public class GrowthlaneTrackingILP {
         model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
     }
 
+    /**
+     * Adding constraining terms for assignments starting the source hypothesis of interest.
+     * @param hypothesis
+     * @param coeff_sign
+     * @param expr
+     */
     private void addConstrainingTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
                                                    double coeff_sign,
                                                    GRBLinExpr expr) {
@@ -1053,13 +1065,6 @@ public class GrowthlaneTrackingILP {
                                      GRBLinExpr expr) {
         double ordinal = hyp.getWrappedComponent().getOrdinalValue();
         expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
-    }
-
-    private double calculateNoneCrossingCoefficient(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j) {
-        List<Hypothesis<AdvancedComponent<FloatType>>> targetHyps = a_j.getTargetHypotheses();
-        ((DivisionAssignment) a_j).getLowerDestinationHypothesis();
-
-        throw new NotImplementedException();
     }
 
     /**

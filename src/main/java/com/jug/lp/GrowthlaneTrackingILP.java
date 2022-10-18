@@ -967,12 +967,37 @@ public class GrowthlaneTrackingILP {
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
-//                List<AdvancedComponent<FloatType>> res = hyp.getWrappedComponent().getComponentsBelowClosestToRoot();
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getHypothesesOfComponents(componentsBelow);
+
+                ArrayList<Hypothesis<AdvancedComponent<FloatType>>> lst = new ArrayList<>();
+                lst.add(hypothesisOfInterest);
+                System.out.print("Hyp of interest (rank): ");
+                printRankRelativeToLeaf(lst);
+                System.out.print("Hyps below (rank): ");
+                printRankRelativeToLeaf(hypothesesBelow);
+                System.out.print("Hyp of interest (ordinal): ");
+                printOrdinalValue(lst);
+                System.out.print("Hyps below (ordinal): ");
+                printOrdinalValue(hypothesesBelow);
+
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
         }
+    }
+
+    private void printRankRelativeToLeaf(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            System.out.print(hyp.getWrappedComponent().getRankRelativeToLeafComponent() + ", ");
+        }
+        System.out.print("\n");
+    }
+
+    private void printOrdinalValue(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            System.out.print(hyp.getWrappedComponent().getOrdinalValue() + ", ");
+        }
+        System.out.print("\n");
     }
 
     private List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesOfComponents(List<AdvancedComponent<FloatType>> components) {

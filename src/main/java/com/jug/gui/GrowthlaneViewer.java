@@ -219,7 +219,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 float optionalCost = getHoveredOptionalHypothesis().getCost();
                 AdvancedComponent<FloatType> component = getHoveredOptionalHypothesis().getWrappedComponent();
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
-                componentInfoString = "C:" + costFormat.format(optionalCost) +
+                componentInfoString =
+                        "\nR:" + component.getRankRelativeToLeafComponent() +
+                        "\nO:" + component.getOrdinalValue() +
+                        "\nC:" + costFormat.format(optionalCost) +
                         "\nT:" + limits.getA() +
                         "\nB:" + limits.getB() +
                         "\nL:" + (limits.getB() - limits.getA()) +

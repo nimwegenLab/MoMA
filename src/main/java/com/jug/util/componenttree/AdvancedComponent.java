@@ -624,7 +624,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public double getOrdinalValue() {
         if (children.size() == 0) { /* this is a leaf component; so calculate its ordinal based on the number of leafs below */
-            return Math.pow(getRankRelativeToLeafComponent(), 2.0);
+            return Math.pow(2, getRankRelativeToLeafComponent());
         } else if (children.size() > 0) {
             double ordinal = 0;
             for (AdvancedComponent<T> child : children){
@@ -635,8 +635,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         throw new RuntimeException("ERROR: This value should never be reached, because each node should either be a leaf or not.");
     }
 
-    private double getRankRelativeToLeafComponent() {
-        return getLeafComponentsBelow().size() + 1;
+    public double getRankRelativeToLeafComponent() {
+        return getLeafComponentsBelow().size();
     }
 
     List<AdvancedComponent<T>> listOfLeafsBelow;

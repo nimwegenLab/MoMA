@@ -983,47 +983,76 @@ public class GrowthlaneTrackingILP {
         return hypothesisList;
     }
 
-    private void addTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
-                          double coeff_sign,
-                          GRBLinExpr expr) {
+    private void addConstrainedTerm(List<Hypothesis<AdvancedComponent<FloatType>>> hyps,
+                                    AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+                                    double coeff_sign,
+                                    GRBLinExpr expr) {
+        double ordinal = 0;
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+            ordinal += hyp.getWrappedComponent().getOrdinalValue();
+        }
+        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
+    }
+
+    private void addConstrainedTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
+                                      double coeff_sign,
+                                      GRBLinExpr expr) {
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-            if (assignment instanceof MappingAssignment) {
-                addBoundingTerm(((MappingAssignment) assignment).getDestinationHypothesis(), assignment, coeff_sign, expr);
-            } else if (assignment instanceof DivisionAssignment) {
-                addBoundingTerm(((DivisionAssignment) assignment).getLowerDestinationHypothesis(), assignment, coeff_sign, expr);
-            }
+            addConstrainedTerm(assignment.getTargetHypotheses(), assignment, coeff_sign, expr);
         }
     }
 
-    private void addBoundingTerm(Hypothesis<AdvancedComponent<FloatType>> hyp,
-                                 AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
-                                 double coeff_sign,
-                                 GRBLinExpr expr) {
-        double ordinal = hyp.getWrappedComponent().getOrdinalValue();
-        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
+    private void addConstrainedTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   double coeff_sign,
+                                                   GRBLinExpr expr) {
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            addConstrainedTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
     }
 
     private void addCrossingConstraint(Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest, List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow) throws GRBException{
         final GRBLinExpr expr = new GRBLinExpr();
         int sourceTime = hypothesisOfInterest.getTime();
 
-        addTermsForHypothesis(hypothesisOfInterest, 1.0, expr);
+        addConstrainingTermsForHypothesis(hypothesisOfInterest, 1.0, expr);
 
         for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypothesesBelow){
-            addTermsForHypothesis(hypothesis, -1.0, expr);
+            addConstrainedTermsForHypothesis(hypothesis, -1.0, expr);
         }
 
         model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
     }
 
-    private void addTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
-                                       double coeff_sign,
-                                       GRBLinExpr expr) {
+    private void addConstrainingTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   double coeff_sign,
+                                                   GRBLinExpr expr) {
         if (edgeSets.getRightNeighborhood(hypothesis) != null) {
-            addTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
+            addConstrainingTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
         } else {
             throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
         }
+    }
+
+    private void addConstrainingTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
+                                      double coeff_sign,
+                                      GRBLinExpr expr) {
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
+            if (assignment instanceof MappingAssignment) {
+                addConstrainingTerm(((MappingAssignment) assignment).getDestinationHypothesis(), assignment, coeff_sign, expr);
+            } else if (assignment instanceof DivisionAssignment) {
+                addConstrainingTerm(((DivisionAssignment) assignment).getLowerDestinationHypothesis(), assignment, coeff_sign, expr);
+            }
+        }
+    }
+
+    private void addConstrainingTerm(Hypothesis<AdvancedComponent<FloatType>> hyp,
+                                     AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+                                     double coeff_sign,
+                                     GRBLinExpr expr) {
+        double ordinal = hyp.getWrappedComponent().getOrdinalValue();
+        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
     }
 
     private double calculateNoneCrossingCoefficient(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j) {

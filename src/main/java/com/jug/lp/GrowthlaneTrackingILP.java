@@ -1083,15 +1083,17 @@ public class GrowthlaneTrackingILP {
                                      double coeff_sign,
                                      GRBLinExpr expr) {
         Hypothesis<AdvancedComponent<FloatType>> hyp;
+        double coefficient;
         if (assignment instanceof MappingAssignment) {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
+            coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
         } else if (assignment instanceof DivisionAssignment) {
             hyp = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
+            coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
         } else {
             return;
         }
-        double ordinal = hyp.getWrappedComponent().getOrdinalValue();
-        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
+        expr.addTerm(coefficient, assignment.getGRBVar());
     }
 
     /**

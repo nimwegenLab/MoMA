@@ -35,7 +35,7 @@ public class Feature__20221013_implement_non_crossing_constraint {
      */
     public void run_interactive_tracking() {
         tmin = 100;
-        tmax = 110;
+        tmax = 101;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});

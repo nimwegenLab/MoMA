@@ -1090,8 +1090,10 @@ public class GrowthlaneTrackingILP {
         } else if (assignment instanceof DivisionAssignment) {
             hyp = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
             coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
+            coefficient = coeff_sign * Double.MAX_VALUE;
         } else {
-            return;
+            throw new RuntimeException("Something went wrong: This statement should never be reached!");
         }
         expr.addTerm(coefficient, assignment.getGRBVar());
     }

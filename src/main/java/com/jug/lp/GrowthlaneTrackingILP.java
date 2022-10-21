@@ -970,35 +970,35 @@ public class GrowthlaneTrackingILP {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getHypothesesOfComponents(componentsBelow);
 
-                ArrayList<Hypothesis<AdvancedComponent<FloatType>>> lst = new ArrayList<>();
-                lst.add(hypothesisOfInterest);
-                System.out.print("Hyp of interest (rank): ");
-                printRankRelativeToLeaf(lst);
-                System.out.print("Hyps below (rank): ");
-                printRankRelativeToLeaf(hypothesesBelow);
-                System.out.print("Hyp of interest (ordinal): ");
-                printOrdinalValue(lst);
-                System.out.print("Hyps below (ordinal): ");
-                printOrdinalValue(hypothesesBelow);
+//                ArrayList<Hypothesis<AdvancedComponent<FloatType>>> lst = new ArrayList<>();  // TODO-MM-20221021: Cleanup commented code before merging topic branch.
+//                lst.add(hypothesisOfInterest);
+//                System.out.print("Hyp of interest (rank): ");
+//                printRankRelativeToLeaf(lst);
+//                System.out.print("Hyps below (rank): ");
+//                printRankRelativeToLeaf(hypothesesBelow);
+//                System.out.print("Hyp of interest (ordinal): ");
+//                printOrdinalValue(lst);
+//                System.out.print("Hyps below (ordinal): ");
+//                printOrdinalValue(hypothesesBelow);
 
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
         }
     }
 
-    private void printRankRelativeToLeaf(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) {
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            System.out.print(hyp.getWrappedComponent().getRankRelativeToLeafComponent() + ", ");
-        }
-        System.out.print("\n");
-    }
+//    private void printRankRelativeToLeaf(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) { // TODO-MM-20221021: Cleanup commented code before merging topic branch.
+//        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+//            System.out.print(hyp.getWrappedComponent().getRankRelativeToLeafComponent() + ", ");
+//        }
+//        System.out.print("\n");
+//    }
 
-    private void printOrdinalValue(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) {
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            System.out.print(hyp.getWrappedComponent().getOrdinalValue() + ", ");
-        }
-        System.out.print("\n");
-    }
+//    private void printOrdinalValue(List<Hypothesis<AdvancedComponent<FloatType>>> hyps) { // TODO-MM-20221021: Cleanup commented code before merging topic branch.
+//        for (Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+//            System.out.print(hyp.getWrappedComponent().getOrdinalValue() + ", ");
+//        }
+//        System.out.print("\n");
+//    }
 
     private List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesOfComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();

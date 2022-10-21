@@ -26,8 +26,9 @@ public class Feature__20221013_implement_non_crossing_constraint {
 
 //        tests.run_interactive_tracking_for_frames_100_to_101();
 //        tests.debug_problem_with_division_assignments();
-        tests.add_variable_to_deactivate_crossing_constraint();
+//        tests.add_variable_to_deactivate_crossing_constraint();
 //        tests.run_interactive_tracking_for_frames_100_to_120();
+        tests.run_interactive_tracking_for_frames_1_to_500();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
@@ -65,6 +66,14 @@ public class Feature__20221013_implement_non_crossing_constraint {
     public void run_interactive_tracking_for_frames_100_to_120() {
         tmin = 100;
         tmax = 120;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive_tracking_for_frames_1_to_500() {
+        tmin = 1;
+        tmax = 500;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});

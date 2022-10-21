@@ -7,8 +7,8 @@ import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 
 public class Feature__20221013_implement_non_crossing_constraint {
-    private final String datasetSubfolder;
-    private final String analysisName;
+    final String datasetSubfolder;
+    String analysisName;
     Integer tmin;
     Integer tmax;
 
@@ -25,7 +25,8 @@ public class Feature__20221013_implement_non_crossing_constraint {
         Feature__20221013_implement_non_crossing_constraint tests = new Feature__20221013_implement_non_crossing_constraint();
 
 //        tests.run_interactive_tracking_for_frames_100_to_101();
-        tests.run_interactive_tracking_for_frames_100_to_120();
+        tests.debug_problem_with_division_assignments();
+//        tests.run_interactive_tracking_for_frames_100_to_120();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
@@ -34,6 +35,15 @@ public class Feature__20221013_implement_non_crossing_constraint {
     /**
      * Test-methods are below.
      */
+    public void debug_problem_with_division_assignments() {
+        tmin = 101;
+        tmax = 102;
+        analysisName = "debug_div_assignment"; /* you can change this if you want to; but it is not needed */
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm_properties_with_focusing_on__problematic_div_assignment.properties");
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
     public void run_interactive_tracking_for_frames_100_to_101() {
         tmin = 100;
         tmax = 101;

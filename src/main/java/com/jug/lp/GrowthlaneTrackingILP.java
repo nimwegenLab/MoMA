@@ -1042,7 +1042,7 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private void addCrossingConstraint(Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest, List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow) throws GRBException{
+    private void addCrossingConstraint(Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest, List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow) throws GRBException {
         final GRBLinExpr expr = new GRBLinExpr();
         int sourceTime = hypothesisOfInterest.getTime();
 
@@ -1052,7 +1052,31 @@ public class GrowthlaneTrackingILP {
             addConstrainedTermsForHypothesis(hypothesis, -1.0, expr);
         }
 
+        addDeactivatingTermForSourceHypothesis(hypothesisOfInterest, expr);
+
         model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
+    }
+
+    private void addDeactivatingTermForSourceHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   GRBLinExpr expr) throws GRBException {
+
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments;
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            assignments = edgeSets.getRightNeighborhood(hypothesis);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
+
+        final GRBLinExpr dummyConstraintExpr = new GRBLinExpr();
+        double cost = 0.0;
+        final GRBVar dummyVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, "DisablingVar_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
+        dummyConstraintExpr.addTerm(1.0, dummyVar);
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
+            dummyConstraintExpr.addTerm(1.0, assignment.getGRBVar());
+        }
+        model.addConstr(dummyConstraintExpr, GRB.EQUAL, 1.0, "DisablingConstr_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
+
+        expr.addTerm(Double.MAX_VALUE, dummyVar);
     }
 
     /**

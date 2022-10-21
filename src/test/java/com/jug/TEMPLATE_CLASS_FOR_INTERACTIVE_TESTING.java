@@ -7,8 +7,8 @@ import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 
 public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
-    private final String datasetSubfolder;
-    private final String analysisName;
+    final String datasetSubfolder;
+    String analysisName;
     Integer tmin;
     Integer tmax;
 

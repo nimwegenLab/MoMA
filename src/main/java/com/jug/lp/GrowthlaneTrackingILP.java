@@ -4,6 +4,7 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
+import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
@@ -19,7 +20,6 @@ import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -969,7 +969,7 @@ public class GrowthlaneTrackingILP {
             System.out.println("addCrossingConstraints for frame: " + t); // TODO-MM-20221021: Remove this before merging the topic branch.
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
-                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getHypothesesOfComponents(componentsBelow);
+                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
 
 //                ArrayList<Hypothesis<AdvancedComponent<FloatType>>> lst = new ArrayList<>();  // TODO-MM-20221021: Cleanup commented code before merging topic branch.
 //                lst.add(hypothesisOfInterest);
@@ -1001,13 +1001,13 @@ public class GrowthlaneTrackingILP {
 //        System.out.print("\n");
 //    }
 
-    private List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesOfComponents(List<AdvancedComponent<FloatType>> components) {
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
         for (AdvancedComponent<FloatType> component : components){
             try {
                 hypothesisList.add(nodes.findHypothesisContaining(component));
-            } catch (RuntimeException e) {
-
+            } catch (IlpSetupException e) {
+                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of intereset  */
             }
         }
         return hypothesisList;

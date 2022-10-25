@@ -1004,7 +1004,11 @@ public class GrowthlaneTrackingILP {
     private List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesOfComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
         for (AdvancedComponent<FloatType> component : components){
-            hypothesisList.add(nodes.findHypothesisContaining(component));
+            try {
+                hypothesisList.add(nodes.findHypothesisContaining(component));
+            } catch (RuntimeException e) {
+
+            }
         }
         return hypothesisList;
     }

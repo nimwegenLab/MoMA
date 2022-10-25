@@ -242,7 +242,9 @@ public class GrowthlaneTrackingILP {
     //            addPathBlockingConstraints();
                 addPathBlockingConstraintsNew();
                 addContinuityConstraints();
-                addCrossingConstraints();
+                if(configurationManager.getCrossingConstraintFeatureFlag()){
+                    addCrossingConstraints();
+                }
 
                 // UPDATE GUROBI-MODEL
                 // - - - - - - - - - -
@@ -966,7 +968,7 @@ public class GrowthlaneTrackingILP {
 
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-            System.out.println("addCrossingConstraints for frame: " + t); // TODO-MM-20221021: Remove this before merging the topic branch.
+//            System.out.println("addCrossingConstraints for frame: " + t); // TODO-MM-20221021: Remove this before merging the topic branch.
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);

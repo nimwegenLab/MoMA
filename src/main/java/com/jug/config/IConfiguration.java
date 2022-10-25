@@ -2,6 +2,12 @@ package com.jug.config;
 
 public interface IConfiguration {
     /**
+     * Returns whether crossing constraints should be used.
+     * @return feature flag
+     */
+    boolean getCrossingConstraintFeatureFlag();
+
+    /**
      * Return a GL is being load. This modifies the startup behavior of MoMA.
      */
     boolean getIsReloading();

@@ -5,6 +5,11 @@ import com.jug.config.IConfiguration;
 public class ConfigMock implements IConfiguration {
 
     @Override
+    public boolean getCrossingConstraintFeatureFlag() {
+        return false;
+    }
+
+    @Override
     public boolean getIsReloading() {
         return false;
     }

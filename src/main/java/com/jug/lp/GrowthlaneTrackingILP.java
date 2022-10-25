@@ -946,7 +946,7 @@ public class GrowthlaneTrackingILP {
 
             final GRBLinExpr exprR = new GRBLinExpr();
             while (runnerNode != null) {
-                @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(runnerNode);
+                @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = nodes.findHypothesisContaining(runnerNode);
                 assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!";
 
                 if (edgeSets.getRightNeighborhood(hypothesis) != null) {

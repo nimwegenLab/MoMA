@@ -1,5 +1,6 @@
 package com.jug.lp;
 
+import com.jug.exceptions.IlpSetupException;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.type.numeric.real.FloatType;
@@ -225,7 +226,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
     public H findHypothesisContaining(final Object something) {
         final H h = hmap.get(something);
         if (isNull(h)) {
-            throw new RuntimeException("No hypothesis found for component: " + ((ComponentInterface) something).getStringId());
+            throw new IlpSetupException("No hypothesis found for component: " + ((ComponentInterface) something).getStringId());
         }
         return h;
     }

@@ -2,7 +2,6 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class GRBModelAdapter implements IGRBModelAdapter {

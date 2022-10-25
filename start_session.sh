@@ -45,7 +45,8 @@ test_folder_path="/home/micha/Documents/01_work/git/MoMA/src/test/java/com/jug"
 #"${foo^}"
 topic_class_name="${session_type^}"__"$session_name"
 topic_class_name="${topic_class_name//-/_}" # this replaces occurences of "-" with "_"
-topic_class_path="$test_folder_path"/"$session_type"/"$topic_class_name".java
+topic_test_folder="$test_folder_path/$session_type"
+topic_class_path="$topic_test_folder/$topic_class_name".java
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
 topic_branch_dataset_subfolder="$session_type"/"$session_name"
 topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
@@ -58,8 +59,7 @@ mkdir -p "$topic_branch_data_folder"
 cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"
 ln -f -r -s "$topic_data_template_folder/$image_file_name" "$topic_branch_data_folder/$image_file_name"
 
-mkdir -p "$topic_branch_data_folder"
-#echo "$topic_class_path"
+mkdir -p "$topic_test_folder"
 cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"

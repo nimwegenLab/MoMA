@@ -4,8 +4,8 @@ import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.config.IConfiguration;
+import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
-import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
@@ -242,6 +242,9 @@ public class GrowthlaneTrackingILP {
     //            addPathBlockingConstraints();
                 addPathBlockingConstraintsNew();
                 addContinuityConstraints();
+                if(configurationManager.getCrossingConstraintFeatureFlag()){
+                    addCrossingConstraints();
+                }
 
                 // UPDATE GUROBI-MODEL
                 // - - - - - - - - - -
@@ -945,7 +948,7 @@ public class GrowthlaneTrackingILP {
 
             final GRBLinExpr exprR = new GRBLinExpr();
             while (runnerNode != null) {
-                @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = (Hypothesis<AdvancedComponent<FloatType>>) nodes.findHypothesisContaining(runnerNode);
+                @SuppressWarnings("unchecked") final Hypothesis<AdvancedComponent<FloatType>> hypothesis = nodes.findHypothesisContaining(runnerNode);
                 assert (hypothesis != null) : "WARNING: Hypothesis for a CTN was not found in GrowthlaneTrackingILP -- this is an indication for some design problem of the system!";
 
                 if (edgeSets.getRightNeighborhood(hypothesis) != null) {
@@ -961,6 +964,143 @@ public class GrowthlaneTrackingILP {
                 recursivelyAddPathBlockingConstraints(childComponents, t);
             }
         }
+    }
+
+    private void addCrossingConstraints() throws GRBException {
+        for (int t = 0; t < gl.numberOfFrames(); t++) {
+            for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
+                List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
+                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
+                addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
+            }
+        }
+    }
+
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
+        List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
+        for (AdvancedComponent<FloatType> component : components){
+            try {
+                hypothesisList.add(nodes.findHypothesisContaining(component));
+            } catch (IlpSetupException e) {
+                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of intereset  */
+            }
+        }
+        return hypothesisList;
+    }
+
+    private void addConstrainedTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+                                    double coeff_sign,
+                                    GRBLinExpr expr) {
+        double ordinal = 0;
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) {
+            ordinal += hyp.getWrappedComponent().getOrdinalValue();
+        }
+        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
+    }
+
+    private void addConstrainedTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
+                                      double coeff_sign,
+                                      GRBLinExpr expr) {
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
+            addConstrainedTerm(assignment, coeff_sign, expr);
+        }
+    }
+
+    /**
+     * Add constrained terms for assignments starting from source hypotheses below the hypothesis of interest.
+     * @param hypothesis
+     * @param coeff_sign
+     * @param expr
+     */
+    private void addConstrainedTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   double coeff_sign,
+                                                   GRBLinExpr expr) {
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            addConstrainedTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
+    }
+
+    private void addCrossingConstraint(Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest, List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow) throws GRBException {
+        final GRBLinExpr expr = new GRBLinExpr();
+        int sourceTime = hypothesisOfInterest.getTime();
+
+        addConstrainingTermsForHypothesis(hypothesisOfInterest, 1.0, expr);
+
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypothesesBelow){
+            addConstrainedTermsForHypothesis(hypothesis, -1.0, expr);
+        }
+
+        addDeactivatingTermForSourceHypothesis(hypothesisOfInterest, expr);
+
+        model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
+    }
+
+    private void addDeactivatingTermForSourceHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   GRBLinExpr expr) throws GRBException {
+
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments;
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            assignments = edgeSets.getRightNeighborhood(hypothesis);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
+
+        final GRBLinExpr dummyConstraintExpr = new GRBLinExpr();
+        double cost = 0.0;
+        final GRBVar dummyVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, "DisablingVar_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
+        dummyConstraintExpr.addTerm(1.0, dummyVar);
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
+            dummyConstraintExpr.addTerm(1.0, assignment.getGRBVar());
+        }
+        model.addConstr(dummyConstraintExpr, GRB.EQUAL, 1.0, "DisablingConstr_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
+
+        expr.addTerm(Double.MAX_VALUE, dummyVar);
+    }
+
+    /**
+     * Adding constraining terms for assignments starting the source hypothesis of interest.
+     * @param hypothesis
+     * @param coeff_sign
+     * @param expr
+     */
+    private void addConstrainingTermsForHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
+                                                   double coeff_sign,
+                                                   GRBLinExpr expr) {
+        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
+            addConstrainingTerms(edgeSets.getRightNeighborhood(hypothesis), coeff_sign, expr);
+        } else {
+            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
+        }
+    }
+
+    private void addConstrainingTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
+                                      double coeff_sign,
+                                      GRBLinExpr expr) {
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
+            addConstrainingTerm(assignment, coeff_sign, expr);
+        }
+    }
+
+    private void addConstrainingTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
+                                     double coeff_sign,
+                                     GRBLinExpr expr) {
+        Hypothesis<AdvancedComponent<FloatType>> hyp;
+        double coefficient;
+        if (assignment instanceof MappingAssignment) {
+            hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
+            coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+        } else if (assignment instanceof DivisionAssignment) {
+            Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
+            Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
+            coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
+        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
+            coefficient = coeff_sign * Double.MAX_VALUE;
+        } else {
+            throw new RuntimeException("Something went wrong: This statement should never be reached!");
+        }
+        expr.addTerm(coefficient, assignment.getGRBVar());
     }
 
     /**

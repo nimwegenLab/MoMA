@@ -24,7 +24,8 @@ public class Feature__20221027_make_migration_cost_optional {
     public static void main(String[] args) {
         Feature__20221027_make_migration_cost_optional tests = new Feature__20221027_make_migration_cost_optional();
 
-        tests.run_trackonly();
+        tests.run_interactive();
+//        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
     }
@@ -32,6 +33,12 @@ public class Feature__20221027_make_migration_cost_optional {
     /**
      * Test-methods are below.
      */
+    public void run_interactive() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");

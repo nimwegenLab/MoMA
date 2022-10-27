@@ -8,6 +8,12 @@ public interface IConfiguration {
     boolean getCrossingConstraintFeatureFlag();
 
     /**
+     * Returns whether migration costs should be used.
+     * @return feature flag
+     */
+    boolean getMigrationCostFeatureFlag();
+
+    /**
      * Return a GL is being load. This modifies the startup behavior of MoMA.
      */
     boolean getIsReloading();

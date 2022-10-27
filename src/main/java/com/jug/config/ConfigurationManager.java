@@ -225,7 +225,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      */
     public boolean EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT = true; /* set whether to perform the oriented bounding box measurement */
 
+    /**
+     * Sets if the crossing constraints should be used.
+     */
     public boolean USE_FEATURE_CROSSING_CONSTRAINTS = true;
+
+    /**
+     * Sets if the crossing constraints should be used.
+     */
+    public boolean USE_FEATURE_MIGRATION_COSTS = false;
 
     private int minTime = -1;
     private int maxTime = -1;
@@ -309,6 +317,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
         USE_FEATURE_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("USE_FEATURE_CROSSING_CONSTRAINTS", USE_FEATURE_CROSSING_CONSTRAINTS);
+
+        USE_FEATURE_MIGRATION_COSTS = parseBooleanFromIntegerValue("USE_FEATURE_MIGRATION_COSTS", USE_FEATURE_MIGRATION_COSTS);
 
         /* process feature flags */
         if (featureFlagDisableMaxCellDrop) {
@@ -597,5 +607,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return new Version(getDatasetMomaVersionString());
     }
 
-    public boolean getCrossingConstraintFeatureFlag() { return USE_FEATURE_CROSSING_CONSTRAINTS; };
+    public boolean getCrossingConstraintFeatureFlag() { return USE_FEATURE_CROSSING_CONSTRAINTS; }
+
+    public boolean getMigrationCostFeatureFlag() { return USE_FEATURE_MIGRATION_COSTS; }
+
 }

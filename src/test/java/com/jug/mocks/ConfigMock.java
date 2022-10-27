@@ -10,6 +10,11 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
+    public boolean getMigrationCostFeatureFlag() {
+        return false;
+    }
+
+    @Override
     public boolean getIsReloading() {
         return false;
     }

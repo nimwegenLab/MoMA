@@ -461,6 +461,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             props.setProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS));
 
+            setBooleanAsIntegerValue(props, "USE_FEATURE_CROSSING_CONSTRAINTS", USE_FEATURE_CROSSING_CONSTRAINTS);
+            setBooleanAsIntegerValue(props, "USE_FEATURE_MIGRATION_COSTS", USE_FEATURE_MIGRATION_COSTS);
+
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {
             e.printStackTrace();

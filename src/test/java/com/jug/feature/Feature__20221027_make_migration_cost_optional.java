@@ -1,4 +1,4 @@
-package com.jug;
+package com.jug.feature;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,23 +6,23 @@ import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 
-public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
+public class Feature__20221027_make_migration_cost_optional {
     final String datasetSubfolder;
     String analysisName;
     Integer tmin;
     Integer tmax;
 
-    String datasetsBasePath = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    String datasetsBasePath = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
 
-    public TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING() {
-        datasetSubfolder = "TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    public Feature__20221027_make_migration_cost_optional() {
+        datasetSubfolder = "feature/20221027-make-migration-cost-optional"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;
     }
 
     public static void main(String[] args) {
-        TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING tests = new TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING();
+        Feature__20221027_make_migration_cost_optional tests = new Feature__20221027_make_migration_cost_optional();
 
         tests.run_interactive();
 //        tests.run_trackonly();

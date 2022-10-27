@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add crossing-constraints to the optimization problem, which make it impossible for assignments to cross each other. This feature can be turned off in `mm.properties` by setting `USE_FEATURE_CROSSING_CONSTRAINTS=0`. It is on by default.
+- Add feature flag `USE_FEATURE_MIGRATION_COSTS` in `mm.properties` flag to enable/disable the migration cost. Disable it by default, because we do not need them anymore thanks to crossing-constraints.
 
 ## [0.6.0] - 2022-10-25
 

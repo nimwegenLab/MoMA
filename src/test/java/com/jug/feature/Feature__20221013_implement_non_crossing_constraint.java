@@ -1,4 +1,4 @@
-package com.jug;
+package com.jug.feature;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;

@@ -50,6 +50,7 @@ topic_class_path="$topic_test_folder/$topic_class_name".java
 topic_data_template_folder="$devel_data_folder/00_test_datasets/gl_data_1_template"
 topic_branch_dataset_subfolder="$session_type"/"$session_name"
 topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
+topic_class_package="package com.jug.${session_type};"
 
 printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch_name"
 printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
@@ -64,6 +65,7 @@ cp "$template_class_path" "$topic_class_path"
 sed -i "s/TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING/$topic_class_name/g" "$topic_class_path"
 sed -i "s|TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS|${devel_data_folder}|g" "$topic_class_path"
 sed -i "s|TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER|${topic_branch_dataset_subfolder}|g" "$topic_class_path"
+sed -i "s|package com.jug;|${topic_class_package}|g" "$topic_class_path"
 
 git branch "$full_topic_branch_name"
 git checkout "$full_topic_branch_name"

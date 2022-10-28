@@ -12,10 +12,10 @@ public class Feature__20221013_implement_non_crossing_constraint {
     Integer tmin;
     Integer tmax;
 
-    String datasetsBasePath = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    String datasetsBasePath = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
 
     public Feature__20221013_implement_non_crossing_constraint() {
-        datasetSubfolder = "feature/20221013-implement-non-crossing-constraint"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+        datasetSubfolder = "feature/20221013-implement-non-crossing-constraint"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;

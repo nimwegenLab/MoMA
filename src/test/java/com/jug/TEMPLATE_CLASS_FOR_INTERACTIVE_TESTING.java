@@ -12,10 +12,10 @@ public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
     Integer tmin;
     Integer tmax;
 
-    String datasetsBasePath = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    String datasetsBasePath = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
 
     public TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING() {
-        datasetSubfolder = "TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER"; /* DO NOT CHANGE: value is overwritten by the script start_session.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+        datasetSubfolder = "TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;

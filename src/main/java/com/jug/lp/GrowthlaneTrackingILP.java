@@ -972,6 +972,8 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    double bigM = Double.MAX_VALUE;
+
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
@@ -1062,7 +1064,7 @@ public class GrowthlaneTrackingILP {
         }
         model.addConstr(dummyConstraintExpr, GRB.EQUAL, 1.0, "DisablingConstr_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
 
-        expr.addTerm(Double.MAX_VALUE, dummyVar);
+        expr.addTerm(bigM, dummyVar);
     }
 
     /**
@@ -1102,7 +1104,7 @@ public class GrowthlaneTrackingILP {
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
             coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
         } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
-            coefficient = coeff_sign * Double.MAX_VALUE;
+            coefficient = coeff_sign * bigM;
         } else {
             throw new RuntimeException("Something went wrong: This statement should never be reached!");
         }

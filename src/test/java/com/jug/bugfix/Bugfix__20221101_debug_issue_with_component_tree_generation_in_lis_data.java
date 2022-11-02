@@ -35,9 +35,9 @@ public class Bugfix__20221101_debug_issue_with_component_tree_generation_in_lis_
      */
     public void run_interactive() {
         tmin = null;
-        tmax = 120;
+        tmax = null;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20220629_VNG1040_AB2h_2_MMStack_Pos1_GL6.tif");
-//        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties__NOT_WORKING_FROM_SCICORE");
+//        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties__COPIED_FROM_SCICORE__NOT_WORKING");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties__DEBUG_DEFAULT");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }

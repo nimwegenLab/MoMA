@@ -53,8 +53,8 @@ topic_branch_data_folder="$devel_data_folder"/$topic_branch_dataset_subfolder
 topic_class_package="package com.jug.${session_type};"
 
 printf "Starting ${session_type} session on branch:\n\t%s\n" "$full_topic_branch_name"
-printf "The data folder for this debug session is:\n\t%s\n" "$topic_branch_data_folder"
-printf "The class for this debug session is:\n\t%s\n" "$topic_class_path"
+printf "The data folder for this session is:\n\t%s\n" "$topic_branch_data_folder"
+printf "The class for this session is:\n\t%s\n" "$topic_class_path"
 
 mkdir -p "$topic_branch_data_folder"
 cp -P "$topic_data_template_folder/$config_file_name" "$topic_branch_data_folder/$config_file_name"

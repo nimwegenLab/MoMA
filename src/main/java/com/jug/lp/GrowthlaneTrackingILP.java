@@ -1000,7 +1000,7 @@ public class GrowthlaneTrackingILP {
                                     double coeff_sign,
                                     GRBLinExpr expr) {
         double ordinal = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) { // TODO-MM-20221102: I only need to include terms for mapping- and division-assignments here! But including the exit and lysis-assignments here is not incorrect.
             ordinal += hyp.getWrappedComponent().getOrdinalValue();
         }
         expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
@@ -1040,9 +1040,9 @@ public class GrowthlaneTrackingILP {
             addConstrainedTermsForHypothesis(hypothesis, -1.0, expr);
         }
 
-        addDeactivatingTermForSourceHypothesis(hypothesisOfInterest, expr);
+//        addDeactivatingTermForSourceHypothesis(hypothesisOfInterest, expr);
 
-        model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
+        model.addConstr(expr, GRB.GREATER_EQUAL, -bigM, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
     }
 
     private void addDeactivatingTermForSourceHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
@@ -1095,20 +1095,18 @@ public class GrowthlaneTrackingILP {
                                      double coeff_sign,
                                      GRBLinExpr expr) {
         Hypothesis<AdvancedComponent<FloatType>> hyp;
-        double coefficient;
         if (assignment instanceof MappingAssignment) {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
-            coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+            double coefficient = coeff_sign * (hyp.getWrappedComponent().getOrdinalValue() - bigM);
+            expr.addTerm(coefficient, assignment.getGRBVar());
         } else if (assignment instanceof DivisionAssignment) {
             Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
-            coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
-        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
-            coefficient = coeff_sign * bigM;
-        } else {
-            throw new RuntimeException("Something went wrong: This statement should never be reached!");
+            double coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue() - bigM);
+//        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
+//            coefficient = coeff_sign * bigM;
+            expr.addTerm(coefficient, assignment.getGRBVar());
         }
-        expr.addTerm(coefficient, assignment.getGRBVar());
     }
 
     /**

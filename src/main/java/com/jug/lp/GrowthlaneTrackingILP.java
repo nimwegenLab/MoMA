@@ -1079,8 +1079,6 @@ public class GrowthlaneTrackingILP {
             Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
             double coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue() - bigM);
-//        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
-//            coefficient = coeff_sign * bigM;
             expr.addTerm(coefficient, assignment.getGRBVar());
         }
     }

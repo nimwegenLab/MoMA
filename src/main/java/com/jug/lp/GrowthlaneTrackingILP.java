@@ -999,11 +999,17 @@ public class GrowthlaneTrackingILP {
     private void addConstrainedTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
                                     double coeff_sign,
                                     GRBLinExpr expr) {
-        double ordinal = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) { // TODO-MM-20221102: I only need to include terms for mapping- and division-assignments here! But including the exit and lysis-assignments here is not incorrect.
-            ordinal += hyp.getWrappedComponent().getOrdinalValue();
+        Hypothesis<AdvancedComponent<FloatType>> hyp;
+        if (assignment instanceof MappingAssignment) {
+            hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
+            double coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+            expr.addTerm(coefficient, assignment.getGRBVar());
+        } else if (assignment instanceof DivisionAssignment) {
+            Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
+            Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
+            double coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
+            expr.addTerm(coefficient, assignment.getGRBVar());
         }
-        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
     }
 
     private void addConstrainedTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,

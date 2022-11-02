@@ -27,9 +27,9 @@ public class Feature__20221013_implement_non_crossing_constraint {
 //        tests.run_interactive_tracking_for_frames_100_to_101();
 //        tests.debug_problem_with_division_assignments();
 //        tests.add_variable_to_deactivate_crossing_constraint();
-        tests.run_interactive_tracking_for_frames_100_to_120();
+//        tests.run_interactive_tracking_for_frames_100_to_120();
 //        tests.run_interactive_tracking_for_frames_398_to_400();
-//        tests.run_interactive_tracking_for_frames_1_to_500();
+        tests.run_interactive_tracking_for_frames_1_to_500();
 //        tests.run_interactive_tracking_for_frames_1_to_390();
 //        tests.run_trackonly();
 //        tests.run_reloading();

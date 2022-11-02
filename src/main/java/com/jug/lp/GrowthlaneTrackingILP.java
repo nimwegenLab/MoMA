@@ -1083,8 +1083,11 @@ public class GrowthlaneTrackingILP {
         }
         model.addConstr(dummyConstraintExpr, GRB.EQUAL, 1.0, "DisablingConstr_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
 
-        expr.addTerm(Double.MAX_VALUE, dummyVar);
+        expr.addTerm(bigM, dummyVar);
     }
+
+//    double bigM = Double.MAX_VALUE;
+    double bigM = 32768;
 
     /**
      * Adding constraining terms for assignments starting the source hypothesis of interest.
@@ -1123,7 +1126,7 @@ public class GrowthlaneTrackingILP {
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
             coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
         } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
-            coefficient = coeff_sign * Double.MAX_VALUE;
+            coefficient = coeff_sign * bigM;
         } else {
             throw new RuntimeException("Something went wrong: This statement should never be reached!");
         }

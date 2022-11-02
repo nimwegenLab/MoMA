@@ -972,7 +972,7 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    double bigM = Double.MAX_VALUE;
+    double bigM = 32768;
 
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {

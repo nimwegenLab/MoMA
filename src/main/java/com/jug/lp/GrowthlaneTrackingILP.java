@@ -972,16 +972,32 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    double bigM = 32768;
+    double bigM = 0;
 
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-            for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
+            List<Hypothesis<AdvancedComponent<FloatType>>> currentHypotheses = nodes.getHypothesesAt(t);
+
+            calculateBigM(currentHypotheses);
+
+            for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : currentHypotheses) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
         }
+    }
+
+    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> currentHypotheses) {
+        double maxLeafRank = 0;
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : currentHypotheses) {
+            AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
+            if(component.getChildren().size() == 0){
+                double componentRank = component.getRankRelativeToLeafComponent();
+                maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
+            }
+        }
+        bigM = Math.pow(2, maxLeafRank-1);
     }
 
     private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {

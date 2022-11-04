@@ -4,20 +4,15 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
-import net.imglib2.img.ImgView;
-import net.imglib2.img.array.ArrayImgs;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.integer.IntType;
-import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import static java.util.Objects.isNull;
 
 /**
  * This class is a new version of {@link Component}. The goal is for all other code to depend on this class and remove
@@ -49,19 +44,23 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         this.tester = tester;
         this.componentPropertiesCalculator = componentPropertiesCalculator;
         CreateTree(componentForest);
-        writeRootNodesToAllNodes();
         sortRootNodes();
         sortAllNodes();
         SortChildrenByPosition();
+        writeRootNodesToAllNodes();
+        writeNodeListToAllNodes();
+        writeLeafNodesToAllNodes();
     }
 
     public AdvancedComponentForest(List<AdvancedComponent<T>> rootComponents) {
         roots = rootComponents;
         recursivelyAddNodes(roots);
-        writeRootNodesToAllNodes();
         sortRootNodes();
         sortAllNodes();
         SortChildrenByPosition();
+        writeRootNodesToAllNodes();
+        writeNodeListToAllNodes();
+        writeLeafNodesToAllNodes();
     }
 
     void recursivelyAddNodes(List<AdvancedComponent<T>> components) {
@@ -74,6 +73,24 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
     private void writeRootNodesToAllNodes() {
         for (AdvancedComponent<T> node : nodes) {
             node.setComponentTreeRoots(roots);
+        }
+    }
+
+    private void writeNodeListToAllNodes(){
+        for (AdvancedComponent<T> node : nodes) {
+            node.setComponentTreeNodes(nodes);
+        }
+    }
+
+    private void writeLeafNodesToAllNodes() {
+        List<AdvancedComponent<T>> leafNodes = new ArrayList();
+        for (AdvancedComponent<T> node : nodes) {
+            if (node.getChildren().size() == 0) {
+                leafNodes.add(node);
+            }
+        }
+        for (AdvancedComponent<T> node : nodes) {
+            node.setComponentTreeLeafNodes(nodes);
         }
     }
 

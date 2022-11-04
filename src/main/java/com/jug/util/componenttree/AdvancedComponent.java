@@ -61,8 +61,6 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private LabelRegion<Integer> region;
     private double[] firstMomentPixelCoordinates = null;
     private List<AdvancedComponent<T>> componentTreeRoots;
-    private List<AdvancedComponent<T>> componentTreeNodes;
-    private List<AdvancedComponent<T>> componentTreeLeafNodes;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
@@ -394,22 +392,6 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             stringId = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         }
         return stringId;
-    }
-
-    public void setComponentTreeNodes(List<AdvancedComponent<T>> nodes) {
-        componentTreeNodes = nodes;
-    }
-
-    public List<AdvancedComponent<T>> getComponentTreeNodes(){
-        return componentTreeNodes;
-    }
-
-    public void setComponentTreeLeafNodes(List<AdvancedComponent<T>> nodes) {
-        componentTreeLeafNodes = nodes;
-    }
-
-    public List<AdvancedComponent<T>> getComponentTreeLeafNodes(){
-        return componentTreeLeafNodes;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {

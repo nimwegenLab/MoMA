@@ -972,20 +972,10 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    double bigM = 0;
-
-    private void calculateBigM(AdvancedComponent<FloatType> component){
-        bigM = Math.pow(2, component.getComponentTreeLeafNodes().size() + 1);
-//        for (AdvancedComponent root : component.getComponentTreeRoots()) {
-//            root.getRankRelativeToLeafComponent()
-//        }
-    }
+    double bigM = 32768;
 
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
-            calculateBigM(nodes.getHypothesesAt(t).get(0).getWrappedComponent());
-//            bigM = // calculate value of bigM here; based on the leaf-component with highest rank
-//            hypotheses.so // calculate value of bigM here; based on the leaf-component with highest rank
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);

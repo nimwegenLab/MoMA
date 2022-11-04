@@ -24,8 +24,8 @@ public class Feature__20221102_simplify_the_crossing_constraint_definition {
     public static void main(String[] args) {
         Feature__20221102_simplify_the_crossing_constraint_definition tests = new Feature__20221102_simplify_the_crossing_constraint_definition();
 
-        tests.run_interactive();
-//        tests.run_interactive__frames_0_to_500();
+//        tests.run_interactive();
+        tests.run_interactive__frames_0_to_500();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
@@ -38,7 +38,7 @@ public class Feature__20221102_simplify_the_crossing_constraint_definition {
         tmin = null;
         tmax = 120;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties__from_20221013-implement-non-crossing-constraint");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 

@@ -35,8 +35,10 @@ public class Feature__20221102_simplify_the_crossing_constraint_definition {
      * Test-methods are below.
      */
     public void run_interactive() {
-        tmin = 112;
-        tmax = 115;
+//        tmin = 112;
+//        tmax = 115;
+        tmin = 100;
+        tmax = 120;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties__from_20221013-implement-non-crossing-constraint");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});

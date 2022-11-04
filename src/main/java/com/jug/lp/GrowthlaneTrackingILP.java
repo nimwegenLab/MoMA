@@ -1003,17 +1003,6 @@ public class GrowthlaneTrackingILP {
         return bigM;
     }
 
-    private double calculateBigMnew(List<Hypothesis<AdvancedComponent<FloatType>>> currentHypotheses) {
-        double maxOrdinal = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : currentHypotheses) {
-            AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
-            double componentOrdinal = component.getOrdinalValue();
-            maxOrdinal = (componentOrdinal > maxOrdinal) ? componentOrdinal : maxOrdinal;
-        }
-        bigM = maxOrdinal;
-        return bigM;
-    }
-
     private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
         for (AdvancedComponent<FloatType> component : components){

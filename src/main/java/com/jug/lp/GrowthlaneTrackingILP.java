@@ -1109,12 +1109,20 @@ public class GrowthlaneTrackingILP {
         Hypothesis<AdvancedComponent<FloatType>> hyp;
         if (assignment instanceof MappingAssignment) {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
-            double coefficient = coeff_sign * (hyp.getWrappedComponent().getOrdinalValue() - bigM);
+            double ordinal = hyp.getWrappedComponent().getOrdinalValue();
+            if(ordinal >= bigM){
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+            }
+            double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());
         } else if (assignment instanceof DivisionAssignment) {
             Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
-            double coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue() - bigM);
+            double ordinal = lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue();
+            if(ordinal >= bigM){
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+            }
+            double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());
         }
     }

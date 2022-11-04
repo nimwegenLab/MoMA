@@ -976,11 +976,7 @@ public class GrowthlaneTrackingILP {
 
     private void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) { /* upper limit of FOR-loop is `gl.numberOfFrames() - 1` because we do not need crossing-constraints for the last time-step, which only contains exit-assignments */
-            bigM = calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
-
-            if(Double.isNaN(bigM) || Double.isInfinite(bigM)){
-                System.out.println("something went wrong");
-            }
+            calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
 
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
@@ -990,17 +986,33 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private double calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> currentHypotheses) {
+    /**
+     * This method calculate the big-M value for the crossing-constraint.
+     *
+     * It takes as input all target-components of assignments being considered in the crossing-constraint.
+     * It then:
+     * 1. Determines the highest rank of the leaf-components in the list: R
+     * 2. Increase this rank value by 1: R+1
+     * 3. Set big-M as the power-of-two: 2^R
+     * big-M is thus guaranteed to be larger than any ordinal-value of the target-components and also larger than the
+     * sum of any two ordinal.
+     *
+     * @param alltargetHypotheses
+     */
+    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> alltargetHypotheses) {
         double maxLeafRank = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : currentHypotheses) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : alltargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
-            if(component.getChildren().size() == 0){
+            if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();
                 maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
             }
         }
         bigM = Math.pow(2, maxLeafRank + 1);
-        return bigM;
+
+        if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
+            System.out.println("something went wrong");
+        }
     }
 
     private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {

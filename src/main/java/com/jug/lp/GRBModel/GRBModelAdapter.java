@@ -14,6 +14,10 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBConstr getConstrByName(String name) throws GRBException {
+        GRBConstr[] listOfConstrains = this.getConstrs();
+        if (listOfConstrains.length == 0) {
+            return null;
+        }
         return this.model.getConstrByName(name);
     }
 
@@ -43,13 +47,10 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     @Override
     public GRBConstr addConstr(GRBLinExpr lhsExpr, char sense, double rhs, String name) throws GRBException {
         GRBConstr res = null;
-        try {
-            res = model.getConstrByName(name);
-        } catch (GRBException err) {
-//            throw new RuntimeException("Failed while adding Gurobi constraint: " + name);
-        }
+        res = this.getConstrByName(name);
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
+            model.update();
         }
         return res;
     }
@@ -100,6 +101,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         }
         if(res == null){
             res = model.addVar(lb, ub, obj, type, name);
+            model.update();
         }
         return res;
     }

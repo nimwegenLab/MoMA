@@ -202,7 +202,7 @@ public class TestUtils {
     }
 
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
-        IImageProvider imageProvider = getImageProvider(imageFile);
+        IImageProvider imageProvider = getImageProviderFromProbabilityImage(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
@@ -228,7 +228,7 @@ public class TestUtils {
         return Paths.get(new File("").getAbsolutePath(), relativePath);
     }
 
-    public IImageProvider getImageProvider(Path imageFile) throws IOException {
+    public IImageProvider getImageProviderFromProbabilityImage(Path imageFile) throws IOException {
         assertTrue(imageFile.toFile().exists());
         Img input = (Img) ij.io().open(imageFile.toString());
         assertNotNull(input);

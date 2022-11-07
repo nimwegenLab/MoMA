@@ -40,9 +40,9 @@ public class ComponentForestGeneratorTests {
 //        new ComponentForestGeneratorTests().testSegmentAreaCalculationOfChildren();
 //        new ComponentForestGeneratorTests().testPrintRankOfSegment();
 //        new ComponentForestGeneratorTests().root_components__return__correct_hash_code();
-        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation();
+//        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation();
 //        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation__check_MserTree();
-//        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation__test_new_tree_generation_method();
+        new ComponentForestGeneratorTests().debugThreeWayComponentSegmentation__test_new_tree_generation_method();
     }
 
     public void debugThreeWayComponentSegmentation__test_new_tree_generation_method() throws IOException {

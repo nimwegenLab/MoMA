@@ -270,14 +270,6 @@ public class PseudoDic {
         return assignmentCostExporter;
     }
 
-    ComponentIntensityExporter componentIntensityExporter;
-    public ComponentIntensityExporter getComponentIntensityExporter(){
-        if(isNull(componentIntensityExporter)){
-            componentIntensityExporter = new ComponentIntensityExporter(getMomaModel().getCurrentGL(), getComponentProperties());
-        }
-        return componentIntensityExporter;
-    }
-
     public ITrackingConfiguration getTrackingConfiguration() {
         return configurationManager;
     }

@@ -15,6 +15,7 @@ import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
+import com.jug.lp.AssignmentFluorescenceFilter;
 import com.jug.lp.AssignmentPlausibilityTester;
 import com.jug.lp.GurobiCallback;
 import com.jug.lp.GurobiCallbackAbstract;
@@ -26,7 +27,6 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -272,6 +272,14 @@ public class PseudoDic {
 
     public ITrackingConfiguration getTrackingConfiguration() {
         return configurationManager;
+    }
+
+    AssignmentFluorescenceFilter assignmentFilter;
+    public AssignmentFluorescenceFilter getAssignmentFilter() {
+        if(isNull(assignmentFilter)){
+            assignmentFilter = new AssignmentFluorescenceFilter(configurationManager);
+        }
+        return assignmentFilter;
     }
 
     public UnetProcessor getUnetProcessor() {

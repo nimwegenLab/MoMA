@@ -1,6 +1,13 @@
 package com.jug.config;
 
 public interface IConfiguration {
+
+    /**
+     * Returns whether to use the fluorescence intensity of components to filter assignments.
+     * @return
+     */
+    boolean getFilterAssignmentsUsingFluorescenceFeatureFlag();
+
     /**
      * Returns whether crossing constraints should be used.
      * @return feature flag

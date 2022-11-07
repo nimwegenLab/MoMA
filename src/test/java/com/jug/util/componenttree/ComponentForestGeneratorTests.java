@@ -21,6 +21,7 @@ import org.junit.Test;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
@@ -46,10 +47,10 @@ public class ComponentForestGeneratorTests {
     }
 
     public void debugThreeWayComponentSegmentation__test_new_tree_generation_method() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        Path imageFile = testUtils.getAbsolutTestFilePath("/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif");
         int frameIndex = 0;
 
-        IImageProvider imageProvider = testUtils.getImageProvider(imageFile);
+        IImageProvider imageProvider = testUtils.getImageProviderFromProbabilityImage(imageFile);
 
         PseudoDic dic = new PseudoDic();
         WatershedMaskGenerator watershedMaskGenerator = dic.getWatershedMaskGenerator();
@@ -93,10 +94,10 @@ public class ComponentForestGeneratorTests {
     }
 
     public void debugThreeWayComponentSegmentation__check_MserTree() throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
+        Path imageFile = testUtils.getAbsolutTestFilePath("/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif");
         int frameIndex = 0;
 
-        IImageProvider imageProvider = testUtils.getImageProvider(imageFile);
+        IImageProvider imageProvider = testUtils.getImageProviderFromProbabilityImage(imageFile);
 
         PseudoDic dic = new PseudoDic();
         WatershedMaskGenerator watershedMaskGenerator = dic.getWatershedMaskGenerator();
@@ -195,7 +196,7 @@ public class ComponentForestGeneratorTests {
      * @throws InterruptedException
      */
     @Test
-    public void testSegmentAreaCalculation() throws IOException, InterruptedException {
+    public void testSegmentAreaCalculation() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 

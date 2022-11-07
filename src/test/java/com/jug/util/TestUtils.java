@@ -208,14 +208,6 @@ public class TestUtils {
         return tree;
     }
 
-    public IImageProvider getImageProvider(String imageFile) throws IOException {
-        assertTrue(new File(imageFile).exists());
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
-
-        return new ImageProviderMock(input);
-    }
-
     public IImageProvider getImageProviderFromDataFolder(String imageFile) throws IOException {
         assertTrue(new File(imageFile).exists());
         Img input = (Img) ij.io().open(imageFile);

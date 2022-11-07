@@ -62,5 +62,4 @@ public class ImageProvider implements IImageProvider {
     public synchronized Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
         return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
     }
-
 }

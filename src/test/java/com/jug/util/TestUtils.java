@@ -208,12 +208,17 @@ public class TestUtils {
         return tree;
     }
 
-    public IImageProvider getImageProviderFromDataFolder(String imageFile) throws IOException {
-        assertTrue(new File(imageFile).exists());
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
+    public IImageProvider getImageProviderFromDataFolder(Path testDataFolder) throws IOException {
+        assertTrue(testDataFolder.toFile().exists());
+        Path testImagePath = getTestImageFilePath(testDataFolder);
+        Img imageStack = (Img) ij.io().open(testImagePath.toString());
+        assertNotNull(imageStack);
 
-        return new ImageProviderMock(input);
+        Path probabilityMapsImageFilePath = getProbabilityMapsImageFilePath(testDataFolder);
+        Img probabilityMapsImage = (Img) ij.io().open(probabilityMapsImageFilePath.toString());
+        assertNotNull(imageStack);
+
+        return new ImageProviderMock(probabilityMapsImage, imageStack);
     }
 
     public Path getAbsolutTestFilePath(String relativePath) {
@@ -232,6 +237,17 @@ public class TestUtils {
         final FilenameFilter filter = (dir, name) -> name.contains( "images__frames_" );
         File[] list = testDataPath.toFile().listFiles(filter);
         return list[0].toPath();
+    }
+
+    public Path getProbabilityMapsImageFilePath(Path testDataPath){
+        assertTrue(testDataPath.toFile().exists());
+        final FilenameFilter filter = (dir, name) -> name.contains( "probability_maps__model_" );
+        File[] list = testDataPath.toFile().listFiles(filter);
+        return list[0].toPath();
+    }
+
+    public <T extends NumericType<T>> ImagePlus show(RandomAccessibleInterval<T> img) {
+        return ImageJFunctions.show(img, "");
     }
 
     class CostFactoryMock implements ICostFactory {

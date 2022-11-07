@@ -231,6 +231,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = true;
 
     /**
+     * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.
+     */
+    public boolean FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE = true;
+
+    /**
      * Sets if the crossing constraints should be used.
      */
     public boolean FEATURE_FLAG_MIGRATION_COSTS = false;
@@ -317,8 +322,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
         FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
-
         FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+        FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE = parseBooleanFromIntegerValue("FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE", FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE);
 
         /* process feature flags */
         if (featureFlagDisableMaxCellDrop) {
@@ -463,6 +468,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE", FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE);
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {

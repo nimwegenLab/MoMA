@@ -1,7 +1,5 @@
 package com.jug.lp;
 
-//import com.jug.lp.GRBModel.GRBModelAdapter;
-
 import gurobi.*;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,6 +10,46 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class TestGurobiVariableSettingAndRetrieval {
+    @Test
+    public void test__getting_constraint_by_name__throws_exception_when_not_updating_model() throws GRBException {
+        GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+        GRBModel model = new GRBModel(env);
+        String name = "some_constraint_name";
+
+        GRBLinExpr expr = new GRBLinExpr();
+        model.addConstr(expr, GRB.EQUAL, 1, name);
+
+        Exception exception = Assert.assertThrows(gurobi.GRBException.class, ()->model.getConstrByName(name));
+        Assert.assertEquals("No constraint names available to index", exception.getMessage());
+    }
+
+    @Test
+    public void test__getting_variable_name__throws_exception_when_not_updating_model() throws GRBException {
+        GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+        GRBModel model = new GRBModel(env);
+        String name = "some_variable_name";
+        String varName = name + "1";
+
+        GRBVar var1 = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
+
+        Exception exception = Assert.assertThrows(gurobi.GRBException.class, ()->var1.get(GRB.StringAttr.VarName));
+        Assert.assertEquals("Error at GRBVar.get", exception.getMessage());
+    }
+
+    @Test
+    public void test__getting_variable_name__works_when_not_updating_model() throws GRBException {
+        GRBEnv env = new GRBEnv("MotherMachineILPs.log");
+        GRBModel model = new GRBModel(env);
+        String name = "some_variable_name";
+        String varName = name + "1";
+        GRBVar var1 = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
+
+        model.update();
+
+        String varNameRecovered = var1.get(GRB.StringAttr.VarName);
+        Assert.assertEquals(varName, varNameRecovered);
+    }
+
     @Test
     public void testSaveAndLoadOfVariableByName() throws GRBException {
         GRBEnv env = new GRBEnv("MotherMachineILPs.log");

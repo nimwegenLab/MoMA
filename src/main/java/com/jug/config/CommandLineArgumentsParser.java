@@ -222,6 +222,14 @@ public class CommandLineArgumentsParser {
 
         if ( cmd.hasOption( "p" ) ) {
             optionalPropertyFile = Paths.get( cmd.getOptionValue( "p" ) );
+            if (!optionalPropertyFile.toFile().exists()) {
+                System.out.println("Error: The specified properties file does not exist: " + optionalPropertyFile);
+                if (!runningAsFijiPlugin) {
+                    System.exit(3);
+                } else {
+                    return;
+                }
+            }
         }
 
         if ( cmd.hasOption( "tmin" ) ) {

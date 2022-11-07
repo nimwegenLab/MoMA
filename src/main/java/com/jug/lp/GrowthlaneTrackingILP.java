@@ -972,13 +972,46 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    double bigM = 0;
+
     private void addCrossingConstraints() throws GRBException {
-        for (int t = 0; t < gl.numberOfFrames(); t++) {
+        for (int t = 0; t < gl.numberOfFrames() - 1; t++) { /* upper limit of FOR-loop is `gl.numberOfFrames() - 1` because we do not need crossing-constraints for the last time-step, which only contains exit-assignments */
+            calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
+
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
                 List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
+        }
+    }
+
+    /**
+     * This method calculate the big-M value for the crossing-constraint.
+     *
+     * It takes as input all target-components of assignments being considered in the crossing-constraint.
+     * It then:
+     * 1. Determines the highest rank of the leaf-components in the list: R
+     * 2. Increase this rank value by 1: R+1
+     * 3. Set big-M as the power-of-two: 2^R
+     * big-M is thus guaranteed to be larger than any ordinal-value of the target-components and also larger than the
+     * sum of any two ordinal.
+     *
+     * @param alltargetHypotheses
+     */
+    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> alltargetHypotheses) {
+        double maxLeafRank = 0;
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : alltargetHypotheses) {
+            AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
+            if (component.getChildren().size() == 0) {
+                double componentRank = component.getRankRelativeToLeafComponent();
+                maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
+            }
+        }
+        bigM = Math.pow(2, maxLeafRank + 1);
+
+        if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
+            System.out.println("something went wrong");
         }
     }
 
@@ -997,11 +1030,17 @@ public class GrowthlaneTrackingILP {
     private void addConstrainedTerm(AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment,
                                     double coeff_sign,
                                     GRBLinExpr expr) {
-        double ordinal = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hyp : assignment.getTargetHypotheses()) {
-            ordinal += hyp.getWrappedComponent().getOrdinalValue();
+        Hypothesis<AdvancedComponent<FloatType>> hyp;
+        if (assignment instanceof MappingAssignment) {
+            hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
+            double coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+            expr.addTerm(coefficient, assignment.getGRBVar());
+        } else if (assignment instanceof DivisionAssignment) {
+            Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
+            Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
+            double coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
+            expr.addTerm(coefficient, assignment.getGRBVar());
         }
-        expr.addTerm(coeff_sign * ordinal, assignment.getGRBVar());
     }
 
     private void addConstrainedTerms(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments,
@@ -1038,31 +1077,7 @@ public class GrowthlaneTrackingILP {
             addConstrainedTermsForHypothesis(hypothesis, -1.0, expr);
         }
 
-        addDeactivatingTermForSourceHypothesis(hypothesisOfInterest, expr);
-
-        model.addConstr(expr, GRB.GREATER_EQUAL, 0.0, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
-    }
-
-    private void addDeactivatingTermForSourceHypothesis(Hypothesis<AdvancedComponent<FloatType>> hypothesis,
-                                                   GRBLinExpr expr) throws GRBException {
-
-        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments;
-        if (edgeSets.getRightNeighborhood(hypothesis) != null) {
-            assignments = edgeSets.getRightNeighborhood(hypothesis);
-        } else {
-            throw new RuntimeException("edgeSets.getRightNeighborhood(hypothesis) == null; hypothesis.getStringId(): " + hypothesis.getStringId());
-        }
-
-        final GRBLinExpr dummyConstraintExpr = new GRBLinExpr();
-        double cost = 0.0;
-        final GRBVar dummyVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, "DisablingVar_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
-        dummyConstraintExpr.addTerm(1.0, dummyVar);
-        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-            dummyConstraintExpr.addTerm(1.0, assignment.getGRBVar());
-        }
-        model.addConstr(dummyConstraintExpr, GRB.EQUAL, 1.0, "DisablingConstr_CrossConstrT" + hypothesis.getTime() + "_" + hypothesis.getStringId());
-
-        expr.addTerm(Double.MAX_VALUE, dummyVar);
+        model.addConstr(expr, GRB.GREATER_EQUAL, -bigM, "CrossConstrT" + sourceTime + "_" + hypothesisOfInterest.getStringId());
     }
 
     /**
@@ -1093,20 +1108,24 @@ public class GrowthlaneTrackingILP {
                                      double coeff_sign,
                                      GRBLinExpr expr) {
         Hypothesis<AdvancedComponent<FloatType>> hyp;
-        double coefficient;
         if (assignment instanceof MappingAssignment) {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
-            coefficient = coeff_sign * hyp.getWrappedComponent().getOrdinalValue();
+            double ordinal = hyp.getWrappedComponent().getOrdinalValue();
+            if(ordinal >= bigM){
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+            }
+            double coefficient = coeff_sign * (ordinal - bigM);
+            expr.addTerm(coefficient, assignment.getGRBVar());
         } else if (assignment instanceof DivisionAssignment) {
             Hypothesis<AdvancedComponent<FloatType>> lowerHypothesis = ((DivisionAssignment) assignment).getLowerDestinationHypothesis();
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
-            coefficient = coeff_sign * (lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue());
-        } else if ((assignment instanceof ExitAssignment) || (assignment instanceof LysisAssignment)) {
-            coefficient = coeff_sign * Double.MAX_VALUE;
-        } else {
-            throw new RuntimeException("Something went wrong: This statement should never be reached!");
+            double ordinal = lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue();
+            if(ordinal >= bigM){
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+            }
+            double coefficient = coeff_sign * (ordinal - bigM);
+            expr.addTerm(coefficient, assignment.getGRBVar());
         }
-        expr.addTerm(coefficient, assignment.getGRBVar());
     }
 
     /**

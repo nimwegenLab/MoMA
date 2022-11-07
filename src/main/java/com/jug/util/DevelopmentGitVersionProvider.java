@@ -39,6 +39,8 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         if(versionString.contains("dirty")){
             if(p.length == 3){
                 return p[0]+"-"+p[1]+"-"+p[2]; /* versionString has format: "0.6.0-beta6-dirty" */
+            } else if (p.length == 4) {
+                return p[0]+"-"+p[1]+"-"+p[3]+"+"+p[2]; /* versionString has format: "0.7.0-1-g2509542b-dirty" */
             } else if (p.length == 5) {
                 return p[0]+"-"+p[1]+"-"+p[2]+"-"+p[4]+"+"+p[3]; /* versionString has format: "0.6.0-beta5-1-g6a457d3f-dirty" */
             } else {
@@ -48,8 +50,10 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
             if(p.length == 2) {
                 return p[0] + "-" + p[1]; /* versionString has format: "0.6.0-beta6" */
             }
-            else if(p.length == 4) {
-                return p[0] + "-" + p[1] + "-" + p[2] + "-" + "+" + p[3]; /* versionString has form: "0.6.0-beta5-1-g6a457d3f" */
+            else if(p.length == 3) {
+                return p[0] + "-" + p[1] + "+" + p[2]; /* versionString has form: "0.7.0-4-g45bcea65" */
+            } else if(p.length == 4) {
+                return p[0] + "-" + p[1] + "-" + p[2] + "+" + p[3]; /* versionString has form: "0.6.0-beta5-1-g6a457d3f" */
             } else {
                 throw new RuntimeException("Could not build version string. 'versionString' is of unknown format: " + versionString);
             }

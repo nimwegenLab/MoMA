@@ -216,16 +216,22 @@ public class TestUtils {
         return new ImageProviderMock(input);
     }
 
+    public IImageProvider getImageProviderFromDataFolder(String imageFile) throws IOException {
+        assertTrue(new File(imageFile).exists());
+        Img input = (Img) ij.io().open(imageFile);
+        assertNotNull(input);
+
+        return new ImageProviderMock(input);
+    }
+
     public Path getAbsolutTestFilePath(String relativePath) {
         return Paths.get(new File("").getAbsolutePath(), relativePath);
     }
 
-    public IImageProvider getImageProvider(Path testDataPath) throws IOException {
-        assertTrue(testDataPath.toFile().exists());
-        Path imageFile = getTestImageFilePath(testDataPath);
+    public IImageProvider getImageProvider(Path imageFile) throws IOException {
+        assertTrue(imageFile.toFile().exists());
         Img input = (Img) ij.io().open(imageFile.toString());
         assertNotNull(input);
-
         return new ImageProviderMock(input);
     }
 

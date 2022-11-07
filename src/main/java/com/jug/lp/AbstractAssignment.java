@@ -249,13 +249,14 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
-//		if (constraintExistsWithName(constraintName)) {
-//			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
-//			return;
-//		}
+		if (constraintExistsWithName(constraintName)) {
+			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
+			return;
+		}
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
+		ilp.model.update();
 	}
 
 	private void addFreezeConstraintWithName(String constraintName) {

@@ -14,6 +14,10 @@ public class GRBModelAdapter implements IGRBModelAdapter {
 
     @Override
     public GRBConstr getConstrByName(String name) throws GRBException {
+        GRBConstr[] constraintList = this.model.getConstrs();
+        if(constraintList.length == 0){
+            return null;
+        }
         return this.model.getConstrByName(name);
     }
 

@@ -634,6 +634,7 @@ public class GrowthlaneTrackingILP {
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);
+                ma.setGroundUntruth(true);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
 //                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));

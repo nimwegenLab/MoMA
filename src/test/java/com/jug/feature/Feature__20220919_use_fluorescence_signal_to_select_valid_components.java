@@ -42,6 +42,8 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
     }
 
     public void run_trackonly() {
+        tmin = 445;
+        tmax = 461;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});

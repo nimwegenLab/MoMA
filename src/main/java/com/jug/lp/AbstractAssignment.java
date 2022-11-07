@@ -19,6 +19,7 @@ import static java.util.Objects.isNull;
 public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private final int sourceTimeStep;
+	protected String stringId;
 	private int type;
 
 	GrowthlaneTrackingILP ilp;
@@ -56,8 +57,6 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	public GRBVar getGRBVar() {
 		return ilpVar;
 	}
-
-	private String stringId;
 
 	public String getStringId() {
 		try {
@@ -250,10 +249,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	private void addConstraint(double rhsValue, String constraintName) throws GRBException {
-		if (constraintExistsWithName(constraintName)) {
-			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
-			return;
-		}
+//		if (constraintExistsWithName(constraintName)) {
+//			System.out.println("WARNING: Tried to add constraint (\""+constraintName+"\"), which was already in the model.");
+//			return;
+//		}
 		final GRBLinExpr exprGroundTruth = new GRBLinExpr();
 		exprGroundTruth.addTerm(1.0, getGRBVar());
 		ilp.model.addConstr(exprGroundTruth, GRB.EQUAL, rhsValue, constraintName);
@@ -273,7 +272,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private boolean constraintExistsWithName(String constraintName){
 		try {
-			return !isNull(ilp.model.getConstrByName(constraintName));
+			return !isNull(ilp.model.getConstrByName(constraintName)); /* TODO-MM-20221107: test if moma model has been optimized, so that this is already queriable */
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}

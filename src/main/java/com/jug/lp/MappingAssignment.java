@@ -28,7 +28,6 @@ public class MappingAssignment extends AbstractAssignment<Hypothesis<AdvancedCom
         super(GrowthlaneTrackingILP.ASSIGNMENT_MAPPING, ilpVariable, ilp, sourceTimeStep);
         this.from = from;
         this.to = to;
-        this.stringId = MappingAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent());
     }
 
     /**

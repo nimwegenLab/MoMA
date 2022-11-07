@@ -218,11 +218,6 @@ public class ComponentForestSerializationTests {
     @NotNull
     private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int frameIndexStart, int frameIndexStop) throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif";
-
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
-        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
-            componentForests.add(testUtils.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
-        }
-        return componentForests;
+        return testUtils.getAdvancedComponentForests(imageFile, frameIndexStart, frameIndexStop);
     }
 }

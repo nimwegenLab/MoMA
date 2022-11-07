@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -40,9 +41,11 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
     private int frame;
     private IComponentTester<T, C> tester;
     private ComponentProperties componentPropertiesCalculator;
+    private IImageProvider imageProvider;
 
 
-    public AdvancedComponentForest(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator) {
+    public AdvancedComponentForest(ComponentForest<C> componentForest, RandomAccessibleInterval<T> sourceImage, int frame, IComponentTester<T, C> tester, ComponentProperties componentPropertiesCalculator, IImageProvider imageProvider) {
+        this.imageProvider = imageProvider;
         roots = new ArrayList<>();
         this.sourceImage = sourceImage;
         this.frame = frame;
@@ -115,7 +118,7 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
 
     private void RecursivelyFindValidComponent(C sourceComponent) {
         if (tester.IsValid(sourceComponent)) {
-            AdvancedComponent<T> newRoot = new AdvancedComponent<>(label++, sourceComponent, sourceImage, componentPropertiesCalculator, frame); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
+            AdvancedComponent<T> newRoot = new AdvancedComponent<>(label++, sourceComponent, sourceImage, componentPropertiesCalculator, frame, imageProvider); // TODO-MM-20220330: Is it a bug that we do not create a new labeling image per component? It seems to be because child components overlap ...
             nodes.add(newRoot);
             RecursivelyAddToTree(sourceComponent, newRoot);
         } else {
@@ -141,7 +144,7 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
 
     @NotNull
     private AdvancedComponent<T> CreateTargetChild(AdvancedComponent<T> targetComponent, C sourceChild) {
-        AdvancedComponent<T> targetChild = new AdvancedComponent<>(label++, sourceChild, sourceImage, componentPropertiesCalculator, frame);
+        AdvancedComponent<T> targetChild = new AdvancedComponent<>(label++, sourceChild, sourceImage, componentPropertiesCalculator, frame, imageProvider);
         targetChild.setParent(targetComponent);
         targetComponent.addChild(targetChild);
         nodes.add(targetChild);

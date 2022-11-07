@@ -101,7 +101,7 @@ public class TestUtils {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }
 
@@ -194,7 +194,7 @@ public class TestUtils {
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProvider(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }
 

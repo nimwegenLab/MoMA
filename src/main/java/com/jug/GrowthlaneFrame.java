@@ -37,6 +37,6 @@ public class GrowthlaneFrame extends AbstractGrowthlaneFrame<AdvancedComponent<F
 
     @Override
     protected AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest() {
-        return componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
+        return componentForestGenerator.buildComponentForest(imageProvider, frameIndex, configurationManager.THRESHOLD_FOR_COMPONENT_SPLITTING);
     }
 }

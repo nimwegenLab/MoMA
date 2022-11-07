@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
@@ -62,6 +63,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private double[] firstMomentPixelCoordinates = null;
     private List<AdvancedComponent<T>> componentTreeRoots;
 
+    private IImageProvider imageProvider;
+
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
@@ -69,12 +72,14 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                                                          C wrappedComponent,
                                                          RandomAccessibleInterval<T> sourceImage,
                                                          ComponentProperties componentProperties,
-                                                         int frameNumber) {
+                                                         int frameNumber,
+                                                         IImageProvider imageProvider) {
         this.value = wrappedComponent.value();
         this.sourceImage = sourceImage;
         this.componentProperties = componentProperties;
         this.label = label;
         this.frameNumber = frameNumber;
+        this.imageProvider = imageProvider;
         copyPixelPositions(wrappedComponent);
         buildLabelRegion(pixelList, label, sourceImage);
     }
@@ -997,13 +1002,15 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
 
     public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,
                                                                           ComponentProperties componentProperties,
-                                                                          RandomAccessibleInterval<T> sourceImage) {
-        return new AdvancedComponent<>(pojo, componentProperties, sourceImage);
+                                                                          RandomAccessibleInterval<T> sourceImage,
+                                                                          IImageProvider imageProvider) {
+        return new AdvancedComponent<>(pojo, componentProperties, sourceImage, imageProvider);
     }
 
     private AdvancedComponent(AdvancedComponentPojo pojo,
                               ComponentProperties componentProperties,
-                              RandomAccessibleInterval<T> sourceImage) {
+                              RandomAccessibleInterval<T> sourceImage,
+                              IImageProvider imageProvider) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
         this.componentProperties = componentProperties;
@@ -1013,6 +1020,7 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
         pixelList = pojo.getPixelList();
         this.sourceImage = sourceImage;
+        this.imageProvider = imageProvider;
         buildLabelRegion(pixelList, label, sourceImage);
     }
 
@@ -1045,5 +1053,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             }
         }
         return true;
+    }
+
+    public IImageProvider getImageProvider() {
+        return imageProvider;
     }
 }

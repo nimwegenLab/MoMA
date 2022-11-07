@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.config.IComponentForestGeneratorConfiguration;
+import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -35,7 +36,9 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
         this.imglib2Utils = imglib2Utils;
     }
 
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(IImageProvider imageProvider, int frameIndex, float componentSplittingThreshold) {
+        Img<FloatType> raiFkt = imageProvider.getImgProbsAt(frameIndex);
+
         /* generate image mask for component generation; watershedMaskGenerator.generateMask(...) also merges adjacent connected components, if values between do fall below a given cutoff (see implementation) */
         Img<BitType> mask = watershedMaskGenerator.generateMask(ImgView.wrap(raiFkt));
 
@@ -66,17 +69,17 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
         testers.add(widthLimit);
         ComponentTester<FloatType, AdvancedComponent<FloatType>> tester = new ComponentTester<>(testers);
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = new AdvancedComponentForest(componentTree, raiFktMasked, frameIndex, tester, componentPropertiesCalculator);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = new AdvancedComponentForest(componentTree, raiFktMasked, frameIndex, tester, componentPropertiesCalculator, imageProvider);
         tree = recursiveComponentWatershedder.recursivelyWatershedComponents(tree); /* IMPORTANT: this step watersheds components into their parent-components, which yields the final size of components; this needs to be done before performing the following filter-steps on component-size, etc. */
 
         IComponentTester rootSizeTester = new RootComponentSizeTester(configuration.getSizeMinimumOfParentComponent());
-        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, rootSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, rootSizeTester , componentPropertiesCalculator, imageProvider);
 
         IComponentTester leafSizeTester = new LeafComponentSizeTester(configuration.getSizeMinimumOfLeafComponent());
-        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, leafSizeTester , componentPropertiesCalculator);
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, leafSizeTester , componentPropertiesCalculator, imageProvider);
 
         HasSiblingsComponentTester<FloatType, AdvancedComponent<FloatType>> siblingTester = new HasSiblingsComponentTester<>();
-        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, siblingTester, componentPropertiesCalculator); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
+        tree = new AdvancedComponentForest(tree, raiFktMasked, frameIndex, siblingTester, componentPropertiesCalculator, imageProvider); /* IMPORTANT: this removes all child-nodes that do not have siblings; we need to do this at the very end, because the filters above may remove child-nodes, which can yield single child nodes _without_ sibling */
 
 //        for (AdvancedComponent component : tree.getAllComponents()) {
 //            if (component.getChildren().size() > 2) {

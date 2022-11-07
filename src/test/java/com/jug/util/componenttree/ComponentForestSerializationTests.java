@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.google.gson.Gson;
+import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -40,9 +41,10 @@ public class ComponentForestSerializationTests {
         AdvancedComponent<FloatType> randomComponent = componentForestToSerialize.getAllComponents().get(0);
         RandomAccessibleInterval<FloatType> sourceImage = randomComponent.getSourceImage();
         int frameNumber = randomComponent.getFrameNumber();
+        IImageProvider imageProvider = randomComponent.getImageProvider();
 
-        ComponentForestDeserializer deserializer = new ComponentForestDeserializer(testUtils.getComponentProperties(), jsonString);
-        ComponentForest<AdvancedComponent<FloatType>> componentForestDeserialized = deserializer.buildComponentForest(ImgView.wrap(sourceImage), frameNumber, Float.MIN_VALUE); /* the threshold-value is not used for the deserializing, because we are not thresholding anything; hence we set it to Float.MIN_VALUE */
+        ComponentForestDeserializer deserializer = new ComponentForestDeserializer(testUtils.getComponentProperties(), jsonString, imageProvider);
+        ComponentForest<AdvancedComponent<FloatType>> componentForestDeserialized = deserializer.buildComponentForest(imageProvider, frameNumber, Float.MIN_VALUE); /* the threshold-value is not used for the deserializing, because we are not thresholding anything; hence we set it to Float.MIN_VALUE */
 
         Assert.assertEquals(componentForestToSerialize, componentForestDeserialized);
 //        Path jsonFile = Files.createTempFile("", ".json");
@@ -173,9 +175,10 @@ public class ComponentForestSerializationTests {
     private AdvancedComponent<FloatType> serializeAndDeserializeThroughJsonString(AdvancedComponent<FloatType> sutComponent) {
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         RandomAccessibleInterval<FloatType> sourceImage = sutComponent.getSourceImage();
+        IImageProvider imageProvider = sutComponent.getImageProvider();
         String jsonString = new Gson().toJson(pojo);
         AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
-        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new, testUtils.getComponentProperties(), sourceImage);
+        AdvancedComponent<FloatType> componentDeserialized = AdvancedComponent.createFromPojo(pojo_new, testUtils.getComponentProperties(), sourceImage, imageProvider);
         return componentDeserialized;
     }
 

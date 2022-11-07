@@ -21,7 +21,7 @@ public class AssignmentFluorescenceFilter {
         boolean targetsAreValid = false;
         for(Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps){
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
-//            component.get
+//            component.
         }
     }
 }

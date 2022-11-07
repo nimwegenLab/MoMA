@@ -605,7 +605,6 @@ public class GrowthlaneTrackingILP {
             }
 
             for (final AdvancedComponent<FloatType> targetComponent : targetComponents) {
-//            for (final AdvancedComponent<FloatType> targetComponent : targetComponentForest.getAllComponents()) {
                 if (!assignmentPlausibilityTester.sizeDifferenceIsPlausible(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength())) {
                     continue;
                 }
@@ -621,25 +620,20 @@ public class GrowthlaneTrackingILP {
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
                     continue;
                 }
-//                        System.out.println("ranks: " + sourceComponent.getRankRelativeToComponentsClosestToRoot() + " -> " + targetComponent.getRankRelativeToComponentsClosestToRoot());
-//                        System.out.println("level: " + sourceComponent.getNodeLevel() + " -> " + targetComponent.getNodeLevel());
 
                 final Hypothesis<AdvancedComponent<FloatType>> to =
                         nodes.getOrAddHypothesis(sourceTimeStep + 1, new Hypothesis<>(sourceTimeStep + 1, targetComponent, this));
                 final Hypothesis<AdvancedComponent<FloatType>> from =
                         nodes.getOrAddHypothesis(sourceTimeStep, new Hypothesis<>(sourceTimeStep, sourceComponent, this));
 
-//                final String name = String.format("a_%d^MAPPING--(%d,%d)", sourceTimeStep, from.getStringId(), to.getStringId());
                 final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent()));
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
                 nodes.addAssignment(sourceTimeStep, ma);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
-//                    System.err.println("ERROR: Mapping-assignment could not be added to right neighborhood!");
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
                 }
                 if (!edgeSets.addToLeftNeighborhood(to, ma)) {
-//                    System.err.println("ERROR: Mapping-assignment could not be added to left neighborhood!");
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
                 }
             }

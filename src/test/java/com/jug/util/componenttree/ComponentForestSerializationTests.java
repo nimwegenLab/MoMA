@@ -15,6 +15,7 @@ import scala.NotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 
 import static java.util.Objects.isNull;
@@ -217,7 +218,7 @@ public class ComponentForestSerializationTests {
 
     @NotNull
     private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int frameIndexStart, int frameIndexStop) throws IOException {
-        String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif";
-        return testUtils.getAdvancedComponentForests(imageFile, frameIndexStart, frameIndexStop);
+        Path imageFilePath = testUtils.getAbsolutTestFilePath("/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif");
+        return testUtils.getAdvancedComponentForests(imageFilePath, frameIndexStart, frameIndexStop);
     }
 }

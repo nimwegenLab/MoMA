@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -192,7 +193,7 @@ public class TestUtils {
 
 
     @NotNull
-    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(String imageFile, int frameIndexStart, int frameIndexStop) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(Path imageFile, int frameIndexStart, int frameIndexStop) throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
         for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
             componentForests.add(this.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
@@ -200,7 +201,7 @@ public class TestUtils {
         return componentForests;
     }
 
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProvider(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
@@ -213,6 +214,26 @@ public class TestUtils {
         assertNotNull(input);
 
         return new ImageProviderMock(input);
+    }
+
+    public Path getAbsolutTestFilePath(String relativePath) {
+        return Paths.get(new File("").getAbsolutePath(), relativePath);
+    }
+
+    public IImageProvider getImageProvider(Path testDataPath) throws IOException {
+        assertTrue(testDataPath.toFile().exists());
+        Path imageFile = getTestImageFilePath(testDataPath);
+        Img input = (Img) ij.io().open(imageFile.toString());
+        assertNotNull(input);
+
+        return new ImageProviderMock(input);
+    }
+
+    public Path getTestImageFilePath(Path testDataPath){
+        assertTrue(testDataPath.toFile().exists());
+        final FilenameFilter filter = (dir, name) -> name.contains( "images__frames_" );
+        File[] list = testDataPath.toFile().listFiles(filter);
+        return list[0].toPath();
     }
 
     class CostFactoryMock implements ICostFactory {

@@ -1,12 +1,11 @@
 package com.jug.lp;
 
-import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
+import com.jug.mocks.MockUtils;
 import com.jug.util.TestUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,46 +62,18 @@ public class AssignmentFluorescenceFilterTest {
     }
 
     @Test
-    public void evaluate__after_using_setTargetChannelNumber__calls_getMaskIntensity_with_correct_channel(){
+    public void evaluate__after_using_setTargetChannelNumber__calls_getMaskIntensity_on_components_with_correct_channel(){
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
 
         int expectedTargetChannelNumber = 4;
         sut.setTargetChannelNumber(expectedTargetChannelNumber);
 
-//        AbstractAssignment assignmentMock = mock(AbstractAssignment.class);
-//        Hypothesis hypothesis = mock(Hypothesis.class);
-//        AdvancedComponent componentMock = mock(AdvancedComponent.class);
-//        when(componentMock.getMaskIntensity(1)).thenReturn(1000.0);
-//        when(hypothesis.getWrappedComponent()).thenReturn(componentMock);
-//
-//        List<Hypothesis> list = new ArrayList<>();
-//        list.add(hypothesis);
-        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = getAssignmentMock(1);
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
 
         sut.evaluate(assignmentMock);
 
         verify(assignmentMock.getTargetComponent(0)).getMaskIntensity(expectedTargetChannelNumber);
-    }
-
-    private AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getAssignmentMock(int numberOfTargetHyptheses) {
-        AbstractAssignment assignmentMock = mock(AbstractAssignment.class);
-        List<Hypothesis> list = new ArrayList<>();
-        for (int i = 0; i < numberOfTargetHyptheses; i++) {
-            list.add(getHypothesis());
-        }
-        when(assignmentMock.getTargetHypotheses()).thenReturn(list);
-        AdvancedComponent componentMock = list.get(0).getWrappedComponent();
-        when(assignmentMock.getTargetComponent(0)).thenReturn(componentMock);
-//        when(assignmentMock.getTargetComponent(1)).thenReturn(list.get(1).getWrappedComponent());
-        return assignmentMock;
-    }
-
-    @NotNull
-    private static Hypothesis getHypothesis() {
-        Hypothesis hypothesis = mock(Hypothesis.class);
-        AdvancedComponent componentMock = mock(AdvancedComponent.class);
-        when(hypothesis.getWrappedComponent()).thenReturn(componentMock);
-        return hypothesis;
+        verify(assignmentMock.getTargetComponent(1)).getMaskIntensity(expectedTargetChannelNumber);
     }
 
     @Test

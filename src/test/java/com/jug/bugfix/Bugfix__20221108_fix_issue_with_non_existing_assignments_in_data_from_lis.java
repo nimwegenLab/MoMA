@@ -18,7 +18,7 @@ public class Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_fr
         datasetSubfolder = "bugfix/20221108-fix-issue-with-non-existing-assignments-in-data-from-lis"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 10;
+        tmax = null;
     }
 
     public static void main(String[] args) {
@@ -34,25 +34,26 @@ public class Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_fr
      * Test-methods are below.
      */
     public void run_interactive() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        String glSubfolder = "Pos0_GL32";
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "20221104_VNG1040_SHU_1_MMStack_Pos0_GL32.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "prj_mm_antibio_analysis_1/track_data__prj_mm_antibio_analysis_1/mm.properties");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
-    public void run_trackonly() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
-    }
-
-    public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-    }
-
-    public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-    }
+//    public void run_trackonly() {
+//        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+//        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+//        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+//    }
+//
+//    public void run_reloading() {
+//        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
+//        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+//    }
+//
+//    public void run_export() {
+//        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
+//        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+//    }
 
 }

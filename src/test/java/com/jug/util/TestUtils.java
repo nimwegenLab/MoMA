@@ -23,6 +23,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -208,6 +209,13 @@ public class TestUtils {
         return tree;
     }
 
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
+        return tree;
+    }
+
     public IImageProvider getImageProviderFromDataFolder(Path testDataFolder) throws IOException {
         assertTrue(testDataFolder.toFile().exists());
         Path testImagePath = getTestImageFilePath(testDataFolder);
@@ -255,5 +263,11 @@ public class TestUtils {
         public float getComponentCost(ComponentInterface component) {
             return 0;
         }
+    }
+
+    public ImagePlus showComponent(ComponentInterface component) {
+        ArrayList<ComponentInterface> componentsToDraw = new ArrayList<>();
+        componentsToDraw.add(component);
+        return ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), component.getSourceImage()));
     }
 }

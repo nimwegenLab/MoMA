@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,15 +36,28 @@ public class AdvancedComponentTests {
     private final TestUtils testUtils;
 
     public static void main(String... args) throws IOException {
-//        new AdvancedComponentTests().testGetParentWatershedLineValues();
-//        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
-//        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
-        new AdvancedComponentTests().explore__getDilatedAndErodedComponents();
+        AdvancedComponentTests tests = new AdvancedComponentTests();
+//        tests.testGetParentWatershedLineValues();
+//        tests.exploreGetParentWatershedLineCoordinates();
+//        tests.test__getWatershedLinePixelPositions();
+//        tests.explore__getDilatedAndErodedComponents();
+        tests.test1();
     }
 
     public AdvancedComponentTests() {
         testUtils = new TestUtils();
     }
+
+    @Test
+    public void test1() throws IOException {
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+//        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentTreeFromDataFolder(testDataFolder, 0, 0.5f);
+        AdvancedComponent<FloatType> component = componentForest.getAllComponents().get(0);
+        testUtils.showComponent(component);
+        System.out.println("stop");
+    }
+
 
     @Test
     public void test__getWatershedLinePixelValues() throws IOException {

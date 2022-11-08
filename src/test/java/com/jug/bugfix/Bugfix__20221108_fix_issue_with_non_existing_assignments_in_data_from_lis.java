@@ -24,7 +24,8 @@ public class Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_fr
     public static void main(String[] args) {
         Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_from_lis tests = new Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_from_lis();
 
-        tests.run_interactive();
+        tests.run_interactive__frames_569_to_571();
+//        tests.run_interactive();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
@@ -33,6 +34,15 @@ public class Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_fr
     /**
      * Test-methods are below.
      */
+    public void run_interactive__frames_569_to_571() {
+        String glSubfolder = "Pos0_GL32";
+        tmin = 571;
+        tmax = 572;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "20221104_VNG1040_SHU_1_MMStack_Pos0_GL32.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "prj_mm_antibio_analysis_1/track_data__prj_mm_antibio_analysis_1/mm.properties");
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
     public void run_interactive() {
         String glSubfolder = "Pos0_GL32";
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "20221104_VNG1040_SHU_1_MMStack_Pos0_GL32.tif");

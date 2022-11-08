@@ -4,6 +4,7 @@ import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.lp.costs.ICostFactory;
+import com.jug.util.TestUtils;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
@@ -31,11 +32,17 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class AdvancedComponentTests {
+    private final TestUtils testUtils;
+
     public static void main(String... args) throws IOException {
 //        new AdvancedComponentTests().testGetParentWatershedLineValues();
 //        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
 //        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
         new AdvancedComponentTests().explore__getDilatedAndErodedComponents();
+    }
+
+    public AdvancedComponentTests() {
+        testUtils = new TestUtils();
     }
 
     @Test
@@ -51,7 +58,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -63,18 +70,6 @@ public class AdvancedComponentTests {
         for(int counter = 0; counter<actualWatershedProbabilityValues.size(); counter++){
             assertEquals(expectedWatershedProbabilityValues[counter], actualWatershedProbabilityValues.get(counter).getRealFloat(), 0.0001);
         }
-    }
-
-    @NotNull
-    private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
-        OpService ops = ij.op();
-        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentForestGenerator;
     }
 
     @Test
@@ -90,7 +85,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -128,7 +123,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -167,7 +162,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 

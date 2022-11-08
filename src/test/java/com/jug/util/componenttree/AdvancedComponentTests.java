@@ -181,11 +181,4 @@ public class AdvancedComponentTests {
         MaskInterval differenceMask = dilatedMask.minus(erodedMask);
         ImageJFunctions.show(Masks.toRandomAccessibleInterval(differenceMask));
     }
-
-    class CostFactoryMock implements ICostFactory {
-        @Override
-        public float getComponentCost(ComponentInterface component) {
-            return 0;
-        }
-    }
 }

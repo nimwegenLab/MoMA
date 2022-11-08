@@ -23,7 +23,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.logic.BitType;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.integer.UnsignedByteType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -209,6 +208,12 @@ public class TestUtils {
         return tree;
     }
 
+    public ComponentInterface getTestComponent(AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest, int index) {
+        List<AdvancedComponent<FloatType>> allComponents = componentForest.getAllComponents();
+        AdvancedComponent<FloatType> component = allComponents.get(index);
+        return component;
+    }
+
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
@@ -256,6 +261,14 @@ public class TestUtils {
 
     public <T extends NumericType<T>> ImagePlus show(RandomAccessibleInterval<T> img) {
         return ImageJFunctions.show(img, "");
+    }
+
+    public void showImageStack(IImageProvider imageProvider) {
+        ImageJFunctions.show(imageProvider.getImgRaw());
+    }
+
+    public void showProbabilityMaps(IImageProvider imageProvider) {
+        ImageJFunctions.show(imageProvider.getImgProbs());
     }
 
     class CostFactoryMock implements ICostFactory {

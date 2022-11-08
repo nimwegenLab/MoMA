@@ -1,15 +1,11 @@
 package com.jug.util.componenttree;
 
-import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
-import com.jug.lp.costs.ICostFactory;
 import com.jug.util.TestUtils;
-import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -21,7 +17,7 @@ import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import org.jetbrains.annotations.NotNull;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
@@ -41,23 +37,60 @@ public class AdvancedComponentTests {
 //        tests.exploreGetParentWatershedLineCoordinates();
 //        tests.test__getWatershedLinePixelPositions();
 //        tests.explore__getDilatedAndErodedComponents();
-        tests.test1();
+//        tests.explore_data();
     }
 
     public AdvancedComponentTests() {
         testUtils = new TestUtils();
     }
 
-    @Test
-    public void test1() throws IOException {
+    public void explore_data() throws IOException {
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
-//        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+        testUtils.showImageStack(imageProvider);
+        testUtils.showProbabilityMaps(imageProvider);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentTreeFromDataFolder(testDataFolder, 0, 0.5f);
-        AdvancedComponent<FloatType> component = componentForest.getAllComponents().get(0);
+        List<AdvancedComponent<FloatType>> allComponents = componentForest.getAllComponents();
+        AdvancedComponent<FloatType> component = allComponents.get(allComponents.size() - 2);
         testUtils.showComponent(component);
+        System.out.println(allComponents.size() - 2);
         System.out.println("stop");
     }
 
+    @Test
+    public void getMaskIntensity__called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
+        int BackgroundCorrectedFluorescenceChannelNumber = 2;
+        double expectedIntensity = 254183.0;
+        ComponentInterface component = getTestComponent1();
+        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getMaskIntensity__called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
+        int BackgroundCorrectedFluorescenceChannelNumber = 1;
+        double expectedIntensity = 146598.8568496704;
+        ComponentInterface component = getTestComponent1();
+        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getMaskIntensity__called_with_phc_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 0;
+        double expectedIntensity = 211.82272602943704;
+        ComponentInterface component = getTestComponent1();
+        double actualIntensity = component.getMaskIntensity(phcChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    private ComponentInterface getTestComponent1() throws IOException {
+        int componentIndex = 8;
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentTreeFromDataFolder(testDataFolder, 0, 0.5f);
+        ComponentInterface component = testUtils.getTestComponent(componentForest, componentIndex);
+        return component;
+    }
 
     @Test
     public void test__getWatershedLinePixelValues() throws IOException {

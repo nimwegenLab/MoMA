@@ -26,6 +26,8 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
@@ -400,9 +402,17 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return stringId;
     }
 
+    Map<Integer, Double> maskIntensities = new HashMap<>();
+
     @Override
     public double getMaskIntensity(int channelNumber) {
-        throw new NotImplementedException();
+        Double intensity = maskIntensities.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getTotalIntensity(this, channelFrame);
+            maskIntensities.put(channelNumber, intensity);
+        }
+        return intensity;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {

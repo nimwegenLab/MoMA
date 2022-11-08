@@ -59,22 +59,22 @@ public class AdvancedComponentTests {
         System.out.println("stop");
     }
 
-    @Mock
-    HashMap<Integer, Double> maskIntensities;
-
     @Test
-    public void getMaskIntensity__called_three_times__accesses_intensity_hashmap_for_subsequent_calls() throws IOException {
+    public void getMaskIntensity__when_calling_getMaskIntensity_twice__second_call_is_much_faster_due_to_caching() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 1;
-        double expectedIntensity = 146598.8568496704;
         ComponentInterface component = getTestComponent1();
 
-        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        long startTime = System.nanoTime();
+        component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        long endTime = System.nanoTime();
+        long execTime1 = endTime - startTime;
 
+        startTime = System.nanoTime();
+        component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        endTime = System.nanoTime();
+        long execTime2 = endTime - startTime;
 
-
-        AdvancedComponent sut = new AdvancedComponent(component, testUtils.getComponentProperties());
-
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assert.assertTrue(execTime1/execTime2 > 1000); /* this test the speed improvement due to getting the value from the HashMap as opposed to calculating it. */
     }
 
     @Test

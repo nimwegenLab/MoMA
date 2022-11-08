@@ -26,6 +26,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 import static com.jug.util.ComponentTreeUtils.*;
 import static java.util.Objects.isNull;
 
-public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
+public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
@@ -397,6 +398,11 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             stringId = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         }
         return stringId;
+    }
+
+    @Override
+    public double getMaskIntensity(int channelNumber) {
+        throw new NotImplementedException();
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {

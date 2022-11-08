@@ -277,7 +277,7 @@ public class PseudoDic {
     AssignmentFluorescenceFilter assignmentFilter;
     public AssignmentFluorescenceFilter getAssignmentFilter() {
         if(isNull(assignmentFilter)){
-            assignmentFilter = new AssignmentFluorescenceFilter(configurationManager);
+            assignmentFilter = new AssignmentFluorescenceFilter();
         }
         return assignmentFilter;
     }

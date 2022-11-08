@@ -37,6 +37,11 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public float getCost() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public RandomAccessibleInterval<FloatType> getSourceImage() {
         return null;
     }
@@ -138,6 +143,11 @@ public class ComponentMock implements ComponentInterface {
     @Override
     public String getStringId() {
         return null;
+    }
+
+    @Override
+    public double getMaskIntensity(int channelNumber) {
+        throw new NotImplementedException();
     }
 
     @Override

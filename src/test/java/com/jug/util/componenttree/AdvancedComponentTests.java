@@ -19,11 +19,13 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -57,12 +59,30 @@ public class AdvancedComponentTests {
         System.out.println("stop");
     }
 
+    @Mock
+    HashMap<Integer, Double> maskIntensities;
+
+    @Test
+    public void getMaskIntensity__called_three_times__accesses_intensity_hashmap_for_subsequent_calls() throws IOException {
+        int BackgroundCorrectedFluorescenceChannelNumber = 1;
+        double expectedIntensity = 146598.8568496704;
+        ComponentInterface component = getTestComponent1();
+
+        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+
+
+
+        AdvancedComponent sut = new AdvancedComponent(component, testUtils.getComponentProperties());
+
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
     @Test
     public void getMaskIntensity__called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 2;
         double expectedIntensity = 254183.0;
-        ComponentInterface component = getTestComponent1();
-        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
         Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -70,8 +90,8 @@ public class AdvancedComponentTests {
     public void getMaskIntensity__called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 1;
         double expectedIntensity = 146598.8568496704;
-        ComponentInterface component = getTestComponent1();
-        double actualIntensity = component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
         Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -79,8 +99,8 @@ public class AdvancedComponentTests {
     public void getMaskIntensity__called_with_phc_channel__returns_correct_value() throws IOException {
         int phcChannelNumber = 0;
         double expectedIntensity = 211.82272602943704;
-        ComponentInterface component = getTestComponent1();
-        double actualIntensity = component.getMaskIntensity(phcChannelNumber);
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensity(phcChannelNumber);
         Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 

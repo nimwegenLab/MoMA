@@ -23,42 +23,66 @@ public class AssignmentFluorescenceFilterTest {
         testUtils = new TestUtils();
     }
 
-    public static void main(String[] args) throws IOException {
-        AssignmentFluorescenceFilterTest tests = new AssignmentFluorescenceFilterTest();
-        tests.test1();
-    }
+//    public static void main(String[] args) throws IOException {
+//        AssignmentFluorescenceFilterTest tests = new AssignmentFluorescenceFilterTest();
+//        tests.test1();
+//    }
+
+//    @Test
+//    public void test1() throws IOException {
+//        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+//        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+//        List<Img<FloatType>> imgs = imageProvider.getRawChannelImgs();
+//        testUtils.show(imgs.get(0));
+//        System.out.println("stop");
+//
+//        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+//    }
 
     @Test
-    public void test1() throws IOException {
-        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
-        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
-        List<Img<FloatType>> imgs = imageProvider.getRawChannelImgs();
-        testUtils.show(imgs.get(0));
-        System.out.println("stop");
-
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
-    }
-
-    @Test
-    public void evaluate__for_target_component_with_low_intensity__filters_the_assignment(){
+    public void evaluate__when_all_component_intensities_are_above_threshold__does_not_call_setGroundUntruth(){
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
         int targetChannelNumber = 4;
-
-        AbstractAssignment assignmentMock = mock(AbstractAssignment.class);
-
-        Hypothesis hypothesis = mock(Hypothesis.class);
-        AdvancedComponent componentMock = mock(AdvancedComponent.class);
-
-        when(componentMock.getMaskIntensity(1)).thenReturn(1000.0);
-        when(hypothesis.getWrappedComponent()).thenReturn(componentMock);
-
-        List<Hypothesis> list = new ArrayList<>();
-        list.add(hypothesis);
-        when(assignmentMock.getTargetHypotheses()).thenReturn(list);
+        double intensityThreshold = 1000.0;
+        sut.setTargetChannelNumber(targetChannelNumber);
+        sut.setFluorescenceThreshold(intensityThreshold);
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
 
         sut.evaluate(assignmentMock);
 
-        verify(componentMock).getMaskIntensity(targetChannelNumber);
+        verify(assignmentMock, never()).setGroundUntruth(true);
+    }
+
+    @Test
+    public void evaluate__when_any_component_intensity_is_below_threshold__calls_setGroundUntruth(){
+        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        int targetChannelNumber = 4;
+        double intensityThreshold = 1000.0;
+        sut.setFluorescenceThreshold(intensityThreshold);
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+
+        sut.evaluate(assignmentMock);
+
+        verify(assignmentMock).setGroundUntruth(true);
+    }
+
+    @Test
+    public void evaluate__when_all_component_intensity_are_below_threshold__calls_setGroundUntruth(){
+        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        int targetChannelNumber = 4;
+        double intensityThreshold = 1000.0;
+        sut.setFluorescenceThreshold(intensityThreshold);
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+
+        sut.evaluate(assignmentMock);
+
+        verify(assignmentMock).setGroundUntruth(true);
     }
 
     @Test

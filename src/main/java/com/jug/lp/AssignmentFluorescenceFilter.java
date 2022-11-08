@@ -30,9 +30,9 @@ public class AssignmentFluorescenceFilter {
                 targetsAreValid = true;
             }
         }
-//        if(!targetsAreValid){
-//            assignment.setGroundUntruth(true);
-//        }
+        if(!targetsAreValid){
+            assignment.setGroundUntruth(true);
+        }
     }
 
     public int getTargetChannelNumber() {

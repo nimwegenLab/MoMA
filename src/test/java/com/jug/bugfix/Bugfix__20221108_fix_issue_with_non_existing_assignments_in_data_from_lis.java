@@ -24,8 +24,8 @@ public class Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_fr
     public static void main(String[] args) {
         Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_from_lis tests = new Bugfix__20221108_fix_issue_with_non_existing_assignments_in_data_from_lis();
 
-        tests.run_interactive__frames_569_to_571();
-//        tests.run_interactive();
+//        tests.run_interactive__frames_569_to_571();
+        tests.run_interactive();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();

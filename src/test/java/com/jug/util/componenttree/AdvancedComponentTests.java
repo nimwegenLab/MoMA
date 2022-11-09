@@ -86,25 +86,7 @@ public class AdvancedComponentTests {
         Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
-    @Test
-    public void getMaskIntensity__when_calling_getMaskIntensity_twice__second_call_is_much_faster_due_to_caching() throws IOException {
-        int BackgroundCorrectedFluorescenceChannelNumber = 1;
-        ComponentInterface component = getTestComponent1();
-
-        long startTime = System.nanoTime();
-        component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
-        long endTime = System.nanoTime();
-        long execTime1 = endTime - startTime;
-
-        startTime = System.nanoTime();
-        component.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
-        endTime = System.nanoTime();
-        long execTime2 = endTime - startTime;
-
-        Assert.assertTrue(execTime1/execTime2 > 1000); /* this test the speed improvement due to getting the value from the HashMap as opposed to calculating it. */
-    }
-
-    @Test
+   @Test
     public void getMaskIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 2;
         double expectedIntensity = 254183.0;

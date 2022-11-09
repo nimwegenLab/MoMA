@@ -60,4 +60,11 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      * @return
      */
     double getMaskIntensity(int channelNumber);
+
+    /**
+     * Return the image intensity of channel channelNumber in the background region of the component.
+     * @param channelNumber
+     * @return
+     */
+    double getBackgroundIntensity(int channelNumber);
 }

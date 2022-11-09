@@ -415,6 +415,19 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return intensity;
     }
 
+    Map<Integer, Double> backgroundIntensities = new HashMap<>();
+
+    @Override
+    public double getBackgroundIntensity(int channelNumber) {
+        Double intensity = backgroundIntensities.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getTotalBackgroundIntensity(this, channelFrame);
+            backgroundIntensities.put(channelNumber, intensity);
+        }
+        return intensity;
+    }
+
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {
         componentTreeRoots = roots;
     }

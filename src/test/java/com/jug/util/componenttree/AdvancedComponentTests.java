@@ -60,6 +60,15 @@ public class AdvancedComponentTests {
     }
 
     @Test
+    public void getBackgroundIntensity__called_with_phc_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 0;
+        double expectedIntensity = -10.640667281084461;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
     public void getMaskIntensity__when_calling_getMaskIntensity_twice__second_call_is_much_faster_due_to_caching() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 1;
         ComponentInterface component = getTestComponent1();

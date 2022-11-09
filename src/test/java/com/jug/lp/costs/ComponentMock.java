@@ -151,6 +151,9 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public double getBackgroundIntensity(int channelNumber) { throw  new NotImplementedException(); }
+
+    @Override
     public List getChildren() {
         return null;
     }

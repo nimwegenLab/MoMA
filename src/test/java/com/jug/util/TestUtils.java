@@ -130,7 +130,7 @@ public class TestUtils {
     }
 
     @NotNull
-    private Imglib2Utils getImglib2Utils() {
+    public Imglib2Utils getImglib2Utils() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         return imglib2Utils;

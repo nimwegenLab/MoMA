@@ -60,7 +60,25 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void getBackgroundIntensity__called_with_phc_channel__returns_correct_value() throws IOException {
+    public void getBackgroundIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 2;
+        double expectedIntensity = 115900.0;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getBackgroundIntensity__when_called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 1;
+        double expectedIntensity = 10567.031685829163;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getBackgroundIntensity__when_called_with_phc_channel__returns_correct_value() throws IOException {
         int phcChannelNumber = 0;
         double expectedIntensity = -10.640667281084461;
         ComponentInterface sut = getTestComponent1();
@@ -87,7 +105,7 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void getMaskIntensity__called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
+    public void getMaskIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 2;
         double expectedIntensity = 254183.0;
         ComponentInterface sut = getTestComponent1();
@@ -96,7 +114,7 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void getMaskIntensity__called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
+    public void getMaskIntensity__when_called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
         int BackgroundCorrectedFluorescenceChannelNumber = 1;
         double expectedIntensity = 146598.8568496704;
         ComponentInterface sut = getTestComponent1();
@@ -105,7 +123,7 @@ public class AdvancedComponentTests {
     }
 
     @Test
-    public void getMaskIntensity__called_with_phc_channel__returns_correct_value() throws IOException {
+    public void getMaskIntensity__when_called_with_phc_channel__returns_correct_value() throws IOException {
         int phcChannelNumber = 0;
         double expectedIntensity = 211.82272602943704;
         ComponentInterface sut = getTestComponent1();

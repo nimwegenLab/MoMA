@@ -17,6 +17,24 @@ public class ImageProperties {
         this.imglib2Utils = imglib2Utils;
     }
 
+
+    public double getBackgroundIntensityStd(IImageProvider imageProvider, int channelNumber) {
+        ArgumentValidation.channelNumberIsValid(imageProvider, channelNumber);
+
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
+        long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
+        long rightNumberOfPixels = Views.interval(img, rightBackgroundRoi).size();
+        if (leftNumberOfPixels != rightNumberOfPixels) {
+            throw new AssertionError(String.format("The areas for calculating the background intensities to the left/right of the growthlane are not equal (left=%d; right=%d)", leftNumberOfPixels, rightNumberOfPixels));
+        }
+        double leftStd = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
+        double rightStd = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
+
+        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / (leftNumberOfPixels + rightNumberOfPixels);
+    }
+
     public double getBackgroundIntensityMean(IImageProvider imageProvider, int channelNumber) {
         ArgumentValidation.channelNumberIsValid(imageProvider, channelNumber);
 
@@ -28,10 +46,10 @@ public class ImageProperties {
         if (leftNumberOfPixels != rightNumberOfPixels) {
             throw new AssertionError(String.format("The areas for calculating the background intensities to the left/right of the growthlane are not equal (left=%d; right=%d)", leftNumberOfPixels, rightNumberOfPixels));
         }
-        double intensityLeft = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
-        double intensityRight = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
 
-        return (intensityLeft + intensityRight) / (leftNumberOfPixels + rightNumberOfPixels);
+        return (leftIntensity + rightIntensity) / (leftNumberOfPixels + rightNumberOfPixels);
     }
 
     long background_roi_width = 5; /* ROI width in pixels*/

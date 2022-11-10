@@ -25,6 +25,23 @@ public class ImagePropertiesTest {
 
     @ParameterizedTest
     @ValueSource(ints = {-1, Integer.MAX_VALUE})
+    public void getBackgroundIntensityStd__when_called_with_invalid_channel_number__throw_InvalidArgument(int channelNumber) {
+        Assert.assertThrows(IllegalArgumentException.class, () -> sut.getBackgroundIntensityStd(imageProvider, channelNumber));
+    }
+
+    @ParameterizedTest()
+    @CsvSource({
+            "0, 24.339816352770796",
+            "1, 23.712322855821302",
+            "2, 5.7702834107518495",
+    })
+    public void getBackgroundIntensityStd__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityStd) throws IOException {
+        double backgroundIntensity = sut.getBackgroundIntensityStd(imageProvider, channelNumber);
+        Assert.assertEquals(expectedBackgroundIntensityStd, backgroundIntensity, 1e-6);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-1, Integer.MAX_VALUE})
     public void getBackgroundIntensityMean__when_called_with_invalid_channel_number__throw_InvalidArgument(int channelNumber) {
         Assert.assertThrows(IllegalArgumentException.class, () -> sut.getBackgroundIntensityMean(imageProvider, channelNumber));
     }

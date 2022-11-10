@@ -38,10 +38,20 @@ public class Imglib2UtilsTest {
         Assert.assertEquals(expectedMeanIntensity, actualMeanIntensity, 1e-6);
     }
 
-//    @Test
-//    public void getIntensityStDev__when_called_across_image_stack__returns_expected_value(){
-//        imglib2utils.getIntensityStDev()
-//    }
+    @Test
+    public void getIntensityStDev__when_called_across_image_stack__returns_expected_value() throws IOException {
+        double expectedStdIntensity = 0.0;
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(1);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
+        double actualStdIntensity = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
+        double actualStdIntensityRight = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
+
+        Assert.assertEquals(expectedStdIntensity, actualStdIntensity, 1e-6);
+    }
 
     long background_roi_width = 5; /* ROI width in pixels*/
 

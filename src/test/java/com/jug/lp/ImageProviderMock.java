@@ -70,4 +70,9 @@ public class ImageProviderMock implements IImageProvider {
         }
         return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
     }
+
+    @Override
+    public int getNumberOfChannels() {
+        throw new NotImplementedException();
+    }
 }

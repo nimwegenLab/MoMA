@@ -19,8 +19,6 @@ public class ImageProperties {
 
 
     public double getBackgroundIntensityStd(IImageProvider imageProvider, int channelNumber) {
-        ArgumentValidation.channelNumberIsValid(imageProvider, channelNumber);
-
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
@@ -36,8 +34,6 @@ public class ImageProperties {
     }
 
     public double getBackgroundIntensityMean(IImageProvider imageProvider, int channelNumber) {
-        ArgumentValidation.channelNumberIsValid(imageProvider, channelNumber);
-
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);

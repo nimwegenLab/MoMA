@@ -63,4 +63,9 @@ public class ImageProvider implements IImageProvider {
         ArgumentValidation.channelNumberIsValid(this, channelNumber);
         return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channelNumber), 2, timestep));
     }
+
+    @Override
+    public int getNumberOfChannels() {
+        return getRawChannelImgs().size();
+    }
 }

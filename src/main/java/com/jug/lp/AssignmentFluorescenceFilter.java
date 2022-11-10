@@ -23,7 +23,8 @@ public class AssignmentFluorescenceFilter implements IAssignmentFilter {
         boolean targetsAreValid = true;
         for(Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps){
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
-            if(component.getMaskIntensity(targetChannelNumber) < threshold){
+            double maskIntensityMean = component.getMeanMaskIntensity(targetChannelNumber);
+            if(maskIntensityMean < threshold){
                 targetsAreValid = false;
             }
         }

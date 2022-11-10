@@ -622,7 +622,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() { return FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE; }
 
-    public double getFluorescentAssignmentFilterNumberOfSigmas() { return 10; }
+    public double getFluorescentAssignmentFilterNumberOfSigmas() { return 6; }
 
     public int getFluorescentAssignmentFilterChannel(){ return 1; }
 }

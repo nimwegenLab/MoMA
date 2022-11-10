@@ -404,6 +404,10 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
 
     Map<Integer, Double> maskIntensities = new HashMap<>();
 
+    public double getMeanMaskIntensity(int channelNumber) {
+        return getMaskIntensity(channelNumber) / size();
+    }
+
     @Override
     public double getMaskIntensity(int channelNumber) {
         Double intensity = maskIntensities.get(channelNumber);

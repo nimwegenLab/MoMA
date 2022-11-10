@@ -81,6 +81,4 @@ public class ImageProperties {
         );
         return tmp;
     }
-
-
 }

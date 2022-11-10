@@ -25,7 +25,7 @@ public class Imglib2UtilsTest {
 
     @Test
     public void getIntensityMean__when_called_across_image_stack__returns_expected_value() throws IOException {
-        double expectedMeanIntensity = 0.0;
+        double expectedMeanIntensity = 9.18003135902371;
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
         IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
         
@@ -40,7 +40,7 @@ public class Imglib2UtilsTest {
 
     @Test
     public void getIntensityStDev__when_called_across_image_stack__returns_expected_value() throws IOException {
-        double expectedStdIntensity = 0.0;
+        double expectedStdIntensity = 23.675810591584096;
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
         IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
 

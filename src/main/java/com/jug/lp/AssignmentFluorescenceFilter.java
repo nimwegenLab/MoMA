@@ -1,15 +1,11 @@
 package com.jug.lp;
 
-import com.jug.config.ConfigurationManager;
-import com.jug.config.IConfiguration;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
-public class AssignmentFluorescenceFilter {
-    private IConfiguration configurationManager;
+public class AssignmentFluorescenceFilter implements IAssignmentFilter {
     private double threshold = 0.0;
     int targetChannelNumber = 0;
 
@@ -21,13 +17,14 @@ public class AssignmentFluorescenceFilter {
         return threshold;
     }
 
+    @Override
     public void evaluate(AbstractAssignment assignment) {
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHyps = assignment.getTargetHypotheses();
-        boolean targetsAreValid = false;
+        boolean targetsAreValid = true;
         for(Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps){
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
-            if(component.getMaskIntensity(targetChannelNumber) > threshold){
-                targetsAreValid = true;
+            if(component.getMaskIntensity(targetChannelNumber) < threshold){
+                targetsAreValid = false;
             }
         }
         if(!targetsAreValid){

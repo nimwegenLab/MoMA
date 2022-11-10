@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class GrowthlaneTrackingIlpTest {
     public static void main(String... args) throws IOException, GRBException {
@@ -64,13 +65,15 @@ public class GrowthlaneTrackingIlpTest {
         ConfigMock configMock = new ConfigMock();
         GlFileManager glFileManagerMock = new GlFileManager();
         Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
+        IAssignmentFilter assignmentFilterMock = mock(IAssignmentFilter.class);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(),
                 gl,
                 mockGrbModel,
                 new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock),
                 false,
                 () -> new GurobiCallbackMock(),
-                () -> new DialogGurobiProgressMock());
+                () -> new DialogGurobiProgressMock(),
+                assignmentFilterMock);
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }

@@ -64,6 +64,7 @@ public class GrowthlaneTrackingILP {
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
+    private IAssignmentFilter assignmentFilter;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
@@ -80,7 +81,8 @@ public class GrowthlaneTrackingILP {
                                  CostFactory costFactory,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
-                                 Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory) {
+                                 Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
+                                 IAssignmentFilter assignmentFilter) {
         this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
@@ -92,6 +94,7 @@ public class GrowthlaneTrackingILP {
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
+        this.assignmentFilter = assignmentFilter;
     }
 
     /**
@@ -629,6 +632,9 @@ public class GrowthlaneTrackingILP {
                 final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, MappingAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent()));
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
+
+                assignmentFilter.evaluate(ma);
+
                 nodes.addAssignment(sourceTimeStep, ma);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to right neighborhood at time-step: t=%d", sourceTimeStep));
@@ -813,6 +819,9 @@ public class GrowthlaneTrackingILP {
                     final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, DivisionAssignment.buildStringId(sourceTimeStep, from.getWrappedComponent(), to.getWrappedComponent(), lowerNeighbor.getWrappedComponent()));
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor, sourceTimeStep);
+
+                    assignmentFilter.evaluate(da);
+
                     nodes.addAssignment(sourceTimeStep, da);
                     edgeSets.addToRightNeighborhood(from, da);
                     edgeSets.addToLeftNeighborhood(to, da);

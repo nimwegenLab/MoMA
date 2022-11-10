@@ -1,8 +1,19 @@
 package com.jug.mocks;
 
 import com.jug.config.IConfiguration;
+import org.apache.commons.lang.NotImplementedException;
 
 public class ConfigMock implements IConfiguration {
+
+    @Override
+    public int getFluorescentAssignmentFilterChannel() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double getFluorescentAssignmentFilterNumberOfSigmas() {
+        throw new NotImplementedException();
+    }
 
     @Override
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {

@@ -15,10 +15,7 @@ import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
-import com.jug.lp.AssignmentFluorescenceFilter;
-import com.jug.lp.AssignmentPlausibilityTester;
-import com.jug.lp.GurobiCallback;
-import com.jug.lp.GurobiCallbackAbstract;
+import com.jug.lp.*;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -280,6 +277,23 @@ public class PseudoDic {
             assignmentFilter = new AssignmentFluorescenceFilter();
         }
         return assignmentFilter;
+    }
+
+    private AssignmentFilterFactory assignmentFilterFactory;
+
+    public AssignmentFilterFactory getAssignmentFilterFactory() {
+        if (isNull(assignmentFilterFactory)) {
+            assignmentFilterFactory = new AssignmentFilterFactory(getConfigurationManager(), getImageProperties());
+        }
+        return assignmentFilterFactory;
+    }
+
+    private ImageProperties imageProperties;
+    private ImageProperties getImageProperties() {
+        if(isNull(imageProperties)){
+            imageProperties = new ImageProperties(getImglib2utils());
+        }
+        return imageProperties;
     }
 
     public UnetProcessor getUnetProcessor() {

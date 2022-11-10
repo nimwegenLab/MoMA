@@ -620,5 +620,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COSTS; }
 
-    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag(){ return FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE; }
+    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() { return FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE; }
+
+    public double getFluorescentAssignmentFilterNumberOfSigmas() { return 10; }
+
+    public int getFluorescentAssignmentFilterChannel(){ return 1; }
 }

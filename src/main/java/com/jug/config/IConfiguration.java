@@ -1,6 +1,18 @@
 package com.jug.config;
 
 public interface IConfiguration {
+    /**
+     * Returns the color channel the fluorescence filter will consider.
+     * @return
+     */
+    int getFluorescentAssignmentFilterChannel();
+
+    /**
+     * Returns the number of sigmas that the threshold of the filter has to be above background noise of the
+     * fluorescence image.
+     * @return
+     */
+    double getFluorescentAssignmentFilterNumberOfSigmas();
 
     /**
      * Returns whether to use the fluorescence intensity of components to filter assignments.

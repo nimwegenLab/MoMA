@@ -1,5 +1,6 @@
 package com.jug.lp;
 
+import com.jug.datahandling.ArgumentValidation;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.FinalInterval;
@@ -17,6 +18,8 @@ public class ImageProperties {
     }
 
     public double getBackgroundIntensityMean(IImageProvider imageProvider, int channelNumber) {
+        ArgumentValidation.channelNumberIsValid(imageProvider, channelNumber);
+
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
@@ -64,4 +67,6 @@ public class ImageProperties {
         );
         return tmp;
     }
+
+
 }

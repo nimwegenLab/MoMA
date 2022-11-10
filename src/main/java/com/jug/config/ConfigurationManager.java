@@ -238,7 +238,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean FEATURE_FLAG_MIGRATION_COSTS = false;
+    public boolean FEATURE_FLAG_MIGRATION_COSTS = true;
 
     private int minTime = -1;
     private int maxTime = -1;

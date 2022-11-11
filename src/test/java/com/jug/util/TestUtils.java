@@ -216,7 +216,17 @@ public class TestUtils {
         return component;
     }
 
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int frameIndexStart, int frameIndexStop, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
+        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
+            componentForests.add(componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold));
+        }
+        return componentForests;
+    }
+
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);

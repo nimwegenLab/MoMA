@@ -19,13 +19,11 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -51,7 +49,7 @@ public class AdvancedComponentTests {
         IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
         testUtils.showImageStack(imageProvider);
         testUtils.showProbabilityMaps(imageProvider);
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentTreeFromDataFolder(testDataFolder, 0, 0.5f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 0, 0.5f);
         List<AdvancedComponent<FloatType>> allComponents = componentForest.getAllComponents();
         AdvancedComponent<FloatType> component = allComponents.get(allComponents.size() - 2);
         testUtils.showComponent(component);
@@ -116,7 +114,7 @@ public class AdvancedComponentTests {
     private ComponentInterface getTestComponent1() throws IOException {
         int componentIndex = 8;
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentTreeFromDataFolder(testDataFolder, 0, 0.5f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 0, 0.5f);
         ComponentInterface component = testUtils.getTestComponent(componentForest, componentIndex);
         return component;
     }

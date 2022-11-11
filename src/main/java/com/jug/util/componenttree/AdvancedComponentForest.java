@@ -164,6 +164,15 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
         return nodes;
     }
 
+    public AdvancedComponent<T> getComponentWithId(String targetId) {
+        for (AdvancedComponent<T> component : getAllComponents()) {
+            if (component.getStringId().equals(targetId)) {
+                return component;
+            }
+        }
+        return null;
+    }
+
     public RandomAccessibleInterval<T> getSourceImage() {
         return sourceImage;
     }

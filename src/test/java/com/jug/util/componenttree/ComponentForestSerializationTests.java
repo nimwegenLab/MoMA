@@ -5,7 +5,6 @@ import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.ImgView;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import scala.NotImplementedError;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -68,7 +66,7 @@ public class ComponentForestSerializationTests {
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
 //            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
 //        }
-//        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 2);
+//        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(0, 2);
 //        String jsonString = new Gson().toJson(componentForests);
 //        AdvancedComponentPojo pojo_new = new Gson().fromJson(jsonString, AdvancedComponentPojo.class);
     }
@@ -234,6 +232,6 @@ public class ComponentForestSerializationTests {
     @NotNull
     private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int frameIndexStart, int frameIndexStop) throws IOException {
         Path imageFilePath = testUtils.getAbsolutTestFilePath("/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif");
-        return testUtils.getAdvancedComponentForests(imageFilePath, frameIndexStart, frameIndexStop);
+        return testUtils.getAdvancedComponentForestList(imageFilePath, frameIndexStart, frameIndexStop);
     }
 }

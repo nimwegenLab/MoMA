@@ -144,7 +144,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 0;
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
 
 //        for (AdvancedComponent component2 : tree.getAllComponents()) {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
@@ -163,7 +163,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_494-495__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12__model_9e5727e4ed18802f4ab04c7494ef8992d798f4d64d5fd75e285b9a3d83b13ac9.tif";
         int frameIndex = 1;
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
         List<AdvancedComponent<FloatType>> rootComponents = tree.rootsSorted();
 
         Set<Integer> expectedRootHashCodes = new HashSet<>(Arrays.asList(new Integer[]{557155091, 2026295260, 911273390, 356038541, 1017538091, 796074954, 592650667, 548763902, 1886319597, 1117842004, -2000971763, -643329487}));
@@ -185,7 +185,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
         Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.roots().iterator().next().getSourceImage());
     }
 
@@ -200,7 +200,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         int frameIndex = 10;
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -236,7 +236,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 
@@ -256,7 +256,7 @@ public class ComponentForestGeneratorTests {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/cropped__20200922_M9glc_VNG1040-hi2_AB_1_MMStack_Pos0_GL30__probability_map_frame_126_duplicated_frame__20210812.tif";
         int frameIndex = 0;
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentTreeFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
 

@@ -195,15 +195,15 @@ public class TestUtils {
 
 
     @NotNull
-    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(Path imageFile, int frameIndexStart, int frameIndexStop) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForestList(Path imageFile, int frameIndexStart, int frameIndexStop) throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
         for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
-            componentForests.add(this.getComponentTreeFromProbabilityImage(imageFile, frameIndex, 1.0f));
+            componentForests.add(this.getComponentForestFromProbabilityImage(imageFile, frameIndex, 1.0f));
         }
         return componentForests;
     }
 
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromProbabilityImage(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);

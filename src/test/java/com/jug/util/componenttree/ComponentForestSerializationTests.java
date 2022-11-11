@@ -33,15 +33,21 @@ public class ComponentForestSerializationTests {
 
     @ParameterizedTest()
     @ValueSource(ints = {0, 1, 2})
-    public void maskIntensities_field__is_correctly_serialized(int channelNumber) throws IOException {
-        AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildrenNew();
+    public void getMaskIntensity__for_deserialized_component__returns_correct_intensities(int channelNumber) throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
+        double expectedMaskIntensity = sutComponent.getMaskIntensity(channelNumber);
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+        Assert.assertEquals(expectedMaskIntensity, componentDeserialized.getMaskIntensity(channelNumber), 1e-6);
+    }
+
+    @ParameterizedTest()
+    @ValueSource(ints = {0, 1, 2})
+    public void getSerializableRepresentation__when_getting_pojo_representation__maskIntensityMap_is_correctly_set(int channelNumber) throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         double expectedMaskIntensity = sutComponent.getMaskIntensity(channelNumber);
         Map<Integer, Double> intensities = pojo.getMaskIntensityHashMap();
         Assert.assertEquals(expectedMaskIntensity, intensities.get(channelNumber), 1e-6);
-        throw new NotImplementedError();
-//        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-//        Assert.assertEquals(sutComponent.hashCode(), componentDeserialized.hashCode());
     }
 
     @Test
@@ -52,7 +58,6 @@ public class ComponentForestSerializationTests {
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForestToSerialize = componentForests.get(0);
         AdvancedComponent<FloatType> randomComponent = componentForestToSerialize.getAllComponents().get(0);
-        RandomAccessibleInterval<FloatType> sourceImage = randomComponent.getSourceImage();
         int frameNumber = randomComponent.getFrameNumber();
         IImageProvider imageProvider = randomComponent.getImageProvider();
 
@@ -211,12 +216,12 @@ public class ComponentForestSerializationTests {
         return internalComponent;
     }
 
-        private AdvancedComponent<FloatType> getRootComponentNodeWithChildrenNew() throws IOException {
+        private AdvancedComponent<FloatType> getComponent(String componentId) throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestListNew(5, 6);
-        AdvancedComponent<FloatType> rootComponent = componentForests.get(0).getComponentWithId("HypT5T420B458L49R60H-1964905642");
-        Assert.assertTrue(isNull(rootComponent.getParent()));
-        Assert.assertFalse(rootComponent.getChildren().isEmpty());
-        return rootComponent;
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> forest = componentForests.get(0);
+        AdvancedComponent<FloatType> component = forest.getComponentWithId(componentId);
+        Assert.assertNotNull(component);
+        return component;
     }
 
     private AdvancedComponent<FloatType> getRootComponentNodeWithChildren() throws IOException {

@@ -13,6 +13,7 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -171,6 +172,14 @@ public final class AdvancedComponentForest<T extends Type<T>, C extends Componen
             }
         }
         return null;
+    }
+
+    public List<String> getComponentIds() {
+        List<String> ids = new ArrayList<>();
+        for (AdvancedComponent<T> component : getAllComponents()) {
+            ids.add(component.getStringId());
+        }
+        return ids;
     }
 
     public RandomAccessibleInterval<T> getSourceImage() {

@@ -4,10 +4,8 @@ import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
 import org.junit.Assert;
-import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,7 +30,7 @@ public class ImagePropertiesTest {
             "1, 23.712322855821302",
             "2, 5.7702834107518495",
     })
-    public void getBackgroundIntensityStd__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityStd) throws IOException {
+    public void getBackgroundIntensityStd__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityStd) {
         double backgroundIntensity = sut.getBackgroundIntensityStd(imageProvider, channelNumber);
         Assert.assertEquals(expectedBackgroundIntensityStd, backgroundIntensity, 1e-6);
     }
@@ -43,7 +41,7 @@ public class ImagePropertiesTest {
             "1, 11.770502803772166",
             "2, 105.6257109466303",
     })
-    public void getBackgroundIntensityMean__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedMeanBackgroundIntensity) throws IOException {
+    public void getBackgroundIntensityMean__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedMeanBackgroundIntensity) {
         double backgroundIntensity = sut.getBackgroundIntensityMean(imageProvider, channelNumber);
         Assert.assertEquals(expectedMeanBackgroundIntensity, backgroundIntensity, 1e-6);
     }

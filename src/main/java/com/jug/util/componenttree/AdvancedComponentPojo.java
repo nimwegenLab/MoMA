@@ -1,9 +1,11 @@
 package com.jug.util.componenttree;
 
 import net.imglib2.Localizable;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AdvancedComponentPojo {
     private final String stringId;
@@ -15,19 +17,23 @@ public class AdvancedComponentPojo {
     private final int[] xCoordinates;
     private final int[] yCoordinates;
 
+    private Map<Integer, Double> maskIntensityMap;
+
     public AdvancedComponentPojo(String stringId,
                                  int frameNumber,
                                  int label,
                                  String parentStringId,
                                  List<String> childrenStringIds,
                                  double value,
-                                 List<LocalizableImpl> pixelList) {
+                                 List<LocalizableImpl> pixelList,
+                                 Map<Integer, Double> maskIntensityMap) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
         this.parentStringId = parentStringId;
         this.childrenStringIds = childrenStringIds;
         this.value = value;
+        this.maskIntensityMap = maskIntensityMap;
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
 
@@ -69,5 +75,9 @@ public class AdvancedComponentPojo {
             pixelList.add(new LocalizableImpl(xCoordinates[coordInd], yCoordinates[coordInd]));
         }
         return pixelList;
+    }
+
+    public Map<Integer, Double> getMaskIntensityHashMap() {
+        return maskIntensityMap;
     }
 }

@@ -28,7 +28,6 @@ import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -402,7 +401,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return stringId;
     }
 
-    Map<Integer, Double> maskIntensities = new HashMap<>();
+    Map<Integer, Double> maskIntensitiesMap = new HashMap<>();
 
     public double getMeanMaskIntensity(int channelNumber) {
         return getMaskIntensity(channelNumber) / size();
@@ -410,11 +409,11 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
 
     @Override
     public double getMaskIntensity(int channelNumber) {
-        Double intensity = maskIntensities.get(channelNumber);
+        Double intensity = maskIntensitiesMap.get(channelNumber);
         if (isNull(intensity)) {
             final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
             intensity = componentProperties.getTotalIntensity(this, channelFrame);
-            maskIntensities.put(channelNumber, intensity);
+            maskIntensitiesMap.put(channelNumber, intensity);
         }
         return intensity;
     }
@@ -1030,7 +1029,8 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
                 getParentStringId(),
                 getChildrenStringIds(),
                 ((FloatType) value()).getRealDouble(),
-                pixelList);
+                pixelList,
+                maskIntensitiesMap);
     }
 
     public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,

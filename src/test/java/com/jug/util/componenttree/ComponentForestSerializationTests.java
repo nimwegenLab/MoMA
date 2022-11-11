@@ -11,6 +11,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import scala.NotImplementedError;
 
 import java.io.File;
@@ -31,6 +33,19 @@ public class ComponentForestSerializationTests {
 //    public static void main(String... args) throws IOException, InterruptedException {
 //        new ComponentForestSerializationTests().serializing_and_deserializing_component_yields_equal_component();
 //    }
+
+    @ParameterizedTest()
+    @ValueSource(ints = {0, 1, 2})
+    public void maskIntensities_field__is_correctly_serialized(int channelNumber) throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
+        double expectedMaskIntensity = sutComponent.getMaskIntensity(channelNumber);
+        Map<Integer, Double> intensities = pojo.getMaskIntensityHashMap();
+        Assert.assertEquals(expectedMaskIntensity, intensities.get(channelNumber), 1e-6);
+        throw new NotImplementedError();
+//        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+//        Assert.assertEquals(sutComponent.hashCode(), componentDeserialized.hashCode());
+    }
 
     @Test
     public void isequal__for_json_serialized_copy_of_list_of_component_trees__is_true() throws IOException {

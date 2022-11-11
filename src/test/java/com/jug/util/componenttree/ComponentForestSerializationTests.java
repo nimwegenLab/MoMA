@@ -47,7 +47,7 @@ public class ComponentForestSerializationTests {
 
     @Test
     public void isequal__for_json_serialized_copy_of_list_of_component_trees__is_true() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(0, 1);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(0, 1);
         ComponentForestSerializer serializer = new ComponentForestSerializer();
         String jsonString = serializer.serializeToJson(componentForests);
 
@@ -197,7 +197,7 @@ public class ComponentForestSerializationTests {
     }
 
     private AdvancedComponent<FloatType> getLeafComponentNode() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> leafComponent = getComponentWithId("HypT5T366B389L50R59H-219465477", componentForests.get(0).getAllComponents());
         Assert.assertTrue(leafComponent.getChildren().isEmpty());
         Assert.assertFalse(isNull(leafComponent.getParent()));
@@ -205,7 +205,7 @@ public class ComponentForestSerializationTests {
     }
 
     private AdvancedComponent<FloatType> getInternalComponentNode() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> internalComponent = getComponentWithId("HypT5T280B354L47R59H1674282099", componentForests.get(0).getAllComponents());
         Assert.assertFalse(internalComponent.getChildren().isEmpty());
         Assert.assertFalse(isNull(internalComponent.getParent()));
@@ -213,7 +213,7 @@ public class ComponentForestSerializationTests {
     }
 
     private AdvancedComponent<FloatType> getRootComponentNodeWithChildren() throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForests(5, 6);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> rootComponent = getComponentWithId("HypT5T420B458L49R60H-1964905642", componentForests.get(0).getAllComponents());
         Assert.assertTrue(isNull(rootComponent.getParent()));
         Assert.assertFalse(rootComponent.getChildren().isEmpty());
@@ -230,7 +230,7 @@ public class ComponentForestSerializationTests {
     }
 
     @NotNull
-    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForests(int frameIndexStart, int frameIndexStop) throws IOException {
+    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForestList(int frameIndexStart, int frameIndexStop) throws IOException {
         Path imageFilePath = testUtils.getAbsolutTestFilePath("/src/test/resources/00_probability_maps/20201119_VNG1040_AB2h_2h_1__Pos5_GL17/probability_maps__frames430-450__cropped__20201119_VNG1040_AB2h_2h_1_MMStack_Pos5_GL17__model_20210715_5b27d7aa.tif");
         return testUtils.getAdvancedComponentForestList(imageFilePath, frameIndexStart, frameIndexStop);
     }

@@ -1,8 +1,7 @@
 package com.jug.util.componenttree;
 
+import com.jug.config.IConfiguration;
 import com.jug.lp.costs.ICostFactory;
-import com.jug.util.ComponentTreeUtils;
-import com.jug.util.math.Vector2D;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.CentroidPolygon;
@@ -16,22 +15,21 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
-
-import static java.util.Objects.isNull;
 
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
     private Imglib2Utils imglib2Utils;
     private ICostFactory costFactory;
+    private IConfiguration configuration;
     private CentralMomentsCalculator polygonMomentsCalculator;
 
-    public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils, ICostFactory costFactory) {
+    public ComponentProperties(OpService ops, Imglib2Utils imglib2Utils, ICostFactory costFactory, IConfiguration configuration) {
         this.imglib2Utils = imglib2Utils;
         this.costFactory = costFactory;
+        this.configuration = configuration;
         regionToPolygonConverter = new LabelRegionToPolygonConverter();
         regionToPolygonConverter.setContext(ops.context());
         polygonMomentsCalculator = new CentralMomentsCalculator();
@@ -120,8 +118,6 @@ public class ComponentProperties {
     }
 
 
-    long background_roi_width = 5; /* ROI width in pixels*/
-
     /**
      * Returns a ROI interval for calculating the background intensity of the segment under consideration.
      * This ROI is situated at the left image edge, has width background_roi_width and the same vertical position as
@@ -136,7 +132,7 @@ public class ComponentProperties {
     private FinalInterval getLeftBackgroundRoi(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
                 new long[]{0, vert_start},
-                new long[]{background_roi_width - 1, vert_stop}
+                new long[]{configuration.getBackgroundRoiWidth() - 1, vert_stop}
         );
         return tmp;
     }
@@ -154,7 +150,7 @@ public class ComponentProperties {
     @NotNull
     private FinalInterval getRightBackgroundRoi(RandomAccessibleInterval<FloatType> img, long vert_start, long vert_stop) {
         FinalInterval tmp = new FinalInterval(
-                new long[]{img.max(0) - (background_roi_width - 1), vert_start},
+                new long[]{img.max(0) - (configuration.getBackgroundRoiWidth() - 1), vert_start},
                 new long[]{img.max(0), vert_stop}
         );
         return tmp;

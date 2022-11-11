@@ -103,7 +103,7 @@ public class PseudoDic {
 
     public ComponentProperties getComponentProperties() {
         if (isNull(componentProperties)) {
-            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils(), getCostFactory());
+            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils(), getCostFactory(), getConfigurationManager());
         }
         return componentProperties;
     }
@@ -291,7 +291,7 @@ public class PseudoDic {
     private ImageProperties imageProperties;
     private ImageProperties getImageProperties() {
         if(isNull(imageProperties)){
-            imageProperties = new ImageProperties(getImglib2utils());
+            imageProperties = new ImageProperties(getImglib2utils(), getConfigurationManager());
         }
         return imageProperties;
     }

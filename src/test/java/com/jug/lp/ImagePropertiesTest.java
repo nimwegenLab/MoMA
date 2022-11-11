@@ -1,5 +1,6 @@
 package com.jug.lp;
 
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
 import org.junit.Assert;
@@ -11,6 +12,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.IOException;
 import java.nio.file.Path;
 
+import static org.mockito.Mockito.mock;
+
 public class ImagePropertiesTest {
     private final TestUtils testUtils;
     private final ImageProperties sut;
@@ -18,7 +21,7 @@ public class ImagePropertiesTest {
 
     public ImagePropertiesTest() throws IOException {
         testUtils = new TestUtils();
-        sut = new ImageProperties(testUtils.getImglib2Utils());
+        sut = new ImageProperties(testUtils.getImglib2Utils(), mock(IConfiguration.class));
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
         imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
     }

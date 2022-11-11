@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.lp.costs.ICostFactory;
@@ -40,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 
 public class TestUtils {
     private final ImageJ ij;
@@ -109,7 +111,7 @@ public class TestUtils {
     public ComponentProperties getComponentProperties() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
     }
 
     @NotNull

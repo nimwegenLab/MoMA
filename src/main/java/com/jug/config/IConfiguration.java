@@ -2,6 +2,11 @@ package com.jug.config;
 
 public interface IConfiguration {
     /**
+     * Return the width of the background width.
+     */
+    long getBackgroundRoiWidth();
+
+    /**
      * Returns the color channel the fluorescence filter will consider.
      * @return
      */

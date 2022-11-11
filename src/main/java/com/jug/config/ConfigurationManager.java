@@ -625,4 +625,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public double getFluorescentAssignmentFilterNumberOfSigmas() { return 6; }
 
     public int getFluorescentAssignmentFilterChannel(){ return 1; }
+
+    long backgroundRoiWidth = 5; /* ROI width in pixels*/
+
+    public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
 }

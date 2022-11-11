@@ -6,6 +6,11 @@ import org.apache.commons.lang.NotImplementedException;
 public class ConfigMock implements IConfiguration {
 
     @Override
+    public long getBackgroundRoiWidth() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public int getFluorescentAssignmentFilterChannel() {
         throw new NotImplementedException();
     }

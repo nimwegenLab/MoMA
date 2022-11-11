@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.lp.costs.ICostFactory;
@@ -37,6 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.mock;
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
 
 
@@ -78,7 +80,7 @@ public class ComponentPropertiesTest {
 
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock(), mock(IConfiguration.class));
 
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
@@ -105,7 +107,7 @@ public class ComponentPropertiesTest {
     private ComponentForestGenerator getComponentForestGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
@@ -126,7 +128,7 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock(), mock(IConfiguration.class));
 
         int componentIndex = 2;
         AdvancedComponent<FloatType> component = roots.get(componentIndex);

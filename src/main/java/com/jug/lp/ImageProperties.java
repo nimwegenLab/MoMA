@@ -1,6 +1,6 @@
 package com.jug.lp;
 
-import com.jug.datahandling.ArgumentValidation;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imglib2.FinalInterval;
@@ -12,9 +12,11 @@ import org.jetbrains.annotations.NotNull;
 
 public class ImageProperties {
     private final Imglib2Utils imglib2Utils;
+    private IConfiguration configuration;
 
-    public ImageProperties(Imglib2Utils imglib2Utils) {
+    public ImageProperties(Imglib2Utils imglib2Utils, IConfiguration configuration) {
         this.imglib2Utils = imglib2Utils;
+        this.configuration = configuration;
     }
 
 
@@ -48,12 +50,10 @@ public class ImageProperties {
         return (leftIntensity + rightIntensity) / (leftNumberOfPixels + rightNumberOfPixels);
     }
 
-    long background_roi_width = 5; /* ROI width in pixels*/
-
     @NotNull
     private FinalInterval getLeftBackgroundRoi(RandomAccessibleInterval<FloatType> img) {
         long xStart = 0;
-        long xEnd = background_roi_width - 1;
+        long xEnd = configuration.getBackgroundRoiWidth() - 1;
         long yStart = 0;
         long yEnd = img.max(1);
         long tStart = 0;
@@ -68,7 +68,7 @@ public class ImageProperties {
 
     @NotNull
     private FinalInterval getRightBackgroundRoi(RandomAccessibleInterval<FloatType> img) {
-        long xStart = img.max(0) - (background_roi_width - 1);
+        long xStart = img.max(0) - (configuration.getBackgroundRoiWidth() - 1);
         long xEnd = img.max(0);
         long yStart = 0;
         long yEnd = img.max(1);

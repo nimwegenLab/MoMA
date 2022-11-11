@@ -233,7 +233,17 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.
      */
-    public boolean FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE = true;
+    private boolean FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = true;
+
+    /**
+     * Set the color channel of the image stack on which to do the processing.
+     */
+    private int FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = 1;
+
+    /**
+     * Sets the number of sigmas that the component fluorescence intensity needs to be above the background intensity.
+     */
+    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = 5.0;
 
     /**
      * Sets if the crossing constraints should be used.
@@ -323,7 +333,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
         FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
         FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
-        FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE = parseBooleanFromIntegerValue("FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE", FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE);
+
+        FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR)));
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = Integer.parseInt(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER)));
 
         /* process feature flags */
         if (featureFlagDisableMaxCellDrop) {
@@ -468,7 +481,10 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
-            setBooleanAsIntegerValue(props, "FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE", FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE);
+
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR));
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER));
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {
@@ -620,11 +636,17 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COSTS; }
 
-    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() { return FEATURE_FLAG_FILTER_ASSIGNMENTS_USING_COMPONENT_FLUORESCENCE; }
+    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
+        return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;
+    }
 
-    public double getFluorescentAssignmentFilterNumberOfSigmas() { return 6; }
+    public double getFluorescentAssignmentFilterNumberOfSigmas() {
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR;
+    }
 
-    public int getFluorescentAssignmentFilterChannel(){ return 1; }
+    public int getFluorescentAssignmentFilterChannel(){
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER;
+    }
 
     long backgroundRoiWidth = 5; /* ROI width in pixels*/
 

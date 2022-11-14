@@ -16,7 +16,7 @@ import net.imglib2.img.ImgView;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 import java.io.File;
@@ -26,8 +26,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ComponentForestGeneratorTests {
     private final TestUtils testUtils;
@@ -169,10 +169,10 @@ public class ComponentForestGeneratorTests {
         Set<Integer> expectedRootHashCodes = new HashSet<>(Arrays.asList(new Integer[]{557155091, 2026295260, 911273390, 356038541, 1017538091, 796074954, 592650667, 548763902, 1886319597, 1117842004, -2000971763, -643329487}));
 
         for (AdvancedComponent root : rootComponents){
-            assertTrue("hash code note found in list of expected hash codes", expectedRootHashCodes.contains(root.hashCode()));
+            assertTrue(expectedRootHashCodes.contains(root.hashCode()), "hash code note found in list of expected hash codes");
             expectedRootHashCodes.remove(root.hashCode());
         }
-        assertTrue("not all expected hash codes were found", expectedRootHashCodes.isEmpty());
+        assertTrue(expectedRootHashCodes.isEmpty(), "not all expected hash codes were found");
     }
 
     /**

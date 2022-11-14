@@ -3,7 +3,7 @@ package com.jug.lp;
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -32,7 +32,7 @@ public class ImagePropertiesTest {
     })
     public void getBackgroundIntensityStd__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityStd) {
         double backgroundIntensity = sut.getBackgroundIntensityStd(imageProvider, channelNumber);
-        Assert.assertEquals(expectedBackgroundIntensityStd, backgroundIntensity, 1e-6);
+        Assertions.assertEquals(expectedBackgroundIntensityStd, backgroundIntensity, 1e-6);
     }
 
     @ParameterizedTest()
@@ -43,6 +43,6 @@ public class ImagePropertiesTest {
     })
     public void getBackgroundIntensityMean__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedMeanBackgroundIntensity) {
         double backgroundIntensity = sut.getBackgroundIntensityMean(imageProvider, channelNumber);
-        Assert.assertEquals(expectedMeanBackgroundIntensity, backgroundIntensity, 1e-6);
+        Assertions.assertEquals(expectedMeanBackgroundIntensity, backgroundIntensity, 1e-6);
     }
 }

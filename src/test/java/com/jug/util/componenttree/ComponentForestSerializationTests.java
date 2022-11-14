@@ -7,8 +7,8 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -42,7 +42,7 @@ public class ComponentForestSerializationTests {
         sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
 
-        Assert.assertEquals(expectedIntensity, componentDeserialized.getBackgroundIntensity(channelNumber), 1e-6);
+        Assertions.assertEquals(expectedIntensity, componentDeserialized.getBackgroundIntensity(channelNumber), 1e-6);
     }
 
     @ParameterizedTest()
@@ -56,7 +56,7 @@ public class ComponentForestSerializationTests {
         sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
         Map<Integer, Double> intensities = pojo.getBackgroundIntensities();
 
-        Assert.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
+        Assertions.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
     }
 
     @ParameterizedTest()
@@ -69,7 +69,7 @@ public class ComponentForestSerializationTests {
         sutComponent.getMaskIntensity(channelNumber);
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
 
-        Assert.assertEquals(expectedIntensity, componentDeserialized.getMaskIntensity(channelNumber), 1e-6);
+        Assertions.assertEquals(expectedIntensity, componentDeserialized.getMaskIntensity(channelNumber), 1e-6);
     }
 
     @ParameterizedTest()
@@ -83,7 +83,7 @@ public class ComponentForestSerializationTests {
         sutComponent.getMaskIntensity(channelNumber);
         Map<Integer, Double> intensities = pojo.getMaskIntensities();
 
-        Assert.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
+        Assertions.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ComponentForestSerializationTests {
         ComponentForestDeserializer deserializer = new ComponentForestDeserializer(testUtils.getComponentProperties(), jsonString, imageProvider);
         ComponentForest<AdvancedComponent<FloatType>> componentForestDeserialized = deserializer.buildComponentForest(imageProvider, frameNumber, Float.MIN_VALUE); /* the threshold-value is not used for the deserializing, because we are not thresholding anything; hence we set it to Float.MIN_VALUE */
 
-        Assert.assertEquals(componentForestToSerialize, componentForestDeserialized);
+        Assertions.assertEquals(componentForestToSerialize, componentForestDeserialized);
 //        Path jsonFile = Files.createTempFile("", ".json");
 
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
@@ -115,43 +115,43 @@ public class ComponentForestSerializationTests {
     public void hashCode__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.hashCode(), componentDeserialized.hashCode());
+        Assertions.assertEquals(sutComponent.hashCode(), componentDeserialized.hashCode());
     }
 
     @Test
     public void hashCode__for_json_serialized_copy__is_not_equal_to_default_value_of_777() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertNotEquals(777, componentDeserialized.hashCode());
+            Assertions.assertNotEquals(777, componentDeserialized.hashCode());
     }
 
     @Test
     public void value_field__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertNotEquals(0.0, sutComponent.value().getRealDouble()); /* make sure value is not 0.0 to make the test more expressive, because it could be that in future changes the value is set to 0 by default */
-        Assert.assertEquals(sutComponent.value(), componentDeserialized.value());
+        Assertions.assertNotEquals(0.0, sutComponent.value().getRealDouble()); /* make sure value is not 0.0 to make the test more expressive, because it could be that in future changes the value is set to 0 by default */
+        Assertions.assertEquals(sutComponent.value(), componentDeserialized.value());
     }
 
     @Test
     public void getChildStringIds__for_json_serialized_copy_of_leaf_component_node__returns_empty_list() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
+        Assertions.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
     }
 
     @Test
     public void getChildStringIds__for_json_serialized_copy_of_root_component_node_with_children__returns_correct_value() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
+        Assertions.assertEquals(sutComponent.getChildrenStringIds(), componentDeserialized.getChildrenStringIds());
     }
 
     @Test
     public void getChildStringIds__for_leaf_component_node__returns_empty_list() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getLeafComponentNode();
         List<String> childStringIds = sutComponent.getChildrenStringIds();
-        Assert.assertTrue(childStringIds.isEmpty());
+        Assertions.assertTrue(childStringIds.isEmpty());
     }
 
     @Test
@@ -159,70 +159,70 @@ public class ComponentForestSerializationTests {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         List<String> childStringIds = sutComponent.getChildrenStringIds();
         String[] expected = new String[]{"HypT5T420B429L51R60H1646872133", "HypT5T430B458L49R59H-2058293790"};
-        Assert.assertEquals(Arrays.asList(expected), childStringIds);
-        Assert.assertEquals("HypT5T420B429L51R60H1646872133", childStringIds.get(0));
-        Assert.assertEquals("HypT5T430B458L49R59H-2058293790", childStringIds.get(1));
+        Assertions.assertEquals(Arrays.asList(expected), childStringIds);
+        Assertions.assertEquals("HypT5T420B429L51R60H1646872133", childStringIds.get(0));
+        Assertions.assertEquals("HypT5T430B458L49R59H-2058293790", childStringIds.get(1));
     }
 
     @Test
     public void getParentStringId__for_json_serialized_copy_of_internal_component_node__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
+        Assertions.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
     }
 
     @Test
     public void getParentStringId__for_json_serialized_copy_of_root_component_node__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
+        Assertions.assertEquals(sutComponent.getParentStringId(), componentDeserialized.getParentStringId());
     }
 
     @Test
     public void getLabel__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getLabel(), componentDeserialized.getLabel());
+        Assertions.assertEquals(sutComponent.getLabel(), componentDeserialized.getLabel());
     }
 
     @Test
     public void getParentStringId__for_internal_component_node__returns_correct_value() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getInternalComponentNode();
-        Assert.assertEquals(sutComponent.getParentStringId(), "HypT5T280B395L47R59H725080955");
+        Assertions.assertEquals(sutComponent.getParentStringId(), "HypT5T280B395L47R59H725080955");
     }
 
     @Test
     public void getParentStringId__for_root_component__returns_NA() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
-        Assert.assertEquals(sutComponent.getParentStringId(), "NA");
+        Assertions.assertEquals(sutComponent.getParentStringId(), "NA");
     }
 
     @Test
     public void getFrameNumber__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getFrameNumber(), componentDeserialized.getFrameNumber());
+        Assertions.assertEquals(sutComponent.getFrameNumber(), componentDeserialized.getFrameNumber());
     }
 
     @Test
     public void getStringId__for_json_serialized_copy__is_equal() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent.getStringId(), componentDeserialized.getStringId());
+        Assertions.assertEquals(sutComponent.getStringId(), componentDeserialized.getStringId());
     }
 
     @Test
     public void equals__for_two_different_components__returns_false() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> leafComponent = getLeafComponentNode();
-        Assert.assertNotEquals(sutComponent, leafComponent);
+        Assertions.assertNotEquals(sutComponent, leafComponent);
     }
 
     @Test
     public void equals__for_json_serialized_copy_returns__returns_true() throws IOException {
         AdvancedComponent<FloatType> sutComponent = getRootComponentNodeWithChildren();
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(sutComponent, componentDeserialized);
+        Assertions.assertEquals(sutComponent, componentDeserialized);
     }
 
     @NotNull
@@ -239,16 +239,16 @@ public class ComponentForestSerializationTests {
     private AdvancedComponent<FloatType> getLeafComponentNode() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> leafComponent = componentForests.get(0).getComponentWithId("HypT5T366B389L50R59H-219465477");
-        Assert.assertTrue(leafComponent.getChildren().isEmpty());
-        Assert.assertFalse(isNull(leafComponent.getParent()));
+        Assertions.assertTrue(leafComponent.getChildren().isEmpty());
+        Assertions.assertFalse(isNull(leafComponent.getParent()));
         return leafComponent;
     }
 
     private AdvancedComponent<FloatType> getInternalComponentNode() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> internalComponent = componentForests.get(0).getComponentWithId("HypT5T280B354L47R59H1674282099");
-        Assert.assertFalse(internalComponent.getChildren().isEmpty());
-        Assert.assertFalse(isNull(internalComponent.getParent()));
+        Assertions.assertFalse(internalComponent.getChildren().isEmpty());
+        Assertions.assertFalse(isNull(internalComponent.getParent()));
         return internalComponent;
     }
 
@@ -256,15 +256,15 @@ public class ComponentForestSerializationTests {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestListNew(5, 6);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> forest = componentForests.get(0);
         AdvancedComponent<FloatType> component = forest.getComponentWithId(componentId);
-        Assert.assertNotNull(component);
+        Assertions.assertNotNull(component);
         return component;
     }
 
     private AdvancedComponent<FloatType> getRootComponentNodeWithChildren() throws IOException {
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(5, 6);
         AdvancedComponent<FloatType> rootComponent = componentForests.get(0).getComponentWithId("HypT5T420B458L49R60H-1964905642");
-        Assert.assertTrue(isNull(rootComponent.getParent()));
-        Assert.assertFalse(rootComponent.getChildren().isEmpty());
+        Assertions.assertTrue(isNull(rootComponent.getParent()));
+        Assertions.assertFalse(rootComponent.getChildren().isEmpty());
         return rootComponent;
     }
 

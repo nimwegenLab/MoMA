@@ -4,9 +4,9 @@ import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
 import org.javatuples.Quartet;
 import org.javatuples.Sextet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CentralMomentsCalculatorTests {
 

@@ -4,8 +4,8 @@ import com.jug.mocks.MockUtils;
 import com.jug.util.TestUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
 
@@ -81,19 +81,19 @@ public class AssignmentFluorescenceFilterTest {
     public void getTargetChannelNumber__after_using_setTargetChannelNumber__returns_set_value() {
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
         sut.setTargetChannelNumber(1);
-        Assert.assertEquals(1, sut.getTargetChannelNumber());
+        Assertions.assertEquals(1, sut.getTargetChannelNumber());
     }
 
     @Test
     public void getTargetChannelNumber__after_instantiation__returns_zero() {
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
-        Assert.assertEquals(0, sut.getTargetChannelNumber());
+        Assertions.assertEquals(0, sut.getTargetChannelNumber());
     }
 
     @Test
     public void getFluorescenceThreshold__after_instantiation__returns_zero() {
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
-        Assert.assertEquals(0.0, sut.getFluorescenceThreshold(), 1e-6);
+        Assertions.assertEquals(0.0, sut.getFluorescenceThreshold(), 1e-6);
     }
 
     @Test
@@ -101,6 +101,6 @@ public class AssignmentFluorescenceFilterTest {
         AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
         double expected = 1.234;
         sut.setFluorescenceThreshold(expected);
-        Assert.assertEquals(expected, sut.getFluorescenceThreshold(), 1e-6);
+        Assertions.assertEquals(expected, sut.getFluorescenceThreshold(), 1e-6);
     }
 }

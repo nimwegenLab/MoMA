@@ -7,8 +7,8 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -35,7 +35,7 @@ public class Imglib2UtilsTest {
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         double actualMeanIntensityRight = imglib2Utils.getIntensityMean(rightBackgroundRoi, img);
 
-        Assert.assertEquals(expectedMeanIntensity, actualMeanIntensity, 1e-6);
+        Assertions.assertEquals(expectedMeanIntensity, actualMeanIntensity, 1e-6);
     }
 
     @Test
@@ -50,7 +50,7 @@ public class Imglib2UtilsTest {
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         double actualStdIntensityRight = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
 
-        Assert.assertEquals(expectedStdIntensity, actualStdIntensity, 1e-6);
+        Assertions.assertEquals(expectedStdIntensity, actualStdIntensity, 1e-6);
     }
 
     long background_roi_width = 5; /* ROI width in pixels*/

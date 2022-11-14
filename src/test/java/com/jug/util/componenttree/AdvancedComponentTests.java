@@ -17,8 +17,8 @@ import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +26,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AdvancedComponentTests {
     private final TestUtils testUtils;
@@ -63,7 +63,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = 115900.0;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = 10567.031685829163;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = -10.640667281084461;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
    @Test
@@ -90,7 +90,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = 254183.0;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
     @Test
@@ -99,7 +99,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = 146598.8568496704;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class AdvancedComponentTests {
         double expectedIntensity = 211.82272602943704;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getMaskIntensity(phcChannelNumber);
-        Assert.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
     private ComponentInterface getTestComponent1() throws IOException {

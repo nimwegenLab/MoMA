@@ -11,8 +11,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import scala.NotImplementedError;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -78,9 +76,9 @@ public class ComponentForestSerializationTests {
                 "2, 101679.0"})
     public void getMaskIntensities__when_called_on_pojo__map_value_are_correctly_set(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
-        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
-
         sutComponent.getMaskIntensity(channelNumber);
+
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         Map<Integer, Double> intensities = pojo.getMaskIntensities();
 
         Assertions.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);

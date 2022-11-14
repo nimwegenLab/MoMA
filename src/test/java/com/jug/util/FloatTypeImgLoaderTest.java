@@ -172,13 +172,13 @@ public class FloatTypeImgLoaderTest {
 
     private void imagesAreEqual(Img<FloatType> a, Img<FloatType> b, float tolerance) {
         // check references
-        Assertions.assertFalse("Both images not null", (a == null || b == null));
-        Assertions.assertFalse("Both images have equal dimensions", (a.numDimensions() != b.numDimensions()));
+        Assertions.assertFalse((a == null || b == null), "Both images not null");
+        Assertions.assertFalse((a.numDimensions() != b.numDimensions()), "Both images have equal dimensions");
 
         // check dimensions
         for (int d = 0; d < a.numDimensions(); d++) {
-            Assertions.assertFalse("minimum position " + d + " equals", (a.min(d) != b.min(d)));
-            Assertions.assertFalse("maximum position " + d + " equals", (a.max(d) != b.max(d)));
+            Assertions.assertFalse((a.min(d) != b.min(d)), "minimum position " + d + " equals");
+            Assertions.assertFalse((a.max(d) != b.max(d)), "maximum position " + d + " equals");
         }
 
         Cursor<FloatType> curA = a.cursor();
@@ -186,11 +186,11 @@ public class FloatTypeImgLoaderTest {
 
         // Note: the order of pixels in the following code is not garanteed. However, as far as I know, it works always.
         while (curA.hasNext() && curB.hasNext()) {
-            Assertions.assertEquals("pixels equal", curA.next().get(), curB.next().get(), tolerance);
+            Assertions.assertEquals(curA.next().get(), curB.next().get(), tolerance, "pixels equal");
         }
 
         // this should never be asserted, we just checked min and max positions...
-        Assertions.assertFalse("Cursors add at same point", (curA.hasNext() || curB.hasNext()));
+        Assertions.assertFalse((curA.hasNext() || curB.hasNext()), "Cursors add at same point");
     }
 
     private String resaveTifAsTifSequence(String tifFilename)

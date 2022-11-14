@@ -23,11 +23,11 @@ public class CentralMomentsCalculatorTests {
         Polygon2D polyRect = GeomMasks.polygon2D(xCoords, yCoords);
         Sextet<Double, Double, Double, Double, Double, Double> moments = polygonMomentsCalculator.calculate(polyRect);
 
-        assertEquals("area is incorrect", 40.0, moments.getValue0(), 1e-5);
-        assertEquals("X coordinate of centroid is incorrect", 5, moments.getValue1(), 1e-5);
-        assertEquals("Y coordinate of centroid is incorrect", 4, moments.getValue2(), 1e-5);  //
-        assertEquals("X variance is incorrect", 17./3., moments.getValue3(), 1e-5); // X variance is correct
-        assertEquals("Y variance is incorrect", 8./3., moments.getValue4(), 1e-5); // Y variance is correct
-        assertEquals("covariance is incorrect", 2, moments.getValue5(), 1e-5); // covariance is correct
+        assertEquals(40.0, moments.getValue0(), 1e-5, "area is incorrect");
+        assertEquals(5, moments.getValue1(), 1e-5, "X coordinate of centroid is incorrect");
+        assertEquals(4, moments.getValue2(), 1e-5, "Y coordinate of centroid is incorrect");  //
+        assertEquals(17./3., moments.getValue3(), 1e-5, "X variance is incorrect"); // X variance is correct
+        assertEquals(8./3., moments.getValue4(), 1e-5, "Y variance is incorrect"); // Y variance is correct
+        assertEquals(2, moments.getValue5(), 1e-5, "covariance is incorrect"); // covariance is correct
     }
 }

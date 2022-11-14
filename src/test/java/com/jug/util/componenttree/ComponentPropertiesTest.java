@@ -29,7 +29,9 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import scala.NotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,6 +63,7 @@ public class ComponentPropertiesTest {
      * @throws InterruptedException
      */
     @Test
+    @Disabled
     public void testGettingComponentProperties() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
@@ -100,7 +103,8 @@ public class ComponentPropertiesTest {
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>(), roots.get(0).getSourceImage());
-        assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
+        throw new NotImplementedError("FIX: This is not a true test, because there is no test-assert statement in this test!");
+//        assertTrue(false, "FIX: This is not a true test, because there is no test-assert statement in this test!");
     }
 
     @NotNull

@@ -99,6 +99,6 @@ public class BoundingBoxPropertiesTest {
     }
 
     private void assertVectorsEqual(Vector2D expectedCenterCoordinate, BoundingBoxProperties bboxProps) {
-        assertTrue("bbox center is incorrect\nexpected: " + expectedCenterCoordinate + "\nactual: " + bboxProps.getCenterCoordinate(), bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta));
+        assertTrue(bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta), "bbox center is incorrect\nexpected: " + expectedCenterCoordinate + "\nactual: " + bboxProps.getCenterCoordinate());
     }
 }

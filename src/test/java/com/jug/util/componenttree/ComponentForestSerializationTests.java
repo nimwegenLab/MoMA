@@ -49,9 +49,9 @@ public class ComponentForestSerializationTests {
                 "2, 41669.0"})
     public void getBackgroundIntensities__when_called_on_pojo__map_value_are_correctly_set(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
-        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
-
         sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
+
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         Map<Integer, Double> intensities = pojo.getBackgroundIntensities();
 
         Assertions.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);

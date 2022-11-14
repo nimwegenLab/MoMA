@@ -38,7 +38,7 @@ public class AdvancedComponentPojo {
         this.childrenStringIds = childrenStringIds;
         this.value = value;
         this.maskIntensities = maskIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `maskIntensities` */
-        this.backgroundIntensities = backgroundIntensities;
+        this.backgroundIntensities = backgroundIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
 

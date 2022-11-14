@@ -3,8 +3,10 @@ package com.jug.util.componenttree;
 import net.imglib2.Localizable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AdvancedComponentPojo {
     private final String stringId;
@@ -18,6 +20,8 @@ public class AdvancedComponentPojo {
 
     private Map<Integer, Double> maskIntensities;
 
+    private Map<Integer, Double> backgroundIntensities;
+
     public AdvancedComponentPojo(String stringId,
                                  int frameNumber,
                                  int label,
@@ -25,14 +29,19 @@ public class AdvancedComponentPojo {
                                  List<String> childrenStringIds,
                                  double value,
                                  List<LocalizableImpl> pixelList,
-                                 Map<Integer, Double> maskIntensities) {
+                                 Map<Integer, Double> maskIntensities,
+                                 Map<Integer, Double> backgroundIntensities) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
         this.parentStringId = parentStringId;
         this.childrenStringIds = childrenStringIds;
         this.value = value;
-        this.maskIntensities = maskIntensities;
+        this.maskIntensities = maskIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue())));
+//        this.maskIntensities = maskIntensities;
+//        this.maskIntensities = new HashMap<>();
+//        this.maskIntensities.putAll(maskIntensities);
+        this.backgroundIntensities = backgroundIntensities;
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
 
@@ -76,7 +85,11 @@ public class AdvancedComponentPojo {
         return pixelList;
     }
 
-    public Map<Integer, Double> getMaskIntensityHashMap() {
+    public Map<Integer, Double> getMaskIntensities() {
         return maskIntensities;
+    }
+
+    public Map<Integer, Double> getBackgroundIntensities() {
+        return backgroundIntensities;
     }
 }

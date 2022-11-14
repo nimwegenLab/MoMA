@@ -42,6 +42,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtils {
     private final ImageJ ij;
@@ -111,7 +112,9 @@ public class TestUtils {
     public ComponentProperties getComponentProperties() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
+        IConfiguration configurationMock = mock(IConfiguration.class);
+        when(configurationMock.getBackgroundRoiWidth()).thenReturn(5L);
+        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), configurationMock);
     }
 
     @NotNull

@@ -1030,7 +1030,8 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
                 getChildrenStringIds(),
                 ((FloatType) value()).getRealDouble(),
                 pixelList,
-                maskIntensities);
+                maskIntensities,
+                backgroundIntensities);
     }
 
     public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,
@@ -1055,7 +1056,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         this.sourceImage = sourceImage;
         this.imageProvider = imageProvider;
         buildLabelRegion(pixelList, label, sourceImage);
-        maskIntensities = pojo.getMaskIntensityHashMap();
+        maskIntensities = pojo.getMaskIntensities();
     }
 
     @Override

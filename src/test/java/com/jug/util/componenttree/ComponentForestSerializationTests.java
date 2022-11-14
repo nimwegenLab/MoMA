@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import scala.NotImplementedError;
 
@@ -32,22 +33,57 @@ public class ComponentForestSerializationTests {
 //    }
 
     @ParameterizedTest()
-    @ValueSource(ints = {0, 1, 2})
-    public void getMaskIntensity__for_deserialized_component__returns_correct_intensities(int channelNumber) throws IOException {
+    @CsvSource({"0, 27.510710166578065",
+                "1, 2756.5084530115128",
+                "2, 41669.0"})
+    public void getBackgroundIntensity__for_deserialized_component__returns_correct_intensities(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
-        double expectedMaskIntensity = sutComponent.getMaskIntensity(channelNumber);
+
+        sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
-        Assert.assertEquals(expectedMaskIntensity, componentDeserialized.getMaskIntensity(channelNumber), 1e-6);
+
+        Assert.assertEquals(expectedIntensity, componentDeserialized.getBackgroundIntensity(channelNumber), 1e-6);
     }
 
     @ParameterizedTest()
-    @ValueSource(ints = {0, 1, 2})
-    public void getSerializableRepresentation__when_getting_pojo_representation__maskIntensityMap_is_correctly_set(int channelNumber) throws IOException {
+    @CsvSource({"0, 27.510710166578065",
+                "1, 2756.5084530115128",
+                "2, 41669.0"})
+    public void getBackgroundIntensities__when_called_on_pojo__map_value_are_correctly_set(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
-        double expectedMaskIntensity = sutComponent.getMaskIntensity(channelNumber);
-        Map<Integer, Double> intensities = pojo.getMaskIntensityHashMap();
-        Assert.assertEquals(expectedMaskIntensity, intensities.get(channelNumber), 1e-6);
+
+        sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
+        Map<Integer, Double> intensities = pojo.getBackgroundIntensities();
+
+        Assert.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
+    }
+
+    @ParameterizedTest()
+    @CsvSource({"0, 152.452898748219",
+                "1, 56636.20825576782",
+                "2, 101679.0"})
+    public void getMaskIntensity__for_deserialized_component__returns_correct_intensities(int channelNumber, double expectedIntensity) throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
+
+        sutComponent.getMaskIntensity(channelNumber);
+        AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
+
+        Assert.assertEquals(expectedIntensity, componentDeserialized.getMaskIntensity(channelNumber), 1e-6);
+    }
+
+    @ParameterizedTest()
+    @CsvSource({"0, 152.452898748219",
+                "1, 56636.20825576782",
+                "2, 101679.0"})
+    public void getMaskIntensities__when_called_on_pojo__map_value_are_correctly_set(int channelNumber, double expectedIntensity) throws IOException {
+        AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
+        AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
+
+        sutComponent.getMaskIntensity(channelNumber);
+        Map<Integer, Double> intensities = pojo.getMaskIntensities();
+
+        Assert.assertEquals(expectedIntensity, intensities.get(channelNumber), 1e-6);
     }
 
     @Test

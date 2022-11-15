@@ -17,6 +17,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import weka.gui.ExtensionFileFilter;
 
@@ -914,9 +915,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (configurationManager.EXPORT_ASSIGNMENT_COSTS) {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
-        if (configurationManager.EXPORT_COMPONENT_INTENSITIES) {
-            exporters.add(MoMA.dic.getComponentIntensitiesExporter());
-        }
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
@@ -932,6 +930,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
+        if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
+            exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+        }
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
         MoMA.dic.getTrackingDataTimer().stop();

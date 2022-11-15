@@ -24,6 +24,7 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -573,6 +574,15 @@ public class PseudoDic {
 
     public Supplier<GurobiCallbackAbstract> getGurobiCallbackFactory() {
         return new GurobiCallbackFactory();
+    }
+
+    ComponentIntensitiesExporter componentIntensitiesExporter;
+
+    public ResultExporterInterface getComponentIntensitiesExporter() {
+        if (isNull(componentIntensitiesExporter)) {
+            componentIntensitiesExporter = new ComponentIntensitiesExporter(getConfigurationManager());
+        }
+        return componentIntensitiesExporter;
     }
 
     class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{

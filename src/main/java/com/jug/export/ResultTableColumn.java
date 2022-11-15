@@ -39,7 +39,7 @@ public class ResultTableColumn<T> {
     }
 
     /**
-     * Construct with the provided column header and .
+     * Construct with the provided column header and value-format.
      *
      * @param columnHeader column header for output.
      * @param valueFormat format of the values during output. Must match type {@link T}.
@@ -103,7 +103,7 @@ public class ResultTableColumn<T> {
      *
      * @return header
      */
-    private String getColumnHeader(){
+    public String getColumnHeader(){
         return columnHeader;
     }
 }

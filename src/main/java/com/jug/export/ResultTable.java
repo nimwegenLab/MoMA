@@ -3,7 +3,11 @@ package com.jug.export;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.util.Objects.isNull;
 
 /**
  * Class for outputting data columns to a CSV file.
@@ -18,6 +22,7 @@ public class ResultTable {
     }
 
     List<ResultTableColumn> columnList = new ArrayList<>();
+    Map<String, ResultTableColumn> columnMap = new HashMap<>();
 
     /**
      * Write table to {@param writer}.
@@ -40,7 +45,20 @@ public class ResultTable {
      */
     public <T> ResultTableColumn<T> addColumn(ResultTableColumn<T> column) {
         columnList.add(column);
+        columnMap.put(column.getColumnHeader(), column);
         return column;
+    }
+
+    public <T> void addValue(T value, String columnHeader) {
+        ResultTableColumn column = columnMap.get(columnHeader);
+        if (isNull(column)) {
+            throw new RuntimeException("specified column name does not exist");
+        }
+//        Class columnValueType = column.getValueType();
+//        if (value.getClass().isAssignableFrom(columnValueType)) {
+//            throw new RuntimeException(String.format("Provided value type (%s) does not match value-type of the target column (%s)", value.getClass(), columnValueType));
+//        }
+        column.addValue(value);
     }
 
     /**

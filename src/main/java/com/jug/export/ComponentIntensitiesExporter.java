@@ -6,12 +6,12 @@ import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBException;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ComponentIntensitiesExporter implements ResultExporterInterface {
-    private IConfiguration configuration;
-    private ResultTable resultTable;
-    private ResultTableColumn<Double> frameCol;
+    private final IConfiguration configuration;
+    private ResultTable table;
 
     public ComponentIntensitiesExporter(IConfiguration configuration) {
         this.configuration = configuration;
@@ -19,16 +19,21 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
-        setupCsvTable();
+        this.table = new ResultTable(",");
+        int channel = configuration.getFluorescentAssignmentFilterChannel();
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
-        for(ComponentInterface component : components){
-            double val = component.getMaskIntensity(configuration.getFluorescentAssignmentFilterChannel());
-            this.resultTable.addValue(val, "mask_intensity [a.u.]");
+        ResultTableColumn<String> idCol = this.table.getColumn(String.class, "component_id");
+        ResultTableColumn<Double> maskIntensityCol = this.table.getColumn(Double.class, String.format("mask_intensity_ch_%d__au", channel));
+        ResultTableColumn<Double> backgroundIntensityCol = this.table.getColumn(Double.class, String.format("component_bkgr_intensity_ch_%d__au", channel));
+        for (ComponentInterface component : components) {
+            idCol.addValue(component.getStringId());
+            maskIntensityCol.addValue(component.getMaskIntensity(channel));
+            backgroundIntensityCol.addValue(component.getBackgroundIntensity(channel));
         }
-    }
-
-    public void setupCsvTable() {
-        this.resultTable = new ResultTable(",");
-        this.frameCol = resultTable.addColumn(new ResultTableColumn<>("mask_intensity [a.u.]"));
+        try {
+            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
+        } catch (final IOException e1) {
+            throw new RuntimeException(String.format("Could not writ component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
+        }
     }
 }

@@ -292,7 +292,7 @@ public class PseudoDic {
     private ImageProperties imageProperties;
     private ImageProperties getImageProperties() {
         if(isNull(imageProperties)){
-            imageProperties = new ImageProperties(getImglib2utils(), getConfigurationManager());
+            imageProperties = new ImageProperties(getImageProvider(), getImglib2utils(), getConfigurationManager());
         }
         return imageProperties;
     }
@@ -580,7 +580,7 @@ public class PseudoDic {
 
     public ResultExporterInterface getComponentIntensitiesExporter() {
         if (isNull(componentIntensitiesExporter)) {
-            componentIntensitiesExporter = new ComponentIntensitiesExporter(getConfigurationManager());
+            componentIntensitiesExporter = new ComponentIntensitiesExporter(getConfigurationManager(), getImageProperties());
         }
         return componentIntensitiesExporter;
     }

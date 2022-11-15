@@ -13,14 +13,16 @@ import org.jetbrains.annotations.NotNull;
 public class ImageProperties {
     private final Imglib2Utils imglib2Utils;
     private IConfiguration configuration;
+    private IImageProvider imageProvider;
 
-    public ImageProperties(Imglib2Utils imglib2Utils, IConfiguration configuration) {
+    public ImageProperties(IImageProvider imageProvider, Imglib2Utils imglib2Utils, IConfiguration configuration) {
         this.imglib2Utils = imglib2Utils;
         this.configuration = configuration;
+        this.imageProvider = imageProvider;
     }
 
 
-    public double getBackgroundIntensityStd(IImageProvider imageProvider, int channelNumber) {
+    public double getBackgroundIntensityStd(int channelNumber) {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
@@ -35,7 +37,7 @@ public class ImageProperties {
         return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / (leftNumberOfPixels + rightNumberOfPixels);
     }
 
-    public double getBackgroundIntensityMean(IImageProvider imageProvider, int channelNumber) {
+    public double getBackgroundIntensityMean(int channelNumber) {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);

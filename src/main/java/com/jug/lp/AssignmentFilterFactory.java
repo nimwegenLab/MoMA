@@ -17,8 +17,8 @@ public class AssignmentFilterFactory {
             return new DummyAssignmentFilter();
         }
         int channelNumber = configuration.getFluorescentAssignmentFilterChannel();
-        double intensityMean = imageProperties.getBackgroundIntensityMean(imageProvider, channelNumber);
-        double intensityStd = imageProperties.getBackgroundIntensityStd(imageProvider, channelNumber);
+        double intensityMean = imageProperties.getBackgroundIntensityMean(channelNumber);
+        double intensityStd = imageProperties.getBackgroundIntensityStd(channelNumber);
         double numberOfSigmas = configuration.getFluorescentAssignmentFilterNumberOfSigmas();
         double threshold = intensityMean + numberOfSigmas * intensityStd;
         AssignmentFluorescenceFilter filter = new AssignmentFluorescenceFilter();

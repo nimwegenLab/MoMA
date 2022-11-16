@@ -34,11 +34,21 @@ public class ImageProperties {
         double leftStd = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
         double rightStd = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
 
-        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / (leftNumberOfPixels + rightNumberOfPixels);
+        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSize();
     }
 
     public double getBackgroundIntensityMean(int channelNumber) {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
+        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+
+        return (leftIntensity + rightIntensity) / getBackgroundRoiSize();
+    }
+
+    public long getBackgroundRoiSize() {
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(0);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
@@ -46,10 +56,7 @@ public class ImageProperties {
         if (leftNumberOfPixels != rightNumberOfPixels) {
             throw new AssertionError(String.format("The areas for calculating the background intensities to the left/right of the growthlane are not equal (left=%d; right=%d)", leftNumberOfPixels, rightNumberOfPixels));
         }
-        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
-        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
-
-        return (leftIntensity + rightIntensity) / (leftNumberOfPixels + rightNumberOfPixels);
+        return leftNumberOfPixels + rightNumberOfPixels;
     }
 
     @NotNull

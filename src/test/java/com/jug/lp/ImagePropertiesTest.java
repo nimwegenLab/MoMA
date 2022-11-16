@@ -4,6 +4,7 @@ import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -25,6 +26,13 @@ public class ImagePropertiesTest {
         IConfiguration config = mock(IConfiguration.class);
         when(config.getBackgroundRoiWidth()).thenReturn(5L);
         sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+    }
+
+    @Test
+    public void getBackgroundRoiSize__when_called___returns_expected_value() {
+        long expectedBackgroundRoiSize = 102680;
+        long actualBackgroundRoiSize = sut.getBackgroundRoiSize();
+        Assertions.assertEquals(expectedBackgroundRoiSize, actualBackgroundRoiSize);
     }
 
     @ParameterizedTest()

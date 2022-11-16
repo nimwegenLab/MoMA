@@ -17,8 +17,8 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
     public Feature__20220919_use_fluorescence_signal_to_select_valid_components() {
         datasetSubfolder = "feature/20220919-use-fluorescence-signal-to-select-valid-components"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
-        tmin = null;
-        tmax = 10;
+        tmin = 400;
+        tmax = 500;
     }
 
     public static void main(String[] args) {

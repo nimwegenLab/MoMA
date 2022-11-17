@@ -22,6 +22,7 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
 
     @Override
     public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
+        System.out.println("START: Export component intensities.");
         this.table = new ResultTable(",");
         int channel = configuration.getFluorescentAssignmentFilterChannel();
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
@@ -39,10 +40,11 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
             imageRoiIntensityCol.addValue(imageProperties.getBackgroundIntensityMean(channel));
 //            imageRoiIntensitySizeCol.
         }
-        try {
-            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
-        } catch (final IOException e1) {
-            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
-        }
+//        try {
+//            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
+//        } catch (final IOException e1) {
+//            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
+//        }
+        System.out.println("FINISH: Export component intensities.");
     }
 }

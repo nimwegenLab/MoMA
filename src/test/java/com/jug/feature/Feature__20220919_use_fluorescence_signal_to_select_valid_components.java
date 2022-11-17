@@ -24,9 +24,9 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
     public static void main(String[] args) {
         Feature__20220919_use_fluorescence_signal_to_select_valid_components tests = new Feature__20220919_use_fluorescence_signal_to_select_valid_components();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -53,11 +53,14 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
 
     public void run_reloading() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
+        analysisName = "test_batch_run"; /* you can change this if you want to; but it is not needed */
+//        analysisName = "test_interactive_run"; /* you can change this if you want to; but it is not needed */
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void run_export() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
+        analysisName = "test_batch_run"; /* you can change this if you want to; but it is not needed */
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

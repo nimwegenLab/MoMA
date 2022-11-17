@@ -19,7 +19,6 @@ public class AssignmentFluorescenceFilter implements IAssignmentFilter {
 
     @Override
     public void evaluate(AbstractAssignment assignment) {
-        System.out.println("START: Filter assignments using component intensities.");
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHyps = assignment.getTargetHypotheses();
         boolean targetsAreValid = true;
         for(Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps){
@@ -32,7 +31,6 @@ public class AssignmentFluorescenceFilter implements IAssignmentFilter {
         if(!targetsAreValid){
             assignment.setGroundUntruth(true);
         }
-        System.out.println("FINISH: Filter assignments using component intensities.");
     }
 
     public int getTargetChannelNumber() {

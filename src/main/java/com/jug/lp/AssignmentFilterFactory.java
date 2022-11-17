@@ -12,7 +12,7 @@ public class AssignmentFilterFactory {
         this.imageProperties = imageProperties;
     }
 
-    public IAssignmentFilter getAssignmentFilter(IImageProvider imageProvider) {
+    public IAssignmentFilter getAssignmentFilter() {
         if (!configuration.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
             return new DummyAssignmentFilter();
         }

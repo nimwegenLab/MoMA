@@ -120,7 +120,7 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
-		IAssignmentFilter assignmentFilter = MoMA.dic.getAssignmentFilterFactory().getAssignmentFilter(MoMA.dic.getImageProvider());
+		IAssignmentFilter assignmentFilter = MoMA.dic.getAssignmentFilterFactory().getAssignmentFilter();
 		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(),
 				this,
 				model,

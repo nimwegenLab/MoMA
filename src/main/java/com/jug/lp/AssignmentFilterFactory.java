@@ -15,14 +15,8 @@ public class AssignmentFilterFactory {
         if (!configuration.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
             return new DummyAssignmentFilter();
         }
-        int channelNumber = configuration.getFluorescentAssignmentFilterChannel();
-        double intensityMean = imageProperties.getBackgroundIntensityMean(channelNumber);
-        double intensityStd = imageProperties.getBackgroundIntensityStd(channelNumber);
-        double numberOfSigmas = configuration.getFluorescentAssignmentFilterNumberOfSigmas();
-        double threshold = intensityMean + numberOfSigmas * intensityStd;
-        AssignmentFilterUsingFluoresenceOfAllFrames filter = new AssignmentFilterUsingFluoresenceOfAllFrames();
-        filter.setTargetChannelNumber(channelNumber);
-        filter.setFluorescenceThreshold(threshold);
-        return filter;
+        return new AssignmentFilterUsingFluorescencePerFrame(imageProperties,
+                configuration.getFluorescentAssignmentFilterChannel(),
+                configuration.getFluorescentAssignmentFilterNumberOfSigmas());
     }
 }

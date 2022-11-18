@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 public interface ComponentInterface<T extends Type<T>, C extends ComponentInterface<T, C>> extends Component<T, C> {
+    int getFrameNumber();
+
     float getCost();
 
     RandomAccessibleInterval<FloatType> getSourceImage();
@@ -67,4 +69,6 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      * @return
      */
     double getBackgroundIntensity(int channelNumber);
+
+    double getMeanMaskIntensity(int expectedTargetChannelNumber);
 }

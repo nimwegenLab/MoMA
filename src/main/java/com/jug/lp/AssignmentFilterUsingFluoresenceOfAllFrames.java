@@ -7,6 +7,7 @@ import java.util.List;
 
 public class AssignmentFilterUsingFluoresenceOfAllFrames implements IAssignmentFilter {
     private double threshold = 0.0;
+
     int targetChannelNumber = 0;
 
     public void setFluorescenceThreshold(double threshold) {

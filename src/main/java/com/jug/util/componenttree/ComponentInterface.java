@@ -61,7 +61,7 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      * @param channelNumber
      * @return
      */
-    double getMaskIntensity(int channelNumber);
+    double getMaskIntensityTotal(int channelNumber);
 
     /**
      * Return the image intensity of channel channelNumber in the background region of the component.
@@ -70,5 +70,5 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      */
     double getBackgroundIntensity(int channelNumber);
 
-    double getMeanMaskIntensity(int expectedTargetChannelNumber);
+    double getMaskIntensityMean(int expectedTargetChannelNumber);
 }

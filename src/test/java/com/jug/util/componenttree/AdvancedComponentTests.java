@@ -89,7 +89,7 @@ public class AdvancedComponentTests {
         int BackgroundCorrectedFluorescenceChannelNumber = 2;
         double expectedIntensity = 254183.0;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        double actualIntensity = sut.getMaskIntensityTotal(BackgroundCorrectedFluorescenceChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -98,7 +98,7 @@ public class AdvancedComponentTests {
         int BackgroundCorrectedFluorescenceChannelNumber = 1;
         double expectedIntensity = 146598.8568496704;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getMaskIntensity(BackgroundCorrectedFluorescenceChannelNumber);
+        double actualIntensity = sut.getMaskIntensityTotal(BackgroundCorrectedFluorescenceChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -107,7 +107,7 @@ public class AdvancedComponentTests {
         int phcChannelNumber = 0;
         double expectedIntensity = 211.82272602943704;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getMaskIntensity(phcChannelNumber);
+        double actualIntensity = sut.getMaskIntensityTotal(phcChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 

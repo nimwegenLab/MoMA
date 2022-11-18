@@ -1,7 +1,6 @@
 package com.jug.lp;
 
 import com.jug.mocks.MockUtils;
-import com.jug.util.TestUtils;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 import org.junit.jupiter.api.Assertions;
@@ -25,8 +24,8 @@ public class AssignmentFilterUsingFluoresenceOfAllFramesTest {
         sut.setTargetChannelNumber(targetChannelNumber);
         sut.setFluorescenceThreshold(intensityThreshold);
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
 
         sut.evaluate(assignmentMock);
 
@@ -39,8 +38,8 @@ public class AssignmentFilterUsingFluoresenceOfAllFramesTest {
         double intensityThreshold = 1000.0;
         sut.setFluorescenceThreshold(intensityThreshold);
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
 
         sut.evaluate(assignmentMock);
 
@@ -53,8 +52,8 @@ public class AssignmentFilterUsingFluoresenceOfAllFramesTest {
         double intensityThreshold = 1000.0;
         sut.setFluorescenceThreshold(intensityThreshold);
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
 
         sut.evaluate(assignmentMock);
 
@@ -70,8 +69,8 @@ public class AssignmentFilterUsingFluoresenceOfAllFramesTest {
 
         sut.evaluate(assignmentMock);
 
-        verify(assignmentMock.getTargetComponent(0)).getMeanMaskIntensity(expectedTargetChannelNumber);
-        verify(assignmentMock.getTargetComponent(1)).getMeanMaskIntensity(expectedTargetChannelNumber);
+        verify(assignmentMock.getTargetComponent(0)).getMaskIntensityMean(expectedTargetChannelNumber);
+        verify(assignmentMock.getTargetComponent(1)).getMaskIntensityMean(expectedTargetChannelNumber);
     }
 
     @Test

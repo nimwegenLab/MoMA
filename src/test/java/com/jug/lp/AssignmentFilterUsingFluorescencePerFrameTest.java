@@ -31,8 +31,8 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
         when(imageProperties.getBackgroundIntensityMeanAtFrame(targetChannelNumber, targetFrame)).thenReturn(intensityThreshold);
         when(imageProperties.getBackgroundIntensityStdAtFrame(targetChannelNumber, targetFrame)).thenReturn(0.0);
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
         when(assignmentMock.getTargetComponent(0).getFrameNumber()).thenReturn(targetFrame);
         when(assignmentMock.getTargetComponent(1).getFrameNumber()).thenReturn(targetFrame);
 
@@ -50,8 +50,8 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
         when(imageProperties.getBackgroundIntensityMeanAtFrame(targetChannelNumber, targetFrame)).thenReturn(intensityThreshold);
         when(imageProperties.getBackgroundIntensityStdAtFrame(targetChannelNumber, targetFrame)).thenReturn(0.0);
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold + 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold + 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
         when(assignmentMock.getTargetComponent(0).getFrameNumber()).thenReturn(targetFrame);
         when(assignmentMock.getTargetComponent(1).getFrameNumber()).thenReturn(targetFrame);
 
@@ -71,8 +71,8 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
         when(imageProperties.getBackgroundIntensityStdAtFrame(targetChannelNumber, targetFrame)).thenReturn(0.0);
 
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignmentMock = MockUtils.getAssignmentMock(2);
-        when(assignmentMock.getTargetComponent(0).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
-        when(assignmentMock.getTargetComponent(1).getMeanMaskIntensity(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(0).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
+        when(assignmentMock.getTargetComponent(1).getMaskIntensityMean(targetChannelNumber)).thenReturn(intensityThreshold - 1);
         when(assignmentMock.getTargetComponent(0).getFrameNumber()).thenReturn(targetFrame);
         when(assignmentMock.getTargetComponent(1).getFrameNumber()).thenReturn(targetFrame);
 
@@ -90,8 +90,8 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
 
         sut.evaluate(assignmentMock);
 
-        verify(assignmentMock.getTargetComponent(0)).getMeanMaskIntensity(expectedTargetChannelNumber);
-        verify(assignmentMock.getTargetComponent(1)).getMeanMaskIntensity(expectedTargetChannelNumber);
+        verify(assignmentMock.getTargetComponent(0)).getMaskIntensityMean(expectedTargetChannelNumber);
+        verify(assignmentMock.getTargetComponent(1)).getMaskIntensityMean(expectedTargetChannelNumber);
     }
 
     @Test

@@ -403,12 +403,12 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
 
     Map<Integer, Double> maskIntensities = new HashMap<>();
 
-    public double getMeanMaskIntensity(int channelNumber) {
-        return getMaskIntensity(channelNumber) / size();
+    public double getMaskIntensityMean(int channelNumber) {
+        return getMaskIntensityTotal(channelNumber) / size();
     }
 
     @Override
-    public double getMaskIntensity(int channelNumber) {
+    public double getMaskIntensityTotal(int channelNumber) {
         Double intensity = maskIntensities.get(channelNumber);
         if (isNull(intensity)) {
             final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);

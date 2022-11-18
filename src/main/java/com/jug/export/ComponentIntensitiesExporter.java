@@ -7,7 +7,6 @@ import com.jug.lp.ImageProperties;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBException;
 
-import java.io.IOException;
 import java.util.List;
 
 public class ComponentIntensitiesExporter implements ResultExporterInterface {
@@ -35,7 +34,7 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
         for (ComponentInterface component : components) {
             idCol.addValue(component.getStringId());
             componentSize.addValue(component.size());
-            componentMaskIntensityCol.addValue(component.getMaskIntensity(channel));
+            componentMaskIntensityCol.addValue(component.getMaskIntensityTotal(channel));
             componentBackgroundIntensityCol.addValue(component.getBackgroundIntensity(channel));
             imageRoiIntensityCol.addValue(imageProperties.getBackgroundIntensityMean(channel));
 //            imageRoiIntensitySizeCol.

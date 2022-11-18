@@ -24,7 +24,7 @@ public class AssignmentFilterUsingFluoresenceOfAllFrames implements IAssignmentF
         boolean targetsAreValid = true;
         for(Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps){
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
-            double maskIntensityMean = component.getMeanMaskIntensity(targetChannelNumber);
+            double maskIntensityMean = component.getMaskIntensityMean(targetChannelNumber);
             if(maskIntensityMean < threshold){
                 targetsAreValid = false;
             }

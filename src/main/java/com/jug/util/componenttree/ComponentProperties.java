@@ -8,9 +8,7 @@ import net.imagej.ops.geom.CentroidPolygon;
 import net.imagej.ops.geom.geom2d.DefaultMinimumFeretAngle;
 import net.imagej.ops.geom.geom2d.DefaultMinorMajorAxis;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
-import net.imglib2.FinalInterval;
-import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.RealPoint;
+import net.imglib2.*;
 import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -93,8 +91,12 @@ public class ComponentProperties {
         return new ValuePair<>(tmp.getDoublePosition(0), tmp.getDoublePosition(1));
     }
 
+    public synchronized double getIntensityStd(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+        return imglib2Utils.getIntensityStDev(component.getRegion(), img);
+    }
+
     public synchronized double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
-        return imglib2Utils.getTotalIntensity(component.getRegion(), img);
+        return imglib2Utils.getIntensityTotal(component.getRegion(), img);
     }
 
     public synchronized double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
@@ -104,9 +106,9 @@ public class ComponentProperties {
     public synchronized double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
-        double intensity1 = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        double intensity1 = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
-        double intensity2 = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        double intensity2 = imglib2Utils.getIntensityTotal(rightBackgroundRoi, img);
         return intensity1 + intensity2;
     }
 

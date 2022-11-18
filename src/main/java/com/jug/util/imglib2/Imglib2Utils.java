@@ -34,7 +34,7 @@ public class Imglib2Utils {
         }
     }
 
-    public synchronized double getTotalIntensity(final Interval interval, final RandomAccessible<FloatType> img) {
+    public synchronized double getIntensityTotal(final Interval interval, final RandomAccessible<FloatType> img) {
         IterableInterval<FloatType> region = Views.interval(img, interval);
         return ops.stats().sum(region).getRealDouble();
     }

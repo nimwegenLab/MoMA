@@ -45,8 +45,8 @@ public class ImageProperties {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
-        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
-        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        double leftIntensity = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
+        double rightIntensity = imglib2Utils.getIntensityTotal(rightBackgroundRoi, img);
         return leftIntensity + rightIntensity;
     }
 
@@ -75,8 +75,8 @@ public class ImageProperties {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
-        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
-        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        double leftIntensity = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
+        double rightIntensity = imglib2Utils.getIntensityTotal(rightBackgroundRoi, img);
         return leftIntensity + rightIntensity;
     }
 

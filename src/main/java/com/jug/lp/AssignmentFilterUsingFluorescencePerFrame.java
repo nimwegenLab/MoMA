@@ -35,7 +35,7 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
 
     @Override
     public void evaluate(AbstractAssignment assignment) {
-        int frame = assignment.getTargetComponent(0).getFrameNumber();
+        int frame = assignment.getTargetTimeStep();
         double intensityMean = imageProperties.getBackgroundIntensityMeanAtFrame(targetChannelNumber, frame);
         double intensityStd = imageProperties.getBackgroundIntensityStdAtFrame(targetChannelNumber, frame);
         double threshold = intensityMean + numberOfSigmas * intensityStd;
@@ -44,6 +44,8 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
         for (Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps) {
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
             double maskIntensityMean = component.getMaskIntensityMean(targetChannelNumber);
+            double maskIntensityStd = component.getMaskIntensityStd(targetChannelNumber);
+
             if (maskIntensityMean < threshold) {
                 targetsAreValid = false;
             }

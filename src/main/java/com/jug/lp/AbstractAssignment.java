@@ -381,4 +381,8 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	public int getSourceTimeStep() {
 		return sourceTimeStep;
 	}
+
+	public int getTargetTimeStep() {
+		return sourceTimeStep + 1;
+	}
 }

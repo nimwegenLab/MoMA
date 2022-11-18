@@ -1,7 +1,6 @@
 package com.jug.lp;
 
 import com.jug.config.IConfiguration;
-import com.jug.datahandling.IImageProvider;
 
 public class AssignmentFilterFactory {
     private final IConfiguration configuration;
@@ -21,7 +20,7 @@ public class AssignmentFilterFactory {
         double intensityStd = imageProperties.getBackgroundIntensityStd(channelNumber);
         double numberOfSigmas = configuration.getFluorescentAssignmentFilterNumberOfSigmas();
         double threshold = intensityMean + numberOfSigmas * intensityStd;
-        AssignmentFluorescenceFilter filter = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames filter = new AssignmentFilterUsingFluoresenceOfAllFrames();
         filter.setTargetChannelNumber(channelNumber);
         filter.setFluorescenceThreshold(threshold);
         return filter;

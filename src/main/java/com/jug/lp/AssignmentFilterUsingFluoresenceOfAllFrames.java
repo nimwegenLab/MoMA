@@ -5,7 +5,7 @@ import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
 
-public class AssignmentFluorescenceFilter implements IAssignmentFilter {
+public class AssignmentFilterUsingFluoresenceOfAllFrames implements IAssignmentFilter {
     private double threshold = 0.0;
     int targetChannelNumber = 0;
 

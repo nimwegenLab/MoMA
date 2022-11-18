@@ -24,7 +24,6 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -272,10 +271,10 @@ public class PseudoDic {
         return configurationManager;
     }
 
-    AssignmentFluorescenceFilter assignmentFilter;
-    public AssignmentFluorescenceFilter getAssignmentFilter() {
+    AssignmentFilterUsingFluoresenceOfAllFrames assignmentFilter;
+    public AssignmentFilterUsingFluoresenceOfAllFrames getAssignmentFilter() {
         if(isNull(assignmentFilter)){
-            assignmentFilter = new AssignmentFluorescenceFilter();
+            assignmentFilter = new AssignmentFilterUsingFluoresenceOfAllFrames();
         }
         return assignmentFilter;
     }

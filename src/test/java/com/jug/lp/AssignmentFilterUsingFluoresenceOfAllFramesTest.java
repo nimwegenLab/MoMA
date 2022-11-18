@@ -9,16 +9,16 @@ import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.*;
 
-public class AssignmentFluorescenceFilterTest {
+public class AssignmentFilterUsingFluoresenceOfAllFramesTest {
     private final TestUtils testUtils;
 
-    public AssignmentFluorescenceFilterTest() {
+    public AssignmentFilterUsingFluoresenceOfAllFramesTest() {
         testUtils = new TestUtils();
     }
 
     @Test
     public void evaluate__when_all_component_intensities_are_above_threshold__does_not_call_setGroundUntruth(){
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         int targetChannelNumber = 4;
         double intensityThreshold = 1000.0;
         sut.setTargetChannelNumber(targetChannelNumber);
@@ -34,7 +34,7 @@ public class AssignmentFluorescenceFilterTest {
 
     @Test
     public void evaluate__when_any_component_intensity_is_below_threshold__calls_setGroundUntruth(){
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         int targetChannelNumber = 4;
         double intensityThreshold = 1000.0;
         sut.setFluorescenceThreshold(intensityThreshold);
@@ -49,7 +49,7 @@ public class AssignmentFluorescenceFilterTest {
 
     @Test
     public void evaluate__when_all_component_intensity_are_below_threshold__calls_setGroundUntruth(){
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         int targetChannelNumber = 4;
         double intensityThreshold = 1000.0;
         sut.setFluorescenceThreshold(intensityThreshold);
@@ -64,7 +64,7 @@ public class AssignmentFluorescenceFilterTest {
 
     @Test
     public void evaluate__after_using_setTargetChannelNumber__calls_getMaskIntensity_on_components_with_correct_channel(){
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
 
         int expectedTargetChannelNumber = 4;
         sut.setTargetChannelNumber(expectedTargetChannelNumber);
@@ -79,26 +79,26 @@ public class AssignmentFluorescenceFilterTest {
 
     @Test
     public void getTargetChannelNumber__after_using_setTargetChannelNumber__returns_set_value() {
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         sut.setTargetChannelNumber(1);
         Assertions.assertEquals(1, sut.getTargetChannelNumber());
     }
 
     @Test
     public void getTargetChannelNumber__after_instantiation__returns_zero() {
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         Assertions.assertEquals(0, sut.getTargetChannelNumber());
     }
 
     @Test
     public void getFluorescenceThreshold__after_instantiation__returns_zero() {
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         Assertions.assertEquals(0.0, sut.getFluorescenceThreshold(), 1e-6);
     }
 
     @Test
     public void getFluorescenceThreshold__after_using_setFluorescenceThreshold__returns_set_value() {
-        AssignmentFluorescenceFilter sut = new AssignmentFluorescenceFilter();
+        AssignmentFilterUsingFluoresenceOfAllFrames sut = new AssignmentFilterUsingFluoresenceOfAllFrames();
         double expected = 1.234;
         sut.setFluorescenceThreshold(expected);
         Assertions.assertEquals(expected, sut.getFluorescenceThreshold(), 1e-6);

@@ -37,14 +37,17 @@ public class ImageProperties {
         return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSize();
     }
 
-    public double getBackgroundIntensityMean(int channelNumber) {
+    public double getBackgroundIntensityTotal(int channelNumber) {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
         double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        return leftIntensity + rightIntensity;
+    }
 
-        return (leftIntensity + rightIntensity) / getBackgroundRoiSize();
+    public double getBackgroundIntensityMean(int channelNumber) {
+        return getBackgroundIntensityTotal(channelNumber) / getBackgroundRoiSize();
     }
 
     public long getBackgroundRoiSize() {

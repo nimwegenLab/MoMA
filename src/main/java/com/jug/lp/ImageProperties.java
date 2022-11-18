@@ -21,6 +21,40 @@ public class ImageProperties {
         this.imageProvider = imageProvider;
     }
 
+    public double getBackgroundIntensityStdAtFrame(int channelNumber, int frame) {
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
+        long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
+        long rightNumberOfPixels = Views.interval(img, rightBackgroundRoi).size();
+        if (leftNumberOfPixels != rightNumberOfPixels) {
+            throw new AssertionError(String.format("The areas for calculating the background intensities to the left/right of the growthlane are not equal (left=%d; right=%d)", leftNumberOfPixels, rightNumberOfPixels));
+        }
+        double leftStd = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
+        double rightStd = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
+
+        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSize();
+    }
+
+    public double getBackgroundIntensityMeanAtFrame(int channelNumber, int frame) {
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        return getBackgroundIntensityTotalAtFrame(channelNumber, frame) / getBackgroundRoiSizeAtFrame(img, frame);
+    }
+
+    public double getBackgroundIntensityTotalAtFrame(int channelNumber, int frame) {
+        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
+        double leftIntensity = imglib2Utils.getTotalIntensity(leftBackgroundRoi, img);
+        double rightIntensity = imglib2Utils.getTotalIntensity(rightBackgroundRoi, img);
+        return leftIntensity + rightIntensity;
+    }
+
+    public long getBackgroundRoiSizeAtFrame(RandomAccessibleInterval<FloatType> img, long frame) {
+        long leftNumberOfPixels = Views.interval(img, getLeftBackgroundRoiAtFrame(img, frame)).size();
+        long rightNumberOfPixels = Views.interval(img, getRightBackgroundRoiAtFrame(img, frame)).size();
+        return leftNumberOfPixels + rightNumberOfPixels;
+    }
 
     public double getBackgroundIntensityStd(int channelNumber) {
         Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
@@ -62,6 +96,37 @@ public class ImageProperties {
         return leftNumberOfPixels + rightNumberOfPixels;
     }
 
+    @NotNull
+    private FinalInterval getLeftBackgroundRoiAtFrame(RandomAccessibleInterval<FloatType> img, long frame) {
+        long xStart = 0;
+        long xEnd = configuration.getBackgroundRoiWidth() - 1;
+        long yStart = 0;
+        long yEnd = img.max(1);
+        long tStart = frame;
+        long tEnd = frame;
+
+        FinalInterval tmp = new FinalInterval(
+                new long[]{xStart, yStart, tStart},
+                new long[]{xEnd, yEnd, tEnd}
+        );
+        return tmp;
+    }
+
+    @NotNull
+    private FinalInterval getRightBackgroundRoiAtFrame(RandomAccessibleInterval<FloatType> img, long frame) {
+        long xStart = img.max(0) - (configuration.getBackgroundRoiWidth() - 1);
+        long xEnd = img.max(0);
+        long yStart = 0;
+        long yEnd = img.max(1);
+        long tStart = frame;
+        long tEnd = frame;
+
+        FinalInterval tmp = new FinalInterval(
+                new long[]{xStart, yStart, tStart},
+                new long[]{xEnd, yEnd, tEnd}
+        );
+        return tmp;
+    }
     @NotNull
     private FinalInterval getLeftBackgroundRoi(RandomAccessibleInterval<FloatType> img) {
         long xStart = 0;

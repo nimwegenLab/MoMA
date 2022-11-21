@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ComponentIntensitiesExporter implements ResultExporterInterface {
     private final IConfiguration configuration;
-    private ImageProperties imageProperties;
+    private final ImageProperties imageProperties;
     private ResultTable table;
 
     public ComponentIntensitiesExporter(IConfiguration configuration, ImageProperties imageProperties) {
@@ -49,10 +49,21 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
             intensityTotalCol.addValue(component.getBackgroundIntensityTotal(channelNumber));
             intensityStdCol.addValue(component.getBackgroundIntensityStd(channelNumber));
         }
+
+        /* add values for the image background */
+        for (int frame = 0; frame <= gl.getTimeStepMaximum(); frame++) {
+            regionNameCol.addValue("ImgBkgrT" + frame);
+            regionTypeCol.addValue("bkgr");
+            frameCol.addValue(frame);
+            componentSizeCol.addValue(imageProperties.getBackgroundRoiSize());
+            intensityTotalCol.addValue(imageProperties.getBackgroundIntensityTotalAtFrame(channelNumber, frame));
+            intensityStdCol.addValue(imageProperties.getBackgroundIntensityStdAtFrame(channelNumber, frame));
+        }
+
         try {
-            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
+            table.writeToFile(exportFilePaths.getAssignmentFilterIntensitiesCsvFile());
         } catch (final IOException e1) {
-            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
+            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.getAssignmentFilterIntensitiesCsvFile().toString()));
         }
         System.out.println("FINISH: Export component intensities.");
     }

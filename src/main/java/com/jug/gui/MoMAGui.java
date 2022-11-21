@@ -903,7 +903,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         exporters.add(MoMA.dic.getCellStatsExporter());
@@ -915,6 +914,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (configurationManager.EXPORT_ASSIGNMENT_COSTS) {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
+        exporters.add(MoMA.dic.getComponentForestExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
@@ -927,12 +927,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
             exporters.add(MoMA.dic.getComponentIntensitiesExporter());
         }
+        exporters.add(MoMA.dic.getComponentForestExporter());
+
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
         MoMA.dic.getTrackingDataTimer().stop();

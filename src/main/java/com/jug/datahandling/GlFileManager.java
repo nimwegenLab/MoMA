@@ -232,7 +232,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
-    public File assignmentFilterIntensityInformation() {
+    public File getAssignmentFilterIntensitiesCsvFile() {
         return Paths.get(getTrackingDataOutputPath().toString(), "assignment_filter_intensities.csv").toFile();
     }
 

@@ -7,6 +7,7 @@ import com.jug.lp.ImageProperties;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.GRBException;
 
+import java.io.IOException;
 import java.util.List;
 
 public class ComponentIntensitiesExporter implements ResultExporterInterface {
@@ -27,8 +28,8 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
         ResultTableColumn<String> regionNameCol = this.table.getColumn(String.class, "region_name");
         ResultTableColumn<String> regionTypeCol = this.table.getColumn(String.class, "region_type");
-        ResultTableColumn<Integer> frameCol = this.table.getColumn(Integer.class, "frame");
-        ResultTableColumn<Long> componentSizeCol = this.table.getColumn(Long.class, "size__px");
+        ResultTableColumn<Long> componentSizeCol = this.table.getColumn(Long.class, "region_size__px");
+        ResultTableColumn<Integer> frameCol = this.table.getColumn(Integer.class, "frame_number");
         ResultTableColumn<Double> intensityTotalCol = this.table.getColumn(Double.class, "intensity_total__au");
         ResultTableColumn<Double> intensityStdCol = this.table.getColumn(Double.class, "intensity_std__au");
         for (ComponentInterface component : components) {
@@ -47,6 +48,11 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
             componentSizeCol.addValue(component.getBackgroundRoiSize());
             intensityTotalCol.addValue(component.getBackgroundIntensityTotal(channelNumber));
             intensityStdCol.addValue(component.getBackgroundIntensityStd(channelNumber));
+        }
+        try {
+            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
+        } catch (final IOException e1) {
+            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
         }
         System.out.println("FINISH: Export component intensities.");
     }

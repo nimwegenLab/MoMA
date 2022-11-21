@@ -44,7 +44,6 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
         for (Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps) {
             AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
             double maskIntensityMean = component.getMaskIntensityMean(targetChannelNumber);
-            double maskIntensityStd = component.getMaskIntensityStd(targetChannelNumber);
 
             if (maskIntensityMean < threshold) {
                 targetsAreValid = false;

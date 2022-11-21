@@ -57,7 +57,7 @@ public class Imglib2Utils {
     }
 
     public synchronized <T extends Type<T>> void copyImage(RandomAccessibleInterval<T> sourceImage,
-                                              RandomAccessibleInterval<T> targetImage) {
+                                                           RandomAccessibleInterval<T> targetImage) {
         LoopBuilder.setImages(sourceImage, targetImage).forEachPixel((src, dest) -> dest.set(src));
     }
 

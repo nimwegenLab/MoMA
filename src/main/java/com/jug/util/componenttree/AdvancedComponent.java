@@ -419,7 +419,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         Double intensity = maskIntensities.get(channelNumber);
         if (isNull(intensity)) {
             final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
-            intensity = componentProperties.getTotalIntensity(this, channelFrame);
+            intensity = componentProperties.getIntensityTotal(this, channelFrame);
             maskIntensities.put(channelNumber, intensity);
         }
         return intensity;
@@ -428,12 +428,31 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
     Map<Integer, Double> backgroundIntensities = new HashMap<>();
 
     @Override
-    public double getBackgroundIntensity(int channelNumber) {
+    public double getBackgroundIntensityTotal(int channelNumber) {
         Double intensity = backgroundIntensities.get(channelNumber);
         if (isNull(intensity)) {
             final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
-            intensity = componentProperties.getTotalBackgroundIntensity(this, channelFrame);
+            intensity = componentProperties.getBackgroundIntensityTotal(this, channelFrame);
             backgroundIntensities.put(channelNumber, intensity);
+        }
+        return intensity;
+    }
+
+    @Override
+    public long getBackgroundRoiSize() {
+        int channelNumber = 0;
+        final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+        return componentProperties.getBackgroundArea(this, channelFrame);
+    }
+
+    Map<Integer, Double> backgroundIntensitiesStd = new HashMap<>();
+
+    public double getBackgroundIntensityStd(int channelNumber) {
+        Double intensity = backgroundIntensitiesStd.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getBackgroundIntensityStd(this, channelFrame);
+            backgroundIntensitiesStd.put(channelNumber, intensity);
         }
         return intensity;
     }

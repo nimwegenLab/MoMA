@@ -37,10 +37,10 @@ public class ComponentForestSerializationTests {
     public void getBackgroundIntensity__for_deserialized_component__returns_correct_intensities(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
 
-        sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
+        sutComponent.getBackgroundIntensityTotal(channelNumber); /* force calculation of the value*/
         AdvancedComponent<FloatType> componentDeserialized = serializeAndDeserializeThroughJsonString(sutComponent);
 
-        Assertions.assertEquals(expectedIntensity, componentDeserialized.getBackgroundIntensity(channelNumber), 1e-6);
+        Assertions.assertEquals(expectedIntensity, componentDeserialized.getBackgroundIntensityTotal(channelNumber), 1e-6);
     }
 
     @ParameterizedTest()
@@ -49,7 +49,7 @@ public class ComponentForestSerializationTests {
                 "2, 41669.0"})
     public void getBackgroundIntensities__when_called_on_pojo__map_value_are_correctly_set(int channelNumber, double expectedIntensity) throws IOException {
         AdvancedComponent<FloatType> sutComponent = getComponent("HypT5T120B158L48R59H228230625");
-        sutComponent.getBackgroundIntensity(channelNumber); /* force calculation of the value*/
+        sutComponent.getBackgroundIntensityTotal(channelNumber); /* force calculation of the value*/
 
         AdvancedComponentPojo pojo = sutComponent.getSerializableRepresentation();
         Map<Integer, Double> intensities = pojo.getBackgroundIntensities();

@@ -95,8 +95,8 @@ public class ComponentPropertiesTest {
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double majorAxisTiltAngle = props.getTiltAngle(component);
-            double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
-            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
+            double totalIntensity = props.getIntensityTotal(component, component.getSourceImage());
+            double totalBackgroundIntensity = props.getBackgroundIntensityTotal(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));

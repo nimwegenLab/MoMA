@@ -24,8 +24,8 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
     public static void main(String[] args) {
         Feature__20220919_use_fluorescence_signal_to_select_valid_components tests = new Feature__20220919_use_fluorescence_signal_to_select_valid_components();
 
-        tests.run_interactive();
-//        tests.run_trackonly();
+//        tests.run_interactive();
+        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
     }

@@ -62,7 +62,7 @@ public class AdvancedComponentTests {
         int phcChannelNumber = 2;
         double expectedIntensity = 115900.0;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -71,7 +71,7 @@ public class AdvancedComponentTests {
         int phcChannelNumber = 1;
         double expectedIntensity = 10567.031685829163;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 
@@ -80,7 +80,7 @@ public class AdvancedComponentTests {
         int phcChannelNumber = 0;
         double expectedIntensity = -10.640667281084461;
         ComponentInterface sut = getTestComponent1();
-        double actualIntensity = sut.getBackgroundIntensity(phcChannelNumber);
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
     }
 

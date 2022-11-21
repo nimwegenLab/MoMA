@@ -13,6 +13,7 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.Views;
 import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
 
@@ -95,7 +96,7 @@ public class ComponentProperties {
         return imglib2Utils.getIntensityStDev(component.getRegion(), img);
     }
 
-    public synchronized double getTotalIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized double getIntensityTotal(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         return imglib2Utils.getIntensityTotal(component.getRegion(), img);
     }
 
@@ -103,13 +104,33 @@ public class ComponentProperties {
         return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
     }
 
-    public synchronized double getTotalBackgroundIntensity(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
+    public synchronized double getBackgroundIntensityTotal(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();;
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity1 = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
         double intensity2 = imglib2Utils.getIntensityTotal(rightBackgroundRoi, img);
         return intensity1 + intensity2;
+    }
+
+    public synchronized double getBackgroundIntensityStd(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img) {
+        ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
+        FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img, limits.getA(), limits.getB());
+        long leftRoiSize = getRoiSize(leftBackgroundRoi);
+        double leftRoiIntensity = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
+        FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img, limits.getA(), limits.getB());
+        long rightRoiSize = getRoiSize(rightBackgroundRoi);
+        double rightRoiIntensity = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
+        return (leftRoiSize * leftRoiIntensity + rightRoiSize * rightRoiIntensity) / (leftRoiSize + rightRoiSize);
+    }
+
+    private long getRoiSize(Interval rightBackgroundRoi) {
+        long size = 0;
+        int numDims = rightBackgroundRoi.numDimensions();
+        for (int d = 0; d < numDims; d++) {
+            size += rightBackgroundRoi.dimension(d);
+        }
+        return size;
     }
 
     public synchronized int getBackgroundArea(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){

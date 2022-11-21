@@ -23,27 +23,31 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
     public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
         System.out.println("START: Export component intensities.");
         this.table = new ResultTable(",");
-        int channel = configuration.getFluorescentAssignmentFilterChannel();
+        int channelNumber = configuration.getFluorescentAssignmentFilterChannel();
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
-        ResultTableColumn<String> idCol = this.table.getColumn(String.class, "component_id");
-        ResultTableColumn<Double> componentMaskIntensityCol = this.table.getColumn(Double.class, String.format("mask_intensity_ch_%d__au", channel));
-        ResultTableColumn<Double> componentBackgroundIntensityCol = this.table.getColumn(Double.class, String.format("component_bkgr_intensity_ch_%d__au", channel));
-        ResultTableColumn<Long> componentSize = this.table.getColumn(Long.class, "component_size__px");
-        ResultTableColumn<Double> imageRoiIntensityCol = this.table.getColumn(Double.class, String.format("image_roi_intensity_ch_%d__au", channel));
-        ResultTableColumn<Double> imageRoiIntensitySizeCol = this.table.getColumn(Double.class, String.format("image_roi_size__px", channel));
+        ResultTableColumn<String> regionNameCol = this.table.getColumn(String.class, "region_name");
+        ResultTableColumn<String> regionTypeCol = this.table.getColumn(String.class, "region_type");
+        ResultTableColumn<Integer> frameCol = this.table.getColumn(Integer.class, "frame");
+        ResultTableColumn<Long> componentSizeCol = this.table.getColumn(Long.class, "size__px");
+        ResultTableColumn<Double> intensityTotalCol = this.table.getColumn(Double.class, "intensity_total__au");
+        ResultTableColumn<Double> intensityStdCol = this.table.getColumn(Double.class, "intensity_std__au");
         for (ComponentInterface component : components) {
-            idCol.addValue(component.getStringId());
-            componentSize.addValue(component.size());
-            componentMaskIntensityCol.addValue(component.getMaskIntensityTotal(channel));
-            componentBackgroundIntensityCol.addValue(component.getBackgroundIntensity(channel));
-            imageRoiIntensityCol.addValue(imageProperties.getBackgroundIntensityMean(channel));
-//            imageRoiIntensitySizeCol.
+            /* add values for the foreground intensities */
+            regionNameCol.addValue(component.getStringId());
+            regionTypeCol.addValue("frgr");
+            frameCol.addValue(component.getFrameNumber());
+            componentSizeCol.addValue(component.size());
+            intensityTotalCol.addValue(component.getMaskIntensityTotal(channelNumber));
+            intensityStdCol.addValue(component.getMaskIntensityStd(channelNumber));
+
+            /* add values for the background intensities */
+            regionNameCol.addValue(component.getStringId());
+            regionTypeCol.addValue("bkgr");
+            frameCol.addValue(component.getFrameNumber());
+            componentSizeCol.addValue(component.getBackgroundRoiSize());
+            intensityTotalCol.addValue(component.getBackgroundIntensityTotal(channelNumber));
+            intensityStdCol.addValue(component.getBackgroundIntensityStd(channelNumber));
         }
-//        try {
-//            table.writeToFile(exportFilePaths.assignmentFilterIntensityInformation());
-//        } catch (final IOException e1) {
-//            throw new RuntimeException(String.format("Could not write component intensities to file: %s", exportFilePaths.assignmentFilterIntensityInformation().toString()));
-//        }
         System.out.println("FINISH: Export component intensities.");
     }
 }

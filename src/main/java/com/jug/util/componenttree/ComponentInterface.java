@@ -16,6 +16,10 @@ import java.util.List;
 import java.util.Set;
 
 public interface ComponentInterface<T extends Type<T>, C extends ComponentInterface<T, C>> extends Component<T, C> {
+    double getBackgroundIntensityStd(int channelNumber);
+
+    long getBackgroundRoiSize();
+
     int getFrameNumber();
 
     float getCost();
@@ -68,7 +72,7 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      * @param channelNumber
      * @return
      */
-    double getBackgroundIntensity(int channelNumber);
+    double getBackgroundIntensityTotal(int channelNumber);
 
     double getMaskIntensityStd(int channelNumber);
 

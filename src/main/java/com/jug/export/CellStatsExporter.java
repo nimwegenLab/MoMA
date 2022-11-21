@@ -203,7 +203,7 @@ public class CellStatsExporter implements ResultExporterInterface {
                 backgroundRoiAreaTotalCol.addValue(componentProperties.getBackgroundArea(currentComponent, imageProvider.getRawChannelImgs().get(0)));
 
                 Img<FloatType> phaseContrastImage = imageProvider.getColorChannelAtTime(0, timeStep);
-                phaseContrastTotalIntensity.addValue(componentProperties.getTotalIntensity(currentComponent, phaseContrastImage));
+                phaseContrastTotalIntensity.addValue(componentProperties.getIntensityTotal(currentComponent, phaseContrastImage));
                 phaseContrastCoefficientOfVariation.addValue(componentProperties.getIntensityCoefficientOfVariation(currentComponent, phaseContrastImage));
 
                 for (String label : configurationManager.CELL_LABEL_LIST) {
@@ -219,8 +219,8 @@ public class CellStatsExporter implements ResultExporterInterface {
                 int columnIndex = 0;
                 for (int c = 1; c < imageProvider.getRawChannelImgs().size(); c++) {
                     final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(c), 2, timeStep);
-                    cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalIntensity(currentComponent, channelFrame));
-                    backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getTotalBackgroundIntensity(currentComponent, channelFrame));
+                    cellMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getIntensityTotal(currentComponent, channelFrame));
+                    backgroundMaskTotalIntensityCols.get(columnIndex).addValue(componentProperties.getBackgroundIntensityTotal(currentComponent, channelFrame));
 
                     final IntervalView<FloatType> columnBoxInChannel = Util.getColumnBoxInImg(channelFrame, segmentRecord.hyp, avgXpos, configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS, configurationManager.GL_WIDTH_IN_PIXELS);
                     double[] estimates = mixtureModelFit.performMeasurement(segmentRecord, columnBoxInChannel, channelFrame.max(0));

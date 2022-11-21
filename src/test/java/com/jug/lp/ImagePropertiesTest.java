@@ -32,6 +32,62 @@ public class ImagePropertiesTest {
     }
 
     @Test
+    public void getBackgroundIntensityMean__for_test_image_with_normally_distributed_intensities__returns_expected_value() {
+        double expectedMean = 3.5;
+        double expectedStd = 4.5;
+        Img<FloatType> img = testUtils.getImageWithNormallyDistributedIntensities(new long[]{2000, 2000, 10}, expectedMean, expectedStd);
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityMean(0);
+        Assertions.assertEquals(expectedMean, actual, 0.1);
+    }
+
+    @Test
+    public void getBackgroundIntensityStd__for_test_image_with_normally_distributed_intensities__returns_expected_value() {
+        double expectedMean = 3.0;
+        double expectedStd = 4.5;
+        Img<FloatType> img = testUtils.getImageWithNormallyDistributedIntensities(new long[]{2000, 2000, 10}, expectedMean, expectedStd);
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityStd(0);
+        Assertions.assertEquals(expectedStd, actual, 0.1);
+    }
+
+    @Test
+    public void getBackgroundIntensityMeanAtFrame__for_test_image_with_normally_distributed_intensities__returns_expected_value() {
+        double expectedMean = 3.5;
+        double expectedStd = 4.5;
+        Img<FloatType> img = testUtils.getImageWithNormallyDistributedIntensities(new long[]{2000, 2000, 10}, expectedMean, expectedStd);
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityMeanAtFrame(0, 0);
+        Assertions.assertEquals(expectedMean, actual, 0.1);
+    }
+
+    @Test
+    public void getBackgroundIntensityStdAtFrame__for_test_image_with_normally_distributed_intensities__returns_expected_value() {
+        double expectedMean = 3.0;
+        double expectedStd = 4.5;
+        Img<FloatType> img = testUtils.getImageWithNormallyDistributedIntensities(new long[]{2000, 2000, 10}, expectedMean, expectedStd);
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityStdAtFrame(0, 0);
+        Assertions.assertEquals(expectedStd, actual, 0.1);
+    }
+
+    @Test
     public void getBackgroundIntensityMeanAtFrame__for_test_image_with_all_ones__returns_expected_value() {
         double expected = 5.0;
         Img<FloatType> img = testUtils.getImageWithValue(new long[]{100, 100, 10}, new FloatType(5.0f));

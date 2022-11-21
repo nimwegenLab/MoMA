@@ -31,6 +31,8 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+//import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import java.awt.*;
 import java.io.File;
@@ -302,21 +304,31 @@ public class TestUtils {
         return ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), component.getSourceImage()));
     }
 
+    /**
+     * Return Img with specified dimensions and value/value-type.
+     *
+     * @param dims
+     * @param value
+     * @return
+     * @param <T>
+     */
     public <T extends NativeType<T>> Img<T> getImageWithValue(long[] dims, T value) {
-//        long[] dims = new long[sourceImage.numDimensions()];
-//        sourceImage.dimensions(dims);
-//        Img<T> img;
         ArrayImgFactory<T> imgFactory = new ArrayImgFactory<>(value);
         Img<T> img = imgFactory.create(dims);
         img.iterator().forEachRemaining(val -> val.set(value));
-//        if (value.getClass().isAssignableFrom(FloatType.class)) {
-//            img = (Img<T>) ArrayFactory.floats(dims);
-//            img.spliterator().forEachRemaining(val -> val.set(value));
-//        } else
-//        {
-//            img = (Img<T>) ArrayImgs.floats(dims);
-//            img.spliterator().forEachRemaining(val -> val.set(value));
-//        }
+        return img;
+    }
+
+    /**
+     * Return Img with specified dimensions and value/value-type.
+     *
+     * @param dims
+     * @return
+     */
+    public Img<FloatType> getImageWithNormallyDistributedIntensities(long[] dims, double expectedMean, double expectedStd) {
+        ArrayImgFactory<FloatType> imgFactory = new ArrayImgFactory<>(new FloatType());
+        Img<FloatType> img = imgFactory.create(dims);
+        img.spliterator().forEachRemaining(val -> val.set((float)(expectedStd * ThreadLocalRandom.current().nextGaussian() + expectedMean)));
         return img;
     }
 }

@@ -262,7 +262,7 @@ public class PseudoDic {
 
     public AssignmentCostExporter getAssignmentCostExporter() {
         if (assignmentCostExporter == null) {
-            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL(), getComponentProperties(), getCostFactory());
+            assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL());
         }
         return assignmentCostExporter;
     }

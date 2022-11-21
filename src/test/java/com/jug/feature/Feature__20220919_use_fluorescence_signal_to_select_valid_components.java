@@ -46,8 +46,8 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_batch_run"; /* you can change this if you want to; but it is not needed */
-        tmin = 440;
-        tmax = 460;
+        tmin = null;
+        tmax = 600;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

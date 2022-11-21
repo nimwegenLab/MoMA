@@ -43,7 +43,7 @@ public class ImageProvider implements IImageProvider {
 
     @Override
     public Img<FloatType> getChannelImg(int channelNumber) {
-        return null;
+        return getRawChannelImgs().get(channelNumber);
     }
 
     /**

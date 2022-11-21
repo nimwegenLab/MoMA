@@ -38,7 +38,6 @@ public class ImageProperties {
 
     public double getBackgroundIntensityMeanAtFrame(int channelNumber, int frame) {
         return getBackgroundIntensityTotalAtFrame(channelNumber, frame) / getBackgroundRoiSizeAtFrame(channelNumber, frame);
-
     }
 
     public double getBackgroundIntensityTotalAtFrame(int channelNumber, int frame) {

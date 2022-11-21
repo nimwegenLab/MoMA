@@ -431,7 +431,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
     public double getBackgroundIntensity(int channelNumber) {
         Double intensity = backgroundIntensities.get(channelNumber);
         if (isNull(intensity)) {
-            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
             intensity = componentProperties.getTotalBackgroundIntensity(this, channelFrame);
             backgroundIntensities.put(channelNumber, intensity);
         }

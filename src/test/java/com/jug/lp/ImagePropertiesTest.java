@@ -132,9 +132,9 @@ public class ImagePropertiesTest {
 
     @ParameterizedTest()
     @CsvSource({
-            "0, 24.339816352770796",
-            "1, 23.712322855821302",
-            "2, 5.7702834107518495",
+            "0, 0.48609346181233815",
+            "1, 6.090577959132455",
+            "2, 5.811560385667141",
     })
     public void getBackgroundIntensityStd__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityStd) {
         double backgroundIntensity = sut.getBackgroundIntensityStd(channelNumber);

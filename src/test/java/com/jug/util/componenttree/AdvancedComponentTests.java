@@ -58,12 +58,21 @@ public class AdvancedComponentTests {
     }
 
     @Test
+    public void getMaskIntensityTotal__when_called_with_background_corrected_fl_channel_on_parent_component__returns_correct_value() throws IOException {
+        int phcChannelNumber = 1;
+        double expectedIntensity = 162299.00565624237;
+        ComponentInterface sut = getInternalTestComponent();
+        double actualIntensity = sut.getMaskIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, testUtils.getDeltaDouble());
+    }
+
+    @Test
     public void getBackgroundIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
         int phcChannelNumber = 2;
         double expectedIntensity = 115900.0;
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
-        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, testUtils.getDeltaDouble());
     }
 
     @Test
@@ -109,6 +118,22 @@ public class AdvancedComponentTests {
         ComponentInterface sut = getTestComponent1();
         double actualIntensity = sut.getMaskIntensityTotal(phcChannelNumber);
         Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    /**
+     * Returns a component that has a parent and leaf-nodes.
+     * @return
+     * @throws IOException
+     */
+    private ComponentInterface getInternalTestComponent() throws IOException {
+        int componentIndex = 11;
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 3, 1.0f);
+        ComponentInterface component = testUtils.getTestComponent(componentForest, componentIndex);
+//        Plotting.drawComponentTree2(componentForest, new ArrayList<>(), component.getSourceImage());
+//        RandomAccessibleInterval<ARGBType> res = Plotting.createImageWithComponent(component);
+//        ImageJFunctions.show(res);
+        return component;
     }
 
     private ComponentInterface getTestComponent1() throws IOException {

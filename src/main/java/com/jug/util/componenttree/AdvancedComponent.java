@@ -425,12 +425,13 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
     public double getMaskIntensityTotal(int channelNumber) {
         Double intensity = maskIntensities.get(channelNumber);
         if (isNull(intensity)) {
-            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
             intensity = componentProperties.getIntensityTotal(this, channelFrame);
             maskIntensities.put(channelNumber, intensity);
         }
         return intensity;
     }
+
 
     Map<Integer, Double> backgroundIntensities = new HashMap<>();
 

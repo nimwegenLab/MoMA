@@ -56,7 +56,13 @@ public class TestUtils {
         this(new ImageJ());
     }
 
-    public static final double deltaDouble = 1e-6;
+    public double getDeltaDouble() {
+        return 1e-6;
+    }
+
+    public int getDeltaInteger() {
+        return 0;
+    }
 
     public TestUtils(ImageJ ij) {
         this.ij = ij;

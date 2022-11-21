@@ -97,7 +97,7 @@ public class ImagePropertiesTest {
         when(imageProvider.getChannelImg(0)).thenReturn(img);
         sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
         double actual = sut.getBackgroundIntensityMeanAtFrame(0, 0);
-        Assertions.assertEquals(expected, actual, testUtils.deltaDouble);
+        Assertions.assertEquals(expected, actual, testUtils.getDeltaDouble());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ImagePropertiesTest {
         when(imageProvider.getChannelImg(0)).thenReturn(img);
         sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
         double actual = sut.getBackgroundIntensityMean(0);
-        Assertions.assertEquals(expected, actual, testUtils.deltaDouble);
+        Assertions.assertEquals(expected, actual, testUtils.getDeltaDouble());
     }
 
     @ParameterizedTest()

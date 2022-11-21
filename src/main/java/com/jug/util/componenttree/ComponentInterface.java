@@ -74,7 +74,7 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
      */
     double getBackgroundIntensityTotal(int channelNumber);
 
-    double getMaskIntensityStd(int channelNumber);
+    double getMaskIntensitiesStd(int channelNumber);
 
     double getMaskIntensityMean(int expectedTargetChannelNumber);
 }

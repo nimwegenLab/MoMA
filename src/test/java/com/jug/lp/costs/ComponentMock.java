@@ -169,7 +169,7 @@ public class ComponentMock implements ComponentInterface {
     public double getBackgroundIntensityTotal(int channelNumber) { throw  new NotImplementedException(); }
 
     @Override
-    public double getMaskIntensityStd(int channelNumber) {
+    public double getMaskIntensitiesStd(int channelNumber) {
         throw new NotImplementedException();
     }
 

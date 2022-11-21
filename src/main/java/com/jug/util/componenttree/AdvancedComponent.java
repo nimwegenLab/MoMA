@@ -401,18 +401,25 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return stringId;
     }
 
-    Map<Integer, Double> maskIntensities = new HashMap<>();
+    Map<Integer, Double> maskIntensitiesStd = new HashMap<>();
 
     @Override
-    public double getMaskIntensityStd(int channelNumber) {
-        final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
-        return componentProperties.getIntensityStd(this, channelFrame);
+    public double getMaskIntensitiesStd(int channelNumber) {
+        Double intensityStd = maskIntensitiesStd.get(channelNumber);
+        if (isNull(intensityStd)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            intensityStd = componentProperties.getIntensityStd(this, channelFrame);
+            maskIntensitiesStd.put(channelNumber, intensityStd);
+        }
+        return intensityStd;
     }
 
     @Override
     public double getMaskIntensityMean(int channelNumber) {
         return getMaskIntensityTotal(channelNumber) / size();
     }
+
+    Map<Integer, Double> maskIntensities = new HashMap<>();
 
     @Override
     public double getMaskIntensityTotal(int channelNumber) {
@@ -1057,7 +1064,9 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
                 ((FloatType) value()).getRealDouble(),
                 pixelList,
                 maskIntensities,
-                backgroundIntensities);
+                maskIntensitiesStd,
+                backgroundIntensities,
+                backgroundIntensitiesStd);
     }
 
     public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,

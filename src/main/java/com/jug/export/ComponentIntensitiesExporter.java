@@ -39,7 +39,7 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
             frameCol.addValue(component.getFrameNumber());
             componentSizeCol.addValue(component.size());
             intensityTotalCol.addValue(component.getMaskIntensityTotal(channelNumber));
-            intensityStdCol.addValue(component.getMaskIntensityStd(channelNumber));
+            intensityStdCol.addValue(component.getMaskIntensitiesStd(channelNumber));
 
             /* add values for the background intensities */
             regionNameCol.addValue(component.getStringId());

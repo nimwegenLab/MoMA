@@ -22,6 +22,10 @@ public class AdvancedComponentPojo {
 
     private Map<Integer, Double> backgroundIntensities;
 
+    private Map<Integer, Double> backgroundIntensitiesStd;
+
+    private Map<Integer, Double> maskIntensitiesStd;
+
     public AdvancedComponentPojo(String stringId,
                                  int frameNumber,
                                  int label,
@@ -30,7 +34,9 @@ public class AdvancedComponentPojo {
                                  double value,
                                  List<LocalizableImpl> pixelList,
                                  Map<Integer, Double> maskIntensities,
-                                 Map<Integer, Double> backgroundIntensities) {
+                                 Map<Integer, Double> maskIntensitiesStd,
+                                 Map<Integer, Double> backgroundIntensities,
+                                 Map<Integer, Double> backgroundIntensitiesStd) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
@@ -39,6 +45,8 @@ public class AdvancedComponentPojo {
         this.value = value;
         this.maskIntensities = maskIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `maskIntensities` */
         this.backgroundIntensities = backgroundIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
+        this.backgroundIntensitiesStd = backgroundIntensitiesStd.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
+        this.maskIntensitiesStd = maskIntensitiesStd.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
 

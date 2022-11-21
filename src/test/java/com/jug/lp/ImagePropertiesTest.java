@@ -3,6 +3,9 @@ package com.jug.lp;
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.TestUtils;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.real.FloatType;
+import org.apache.commons.lang.NotImplementedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -16,8 +19,8 @@ import static org.mockito.Mockito.when;
 
 public class ImagePropertiesTest {
     private final TestUtils testUtils;
-    private final ImageProperties sut;
-    private final IImageProvider imageProvider;
+    private ImageProperties sut;
+    private IImageProvider imageProvider;
 
     public ImagePropertiesTest() throws IOException {
         testUtils = new TestUtils();
@@ -28,17 +31,43 @@ public class ImagePropertiesTest {
         sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
     }
 
+    @Test
+    public void getBackgroundIntensityMeanAtFrame__for_test_image_with_all_ones__returns_expected_value() {
+        double expected = 5.0;
+        Img<FloatType> img = testUtils.getImageWithValue(new long[]{100, 100, 10}, new FloatType(5.0f));
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityMeanAtFrame(0, 0);
+        Assertions.assertEquals(expected, actual, testUtils.deltaDouble);
+    }
+
+    @Test
+    public void getBackgroundIntensityMean__for_test_image_with_all_ones__returns_expected_value() {
+        double expected = 5.0;
+        Img<FloatType> img = testUtils.getImageWithValue(new long[]{100, 100, 10}, new FloatType(5.0f));
+        IConfiguration config = mock(IConfiguration.class);
+        when(config.getBackgroundRoiWidth()).thenReturn(5L);
+        imageProvider = mock(IImageProvider.class);
+        when(imageProvider.getChannelImg(0)).thenReturn(img);
+        sut = new ImageProperties(imageProvider, testUtils.getImglib2Utils(), config);
+        double actual = sut.getBackgroundIntensityMean(0);
+        Assertions.assertEquals(expected, actual, testUtils.deltaDouble);
+    }
+
     @ParameterizedTest()
     @CsvSource({
-            "0, 0, 0.028209109532198063",
-            "0, 1, 0.028458951602927576",
-            "0, 2, 0.028359792682713877",
-            "1, 0, 0.3840533382952534",
-            "1, 1, 0.37789517234592646",
-            "1, 2, 0.3781369087891849",
-            "2, 0, 0.3665695277220276",
-            "2, 1, 0.36061781839938",
-            "2, 2, 0.36008608185592966",
+            "0, 0, 0.4795548620473671",
+            "0, 1, 0.48380217724976876",
+            "0, 2, 0.4821164756061359",
+            "1, 0, 6.528906751019308",
+            "1, 1, 6.42421792988075",
+            "1, 2, 6.428327449416144",
+            "2, 0, 6.23168197127447",
+            "2, 1, 6.130502912789461",
+            "2, 2, 6.1214633915508045",
     })
     public void getBackgroundIntensityStdAtFrame__when_called_with_valid_channel_number_and_frame__returns_expected_value(int channelNumber, int frame, double expectedBackgroundIntensityStd) {
         double backgroundIntensity = sut.getBackgroundIntensityStdAtFrame(channelNumber, frame);
@@ -79,9 +108,24 @@ public class ImagePropertiesTest {
         Assertions.assertEquals(expectedBackgroundIntensityStd, backgroundIntensity, 1e-6);
     }
 
+    @ParameterizedTest()
+    @CsvSource({
+            "0, 0",
+            "0, 1",
+            "1, 0",
+            "1, 1",
+            "2, 0",
+            "2, 1",
+    })
+    public void getBackgroundRoiSizeAtFrame__when_called___returns_expected_value(int channelNumber, int frame) {
+        long expectedBackgroundRoiSize = 6040;
+        long actualBackgroundRoiSize = sut.getBackgroundRoiSizeAtFrame(channelNumber, frame);
+        Assertions.assertEquals(expectedBackgroundRoiSize, actualBackgroundRoiSize);
+    }
+
     @Test
     public void getBackgroundRoiSize__when_called___returns_expected_value() {
-        long expectedBackgroundRoiSize = 102680;
+        long expectedBackgroundRoiSize = 96640;
         long actualBackgroundRoiSize = sut.getBackgroundRoiSize();
         Assertions.assertEquals(expectedBackgroundRoiSize, actualBackgroundRoiSize);
     }
@@ -99,12 +143,23 @@ public class ImagePropertiesTest {
 
     @ParameterizedTest()
     @CsvSource({
-            "0, 6.2809052255378655",
-            "1, 11.770502803772166",
-            "2, 105.6257109466303",
+            "0, 0.20344938491543943",
+            "1, 6.036146811789383",
+            "2, 105.75730546357616",
     })
     public void getBackgroundIntensityMean__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedMeanBackgroundIntensity) {
         double backgroundIntensity = sut.getBackgroundIntensityMean(channelNumber);
         Assertions.assertEquals(expectedMeanBackgroundIntensity, backgroundIntensity, 1e-6);
+    }
+
+    @ParameterizedTest()
+    @CsvSource({
+            "0, 19661.348558228066",
+            "1, 583333.227891326",
+            "2, 1.0220386E7",
+    })
+    public void getBackgroundIntensityTotal__when_called_with_valid_channel_number__returns_expected_value(int channelNumber, double expectedBackgroundIntensityTotal) {
+        double backgroundIntensity = sut.getBackgroundIntensityTotal(channelNumber);
+        Assertions.assertEquals(expectedBackgroundIntensityTotal, backgroundIntensity, 1e-6);
     }
 }

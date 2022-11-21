@@ -22,7 +22,7 @@ public class ImageProperties {
     }
 
     public double getBackgroundIntensityStdAtFrame(int channelNumber, int frame) {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
         long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
@@ -33,16 +33,16 @@ public class ImageProperties {
         double leftStd = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
         double rightStd = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
 
-        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSize();
+        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSizeAtFrame(channelNumber, frame);
     }
 
     public double getBackgroundIntensityMeanAtFrame(int channelNumber, int frame) {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
-        return getBackgroundIntensityTotalAtFrame(channelNumber, frame) / getBackgroundRoiSizeAtFrame(img, frame);
+        return getBackgroundIntensityTotalAtFrame(channelNumber, frame) / getBackgroundRoiSizeAtFrame(channelNumber, frame);
+
     }
 
     public double getBackgroundIntensityTotalAtFrame(int channelNumber, int frame) {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
         double leftIntensity = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
@@ -50,14 +50,15 @@ public class ImageProperties {
         return leftIntensity + rightIntensity;
     }
 
-    public long getBackgroundRoiSizeAtFrame(RandomAccessibleInterval<FloatType> img, long frame) {
+    public long getBackgroundRoiSizeAtFrame(int channelNumber, long frame) {
+        Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         long leftNumberOfPixels = Views.interval(img, getLeftBackgroundRoiAtFrame(img, frame)).size();
         long rightNumberOfPixels = Views.interval(img, getRightBackgroundRoiAtFrame(img, frame)).size();
         return leftNumberOfPixels + rightNumberOfPixels;
     }
 
     public double getBackgroundIntensityStd(int channelNumber) {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
@@ -72,7 +73,7 @@ public class ImageProperties {
     }
 
     public double getBackgroundIntensityTotal(int channelNumber) {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(channelNumber);
+        Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         double leftIntensity = imglib2Utils.getIntensityTotal(leftBackgroundRoi, img);
@@ -85,7 +86,7 @@ public class ImageProperties {
     }
 
     public long getBackgroundRoiSize() {
-        Img<FloatType> img = imageProvider.getRawChannelImgs().get(0);
+        Img<FloatType> img = imageProvider.getChannelImg(0);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoi(img);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoi(img);
         long leftNumberOfPixels = Views.interval(img, leftBackgroundRoi).size();
@@ -134,7 +135,7 @@ public class ImageProperties {
         long yStart = 0;
         long yEnd = img.max(1);
         long tStart = 0;
-        long tEnd = img.dimension(2);
+        long tEnd = img.max(2);
 
         FinalInterval tmp = new FinalInterval(
                 new long[]{xStart, yStart, tStart},
@@ -150,7 +151,7 @@ public class ImageProperties {
         long yStart = 0;
         long yEnd = img.max(1);
         long tStart = 0;
-        long tEnd = img.dimension(2);
+        long tEnd = img.max(2);
 
         FinalInterval tmp = new FinalInterval(
                 new long[]{xStart, yStart, tStart},

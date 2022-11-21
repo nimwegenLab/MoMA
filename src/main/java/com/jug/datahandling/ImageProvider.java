@@ -29,11 +29,21 @@ public class ImageProvider implements IImageProvider {
     }
 
     /**
+     * @deprecated
+     * - use {@link #getChannelImg(int)} to get the image for a specific channel.
+     * - use {@link #getNumberOfChannels()} to get the number of channels.
+     *
      * @return the rawChannelImgs
      */
+    @Deprecated
     @Override
     public List<Img<FloatType>> getRawChannelImgs() {
         return rawChannelImgs;
+    }
+
+    @Override
+    public Img<FloatType> getChannelImg(int channelNumber) {
+        return null;
     }
 
     /**

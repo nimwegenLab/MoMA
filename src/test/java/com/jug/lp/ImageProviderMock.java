@@ -64,6 +64,11 @@ public class ImageProviderMock implements IImageProvider {
     }
 
     @Override
+    public Img<FloatType> getChannelImg(int channelNumber) {
+        return getRawChannelImgs().get(channelNumber);
+    }
+
+    @Override
     public Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
         if(isNull(this.imageStack)){
             throw new RuntimeException("Image data is not available.");

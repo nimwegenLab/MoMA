@@ -20,6 +20,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
@@ -52,6 +53,8 @@ public class TestUtils {
     public TestUtils() {
         this(new ImageJ());
     }
+
+    public static final double deltaDouble = 1e-6;
 
     public TestUtils(ImageJ ij) {
         this.ij = ij;
@@ -297,5 +300,23 @@ public class TestUtils {
         ArrayList<ComponentInterface> componentsToDraw = new ArrayList<>();
         componentsToDraw.add(component);
         return ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), component.getSourceImage()));
+    }
+
+    public <T extends NativeType<T>> Img<T> getImageWithValue(long[] dims, T value) {
+//        long[] dims = new long[sourceImage.numDimensions()];
+//        sourceImage.dimensions(dims);
+//        Img<T> img;
+        ArrayImgFactory<T> imgFactory = new ArrayImgFactory<>(value);
+        Img<T> img = imgFactory.create(dims);
+        img.iterator().forEachRemaining(val -> val.set(value));
+//        if (value.getClass().isAssignableFrom(FloatType.class)) {
+//            img = (Img<T>) ArrayFactory.floats(dims);
+//            img.spliterator().forEachRemaining(val -> val.set(value));
+//        } else
+//        {
+//            img = (Img<T>) ArrayImgs.floats(dims);
+//            img.spliterator().forEachRemaining(val -> val.set(value));
+//        }
+        return img;
     }
 }

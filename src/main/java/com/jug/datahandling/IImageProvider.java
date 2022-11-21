@@ -14,7 +14,17 @@ public interface IImageProvider {
 
     Img<FloatType> getImgRaw();
 
+    /**
+     * @deprecated
+     * - use {@link #getChannelImg(int)} to get the image for a specific channel.
+     * - use {@link #getNumberOfChannels()} to get the number of channels.
+     *
+     * @return the rawChannelImgs
+     */
+    @Deprecated
     List<Img<FloatType>> getRawChannelImgs();
+
+    Img<FloatType> getChannelImg(int channelNumber);
 
     Img<FloatType> getColorChannelAtTime(int channel, int timestep);
 

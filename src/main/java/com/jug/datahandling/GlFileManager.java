@@ -232,6 +232,11 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
+    public File getAssignmentFilterIntensitiesCsvFile() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "assignment_filter_intensities.csv").toFile();
+    }
+
+    @Override
     public File getComponentTreeJsonFile() {
         return Paths.get(getTrackingDataOutputPath().toString(), "component_forests.json").toFile();
     }

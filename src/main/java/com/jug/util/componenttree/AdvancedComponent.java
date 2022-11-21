@@ -1,5 +1,6 @@
 package com.jug.util.componenttree;
 
+import com.jug.datahandling.IImageProvider;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imglib2.RandomAccess;
@@ -25,6 +26,8 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import net.imglib2.view.IntervalView;
+import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -34,7 +37,7 @@ import java.util.stream.Collectors;
 import static com.jug.util.ComponentTreeUtils.*;
 import static java.util.Objects.isNull;
 
-public final class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
+public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<T, AdvancedComponent<T>> {
 
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
     /**
@@ -62,6 +65,8 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
     private double[] firstMomentPixelCoordinates = null;
     private List<AdvancedComponent<T>> componentTreeRoots;
 
+    private IImageProvider imageProvider;
+
     /**
      * Constructor for fully connected component-node (with parent or children).
      */
@@ -69,12 +74,14 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                                                          C wrappedComponent,
                                                          RandomAccessibleInterval<T> sourceImage,
                                                          ComponentProperties componentProperties,
-                                                         int frameNumber) {
+                                                         int frameNumber,
+                                                         IImageProvider imageProvider) {
         this.value = wrappedComponent.value();
         this.sourceImage = sourceImage;
         this.componentProperties = componentProperties;
         this.label = label;
         this.frameNumber = frameNumber;
+        this.imageProvider = imageProvider;
         copyPixelPositions(wrappedComponent);
         buildLabelRegion(pixelList, label, sourceImage);
     }
@@ -392,6 +399,70 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             stringId = "HypT" + getFrameNumber() + "T" + getVerticalComponentLimits().getA() + "B" + getVerticalComponentLimits().getB() + "L" + getHorizontalComponentLimits().getA() + "R" + getHorizontalComponentLimits().getB() + "H" + hashCode();
         }
         return stringId;
+    }
+
+    Map<Integer, Double> maskIntensitiesStd = new HashMap<>();
+
+    @Override
+    public double getMaskIntensitiesStd(int channelNumber) {
+        Double intensityStd = maskIntensitiesStd.get(channelNumber);
+        if (isNull(intensityStd)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(channelNumber), 2, frameNumber);
+            intensityStd = componentProperties.getIntensityStd(this, channelFrame);
+            maskIntensitiesStd.put(channelNumber, intensityStd);
+        }
+        return intensityStd;
+    }
+
+    @Override
+    public double getMaskIntensityMean(int channelNumber) {
+        return getMaskIntensityTotal(channelNumber) / size();
+    }
+
+    Map<Integer, Double> maskIntensities = new HashMap<>();
+
+    @Override
+    public double getMaskIntensityTotal(int channelNumber) {
+        Double intensity = maskIntensities.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getIntensityTotal(this, channelFrame);
+            maskIntensities.put(channelNumber, intensity);
+        }
+        return intensity;
+    }
+
+
+    Map<Integer, Double> backgroundIntensities = new HashMap<>();
+
+    @Override
+    public double getBackgroundIntensityTotal(int channelNumber) {
+        Double intensity = backgroundIntensities.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getBackgroundIntensityTotal(this, channelFrame);
+            backgroundIntensities.put(channelNumber, intensity);
+        }
+        return intensity;
+    }
+
+    @Override
+    public long getBackgroundRoiSize() {
+        int channelNumber = 0;
+        final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+        return componentProperties.getBackgroundArea(this, channelFrame);
+    }
+
+    Map<Integer, Double> backgroundIntensitiesStd = new HashMap<>();
+
+    public double getBackgroundIntensityStd(int channelNumber) {
+        Double intensity = backgroundIntensitiesStd.get(channelNumber);
+        if (isNull(intensity)) {
+            final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+            intensity = componentProperties.getBackgroundIntensityStd(this, channelFrame);
+            backgroundIntensitiesStd.put(channelNumber, intensity);
+        }
+        return intensity;
     }
 
     public void setComponentTreeRoots(List<AdvancedComponent<T>> roots) {
@@ -992,18 +1063,24 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
                 getParentStringId(),
                 getChildrenStringIds(),
                 ((FloatType) value()).getRealDouble(),
-                pixelList);
+                pixelList,
+                maskIntensities,
+                maskIntensitiesStd,
+                backgroundIntensities,
+                backgroundIntensitiesStd);
     }
 
     public static <T extends Type<T>> AdvancedComponent<T> createFromPojo(AdvancedComponentPojo pojo,
                                                                           ComponentProperties componentProperties,
-                                                                          RandomAccessibleInterval<T> sourceImage) {
-        return new AdvancedComponent<>(pojo, componentProperties, sourceImage);
+                                                                          RandomAccessibleInterval<T> sourceImage,
+                                                                          IImageProvider imageProvider) {
+        return new AdvancedComponent<>(pojo, componentProperties, sourceImage, imageProvider);
     }
 
     private AdvancedComponent(AdvancedComponentPojo pojo,
                               ComponentProperties componentProperties,
-                              RandomAccessibleInterval<T> sourceImage) {
+                              RandomAccessibleInterval<T> sourceImage,
+                              IImageProvider imageProvider) {
         stringId = pojo.getStringId();
         frameNumber = pojo.getFrameNumber();
         this.componentProperties = componentProperties;
@@ -1013,7 +1090,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
         value = (T) new FloatType((float)pojo.getValue()); /* TODO-MM-20220921: This is dangerous: We need to check that this cast is valid using something like: if(T instanceof FloatType) (e.g.: https://www.baeldung.com/java-instanceof). But I currently do not know how do this with the generic T. */
         pixelList = pojo.getPixelList();
         this.sourceImage = sourceImage;
+        this.imageProvider = imageProvider;
         buildLabelRegion(pixelList, label, sourceImage);
+        maskIntensities = pojo.getMaskIntensities();
     }
 
     @Override
@@ -1045,5 +1124,9 @@ public final class AdvancedComponent<T extends Type<T>> implements ComponentInte
             }
         }
         return true;
+    }
+
+    public IImageProvider getImageProvider() {
+        return imageProvider;
     }
 }

@@ -3,8 +3,8 @@ package com.jug.util.componenttree;
 import com.jug.util.math.Vector2D;
 import net.imglib2.roi.geom.GeomMasks;
 import net.imglib2.roi.geom.real.Polygon2D;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BoundingBoxPropertiesTest {
     double delta = 0.01;
@@ -99,6 +99,6 @@ public class BoundingBoxPropertiesTest {
     }
 
     private void assertVectorsEqual(Vector2D expectedCenterCoordinate, BoundingBoxProperties bboxProps) {
-        assertTrue("bbox center is incorrect\nexpected: " + expectedCenterCoordinate + "\nactual: " + bboxProps.getCenterCoordinate(), bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta));
+        assertTrue(bboxProps.getCenterCoordinate().equals(expectedCenterCoordinate, delta), "bbox center is incorrect\nexpected: " + expectedCenterCoordinate + "\nactual: " + bboxProps.getCenterCoordinate());
     }
 }

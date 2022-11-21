@@ -16,17 +16,17 @@ public class ResultTableColumn<T> {
     /**
      * Column values.
      */
-    private List<T> values  = new ArrayList<T>();
+    private final List<T> values = new ArrayList<T>();
 
     /**
      * Column header.
      */
-    private String columnHeader;
+    private final String columnHeader;
 
     /**
      * Lambda holding the formatter for formatting the value upon string output.
      */
-    private Function<T, String> outputStringFormatter;
+    private final Function<T, String> outputStringFormatter;
 
     /**
      * Construct with the provided column header.
@@ -39,10 +39,10 @@ public class ResultTableColumn<T> {
     }
 
     /**
-     * Construct with the provided column header and .
+     * Construct with the provided column header and value-format.
      *
      * @param columnHeader column header for output.
-     * @param valueFormat format of the values during output. Must match type {@link T}.
+     * @param valueFormat  format of the values during output. Must match type {@link T}.
      */
     public ResultTableColumn(String columnHeader, String valueFormat) {
         this.columnHeader = columnHeader;
@@ -54,7 +54,7 @@ public class ResultTableColumn<T> {
      *
      * @param value to add.
      */
-    public void addValue(T value){
+    public void addValue(T value) {
         values.add(value);
     }
 
@@ -64,18 +64,18 @@ public class ResultTableColumn<T> {
      * @param ind index of value to return
      * @return value of {@link values} at {@param ind}.
      */
-    public T getValue(int ind){
+    public T getValue(int ind) {
         return values.get(ind);
     }
 
     /**
      * Write the value at position {@param ind} to {@param writer}.
      *
-     * @param ind index of value to write
+     * @param ind    index of value to write
      * @param writer output writer
      * @throws IOException thrown by {@param writer}
      */
-    public void writeValue(int ind, Writer writer) throws IOException{
+    public void writeValue(int ind, Writer writer) throws IOException {
         writer.write(outputStringFormatter.apply(getValue(ind)));
     }
 
@@ -94,7 +94,7 @@ public class ResultTableColumn<T> {
      *
      * @return number of values
      */
-    public Integer getNumberOfEntries(){
+    public Integer getNumberOfEntries() {
         return values.size();
     }
 
@@ -103,7 +103,7 @@ public class ResultTableColumn<T> {
      *
      * @return header
      */
-    private String getColumnHeader(){
+    public String getColumnHeader() {
         return columnHeader;
     }
 }

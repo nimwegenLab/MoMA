@@ -29,11 +29,21 @@ public class ImageProvider implements IImageProvider {
     }
 
     /**
+     * @deprecated
+     * - use {@link #getChannelImg(int)} to get the image for a specific channel.
+     * - use {@link #getNumberOfChannels()} to get the number of channels.
+     *
      * @return the rawChannelImgs
      */
+    @Deprecated
     @Override
     public List<Img<FloatType>> getRawChannelImgs() {
         return rawChannelImgs;
+    }
+
+    @Override
+    public Img<FloatType> getChannelImg(int channelNumber) {
+        return getRawChannelImgs().get(channelNumber);
     }
 
     /**
@@ -59,8 +69,13 @@ public class ImageProvider implements IImageProvider {
     }
 
     @Override
-    public synchronized Img<FloatType> getColorChannelAtTime(int channel, int timestep) {
-        return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channel), 2, timestep));
+    public synchronized Img<FloatType> getColorChannelAtTime(int channelNumber, int timestep) {
+        ArgumentValidation.channelNumberIsValid(this, channelNumber);
+        return ImgView.wrap(Views.hyperSlice(this.getRawChannelImgs().get(channelNumber), 2, timestep));
     }
 
+    @Override
+    public int getNumberOfChannels() {
+        return getRawChannelImgs().size();
+    }
 }

@@ -228,12 +228,27 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean USE_FEATURE_CROSSING_CONSTRAINTS = true;
+    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = true;
+
+    /**
+     * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.
+     */
+    private boolean FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = true;
+
+    /**
+     * Set the color channel of the image stack on which to do the processing.
+     */
+    private int FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = 1;
+
+    /**
+     * Sets the number of sigmas that the component fluorescence intensity needs to be above the background intensity.
+     */
+    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = 5.0;
 
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean USE_FEATURE_MIGRATION_COSTS = false;
+    public boolean FEATURE_FLAG_MIGRATION_COSTS = true;
 
     private int minTime = -1;
     private int maxTime = -1;
@@ -316,9 +331,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         INTENSITY_FIT_PRECISION = Double.parseDouble(props.getProperty("INTENSITY_FIT_PRECISION", Double.toString(INTENSITY_FIT_PRECISION)));
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
-        USE_FEATURE_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("USE_FEATURE_CROSSING_CONSTRAINTS", USE_FEATURE_CROSSING_CONSTRAINTS);
+        FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
+        FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
 
-        USE_FEATURE_MIGRATION_COSTS = parseBooleanFromIntegerValue("USE_FEATURE_MIGRATION_COSTS", USE_FEATURE_MIGRATION_COSTS);
+        FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR)));
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = Integer.parseInt(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER)));
 
         /* process feature flags */
         if (featureFlagDisableMaxCellDrop) {
@@ -461,8 +479,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             props.setProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS));
 
-            setBooleanAsIntegerValue(props, "USE_FEATURE_CROSSING_CONSTRAINTS", USE_FEATURE_CROSSING_CONSTRAINTS);
-            setBooleanAsIntegerValue(props, "USE_FEATURE_MIGRATION_COSTS", USE_FEATURE_MIGRATION_COSTS);
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR));
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER));
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {
@@ -610,8 +632,23 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return new Version(getDatasetMomaVersionString());
     }
 
-    public boolean getCrossingConstraintFeatureFlag() { return USE_FEATURE_CROSSING_CONSTRAINTS; }
+    public boolean getCrossingConstraintFeatureFlag() { return FEATURE_FLAG_CROSSING_CONSTRAINTS; }
 
-    public boolean getMigrationCostFeatureFlag() { return USE_FEATURE_MIGRATION_COSTS; }
+    public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COSTS; }
 
+    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
+        return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;
+    }
+
+    public double getFluorescentAssignmentFilterNumberOfSigmas() {
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR;
+    }
+
+    public int getFluorescentAssignmentFilterChannel(){
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER;
+    }
+
+    long backgroundRoiWidth = 5; /* ROI width in pixels*/
+
+    public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
 }

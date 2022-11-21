@@ -37,6 +37,26 @@ public class ComponentMock implements ComponentInterface {
     }
 
     @Override
+    public double getBackgroundIntensityStd(int channelNumber) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public long getBackgroundRoiSize() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public int getFrameNumber() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public float getCost() {
+        throw new NotImplementedException();
+    }
+
+    @Override
     public RandomAccessibleInterval<FloatType> getSourceImage() {
         return null;
     }
@@ -138,6 +158,24 @@ public class ComponentMock implements ComponentInterface {
     @Override
     public String getStringId() {
         return null;
+    }
+
+    @Override
+    public double getMaskIntensityTotal(int channelNumber) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double getBackgroundIntensityTotal(int channelNumber) { throw  new NotImplementedException(); }
+
+    @Override
+    public double getMaskIntensitiesStd(int channelNumber) {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double getMaskIntensityMean(int expectedTargetChannelNumber) {
+        throw new NotImplementedException();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.jug.util;
 
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.lp.costs.ICostFactory;
@@ -19,6 +20,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.img.Img;
+import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
 import net.imglib2.type.NativeType;
@@ -29,16 +31,21 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+//import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class TestUtils {
     private final ImageJ ij;
@@ -47,6 +54,14 @@ public class TestUtils {
 
     public TestUtils() {
         this(new ImageJ());
+    }
+
+    public double getDeltaDouble() {
+        return 1e-6;
+    }
+
+    public int getDeltaInteger() {
+        return 0;
     }
 
     public TestUtils(ImageJ ij) {
@@ -101,14 +116,16 @@ public class TestUtils {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }
 
     public ComponentProperties getComponentProperties() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+        IConfiguration configurationMock = mock(IConfiguration.class);
+        when(configurationMock.getBackgroundRoiWidth()).thenReturn(5L);
+        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), configurationMock);
     }
 
     @NotNull
@@ -129,7 +146,7 @@ public class TestUtils {
     }
 
     @NotNull
-    private Imglib2Utils getImglib2Utils() {
+    public Imglib2Utils getImglib2Utils() {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         return imglib2Utils;
@@ -191,19 +208,93 @@ public class TestUtils {
     }
 
 
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentTreeFromProbabilityImage(String imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
-        IImageProvider imageProvider = getImageProvider(imageFile);
+    @NotNull
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForestList(Path imageFile, int frameIndexStart, int frameIndexStop) throws IOException {
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
+        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
+            componentForests.add(this.getComponentForestFromProbabilityImage(imageFile, frameIndex, 1.0f));
+        }
+        return componentForests;
+    }
+
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProviderFromProbabilityImage(imageFile);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider.getImgProbsAt(frameIndex), frameIndex, componentSplittingThreshold);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }
 
-    public IImageProvider getImageProvider(String imageFile) throws IOException {
-        assertTrue(new File(imageFile).exists());
-        Img input = (Img) ij.io().open(imageFile);
-        assertNotNull(input);
+    public ComponentInterface getTestComponent(AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest, int index) {
+        List<AdvancedComponent<FloatType>> allComponents = componentForest.getAllComponents();
+        AdvancedComponent<FloatType> component = allComponents.get(index);
+        return component;
+    }
 
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int frameIndexStart, int frameIndexStop, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
+        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
+            componentForests.add(componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold));
+        }
+        return componentForests;
+    }
+
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
+        IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
+        return tree;
+    }
+
+    public IImageProvider getImageProviderFromDataFolder(Path testDataFolder) throws IOException {
+        assertTrue(testDataFolder.toFile().exists());
+        Path testImagePath = getTestImageFilePath(testDataFolder);
+        Img imageStack = (Img) ij.io().open(testImagePath.toString());
+        assertNotNull(imageStack);
+
+        Path probabilityMapsImageFilePath = getProbabilityMapsImageFilePath(testDataFolder);
+        Img probabilityMapsImage = (Img) ij.io().open(probabilityMapsImageFilePath.toString());
+        assertNotNull(imageStack);
+
+        return new ImageProviderMock(probabilityMapsImage, imageStack);
+    }
+
+    public Path getAbsolutTestFilePath(String relativePath) {
+        return Paths.get(new File("").getAbsolutePath(), relativePath);
+    }
+
+    public IImageProvider getImageProviderFromProbabilityImage(Path imageFile) throws IOException {
+        assertTrue(imageFile.toFile().exists());
+        Img input = (Img) ij.io().open(imageFile.toString());
+        assertNotNull(input);
         return new ImageProviderMock(input);
+    }
+
+    public Path getTestImageFilePath(Path testDataPath){
+        assertTrue(testDataPath.toFile().exists());
+        final FilenameFilter filter = (dir, name) -> name.contains( "images__frames_" );
+        File[] list = testDataPath.toFile().listFiles(filter);
+        return list[0].toPath();
+    }
+
+    public Path getProbabilityMapsImageFilePath(Path testDataPath){
+        assertTrue(testDataPath.toFile().exists());
+        final FilenameFilter filter = (dir, name) -> name.contains( "probability_maps__model_" );
+        File[] list = testDataPath.toFile().listFiles(filter);
+        return list[0].toPath();
+    }
+
+    public <T extends NumericType<T>> ImagePlus show(RandomAccessibleInterval<T> img) {
+        return ImageJFunctions.show(img, "");
+    }
+
+    public void showImageStack(IImageProvider imageProvider) {
+        ImageJFunctions.show(imageProvider.getImgRaw());
+    }
+
+    public void showProbabilityMaps(IImageProvider imageProvider) {
+        ImageJFunctions.show(imageProvider.getImgProbs());
     }
 
     class CostFactoryMock implements ICostFactory {
@@ -211,5 +302,39 @@ public class TestUtils {
         public float getComponentCost(ComponentInterface component) {
             return 0;
         }
+    }
+
+    public ImagePlus showComponent(ComponentInterface component) {
+        ArrayList<ComponentInterface> componentsToDraw = new ArrayList<>();
+        componentsToDraw.add(component);
+        return ImageJFunctions.show(Plotting.createImageWithComponents(componentsToDraw, new ArrayList<>(), component.getSourceImage()));
+    }
+
+    /**
+     * Return Img with specified dimensions and value/value-type.
+     *
+     * @param dims
+     * @param value
+     * @return
+     * @param <T>
+     */
+    public <T extends NativeType<T>> Img<T> getImageWithValue(long[] dims, T value) {
+        ArrayImgFactory<T> imgFactory = new ArrayImgFactory<>(value);
+        Img<T> img = imgFactory.create(dims);
+        img.iterator().forEachRemaining(val -> val.set(value));
+        return img;
+    }
+
+    /**
+     * Return Img with specified dimensions and value/value-type.
+     *
+     * @param dims
+     * @return
+     */
+    public Img<FloatType> getImageWithNormallyDistributedIntensities(long[] dims, double expectedMean, double expectedStd) {
+        ArrayImgFactory<FloatType> imgFactory = new ArrayImgFactory<>(new FloatType());
+        Img<FloatType> img = imgFactory.create(dims);
+        img.spliterator().forEachRemaining(val -> val.set((float)(expectedStd * ThreadLocalRandom.current().nextGaussian() + expectedMean)));
+        return img;
     }
 }

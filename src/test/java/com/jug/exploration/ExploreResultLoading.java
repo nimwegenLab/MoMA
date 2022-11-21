@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 import static com.jug.util.io.FileUtils.createEmptyDirectory;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ExploreResultLoading {
     String datasets_base_path = "/media/micha/T7/data_michael_mell/moma_test_data/000_development/feature/20220121-fix-loading-of-curated-datasets/";

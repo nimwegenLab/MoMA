@@ -15,9 +15,7 @@ import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
-import com.jug.lp.AssignmentPlausibilityTester;
-import com.jug.lp.GurobiCallback;
-import com.jug.lp.GurobiCallbackAbstract;
+import com.jug.lp.*;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
@@ -26,7 +24,6 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -106,7 +103,7 @@ public class PseudoDic {
 
     public ComponentProperties getComponentProperties() {
         if (isNull(componentProperties)) {
-            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils(), getCostFactory());
+            componentProperties = new ComponentProperties(getImageJOpService(), getImglib2utils(), getCostFactory(), getConfigurationManager());
         }
         return componentProperties;
     }
@@ -145,7 +142,7 @@ public class PseudoDic {
     public IComponentForestGenerator getComponentForestGenerator() {
         if (componentForestProvider == null) {
             componentForestGenerator = new ComponentForestGenerator(getConfigurationManager(), getRecursiveComponentWatershedder(), getComponentProperties(), getWatershedMaskGenerator(), getImglib2utils());
-            componentForestProvider = new ComponentForestProvider(getComponentProperties(), componentForestGenerator, getFilePaths(), getConfigurationManager());
+            componentForestProvider = new ComponentForestProvider(getComponentProperties(), componentForestGenerator, getFilePaths(), getConfigurationManager(), getImageProvider());
         }
         return componentForestProvider;
     }
@@ -272,6 +269,31 @@ public class PseudoDic {
 
     public ITrackingConfiguration getTrackingConfiguration() {
         return configurationManager;
+    }
+
+    AssignmentFilterUsingFluoresenceOfAllFrames assignmentFilter;
+    public AssignmentFilterUsingFluoresenceOfAllFrames getAssignmentFilter() {
+        if(isNull(assignmentFilter)){
+            assignmentFilter = new AssignmentFilterUsingFluoresenceOfAllFrames();
+        }
+        return assignmentFilter;
+    }
+
+    private AssignmentFilterFactory assignmentFilterFactory;
+
+    public AssignmentFilterFactory getAssignmentFilterFactory() {
+        if (isNull(assignmentFilterFactory)) {
+            assignmentFilterFactory = new AssignmentFilterFactory(getConfigurationManager(), getImageProperties());
+        }
+        return assignmentFilterFactory;
+    }
+
+    private ImageProperties imageProperties;
+    private ImageProperties getImageProperties() {
+        if(isNull(imageProperties)){
+            imageProperties = new ImageProperties(getImageProvider(), getImglib2utils(), getConfigurationManager());
+        }
+        return imageProperties;
     }
 
     public UnetProcessor getUnetProcessor() {
@@ -551,6 +573,15 @@ public class PseudoDic {
 
     public Supplier<GurobiCallbackAbstract> getGurobiCallbackFactory() {
         return new GurobiCallbackFactory();
+    }
+
+    ComponentIntensitiesExporter componentIntensitiesExporter;
+
+    public ResultExporterInterface getComponentIntensitiesExporter() {
+        if (isNull(componentIntensitiesExporter)) {
+            componentIntensitiesExporter = new ComponentIntensitiesExporter(getConfigurationManager(), getImageProperties());
+        }
+        return componentIntensitiesExporter;
     }
 
     class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{

@@ -10,6 +10,7 @@ import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.IAssignmentFilter;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
@@ -119,6 +120,7 @@ public class Growthlane {
 			model = GRBModelFactory.getModel();
 		}
 
+		IAssignmentFilter assignmentFilter = MoMA.dic.getAssignmentFilterFactory().getAssignmentFilter();
 		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(),
 				this,
 				model,
@@ -128,7 +130,9 @@ public class Growthlane {
 				MoMA.dic.getCostFactory(),
 				isLoadedFromDisk(),
 				MoMA.dic.getGurobiCallbackFactory(),
-				MoMA.dic.getGurobiProgressDialogFactory());
+				MoMA.dic.getGurobiProgressDialogFactory(),
+				assignmentFilter
+				);
 		if (guiProgressReceiver != null) {
 			ilp.addProgressListener(guiProgressReceiver);
 		}

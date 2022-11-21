@@ -16,6 +16,14 @@ import java.util.List;
 import java.util.Set;
 
 public interface ComponentInterface<T extends Type<T>, C extends ComponentInterface<T, C>> extends Component<T, C> {
+    double getBackgroundIntensityStd(int channelNumber);
+
+    long getBackgroundRoiSize();
+
+    int getFrameNumber();
+
+    float getCost();
+
     RandomAccessibleInterval<FloatType> getSourceImage();
 
     double[] firstMomentPixelCoordinates();
@@ -51,4 +59,22 @@ public interface ComponentInterface<T extends Type<T>, C extends ComponentInterf
     double getPixelValueAverage();
 
     String getStringId();
+
+    /**
+     * Return the image intensity of channel channelNumber within the mask of the component.
+     * @param channelNumber
+     * @return
+     */
+    double getMaskIntensityTotal(int channelNumber);
+
+    /**
+     * Return the image intensity of channel channelNumber in the background region of the component.
+     * @param channelNumber
+     * @return
+     */
+    double getBackgroundIntensityTotal(int channelNumber);
+
+    double getMaskIntensitiesStd(int channelNumber);
+
+    double getMaskIntensityMean(int expectedTargetChannelNumber);
 }

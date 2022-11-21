@@ -24,24 +24,26 @@ import static java.util.Objects.isNull;
 public class ComponentForestProvider implements IComponentForestGenerator {
     private IGlExportFilePathGetter paths;
     private ComponentForestGenerator componentForestGenerator;
+    private IImageProvider imageProvider;
     private ComponentProperties componentProperties;
     private IConfiguration configuration;
     private ComponentForestDeserializer componentForestDeserializer;
 
-    public ComponentForestProvider(ComponentProperties componentProperties, ComponentForestGenerator componentForestGenerator, IGlExportFilePathGetter paths, IConfiguration configuration) {
+    public ComponentForestProvider(ComponentProperties componentProperties, ComponentForestGenerator componentForestGenerator, IGlExportFilePathGetter paths, IConfiguration configuration, IImageProvider imageProvider) {
         this.componentProperties = componentProperties;
         this.paths = paths;
         this.configuration = configuration;
         this.componentForestGenerator = componentForestGenerator;
+        this.imageProvider = imageProvider;
     }
 
     @Override
-    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(Img<FloatType> raiFkt, int frameIndex, float componentSplittingThreshold) {
+    public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> buildComponentForest(IImageProvider imageProvider, int frameIndex, float componentSplittingThreshold) {
         if (configuration.getIsReloading() && paths.getComponentTreeJsonFile().exists()) {
             componentForestDeserializer = getComponentForestDeserializer(paths.getComponentTreeJsonFile());
-            return componentForestDeserializer.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
+            return componentForestDeserializer.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         }
-        return componentForestGenerator.buildComponentForest(raiFkt, frameIndex, componentSplittingThreshold);
+        return componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
     }
 
     private synchronized ComponentForestDeserializer getComponentForestDeserializer(File jsonFile) {
@@ -51,7 +53,7 @@ public class ComponentForestProvider implements IComponentForestGenerator {
             }
             currentJsonFile = jsonFile;
             String jsonString = readFileAsString(jsonFile);
-            componentForestDeserializer = new ComponentForestDeserializer(componentProperties, jsonString);
+            componentForestDeserializer = new ComponentForestDeserializer(componentProperties, jsonString, this.imageProvider);
         }
         return componentForestDeserializer;
     }

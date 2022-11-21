@@ -145,8 +145,8 @@ public class Plotting {
         return resultImage;
     }
 
-    public static RandomAccessibleInterval<ARGBType> createImageWithComponent(AdvancedComponent<FloatType> component) {
-        ArrayList<AdvancedComponent<FloatType>> componentList = new ArrayList<>();
+    public static RandomAccessibleInterval<ARGBType> createImageWithComponent(ComponentInterface component) {
+        ArrayList<ComponentInterface> componentList = new ArrayList<>();
         componentList.add(component);
         return createImageWithComponents(componentList, new ArrayList<>(), component.getSourceImage());
     }

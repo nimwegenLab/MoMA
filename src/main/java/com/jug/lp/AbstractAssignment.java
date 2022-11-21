@@ -1,8 +1,11 @@
 package com.jug.lp;
 
+import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -49,6 +52,22 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	abstract public H getSourceHypothesis();
 
 	abstract public List<H> getTargetHypotheses();
+
+	public H getTargetHypothesis(int hypothesisInd) {
+		return getTargetHypotheses().get(hypothesisInd);
+	}
+
+	public ComponentInterface getTargetComponent(int componentInd) {
+		return getTargetHypothesis(componentInd).getWrappedComponent();
+	}
+
+	public List<ComponentInterface> getTargetComponents() {
+		List<ComponentInterface> list = new ArrayList<ComponentInterface>();
+		for (Hypothesis hyp : getTargetHypotheses()) {
+			list.add(getSourceHypothesis().getWrappedComponent());
+		}
+		return list;
+	}
 
 	/**
 	 * @return the ilpVar
@@ -361,5 +380,9 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	public int getSourceTimeStep() {
 		return sourceTimeStep;
+	}
+
+	public int getTargetTimeStep() {
+		return sourceTimeStep + 1;
 	}
 }

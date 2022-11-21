@@ -1,6 +1,7 @@
 package com.jug.util.componenttree;
 
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
 import com.jug.lp.costs.ICostFactory;
@@ -28,7 +29,9 @@ import net.imglib2.type.numeric.integer.IntType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import scala.NotImplementedError;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +39,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 //import net.imagej.ops.geom.geom2d.DefaultBoundingBox; // contains convex hull functions  e.g.: op = net.imagej.ops.geom.geom2d.DefaultVerticesCountConvexHullPolygon.class). public DoubleType boundaryPixelCountConvexHull(final Polygon2D in) {. boundaryPixelCountConvexHull
 
 
@@ -59,6 +63,7 @@ public class ComponentPropertiesTest {
      * @throws InterruptedException
      */
     @Test
+    @Disabled
     public void testGettingComponentProperties() throws IOException {
         String imageFile = new File("").getAbsolutePath() + "/src/test/resources/00_probability_maps/probabilities_watershedding_000.tif";
         assertTrue(new File(imageFile).exists());
@@ -76,9 +81,9 @@ public class ComponentPropertiesTest {
 
         ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock(), mock(IConfiguration.class));
 
         ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
@@ -90,22 +95,23 @@ public class ComponentPropertiesTest {
             double minorAxis = props.getMinorMajorAxis(component).getA();
             double majorAxis = props.getMinorMajorAxis(component).getB();
             double majorAxisTiltAngle = props.getTiltAngle(component);
-            double totalIntensity = props.getTotalIntensity(component, component.getSourceImage());
-            double totalBackgroundIntensity = props.getTotalBackgroundIntensity(component, currentImage);
+            double totalIntensity = props.getIntensityTotal(component, component.getSourceImage());
+            double totalBackgroundIntensity = props.getBackgroundIntensityTotal(component, currentImage);
             long backgroundRoiArea = props.getBackgroundArea(component, currentImage);
             int area = props.getArea(component);
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
         Plotting.drawComponentTree2(tree, new ArrayList<>(), roots.get(0).getSourceImage());
-        assertTrue("FIX: This is not a true test, because there is no test-assert statement in this test!", false);
+        throw new NotImplementedError("FIX: This is not a true test, because there is no test-assert statement in this test!");
+//        assertTrue(false, "FIX: This is not a true test, because there is no test-assert statement in this test!");
     }
 
     @NotNull
     private ComponentForestGenerator getComponentForestGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
@@ -126,7 +132,7 @@ public class ComponentPropertiesTest {
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         roots.sort(verticalComponentPositionComparator);
 
-        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock());
+        ComponentProperties props = new ComponentProperties(ij.op(), new Imglib2Utils(ij.op()), new CostFactoryMock(), mock(IConfiguration.class));
 
         int componentIndex = 2;
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
@@ -172,7 +178,7 @@ public class ComponentPropertiesTest {
 
         ComponentForestGenerator componentForestGenerator = getComponentForestGenerator(ij);
 
-        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }
 

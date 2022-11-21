@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.jug.fijiplugins.Utilities;
 
@@ -24,12 +24,12 @@ public class FloatTypeImgLoaderTest {
     @Test
     public void testGetTimeAndChannelFromFilename() {
         String filename1 = "example_t001_c00005.tif";
-        Assert.assertEquals(1, FloatTypeImgLoader.getTimeFromFilename(filename1));
-        Assert.assertEquals(5, FloatTypeImgLoader.getChannelFromFilename(filename1));
+        Assertions.assertEquals(1, FloatTypeImgLoader.getTimeFromFilename(filename1));
+        Assertions.assertEquals(5, FloatTypeImgLoader.getChannelFromFilename(filename1));
 
         String filename2 = "example_test_case_t003_c00004.tif";
-        Assert.assertEquals(3, FloatTypeImgLoader.getTimeFromFilename(filename2));
-        Assert.assertEquals(4, FloatTypeImgLoader.getChannelFromFilename(filename2));
+        Assertions.assertEquals(3, FloatTypeImgLoader.getTimeFromFilename(filename2));
+        Assertions.assertEquals(4, FloatTypeImgLoader.getChannelFromFilename(filename2));
     }
 
     @Test
@@ -42,22 +42,22 @@ public class FloatTypeImgLoaderTest {
         ArrayList<Img<FloatType>> list = FloatTypeImgLoader.loadTiffsFromFileOrFolder(foldername, 1, 5, 1, 2);
 
         // check number of channels
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
 
         // check dimensionality
-        Assert.assertEquals(3, list.get(0).numDimensions());
+        Assertions.assertEquals(3, list.get(0).numDimensions());
 
         // check width
-        Assert.assertEquals(0, list.get(0).min(0));
-        Assert.assertEquals(2, list.get(0).max(0));
+        Assertions.assertEquals(0, list.get(0).min(0));
+        Assertions.assertEquals(2, list.get(0).max(0));
 
         // check height
-        Assert.assertEquals(0, list.get(0).min(1));
-        Assert.assertEquals(3, list.get(0).max(1));
+        Assertions.assertEquals(0, list.get(0).min(1));
+        Assertions.assertEquals(3, list.get(0).max(1));
 
         // check frames
-        Assert.assertEquals(0, list.get(0).min(2));
-        Assert.assertEquals(5, list.get(0).max(2));
+        Assertions.assertEquals(0, list.get(0).min(2));
+        Assertions.assertEquals(5, list.get(0).max(2));
         // note: in the implementation of FloatTypeImgLoader.loadMMTiffSequence it is documented that the last slice
         // is duplicated. That's why here the reference for nuber of slices is in fact 6, even though the dataset just
         // contains 5 slices...
@@ -73,22 +73,22 @@ public class FloatTypeImgLoaderTest {
         ArrayList<Img<FloatType>> list = FloatTypeImgLoader.loadTiffsFromFileOrFolder(filename, 1, 5, 1, 2);
 
         // check number of channels
-        Assert.assertEquals(2, list.size());
+        Assertions.assertEquals(2, list.size());
 
         // check dimensionality
-        Assert.assertEquals(3, list.get(0).numDimensions());
+        Assertions.assertEquals(3, list.get(0).numDimensions());
 
         // check width
-        Assert.assertEquals(0, list.get(0).min(0));
-        Assert.assertEquals(2, list.get(0).max(0));
+        Assertions.assertEquals(0, list.get(0).min(0));
+        Assertions.assertEquals(2, list.get(0).max(0));
 
         // check height
-        Assert.assertEquals(0, list.get(0).min(1));
-        Assert.assertEquals(3, list.get(0).max(1));
+        Assertions.assertEquals(0, list.get(0).min(1));
+        Assertions.assertEquals(3, list.get(0).max(1));
 
         // check frames
-        Assert.assertEquals(0, list.get(0).min(2));
-        Assert.assertEquals(5, list.get(0).max(2));
+        Assertions.assertEquals(0, list.get(0).min(2));
+        Assertions.assertEquals(5, list.get(0).max(2));
         // note: in the implementation of FloatTypeImgLoader.loadMMTiffSequence it is documented that the last slice
         // is duplicated. That's why here the reference for nuber of slices is in fact 6, even though the dataset just
         // contains 5 slices...
@@ -112,9 +112,9 @@ public class FloatTypeImgLoaderTest {
         String foldername32bit = resaveTifAsTifSequence(filename32bit);
         ArrayList<Img<FloatType>> listFolder32Bit = FloatTypeImgLoader.loadTiffsFromFileOrFolder(foldername32bit, 1, 5, 1, 2);
 
-        Assert.assertEquals(listFile8Bit.size(), listFile32Bit.size());
-        Assert.assertEquals(listFile8Bit.size(), listFolder8Bit.size());
-        Assert.assertEquals(listFile8Bit.size(), listFolder32Bit.size());
+        Assertions.assertEquals(listFile8Bit.size(), listFile32Bit.size());
+        Assertions.assertEquals(listFile8Bit.size(), listFolder8Bit.size());
+        Assertions.assertEquals(listFile8Bit.size(), listFolder32Bit.size());
 
         // do for every channel...
         for (int i = 0; i < listFolder8Bit.size(); i++) {
@@ -138,30 +138,30 @@ public class FloatTypeImgLoaderTest {
         System.out.println("size: " + folderDataset.size());
 
         // check number of channels
-        Assert.assertEquals(2, fileDataset.size());
-        Assert.assertEquals(2, folderDataset.size());
+        Assertions.assertEquals(2, fileDataset.size());
+        Assertions.assertEquals(2, folderDataset.size());
 
         // check dimensionality
-        Assert.assertEquals(3, fileDataset.get(0).numDimensions());
-        Assert.assertEquals(3, folderDataset.get(0).numDimensions());
+        Assertions.assertEquals(3, fileDataset.get(0).numDimensions());
+        Assertions.assertEquals(3, folderDataset.get(0).numDimensions());
 
         // check width
-        Assert.assertEquals(0, fileDataset.get(0).min(0));
-        Assert.assertEquals(100, fileDataset.get(0).max(0));
-        Assert.assertEquals(0, folderDataset.get(0).min(0));
-        Assert.assertEquals(100, folderDataset.get(0).max(0));
+        Assertions.assertEquals(0, fileDataset.get(0).min(0));
+        Assertions.assertEquals(100, fileDataset.get(0).max(0));
+        Assertions.assertEquals(0, folderDataset.get(0).min(0));
+        Assertions.assertEquals(100, folderDataset.get(0).max(0));
 
         // check height
-        Assert.assertEquals(0, fileDataset.get(0).min(1));
-        Assert.assertEquals(444, fileDataset.get(0).max(1));
-        Assert.assertEquals(0, folderDataset.get(0).min(1));
-        Assert.assertEquals(444, folderDataset.get(0).max(1));
+        Assertions.assertEquals(0, fileDataset.get(0).min(1));
+        Assertions.assertEquals(444, fileDataset.get(0).max(1));
+        Assertions.assertEquals(0, folderDataset.get(0).min(1));
+        Assertions.assertEquals(444, folderDataset.get(0).max(1));
 
         // check frames
-        Assert.assertEquals(0, fileDataset.get(0).min(2));
-        Assert.assertEquals(40, fileDataset.get(0).max(2));
-        Assert.assertEquals(0, folderDataset.get(0).min(2));
-        Assert.assertEquals(40, folderDataset.get(0).max(2));
+        Assertions.assertEquals(0, fileDataset.get(0).min(2));
+        Assertions.assertEquals(40, fileDataset.get(0).max(2));
+        Assertions.assertEquals(0, folderDataset.get(0).min(2));
+        Assertions.assertEquals(40, folderDataset.get(0).max(2));
     }
 
 
@@ -172,13 +172,13 @@ public class FloatTypeImgLoaderTest {
 
     private void imagesAreEqual(Img<FloatType> a, Img<FloatType> b, float tolerance) {
         // check references
-        Assert.assertFalse("Both images not null", (a == null || b == null));
-        Assert.assertFalse("Both images have equal dimensions", (a.numDimensions() != b.numDimensions()));
+        Assertions.assertFalse((a == null || b == null), "Both images not null");
+        Assertions.assertFalse((a.numDimensions() != b.numDimensions()), "Both images have equal dimensions");
 
         // check dimensions
         for (int d = 0; d < a.numDimensions(); d++) {
-            Assert.assertFalse("minimum position " + d + " equals", (a.min(d) != b.min(d)));
-            Assert.assertFalse("maximum position " + d + " equals", (a.max(d) != b.max(d)));
+            Assertions.assertFalse((a.min(d) != b.min(d)), "minimum position " + d + " equals");
+            Assertions.assertFalse((a.max(d) != b.max(d)), "maximum position " + d + " equals");
         }
 
         Cursor<FloatType> curA = a.cursor();
@@ -186,11 +186,11 @@ public class FloatTypeImgLoaderTest {
 
         // Note: the order of pixels in the following code is not garanteed. However, as far as I know, it works always.
         while (curA.hasNext() && curB.hasNext()) {
-            Assert.assertEquals("pixels equal", curA.next().get(), curB.next().get(), tolerance);
+            Assertions.assertEquals(curA.next().get(), curB.next().get(), tolerance, "pixels equal");
         }
 
         // this should never be asserted, we just checked min and max positions...
-        Assert.assertFalse("Cursors add at same point", (curA.hasNext() || curB.hasNext()));
+        Assertions.assertFalse((curA.hasNext() || curB.hasNext()), "Cursors add at same point");
     }
 
     private String resaveTifAsTifSequence(String tifFilename)

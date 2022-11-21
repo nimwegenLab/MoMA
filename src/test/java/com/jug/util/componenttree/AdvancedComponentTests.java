@@ -1,14 +1,11 @@
 package com.jug.util.componenttree;
 
-import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.datahandling.IImageProvider;
 import com.jug.lp.ImageProviderMock;
-import com.jug.lp.costs.ICostFactory;
-import com.jug.util.imglib2.Imglib2Utils;
+import com.jug.util.TestUtils;
 import com.jug.util.math.Vector2D;
 import com.moma.auxiliary.Plotting;
 import net.imagej.ImageJ;
-import net.imagej.ops.OpService;
 import net.imglib2.Localizable;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
@@ -20,22 +17,131 @@ import net.imglib2.type.logic.NativeBoolType;
 import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
-import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AdvancedComponentTests {
+    private final TestUtils testUtils;
+
     public static void main(String... args) throws IOException {
-//        new AdvancedComponentTests().testGetParentWatershedLineValues();
-//        new AdvancedComponentTests().exploreGetParentWatershedLineCoordinates();
-//        new AdvancedComponentTests().test__getWatershedLinePixelPositions();
-        new AdvancedComponentTests().explore__getDilatedAndErodedComponents();
+        AdvancedComponentTests tests = new AdvancedComponentTests();
+//        tests.testGetParentWatershedLineValues();
+//        tests.exploreGetParentWatershedLineCoordinates();
+//        tests.test__getWatershedLinePixelPositions();
+//        tests.explore__getDilatedAndErodedComponents();
+//        tests.explore_data();
+    }
+
+    public AdvancedComponentTests() {
+        testUtils = new TestUtils();
+    }
+
+    public void explore_data() throws IOException {
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        IImageProvider imageProvider = testUtils.getImageProviderFromDataFolder(testDataFolder);
+        testUtils.showImageStack(imageProvider);
+        testUtils.showProbabilityMaps(imageProvider);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 0, 0.5f);
+        List<AdvancedComponent<FloatType>> allComponents = componentForest.getAllComponents();
+        AdvancedComponent<FloatType> component = allComponents.get(allComponents.size() - 2);
+        testUtils.showComponent(component);
+        System.out.println(allComponents.size() - 2);
+        System.out.println("stop");
+    }
+
+    @Test
+    public void getMaskIntensityTotal__when_called_with_background_corrected_fl_channel_on_parent_component__returns_correct_value() throws IOException {
+        int phcChannelNumber = 1;
+        double expectedIntensity = 162299.00565624237;
+        ComponentInterface sut = getInternalTestComponent();
+        double actualIntensity = sut.getMaskIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, testUtils.getDeltaDouble());
+    }
+
+    @Test
+    public void getBackgroundIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 2;
+        double expectedIntensity = 115900.0;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, testUtils.getDeltaDouble());
+    }
+
+    @Test
+    public void getBackgroundIntensity__when_called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 1;
+        double expectedIntensity = 10567.031685829163;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getBackgroundIntensity__when_called_with_phc_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 0;
+        double expectedIntensity = -10.640667281084461;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getBackgroundIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+   @Test
+    public void getMaskIntensity__when_called_with_uncorrected_fl_channel__returns_correct_value() throws IOException {
+        int BackgroundCorrectedFluorescenceChannelNumber = 2;
+        double expectedIntensity = 254183.0;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensityTotal(BackgroundCorrectedFluorescenceChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getMaskIntensity__when_called_with_background_corrected_fl_channel__returns_correct_value() throws IOException {
+        int BackgroundCorrectedFluorescenceChannelNumber = 1;
+        double expectedIntensity = 146598.8568496704;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensityTotal(BackgroundCorrectedFluorescenceChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    @Test
+    public void getMaskIntensity__when_called_with_phc_channel__returns_correct_value() throws IOException {
+        int phcChannelNumber = 0;
+        double expectedIntensity = 211.82272602943704;
+        ComponentInterface sut = getTestComponent1();
+        double actualIntensity = sut.getMaskIntensityTotal(phcChannelNumber);
+        Assertions.assertEquals(expectedIntensity, actualIntensity, 1e-6);
+    }
+
+    /**
+     * Returns a component that has a parent and leaf-nodes.
+     * @return
+     * @throws IOException
+     */
+    private ComponentInterface getInternalTestComponent() throws IOException {
+        int componentIndex = 11;
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 3, 1.0f);
+        ComponentInterface component = testUtils.getTestComponent(componentForest, componentIndex);
+//        Plotting.drawComponentTree2(componentForest, new ArrayList<>(), component.getSourceImage());
+//        RandomAccessibleInterval<ARGBType> res = Plotting.createImageWithComponent(component);
+//        ImageJFunctions.show(res);
+        return component;
+    }
+
+    private ComponentInterface getTestComponent1() throws IOException {
+        int componentIndex = 8;
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = testUtils.getComponentForestFromDataFolder(testDataFolder, 0, 0.5f);
+        ComponentInterface component = testUtils.getTestComponent(componentForest, componentIndex);
+        return component;
     }
 
     @Test
@@ -51,9 +157,9 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
         float[] expectedWatershedProbabilityValues = new float[]{0.7120329141616821F,0.7112422585487366F, 0.5284326672554016F};
@@ -63,18 +169,6 @@ public class AdvancedComponentTests {
         for(int counter = 0; counter<actualWatershedProbabilityValues.size(); counter++){
             assertEquals(expectedWatershedProbabilityValues[counter], actualWatershedProbabilityValues.get(counter).getRealFloat(), 0.0001);
         }
-    }
-
-    @NotNull
-    private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
-        OpService ops = ij.op();
-        Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
-        RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
-        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
-        ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
-        return componentForestGenerator;
     }
 
     @Test
@@ -90,9 +184,9 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
         AdvancedComponent<FloatType> root = roots.get(0);
@@ -128,9 +222,9 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
         for (AdvancedComponent<FloatType> root : roots) {
@@ -167,9 +261,9 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
         List<AdvancedComponent<FloatType>> roots = tree.rootsSorted();
         AdvancedComponent<FloatType> component = roots.get(1);
@@ -185,12 +279,5 @@ public class AdvancedComponentTests {
 
         MaskInterval differenceMask = dilatedMask.minus(erodedMask);
         ImageJFunctions.show(Masks.toRandomAccessibleInterval(differenceMask));
-    }
-
-    class CostFactoryMock implements ICostFactory {
-        @Override
-        public float getComponentCost(ComponentInterface component) {
-            return 0;
-        }
     }
 }

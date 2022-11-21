@@ -1,8 +1,29 @@
 package com.jug.mocks;
 
 import com.jug.config.IConfiguration;
+import org.apache.commons.lang.NotImplementedException;
 
 public class ConfigMock implements IConfiguration {
+
+    @Override
+    public long getBackgroundRoiWidth() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public int getFluorescentAssignmentFilterChannel() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public double getFluorescentAssignmentFilterNumberOfSigmas() {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
+        return false;
+    }
 
     @Override
     public boolean getCrossingConstraintFeatureFlag() {

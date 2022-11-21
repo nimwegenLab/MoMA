@@ -1,14 +1,14 @@
 package com.jug.util;
 
-import org.junit.Test;
-import org.junit.Assert;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class JarGitVersionParserTest {
     @Test
     public void getVersion__returns_correct_version() {
         IVersionProvider sut = new JarGitVersionParser(getJsonJarGitVersionString());
         String versionString = sut.getVersion().toString();
-        Assert.assertEquals("0.6.0-beta4+bbf9f630", versionString);
+        Assertions.assertEquals("0.6.0-beta4+bbf9f630", versionString);
     }
 
     private String getJsonJarGitVersionString() {

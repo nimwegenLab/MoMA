@@ -2,6 +2,7 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
+import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
 import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
@@ -23,14 +24,15 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class GrowthlaneTrackingIlpTest {
     public static void main(String... args) throws IOException, GRBException {
@@ -56,21 +58,23 @@ public class GrowthlaneTrackingIlpTest {
 
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(ij);
 
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
-        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentForestGenerator.buildComponentForest(imageProviderMock.getImgProbsAt(frameIndex), frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
+        AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
         IDialogManager dialogManagerMock = new DialogManagerMock();
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
         ConfigMock configMock = new ConfigMock();
         GlFileManager glFileManagerMock = new GlFileManager();
         Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
+        IAssignmentFilter assignmentFilterMock = mock(IAssignmentFilter.class);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(),
                 gl,
                 mockGrbModel,
                 new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock),
                 false,
                 () -> new GurobiCallbackMock(),
-                () -> new DialogGurobiProgressMock());
+                () -> new DialogGurobiProgressMock(),
+                assignmentFilterMock);
         int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
         ilp.addMappingAssignments(t, sourceTree, targetTree);
     }
@@ -79,7 +83,7 @@ public class GrowthlaneTrackingIlpTest {
     private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock());
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);

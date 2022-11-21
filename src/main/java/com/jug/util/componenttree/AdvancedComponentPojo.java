@@ -3,7 +3,10 @@ package com.jug.util.componenttree;
 import net.imglib2.Localizable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AdvancedComponentPojo {
     private final String stringId;
@@ -15,19 +18,35 @@ public class AdvancedComponentPojo {
     private final int[] xCoordinates;
     private final int[] yCoordinates;
 
+    private Map<Integer, Double> maskIntensities;
+
+    private Map<Integer, Double> backgroundIntensities;
+
+    private Map<Integer, Double> backgroundIntensitiesStd;
+
+    private Map<Integer, Double> maskIntensitiesStd;
+
     public AdvancedComponentPojo(String stringId,
                                  int frameNumber,
                                  int label,
                                  String parentStringId,
                                  List<String> childrenStringIds,
                                  double value,
-                                 List<LocalizableImpl> pixelList) {
+                                 List<LocalizableImpl> pixelList,
+                                 Map<Integer, Double> maskIntensities,
+                                 Map<Integer, Double> maskIntensitiesStd,
+                                 Map<Integer, Double> backgroundIntensities,
+                                 Map<Integer, Double> backgroundIntensitiesStd) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
         this.parentStringId = parentStringId;
         this.childrenStringIds = childrenStringIds;
         this.value = value;
+        this.maskIntensities = maskIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `maskIntensities` */
+        this.backgroundIntensities = backgroundIntensities.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
+        this.backgroundIntensitiesStd = backgroundIntensitiesStd.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
+        this.maskIntensitiesStd = maskIntensitiesStd.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
 
@@ -69,5 +88,13 @@ public class AdvancedComponentPojo {
             pixelList.add(new LocalizableImpl(xCoordinates[coordInd], yCoordinates[coordInd]));
         }
         return pixelList;
+    }
+
+    public Map<Integer, Double> getMaskIntensities() {
+        return maskIntensities;
+    }
+
+    public Map<Integer, Double> getBackgroundIntensities() {
+        return backgroundIntensities;
     }
 }

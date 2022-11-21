@@ -48,5 +48,7 @@ public interface IGlExportFilePathGetter {
 
     File getComponentTreeJsonFile();
 
+    File getAssignmentFilterIntensitiesCsvFile();
+
     void createFile(File file);
 }

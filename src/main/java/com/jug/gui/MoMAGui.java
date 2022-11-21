@@ -17,6 +17,7 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import weka.gui.ExtensionFileFilter;
 
@@ -902,7 +903,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
         exporters.add(MoMA.dic.getCellStatsExporter());
@@ -914,6 +914,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (configurationManager.EXPORT_ASSIGNMENT_COSTS) {
             exporters.add(MoMA.dic.getAssignmentCostExporter());
         }
+        exporters.add(MoMA.dic.getComponentForestExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
@@ -926,9 +927,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
+        if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
+            exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+        }
+        exporters.add(MoMA.dic.getComponentForestExporter());
+
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
         MoMA.dic.getTrackingDataTimer().stop();

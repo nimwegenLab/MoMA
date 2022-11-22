@@ -39,7 +39,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         assignmentIdCol = table.getColumn(String.class, "assignment_id");
         assignmentTypeCol = table.getColumn(String.class, "assignment_type");
         frameCol = table.getColumn(Integer.class, "assignment_source_frame");
-        assignmentCostCol = table.addColumn(new ResultTableColumn<>("assigment_cost"));
+        assignmentCostCol = table.addColumn(new ResultTableColumn<>("assignment_cost"));
 
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {

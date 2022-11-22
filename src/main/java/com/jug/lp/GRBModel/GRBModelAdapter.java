@@ -12,6 +12,15 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         return this.model.getConstrs();
     }
 
+    /**
+     * Get a constraint by name. This method extends the method GRBModel.getConstrByName(..) to handle the situation
+     * where a constraint with the desired name does not exist. In this ccase this method returns null, whereas
+     * GRBModel.getConstrByName(..) raises a GRBException.
+     *
+     * @param name
+     * @return
+     * @throws GRBException
+     */
     @Override
     public GRBConstr getConstrByName(String name) throws GRBException {
         GRBConstr[] listOfConstrains = this.getConstrs();
@@ -50,7 +59,6 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         res = this.getConstrByName(name);
         if(res == null){
             res = model.addConstr(lhsExpr, sense, rhs, name);
-            model.update();
         }
         return res;
     }
@@ -101,7 +109,6 @@ public class GRBModelAdapter implements IGRBModelAdapter {
         }
         if(res == null){
             res = model.addVar(lb, ub, obj, type, name);
-            model.update();
         }
         return res;
     }

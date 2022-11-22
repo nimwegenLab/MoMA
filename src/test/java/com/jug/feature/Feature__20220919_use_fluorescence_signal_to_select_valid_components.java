@@ -63,5 +63,4 @@ public class Feature__20220919_use_fluorescence_signal_to_select_valid_component
         analysisName = "test_batch_run"; /* you can change this if you want to; but it is not needed */
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
-
 }

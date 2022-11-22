@@ -221,6 +221,8 @@ public class GrowthlaneTrackingILP {
             } else {
                 MoMA.dic.getAssignmentCreationTimer().start();
                 createAssignments();
+                model.update();
+                filterAssignments();
 
     //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
     //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
@@ -233,11 +235,14 @@ public class GrowthlaneTrackingILP {
                 // Iterate over all assignments and ask them to add their
                 // constraints to the model
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
-                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
-                        assignment.addConstraintsToILP();
-                    }
+                for(final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : nodes.getAllAssignmentsFlattened()){
+                    assignment.addConstraintsToILP();
                 }
+//                for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
+//                    for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
+//                        assignment.addConstraintsToILP();
+//                    }
+//                }
 
                 // Add the remaining ILP constraints
                 // (those would be (i) and (ii) of 'Default Solution')
@@ -302,6 +307,12 @@ public class GrowthlaneTrackingILP {
             e.printStackTrace();
         }
 
+    }
+
+    private void filterAssignments() {
+        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
+            assignmentFilter.evaluate(assignment);
+        }
     }
 
     private int getNumberOfLeafComponents() {
@@ -637,7 +648,7 @@ public class GrowthlaneTrackingILP {
 
                 final MappingAssignment ma = new MappingAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, from, to);
 
-                assignmentFilter.evaluate(ma);
+//                assignmentFilter.evaluate(ma);
 
                 nodes.addAssignment(sourceTimeStep, ma);
                 if (!edgeSets.addToRightNeighborhood(from, ma)) {
@@ -824,7 +835,7 @@ public class GrowthlaneTrackingILP {
 
                     final DivisionAssignment da = new DivisionAssignment(newLPVar, this, from, to, lowerNeighbor, sourceTimeStep);
 
-                    assignmentFilter.evaluate(da);
+//                    assignmentFilter.evaluate(da);
 
                     nodes.addAssignment(sourceTimeStep, da);
                     edgeSets.addToRightNeighborhood(from, da);
@@ -1927,22 +1938,12 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllAssignments() {
-        ArrayList<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = new ArrayList<>();
-        for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
-                assignments.add(assignment);
-            }
-        }
-        return assignments;
-    }
-
     /**
      * Adds storage lock constraints to all assignment variables in the Gurobi model. This enforces the previous state
      * of the Gurobi model, when it is read from disk and optimized when loading/restoring a previous curation.
      */
     public void addStorageLockConstraintsToAssignments() {
-        for (AbstractAssignment assignment : getAllAssignments()) {
+        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
             assignment.addStorageLockConstraint();
         }
         try {
@@ -1958,7 +1959,7 @@ public class GrowthlaneTrackingILP {
      * reading a Gurobi model from disk and optimizing it, so that the user can continue modifying it.
      */
     public void removeStorageLockConstraintsFromAssignments() {
-        for (AbstractAssignment assignment : getAllAssignments()) {
+        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
             assignment.removeStorageLockConstraint();
         }
         try {

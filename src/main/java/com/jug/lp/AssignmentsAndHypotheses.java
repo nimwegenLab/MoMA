@@ -95,6 +95,20 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         return a_t;
     }
 
+    List<A> assignmentListFlattened;
+    public List<A> getAllAssignmentsFlattened() {
+        if (!isNull(assignmentListFlattened)) {
+            return assignmentListFlattened;
+        }
+        List<A> assignmentListFlattened = new ArrayList<>();
+        for (final List<A> innerList : this.getAllAssignments()) {
+            for (final A assignment : innerList) {
+                assignmentListFlattened.add(assignment);
+            }
+        }
+        return assignmentListFlattened;
+    }
+
     /**
      * Return the total number of all assignments.
      *

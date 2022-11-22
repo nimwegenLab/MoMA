@@ -486,7 +486,11 @@ public class GrowthlaneTrackingILP {
 //        }
 
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
+            System.out.println("Processing source frame: " + t);
+            double start = System.currentTimeMillis();
             createAssignmentsForTimeStep(t);
+            double end = System.currentTimeMillis();
+            System.out.println("AssignmentFilter execution time [ms]: " + (end-start));
         }
         final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
         addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */

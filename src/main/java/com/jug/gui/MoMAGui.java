@@ -911,9 +911,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
-        if (configurationManager.EXPORT_ASSIGNMENT_COSTS) {
-            exporters.add(MoMA.dic.getAssignmentCostExporter());
-        }
         exporters.add(MoMA.dic.getComponentForestExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
@@ -933,6 +930,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             exporters.add(MoMA.dic.getComponentIntensitiesExporter());
         }
         exporters.add(MoMA.dic.getComponentForestExporter());
+        exporters.add(MoMA.dic.getAssignmentCostExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());

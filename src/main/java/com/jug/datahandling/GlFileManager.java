@@ -167,7 +167,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     @Override
     public Path getAssignmentActivitiesCsvFilePath() {
         makeTrackingDataOutputDirectory();
-        String filename = "assignment_activity.csv";
+        String filename = "assignment_states.csv";
         return Paths.get(getTrackingDataOutputPath().toString(), filename);
     }
 

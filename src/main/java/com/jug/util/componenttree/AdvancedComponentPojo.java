@@ -18,6 +18,7 @@ public class AdvancedComponentPojo {
     private final int[] xCoordinates;
     private final int[] yCoordinates;
     private final Float cost;
+    private final Integer size; /* This field contains the number of pixels in the component. It is not needed for deserialization, but useful when using the JSON serialization for evaluation purposes. */
 
     private Map<Integer, Double> maskIntensities;
 
@@ -52,6 +53,7 @@ public class AdvancedComponentPojo {
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
         this.cost = cost;
+        this.size = pixelList.size();
 
         int coordinateIndex = 0;
         for(Localizable loc : pixelList){

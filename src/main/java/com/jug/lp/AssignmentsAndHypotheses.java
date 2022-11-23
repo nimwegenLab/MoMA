@@ -91,17 +91,17 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      *
      * @return <code>a_t</code>
      */
-    public List<List<A>> getAllAssignments() {
+    private List<List<A>> getAllAssignmentsInternal() {
         return a_t;
     }
 
     List<A> assignmentListFlattened;
-    public List<A> getAllAssignmentsFlattened() {
+    public List<A> getAllAssignments() {
         if (!isNull(assignmentListFlattened)) {
             return assignmentListFlattened;
         }
         List<A> assignmentListFlattened = new ArrayList<>();
-        for (final List<A> innerList : this.getAllAssignments()) {
+        for (final List<A> innerList : this.getAllAssignmentsInternal()) {
             for (final A assignment : innerList) {
                 assignmentListFlattened.add(assignment);
             }
@@ -115,11 +115,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * @return
      */
     public int getTotalNumberOfAssignments() {
-        int numberOfAssignments = 0;
-        for (List<A> assignmentsAtT : getAllAssignments()) {
-            numberOfAssignments += assignmentsAtT.size();
-        }
-        return numberOfAssignments;
+        return getAllAssignments().size();
     }
 
     /**

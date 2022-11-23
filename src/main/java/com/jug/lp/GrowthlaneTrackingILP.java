@@ -237,7 +237,7 @@ public class GrowthlaneTrackingILP {
                 // Iterate over all assignments and ask them to add their
                 // constraints to the model
                 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-                for(final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : nodes.getAllAssignmentsFlattened()){
+                for(final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : nodes.getAllAssignments()){
                     assignment.addConstraintsToILP();
                 }
 //                for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
@@ -312,7 +312,7 @@ public class GrowthlaneTrackingILP {
     }
 
     private void filterAssignments() {
-        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
+        for (AbstractAssignment assignment : nodes.getAllAssignments()) {
             assignmentFilter.evaluate(assignment);
         }
     }
@@ -1941,7 +1941,7 @@ public class GrowthlaneTrackingILP {
      * of the Gurobi model, when it is read from disk and optimized when loading/restoring a previous curation.
      */
     public void addStorageLockConstraintsToAssignments() {
-        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
+        for (AbstractAssignment assignment : nodes.getAllAssignments()) {
             assignment.addStorageLockConstraint();
         }
         try {
@@ -1957,7 +1957,7 @@ public class GrowthlaneTrackingILP {
      * reading a Gurobi model from disk and optimizing it, so that the user can continue modifying it.
      */
     public void removeStorageLockConstraintsFromAssignments() {
-        for (AbstractAssignment assignment : nodes.getAllAssignmentsFlattened()) {
+        for (AbstractAssignment assignment : nodes.getAllAssignments()) {
             assignment.removeStorageLockConstraint();
         }
         try {
@@ -2575,5 +2575,9 @@ public class GrowthlaneTrackingILP {
             }
         }
         return false;
+    }
+
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllAssignments() {
+        return nodes.getAllAssignments();
     }
 }

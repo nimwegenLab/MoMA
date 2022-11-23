@@ -5,9 +5,7 @@ import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
-import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentProperties;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.io.*;
@@ -46,7 +44,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAssignmentInformation(allAssignments);
         }
-        File outputCsvFile = exportFilePaths.getAssignmentCostsFilePath().toFile();
+        File outputCsvFile = exportFilePaths.getAssignmentCostsCsvFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {

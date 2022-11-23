@@ -1986,15 +1986,9 @@ public class GrowthlaneTrackingILP {
                     numH++;
                 }
             }
-            int numA = 0;
-            for (final List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerList : nodes.getAllAssignments()) {
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : innerList) {
-                    numA++;
-                }
-            }
             out.write(String.format("TIME, %d, %d, %d\n", numT,
                     configurationManager.getMinTime(), configurationManager.getMaxTime()));
-            out.write(String.format("SIZE, %d, %d\n", numH, numA));
+            out.write(String.format("SIZE, %d, %d\n", numH, nodes.getTotalNumberOfAssignments()));
             out.newLine();
 
             final int timeOffset = configurationManager.getMinTime();

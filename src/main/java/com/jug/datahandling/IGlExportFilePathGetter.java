@@ -16,7 +16,9 @@ public interface IGlExportFilePathGetter {
 
     Path getCellStatsFilePath();
 
-    Path getAssignmentCostsFilePath();
+    Path getAssignmentCostsCsvFilePath();
+
+    Path getAssignmentActivitiesCsvFilePath();
 
     Path getCellMaskImageFilePath();
 

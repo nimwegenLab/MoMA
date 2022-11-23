@@ -27,13 +27,15 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
         ResultTableColumn<Integer> isActiveCol = table.getColumn(Integer.class, "is_active");
         ResultTableColumn<Integer> isGroundTruthCol = table.getColumn(Integer.class, "is_forced_by_user");
         ResultTableColumn<Integer> isGroundUntruthCol = table.getColumn(Integer.class, "is_ignored_by_user");
+        ResultTableColumn<Integer> isPrunedCol = table.getColumn(Integer.class, "is_pruned_by_user");
 
         for (AbstractAssignment<?> assignment : ilp.getAllAssignments()) {
-            if(assignment.isChoosen() || assignment.isGroundTruth() || assignment.isGroundUntruth()) {
+            if(assignment.isChoosen() || assignment.isGroundTruth() || assignment.isGroundUntruth() || assignment.isPruned()) {
                 idCol.addValue(assignment.getStringId());
                 isActiveCol.addValue(assignment.isChoosen() ? 1 : 0);
                 isGroundTruthCol.addValue(assignment.isGroundTruth() ? 1 : 0);
                 isGroundUntruthCol.addValue(assignment.isGroundUntruth() ? 1 : 0);
+                isPrunedCol.addValue(assignment.isPruned() ? 1 : 0);
             }
         }
 
@@ -41,7 +43,7 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {
-                out.write(String.format("# Comment: This file lists only assignments that are active, user-forced or user-ignored. A list of all assignments can be found in the CSV file containing the assignment costs.\n"));
+                out.write(String.format("# Comment: This file lists only assignments that are true for at least one of the categories. The file containing the assignment costs lists all assignments.\n"));
                 table.writeTable(out);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -46,7 +46,6 @@ public class AssignmentCostExporter implements ResultExporterInterface {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAssignmentInformation(allAssignments);
         }
-        exportFilePaths.makeExportDataOutputDirectory();
         File outputCsvFile = exportFilePaths.getAssignmentCostsFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));

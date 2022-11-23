@@ -273,7 +273,7 @@ public class PseudoDic {
         if (!isNull(assignmentActivitiesExporter)) {
             return assignmentActivitiesExporter;
         }
-        assignmentActivitiesExporter = new AssignmentActivitiesExporter(getMomaModel().getCurrentGL(), getNewTimer());
+        assignmentActivitiesExporter = new AssignmentActivitiesExporter(getMomaModel().getCurrentGL(), getNewTimer(), getConfigurationManager());
         return assignmentActivitiesExporter;
     }
 

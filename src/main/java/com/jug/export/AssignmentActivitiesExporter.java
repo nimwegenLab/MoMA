@@ -1,21 +1,27 @@
 package com.jug.export;
 
 import com.jug.Growthlane;
+import com.jug.config.IConfiguration;
 import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.ITimer;
 import gurobi.GRBException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
+import java.nio.file.*;
 
 public class AssignmentActivitiesExporter implements ResultExporterInterface {
     private final GrowthlaneTrackingILP ilp;
     private ITimer timer;
+    private IConfiguration configuration;
 
-    public AssignmentActivitiesExporter(Growthlane growthlane, ITimer timer) {
+    public AssignmentActivitiesExporter(Growthlane growthlane, ITimer timer, IConfiguration configuration) {
         this.ilp = growthlane.getIlp();
         this.timer = timer;
+        this.configuration = configuration;
     }
 
     @Override
@@ -45,6 +51,9 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
             try {
                 out.write(String.format("# Comment: This file lists only assignments that are true for at least one of the categories. The file containing the assignment costs lists all assignments.\n"));
                 table.writeTable(out);
+                if (!configuration.getIsReloading()) {
+                    createCopyAtFirstRun(outputCsvFile);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -53,5 +62,22 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
         }
         timer.stop();
         timer.printExecutionTime("Timer result for AssignmentActivitiesExporter");
+    }
+
+    /**
+     * Creates a copy of the activities files during the tracking of the GL. This file will reflect the ILP state after
+     * initial tracking before any curation was performed by the user.
+     *
+     * @param sourceFile
+     * @throws IOException
+     */
+    private void createCopyAtFirstRun(File sourceFile) throws IOException {
+        String sourcePath = sourceFile.getParent();
+        String sourceName = FilenameUtils.getBaseName(sourceFile.getName());
+        String sourceExtension = FilenameUtils.getExtension(sourceFile.getName());
+        Path targetPath = Paths.get(sourcePath, sourceName + "_initial." + sourceExtension);
+        if (!targetPath.toFile().exists()) {
+            FileUtils.copyFile(sourceFile, targetPath.toFile());
+        }
     }
 }

@@ -48,6 +48,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {
+                out.write(String.format("# Comment: This file lists costs and additional information on all assignments in the tracking problem.\n"));
                 table.writeTable(out);
             } catch (IOException e) {
                 e.printStackTrace();

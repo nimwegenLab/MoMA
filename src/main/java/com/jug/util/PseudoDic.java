@@ -267,6 +267,16 @@ public class PseudoDic {
         return assignmentCostExporter;
     }
 
+    HypothesisRangeSelector hypothesisRangeSelector;
+
+    public HypothesisRangeSelector getHypothesisRangeSelector() {
+        if (isNull(hypothesisRangeSelector)) {
+            return hypothesisRangeSelector;
+        }
+        hypothesisRangeSelector = new HypothesisRangeSelector();
+        return hypothesisRangeSelector;
+    }
+
     HypothesisActivitiesExporter hypothesisActivitiesExporter;
 
     public HypothesisActivitiesExporter getHypothesisActivitiesExporter() {

@@ -47,6 +47,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
     private final LabelEditorDialog labelEditorDialog;
     private IDialogManager dialogManager;
+    private HypothesisRangeSelector hypothesisRangeSelector;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -63,12 +64,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h, HypothesisRangeSelector hypothesisRangeSelector) {
         super();
 
         this.mmgui = mmgui;
         this.labelEditorDialog = labelEditorDialog;
         this.dialogManager = dialogManager;
+        this.hypothesisRangeSelector = hypothesisRangeSelector;
 
         addMouseListener(this);
         addMouseMotionListener(this);

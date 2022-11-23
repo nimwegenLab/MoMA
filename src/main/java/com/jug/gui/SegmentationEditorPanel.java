@@ -39,14 +39,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private Color groundTruthCheckboxDefaultColor;
     private MoMAGui mmgui;
 
-    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter, ConfigurationManager configurationManager) {
+    public SegmentationEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, IImageProvider imageProvider, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, int viewWidth, int viewHeight, int timeStepOffset, boolean showGroundTruthExportFunctionality, GroundTruthFramesExporter groundTruthFramesExporter, ConfigurationManager configurationManager, HypothesisRangeSelector hypothesisRangeSelector) {
         this.mmgui = mmgui;
         this.momaModel = momaModel;
         this.imageProvider = imageProvider;
         this.timeStepOffset = timeStepOffset;
         this.groundTruthFramesExporter = groundTruthFramesExporter;
         this.configurationManager = configurationManager;
-        growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, dialogManager, viewWidth, viewHeight);
+        growthlaneViewer = new GrowthlaneViewer(mmgui, labelEditorDialog, dialogManager, viewWidth, viewHeight, hypothesisRangeSelector);
         this.addTitleLabel();
         this.addGrowthlaneViewer(growthlaneViewer);
         this.addCheckboxForSettingIlpConstraints(mmgui);

@@ -173,12 +173,9 @@ public class GrowthlaneTrackingILP {
      * @return
      */
     public List<ComponentInterface> getAllComponentsInIlp() {
-        ArrayList<ComponentInterface> ret = new ArrayList<>();
-        List<List<Hypothesis<AdvancedComponent<FloatType>>>> result = nodes.getAllHypotheses();
-        for (List<Hypothesis<AdvancedComponent<FloatType>>> timestepList : result) {
-            for (Hypothesis<AdvancedComponent<FloatType>> hyp : timestepList) {
-                ret.add(hyp.getWrappedComponent());
-            }
+        List<ComponentInterface> ret = new ArrayList<>();
+        for (Hypothesis<AdvancedComponent<FloatType>> hyp : nodes.getAllHypotheses()) {
+            ret.add(hyp.getWrappedComponent());
         }
         return ret;
     }
@@ -1979,16 +1976,8 @@ public class GrowthlaneTrackingILP {
 
             // Write characteristics of dataset
             // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-            final int numT = gl.numberOfFrames() - 1;
-            int numH = 0;
-            for (final List<Hypothesis<AdvancedComponent<FloatType>>> innerList : nodes.getAllHypotheses()) {
-                for (@SuppressWarnings("unused") final Hypothesis<AdvancedComponent<FloatType>> hypothesis : innerList) {
-                    numH++;
-                }
-            }
-            out.write(String.format("TIME, %d, %d, %d\n", numT,
-                    configurationManager.getMinTime(), configurationManager.getMaxTime()));
-            out.write(String.format("SIZE, %d, %d\n", numH, nodes.getTotalNumberOfAssignments()));
+            out.write(String.format("TIME, %d, %d, %d\n", gl.numberOfFrames(), configurationManager.getMinTime(), configurationManager.getMaxTime()));
+            out.write(String.format("SIZE, %d, %d\n", nodes.getNumberOfHypotheses(), nodes.getTotalNumberOfAssignments()));
             out.newLine();
 
             final int timeOffset = configurationManager.getMinTime();

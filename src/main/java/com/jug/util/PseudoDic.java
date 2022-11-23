@@ -267,6 +267,16 @@ public class PseudoDic {
         return assignmentCostExporter;
     }
 
+    HypothesisActivitiesExporter hypothesisActivitiesExporter;
+
+    public HypothesisActivitiesExporter getHypothesisActivitiesExporter() {
+        if (!isNull(hypothesisActivitiesExporter)) {
+            return hypothesisActivitiesExporter;
+        }
+        hypothesisActivitiesExporter = new HypothesisActivitiesExporter(getMomaModel().getCurrentGL(), getNewTimer(), getConfigurationManager());
+        return hypothesisActivitiesExporter;
+    }
+
     AssignmentActivitiesExporter assignmentActivitiesExporter;
 
     public AssignmentActivitiesExporter getAssignmentActivitiesExporter() {

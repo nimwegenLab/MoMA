@@ -172,6 +172,13 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
     }
 
     @Override
+    public Path getHypothesesActivitiesCsvFilePath() {
+        makeTrackingDataOutputDirectory();
+        String filename = "hypothesis_states.csv";
+        return Paths.get(getTrackingDataOutputPath().toString(), filename);
+    }
+
+    @Override
     public Path getCellMaskImageFilePath() {
         String filename = "CellMasks__" + getInputTiffFileName() + ".tif";
         return Paths.get(getExportOutputPath().toString(), filename);

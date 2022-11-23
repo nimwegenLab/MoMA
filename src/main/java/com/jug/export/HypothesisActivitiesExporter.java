@@ -5,20 +5,22 @@ import com.jug.config.IConfiguration;
 import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.Hypothesis;
 import com.jug.util.ITimer;
 import gurobi.GRBException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.*;
-import java.nio.file.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-public class AssignmentActivitiesExporter implements ResultExporterInterface {
+public class HypothesisActivitiesExporter implements ResultExporterInterface {
     private final GrowthlaneTrackingILP ilp;
     private ITimer timer;
     private IConfiguration configuration;
 
-    public AssignmentActivitiesExporter(Growthlane growthlane, ITimer timer, IConfiguration configuration) {
+    public HypothesisActivitiesExporter(Growthlane growthlane, ITimer timer, IConfiguration configuration) {
         this.ilp = growthlane.getIlp();
         this.timer = timer;
         this.configuration = configuration;
@@ -34,22 +36,24 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
         ResultTableColumn<Integer> isGroundTruthCol = table.getColumn(Integer.class, "is_forced");
         ResultTableColumn<Integer> isGroundUntruthCol = table.getColumn(Integer.class, "is_force_ignored");
         ResultTableColumn<Integer> isPrunedCol = table.getColumn(Integer.class, "is_pruned");
+        ResultTableColumn<Integer> isPruneRootCol = table.getColumn(Integer.class, "is_prune_root");
 
-        for (AbstractAssignment<?> assignment : ilp.getAllAssignments()) {
-            if(assignment.isChoosen() || assignment.isGroundTruth() || assignment.isGroundUntruth() || assignment.isPruned()) {
-                idCol.addValue(assignment.getStringId());
-                isActiveCol.addValue(assignment.isChoosen() ? 1 : 0);
-                isGroundTruthCol.addValue(assignment.isGroundTruth() ? 1 : 0);
-                isGroundUntruthCol.addValue(assignment.isGroundUntruth() ? 1 : 0);
-                isPrunedCol.addValue(assignment.isPruned() ? 1 : 0);
+        for (Hypothesis<?> hypothesis : ilp.getAllHypotheses()) {
+            if(hypothesis.isActive() || hypothesis.isForced() || hypothesis.isForceIgnored() || hypothesis.isPruned() || hypothesis.isPruneRoot()) {
+                idCol.addValue(hypothesis.getStringId());
+                isActiveCol.addValue(hypothesis.isActive() ? 1 : 0);
+                isGroundTruthCol.addValue(hypothesis.isForced() ? 1 : 0);
+                isGroundUntruthCol.addValue(hypothesis.isForceIgnored() ? 1 : 0);
+                isPrunedCol.addValue(hypothesis.isPruned() ? 1 : 0);
+                isPruneRootCol.addValue(hypothesis.isPruneRoot() ? 1 : 0);
             }
         }
 
-        File outputCsvFile = exportFilePaths.getAssignmentActivitiesCsvFilePath().toFile();
+        File outputCsvFile = exportFilePaths.getHypothesesActivitiesCsvFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {
-                out.write(String.format("# Comment: This file lists only assignments that are true for at least one of the categories. The file containing the assignment costs lists all assignments.\n"));
+                out.write(String.format("# Comment: This file lists only hypothesis that are true for at least one of the considered properties. The file containing the assignment costs lists all hypotheses in the ILP (you can use the assignment IDs to parse the hypotheses names).\n"));
                 table.writeTable(out);
                 if (!configuration.getIsReloading()) {
                     createCopyAtFirstRun(outputCsvFile);
@@ -61,7 +65,7 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
             e.printStackTrace();
         }
         timer.stop();
-        timer.printExecutionTime("Timer result for AssignmentActivitiesExporter");
+        timer.printExecutionTime("Timer result for HypothesisActivitiesExporter");
     }
 
     /**

@@ -20,6 +20,8 @@ public interface IGlExportFilePathGetter {
 
     Path getAssignmentActivitiesCsvFilePath();
 
+    Path getHypothesesActivitiesCsvFilePath();
+
     Path getCellMaskImageFilePath();
 
     Path getGroundTruthFrameListFilePath();

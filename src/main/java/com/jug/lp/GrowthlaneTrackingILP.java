@@ -2569,4 +2569,8 @@ public class GrowthlaneTrackingILP {
     public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllAssignments() {
         return nodes.getAllAssignments();
     }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getAllHypotheses() {
+        return nodes.getAllHypotheses();
+    }
 }

@@ -17,6 +17,7 @@ public class AdvancedComponentPojo {
     private final double value;
     private final int[] xCoordinates;
     private final int[] yCoordinates;
+    private final Float cost;
 
     private Map<Integer, Double> maskIntensities;
 
@@ -36,7 +37,8 @@ public class AdvancedComponentPojo {
                                  Map<Integer, Double> maskIntensities,
                                  Map<Integer, Double> maskIntensitiesStd,
                                  Map<Integer, Double> backgroundIntensities,
-                                 Map<Integer, Double> backgroundIntensitiesStd) {
+                                 Map<Integer, Double> backgroundIntensitiesStd,
+                                 float cost) {
         this.stringId = stringId;
         this.frameNumber = frameNumber;
         this.label = label;
@@ -49,6 +51,7 @@ public class AdvancedComponentPojo {
         this.maskIntensitiesStd = maskIntensitiesStd.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e -> new Double(e.getValue()))); /* create a copy of HashMap `backgroundIntensities` */
         this.xCoordinates = new int[pixelList.size()];
         this.yCoordinates = new int[pixelList.size()];
+        this.cost = cost;
 
         int coordinateIndex = 0;
         for(Localizable loc : pixelList){
@@ -96,5 +99,9 @@ public class AdvancedComponentPojo {
 
     public Map<Integer, Double> getBackgroundIntensities() {
         return backgroundIntensities;
+    }
+
+    public Float getCost() {
+        return cost;
     }
 }

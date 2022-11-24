@@ -31,6 +31,9 @@ public class ArgbDrawingUtils {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
         for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
+            if (!hypothesis.isActive() && !hypothesis.isForceIgnored()) { /* do not draw segments, that are inactive and not force-ignored by the user; i.e. these are hypotheses that are "naturally" not part of the solution */
+                continue;
+            }
             final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {

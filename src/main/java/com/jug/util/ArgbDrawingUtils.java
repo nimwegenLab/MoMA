@@ -23,14 +23,14 @@ public class ArgbDrawingUtils {
      *
      * @param imgDestination image to draw calculated overlay pixel values to
      * @param imgSource      pixel value source
-     * @param segments       a <code>List</code> of the hypotheses containing
+     * @param hypotheses       a <code>List</code> of the hypotheses containing
      *                       component-tree-nodes that represent the optimal segmentation
      *                       (the one returned by the solution to the ILP)
      */
-    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<AdvancedComponent<FloatType>>> segments) {
+    public static void drawSegments(final Img<ARGBType> imgDestination, final Img<ARGBType> imgSource, final long offsetX, final long offsetY, final Iterable<Hypothesis<AdvancedComponent<FloatType>>> hypotheses) {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
-        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
             final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {

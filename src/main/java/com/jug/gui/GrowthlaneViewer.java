@@ -142,24 +142,14 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                             screenImageUnaltered,
                             xOffset,
                             yOffset,
-                            glf.getParent().getIlp().getHypothesesAt(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-//                    drawSegments(screenImage,
-//                            screenImageUnaltered,
-//                            xOffset,
-//                            yOffset,
-//                            glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
-//                    drawSegments(screenImage,
-//                            screenImageUnaltered,
-//                            xOffset,
-//                            yOffset,
-//                            glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                            glf.getParent().getIlp().getHypothesesAt(t));
                 }
             }
 
         } catch (final ArrayIndexOutOfBoundsException e) {
             // this can happen if a growth line, due to shift, exists in one
             // frame, and does not exist in others.
-            // If for this growth line we want to visualize a time where the
+            // If for this growth line we want to visualize a time, where the
             // Growthlane is empty, the projector
             // throws a ArrayIndexOutOfBoundsException that I catch
             // hereby... ;)

@@ -273,7 +273,7 @@ public class PseudoDic {
         if (!isNull(hypothesisRangeSelector)) {
             return hypothesisRangeSelector;
         }
-        hypothesisRangeSelector = new HypothesisRangeSelector();
+        hypothesisRangeSelector = new HypothesisRangeSelector(getMomaModel().getCurrentGL());
         return hypothesisRangeSelector;
     }
 
@@ -424,7 +424,7 @@ public class PseudoDic {
 
     public MoMAGui getMomaGui() {
         if (gui == null) {
-            gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel());
+            gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel(), getHypothesisRangeSelector());
         }
         return gui;
     }

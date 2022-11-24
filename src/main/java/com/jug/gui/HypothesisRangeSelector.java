@@ -1,8 +1,7 @@
 package com.jug.gui;
 
+import com.jug.Growthlane;
 import com.jug.lp.Hypothesis;
-import com.jug.util.componenttree.AdvancedComponent;
-import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
@@ -11,8 +10,10 @@ import java.util.List;
 public class HypothesisRangeSelector {
     private Hypothesis<?> startHypothesis;
     private Hypothesis<?> endHypothesis;
+    private Growthlane growthlane;
 
-    public HypothesisRangeSelector() {
+    public HypothesisRangeSelector(Growthlane growthlane) {
+        this.growthlane = growthlane;
     }
 
     public void setStartHypothesis(Hypothesis<?> hypothesis) {
@@ -56,5 +57,11 @@ public class HypothesisRangeSelector {
             clearSelectedHypotheses();
             throw new NotImplementedException("implement displaying a dialog that the starting-hypothesis was not found.");
         }
+    }
+
+    public void forceIgnoreSelectedHypotheses() {
+        selectedHypotheses.stream().forEach(hyp -> hyp.setIsForceIgnored(true));
+        clearSelectedHypotheses();
+        growthlane.getIlp().run();
     }
 }

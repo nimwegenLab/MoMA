@@ -324,7 +324,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if(SwingUtilities.isRightMouseButton(e)){
                 hypothesisRangeSelector.setEndHypothesis(hyp2add);
             }
-            updateMomaState(ilp);
+            mmgui.dataToDisplayChanged();
             return;
         }
 

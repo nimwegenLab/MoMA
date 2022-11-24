@@ -27,7 +27,6 @@ import static java.util.Objects.isNull;
  */
 @SuppressWarnings("restriction")
 public class Hypothesis<C extends AdvancedComponent<FloatType>> {
-
     private final C wrappedComponent;
     private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
@@ -391,5 +390,19 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             this.t = t;
             this.limits = ComponentTreeUtils.getTreeNodeInterval(wrappedComponent);
         }
+    }
+
+    private boolean isSelected = false;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public boolean selected() {
+        return isSelected = true;
+    }
+
+    public boolean deselected() {
+        return isSelected = false;
     }
 }

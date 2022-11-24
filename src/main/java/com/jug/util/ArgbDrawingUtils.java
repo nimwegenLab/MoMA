@@ -31,9 +31,6 @@ public class ArgbDrawingUtils {
         final RandomAccess<ARGBType> targetImage = imgDestination.randomAccess();
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
         for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
-            if (!hypothesis.isActive() && !hypothesis.isForceIgnored()) { /* do not draw segments, that are inactive and not force-ignored by the user; i.e. these are hypotheses that are "naturally" not part of the solution */
-                continue;
-            }
             final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
             if (hypothesis.isPruned()) {
@@ -42,8 +39,10 @@ public class ArgbDrawingUtils {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else if (hypothesis.isForceIgnored()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
-            } else {
+            } else if (hypothesis.isActive()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
+            } else {
+                continue; /* do not draw segments that are inactive and not force-ignored */
             }
             drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
             if (!hypothesis.labels.isEmpty()) {

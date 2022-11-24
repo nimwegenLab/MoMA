@@ -36,7 +36,7 @@ public class HypothesisRangeSelector {
     }
 
     public void setEndHypothesis(Hypothesis<?> hypothesis) {
-        if(isNull(hypothesis)) {
+        if (isNull(hypothesis)) {
             throw new RuntimeException("hypothesis is null.");
         }
         if (!isNull(endHypothesis) && !hypothesis.equals(endHypothesis)) {

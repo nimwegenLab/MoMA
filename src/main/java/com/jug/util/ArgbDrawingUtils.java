@@ -41,10 +41,11 @@ public class ArgbDrawingUtils {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else if (hypothesis.isActive()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
-            } else if (hypothesis.isSelected()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
             } else {
                 continue; /* do not draw segments that are inactive and not force-ignored */
+            }
+            if (hypothesis.isSelected()) {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
             }
             drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
             if (!hypothesis.labels.isEmpty()) {

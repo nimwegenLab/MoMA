@@ -32,25 +32,29 @@ public class ArgbDrawingUtils {
         final RandomAccess<ARGBType> sourceImage = imgSource.randomAccess();
         for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
             final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
-            Function<Integer, ARGBType> pixelOverlayColorCalculator;
-            if (hypothesis.isPruned()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
-            } else if (hypothesis.isForced()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
-            } else if (hypothesis.isForceIgnored()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
-            } else if (hypothesis.isActive()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
-            } else {
-                continue; /* do not draw segments that are inactive and not force-ignored */
-            }
-            if (hypothesis.isSelected()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
-            }
-            drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
-            if (!hypothesis.labels.isEmpty()) {
-                drawLabelingMarker(component, targetImage, offsetX, offsetY);
-            }
+            drawComponent(offsetX, offsetY, targetImage, sourceImage, hypothesis, component);
+        }
+    }
+
+    private static void drawComponent(long offsetX, long offsetY, RandomAccess<ARGBType> targetImage, RandomAccess<ARGBType> sourceImage, Hypothesis<AdvancedComponent<FloatType>> hypothesis, AdvancedComponent<FloatType> component) {
+        Function<Integer, ARGBType> pixelOverlayColorCalculator;
+        if (hypothesis.isPruned()) {
+            pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
+        } else if (hypothesis.isForced()) {
+            pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
+        } else if (hypothesis.isForceIgnored()) {
+            pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
+        } else if (hypothesis.isActive()) {
+            pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
+        } else {
+            return;
+        }
+        if (hypothesis.isSelected()) {
+            pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
+        }
+        drawSegmentColorOverlay(component, targetImage, sourceImage, offsetX, offsetY, pixelOverlayColorCalculator);
+        if (!hypothesis.labels.isEmpty()) {
+            drawLabelingMarker(component, targetImage, offsetX, offsetY);
         }
     }
 

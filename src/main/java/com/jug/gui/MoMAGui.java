@@ -287,6 +287,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
         inputMap.put(KeyStroke.getKeyStroke("pressed SPACE"), "pressed_SPACE");
         inputMap.put(KeyStroke.getKeyStroke("released SPACE"), "released_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke('c'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('i'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('m'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
@@ -348,6 +349,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
+                if(e.getActionCommand().equals("c") && e.getModifiers() == KeyEvent.ALT_MASK){
+                    hypothesisRangeSelector.clearUserConstraints();
+                    dataToDisplayChanged();
+                }
                 if(e.getActionCommand().equals("i") && e.getModifiers() == KeyEvent.ALT_MASK){
                     hypothesisRangeSelector.forceIgnoreSelectedHypotheses();
                     dataToDisplayChanged();

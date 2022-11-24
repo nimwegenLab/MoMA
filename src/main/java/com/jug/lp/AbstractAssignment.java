@@ -219,35 +219,27 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 					removeGroundTruthConstraint();
 				}
 				addGroundTruthConstraint();
-				return;
-			}
-			if (!targetStateIsTrue && isGroundTruth()) {
+			} else if (isGroundTruth()) {
 				removeGroundTruthConstraint();
-				return;
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
-		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
-	public void setGroundUntruth(final boolean targetStateIsTrue) {
+	public void setGroundUntruth(final boolean targetState) {
 		try {
-			if (targetStateIsTrue) {
+			if (targetState) {
 				if (isGroundTruth()) {
 					removeGroundTruthConstraint();
 				}
 				addGroundUntruthConstraint();
-				return;
-			}
-			if (!targetStateIsTrue && isGroundUntruth()) {
-				removeGroundTruthConstraint();
-				return;
+			} else if (isGroundUntruth()) {
+				removeGroundUntruthConstraint();
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}
-		throw new RuntimeException("There was an error in the Gurobi model, which caused an undefined state."); /* this should never be reached*/
 	}
 
 	public void reoptimize() {
@@ -301,6 +293,11 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	private void removeGroundTruthConstraint() throws GRBException {
 		removeConstraintWithName(getGroundTruthConstraintName());
 	}
+
+	private void removeGroundUntruthConstraint() throws GRBException {
+		removeGroundTruthConstraint(); /* the constraint for ground-truth and ground untruth have the same name, so that the remove function is the same; hence this is just an alias */
+	}
+
 
 	private void removeConstraintWithName(String constraintName) {
 		GRBConstr constraint = getConstraint(constraintName);

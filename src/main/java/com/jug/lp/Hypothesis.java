@@ -344,7 +344,11 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        return getActiveIncomingAssignment().getSourceHypothesis();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incomingAssignment = getActiveIncomingAssignment();
+        if (isNull(incomingAssignment)) {
+            return null;
+        }
+        return incomingAssignment.getSourceHypothesis();
     }
 
     public void setPruneRoot(final boolean value) {
@@ -409,11 +413,11 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return isSelected;
     }
 
-    public boolean selected() {
+    public boolean select() {
         return isSelected = true;
     }
 
-    public boolean deselected() {
+    public boolean deselect() {
         return isSelected = false;
     }
 }

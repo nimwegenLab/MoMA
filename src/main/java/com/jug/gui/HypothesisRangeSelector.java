@@ -4,7 +4,6 @@ import com.jug.Growthlane;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import gurobi.GRBException;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,15 +21,29 @@ public class HypothesisRangeSelector {
     }
 
     public void setStartHypothesis(Hypothesis<?> hypothesis) {
-        this.startHypothesis = hypothesis;
+        if (isNull(hypothesis)) {
+            throw new RuntimeException("hypothesis is null.");
+        }
+        if (!isNull(startHypothesis) && !hypothesis.equals(startHypothesis)) {
+            startHypothesis.deselect();
+        }
+        startHypothesis = hypothesis;
+        startHypothesis.select();
         if (isNull(startHypothesis) || isNull(endHypothesis)) {
             return;
         }
-        calculateSelectedHypotheses();
+        updatedSelectedHypotheses();
     }
 
     public void setEndHypothesis(Hypothesis<?> hypothesis) {
-        this.endHypothesis = hypothesis;
+        if(isNull(hypothesis)) {
+            throw new RuntimeException("hypothesis is null.");
+        }
+        if (!isNull(endHypothesis) && !hypothesis.equals(endHypothesis)) {
+            endHypothesis.deselect();
+        }
+        endHypothesis = hypothesis;
+        endHypothesis.select();
         if (isNull(startHypothesis) || isNull(endHypothesis)) {
             return;
         }
@@ -38,13 +51,22 @@ public class HypothesisRangeSelector {
     }
 
     private void updatedSelectedHypotheses() {
+        deselectHypotheses();
+        startHypothesis.select();
+        endHypothesis.select();
         calculateSelectedHypotheses();
-        highlightSelectedHypotheses();
+        selectedHypotheses();
     }
 
-    private void highlightSelectedHypotheses() {
+    private void deselectHypotheses() {
         for (Hypothesis<?> hyp : selectedHypotheses) {
-            hyp.selected();
+            hyp.deselect();
+        }
+    }
+
+    private void selectedHypotheses() {
+        for (Hypothesis<?> hyp : selectedHypotheses) {
+            hyp.select();
         }
     }
 
@@ -52,25 +74,31 @@ public class HypothesisRangeSelector {
 
     public void clearSelectedHypotheses() {
         for (Hypothesis<?> hyp : selectedHypotheses) {
-            hyp.deselected();
+            hyp.deselect();
         }
         selectedHypotheses.clear();
+        startHypothesis.deselect();
+        startHypothesis = null;
+        endHypothesis.deselect();
+        endHypothesis = null;
     }
 
     private void calculateSelectedHypotheses() {
-        clearSelectedHypotheses();
+        selectedHypotheses.clear();
         selectedHypotheses.add(endHypothesis);
         Hypothesis<?> currentHyp = endHypothesis;
         while (currentHyp != null) {
             currentHyp = currentHyp.getSourceHypothesis();
+            if (isNull(currentHyp)) {
+                break;
+            }
             selectedHypotheses.add(currentHyp);
             if (currentHyp == startHypothesis) {
                 break;
             }
         }
         if (!selectedHypotheses.contains(startHypothesis)) {
-            clearSelectedHypotheses();
-            throw new NotImplementedException("implement displaying a dialog that the starting-hypothesis was not found.");
+            selectedHypotheses.clear();
         }
         Collections.reverse(selectedHypotheses); /* reverse order so that the assignment with lowest time-steps is first and with highest time-step is last element */
     }
@@ -86,10 +114,15 @@ public class HypothesisRangeSelector {
     }
 
     public void forceMappingAssigmentBetweenSelectedHypotheses() {
+        List<MappingAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
-            assignment.setGroundTruth(true);
+            if (isNull(assignment)) {
+                assignments.clear();
+                return;
+            }
         }
+        assignments.stream().forEach(assignment -> assignment.setGroundUntruth(true));
         updateMomaState();
     }
 

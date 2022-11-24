@@ -33,9 +33,7 @@ public class ArgbDrawingUtils {
         for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : segments) {
             final AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             Function<Integer, ARGBType> pixelOverlayColorCalculator;
-            if (hypothesis.isSelected()) {
-                pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
-            } else if (hypothesis.isPruned()) {
+            if (hypothesis.isPruned()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGrayPixelOverlayValue(grayscaleValue); /* highlight pruned component in gray */
             } else if (hypothesis.isForced()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateYellowPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
@@ -43,6 +41,8 @@ public class ArgbDrawingUtils {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateRedPixelOverlayValue(grayscaleValue); /* highlight enforced component in yellow */
             } else if (hypothesis.isActive()) {
                 pixelOverlayColorCalculator = grayscaleValue -> calculateGreenPixelOverlayValue(grayscaleValue); /* highlight optimal component in green */
+            } else if (hypothesis.isSelected()) {
+                pixelOverlayColorCalculator = grayscaleValue -> calculateBluePixelOverlayValue(grayscaleValue); /* highlight selected component in blue */
             } else {
                 continue; /* do not draw segments that are inactive and not force-ignored */
             }

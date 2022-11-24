@@ -311,7 +311,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     public boolean isActive() {
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incoming = getActiveIncomingAssignment();
-        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveIncomingAssignment();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveOutgoingAssignment();
         if (getTime() == 0 && isNull(incoming) && !isNull(outgoing)) { /* handle first time-step, where there exists no incoming assignment, when the hypothesis is active */
             return true;
         }

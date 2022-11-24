@@ -320,7 +320,20 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         ilp.autosave();
 
-        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown()) {
+        if(e.isAltDown()  && !e.isControlDown() && !e.isShiftDown()){
+            Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
+
+            if(SwingUtilities.isLeftMouseButton(e)){
+                hypothesisRangeSelector.setStartHypothesis(hyp2add);
+            }
+            if(SwingUtilities.isRightMouseButton(e)){
+                hypothesisRangeSelector.setEndHypothesis(hyp2add);
+            }
+//            updateMomaState(ilp);
+            return;
+        }
+
+        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown() && !e.isAltDown()) {
             // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
@@ -329,7 +342,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (SwingUtilities.isRightMouseButton(e)) {
+        if (SwingUtilities.isRightMouseButton(e)  && !e.isAltDown()) {
             // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> selectedParentHypothesis = getSelectedHypothesis();
@@ -348,13 +361,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 }
             }
 
-            mmgui.dataToDisplayChanged();
-            fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
-            runIlpAndFocusSlider(ilp);
+            updateMomaState(ilp);
             return;
         }
 
-        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()  && !e.isAltDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             if (isNull(getSelectedHypothesis())) return;
@@ -386,6 +397,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 e1.printStackTrace();
             }
         }
+        updateMomaState(ilp);
+    }
+
+    private void updateMomaState(GrowthlaneTrackingILP ilp) {
         mmgui.dataToDisplayChanged();
         fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
         runIlpAndFocusSlider(ilp);

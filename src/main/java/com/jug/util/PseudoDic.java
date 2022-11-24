@@ -270,7 +270,7 @@ public class PseudoDic {
     HypothesisRangeSelector hypothesisRangeSelector;
 
     public HypothesisRangeSelector getHypothesisRangeSelector() {
-        if (isNull(hypothesisRangeSelector)) {
+        if (!isNull(hypothesisRangeSelector)) {
             return hypothesisRangeSelector;
         }
         hypothesisRangeSelector = new HypothesisRangeSelector();

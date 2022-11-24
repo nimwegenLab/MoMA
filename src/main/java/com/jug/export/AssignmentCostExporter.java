@@ -5,9 +5,7 @@ import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
-import com.jug.lp.costs.CostFactory;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentProperties;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.io.*;
@@ -36,21 +34,21 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         double start = System.currentTimeMillis();
         System.out.println("Exporting assignment costs...");
         table = new ResultTable(",");
-        assignmentIdCol = table.getColumn(String.class, "assignment_id");
-        assignmentTypeCol = table.getColumn(String.class, "assignment_type");
-        frameCol = table.getColumn(Integer.class, "assignment_source_frame");
-        assignmentCostCol = table.addColumn(new ResultTableColumn<>("assigment_cost"));
+        assignmentIdCol = table.getColumn(String.class, "id");
+        assignmentTypeCol = table.getColumn(String.class, "type");
+        frameCol = table.getColumn(Integer.class, "source_frame");
+        assignmentCostCol = table.addColumn(new ResultTableColumn<>("cost"));
 
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {
             Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
             exportAssignmentInformation(allAssignments);
         }
-        exportFilePaths.makeExportDataOutputDirectory();
-        File outputCsvFile = exportFilePaths.getAssignmentCostsFilePath().toFile();
+        File outputCsvFile = exportFilePaths.getAssignmentCostsCsvFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {
+                out.write(String.format("# Comment: This file lists costs and additional information on all assignments in the tracking problem.\n"));
                 table.writeTable(out);
             } catch (IOException e) {
                 e.printStackTrace();

@@ -2,7 +2,7 @@ package com.jug.util;
 
 import static java.util.Objects.isNull;
 
-public class Timer {
+public class Timer implements ITimer {
     Long startTime;
     Long stopTime;
     private boolean isRunning;

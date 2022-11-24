@@ -130,7 +130,7 @@ public class AssignmentCostExporterOld implements ResultExporterInterface {
             exportAllAssignmentInformationForHypothesisNew(t, allAssignments);
         }
         exportFilePaths.makeExportDataOutputDirectory();
-        File outputCsvFile = exportFilePaths.getAssignmentCostsFilePath().toFile();
+        File outputCsvFile = exportFilePaths.getAssignmentCostsCsvFilePath().toFile();
         try {
             OutputStreamWriter out = new OutputStreamWriter(new FileOutputStream(outputCsvFile));
             try {

@@ -91,8 +91,22 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      *
      * @return <code>a_t</code>
      */
-    public List<List<A>> getAllAssignments() {
+    private List<List<A>> getAllAssignmentsInternal() {
         return a_t;
+    }
+
+    List<A> assignmentListFlattened;
+    public List<A> getAllAssignments() {
+        if (!isNull(assignmentListFlattened)) {
+            return assignmentListFlattened;
+        }
+        List<A> assignmentListFlattened = new ArrayList<>();
+        for (final List<A> innerList : this.getAllAssignmentsInternal()) {
+            for (final A assignment : innerList) {
+                assignmentListFlattened.add(assignment);
+            }
+        }
+        return assignmentListFlattened;
     }
 
     /**
@@ -101,11 +115,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      * @return
      */
     public int getTotalNumberOfAssignments() {
-        int numberOfAssignments = 0;
-        for (List<A> assignmentsAtT : getAllAssignments()) {
-            numberOfAssignments += assignmentsAtT.size();
-        }
-        return numberOfAssignments;
+        return getAllAssignments().size();
     }
 
     /**
@@ -178,8 +188,27 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      *
      * @return <code>h_t</code>
      */
-    public List<List<H>> getAllHypotheses() {
+    private List<List<H>> getAllHypothesesInternal() {
         return h_t;
+    }
+
+    public int getNumberOfHypotheses() {
+        return getAllHypotheses().size();
+    }
+
+    List<H> hyps;
+
+    public List<H> getAllHypotheses() {
+        if (!isNull(hyps)) {
+            return hyps;
+        }
+        hyps = new ArrayList<>();
+        for (List<H> timestepList : getAllHypothesesInternal()) {
+            for (H hyp : timestepList) {
+                hyps.add(hyp);
+            }
+        }
+        return hyps;
     }
 
     /**

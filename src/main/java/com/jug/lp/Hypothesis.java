@@ -297,7 +297,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
-    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getOutgoingAssignment() {
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
         } catch (GRBException e) {
@@ -306,10 +306,26 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
-            return getOutgoingAssignment().getTargetHypotheses();
+            return getActiveOutgoingAssignment().getTargetHypotheses();
     }
 
-    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getIncomingAssignment() {
+    public boolean isActive() {
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incoming = getActiveIncomingAssignment();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveIncomingAssignment();
+        if (getTime() == 0 && isNull(incoming) && !isNull(outgoing)) { /* handle first time-step, where there exists no incoming assignment, when the hypothesis is active */
+            return true;
+        }
+        else if (!isNull(incoming) && !isNull(outgoing)) {
+            return true;
+        }
+        else if (isNull(incoming) && isNull(outgoing)) {
+            return false;
+        } else{
+            throw new RuntimeException("None of the conditions for classifying the activity of the hypothesis were met. This indicates that the continuity constraint is violated, which should never happen.");
+        }
+    }
+
+    public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveIncomingAssignment() {
         try {
             return ilp.getOptimalLeftAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
         } catch (GRBException e) {
@@ -318,14 +334,14 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        return getIncomingAssignment().getSourceHypothesis();
+        return getActiveIncomingAssignment().getSourceHypothesis();
     }
 
     public void setPruneRoot(final boolean value) {
         if (getSourceHypothesis().isPruned()) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
-        if (getIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+        if (getActiveIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "You cannot prune segments that are targets of a division assignment, because this would break lineage information. To prune this segment, please first force a mapping assignment to it.");
         }
         this.isPruneRoot = value;
@@ -334,7 +350,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     private static void setPruneStateRecursively(Hypothesis<?> hypothesis, boolean value) {
         hypothesis.setPruned(value);
-        hypothesis.getOutgoingAssignment().setPruned(value);
+        hypothesis.getActiveOutgoingAssignment().setPruned(value);
         List<Hypothesis<AdvancedComponent<FloatType>>> childNodes = hypothesis.getTargetHypotheses();
         for (Hypothesis<?> child : childNodes) {
             setPruneStateRecursively(child, value);

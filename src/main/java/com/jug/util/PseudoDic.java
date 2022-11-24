@@ -39,7 +39,7 @@ import static java.util.Objects.isNull;
 
 /**
  * This is pseudo dependency injection container, which I use to work on getting my class dependencies and initialization
- * in order. Ideally at some point, this will be replaced with a true dependency injection frame-work.
+ * in order. Ideally at some point, this will be replaced with a true dependency injection framework.
  */
 public class PseudoDic {
     public Context context;
@@ -265,6 +265,26 @@ public class PseudoDic {
             assignmentCostExporter = new AssignmentCostExporter(getMomaModel().getCurrentGL());
         }
         return assignmentCostExporter;
+    }
+
+    HypothesisActivitiesExporter hypothesisActivitiesExporter;
+
+    public HypothesisActivitiesExporter getHypothesisActivitiesExporter() {
+        if (!isNull(hypothesisActivitiesExporter)) {
+            return hypothesisActivitiesExporter;
+        }
+        hypothesisActivitiesExporter = new HypothesisActivitiesExporter(getMomaModel().getCurrentGL(), getNewTimer(), getConfigurationManager());
+        return hypothesisActivitiesExporter;
+    }
+
+    AssignmentActivitiesExporter assignmentActivitiesExporter;
+
+    public AssignmentActivitiesExporter getAssignmentActivitiesExporter() {
+        if (!isNull(assignmentActivitiesExporter)) {
+            return assignmentActivitiesExporter;
+        }
+        assignmentActivitiesExporter = new AssignmentActivitiesExporter(getMomaModel().getCurrentGL(), getNewTimer(), getConfigurationManager());
+        return assignmentActivitiesExporter;
     }
 
     public ITrackingConfiguration getTrackingConfiguration() {
@@ -504,70 +524,70 @@ public class PseudoDic {
         return htmlOverviewExporter;
     }
 
-    private Timer loadingTimeTimer;
+    private ITimer loadingTimeTimer;
 
-    public Timer getLoadingTimer() {
+    public ITimer getLoadingTimer() {
         if (isNull(loadingTimeTimer)) {
             loadingTimeTimer = getNewTimer();
         }
         return loadingTimeTimer;
     }
 
-    private Timer exportTimer;
+    private ITimer exportTimer;
 
-    public Timer getExportTimer() {
+    public ITimer getExportTimer() {
         if (isNull(exportTimer)) {
             exportTimer = getNewTimer();
         }
         return exportTimer;
     }
 
-    private Timer trackingDataTimer;
+    private ITimer trackingDataTimer;
 
-    public Timer getTrackingDataTimer() {
+    public ITimer getTrackingDataTimer() {
         if (isNull(trackingDataTimer)) {
             trackingDataTimer = getNewTimer();
         }
         return trackingDataTimer;
     }
 
-    private Timer componentForestTimer;
+    private ITimer componentForestTimer;
 
-    public Timer getComponentForestTimer() {
+    public ITimer getComponentForestTimer() {
         if (isNull(componentForestTimer)) {
             componentForestTimer = getNewTimer();
         }
         return componentForestTimer;
     }
 
-    private Timer assignmentCreationTimer;
+    private ITimer assignmentCreationTimer;
 
-    public Timer getAssignmentCreationTimer() {
+    public ITimer getAssignmentCreationTimer() {
         if (isNull(assignmentCreationTimer)) {
             assignmentCreationTimer = getNewTimer();
         }
         return assignmentCreationTimer;
     }
 
-    private Timer totalRuntimeTimer;
+    private ITimer totalRuntimeTimer;
 
-    public Timer getTotalRuntimeTimer() {
+    public ITimer getTotalRuntimeTimer() {
         if (isNull(totalRuntimeTimer)) {
             totalRuntimeTimer = getNewTimer();
         }
         return totalRuntimeTimer;
     }
 
-    private Timer optimizationTimer;
+    private ITimer optimizationTimer;
 
-    public Timer getOptimizationTimer() {
+    public ITimer getOptimizationTimer() {
         if (isNull(optimizationTimer)) {
             optimizationTimer = getNewTimer();
         }
         return optimizationTimer;
     }
 
-    private Timer getNewTimer(){
+    private ITimer getNewTimer(){
         return new Timer(getCommandLineArgumentParser().isTrackOnly(), getCommandLineArgumentParser().getIfRunningHeadless());
     }
 

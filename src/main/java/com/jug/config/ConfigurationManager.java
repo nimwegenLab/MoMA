@@ -197,11 +197,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private File currentPropertyFile;
 
     /**
-     * Determine if assignment costs should be exported.
-     */
-    public boolean EXPORT_ASSIGNMENT_COSTS = false;
-
-    /**
      * One of the test for paper:
      * What happens if exit constraints are NOT part of the model?
      */
@@ -300,7 +295,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));
 
         GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = parseBooleanFromIntegerValue("GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
-        EXPORT_ASSIGNMENT_COSTS = parseBooleanFromIntegerValue("EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
         GUROBI_TIME_LIMIT = Double.parseDouble(props.getProperty("GUROBI_TIME_LIMIT", Double.toString(GUROBI_TIME_LIMIT)));
         GUROBI_TIME_LIMIT_DURING_CURATION = Double.parseDouble(props.getProperty("GUROBI_TIME_LIMIT_DURING_CURATION", Double.toString(GUROBI_TIME_LIMIT_DURING_CURATION)));
@@ -466,8 +460,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH));
 
             setBooleanAsIntegerValue(props, "GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY", GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY);
-
-            setBooleanAsIntegerValue(props, "EXPORT_ASSIGNMENT_COSTS", EXPORT_ASSIGNMENT_COSTS);
 
             setBooleanAsIntegerValue(props, "EXPORT_SPINE_MEASUREMENT", EXPORT_SPINE_MEASUREMENT);
             setBooleanAsIntegerValue(props, "EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT", EXPORT_ORIENTED_BOUNDING_BOX_MEASUREMENT);

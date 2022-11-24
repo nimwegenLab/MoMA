@@ -149,7 +149,7 @@ public final class SegmentRecord {
     SegmentRecord nextSegmentInTime() {
         SegmentRecord ret = this;
         exists = true;
-        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = this.hyp.getOutgoingAssignment();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = this.hyp.getActiveOutgoingAssignment();
         if (timestep == ilp.getNodes().getNumberOfTimeSteps() - 1) {
             exists = false;
             terminated_by = SegmentRecord.ENDOFTRACKING;

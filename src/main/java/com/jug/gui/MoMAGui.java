@@ -931,6 +931,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
         exporters.add(MoMA.dic.getComponentForestExporter());
         exporters.add(MoMA.dic.getAssignmentCostExporter());
+        exporters.add(MoMA.dic.getAssignmentActivitiesExporter());
+        exporters.add(MoMA.dic.getHypothesisActivitiesExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());

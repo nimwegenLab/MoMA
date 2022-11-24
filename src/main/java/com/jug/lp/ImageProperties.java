@@ -9,19 +9,29 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ImageProperties {
     private final Imglib2Utils imglib2Utils;
-    private IConfiguration configuration;
-    private IImageProvider imageProvider;
+    private final IConfiguration configuration;
+    private final IImageProvider imageProvider;
+    private final Map<Integer, Map<Integer, Double>> backgroundIntensitiesPerFrame;
 
     public ImageProperties(IImageProvider imageProvider, Imglib2Utils imglib2Utils, IConfiguration configuration) {
         this.imglib2Utils = imglib2Utils;
         this.configuration = configuration;
         this.imageProvider = imageProvider;
+        backgroundIntensitiesPerFrame = new HashMap<>();
     }
 
     public double getBackgroundIntensityStdAtFrame(int channelNumber, int frame) {
+        if(!backgroundIntensitiesPerFrame.containsKey(channelNumber)){
+            backgroundIntensitiesPerFrame.put(channelNumber, new HashMap<>());
+        }
+        if (backgroundIntensitiesPerFrame.get(channelNumber).containsKey(frame)) {
+            return backgroundIntensitiesPerFrame.get(channelNumber).get(frame);
+        }
         Img<FloatType> img = imageProvider.getChannelImg(channelNumber);
         FinalInterval leftBackgroundRoi = getLeftBackgroundRoiAtFrame(img, frame);
         FinalInterval rightBackgroundRoi = getRightBackgroundRoiAtFrame(img, frame);
@@ -33,7 +43,9 @@ public class ImageProperties {
         double leftStd = imglib2Utils.getIntensityStDev(leftBackgroundRoi, img);
         double rightStd = imglib2Utils.getIntensityStDev(rightBackgroundRoi, img);
 
-        return (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSizeAtFrame(channelNumber, frame);
+        double intensity = (leftNumberOfPixels * leftStd + rightNumberOfPixels * rightStd) / getBackgroundRoiSizeAtFrame(channelNumber, frame);
+        backgroundIntensitiesPerFrame.get(channelNumber).put(frame, intensity);
+        return intensity;
     }
 
     public double getBackgroundIntensityMeanAtFrame(int channelNumber, int frame) {

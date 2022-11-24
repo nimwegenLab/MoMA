@@ -319,6 +319,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
+                hypothesisRangeSelector.clearSelectedHypotheses();
+                dataToDisplayChanged();
                 requestFocusOnTimeStepSlider();
             }
         });

@@ -44,9 +44,9 @@ public class Feature__20221124_add_gui_interaction_to_select_range_of_connected_
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        tmin = 440;
-        tmax = 460;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+        tmin = 400;
+        tmax = 500;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void run_reloading() {

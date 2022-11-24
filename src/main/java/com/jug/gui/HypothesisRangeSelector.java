@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 public class HypothesisRangeSelector {
     private Hypothesis<?> startHypothesis;
     private Hypothesis<?> endHypothesis;
@@ -20,11 +22,17 @@ public class HypothesisRangeSelector {
 
     public void setStartHypothesis(Hypothesis<?> hypothesis) {
         this.startHypothesis = hypothesis;
-//        calculateSelectedHypotheses();
+        if(isNull(startHypothesis) || isNull(endHypothesis)) { return; }
+        calculateSelectedHypotheses();
     }
 
     public void setEndHypothesis(Hypothesis<?> hypothesis) {
         this.endHypothesis = hypothesis;
+        if(isNull(startHypothesis) || isNull(endHypothesis)) { return; }
+        updatedSelectedHypotheses();
+    }
+
+    private void updatedSelectedHypotheses() {
         calculateSelectedHypotheses();
         highlightSelectedHypotheses();
     }
@@ -37,7 +45,7 @@ public class HypothesisRangeSelector {
 
     List<Hypothesis<?>> selectedHypotheses = new ArrayList<>();
 
-    private void clearSelectedHypotheses() {
+    public void clearSelectedHypotheses() {
         for (Hypothesis<?> hyp : selectedHypotheses) {
             hyp.deselected();
         }

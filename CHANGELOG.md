@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add filtering of assignments based on the intensity of the target components using the image background intensity. This feature is controlled by the setting values `FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING`, `FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER` and `FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR`.
+
+## [0.8.0] - 2022-11-04
+
+### Added
+
+- Rework formulation and calculation of crossing-constraint.
+
+## [0.7.0] - 2022-10-28
+
+### Added
+
 - Add crossing-constraints to the optimization problem, which make it impossible for assignments to cross each other. This feature can be turned off in `mm.properties` by setting `FEATURE_FLAG_CROSSING_CONSTRAINTS=0`. It is on by default.
 - Add feature flag `FEATURE_FLAG_MIGRATION_COSTS` in `mm.properties` flag to enable/disable the migration cost. Disable it by default, because we do not need them anymore thanks to crossing-constraints.
 

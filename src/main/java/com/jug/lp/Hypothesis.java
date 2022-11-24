@@ -296,6 +296,17 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
+    public <T extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> T getRightAssignmentWithTarget(Class<T> assignmentType, Hypothesis<?> targetHypothesis) {
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAllRightAssignmentsForHypothesis((Hypothesis<AdvancedComponent<FloatType>>) this);
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
+            if (assignmentType.isAssignableFrom(assignment.getClass()) &&
+                    assignment.getTargetHypotheses().contains(targetHypothesis)) {
+                return (T) assignment;
+            }
+        }
+        return null;
+    }
+
     public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);

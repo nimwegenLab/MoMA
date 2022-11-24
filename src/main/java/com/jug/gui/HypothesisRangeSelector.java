@@ -2,9 +2,11 @@ package com.jug.gui;
 
 import com.jug.Growthlane;
 import com.jug.lp.Hypothesis;
+import com.jug.lp.MappingAssignment;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HypothesisRangeSelector {
@@ -57,10 +59,23 @@ public class HypothesisRangeSelector {
             clearSelectedHypotheses();
             throw new NotImplementedException("implement displaying a dialog that the starting-hypothesis was not found.");
         }
+        Collections.reverse(selectedHypotheses); /* reverse order so that the assignment with lowest time-steps is first and with highest time-step is last element */
     }
 
     public void forceIgnoreSelectedHypotheses() {
         selectedHypotheses.stream().forEach(hyp -> hyp.setIsForceIgnored(true));
+        updateMomaState();
+    }
+
+    public void forceMappingAssigmentBetweenSelectedHypotheses() {
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
+            assignment.setGroundTruth(true);
+        }
+        updateMomaState();
+    }
+
+    private void updateMomaState() {
         clearSelectedHypotheses();
         growthlane.getIlp().run();
     }

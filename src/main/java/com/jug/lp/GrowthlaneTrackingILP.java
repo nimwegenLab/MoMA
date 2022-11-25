@@ -28,6 +28,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
@@ -1471,6 +1472,11 @@ public class GrowthlaneTrackingILP {
             }
         }
         return result;
+    }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getSelectedHypothesesAt(int t){
+        List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getHypothesesAt(t);
+        return getHypothesesAt(t).stream().filter(hypothesis -> hypothesis.isSelected()).collect(Collectors.toList());
     }
 
     public boolean isSelected(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {

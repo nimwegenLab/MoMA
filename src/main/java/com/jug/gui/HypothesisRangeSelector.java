@@ -24,9 +24,7 @@ public class HypothesisRangeSelector {
         if (isNull(hypothesis)) {
             throw new RuntimeException("hypothesis is null.");
         }
-        if (!isNull(startHypothesis) && !hypothesis.equals(startHypothesis)) {
-            startHypothesis.deselect();
-        }
+        clearStartHypothesis();
         startHypothesis = hypothesis;
         startHypothesis.select();
         if (isNull(startHypothesis) || isNull(endHypothesis)) {
@@ -39,9 +37,7 @@ public class HypothesisRangeSelector {
         if (isNull(hypothesis)) {
             throw new RuntimeException("hypothesis is null.");
         }
-        if (!isNull(endHypothesis) && !hypothesis.equals(endHypothesis)) {
-            endHypothesis.deselect();
-        }
+        clearEndHypothesis();
         endHypothesis = hypothesis;
         endHypothesis.select();
         if (isNull(startHypothesis) || isNull(endHypothesis)) {
@@ -76,11 +72,25 @@ public class HypothesisRangeSelector {
         for (Hypothesis<?> hyp : selectedHypotheses) {
             hyp.deselect();
         }
+        clearStartHypothesis();
+        clearEndHypothesis();
         selectedHypotheses.clear();
-        startHypothesis.deselect();
-        startHypothesis = null;
+    }
+
+    private void clearEndHypothesis() {
+        if (isNull(endHypothesis)) {
+            return;
+        }
         endHypothesis.deselect();
         endHypothesis = null;
+    }
+
+    private void clearStartHypothesis() {
+        if (isNull(startHypothesis)) {
+            return;
+        }
+        startHypothesis.deselect();
+        startHypothesis = null;
     }
 
     private void calculateSelectedHypotheses() {

@@ -142,7 +142,18 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                             screenImageUnaltered,
                             xOffset,
                             yOffset,
-                            glf.getParent().getIlp().getHypothesesAt(t));
+                            glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    drawSegments(screenImage,
+                            screenImageUnaltered,
+                            xOffset,
+                            yOffset,
+                            glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                    List<Hypothesis<AdvancedComponent<FloatType>>> selectedHypotheses = glf.getParent().getIlp().getSelectedHypothesesAt(t);
+                    drawSegments(screenImage,
+                            screenImageUnaltered,
+                            xOffset,
+                            yOffset,
+                            selectedHypotheses); /* DRAW SEGMENTS + PRUNE-COLORING */
                 }
             }
 

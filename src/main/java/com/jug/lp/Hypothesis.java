@@ -257,7 +257,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         if (isNull(component)) {
             return null;
         }
-        return (Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(component);
+        return ilp.getNodes().findHypothesisContaining(component);
     }
 
     /**
@@ -268,7 +268,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         List<AdvancedComponent<FloatType>> childComponents = getChildComponentsWithExistingHypotheses();
         List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
         for (AdvancedComponent child : childComponents) {
-            childHypotheses.add((Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(child));
+            childHypotheses.add(ilp.getNodes().findHypothesisContaining(child));
         }
         return childHypotheses;
     }

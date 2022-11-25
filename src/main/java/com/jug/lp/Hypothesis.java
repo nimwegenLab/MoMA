@@ -27,7 +27,6 @@ import static java.util.Objects.isNull;
  */
 @SuppressWarnings("restriction")
 public class Hypothesis<C extends AdvancedComponent<FloatType>> {
-
     private final C wrappedComponent;
     private GrowthlaneTrackingILP ilp;
     private final HypLoc location;
@@ -258,7 +257,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         if (isNull(component)) {
             return null;
         }
-        return (Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(component);
+        return ilp.getNodes().findHypothesisContaining(component);
     }
 
     /**
@@ -269,7 +268,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         List<AdvancedComponent<FloatType>> childComponents = getChildComponentsWithExistingHypotheses();
         List<Hypothesis<AdvancedComponent<FloatType>>> childHypotheses = new ArrayList<>();
         for (AdvancedComponent child : childComponents) {
-            childHypotheses.add((Hypothesis<AdvancedComponent<FloatType>>) ilp.getNodes().findHypothesisContaining(child));
+            childHypotheses.add(ilp.getNodes().findHypothesisContaining(child));
         }
         return childHypotheses;
     }
@@ -297,6 +296,17 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
+    public <T extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> T getRightAssignmentWithTarget(Class<T> assignmentType, Hypothesis<?> targetHypothesis) {
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAllRightAssignmentsForHypothesis((Hypothesis<AdvancedComponent<FloatType>>) this);
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
+            if (assignmentType.isAssignableFrom(assignment.getClass()) &&
+                    assignment.getTargetHypotheses().contains(targetHypothesis)) {
+                return (T) assignment;
+            }
+        }
+        return null;
+    }
+
     public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
@@ -311,7 +321,7 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     public boolean isActive() {
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incoming = getActiveIncomingAssignment();
-        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveIncomingAssignment();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveOutgoingAssignment();
         if (getTime() == 0 && isNull(incoming) && !isNull(outgoing)) { /* handle first time-step, where there exists no incoming assignment, when the hypothesis is active */
             return true;
         }
@@ -334,14 +344,18 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        return getActiveIncomingAssignment().getSourceHypothesis();
+        AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incomingAssignment = getActiveIncomingAssignment();
+        if (isNull(incomingAssignment)) {
+            return null;
+        }
+        return incomingAssignment.getSourceHypothesis();
     }
 
     public void setPruneRoot(final boolean value) {
-        if (getSourceHypothesis().isPruned()) {
+        if (getTime()!=0 && getSourceHypothesis().isPruned()) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
-        if (getActiveIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+        if (getTime()!=0 && getActiveIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "You cannot prune segments that are targets of a division assignment, because this would break lineage information. To prune this segment, please first force a mapping assignment to it.");
         }
         this.isPruneRoot = value;
@@ -391,5 +405,19 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             this.t = t;
             this.limits = ComponentTreeUtils.getTreeNodeInterval(wrappedComponent);
         }
+    }
+
+    private boolean isSelected = false;
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public boolean select() {
+        return isSelected = true;
+    }
+
+    public boolean deselect() {
+        return isSelected = false;
     }
 }

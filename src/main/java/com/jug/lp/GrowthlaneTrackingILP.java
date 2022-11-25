@@ -28,6 +28,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
@@ -1301,8 +1302,18 @@ public class GrowthlaneTrackingILP {
      * active segmentation hypothesis (chosen by the optimization
      * procedure).
      */
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentation(final int t) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalSegmentation(int t) {
         return getOptimalHypotheses(t);
+    }
+
+    /**
+     * Returns all hypotheses of the specified time-step.
+     *
+     * @param t
+     * @return list of hypotheses
+     */
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getHypothesesAt(int t) {
+        return nodes.getHypothesesAt(t);
     }
 
     /**
@@ -1461,6 +1472,11 @@ public class GrowthlaneTrackingILP {
             }
         }
         return result;
+    }
+
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getSelectedHypothesesAt(int t){
+        List<Hypothesis<AdvancedComponent<FloatType>>> hyps = getHypothesesAt(t);
+        return getHypothesesAt(t).stream().filter(hypothesis -> hypothesis.isSelected()).collect(Collectors.toList());
     }
 
     public boolean isSelected(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
@@ -1648,9 +1664,8 @@ public class GrowthlaneTrackingILP {
      *
      * @param hypothesis
      * @return
-     * @throws GRBException
      */
-    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllRightAssignmentsForHypothesis(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
+    public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllRightAssignmentsForHypothesis(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) {
         return new HashSet<>(edgeSets.getRightNeighborhood(hypothesis)); /* return a new set of assignment references, so that caller cannot modify the underlying set of the ILP */
     }
 

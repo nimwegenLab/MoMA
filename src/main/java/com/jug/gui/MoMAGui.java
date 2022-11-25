@@ -17,7 +17,6 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.Nullable;
 import weka.gui.ExtensionFileFilter;
 
@@ -27,6 +26,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -47,6 +47,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     public final MoMAModel model;
     private IDialogManager dialogManager;
     private PanelWithSliders panelWithSliders;
+    private HypothesisRangeSelector hypothesisRangeSelector;
     private final String itemChannel0 = "Channel 0";
     private final String itemChannel1 = "Channel 1";
     private final String itemChannel2 = "Channel 2";
@@ -103,7 +104,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                    GlFileManager glFileManager,
                    LoggerWindow loggerWindow,
                    IDialogManager dialogManager,
-                   PanelWithSliders panelWithSliders) {
+                   PanelWithSliders panelWithSliders,
+                   HypothesisRangeSelector hypothesisRangeSelector) {
         super(new BorderLayout());
         this.guiFrame = guiFrame;
         this.closeCommand = closeCommand;
@@ -118,6 +120,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.dialogManager = dialogManager;
 
         this.panelWithSliders = panelWithSliders;
+        this.hypothesisRangeSelector = hypothesisRangeSelector;
         registerSliderListeners();
 
         buildGui();
@@ -284,6 +287,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
         inputMap.put(KeyStroke.getKeyStroke("pressed SPACE"), "pressed_SPACE");
         inputMap.put(KeyStroke.getKeyStroke("released SPACE"), "released_SPACE");
+        inputMap.put(KeyStroke.getKeyStroke('c'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('i'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke('m'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
@@ -314,6 +320,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
+                hypothesisRangeSelector.clearSelectedHypotheses();
+                dataToDisplayChanged();
                 requestFocusOnTimeStepSlider();
             }
         });
@@ -341,6 +349,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
+                if(e.getActionCommand().equals("c") && e.getModifiers() == KeyEvent.ALT_MASK){
+                    hypothesisRangeSelector.clearUserConstraints();
+                    dataToDisplayChanged();
+                }
+                if(e.getActionCommand().equals("i") && e.getModifiers() == KeyEvent.ALT_MASK){
+                    hypothesisRangeSelector.forceIgnoreSelectedHypotheses();
+                    dataToDisplayChanged();
+                }
+                if(e.getActionCommand().equals("m") && e.getModifiers() == KeyEvent.ALT_MASK){
+                    hypothesisRangeSelector.forceMappingAssigmentBetweenSelectedHypotheses();
+                    dataToDisplayChanged();
+                }
                 if (e.getActionCommand().equals("l")) {
                     dataToDisplayChanged();
                 }
@@ -506,7 +526,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         int min_time_offset = -configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         int max_time_offset = configurationManager.GUI_NUMBER_OF_SHOWN_TIMESTEPS / 2;
         for (int time_offset = min_time_offset; time_offset < max_time_offset; time_offset++) {
-            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, dialogManager, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager);
+            SegmentationEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, dialogManager, viewWidth, viewHeight, time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager, MoMA.dic.getHypothesisRangeSelector());
             panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
             ilpVariableEditorPanels.add(segmentationEditorPanel);
             segmentationEditorPanels.add(segmentationEditorPanel);
@@ -522,7 +542,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 assignmentsEditorViewerUsedForHtmlExport = assignmentEditorPanel.getAssignmentViewerPanel();
             }
         }
-        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, dialogManager, viewWidth, viewHeight, max_time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager);
+        IlpVariableEditorPanel segmentationEditorPanel = new SegmentationEditorPanel(this, model, imageProvider, labelEditorDialog, dialogManager, viewWidth, viewHeight, max_time_offset, showGroundTruthExportFunctionality, MoMA.dic.getGroundTruthFramesExporter(), configurationManager, MoMA.dic.getHypothesisRangeSelector());
         panel1.add(segmentationEditorPanel, gridBagConstraintPanel1);
         ilpVariableEditorPanels.add(segmentationEditorPanel);
         segmentationEditorPanels.add((SegmentationEditorPanel) segmentationEditorPanel);

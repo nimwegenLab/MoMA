@@ -47,6 +47,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     Hypothesis<AdvancedComponent<FloatType>> hoveredOptimalHypothesis = null;
     private final LabelEditorDialog labelEditorDialog;
     private IDialogManager dialogManager;
+    private HypothesisRangeSelector hypothesisRangeSelector;
     private IterableIntervalProjector2D<?, ?> projector;
     private ARGBScreenImage screenImage;
     private ARGBScreenImage screenImageUnaltered;
@@ -63,12 +64,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private int indexOfCurrentHoveredHypothesis = 0;
     private Hypothesis<AdvancedComponent<FloatType>> selectedHypothesis;
 
-    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h) {
+    public GrowthlaneViewer(final MoMAGui mmgui, LabelEditorDialog labelEditorDialog, IDialogManager dialogManager, final int myWidth, final int h, HypothesisRangeSelector hypothesisRangeSelector) {
         super();
 
         this.mmgui = mmgui;
         this.labelEditorDialog = labelEditorDialog;
         this.dialogManager = dialogManager;
+        this.hypothesisRangeSelector = hypothesisRangeSelector;
 
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -140,19 +142,24 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                             screenImageUnaltered,
                             xOffset,
                             yOffset,
-                            glf.getParent().getIlp().getOptimalSegmentation(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                            glf.getParent().getIlp().getOptimalSegmentation(t));
                     drawSegments(screenImage,
                             screenImageUnaltered,
                             xOffset,
                             yOffset,
-                            glf.getParent().getIlp().getForcedHypotheses(t)); /* DRAW SEGMENTS + PRUNE-COLORING */
+                            glf.getParent().getIlp().getForcedHypotheses(t));
+                    drawSegments(screenImage,
+                            screenImageUnaltered,
+                            xOffset,
+                            yOffset,
+                            glf.getParent().getIlp().getSelectedHypothesesAt(t));
                 }
             }
 
         } catch (final ArrayIndexOutOfBoundsException e) {
             // this can happen if a growth line, due to shift, exists in one
             // frame, and does not exist in others.
-            // If for this growth line we want to visualize a time where the
+            // If for this growth line we want to visualize a time, where the
             // Growthlane is empty, the projector
             // throws a ArrayIndexOutOfBoundsException that I catch
             // hereby... ;)
@@ -318,7 +325,20 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         ilp.autosave();
 
-        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown()) {
+        if(e.isAltDown()  && !e.isControlDown() && !e.isShiftDown()){
+            Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
+
+            if(SwingUtilities.isLeftMouseButton(e)){
+                hypothesisRangeSelector.setStartHypothesis(hyp2add);
+            }
+            if(SwingUtilities.isRightMouseButton(e)){
+                hypothesisRangeSelector.setEndHypothesis(hyp2add);
+            }
+            mmgui.dataToDisplayChanged();
+            return;
+        }
+
+        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown() && !e.isAltDown()) {
             // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
@@ -327,7 +347,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (SwingUtilities.isRightMouseButton(e)) {
+        if (SwingUtilities.isRightMouseButton(e)  && !e.isAltDown()) {
             // CTRL + CLICK: ADD/REMOVE IGNORING CONSTRAINT HYPOTHESIS
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> selectedParentHypothesis = getSelectedHypothesis();
@@ -346,13 +366,11 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 }
             }
 
-            mmgui.dataToDisplayChanged();
-            fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
-            runIlpAndFocusSlider(ilp);
+            updateMomaState(ilp);
             return;
         }
 
-        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()) {
+        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && e.isShiftDown()  && !e.isAltDown()) {
             // CTRL + SHIFT: PRUNE HYPOTHESIS AND FOLLOWING LINEAGE
             // -----------------------
             if (isNull(getSelectedHypothesis())) return;
@@ -384,6 +402,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 e1.printStackTrace();
             }
         }
+        updateMomaState(ilp);
+    }
+
+    private void updateMomaState(GrowthlaneTrackingILP ilp) {
         mmgui.dataToDisplayChanged();
         fireIlpModelChangedEvent(new IlpModelChangedEvent(this));
         runIlpAndFocusSlider(ilp);

@@ -24,9 +24,9 @@ public class Bugfix__20221126_export_costs_only_when_running_in_headless_mode {
     public static void main(String[] args) {
         Bugfix__20221126_export_costs_only_when_running_in_headless_mode tests = new Bugfix__20221126_export_costs_only_when_running_in_headless_mode();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -42,6 +42,8 @@ public class Bugfix__20221126_export_costs_only_when_running_in_headless_mode {
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        tmin = null;
+        tmax = 500;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

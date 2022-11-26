@@ -7,6 +7,7 @@ import com.jug.lp.*;
 import com.jug.util.OSValidator;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
+import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -17,6 +18,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.GeneralPath;
 import java.util.*;
+import java.util.List;
 
 /**
  * @author jug
@@ -50,7 +52,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     private final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filteredAssignments;
     private final float defaultFilterMinCost;
     private final float defaultFilterMaxCost;
-    private final ArrayList<AssignmentView> assignmentViews = new ArrayList<>();
+    private final List<AssignmentView> assignmentViews = new ConcurrentArrayList<>();
     protected EventListenerList listenerList = new EventListenerList();
     ArrayList<AssignmentView> hoveredAssignments = new ArrayList<>();
     int selectedAssignmentIndex = 0;
@@ -482,7 +484,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         }
     }
 
-    private void sortAssignmentViews(ArrayList<AssignmentView> assignmentViews) {
+    private void sortAssignmentViews(List<AssignmentView> assignmentViews) {
         assignmentViews.sort(Comparator.comparingDouble(AssignmentView::getCost));
         Collections.reverse(assignmentViews);
     }

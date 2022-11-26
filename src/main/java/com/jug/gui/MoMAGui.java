@@ -807,7 +807,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             Path outputPath = queryUserForOutputPath();
             if (outputPathIsValid(outputPath)) {
                 model.getCurrentGL().setOutputPath(outputPath);
-                final Thread t = new Thread(() -> this.exportDataFiles());
+                final Thread t = new Thread(() -> this.exportAllData());
                 t.start();
             }
         }
@@ -815,7 +815,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
-                final Thread t = new Thread(() -> this.exportTrackingData());
+                final Thread t = new Thread(() -> this.exportMomaInternalData());
                 t.start();
             }
         }
@@ -824,7 +824,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
                 final Thread t = new Thread(() -> {
-                    this.exportTrackingData();
+                    this.exportMomaInternalData();
                     closeCommand.run();
                 });
                 t.start();
@@ -917,43 +917,50 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     /**
-     * Export data to specified folder.
+     * Export all data.
      */
-    public void exportDataFiles() {
+    public void exportAllData() {
+        exportMomaInternalData();
+        exportTrackingResults();
+    }
+
+    /**
+     * Export result data that is used by users for their down-stream analysis of the experiment.
+     */
+    private void exportTrackingResults() {
         MoMA.dic.getExportTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
-        exporters.add(MoMA.dic.getMetaDataExporter());
-        exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getMMPropertiesExporter());
-        exporters.add(MoMA.dic.getCurationStatsExporter());
         exporters.add(MoMA.dic.getCellStatsExporter());
         exporters.add(MoMA.dic.getCellMaskExporter());
         exporters.add(MoMA.dic.getHtmlOverviewExporterWrapper());
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
-        exporters.add(MoMA.dic.getComponentForestExporter());
-
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
         MoMA.dic.getExportTimer().stop();
         MoMA.dic.getExportTimer().printExecutionTime("Timer result for exporting results");
     }
 
-    public void exportTrackingData() {
+    /**
+     * Export data that is used by MoMA such as e.g. the state of the ILP and data used for debugging.
+     */
+    public void exportMomaInternalData() {
         MoMA.dic.getTrackingDataTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
-        exporters.add(MoMA.dic.getCurationStatsExporter());
-        if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
-            exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+        if (configurationManager.getIfRunningHeadless()) { /* export debug data only in headless mode, so that the user does not have to wait for this during interactive curation. */
+            if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
+                exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+            }
+            exporters.add(MoMA.dic.getAssignmentCostExporter());
+            exporters.add(MoMA.dic.getAssignmentActivitiesExporter());
+            exporters.add(MoMA.dic.getHypothesisActivitiesExporter());
+            exporters.add(MoMA.dic.getCurationStatsExporter());
         }
         exporters.add(MoMA.dic.getComponentForestExporter());
-        exporters.add(MoMA.dic.getAssignmentCostExporter());
-        exporters.add(MoMA.dic.getAssignmentActivitiesExporter());
-        exporters.add(MoMA.dic.getHypothesisActivitiesExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());

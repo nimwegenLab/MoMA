@@ -36,12 +36,16 @@ public class Bugfix__20221126_fix_behavior_where_the_timestep_incorrectly_shown_
     public void run_interactive() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        tmin = null;
+        tmax = 100;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        tmin = null;
+        tmax = 200;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

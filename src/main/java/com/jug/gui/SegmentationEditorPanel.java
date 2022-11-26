@@ -23,6 +23,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Objects.isNull;
+
 public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private final MoMAModel momaModel;
     private final int timeStepOffset;
@@ -83,11 +85,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         List<AdvancedComponent<FloatType>> optimalSegs = new ArrayList<>();
         int timeStep = timeStepToDisplay();
         GrowthlaneFrame glf = momaModel.getGlfAtTimeStep(timeStep);
-        if (glf == null) {
+        if (isNull(glf)) {
             return; /* this method was called at an invalid time-step so there is no component-tree; do nothing */
         }
         GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
-        if (ilp != null) {
+        if (!isNull(ilp)) {
             optimalSegs = glf.getParent().getIlp().getOptimalComponents(timeStep);
         }
         Plotting.drawComponentTree(glf.getComponentForest(), optimalSegs, timeStep);

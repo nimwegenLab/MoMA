@@ -433,7 +433,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private void openSegmentView() {
         SegmentationEditorPanel hoveredAssignmentEditorPanel = getHoveredSegmentationEditorPanel();
-        if (hoveredAssignmentEditorPanel != null) {
+        if (!isNull(hoveredAssignmentEditorPanel)) {
             hoveredAssignmentEditorPanel.openSegmentView();
             return;
         }

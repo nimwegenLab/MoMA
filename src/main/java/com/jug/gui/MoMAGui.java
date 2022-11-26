@@ -133,7 +133,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (spaceBarIsBeingHeld.isActive()) {
                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
             }
-            updateGui();
+            dataToDisplayChanged();
         });
 
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
@@ -149,18 +149,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                         previousTrackingRangeEnd = panelWithSliders.getTrackingRangeEnd();
                     }
                 }
-                updateGui();
+                dataToDisplayChanged();
             }
         });
     }
 
     int previousTrackingRangeStart = -1;
     int previousTrackingRangeEnd = -1;
-
-    public void updateGui() {
-        dataToDisplayChanged();
-        this.repaint();
-    }
 
     /**
      * Builds the GUI.
@@ -640,6 +635,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             updateIlpVariableEditorPanels();
         }
         requestFocusOnTimeStepSlider();
+
+        this.repaint();
     }
 
     private void updateIlpVariableEditorPanels() {
@@ -656,7 +653,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (e.getSource().equals(sliderGL)) {
             model.setCurrentGL(sliderGL.getValue(), panelWithSliders.getTimeStepSliderPosition());
         }
-        updateGui();
+        dataToDisplayChanged();
         requestFocusOnTimeStepSlider();
     }
 

@@ -158,7 +158,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
             final Thread t = new Thread(() -> {
                 momaModel.getCurrentGL().getIlp().run();
-                mmgui.updateGui();
+                mmgui.dataToDisplayChanged();
                 mmgui.requestFocusOnTimeStepSlider();
             });
             t.start();

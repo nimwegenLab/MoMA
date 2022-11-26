@@ -290,7 +290,7 @@ public class MoMA {
 
 			configurationManager.saveParams(dic.getGuiFrame());
 			if (commandLineArgumentParser.isTrackOnly()) {
-				dic.getMomaGui().exportTrackingData();
+				dic.getMomaGui().exportMomaInternalData();
 			} else {
 				dic.getMomaGui().exportAllData();
 			}

@@ -815,7 +815,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
-                final Thread t = new Thread(() -> this.exportTrackingData());
+                final Thread t = new Thread(() -> this.exportMomaInternalData());
                 t.start();
             }
         }
@@ -824,7 +824,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
                 final Thread t = new Thread(() -> {
-                    this.exportTrackingData();
+                    this.exportMomaInternalData();
                     closeCommand.run();
                 });
                 t.start();
@@ -916,15 +916,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
     }
 
+    /**
+     * Export all data.
+     */
     public void exportAllData() {
-        exportTrackingData();
-        exportDataFiles();
+        exportMomaInternalData();
+        exportTrackingResults();
     }
 
     /**
-     * Export data to specified folder.
+     * Export result data that is used by users for their down-stream analysis of the experiment.
      */
-    private void exportDataFiles() {
+    private void exportTrackingResults() {
         MoMA.dic.getExportTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getCellStatsExporter());
@@ -939,7 +942,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         MoMA.dic.getExportTimer().printExecutionTime("Timer result for exporting results");
     }
 
-    public void exportTrackingData() {
+    /**
+     * Export data that is used by MoMA such as e.g. the state of the ILP and data used for debugging.
+     */
+    public void exportMomaInternalData() {
         MoMA.dic.getTrackingDataTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
         exporters.add(MoMA.dic.getMetaDataExporter());

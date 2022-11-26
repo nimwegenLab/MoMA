@@ -287,9 +287,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         inputMap.put(KeyStroke.getKeyStroke("ESCAPE"), "ESCAPE");
         inputMap.put(KeyStroke.getKeyStroke("pressed SPACE"), "pressed_SPACE");
         inputMap.put(KeyStroke.getKeyStroke("released SPACE"), "released_SPACE");
-        inputMap.put(KeyStroke.getKeyStroke('c'), "MMGUI_bindings");
-        inputMap.put(KeyStroke.getKeyStroke('i'), "MMGUI_bindings");
-        inputMap.put(KeyStroke.getKeyStroke('m'), "MMGUI_bindings");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK), "ignore_selected_component");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK), "clear_user_constraints_component");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK), "force_mapping_assignments");
         inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
@@ -315,6 +315,22 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         inputMap.put(KeyStroke.getKeyStroke('9'), "MMGUI_bindings");
 
         ActionMap actionMap = this.getActionMap();
+
+        getActionMap().put("ignore_selected_component", new FunctionalAction(a -> {
+            hypothesisRangeSelector.forceIgnoreSelectedHypotheses();
+            dataToDisplayChanged();
+        }));
+
+        getActionMap().put("clear_user_constraints_component", new FunctionalAction(a -> {
+            hypothesisRangeSelector.clearUserConstraints();
+            dataToDisplayChanged();
+        }));
+
+        getActionMap().put("force_mapping_assignments", new FunctionalAction(a -> {
+            hypothesisRangeSelector.forceMappingAssigmentBetweenSelectedHypotheses();
+            dataToDisplayChanged();
+        }));
+
         actionMap.put("ESCAPE", new AbstractAction() {
             private static final long serialVersionUID = 1L;
 
@@ -349,18 +365,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             @Override
             public void actionPerformed(final ActionEvent e) {
-                if(e.getActionCommand().equals("c") && e.getModifiers() == KeyEvent.ALT_MASK){
-                    hypothesisRangeSelector.clearUserConstraints();
-                    dataToDisplayChanged();
-                }
-                if(e.getActionCommand().equals("i") && e.getModifiers() == KeyEvent.ALT_MASK){
-                    hypothesisRangeSelector.forceIgnoreSelectedHypotheses();
-                    dataToDisplayChanged();
-                }
-                if(e.getActionCommand().equals("m") && e.getModifiers() == KeyEvent.ALT_MASK){
-                    hypothesisRangeSelector.forceMappingAssigmentBetweenSelectedHypotheses();
-                    dataToDisplayChanged();
-                }
                 if (e.getActionCommand().equals("l")) {
                     dataToDisplayChanged();
                 }

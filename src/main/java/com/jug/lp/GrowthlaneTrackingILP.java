@@ -1261,7 +1261,7 @@ public class GrowthlaneTrackingILP {
             }
             System.out.println("Status: " + status);
 
-            if (MoMA.getGui() != null) {
+            if (!isNull(MoMA.getGui())) {
                 MoMA.getGui().dataToDisplayChanged();
             }
 
@@ -1273,7 +1273,7 @@ public class GrowthlaneTrackingILP {
             solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
             System.out.println(solutionSanityChecker.getErrorMessage());
             if (solutionSanityChecker.continuityConstraintFound()) {
-                if (dialogManager != null) {
+                if (!isNull(dialogManager)) {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }

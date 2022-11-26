@@ -952,13 +952,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         exporters.add(MoMA.dic.getIlpModelExporter());
         exporters.add(MoMA.dic.getMMPropertiesExporter());
         exporters.add(MoMA.dic.getCurationStatsExporter());
-        if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
-            exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+        if (configurationManager.getIfRunningHeadless()) { /* export debug data only in headless mode, so that the user does not have to wait for this during interactive curation. */
+            if (configurationManager.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
+                exporters.add(MoMA.dic.getComponentIntensitiesExporter());
+            }
+            exporters.add(MoMA.dic.getAssignmentCostExporter());
+            exporters.add(MoMA.dic.getAssignmentActivitiesExporter());
+            exporters.add(MoMA.dic.getHypothesisActivitiesExporter());
         }
         exporters.add(MoMA.dic.getComponentForestExporter());
-        exporters.add(MoMA.dic.getAssignmentCostExporter());
-        exporters.add(MoMA.dic.getAssignmentActivitiesExporter());
-        exporters.add(MoMA.dic.getHypothesisActivitiesExporter());
 
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());

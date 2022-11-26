@@ -325,7 +325,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
 
         ilp.autosave();
 
-        if(e.isAltDown()  && !e.isControlDown() && !e.isShiftDown()){
+        if(e.isControlDown() && !e.isShiftDown()){
             Hypothesis<AdvancedComponent<FloatType>> hyp2add = getSelectedHypothesis();
 
             if(SwingUtilities.isLeftMouseButton(e)){
@@ -338,7 +338,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
-        if (SwingUtilities.isLeftMouseButton(e) && e.isControlDown() && !e.isShiftDown() && !e.isAltDown()) {
+        if (SwingUtilities.isRightMouseButton(e) && e.isControlDown() && e.isShiftDown() && !e.isAltDown()) {
             // ALT + CLICK: OPEN LABEL EDITOR
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();

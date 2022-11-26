@@ -127,12 +127,13 @@ public class HypothesisRangeSelector {
         List<MappingAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
-            if (isNull(assignment)) {
+            if (isNull(assignment)) { /* assignment is NULL, when user-selected start-/end-components are not connected by assignments; in this case abort action */
                 assignments.clear();
                 return;
             }
+            assignments.add(assignment);
         }
-        assignments.stream().forEach(assignment -> assignment.setGroundUntruth(true));
+        assignments.stream().forEach(assignment -> assignment.setGroundTruth(true));
         updateMomaState();
     }
 

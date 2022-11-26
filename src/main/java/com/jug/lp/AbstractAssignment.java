@@ -79,12 +79,12 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	private String stringId;
 
 	public String getStringId() {
-		try {
-			if(isNull(stringId)){
+		if (isNull(stringId)) {
+			try {
 				stringId = getGRBVar().get(GRB.StringAttr.VarName);
+			} catch (GRBException err) {
+				throw new RuntimeException("Could not retrieve name of the Gurobi variable of assignment.");
 			}
-		} catch (GRBException err) {
-			throw new RuntimeException("Could not retrieve name of the Gurobi variable of assignment.");
 		}
 		return stringId;
 	}

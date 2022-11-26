@@ -505,10 +505,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // =============== panelDropdown-part ===================
         comboboxWhichImgToShow = new JComboBox();
         comboboxWhichImgToShow.addItem(itemChannel0);
-        if (imageProvider.getRawChannelImgs().size() > 1) {
+        if (imageProvider.getNumberOfChannels() > 1) {
             comboboxWhichImgToShow.addItem(itemChannel1);
         }
-        if (imageProvider.getRawChannelImgs().size() > 2) {
+        if (imageProvider.getNumberOfChannels() > 2) {
             comboboxWhichImgToShow.addItem(itemChannel2);
         }
 

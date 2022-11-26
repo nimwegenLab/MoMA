@@ -422,8 +422,8 @@ public class PseudoDic {
         return panelWithSliders;
     }
 
-    public MoMAGui getMomaGui() {
-        if (gui == null) {
+    public synchronized MoMAGui getMomaGui() {
+        if (isNull(gui)) {
             gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel(), getHypothesisRangeSelector());
         }
         return gui;
@@ -487,7 +487,7 @@ public class PseudoDic {
 
     private LoggerWindow loggerWindow;
 
-    public LoggerWindow getLoggerWindow() {
+    public synchronized LoggerWindow getLoggerWindow() {
         if (loggerWindow != null) {
             return loggerWindow;
         }

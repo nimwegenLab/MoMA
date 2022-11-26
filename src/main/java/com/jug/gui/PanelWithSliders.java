@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.Growthlane;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
+import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -62,6 +63,15 @@ public class PanelWithSliders extends JPanel {
 
         final Growthlane currentGL = model.getCurrentGL();
         trackingRangeSlider.setEnabled(currentGL.ilpIsReady());
+
+//        currentGL.getIlp().addChangeListener(l -> {
+//            GrowthlaneTrackingILP ilp = ((GrowthlaneTrackingILP) l.getSource());
+//            if(ilp.isReady()){
+//                trackingRangeSlider.setEnabled(true);
+//            } else {
+//                trackingRangeSlider.setEnabled(false);
+//            }
+//        });
 
         initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
             Growthlane gl = ((Growthlane) e.getSource());

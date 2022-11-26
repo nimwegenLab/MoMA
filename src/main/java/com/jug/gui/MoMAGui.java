@@ -807,7 +807,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             Path outputPath = queryUserForOutputPath();
             if (outputPathIsValid(outputPath)) {
                 model.getCurrentGL().setOutputPath(outputPath);
-                final Thread t = new Thread(() -> this.exportDataFiles());
+                final Thread t = new Thread(() -> this.exportAllData());
                 t.start();
             }
         }
@@ -916,24 +916,23 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
     }
 
+    public void exportAllData() {
+        exportTrackingData();
+        exportDataFiles();
+    }
+
     /**
      * Export data to specified folder.
      */
-    public void exportDataFiles() {
+    private void exportDataFiles() {
         MoMA.dic.getExportTimer().start();
         List<ResultExporterInterface> exporters = new ArrayList<>();
-        exporters.add(MoMA.dic.getMetaDataExporter());
-        exporters.add(MoMA.dic.getIlpModelExporter());
-        exporters.add(MoMA.dic.getMMPropertiesExporter());
-        exporters.add(MoMA.dic.getCurationStatsExporter());
         exporters.add(MoMA.dic.getCellStatsExporter());
         exporters.add(MoMA.dic.getCellMaskExporter());
         exporters.add(MoMA.dic.getHtmlOverviewExporterWrapper());
         if (showGroundTruthExportFunctionality) {
             exporters.add(MoMA.dic.getGroundTruthFramesExporter());
         }
-        exporters.add(MoMA.dic.getComponentForestExporter());
-
         final ResultExporter resultExporter = new ResultExporter(exporters);
         resultExporter.export(model.getCurrentGL(), model.getCurrentGL().getExportPaths());
         MoMA.dic.getExportTimer().stop();

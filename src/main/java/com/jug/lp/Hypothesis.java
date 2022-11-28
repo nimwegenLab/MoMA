@@ -136,6 +136,10 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             grbConstr = ilp.model.getConstrByName(getSegmentInSolutionConstraintName());
         } catch (GRBException e) {
             return null;
+        } catch (RuntimeException e){
+            System.out.println("ILP status: " + ilp.getStatus());
+            System.out.println("constraintName: " + getSegmentInSolutionConstraintName());
+            throw e;
         }
         return grbConstr;
     }

@@ -1,5 +1,6 @@
 package com.jug.gui;
 
+import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.commands.ICommand;
@@ -246,6 +247,11 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 }
             });
         }
+        buttonOptimizeMore.setEnabled(false);
+        model.getCurrentGL().addChangeListener(e -> {
+            Growthlane gl = (Growthlane) e.getSource();
+            buttonOptimizeMore.setEnabled(gl.ilpIsReady());
+        });
 
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);

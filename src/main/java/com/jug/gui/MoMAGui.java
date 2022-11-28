@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -248,10 +249,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             });
         }
         buttonOptimizeMore.setEnabled(false);
-        model.getCurrentGL().addChangeListener(e -> {
-            Growthlane gl = (Growthlane) e.getSource();
-            buttonOptimizeMore.setEnabled(gl.ilpIsReady());
-        });
 
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);
@@ -261,6 +258,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonSaveTracking.addActionListener(this);
         buttonSaveTrackingAndExit = new JButton("Save tracking & exit");
         buttonSaveTrackingAndExit.addActionListener(this);
+
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
         panelHorizontalHelper.add(checkboxAutosave);
@@ -272,6 +270,21 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(buttonSaveTracking);
         panelHorizontalHelper.add(buttonSaveTrackingAndExit);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
+        panelHorizontalHelper.setEnabled(false);
+
+        List<JComponent> componentsToDisableDuringOptimization = Arrays.asList(checkboxAutosave,
+                buttonRestart,
+                buttonOptimizeMore,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+        componentsToDisableDuringOptimization.stream().forEach(jComponent -> jComponent.setEnabled(false));
+        model.getCurrentGL().addChangeListener(e -> {
+            Growthlane gl = (Growthlane) e.getSource();
+            componentsToDisableDuringOptimization.stream().forEach(jComponent -> jComponent.setEnabled(gl.ilpIsReady()));
+        });
+
 
         // --- Final adding and layout steps -------------
 

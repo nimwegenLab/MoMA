@@ -1237,6 +1237,7 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - -
             MoMA.dic.getOptimizationTimer().start();
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
+            fireStateChanged();
             model.optimize();
             MoMA.dic.getOptimizationTimer().stop();
             MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");

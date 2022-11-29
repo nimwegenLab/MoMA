@@ -35,7 +35,7 @@ public abstract class AssignmentView {
 
     public boolean isChosen(){
         try {
-            return abstractAssignment.isChoosen();
+            return abstractAssignment.isChosen();
         } catch (GRBException err) {
             return false;
         }

@@ -32,7 +32,16 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     private final HypLoc location;
     public List<String> labels = new ArrayList<>();
 
+    private Boolean isForced = null;
+
     public boolean isForced() {
+        if (isNull(isForced)) {
+            isForced = isForcedInternal();
+        }
+        return isForced;
+    }
+
+    private boolean isForcedInternal() {
         GRBConstr grbConstr = getSegmentInSolutionConstraint();
         if (isNull(grbConstr)) {
             return false;  /* no variable was found so this assignment is not forced */
@@ -51,11 +60,13 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
         if (!targetStateIsTrue) {
             removeSegmentInSolutionConstraint();
+            invalidateCache();
             return;
         }
 
         if (targetStateIsTrue) {
             addSegmentInSolutionConstraint();
+            invalidateCache();
             return;
         }
         throw new RuntimeException("We should not reach here. Something went wrong.");
@@ -96,10 +107,12 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
         if (!targetStateIsTrue) {
             removeSegmentNotInSolutionConstraint();
+            invalidateCache();
             return;
         }
         if (targetStateIsTrue) {
             addSegmentNotInSolutionConstraint();
+            invalidateCache();
             return;
         }
         throw new RuntimeException("We should not reach here. Something went wrong.");
@@ -145,7 +158,16 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return "HypEnforceConstr_" + getStringId();
     }
 
-    public boolean isForceIgnored() {
+    Boolean isForceIgnored = null;
+
+    public boolean isForceIgnored(){
+        if(isNull(isForceIgnored)){
+            isForceIgnored = isForceIgnoredInternal();
+        }
+        return isForceIgnored;
+    }
+
+    private boolean isForceIgnoredInternal() {
         GRBConstr grbConstr = getSegmentNotInSolutionConstraint();
         if (isNull(grbConstr)) {
             return false;  /* no variable was found so this assignment is not forced */
@@ -319,7 +341,29 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             return getActiveOutgoingAssignment().getTargetHypotheses();
     }
 
+    public void invalidateCache() {
+        isActive = null;
+        isForced = null;
+        isForceIgnored = null;
+    }
+
+    public void cache() {
+        invalidateCache();
+        isActive = isActive();
+        isForced = isForced();
+        isForceIgnored = isForceIgnored();
+    }
+
+    Boolean isActive = null;
+
     public boolean isActive() {
+        if (isNull(isActive)) {
+            isActive = isActiveInternal();
+        }
+        return isActive;
+    }
+
+    private boolean isActiveInternal() {
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> incoming = getActiveIncomingAssignment();
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> outgoing = getActiveOutgoingAssignment();
         if (getTime() == 0 && isNull(incoming) && !isNull(outgoing)) { /* handle first time-step, where there exists no incoming assignment, when the hypothesis is active */

@@ -4,7 +4,6 @@ import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -151,13 +150,22 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		}
 	}
 
+	Boolean isChosen = null;
+
+	public boolean isChosen() throws GRBException {
+		if(isNull(isChosen)){
+			isChosen = isChosenInternal();
+		}
+		return isChosen;
+	}
+
 	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;
-	public boolean isChoosen() throws GRBException {
+	private boolean isChosenInternal() throws GRBException {
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED)
-			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChoosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
+			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING || ilp.getStatus() == IlpStatus.UNDEFINED) {
 			return previousIsChoosen;
 		}
@@ -177,7 +185,33 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	 */
 	public abstract void addConstraintsToILP() throws GRBException;
 
+	public void invalidateCache() {
+		isGroundTruth = null;
+		isGroundUntruth = null;
+		isChosen = null;
+	}
+
+	public void cache() {
+		invalidateCache();
+		isGroundTruth = isGroundTruth();
+		isGroundUntruth = isGroundUntruth();
+		try {
+			isChosen = isChosen();
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	Boolean isGroundTruth = null;
+
 	public boolean isGroundTruth() {
+		if (isNull(isGroundTruth)) {
+			isGroundTruth = isGroundTruthInternal();
+		}
+		return isGroundTruth;
+	}
+
+	private boolean isGroundTruthInternal() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
 			return false; /* no variable was found so this assignment is not forced */
@@ -197,7 +231,16 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return "GroundTruthConstr_" + getStringId();
 	}
 
-	public boolean isGroundUntruth() {
+	Boolean isGroundUntruth = null;
+
+	public boolean isGroundUntruth(){
+		if(isNull(isGroundUntruth)){
+			isGroundUntruth = isGroundUntruthInternal();
+		}
+		return isGroundUntruth;
+	}
+
+	private boolean isGroundUntruthInternal() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
 			return false; /* no variable was found so this assignment is not forced */
@@ -219,8 +262,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 					removeGroundTruthConstraint();
 				}
 				addGroundTruthConstraint();
+				invalidateCache();
 			} else if (isGroundTruth()) {
 				removeGroundTruthConstraint();
+				invalidateCache();
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
@@ -234,8 +279,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 					removeGroundTruthConstraint();
 				}
 				addGroundUntruthConstraint();
+				invalidateCache();
 			} else if (isGroundUntruth()) {
 				removeGroundUntruthConstraint();
+				invalidateCache();
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
@@ -272,7 +319,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private void addFreezeConstraintWithName(String constraintName) {
 		try {
-			if (this.isChoosen()) {
+			if (this.isChosen()) {
 				addConstraint(1.0, constraintName);
 			} else {
 				addConstraint(0.0, constraintName);

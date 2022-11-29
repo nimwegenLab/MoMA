@@ -111,7 +111,7 @@ public class GrowthlaneTrackingILP {
                 final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
                     try {
-                        if (ass.isChoosen() || ass.isGroundTruth()) {
+                        if (ass.isChosen() || ass.isGroundTruth()) {
                             activeSet.add(ass);
                         }
                     } catch (final GRBException e) {
@@ -1218,6 +1218,16 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private void invalidateCaches() {
+        getAllAssignments().stream().forEach(assigmnent -> assigmnent.invalidateCache());
+        getAllHypotheses().stream().forEach(hypothesis -> hypothesis.invalidateCache());
+    }
+
+    private void fillCaches() {
+        getAllAssignments().stream().forEach(assigmnent -> assigmnent.cache());
+        getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
+    }
+
     /**
      * This function takes the ILP built up in <code>model</code>
      * and starts the convex optimization procedure. This is actually the step
@@ -1226,6 +1236,8 @@ public class GrowthlaneTrackingILP {
      */
     public void runImmediately() {
         try {
+            invalidateCaches();
+
             // Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);
@@ -1297,6 +1309,9 @@ public class GrowthlaneTrackingILP {
             if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
                 removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
                 removeStorageLockConstraintAfterFirstOptimization = false;
+            }
+            if (getStatus() != IlpStatus.INFEASIBLE && getStatus() != IlpStatus.SUBOPTIMAL) {
+                fillCaches();
             }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
@@ -1606,7 +1621,7 @@ public class GrowthlaneTrackingILP {
         HashSet<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeAssignments = new HashSet<>();
         try {
             for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-                if (assignment.isChoosen()) activeAssignments.add(assignment);
+                if (assignment.isChosen()) activeAssignments.add(assignment);
             }
         } catch (GRBException e) {
             e.printStackTrace();
@@ -1702,7 +1717,7 @@ public class GrowthlaneTrackingILP {
         if (set == null) return null;
 
         for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-            if (a.isChoosen()) {
+            if (a.isChosen()) {
                 return a;
             }
         }
@@ -1738,7 +1753,7 @@ public class GrowthlaneTrackingILP {
                 if (set == null) continue;
 
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                    if (!a.isChoosen()) {
+                    if (!a.isChosen()) {
                         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
@@ -1787,7 +1802,7 @@ public class GrowthlaneTrackingILP {
                 if (set == null) continue;
 
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                    if (!a.isChoosen()) {
+                    if (!a.isChosen()) {
                         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
@@ -2320,7 +2335,7 @@ public class GrowthlaneTrackingILP {
             for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : nh) {
                 if (assmnt.getGroundTruthConstraint() == null) {
                     try {
-                        if (assmnt.isChoosen()) {
+                        if (assmnt.isChosen()) {
                             assmnt.setGroundTruth(true);
                         } else {
                             assmnt.setGroundUntruth(true);

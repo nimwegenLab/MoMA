@@ -36,9 +36,9 @@ public class AssignmentActivitiesExporter implements ResultExporterInterface {
         ResultTableColumn<Integer> isPrunedCol = table.getColumn(Integer.class, "is_pruned");
 
         for (AbstractAssignment<?> assignment : ilp.getAllAssignments()) {
-            if(assignment.isChoosen() || assignment.isGroundTruth() || assignment.isGroundUntruth() || assignment.isPruned()) {
+            if(assignment.isChosen() || assignment.isGroundTruth() || assignment.isGroundUntruth() || assignment.isPruned()) {
                 idCol.addValue(assignment.getStringId());
-                isActiveCol.addValue(assignment.isChoosen() ? 1 : 0);
+                isActiveCol.addValue(assignment.isChosen() ? 1 : 0);
                 isGroundTruthCol.addValue(assignment.isGroundTruth() ? 1 : 0);
                 isGroundUntruthCol.addValue(assignment.isGroundUntruth() ? 1 : 0);
                 isPrunedCol.addValue(assignment.isPruned() ? 1 : 0);

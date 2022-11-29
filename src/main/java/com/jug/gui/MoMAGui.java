@@ -1,6 +1,5 @@
 package com.jug.gui;
 
-import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.MoMA;
 import com.jug.commands.ICommand;
@@ -85,6 +84,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonFreezePreviousTimeSteps;
     private JButton buttonSet;
     private JButton buttonReset;
+
+    public List<JComponent> getComponentsToDeactivateWhenIlpNotReady() {
+        return Arrays.asList(checkboxAutosave,
+                buttonRestart,
+                buttonOptimizeMore,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
 
     private MenuItem menuViewShowConsole;
     private MenuItem menuShowImgRaw;
@@ -271,20 +280,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(buttonSaveTrackingAndExit);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
         panelHorizontalHelper.setEnabled(false);
-
-        List<JComponent> componentsToDisableDuringOptimization = Arrays.asList(checkboxAutosave,
-                buttonRestart,
-                buttonOptimizeMore,
-                buttonExportHtml,
-                buttonExportData,
-                buttonSaveTracking,
-                buttonSaveTrackingAndExit);
-        componentsToDisableDuringOptimization.stream().forEach(jComponent -> jComponent.setEnabled(false));
-        model.getCurrentGL().addChangeListener(e -> {
-            Growthlane gl = (Growthlane) e.getSource();
-            componentsToDisableDuringOptimization.stream().forEach(jComponent -> jComponent.setEnabled(gl.ilpIsReady()));
-        });
-
 
         // --- Final adding and layout steps -------------
 

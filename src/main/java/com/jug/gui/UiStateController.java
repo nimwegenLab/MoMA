@@ -15,6 +15,7 @@ public class UiStateController {
         this.sliderPanel = sliderPanel;
         this.sliderPanel.setEnabled(false);
         hookUpPanelSliderEvents();
+        hookUpButtons();
     }
 
     private void hookUpPanelSliderEvents() {
@@ -33,6 +34,14 @@ public class UiStateController {
 //            Growthlane gl = ((Growthlane) e.getSource());
 //            sliderPanel.setEnabled(gl.getIlp().isReady() || gl.getIlp().isInfeasible());
 //        });
+    }
+
+    private void hookUpButtons() {
+        momaGui.getComponentsToDeactivateWhenIlpNotReady().stream().forEach(jComponent -> jComponent.setEnabled(false));
+        momaModel.getCurrentGL().addChangeListener(e -> {
+            Growthlane gl = (Growthlane) e.getSource();
+            momaGui.getComponentsToDeactivateWhenIlpNotReady().stream().forEach(jComponent -> jComponent.setEnabled(gl.ilpIsReady()));
+        });
     }
 
     ChangeListener initializationCallback;

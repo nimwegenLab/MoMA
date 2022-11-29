@@ -13,11 +13,12 @@ public class UiStateController {
         this.momaModel = momaModel;
         this.momaGui = momaGui;
         this.sliderPanel = sliderPanel;
+        this.sliderPanel.setEnabled(false);
         hookUpPanelSliderEvents();
     }
 
     private void hookUpPanelSliderEvents() {
-        initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
+        initializationCallback = e -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
             Growthlane gl = ((Growthlane) e.getSource());
             if (gl.ilpIsReady()) {
                 momaModel.getCurrentGL().removeChangeListener(initializationCallback);
@@ -28,6 +29,10 @@ public class UiStateController {
             }
         };
         momaModel.getCurrentGL().addChangeListener(initializationCallback);
+        momaModel.getCurrentGL().addChangeListener(e ->{
+            Growthlane gl = ((Growthlane) e.getSource());
+            sliderPanel.setEnabled(gl.getIlp().isReady() || gl.getIlp().isInfeasible());
+        });
     }
 
     ChangeListener initializationCallback;

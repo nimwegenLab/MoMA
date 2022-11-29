@@ -42,9 +42,9 @@ public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        tmin=null;
-        tmax=20;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+        tmin=200;
+        tmax=600;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void run_reloading() {

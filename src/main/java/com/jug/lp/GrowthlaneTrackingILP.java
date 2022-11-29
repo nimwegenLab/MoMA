@@ -164,6 +164,22 @@ public class GrowthlaneTrackingILP {
         return getStatus() != IlpStatus.OPTIMIZATION_IS_RUNNING && getStatus() != IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     }
 
+    public boolean isRunning() {
+        return getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING;
+    }
+
+    public boolean isOptimal() {
+        return getStatus() == IlpStatus.OPTIMAL;
+    }
+
+    public boolean isOptimizationNotPerformed() {
+        return getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
+    }
+
+    public boolean isInfeasible() {
+        return getStatus() == IlpStatus.INFEASIBLE;
+    }
+
     public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> getNodes() {
         return nodes;
     }

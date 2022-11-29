@@ -71,6 +71,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JScrollPane panelSegmentationAndAssignmentView;
     private JCheckBox checkboxAutosave;
     private JButton buttonRestart;
+
     private JButton buttonOptimizeMore;
     private JButton buttonExportHtml;
     private JButton buttonExportData;
@@ -85,11 +86,35 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonSet;
     private JButton buttonReset;
 
-    public List<JComponent> getComponentsToDeactivateWhenIlpNotReady() {
+    public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
+        return Arrays.asList(buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getAllComponentsToUpdate() {
         return Arrays.asList(checkboxAutosave,
                 buttonRestart,
                 buttonOptimizeMore,
                 buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning() {
+        return Arrays.asList(checkboxAutosave,
+                buttonRestart,
+                buttonOptimizeMore,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {
+        return Arrays.asList(buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);

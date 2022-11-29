@@ -2,7 +2,10 @@ package com.jug.gui;
 
 import com.jug.Growthlane;
 
+import javax.swing.*;
 import javax.swing.event.ChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UiStateController {
     private final MoMAModel momaModel;
@@ -29,19 +32,51 @@ public class UiStateController {
                 sliderPanel.setTrackingRangeEnd(optimizationRangeEnd);
             }
         };
-        momaModel.getCurrentGL().addChangeListener(initializationCallback);
+//        momaModel.getCurrentGL().addChangeListener(initializationCallback);
 //        momaModel.getCurrentGL().addChangeListener(e ->{
 //            Growthlane gl = ((Growthlane) e.getSource());
-//            sliderPanel.setEnabled(gl.getIlp().isReady() || gl.getIlp().isInfeasible());
+//            sliderPanel.setEnabled(gl.getIlp().isReady());
 //        });
     }
 
     private void hookUpButtons() {
-        momaGui.getComponentsToDeactivateWhenIlpNotReady().stream().forEach(jComponent -> jComponent.setEnabled(false));
         momaModel.getCurrentGL().addChangeListener(e -> {
             Growthlane gl = (Growthlane) e.getSource();
-            momaGui.getComponentsToDeactivateWhenIlpNotReady().stream().forEach(jComponent -> jComponent.setEnabled(gl.ilpIsReady()));
+            getAllComponentsToUpdate().stream().forEach(jComponent -> jComponent.setEnabled(true));
+            if (gl.getIlp().isRunning()) {
+                getComponentsToDeactivateWhenOptimizationIsRunning().stream().forEach(jComponent -> jComponent.setEnabled(false));
+            }
+            if(gl.getIlp().isOptimizationNotPerformed()){
+                getComponentsToDeactivateWhenOptimizationWasNeverRun().stream().forEach(jComponent -> jComponent.setEnabled(false));
+            }
+            if(gl.getIlp().isInfeasible()){
+                getComponentsToDeactivateWhenIlpIsInfeasible().stream().forEach(jComponent -> jComponent.setEnabled(false));
+            }
         });
+    }
+
+    private List<JComponent> getAllComponentsToUpdate() {
+        List<JComponent> list = new ArrayList<>(momaGui.getAllComponentsToUpdate());
+        list.add(sliderPanel.getTrackingRangeSlider());
+        list.add(sliderPanel.getTimestepSlider());
+        return list;
+    }
+
+    private List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning(){
+        List<JComponent> list = new ArrayList<>(momaGui.getComponentsToDeactivateWhenOptimizationIsRunning());
+        list.add(sliderPanel.getTrackingRangeSlider());
+        list.add(sliderPanel.getTimestepSlider());
+        return list;
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {
+        List<JComponent> list = new ArrayList<>(momaGui.getComponentsToDeactivateWhenOptimizationWasNeverRun());
+        return list;
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
+        List<JComponent> list = new ArrayList<>(momaGui.getComponentsToDeactivateWhenIlpIsInfeasible());
+        return list;
     }
 
     ChangeListener initializationCallback;

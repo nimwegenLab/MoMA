@@ -33,11 +33,6 @@ public class UiStateController {
                 sliderPanel.setTrackingRangeEnd(optimizationRangeEnd);
             }
         };
-//        momaModel.getCurrentGL().addChangeListener(initializationCallback);
-//        momaModel.getCurrentGL().addChangeListener(e ->{
-//            Growthlane gl = ((Growthlane) e.getSource());
-//            sliderPanel.setEnabled(gl.getIlp().isReady());
-//        });
     }
 
     private void setInitialUiState() {

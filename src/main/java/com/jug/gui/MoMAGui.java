@@ -86,18 +86,18 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonSet;
     private JButton buttonReset;
 
-    public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
-        return Arrays.asList(buttonExportHtml,
-                buttonExportData,
-                buttonSaveTracking,
-                buttonSaveTrackingAndExit);
-    }
-
     public List<JComponent> getAllComponentsToUpdate() {
         return Arrays.asList(checkboxAutosave,
                 buttonRestart,
                 buttonOptimizeMore,
                 buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
+        return Arrays.asList(buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);
@@ -114,7 +114,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {
-        return Arrays.asList(buttonExportHtml,
+        return Arrays.asList(buttonRestart,
+                buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);
@@ -275,14 +276,13 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonOptimizeMore.setForeground(Color.RED);
         buttonOptimizeMore.addActionListener(this);
 
-        for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
+        for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) { // TODO-MM-20221129: I should move this to UiStateController and use a state-change event in GurobiModel to trigger the change in button-color.
             ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
                 if (!configurationManager.getRunIlpOnChange()) {
                     buttonOptimizeMore.setForeground(Color.RED);
                 }
             });
         }
-        buttonOptimizeMore.setEnabled(false);
 
         buttonExportHtml = new JButton("Export HTML");
         buttonExportHtml.addActionListener(this);

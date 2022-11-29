@@ -19,6 +19,7 @@ public class UiStateController {
         this.sliderPanel.setEnabled(false);
         hookUpPanelSliderEvents();
         hookUpButtons();
+        setInitialUiState();
     }
 
     private void hookUpPanelSliderEvents() {
@@ -39,6 +40,11 @@ public class UiStateController {
 //        });
     }
 
+    private void setInitialUiState() {
+        getAllComponentsToUpdate().stream().forEach(jComponent -> jComponent.setEnabled(true));
+        getComponentsToDeactivateWhenOptimizationWasNeverRun().stream().forEach(jComponent -> jComponent.setEnabled(false));
+    }
+
     private void hookUpButtons() {
         momaModel.getCurrentGL().addChangeListener(e -> {
             Growthlane gl = (Growthlane) e.getSource();
@@ -46,10 +52,10 @@ public class UiStateController {
             if (gl.getIlp().isRunning()) {
                 getComponentsToDeactivateWhenOptimizationIsRunning().stream().forEach(jComponent -> jComponent.setEnabled(false));
             }
-            if(gl.getIlp().isOptimizationNotPerformed()){
+            if (gl.getIlp().isOptimizationNotPerformed()) {
                 getComponentsToDeactivateWhenOptimizationWasNeverRun().stream().forEach(jComponent -> jComponent.setEnabled(false));
             }
-            if(gl.getIlp().isInfeasible()){
+            if (gl.getIlp().isInfeasible()) {
                 getComponentsToDeactivateWhenIlpIsInfeasible().stream().forEach(jComponent -> jComponent.setEnabled(false));
             }
         });

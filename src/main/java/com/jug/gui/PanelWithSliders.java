@@ -64,9 +64,9 @@ public class PanelWithSliders extends JPanel {
         final Growthlane currentGL = model.getCurrentGL();
         trackingRangeSlider.setEnabled(currentGL.ilpIsReady());
 
-//        currentGL.getIlp().addChangeListener(l -> {
-//            GrowthlaneTrackingILP ilp = ((GrowthlaneTrackingILP) l.getSource());
-//            if(ilp.isReady()){
+//        currentGL.addChangeListener(e -> {
+//            Growthlane gl = ((Growthlane) e.getSource());
+//            if(gl.ilpIsReady()){
 //                trackingRangeSlider.setEnabled(true);
 //            } else {
 //                trackingRangeSlider.setEnabled(false);

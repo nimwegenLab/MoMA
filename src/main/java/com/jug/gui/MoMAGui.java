@@ -12,6 +12,7 @@ import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.util.JavaUtils;
 import ij.ImageJ;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
@@ -87,30 +88,36 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonReset;
 
     public List<JComponent> getAllComponentsToUpdate() {
-        return Arrays.asList(checkboxAutosave,
+        List<JComponent> list = JavaUtils.ListOf(checkboxAutosave,
                 buttonRestart,
                 buttonOptimizeMore,
                 buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);
+        list.addAll(segmentationEditorPanels);
+        list.addAll(assignmentEditorPanels);
+        return list;
     }
 
     public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
-        return Arrays.asList(buttonExportHtml,
+        return JavaUtils.ListOf(buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);
     }
 
     public List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning() {
-        return Arrays.asList(checkboxAutosave,
+        List<JComponent> list = JavaUtils.ListOf(checkboxAutosave,
                 buttonRestart,
                 buttonOptimizeMore,
                 buttonExportHtml,
                 buttonExportData,
                 buttonSaveTracking,
                 buttonSaveTrackingAndExit);
+        list.addAll(segmentationEditorPanels);
+        list.addAll(assignmentEditorPanels);
+        return list;
     }
 
     public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {

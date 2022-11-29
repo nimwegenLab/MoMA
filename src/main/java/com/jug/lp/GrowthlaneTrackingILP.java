@@ -1218,9 +1218,14 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private void invalidateHypothesisCaches() {
+    private void invalidateCaches() {
         getAllAssignments().stream().forEach(assigmnent -> assigmnent.invalidateCache());
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.invalidateCache());
+    }
+
+    private void fillCaches() {
+        getAllAssignments().stream().forEach(assigmnent -> assigmnent.cache());
+        getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
     }
 
     /**
@@ -1231,7 +1236,7 @@ public class GrowthlaneTrackingILP {
      */
     public void runImmediately() {
         try {
-            invalidateHypothesisCaches();
+            invalidateCaches();
 
             // Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
@@ -1304,6 +1309,9 @@ public class GrowthlaneTrackingILP {
             if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
                 removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
                 removeStorageLockConstraintAfterFirstOptimization = false;
+            }
+            if (getStatus() != IlpStatus.INFEASIBLE && getStatus() != IlpStatus.SUBOPTIMAL) {
+                fillCaches();
             }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;

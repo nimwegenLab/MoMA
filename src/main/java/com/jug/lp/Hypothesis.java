@@ -347,6 +347,13 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         isForceIgnored = null;
     }
 
+    public void cache() {
+        invalidateCache();
+        isActive = isActive();
+        isForced = isForced();
+        isForceIgnored = isForceIgnored();
+    }
+
     Boolean isActive = null;
 
     public boolean isActive() {

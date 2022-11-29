@@ -191,6 +191,17 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		isChosen = null;
 	}
 
+	public void cache() {
+		invalidateCache();
+		isGroundTruth = isGroundTruth();
+		isGroundUntruth = isGroundUntruth();
+		try {
+			isChosen = isChosen();
+		} catch (GRBException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	Boolean isGroundTruth = null;
 
 	public boolean isGroundTruth() {

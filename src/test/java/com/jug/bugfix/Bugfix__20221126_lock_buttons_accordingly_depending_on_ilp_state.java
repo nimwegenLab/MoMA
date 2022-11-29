@@ -1,4 +1,4 @@
-package com.jug;
+package com.jug.bugfix;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -6,27 +6,27 @@ import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 
-public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
+public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
     final String datasetSubfolder;
     String analysisName;
     Integer tmin;
     Integer tmax;
 
-    String datasetsBasePath = "TEMPLATE::BASE_PATH_TO_FOLDER_WITH_TEST_DATASETS"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    String datasetsBasePath = "/home/micha/Documents/01_work/15_moma_notes/02_moma_development"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
 
-    public TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING() {
-        datasetSubfolder = "TEMPLATE::RELATIVE_PATH_TO_TEST_DATASET_SUBFOLDER"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+    public Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state() {
+        datasetSubfolder = "bugfix/20221126-lock-buttons-accordingly-depending-on-ilp-state"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;
     }
 
     public static void main(String[] args) {
-        TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING tests = new TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING();
+        Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state tests = new Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -35,16 +35,18 @@ public class TEMPLATE_CLASS_FOR_INTERACTIVE_TESTING {
      */
     public void run_interactive() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        tmin=200;
+        tmax=600;
         analysisName = "test_batch_run";
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void run_reloading() {

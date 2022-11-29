@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Objects.isNull;
@@ -70,6 +71,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JScrollPane panelSegmentationAndAssignmentView;
     private JCheckBox checkboxAutosave;
     private JButton buttonRestart;
+
     private JButton buttonOptimizeMore;
     private JButton buttonExportHtml;
     private JButton buttonExportData;
@@ -83,6 +85,41 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private JButton buttonFreezePreviousTimeSteps;
     private JButton buttonSet;
     private JButton buttonReset;
+
+    public List<JComponent> getAllComponentsToUpdate() {
+        return Arrays.asList(checkboxAutosave,
+                buttonRestart,
+                buttonOptimizeMore,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenIlpIsInfeasible() {
+        return Arrays.asList(buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning() {
+        return Arrays.asList(checkboxAutosave,
+                buttonRestart,
+                buttonOptimizeMore,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
+
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {
+        return Arrays.asList(buttonRestart,
+                buttonExportHtml,
+                buttonExportData,
+                buttonSaveTracking,
+                buttonSaveTrackingAndExit);
+    }
 
     private MenuItem menuViewShowConsole;
     private MenuItem menuShowImgRaw;
@@ -239,7 +276,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonOptimizeMore.setForeground(Color.RED);
         buttonOptimizeMore.addActionListener(this);
 
-        for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) {
+        for (IlpVariableEditorPanel ilpVariableEditorPanel : ilpVariableEditorPanels) { // TODO-MM-20221129: I should move this to UiStateController and use a state-change event in GurobiModel to trigger the change in button-color.
             ilpVariableEditorPanel.addIlpModelChangedEventListener(evt -> {
                 if (!configurationManager.getRunIlpOnChange()) {
                     buttonOptimizeMore.setForeground(Color.RED);
@@ -255,6 +292,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         buttonSaveTracking.addActionListener(this);
         buttonSaveTrackingAndExit = new JButton("Save tracking & exit");
         buttonSaveTrackingAndExit.addActionListener(this);
+
         panelHorizontalHelper = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
         panelHorizontalHelper.setBorder(BorderFactory.createEmptyBorder(3, 0, 5, 0));
         panelHorizontalHelper.add(checkboxAutosave);
@@ -266,6 +304,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         panelHorizontalHelper.add(buttonSaveTracking);
         panelHorizontalHelper.add(buttonSaveTrackingAndExit);
         add(panelHorizontalHelper, BorderLayout.SOUTH);
+        panelHorizontalHelper.setEnabled(false);
 
         // --- Final adding and layout steps -------------
 
@@ -505,10 +544,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         // =============== panelDropdown-part ===================
         comboboxWhichImgToShow = new JComboBox();
         comboboxWhichImgToShow.addItem(itemChannel0);
-        if (imageProvider.getRawChannelImgs().size() > 1) {
+        if (imageProvider.getNumberOfChannels() > 1) {
             comboboxWhichImgToShow.addItem(itemChannel1);
         }
-        if (imageProvider.getRawChannelImgs().size() > 2) {
+        if (imageProvider.getNumberOfChannels() > 2) {
             comboboxWhichImgToShow.addItem(itemChannel2);
         }
 
@@ -616,7 +655,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     @SuppressWarnings({"unchecked"})
     public void dataToDisplayChanged() {
-
         final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // IF 'COUNTING VIEW' VIEW IS ACTIVE

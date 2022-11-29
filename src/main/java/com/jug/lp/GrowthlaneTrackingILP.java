@@ -164,6 +164,22 @@ public class GrowthlaneTrackingILP {
         return getStatus() != IlpStatus.OPTIMIZATION_IS_RUNNING && getStatus() != IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     }
 
+    public boolean isRunning() {
+        return getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING;
+    }
+
+    public boolean isOptimal() {
+        return getStatus() == IlpStatus.OPTIMAL;
+    }
+
+    public boolean isOptimizationNotPerformed() {
+        return getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
+    }
+
+    public boolean isInfeasible() {
+        return getStatus() == IlpStatus.INFEASIBLE;
+    }
+
     public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> getNodes() {
         return nodes;
     }
@@ -1225,6 +1241,7 @@ public class GrowthlaneTrackingILP {
             // - - - - - - - - - - - - - - - - - - - - -
             MoMA.dic.getOptimizationTimer().start();
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
+            fireStateChanged();
             model.optimize();
             MoMA.dic.getOptimizationTimer().stop();
             MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
@@ -1261,7 +1278,7 @@ public class GrowthlaneTrackingILP {
             }
             System.out.println("Status: " + status);
 
-            if (MoMA.getGui() != null) {
+            if (!isNull(MoMA.getGui())) {
                 MoMA.getGui().dataToDisplayChanged();
             }
 
@@ -1273,7 +1290,7 @@ public class GrowthlaneTrackingILP {
             solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
             System.out.println(solutionSanityChecker.getErrorMessage());
             if (solutionSanityChecker.continuityConstraintFound()) {
-                if (dialogManager != null) {
+                if (!isNull(dialogManager)) {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }

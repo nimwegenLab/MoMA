@@ -3,6 +3,7 @@ package com.jug.gui;
 import com.jug.Growthlane;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
+import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -20,6 +21,19 @@ public class PanelWithSliders extends JPanel {
         this.configurationManager = configurationManager;
         this.model = model;
         build();
+    }
+
+    boolean isEnabled = true;
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        timestepSlider.setEnabled(isEnabled);
+        trackingRangeSlider.setEnabled(isEnabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
     private void build() {
@@ -63,21 +77,29 @@ public class PanelWithSliders extends JPanel {
         final Growthlane currentGL = model.getCurrentGL();
         trackingRangeSlider.setEnabled(currentGL.ilpIsReady());
 
-        initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
-            Growthlane gl = ((Growthlane) e.getSource());
-            if (gl.ilpIsReady()) {
-                currentGL.removeChangeListener(initializationCallback);
-                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
-                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
-                setTrackingRangeStart(optimizationRangeStart);
-                setTrackingRangeEnd(optimizationRangeEnd);
-                trackingRangeSlider.setEnabled(true);
-            }
-        };
-        currentGL.addChangeListener(initializationCallback);
+//        currentGL.addChangeListener(e -> {
+//            Growthlane gl = ((Growthlane) e.getSource());
+//            if(gl.ilpIsReady()){
+//                trackingRangeSlider.setEnabled(true);
+//            } else {
+//                trackingRangeSlider.setEnabled(false);
+//            }
+//        });
+
+//        initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
+//            Growthlane gl = ((Growthlane) e.getSource());
+//            if (gl.ilpIsReady()) {
+//                currentGL.removeChangeListener(initializationCallback);
+//                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
+//                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
+//                setTrackingRangeStart(optimizationRangeStart);
+//                setTrackingRangeEnd(optimizationRangeEnd);
+//            }
+//        };
+//        currentGL.addChangeListener(initializationCallback);
     }
 
-    ChangeListener initializationCallback;
+//    ChangeListener initializationCallback;
 
     public void requestFocusOnTimeStepSlider(){
         timestepSlider.requestFocus();

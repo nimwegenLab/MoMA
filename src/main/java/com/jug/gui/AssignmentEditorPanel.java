@@ -6,6 +6,8 @@ import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
 
+import static java.util.Objects.isNull;
+
 public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     AssignmentsEditorViewer assignmentView;
     JCheckBox checkboxIsSelected;
@@ -54,7 +56,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         updateSelectionCheckbox();
 
-        if (ilp == null) {
+        if (isNull(ilp)) {
             assignmentView.display();
             return;
         }

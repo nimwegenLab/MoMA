@@ -414,7 +414,7 @@ public class PseudoDic {
     MoMAGui gui;
 
     PanelWithSliders panelWithSliders;
-    public PanelWithSliders getRangeSliderPanel(){
+    public PanelWithSliders getPanelWithSliders(){
         if(isNull(panelWithSliders)){
             LayoutManager layout = new MigLayout("wrap 2", "[]3[grow,fill]", "[]0[]");
             panelWithSliders = new PanelWithSliders(layout, configurationManager, getMomaModel());
@@ -422,9 +422,19 @@ public class PseudoDic {
         return panelWithSliders;
     }
 
-    public MoMAGui getMomaGui() {
-        if (gui == null) {
-            gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getRangeSliderPanel(), getHypothesisRangeSelector());
+    UiStateController uiStateController;
+
+    public UiStateController getUiStateController() {
+        if (isNull(uiStateController)) {
+            uiStateController = new UiStateController(getMomaModel(), getMomaGui(), getPanelWithSliders());
+        }
+        return uiStateController;
+    }
+
+    public synchronized MoMAGui getMomaGui() {
+        if (isNull(gui)) {
+            gui = new MoMAGui(getGuiFrame(), getCloseCommand(), getMomaModel(), getImageProvider(), configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY, getConfigurationManager(), getFilePaths(), getLoggerWindow(), getDialogManager(), getPanelWithSliders(), getHypothesisRangeSelector());
+            getUiStateController();
         }
         return gui;
     }
@@ -487,7 +497,7 @@ public class PseudoDic {
 
     private LoggerWindow loggerWindow;
 
-    public LoggerWindow getLoggerWindow() {
+    public synchronized LoggerWindow getLoggerWindow() {
         if (loggerWindow != null) {
             return loggerWindow;
         }

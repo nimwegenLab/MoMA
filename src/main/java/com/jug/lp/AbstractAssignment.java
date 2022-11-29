@@ -150,11 +150,20 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		}
 	}
 
+	Boolean isChosen = null;
+
+	public boolean isChosen() throws GRBException {
+		if(isNull(isChosen)){
+			isChosen = isChosenInternal();
+		}
+		return isChosen;
+	}
+
 	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;
-	public boolean isChosen() throws GRBException {
+	private boolean isChosenInternal() throws GRBException {
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED)
 			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING || ilp.getStatus() == IlpStatus.UNDEFINED) {
@@ -179,6 +188,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	public void invalidateCache() {
 		isGroundTruth = null;
 		isGroundUntruth = null;
+		isChosen = null;
 	}
 
 	Boolean isGroundTruth = null;

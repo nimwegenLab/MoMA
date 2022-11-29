@@ -1218,6 +1218,11 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private void invalidateHypothesisCaches() {
+        getAllAssignments().stream().forEach(assigmnent -> assigmnent.invalidateCache());
+        getAllHypotheses().stream().forEach(hypothesis -> hypothesis.invalidateCache());
+    }
+
     /**
      * This function takes the ILP built up in <code>model</code>
      * and starts the convex optimization procedure. This is actually the step
@@ -1226,6 +1231,8 @@ public class GrowthlaneTrackingILP {
      */
     public void runImmediately() {
         try {
+            invalidateHypothesisCaches();
+
             // Set maximum time Gurobi may use!
 //			model.getEnv().set( GRB.DoubleParam.TimeLimit, MotherMachine.GUROBI_TIME_LIMIT ); // now handled by callback!
             model.getEnv().set(GRB.IntParam.OutputFlag, 0);

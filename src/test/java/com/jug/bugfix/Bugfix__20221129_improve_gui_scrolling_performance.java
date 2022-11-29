@@ -25,8 +25,8 @@ public class Bugfix__20221129_improve_gui_scrolling_performance {
         Bugfix__20221129_improve_gui_scrolling_performance tests = new Bugfix__20221129_improve_gui_scrolling_performance();
 
 //        tests.run_interactive();
-        tests.run_trackonly();
-//        tests.run_reloading();
+//        tests.run_trackonly();
+        tests.run_reloading();
 //        tests.run_export();
     }
 

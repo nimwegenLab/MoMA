@@ -177,7 +177,21 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	 */
 	public abstract void addConstraintsToILP() throws GRBException;
 
+	public void invalidateCache() {
+		isGroundTruth = null;
+		isGroundUntruth = null;
+	}
+
+	Boolean isGroundTruth = null;
+
 	public boolean isGroundTruth() {
+		if (isNull(isGroundTruth)) {
+			isGroundTruth = isGroundTruthInternal();
+		}
+		return isGroundTruth;
+	}
+
+	private boolean isGroundTruthInternal() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
 			return false; /* no variable was found so this assignment is not forced */
@@ -197,7 +211,16 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return "GroundTruthConstr_" + getStringId();
 	}
 
-	public boolean isGroundUntruth() {
+	Boolean isGroundUntruth = null;
+
+	public boolean isGroundUntruth(){
+		if(isNull(isGroundUntruth)){
+			isGroundUntruth = isGroundUntruthInternal();
+		}
+		return isGroundUntruth;
+	}
+
+	private boolean isGroundUntruthInternal() {
 		GRBConstr grbConstr = getGroundTruthConstraint();
 		if (isNull(grbConstr)) {
 			return false; /* no variable was found so this assignment is not forced */
@@ -219,8 +242,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 					removeGroundTruthConstraint();
 				}
 				addGroundTruthConstraint();
+				invalidateCache();
 			} else if (isGroundTruth()) {
 				removeGroundTruthConstraint();
+				invalidateCache();
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
@@ -234,8 +259,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 					removeGroundTruthConstraint();
 				}
 				addGroundUntruthConstraint();
+				invalidateCache();
 			} else if (isGroundUntruth()) {
 				removeGroundUntruthConstraint();
+				invalidateCache();
 			}
 		} catch (GRBException e) {
 			throw new RuntimeException(e);

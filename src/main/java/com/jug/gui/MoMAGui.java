@@ -655,7 +655,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
      */
     @SuppressWarnings({"unchecked"})
     public void dataToDisplayChanged() {
-
         final GrowthlaneTrackingILP ilp = model.getCurrentGL().getIlp();
 
         // IF 'COUNTING VIEW' VIEW IS ACTIVE

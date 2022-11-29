@@ -356,10 +356,6 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 			grbConstr = ilp.model.getConstrByName(constraintName);
 		} catch (GRBException e) {
 			return null;
-		} catch (RuntimeException e){
-			System.out.println("ILP status: " + ilp.getStatus());
-			System.out.println("constraintName: " + constraintName);
-			throw e;
 		}
 		return grbConstr;
 	}

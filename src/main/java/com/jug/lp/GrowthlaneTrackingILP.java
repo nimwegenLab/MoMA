@@ -161,19 +161,7 @@ public class GrowthlaneTrackingILP {
     }
 
     public boolean isReady() {
-        return !isOptimizationRunning() && optimizationWasPerformed() && !isInfeasible();
-    }
-
-    public boolean isOptimizationRunning() {
-        return getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING;
-    }
-
-    public boolean optimizationWasPerformed() {
-        return getStatus() != IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
-    }
-
-    public boolean isInfeasible() {
-        return getStatus() == IlpStatus.INFEASIBLE;
+        return getStatus() != IlpStatus.OPTIMIZATION_IS_RUNNING && getStatus() != IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     }
 
     public AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> getNodes() {

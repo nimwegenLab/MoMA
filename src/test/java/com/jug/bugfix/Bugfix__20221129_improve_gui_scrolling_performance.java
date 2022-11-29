@@ -24,8 +24,8 @@ public class Bugfix__20221129_improve_gui_scrolling_performance {
     public static void main(String[] args) {
         Bugfix__20221129_improve_gui_scrolling_performance tests = new Bugfix__20221129_improve_gui_scrolling_performance();
 
-        tests.run_interactive();
-//        tests.run_trackonly();
+//        tests.run_interactive();
+        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
     }
@@ -44,6 +44,8 @@ public class Bugfix__20221129_improve_gui_scrolling_performance {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_batch_run";
+        tmin = null;
+        tmax = 400;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

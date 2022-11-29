@@ -23,6 +23,19 @@ public class PanelWithSliders extends JPanel {
         build();
     }
 
+    boolean isEnabled = true;
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+        timestepSlider.setEnabled(isEnabled);
+        trackingRangeSlider.setEnabled(isEnabled);
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
     private void build() {
         // --- Slider for time and GL -------------
         int initialTimeStep = 0; /* MM-20220620: I initialize the current time step to the start of the optimization interval. This is to ensure that the position of the current time-step is consistent with that of the optimization range. Because the optimization range will be adjusted otherwise with the current implementation. */
@@ -73,21 +86,20 @@ public class PanelWithSliders extends JPanel {
 //            }
 //        });
 
-        initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
-            Growthlane gl = ((Growthlane) e.getSource());
-            if (gl.ilpIsReady()) {
-                currentGL.removeChangeListener(initializationCallback);
-                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
-                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
-                setTrackingRangeStart(optimizationRangeStart);
-                setTrackingRangeEnd(optimizationRangeEnd);
-                trackingRangeSlider.setEnabled(true);
-            }
-        };
-        currentGL.addChangeListener(initializationCallback);
+//        initializationCallback = (e) -> { /* this callback is a hack to set the sliders to the correct state, once the ILP has been initialized; the boolean slidersInitialized serves to run it only once */
+//            Growthlane gl = ((Growthlane) e.getSource());
+//            if (gl.ilpIsReady()) {
+//                currentGL.removeChangeListener(initializationCallback);
+//                int optimizationRangeStart = gl.getIlp().getOptimizationRangeStart();
+//                int optimizationRangeEnd = gl.getIlp().getOptimizationRangeEnd();
+//                setTrackingRangeStart(optimizationRangeStart);
+//                setTrackingRangeEnd(optimizationRangeEnd);
+//            }
+//        };
+//        currentGL.addChangeListener(initializationCallback);
     }
 
-    ChangeListener initializationCallback;
+//    ChangeListener initializationCallback;
 
     public void requestFocusOnTimeStepSlider(){
         timestepSlider.requestFocus();

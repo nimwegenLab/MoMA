@@ -4,7 +4,6 @@ import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -155,9 +154,9 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;
-	public boolean isChoosen() throws GRBException {
+	public boolean isChosen() throws GRBException {
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED)
-			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChoosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
+			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING || ilp.getStatus() == IlpStatus.UNDEFINED) {
 			return previousIsChoosen;
 		}
@@ -299,7 +298,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	private void addFreezeConstraintWithName(String constraintName) {
 		try {
-			if (this.isChoosen()) {
+			if (this.isChosen()) {
 				addConstraint(1.0, constraintName);
 			} else {
 				addConstraint(0.0, constraintName);

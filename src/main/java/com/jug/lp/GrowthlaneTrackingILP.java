@@ -111,7 +111,7 @@ public class GrowthlaneTrackingILP {
                 final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
                     try {
-                        if (ass.isChoosen() || ass.isGroundTruth()) {
+                        if (ass.isChosen() || ass.isGroundTruth()) {
                             activeSet.add(ass);
                         }
                     } catch (final GRBException e) {
@@ -1613,7 +1613,7 @@ public class GrowthlaneTrackingILP {
         HashSet<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeAssignments = new HashSet<>();
         try {
             for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : assignments) {
-                if (assignment.isChoosen()) activeAssignments.add(assignment);
+                if (assignment.isChosen()) activeAssignments.add(assignment);
             }
         } catch (GRBException e) {
             e.printStackTrace();
@@ -1709,7 +1709,7 @@ public class GrowthlaneTrackingILP {
         if (set == null) return null;
 
         for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-            if (a.isChoosen()) {
+            if (a.isChosen()) {
                 return a;
             }
         }
@@ -1745,7 +1745,7 @@ public class GrowthlaneTrackingILP {
                 if (set == null) continue;
 
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                    if (!a.isChoosen()) {
+                    if (!a.isChosen()) {
                         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
@@ -1794,7 +1794,7 @@ public class GrowthlaneTrackingILP {
                 if (set == null) continue;
 
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                    if (!a.isChoosen()) {
+                    if (!a.isChosen()) {
                         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
                         if (innerSet == null) {
                             innerSet = new HashSet<>();
@@ -2327,7 +2327,7 @@ public class GrowthlaneTrackingILP {
             for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assmnt : nh) {
                 if (assmnt.getGroundTruthConstraint() == null) {
                     try {
-                        if (assmnt.isChoosen()) {
+                        if (assmnt.isChosen()) {
                             assmnt.setGroundTruth(true);
                         } else {
                             assmnt.setGroundUntruth(true);

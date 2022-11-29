@@ -152,7 +152,7 @@ public class AssignmentCostExporterOld implements ResultExporterInterface {
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
             boolean assignmentInIlpSolution;
             try {
-                assignmentInIlpSolution = assignment.isChoosen();
+                assignmentInIlpSolution = assignment.isChosen();
             } catch (GRBException err) {
                 assignmentInIlpSolution = false;
             }

@@ -85,6 +85,16 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         this.glf = null;
     }
 
+
+    private boolean isEnabled;
+    public void setEnabled(boolean enabled){
+        this.isEnabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
     /**
      * Sets the image data to be displayed when paintComponent is called.
      *
@@ -280,6 +290,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseWheelMoved(final MouseWheelEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (isNull(glf)) {
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         }
@@ -317,6 +331,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
@@ -475,8 +493,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mousePressed(final MouseEvent e) {
-        if (glf == null)
-            return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
+        if (!isEnabled()) {
+            return;
+        }
+
+        if (glf == null) {
+        } /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
     }
 
     /**
@@ -484,6 +506,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseEntered(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.isMouseOver = true;
@@ -494,6 +520,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseExited(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.isMouseOver = false;
@@ -511,6 +541,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseDragged(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         if (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3) {
@@ -526,6 +560,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseReleased(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.isDragging = false;
@@ -538,6 +576,10 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
      */
     @Override
     public void mouseMoved(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         if (glf == null)
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
         this.mousePosY = e.getY();

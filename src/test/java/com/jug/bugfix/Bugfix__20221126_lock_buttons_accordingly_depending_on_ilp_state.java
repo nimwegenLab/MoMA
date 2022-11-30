@@ -18,15 +18,15 @@ public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
         datasetSubfolder = "bugfix/20221126-lock-buttons-accordingly-depending-on-ilp-state"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 10;
+        tmax = 200;
     }
 
     public static void main(String[] args) {
         Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state tests = new Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state();
 
-//        tests.run_interactive();
+        tests.run_interactive();
 //        tests.run_trackonly();
-        tests.run_reloading();
+//        tests.run_reloading();
 //        tests.run_export();
     }
 

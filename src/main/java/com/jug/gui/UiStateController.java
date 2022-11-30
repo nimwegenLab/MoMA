@@ -72,6 +72,7 @@ public class UiStateController {
 
     public List<JComponent> getComponentsToDeactivateWhenOptimizationWasNeverRun() {
         List<JComponent> list = new ArrayList<>(momaGui.getComponentsToDeactivateWhenOptimizationWasNeverRun());
+        list.add(sliderPanel.getTrackingRangeSlider());
         return list;
     }
 

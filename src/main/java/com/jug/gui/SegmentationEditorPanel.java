@@ -59,8 +59,14 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.setAppearanceAndLayout();
     }
 
-    @Override
-    public void setEnabled(boolean enabled){
+    private boolean isEnabled = false;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
         super.setEnabled(enabled);
     }
 
@@ -172,7 +178,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void updateSelectionCheckboxes() {
-        checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelectedForSettingIlpConstraints.setEnabled(currentTimeStepIsValid() && isEnabled());
     }
 
     public void toggleGroundTruthSelectionCheckbox() {
@@ -197,7 +203,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void updateGroundTruthSelectionCheckbox() {
-        checkboxIsSelectedAsGroundTruth.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelectedAsGroundTruth.setEnabled(currentTimeStepIsValid() && isEnabled());
         if (groundTruthFramesExporter.containsFrame(timeStepToDisplay())){
             checkboxIsSelectedAsGroundTruth.setSelected(true);
             checkboxIsSelectedAsGroundTruth.setBackground(Color.GREEN);
@@ -213,7 +219,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
             return;
         }
 
-        if (!currentTimeStepIsValid()) {
+        if (!currentTimeStepIsValid() || !isEnabled()) {
             txtNumCells.setEnabled(false);
             txtNumCells.setText("-");
             txtNumCells.setBackground(Color.WHITE);
@@ -278,10 +284,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         GrowthlaneFrame glf = momaModel.getGrowthlaneFrame(timeStepToDisplay());
         IntervalView<FloatType> viewImgRightActive = getImageToDisplay(glf);
         growthlaneViewer.setScreenImage(glf, viewImgRightActive);
+        growthlaneViewer.setEnabled(isEnabled());
     }
 
     private void updateShowSegmentsButton() {
-        showSegmentsButton.setEnabled(currentTimeStepIsValid());
+        showSegmentsButton.setEnabled(currentTimeStepIsValid() && isEnabled());
     }
 
     private IntervalView<FloatType> getImageToDisplay(GrowthlaneFrame glf) {

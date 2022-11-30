@@ -24,8 +24,14 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         this.sourceTimeStepOffset = sourceTimeStepOffset;
     }
 
-    @Override
+    private boolean isEnabled = false;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
     public void setEnabled(boolean enabled){
+        isEnabled = enabled;
         super.setEnabled(enabled);
     }
 
@@ -53,7 +59,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     }
 
     private void updateSelectionCheckbox() {
-        checkboxIsSelected.setEnabled(currentTimeStepIsValid());
+        checkboxIsSelected.setEnabled(currentTimeStepIsValid() && isEnabled());
     }
 
     @Override
@@ -70,6 +76,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
             return;
         }
         assignmentView.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
+        assignmentView.setEnabled(isEnabled());
     }
 
     private boolean currentTimeStepIsValid() {

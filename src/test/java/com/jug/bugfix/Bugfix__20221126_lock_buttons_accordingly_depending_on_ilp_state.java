@@ -24,9 +24,9 @@ public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
     public static void main(String[] args) {
         Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state tests = new Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 

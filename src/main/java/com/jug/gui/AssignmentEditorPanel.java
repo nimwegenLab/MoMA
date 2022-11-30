@@ -9,16 +9,16 @@ import javax.swing.*;
 import static java.util.Objects.isNull;
 
 public class AssignmentEditorPanel extends IlpVariableEditorPanel {
-    AssignmentsEditorViewer assignmentView;
+    AssignmentsEditorViewer assignmentsEditorViewer;
     JCheckBox checkboxIsSelected;
     int sourceTimeStepOffset;
     private final MoMAModel momaModel;
 
     public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset, ConfigurationManager configurationManager) {
         this.momaModel = momaModel;
-        assignmentView = new AssignmentsEditorViewer(viewHeight, configurationManager);
-        assignmentView.addChangeListener(mmgui);
-        this.addAssignmentView(assignmentView);
+        assignmentsEditorViewer = new AssignmentsEditorViewer(viewHeight, configurationManager);
+        assignmentsEditorViewer.addChangeListener(mmgui);
+        this.add(assignmentsEditorViewer);
         this.setAppearanceAndLayout();
         this.addSelectionCheckbox(mmgui);
         this.sourceTimeStepOffset = sourceTimeStepOffset;
@@ -33,14 +33,11 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     public void setEnabled(boolean enabled){
         isEnabled = enabled;
         super.setEnabled(enabled);
+        assignmentsEditorViewer.setEnabled(enabled);
     }
 
     public int getTimeStepToDisplay() {
         return momaModel.getCurrentTimeOfCurrentGl() + sourceTimeStepOffset;
-    }
-
-    private void addAssignmentView(AssignmentsEditorViewer assignmentView) {
-        this.add(assignmentView);
     }
 
     private void addSelectionCheckbox(MoMAGui mmgui) {
@@ -68,15 +65,15 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         updateSelectionCheckbox();
 
         if (isNull(ilp)) {
-            assignmentView.display();
+            assignmentsEditorViewer.display();
             return;
         }
         if (!currentTimeStepIsValid()) {
-            assignmentView.display();
+            assignmentsEditorViewer.display();
             return;
         }
-        assignmentView.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
-        assignmentView.setEnabled(isEnabled());
+        assignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
+        assignmentsEditorViewer.setEnabled(isEnabled());
     }
 
     private boolean currentTimeStepIsValid() {
@@ -113,18 +110,18 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
     }
 
     public void switchToTab(int tabIndex) {
-        this.assignmentView.switchToTab(tabIndex);
+        this.assignmentsEditorViewer.switchToTab(tabIndex);
     }
 
     public AssignmentsEditorViewer getAssignmentViewerPanel() {
-        return assignmentView;
+        return assignmentsEditorViewer;
     }
 
     public void addIlpModelChangedEventListener(IlpModelChangedEventListener listener) {
-        assignmentView.addIlpModelChangedEventListener(listener);
+        assignmentsEditorViewer.addIlpModelChangedEventListener(listener);
     }
 
     public boolean isMouseOver(){
-        return assignmentView.isMouseOver();
+        return assignmentsEditorViewer.isMouseOver();
     }
 }

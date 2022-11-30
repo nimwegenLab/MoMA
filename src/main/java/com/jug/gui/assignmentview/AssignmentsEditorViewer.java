@@ -15,7 +15,9 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -42,6 +44,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data = new HashMap<>();
     private JComponent[] tabsToRoll;
     private String[] namesToRoll;
+    private List<AssignmentsEditorCanvasView> assignmentViews;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -54,6 +57,18 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         this.configurationManager = configurationManager;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
+    }
+
+    private boolean isEnabled = false;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled){
+        isEnabled = enabled;
+        super.setEnabled(enabled);
+        assignmentViews.stream().forEach(assignmentView -> assignmentView.setEnabled(enabled));
     }
 
     /**
@@ -84,6 +99,8 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveExitAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+
+        assignmentViews = Arrays.asList(activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments);
 
         tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
         namesToRoll = new String[]{"O", "M", "D", "E", "L"};

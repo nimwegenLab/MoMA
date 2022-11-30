@@ -121,6 +121,16 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     // methods
     // -------------------------------------------------------------------------------------
 
+    private boolean isEnabled = false;
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled){
+        isEnabled = enabled;
+        super.setEnabled(enabled);
+    }
     /**
      * @return the filterMinCost
      */
@@ -297,6 +307,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseClicked(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         // unmod. float_click  --  show filter window thing
         if (e.getClickCount() == 2 && !e.isShiftDown()) {
             new DialogAssignmentViewSetup(this, e.getXOnScreen(), e.getYOnScreen()).setVisible(true);
@@ -326,6 +340,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mousePressed(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         System.out.println("shift:    " + e.isShiftDown());
         System.out.println("ctrl:     " + e.isControlDown());
         System.out.println("alt:      " + e.isAltDown());
@@ -373,6 +391,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseReleased(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         this.isDragging = false;
         repaint();
     }
@@ -389,6 +411,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseExited(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         clearHoveredAssignments();
         repaint();
     }
@@ -398,6 +424,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseDragged(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         final float minstep = 0.01f;
         final float xsensitivity = 30.0f;
         final int dX = e.getX() - this.dragX;
@@ -442,6 +472,10 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      */
     @Override
     public void mouseMoved(final MouseEvent e) {
+        if (!isEnabled()) {
+            return;
+        }
+
         this.mousePosX = e.getX();
         this.mousePosY = e.getY();
         updateHoveredAssignments();

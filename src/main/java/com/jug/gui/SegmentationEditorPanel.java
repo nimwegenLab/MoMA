@@ -59,6 +59,11 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
         this.setAppearanceAndLayout();
     }
 
+    @Override
+    public void setEnabled(boolean enabled){
+        super.setEnabled(enabled);
+    }
+
     private void addShowSegmentsButton() {
         showSegmentsButton = new JButton("Seg");
         showSegmentsButton.setFont(new Font("default", Font.BOLD, 11));

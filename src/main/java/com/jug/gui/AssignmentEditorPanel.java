@@ -24,6 +24,11 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
         this.sourceTimeStepOffset = sourceTimeStepOffset;
     }
 
+    @Override
+    public void setEnabled(boolean enabled){
+        super.setEnabled(enabled);
+    }
+
     public int getTimeStepToDisplay() {
         return momaModel.getCurrentTimeOfCurrentGl() + sourceTimeStepOffset;
     }

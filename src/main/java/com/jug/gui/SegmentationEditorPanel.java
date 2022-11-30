@@ -291,10 +291,10 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
          */
         IntervalView<FloatType> viewImgCenterActive;
         if (colorChannelToDisplay == ColorChannel.CHANNEL1) {
-            viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(1), 2, glf.getOffsetF());
+            viewImgCenterActive = Views.hyperSlice(imageProvider.getChannelImg(1), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else if (colorChannelToDisplay == ColorChannel.CHANNEL2) {
-            viewImgCenterActive = Views.hyperSlice(imageProvider.getRawChannelImgs().get(2), 2, glf.getOffsetF());
+            viewImgCenterActive = Views.hyperSlice(imageProvider.getChannelImg(2), 2, glf.getOffsetF());
             viewImgCenterActive = normalizeImage(glf, viewImgCenterActive);
         } else { // default value to ColorChannel.CHANNEL0
             viewImgCenterActive = Views.offset(Views.hyperSlice(imageProvider.getImgRaw(), 2, glf.getOffsetF()), glf.getOffsetX() - configurationManager.GL_WIDTH_IN_PIXELS / 2 - configurationManager.GL_PIXEL_PADDING_IN_VIEWS, glf.getOffsetY());

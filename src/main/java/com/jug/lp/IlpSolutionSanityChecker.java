@@ -32,7 +32,7 @@ public class IlpSolutionSanityChecker {
      * Return if continuity constraint was found.
      * @return
      */
-    public boolean continuityConstraintFound() {
+    public boolean continuityConstraintViolationFound() {
         return continuityConstraintViolationFound;
     }
     private boolean continuityConstraintViolationFound;

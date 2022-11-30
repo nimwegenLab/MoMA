@@ -1301,7 +1301,7 @@ public class GrowthlaneTrackingILP {
             IlpSolutionSanityChecker solutionSanityChecker = new IlpSolutionSanityChecker(this, gl);
             solutionSanityChecker.CheckSolutionContinuityConstraintForAllTimesteps();
             System.out.println(solutionSanityChecker.getErrorMessage());
-            if (solutionSanityChecker.continuityConstraintFound()) {
+            if (solutionSanityChecker.continuityConstraintViolationFound()) {
                 if (!isNull(dialogManager)) {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }

@@ -150,33 +150,38 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		}
 	}
 
-	Boolean isChosen = null;
-
-	public boolean isChosen() throws GRBException {
-		if(isNull(isChosen)){
-			isChosen = isChosenInternal();
-		}
-		return isChosen;
-	}
-
 	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;
-	private boolean isChosenInternal() throws GRBException {
+	public boolean isChosen() throws GRBException {
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_NEVER_PERFORMED)
 			throw new GRBException();  /* ilp.getStatus() == 0: corresponds to OPTIMIZATION_NEVER_PERFORMED; this hack is needed to stay compatible, because the first time that isChosen() is called from program code, it throws GRBException. And this first call is needed to run the first optimization and initialize `previousIsChoosen`. Furthermore, we cannot simply return `previousIsChoosen=false`, because then the state of the assignments will not be correctly initialized. */
 		if (ilp.getStatus() == IlpStatus.OPTIMIZATION_IS_RUNNING || ilp.getStatus() == IlpStatus.UNDEFINED) {
 			return previousIsChoosen;
 		}
 		try {
-			GRBVar grbVarOfAssignment = getGRBVar();
-			long binary_selection_variable_value_rounded = Math.round(grbVarOfAssignment.get(GRB.DoubleAttr.X));
-			previousIsChoosen = (binary_selection_variable_value_rounded == 1);
+			boolean result = getIsChosenStateFromIlpCached();
+			previousIsChoosen = result;
 			return previousIsChoosen;
 		} catch (GRBException err) {
 			return previousIsChoosen; /* This will be returned in case the ILP optimization fails. In that case GRBException will be thrown. We then return the previous state of all assignments, so that the user can correct any mistakes she mad. */
 		}
+	}
+
+	Boolean isChosen = null;
+
+	public boolean getIsChosenStateFromIlpCached() throws GRBException {
+		if(isNull(isChosen)){
+			isChosen = getIsChosenStateFromIlp();
+		}
+		return isChosen;
+	}
+
+	private boolean getIsChosenStateFromIlp() throws GRBException {
+		GRBVar grbVarOfAssignment = getGRBVar();
+		long binary_selection_variable_value_rounded = Math.round(grbVarOfAssignment.get(GRB.DoubleAttr.X));
+		return (binary_selection_variable_value_rounded == 1);
 	}
 
 	/**

@@ -1290,10 +1290,6 @@ public class GrowthlaneTrackingILP {
             }
             System.out.println("Status: " + status);
 
-            if (!isNull(MoMA.getGui())) {
-                MoMA.getGui().dataToDisplayChanged();
-            }
-
             if (status == IlpStatus.OPTIMIZATION_IS_RUNNING) {
                 status = IlpStatus.UNDEFINED; /* something went wrong and `this.status` was not set to something different than OPTIMIZATION_RUNNING; so set it to UNDEFINED */
             }
@@ -1313,18 +1309,20 @@ public class GrowthlaneTrackingILP {
             if (getStatus() != IlpStatus.INFEASIBLE && getStatus() != IlpStatus.SUBOPTIMAL) {
                 fillCaches();
             }
+            fireStateChanged();
+
+            if (!isNull(MoMA.getGui())) {
+                MoMA.getGui().dataToDisplayChanged();
+            }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
             e.printStackTrace();
-        } finally {
-            fireStateChanged();
         }
     }
 
     /**
-     * Returns the optimal segmentation at time t, given by a list of non
-     * conflicting component-tree-nodes.
+     * Returns the optimal segmentation at time t, given by a list of non-conflicting component-tree-nodes.
      * Calling this function makes only sense if the <code>run</code>-method was
      * called and the convex optimizer could find a optimal feasible solution.
      *

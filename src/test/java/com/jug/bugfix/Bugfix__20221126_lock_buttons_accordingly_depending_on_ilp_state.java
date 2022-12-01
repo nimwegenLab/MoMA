@@ -18,15 +18,15 @@ public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
         datasetSubfolder = "bugfix/20221126-lock-buttons-accordingly-depending-on-ilp-state"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 200;
+        tmax = 500;
     }
 
     public static void main(String[] args) {
         Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state tests = new Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state();
 
-//        tests.run_interactive();
+        tests.run_interactive();
 //        tests.run_trackonly();
-        tests.run_reloading();
+//        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -37,14 +37,16 @@ public class Bugfix__20221126_lock_buttons_accordingly_depending_on_ilp_state {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         analysisName = "test_interactive";
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        tmin=null;
+        tmax=10;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        tmin=200;
-        tmax=600;
+        tmin=null;
+        tmax=10;
         analysisName = "test_batch_run";
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }

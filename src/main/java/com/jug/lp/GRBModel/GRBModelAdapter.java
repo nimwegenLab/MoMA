@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
-    private boolean modelIsEmpty;
+    private boolean modelIsEmpty=true;
 
     @Override
     public GRBConstr[] getConstrs() {
@@ -24,10 +24,9 @@ public class GRBModelAdapter implements IGRBModelAdapter {
      */
     @Override
     public GRBConstr getConstrByName(String name) throws GRBException {
-        if (modelIsEmpty) { /* we use this flag to avoid unnecessary queries once at least one constraint was added and model.getConstrByName(name) will not throw an exception anymore */
+        if (modelIsEmpty) { /* we use this flag to avoid unnecessary queries until at least one constraint was added to the model and model.getConstrByName(name) will not throw an exception anymore */
             GRBConstr[] listOfConstrains = this.getConstrs();
             if (listOfConstrains.length == 0) {
-                modelIsEmpty = true;
                 return null;
             } else {
                 modelIsEmpty = false;

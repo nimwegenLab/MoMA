@@ -135,7 +135,7 @@ public class GlDataLoader {
         int i = 0;
         for ( final Growthlane gl : getGrowthlanes() ) {
             System.out.println( " > > > > > Starting LP for GL# " + i + " < < < < < " );
-            gl.getIlp().run();
+            gl.getIlp().runImmediately();
             i++;
         }
     }

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Ctrl + m: Force mapping-assignments between selected hypotheses. 
   - Ctrl + i: Force-ignore selected hypotheses. 
   - Ctrl + c: Clear all constraints on the select hypotheses and assignments between them.
+- The user-selection for the checkbox "Run optimization on change" is now persisted to `GUI_OPTIMIZE_ON_ILP_CHANGE` in `mm.properties`.
 
 ### Changed
 - Label-Editor is now opened using Ctrl+Shift+RightClick (previously it was Ctrl+LeftClick).

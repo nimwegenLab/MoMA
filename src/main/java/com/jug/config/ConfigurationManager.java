@@ -309,6 +309,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
         SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS = Double.parseDouble(props.getProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS)));
 
+        GUI_OPTIMIZE_ON_ILP_CHANGE = parseBooleanFromIntegerValue("GUI_OPTIMIZE_ON_ILP_CHANGE", GUI_OPTIMIZE_ON_ILP_CHANGE);
+
 		/*
 		  Default x-position of the main GUI-window. This value will be used if the
 		  values in the properties file are not fitting on any of the currently
@@ -477,6 +479,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR));
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER));
+
+            setBooleanAsIntegerValue(props, "GUI_OPTIMIZE_ON_ILP_CHANGE", GUI_OPTIMIZE_ON_ILP_CHANGE);
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {

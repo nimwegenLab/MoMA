@@ -8,6 +8,8 @@ import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
     final String datasetSubfolder;
+    private final String dataset1;
+    private final String dataset2;
     String analysisName;
     Integer tmin;
     Integer tmax;
@@ -16,6 +18,8 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
 
     public Bugfix__20220112_fix_spurious_ilp_infeasible_error() {
         datasetSubfolder = "bugfix/20220112-fix-spurious-ilp-infeasible-error"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
+        dataset1 = "data/20220530_2_32";
+        dataset2 = "data/20220701_7_2";
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
         tmax = 10;
@@ -24,8 +28,9 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
     public static void main(String[] args) {
         Bugfix__20220112_fix_spurious_ilp_infeasible_error tests = new Bugfix__20220112_fix_spurious_ilp_infeasible_error();
 
-        tests.run_interactive();
-//        tests.run_trackonly();
+//        tests.run_interactive();
+//        tests.run_trackonly__20220530_2_32();
+        tests.run_trackonly__20220701_7_2();
 //        tests.run_reloading();
 //        tests.run_export();
     }
@@ -40,10 +45,21 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
-    public void run_trackonly() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+    public void run_trackonly__20220530_2_32() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, dataset1, "20220530_VNG1040_AB2h_1_MMStack_Pos2_GL32.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, dataset1, "20220530_2_32__mm.properties");
         analysisName = "test_batch_run";
+        tmin = null;
+        tmax = null;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void run_trackonly__20220701_7_2() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, dataset2, "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, dataset2, "20220701_7_2__mm.properties");
+        analysisName = "test_batch_run";
+        tmin = null;
+        tmax = null;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

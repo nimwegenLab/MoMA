@@ -33,6 +33,7 @@ public class ResultTable {
     public void writeToFile(File file) throws IOException {
         Writer writer = new OutputStreamWriter(new FileOutputStream(file));
         this.writeTable(writer);
+        writer.close();
     }
 
     /**

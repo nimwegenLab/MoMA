@@ -1142,7 +1142,7 @@ public class GrowthlaneTrackingILP {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
             double ordinal = hyp.getWrappedComponent().getOrdinalValue();
             if(ordinal >= bigM){
-                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the ordinal value (=%f) of hypothesis %s; this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal, hyp.getStringId()));
             }
             double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());
@@ -1151,7 +1151,7 @@ public class GrowthlaneTrackingILP {
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
             double ordinal = lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue();
             if(ordinal >= bigM){
-                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the summed ordinal values (=%f) of hypotheses %s and %s; this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal, lowerHypothesis.getStringId(), upperHypothesis.getStringId()));
             }
             double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());

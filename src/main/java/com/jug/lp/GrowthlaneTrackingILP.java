@@ -1041,7 +1041,7 @@ public class GrowthlaneTrackingILP {
         bigM = Math.pow(2, maxLeafRank + 1);
 
         if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
-            System.out.println("something went wrong");
+            throw new RuntimeException("Value for bigM was not correctly calculated!");
         }
     }
 

@@ -1010,7 +1010,7 @@ public class GrowthlaneTrackingILP {
 
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
-                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
+                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExistingHypothesesForComponents(componentsBelow);
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
         }
@@ -1045,13 +1045,13 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getExistingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
         for (AdvancedComponent<FloatType> component : components){
             try {
                 hypothesisList.add(nodes.findHypothesisContaining(component));
             } catch (IlpSetupException e) {
-                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of intereset  */
+                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of interest  */
             }
         }
         return hypothesisList;

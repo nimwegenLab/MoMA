@@ -1027,11 +1027,11 @@ public class GrowthlaneTrackingILP {
      * big-M is thus guaranteed to be larger than any ordinal-value of the target-components and also larger than the
      * sum of any two ordinal.
      *
-     * @param alltargetHypotheses
+     * @param allTargetHypotheses
      */
-    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> alltargetHypotheses) {
+    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> allTargetHypotheses) {
         double maxLeafRank = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : alltargetHypotheses) {
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : allTargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
             if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();

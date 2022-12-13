@@ -29,8 +29,8 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
         Bugfix__20220112_fix_spurious_ilp_infeasible_error tests = new Bugfix__20220112_fix_spurious_ilp_infeasible_error();
 
 //        tests.run_interactive();
-        tests.run_trackonly__20220530_2_32();
-//        tests.run_trackonly__20220701_7_2();
+//        tests.run_trackonly__20220530_2_32();
+        tests.run_trackonly__20220701_7_2();
 //        tests.run_reloading();
 //        tests.run_export();
     }

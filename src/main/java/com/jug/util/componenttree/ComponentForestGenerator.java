@@ -3,6 +3,7 @@ package com.jug.util.componenttree;
 import com.jug.config.IComponentForestGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.moma.auxiliary.Plotting;
 import net.imglib2.algorithm.binary.Thresholder;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
@@ -86,7 +87,7 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
 //                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
 //            }
 //        }
-
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.getSourceImage());
         return tree;
     }
 }

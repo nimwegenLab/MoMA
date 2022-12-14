@@ -47,7 +47,6 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
 
-    private JFrame guiFrame;
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -73,8 +72,7 @@ public class GrowthlaneTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthlaneTrackingILP(JFrame guiFrame,
-                                 final Growthlane gl,
+    public GrowthlaneTrackingILP(final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  IConfiguration configurationManager,
@@ -84,7 +82,6 @@ public class GrowthlaneTrackingILP {
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
                                  IAssignmentFilter assignmentFilter) {
-        this.guiFrame = guiFrame;
         this.gl = gl;
         this.model = grbModel;
         this.versionString = versionString;

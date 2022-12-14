@@ -121,8 +121,7 @@ public class Growthlane {
 		}
 
 		IAssignmentFilter assignmentFilter = MoMA.dic.getAssignmentFilterFactory().getAssignmentFilter();
-		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(),
-				this,
+		ilp = new GrowthlaneTrackingILP(this,
 				model,
 				MoMA.dic.getAssignmentPlausibilityTester(),
 				configurationManager,

@@ -67,8 +67,7 @@ public class GrowthlaneTrackingIlpTest {
         GlFileManager glFileManagerMock = new GlFileManager();
         Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
         IAssignmentFilter assignmentFilterMock = mock(IAssignmentFilter.class);
-        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(new JFrame(),
-                gl,
+        GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl,
                 mockGrbModel,
                 new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock),
                 false,

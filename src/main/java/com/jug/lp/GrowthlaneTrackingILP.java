@@ -1034,7 +1034,7 @@ public class GrowthlaneTrackingILP {
 //        List<Integer> res = allTargetHypotheses.stream().map(hyp -> hyp.getWrappedComponent().getChildren().size()).collect(Collectors.toList());
         for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : allTargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
-            System.out.println("component id: " + component.getStringId());
+//            System.out.println("component id: " + component.getStringId());
             if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();
                 maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;

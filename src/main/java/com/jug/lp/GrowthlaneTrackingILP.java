@@ -149,7 +149,7 @@ public class GrowthlaneTrackingILP {
 
     /**
      * @return the status. This status returns one of the following values:
-     * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASABLE, UNBOUNDED,
+     * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASIBLE, UNBOUNDED,
      * SUBOPTIMAL, NUMERIC, or LIMIT_REACHED. Values 2-6 correspond
      * directly to the ones from gurobi, the last one is set when none
      * of the others was actually returned by gurobi.

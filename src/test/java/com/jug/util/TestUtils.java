@@ -230,11 +230,11 @@ public class TestUtils {
         return component;
     }
 
-    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int frameIndexStart, int frameIndexStop, float componentSplittingThreshold) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int firstFrame, int lastFrame, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
         ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
-        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
+        for (int frameIndex = firstFrame; frameIndex <= lastFrame; frameIndex++) {
             componentForests.add(componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold));
         }
         return componentForests;

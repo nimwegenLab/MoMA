@@ -251,7 +251,7 @@ public class ComponentForestSerializationTests {
     }
 
         private AdvancedComponent<FloatType> getComponent(String componentId) throws IOException {
-        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestListNew(5, 6);
+        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestListNew(5, 5);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> forest = componentForests.get(0);
         AdvancedComponent<FloatType> component = forest.getComponentWithId(componentId);
         Assertions.assertNotNull(component);
@@ -273,8 +273,8 @@ public class ComponentForestSerializationTests {
     }
 
     @NotNull
-    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForestListNew(int frameIndexStart, int frameIndexStop) throws IOException {
+    private List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getAdvancedComponentForestListNew(int firstFrame, int lastFrame) throws IOException {
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
-        return testUtils.getComponentForestListFromDataFolder(testDataFolder, frameIndexStart, frameIndexStop, 1.0f);
+        return testUtils.getComponentForestListFromDataFolder(testDataFolder, firstFrame, lastFrame, 1.0f);
     }
 }

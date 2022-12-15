@@ -52,7 +52,7 @@ public class GrowthlaneTrackingIlpTest {
    public void reproduceAssertionError() throws IOException, GRBException {
         int frameIndexStart = 0;
         int frameIndexStop = 1;
-        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12/frames_445-460__20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12");
+        Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2/frames_172-173__probability_maps__20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2");
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentTress = testUtils.getComponentForestListFromDataFolder(testDataFolder, frameIndexStart, frameIndexStop, 1.0f);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentTress.get(0);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentTress.get(1);

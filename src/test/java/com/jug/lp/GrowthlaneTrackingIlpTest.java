@@ -70,8 +70,11 @@ public class GrowthlaneTrackingIlpTest {
                 () -> new GurobiCallbackMock(),
                 () -> new DialogGurobiProgressMock(),
                 assignmentFilterMock);
-        int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
-        ilp.addMappingAssignments(t, sourceTree, targetTree);
+//        int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
+        for(int t=0; t<=2; t++){
+            ilp.addMappingAssignments(t, sourceTree, targetTree);
+        }
+        ilp.addCrossingConstraints();
     }
 
     @Test

@@ -1001,7 +1001,7 @@ public class GrowthlaneTrackingILP {
 
     double bigM = 0;
 
-    private void addCrossingConstraints() throws GRBException {
+    public void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) { /* upper limit of FOR-loop is `gl.numberOfFrames() - 1` because we do not need crossing-constraints for the last time-step, which only contains exit-assignments */
             calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
 

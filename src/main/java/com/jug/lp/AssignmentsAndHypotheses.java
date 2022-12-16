@@ -282,4 +282,22 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
             throw new AssertionError(String.format("h_t and hmap contain different hypotheses or different number of hypotheses (h_t_flat.size()=%d, hmap_values_flat.size()=%d, union.size()=%d)", h_t_flat.size(), hmap_values_flat.size(), union.size()));
         }
     }
+
+    /**
+     * Assert that the hypotheses that are source-/target-hypotheses of all assignments are identical to the hypotheses
+     * in h_t.
+     */
+    public void assertSourceAndTargetHypothesesEqualHypothesesInHt() {
+        Set<H> h_t_flat = h_t.stream().flatMap(List::stream).collect(Collectors.toSet());
+        Set<A> assignments = a_t.stream().flatMap(List::stream).collect(Collectors.toSet());
+        Set<H> sourceHyps = assignments.stream().map(a -> a.getSourceHypothesis()).collect(Collectors.toSet());
+        Set<H> targetHyps = assignments.stream().flatMap(a -> a.getTargetHypotheses().stream()).collect(Collectors.toSet());
+        HashSet<H> hypothesesInAssignments = new HashSet<>(sourceHyps);
+        hypothesesInAssignments.addAll(targetHyps);
+        HashSet<H> union = new HashSet<>(hypothesesInAssignments);
+        union.addAll(h_t_flat);
+        if (h_t_flat.size() != hypothesesInAssignments.size() || h_t_flat.size() != union.size()) {
+            throw new AssertionError(String.format("Hypotheses in h_t are different from the collection of source- and target-hypotheses of all assignments (h_t_flat.size()=%d, hypothesesInAssignments.size()=%d, union.size()=%d)", h_t_flat.size(), hypothesesInAssignments.size(), union.size()));
+        }
+    }
 }

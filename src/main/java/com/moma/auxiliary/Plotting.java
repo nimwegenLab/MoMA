@@ -18,6 +18,8 @@ import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.img.ImgView;
 import net.imglib2.img.array.ArrayImgFactory;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.MaskPredicate;
@@ -28,6 +30,7 @@ import net.imglib2.type.numeric.NumericType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.view.Views;
 import org.javatuples.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -97,6 +100,12 @@ public class Plotting {
     public static <T extends Type<T>, C extends Component<T, C>> void showComponentTree(ComponentForest<C> ct,
                                                                                         List<C> componentsInOptimalSolution,
                                                                                         RandomAccessibleInterval sourceImage) {
+        Img<ARGBType> img = drawComponentTreeToImg(ct, componentsInOptimalSolution, sourceImage);
+        ImageJFunctions.show(img);
+    }
+
+    @NotNull
+    private static <T extends Type<T>, C extends Component<T, C>> Img<ARGBType> drawComponentTreeToImg(ComponentForest<C> ct, List<C> componentsInOptimalSolution, RandomAccessibleInterval sourceImage) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }
@@ -116,9 +125,8 @@ public class Plotting {
 
         // run for components in each level
         ComponentTreeUtils.doForEachComponentInTreeLevel(ct, levelComponentsConsumer);
-
-        // show
-        ImageJFunctions.show(Views.stack(componentLevelImageStack));
+        Img<ARGBType> img = ImgView.wrap(Views.stack(componentLevelImageStack));
+        return img;
     }
 
 

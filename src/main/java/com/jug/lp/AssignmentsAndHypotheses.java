@@ -5,10 +5,8 @@ import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -270,5 +268,18 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
      */
     public int getNumberOfTimeSteps() {
         return h_t.size();
+    }
+
+    /**
+     * Assert that the hypotheses in h_t and hmap are identical.
+     */
+    public void assertHypothesesInHtAndHmapEqual() {
+        Set<H> h_t_flat = h_t.stream().flatMap(List::stream).collect(Collectors.toSet());
+        Set<H> hmap_values_flat = new HashSet<>(hmap.values());
+        HashSet<H> union = new HashSet<>(h_t_flat);
+        union.addAll(hmap_values_flat);
+        if (h_t_flat.size() != hmap_values_flat.size() || h_t_flat.size() != union.size() || hmap_values_flat.size() != union.size()) {
+            throw new AssertionError(String.format("h_t and hmap contain different hypotheses or different number of hypotheses (h_t_flat.size()=%d, hmap_values_flat.size()=%d, union.size()=%d)", h_t_flat.size(), hmap_values_flat.size(), union.size()));
+        }
     }
 }

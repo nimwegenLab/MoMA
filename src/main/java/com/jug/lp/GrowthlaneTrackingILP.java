@@ -240,6 +240,8 @@ public class GrowthlaneTrackingILP {
                 filterAssignments();
                 System.out.println("FINISH: Filter assignments.");
 
+                nodes.assertHypothesesInHtAndHmapEqual();
+
     //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
     //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
     //            sanityChecker.checkIfAllComponentsHaveMappingAssignmentsBetweenThem();

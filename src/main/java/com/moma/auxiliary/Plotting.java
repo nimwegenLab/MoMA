@@ -96,17 +96,17 @@ public class Plotting {
         }
     }
 
-    public static <T extends Type<T>, C extends Component<T, C>> void showComponentTree(ComponentForest<C> ct,
-                                                                                        List<C> componentsInOptimalSolution,
-                                                                                        RandomAccessibleInterval sourceImage) {
-        Img<ARGBType> img = drawComponentTreeToImg(ct, componentsInOptimalSolution, sourceImage);
+    public static <T extends Type<T>, C extends Component<T, C>> void showComponentForest(ComponentForest<C> ct,
+                                                                                          List<C> componentsInOptimalSolution,
+                                                                                          RandomAccessibleInterval sourceImage) {
+        Img<ARGBType> img = getComponentForestAsImg(ct, componentsInOptimalSolution, sourceImage);
         ImageJFunctions.show(img);
     }
 
     @NotNull
-    public static <T extends Type<T>, C extends Component<T, C>> Img<ARGBType> drawComponentTreeToImg(ComponentForest<C> ct,
-                                                                                                      List<C> componentsInOptimalSolution,
-                                                                                                      RandomAccessibleInterval sourceImage) {
+    public static <T extends Type<T>, C extends Component<T, C>> Img<ARGBType> getComponentForestAsImg(ComponentForest<C> ct,
+                                                                                                       List<C> componentsInOptimalSolution,
+                                                                                                       RandomAccessibleInterval sourceImage) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }

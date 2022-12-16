@@ -278,7 +278,7 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
         Set<H> hmap_values_flat = new HashSet<>(hmap.values());
         HashSet<H> union = new HashSet<>(h_t_flat);
         union.addAll(hmap_values_flat);
-        if (h_t_flat.size() != hmap_values_flat.size() || h_t_flat.size() != union.size() || hmap_values_flat.size() != union.size()) {
+        if (h_t_flat.size() != hmap_values_flat.size() || hmap_values_flat.size() != union.size()) {
             throw new AssertionError(String.format("h_t and hmap contain different hypotheses or different number of hypotheses (h_t_flat.size()=%d, hmap_values_flat.size()=%d, union.size()=%d)", h_t_flat.size(), hmap_values_flat.size(), union.size()));
         }
     }

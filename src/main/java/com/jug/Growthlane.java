@@ -130,8 +130,8 @@ public class Growthlane {
 				isLoadedFromDisk(),
 				MoMA.dic.getGurobiCallbackFactory(),
 				MoMA.dic.getGurobiProgressDialogFactory(),
-				assignmentFilter
-				);
+				assignmentFilter,
+				MoMA.dic);
 		if (guiProgressReceiver != null) {
 			ilp.addProgressListener(guiProgressReceiver);
 		}

@@ -2,7 +2,6 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
-import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
@@ -11,6 +10,7 @@ import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
@@ -64,6 +64,7 @@ public class GrowthlaneTrackingILP {
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
+    private PseudoDic dic;
     private IAssignmentFilter assignmentFilter;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
@@ -81,7 +82,8 @@ public class GrowthlaneTrackingILP {
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
-                                 IAssignmentFilter assignmentFilter) {
+                                 IAssignmentFilter assignmentFilter,
+                                 PseudoDic dic) {
         this.gl = gl;
         this.model = grbModel;
         this.versionString = versionString;
@@ -90,6 +92,7 @@ public class GrowthlaneTrackingILP {
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
+        this.dic = dic;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
         this.assignmentFilter = assignmentFilter;
@@ -225,12 +228,12 @@ public class GrowthlaneTrackingILP {
 
             // add Hypothesis and Assignments
             if (isLoadedFromDisk) {
-                MoMA.dic.getAssignmentCreationTimer().start();
+                dic.getAssignmentCreationTimer().start();
                 loadAssignments();
-                MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
+                dic.getAssignmentCreationTimer().stop();
+                dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
             } else {
-                MoMA.dic.getAssignmentCreationTimer().start();
+                dic.getAssignmentCreationTimer().start();
                 createAssignments();
                 model.update();
                 System.out.println("START: Filter assignments.");
@@ -270,8 +273,8 @@ public class GrowthlaneTrackingILP {
                 // UPDATE GUROBI-MODEL
                 // - - - - - - - - - -
                 model.update();
-                MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
+                dic.getAssignmentCreationTimer().stop();
+                dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
             }
 
             printIlpStatistics();
@@ -351,8 +354,8 @@ public class GrowthlaneTrackingILP {
     }
 
     private void printIlpStatistics() {
-        boolean isTrackOnly = MoMA.dic.getCommandLineArgumentParser().isTrackOnly();
-        boolean isHeadless = MoMA.dic.getCommandLineArgumentParser().getIfRunningHeadless();
+        boolean isTrackOnly = dic.getCommandLineArgumentParser().isTrackOnly();
+        boolean isHeadless = dic.getCommandLineArgumentParser().getIfRunningHeadless();
         System.out.println("########### ILP STATISTICS START ###########");
         System.out.println("Number of all components in component-trees (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + allComponents.size());
         System.out.println("Number of components in ILP (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + getAllComponentsInIlp().size());
@@ -1204,7 +1207,7 @@ public class GrowthlaneTrackingILP {
      * the MotherMachineGui is checked).
      */
     public synchronized void autosave() {
-        if (!configurationManager.getIfRunningHeadless() && MoMA.getGui().isAutosaveRequested()) {
+        if (!configurationManager.getIfRunningHeadless() && dic.getMomaGui().isAutosaveRequested()) {
             final File autosaveFile = new File(configurationManager.getPathForAutosaving());
             saveState(autosaveFile);
             System.out.println("Autosave to: " + autosaveFile.getAbsolutePath());
@@ -1250,12 +1253,12 @@ public class GrowthlaneTrackingILP {
 
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
-            MoMA.dic.getOptimizationTimer().start();
+            dic.getOptimizationTimer().start();
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             fireStateChanged();
             model.optimize();
-            MoMA.dic.getOptimizationTimer().stop();
-            MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
+            dic.getOptimizationTimer().stop();
+            dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
             dialog.notifyGurobiTermination();
 
             // Read solution and extract interpretation
@@ -1264,8 +1267,8 @@ public class GrowthlaneTrackingILP {
                 status = IlpStatus.OPTIMAL;
                 if (!configurationManager.getIfRunningHeadless()) {
                     dialog.pushStatus("Optimum was found!");
-                    if (MoMA.getGui() != null) {
-                        MoMA.getGui().requestFocusOnTimeStepSlider();
+                    if (dic.getMomaGui() != null) {
+                        dic.getMomaGui().requestFocusOnTimeStepSlider();
                     }
                     dialog.setVisible(false);
                     dialog.dispose();
@@ -1310,8 +1313,8 @@ public class GrowthlaneTrackingILP {
             }
             fireStateChanged();
 
-            if (!isNull(MoMA.getGui())) {
-                MoMA.getGui().dataToDisplayChanged();
+            if (!isNull(dic.getMomaGui())) {
+                dic.getMomaGui().dataToDisplayChanged();
             }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
@@ -2139,7 +2142,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }
-        MoMA.getGui().dataToDisplayChanged();
+        dic.getMomaGui().dataToDisplayChanged();
     }
 
     /**
@@ -2172,7 +2175,7 @@ public class GrowthlaneTrackingILP {
                     if (configurationManager.getMinTime() != readTmin || configurationManager.getMaxTime() != readTmax) {
                         if (!configurationManager.getIfRunningHeadless()) {
                             JOptionPane.showMessageDialog(
-                                    MoMA.getGui(),
+                                    dic.getMomaGui(),
                                     "Tracking to be loaded is at best a partial fit.\nMatching data will be loaded whereever possible...",
                                     "Warning",
                                     JOptionPane.WARNING_MESSAGE);
@@ -2286,7 +2289,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }
-        MoMA.getGui().dataToDisplayChanged();
+        dic.getMomaGui().dataToDisplayChanged();
     }
 
     /**

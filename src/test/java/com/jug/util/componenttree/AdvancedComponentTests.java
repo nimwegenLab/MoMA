@@ -157,7 +157,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -184,7 +184,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -222,7 +222,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 
@@ -261,7 +261,7 @@ public class AdvancedComponentTests {
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
 
-        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = testUtils.getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
 
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
 

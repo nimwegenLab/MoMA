@@ -116,7 +116,7 @@ public class TestUtils {
         imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }
@@ -130,12 +130,12 @@ public class TestUtils {
     }
 
     @NotNull
-    public ComponentForestGenerator getComponentTreeGenerator() {
+    public ComponentForestGenerator getComponentTreeGenerator(float thresholdForComponentMerging, float threshold, int sizeMinimumOfLeafComponent, int sizeMinimumOfParentComponent) {
         Imglib2Utils imglib2Utils = getImglib2Utils();
         ComponentProperties componentProperties = getComponentProperties();
         RecursiveComponentWatershedder recursiveComponentWatershedder = getRecursiveComponentWatershedder();
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(thresholdForComponentMerging, threshold);
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(sizeMinimumOfLeafComponent, sizeMinimumOfParentComponent);
         ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentForestGenerator;
     }
@@ -220,7 +220,7 @@ public class TestUtils {
 
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromProbabilityImage(imageFile);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }
@@ -231,9 +231,16 @@ public class TestUtils {
         return component;
     }
 
-    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int firstFrame, int lastFrame, float componentSplittingThreshold) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder,
+                                                                                                                       int firstFrame,
+                                                                                                                       int lastFrame,
+                                                                                                                       float componentSplittingThreshold,
+                                                                                                                       float thresholdForComponentMerging,
+                                                                                                                       float threshold,
+                                                                                                                       int sizeMinimumOfLeafComponent,
+                                                                                                                       int sizeMinimumOfParentComponent) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(thresholdForComponentMerging, threshold, sizeMinimumOfLeafComponent, sizeMinimumOfParentComponent);
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
         for (int frameIndex = firstFrame; frameIndex <= lastFrame; frameIndex++) {
             componentForests.add(componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold));
@@ -243,7 +250,7 @@ public class TestUtils {
 
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }

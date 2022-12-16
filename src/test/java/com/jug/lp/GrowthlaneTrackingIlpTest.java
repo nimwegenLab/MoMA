@@ -64,7 +64,7 @@ public class GrowthlaneTrackingIlpTest {
                 frameIndexStart,
                 frameIndexStop,
                 1.5f,
-                0.5f,
+                0.1f,
                 0.5f,
                 60,
                 Integer.MIN_VALUE);

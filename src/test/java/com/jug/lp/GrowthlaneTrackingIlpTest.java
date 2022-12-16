@@ -2,6 +2,7 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
+import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
@@ -16,6 +17,7 @@ import com.jug.lp.costs.ICostFactory;
 import com.jug.mocks.ConfigMock;
 import com.jug.util.PseudoDic;
 import com.jug.util.TestUtils;
+import com.jug.util.Timer;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import gurobi.GRBCallback;
@@ -76,7 +78,8 @@ public class GrowthlaneTrackingIlpTest {
         listOfFrames.add(mock(GrowthlaneFrame.class));
         when(listOfFrames.get(1).getComponentForest()).thenReturn(targetTree);
         when(gl.getFrames()).thenReturn(listOfFrames);
-        PseudoDic dic = mock(PseudoDic.class);
+
+        PseudoDic dic = testUtils.getPseudoDicMock(true, true);
 
         IAssignmentFilter assignmentFilterMock = mock(IAssignmentFilter.class);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl,

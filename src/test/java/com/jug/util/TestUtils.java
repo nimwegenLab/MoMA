@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
@@ -336,5 +337,15 @@ public class TestUtils {
         Img<FloatType> img = imgFactory.create(dims);
         img.spliterator().forEachRemaining(val -> val.set((float)(expectedStd * ThreadLocalRandom.current().nextGaussian() + expectedMean)));
         return img;
+    }
+
+    public PseudoDic getPseudoDicMock(boolean isTrackOnly, boolean isHeadless) {
+        PseudoDic dic = mock(PseudoDic.class);
+        when(dic.getAssignmentCreationTimer()).thenReturn(new Timer(isHeadless, isTrackOnly));
+        CommandLineArgumentsParser configCommandLineArgumentParser = mock(CommandLineArgumentsParser.class);
+        when(configCommandLineArgumentParser.isTrackOnly()).thenReturn(isTrackOnly);
+        when(configCommandLineArgumentParser.getIfRunningHeadless()).thenReturn(isHeadless);
+        when(dic.getCommandLineArgumentParser()).thenReturn(configCommandLineArgumentParser);
+        return dic;
     }
 }

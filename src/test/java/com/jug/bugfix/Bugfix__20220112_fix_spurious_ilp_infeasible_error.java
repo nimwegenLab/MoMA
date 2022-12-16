@@ -22,15 +22,15 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
         dataset2 = "data/20220701_7_2";
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 100;
+        tmax = 10;
     }
 
     public static void main(String[] args) {
         Bugfix__20220112_fix_spurious_ilp_infeasible_error tests = new Bugfix__20220112_fix_spurious_ilp_infeasible_error();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly__20220530_2_32();
-//        tests.run_trackonly__20220701_7_2();
+        tests.run_trackonly__20220701_7_2();
 //        tests.run_reloading();
 //        tests.run_export();
     }

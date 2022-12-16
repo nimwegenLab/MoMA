@@ -90,7 +90,7 @@ public class ComponentForestGeneratorTests {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
 
-        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
+        Plotting.showComponentTree(componentTree, new ArrayList<>(), raiFkt);
     }
 
     public void debugThreeWayComponentSegmentation__check_MserTree() throws IOException {
@@ -137,7 +137,7 @@ public class ComponentForestGeneratorTests {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
 
-        Plotting.drawComponentTree2(componentTree, new ArrayList<>(), raiFkt);
+        Plotting.showComponentTree(componentTree, new ArrayList<>(), raiFkt);
     }
 
     public void debugThreeWayComponentSegmentation() throws IOException {
@@ -149,7 +149,7 @@ public class ComponentForestGeneratorTests {
 //        for (AdvancedComponent component2 : tree.getAllComponents()) {
 //            ImageJFunctions.show(Plotting.createImageWithComponent(component2));
 //        }
-        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.getSourceImage());
+        Plotting.showComponentTree(tree, new ArrayList<>(), tree.getSourceImage());
     }
 
     /**
@@ -186,7 +186,7 @@ public class ComponentForestGeneratorTests {
         int frameIndex = 10;
 
         ComponentForest<AdvancedComponent<FloatType>> tree = testUtils.getComponentForestFromProbabilityImage(Paths.get(imageFile), frameIndex, 1.0f);
-        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.roots().iterator().next().getSourceImage());
+        Plotting.showComponentTree(tree, new ArrayList<>(), tree.roots().iterator().next().getSourceImage());
     }
 
     /**

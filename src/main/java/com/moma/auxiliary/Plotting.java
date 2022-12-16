@@ -94,9 +94,9 @@ public class Plotting {
     }
 
 
-    public static <T extends Type<T>, C extends Component<T, C>> void drawComponentTree2(ComponentForest<C> ct,
-                                                                                         List<C> componentsInOptimalSolution,
-                                                                                         RandomAccessibleInterval sourceImage) {
+    public static <T extends Type<T>, C extends Component<T, C>> void showComponentTree(ComponentForest<C> ct,
+                                                                                        List<C> componentsInOptimalSolution,
+                                                                                        RandomAccessibleInterval sourceImage) {
         if (ct.roots().isEmpty()) {
             throw new ValueException("ct.roots() is empty");
         }

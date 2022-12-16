@@ -102,7 +102,7 @@ public class ComponentForestSerializationTests {
 //        Path jsonFile = Files.createTempFile("", ".json");
 
 //        for (AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree : componentForests) {
-//            Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
+//            Plotting.showComponentTree(tree, new ArrayList<>(), tree.rootsSorted().get(0).getSourceImage());
 //        }
 //        List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = getAdvancedComponentForestList(0, 2);
 //        String jsonString = new Gson().toJson(componentForests);

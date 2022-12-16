@@ -102,7 +102,7 @@ public class ComponentPropertiesTest {
             System.out.println(String.format("%f, %f, %f, %f, %d, %f, %d, %f", verticalPosition, minorAxis, majorAxis, majorAxisTiltAngle, area, totalIntensity, backgroundRoiArea, totalBackgroundIntensity));
         }
 
-        Plotting.drawComponentTree2(tree, new ArrayList<>(), roots.get(0).getSourceImage());
+        Plotting.showComponentTree(tree, new ArrayList<>(), roots.get(0).getSourceImage());
         throw new NotImplementedError("FIX: This is not a true test, because there is no test-assert statement in this test!");
 //        assertTrue(false, "FIX: This is not a true test, because there is no test-assert statement in this test!");
     }
@@ -136,7 +136,7 @@ public class ComponentPropertiesTest {
 
         int componentIndex = 2;
         AdvancedComponent<FloatType> component = roots.get(componentIndex);
-//        Plotting.drawComponentTree2(tree, new ArrayList<>());
+//        Plotting.showComponentTree(tree, new ArrayList<>());
         OpService ops = ij.op();
 
 //        double minorAxis = props.getMinorMajorAxis(component).getA();

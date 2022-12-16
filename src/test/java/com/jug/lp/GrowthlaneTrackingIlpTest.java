@@ -63,10 +63,22 @@ public class GrowthlaneTrackingIlpTest {
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentTress.get(0);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentTress.get(1);
         
-        IDialogManager dialogManagerMock = new DialogManagerMock();
+//        IDialogManager dialogManagerMock = new DialogManagerMock();
         GRBModelAdapterMock mockGrbModel = new GRBModelAdapterMock();
-        ConfigMock configMock = new ConfigMock();
-        GlFileManager glFileManagerMock = new GlFileManager();
+
+//        ConfigMock configMock = new ConfigMock();
+        IConfiguration configMock = testUtils.getConfigMock(
+                true,
+                1,
+                2,
+                true,
+                true,
+                0.0,
+                50,
+                2.0,
+                120);
+
+//        GlFileManager glFileManagerMock = new GlFileManager();
 //        Growthlane gl = new Growthlane(dialogManagerMock, configMock, glFileManagerMock, glFileManagerMock);
 
 //        gl.getFrames().get(t).getComponentForest()

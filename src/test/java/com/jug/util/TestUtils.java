@@ -348,4 +348,27 @@ public class TestUtils {
         when(dic.getCommandLineArgumentParser()).thenReturn(configCommandLineArgumentParser);
         return dic;
     }
+
+    public IConfiguration getConfigMock(boolean isHeadless,
+                                         int minTime,
+                                         int maxTime,
+                                         boolean migrationCostFeatureFlag,
+                                         boolean crossingConstraintFeatureFlag,
+                                         double lysisAssignmentCost,
+                                         int maxCellDrop,
+                                         double assignmentCostCutoff,
+                                         int cellDetectionRoiOffsetTop) {
+        IConfiguration configMock = mock(IConfiguration.class);
+        /* setup configurable setting values; all other values will return default values as selected by Mockito(!) */
+        when(configMock.getCrossingConstraintFeatureFlag()).thenReturn(crossingConstraintFeatureFlag);
+        when(configMock.getLysisAssignmentCost()).thenReturn((float) lysisAssignmentCost);
+        when(configMock.getMaxCellDrop()).thenReturn(maxCellDrop);
+        when(configMock.getAssignmentCostCutoff()).thenReturn((float) assignmentCostCutoff);
+        when(configMock.getMigrationCostFeatureFlag()).thenReturn(migrationCostFeatureFlag);
+        when(configMock.getCellDetectionRoiOffsetTop()).thenReturn(cellDetectionRoiOffsetTop);
+        when(configMock.getIfRunningHeadless()).thenReturn(isHeadless);
+        when(configMock.getMinTime()).thenReturn(minTime);
+        when(configMock.getMaxTime()).thenReturn(maxTime);
+        return configMock;
+    }
 }

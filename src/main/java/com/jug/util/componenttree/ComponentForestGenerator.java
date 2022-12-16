@@ -87,7 +87,7 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
 //                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
 //            }
 //        }
-//        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
+        Plotting.drawComponentTree2(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
         return tree;
     }
 }

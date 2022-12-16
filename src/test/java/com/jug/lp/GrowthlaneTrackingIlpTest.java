@@ -45,7 +45,8 @@ import static org.mockito.Mockito.when;
 
 public class GrowthlaneTrackingIlpTest {
     public static void main(String... args) throws IOException, GRBException {
-        new GrowthlaneTrackingIlpTest().testMappingAssignmentGeneration();
+//        new GrowthlaneTrackingIlpTest().testMappingAssignmentGeneration();
+        new GrowthlaneTrackingIlpTest().reproduceAssertionError();
     }
 
     private final TestUtils testUtils;

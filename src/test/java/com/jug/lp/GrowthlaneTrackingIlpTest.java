@@ -80,11 +80,16 @@ public class GrowthlaneTrackingIlpTest {
         when(gl.getFrames()).thenReturn(listOfFrames);
 
         PseudoDic dic = testUtils.getPseudoDicMock(true, true);
-
+        
+        ITrackingConfiguration trackingConfiguration = mock(ITrackingConfiguration.class);
+        when(trackingConfiguration.getMaximumGrowthRate()).thenReturn(1.5);
+        AssignmentPlausibilityTester assignmentPlausibilityTester = new AssignmentPlausibilityTester(trackingConfiguration);
+                
         IAssignmentFilter assignmentFilterMock = mock(IAssignmentFilter.class);
+
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl,
                 mockGrbModel,
-                new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock),
+                assignmentPlausibilityTester, configMock, "mockVersionString", new CostFactory(configMock),
                 false,
                 () -> new GurobiCallbackMock(),
                 () -> new DialogGurobiProgressMock(),
@@ -92,10 +97,10 @@ public class GrowthlaneTrackingIlpTest {
                 dic);
         ilp.buildILP();
 //        int t = 0; /* has to be zero, to avoid entering the IF-statement inside addMappingAssignment: if (t > 0) { .... }*/
-        for(int t=0; t<=2; t++){
-            ilp.addMappingAssignments(t, sourceTree, targetTree);
-        }
-        ilp.addCrossingConstraints();
+//        for(int t=0; t<=2; t++){
+//            ilp.addMappingAssignments(t, sourceTree, targetTree);
+//        }
+//        ilp.addCrossingConstraints();
     }
 
     @Test

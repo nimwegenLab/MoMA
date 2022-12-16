@@ -67,8 +67,8 @@ public class GrowthlaneTrackingIlpTest {
                 1.5f,
                 0.1f,
                 0.5f,
-                60,
-                Integer.MIN_VALUE);
+                10,
+                10);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> sourceTree = componentTress.get(0);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> targetTree = componentTress.get(1);
         

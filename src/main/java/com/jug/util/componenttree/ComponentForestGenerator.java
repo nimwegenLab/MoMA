@@ -87,11 +87,12 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
 //                throw new RuntimeException("component" + component.getStringId() + " has >2 child-nodes.");
 //            }
 //        }
-        Plotting.showComponentForest(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
-        Img<ARGBType> img = Plotting.getComponentForestAsImg(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
-        Imglib2Utils.saveImage(img,
-                "component_tree_frame_" + frameIndex,
-                "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20220112-fix-spurious-ilp-infeasible-error/debug_scratch_folder/component_tree_frame_"+frameIndex+".tiff");
+
+//        Plotting.showComponentForest(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
+//        Img<ARGBType> img = Plotting.getComponentForestAsImg(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
+//        Imglib2Utils.saveImage(img,
+//                "component_tree_frame_" + frameIndex,
+//                "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20220112-fix-spurious-ilp-infeasible-error/debug_scratch_folder/component_tree_frame_"+frameIndex+".tiff");
         return tree;
     }
 }

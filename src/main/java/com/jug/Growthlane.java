@@ -121,8 +121,7 @@ public class Growthlane {
 		}
 
 		IAssignmentFilter assignmentFilter = MoMA.dic.getAssignmentFilterFactory().getAssignmentFilter();
-		ilp = new GrowthlaneTrackingILP(MoMA.dic.getGuiFrame(),
-				this,
+		ilp = new GrowthlaneTrackingILP(this,
 				model,
 				MoMA.dic.getAssignmentPlausibilityTester(),
 				configurationManager,
@@ -131,8 +130,8 @@ public class Growthlane {
 				isLoadedFromDisk(),
 				MoMA.dic.getGurobiCallbackFactory(),
 				MoMA.dic.getGurobiProgressDialogFactory(),
-				assignmentFilter
-				);
+				assignmentFilter,
+				MoMA.dic);
 		if (guiProgressReceiver != null) {
 			ilp.addProgressListener(guiProgressReceiver);
 		}

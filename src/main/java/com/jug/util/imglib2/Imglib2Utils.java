@@ -61,8 +61,8 @@ public class Imglib2Utils {
         LoopBuilder.setImages(sourceImage, targetImage).forEachPixel((src, dest) -> dest.set(src));
     }
 
-    public synchronized <T extends NumericType<T>> void saveImage(RandomAccessibleInterval<T> imgResult, String path) {
-        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, "imgResults");
+    public static synchronized <T extends NumericType<T>> void saveImage(RandomAccessibleInterval<T> imgResult, String imageName, String path) {
+        ImagePlus tmp_image = ImageJFunctions.wrap(imgResult, imageName);
         IJ.saveAsTiff(tmp_image, path);
     }
 

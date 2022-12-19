@@ -1,5 +1,6 @@
 package com.jug.util;
 
+import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.IConfiguration;
 import com.jug.datahandling.IImageProvider;
@@ -92,7 +93,7 @@ public class TestUtils {
         ComponentForest<AdvancedComponent<FloatType>> tree = getComponentTree(imageFile);
         List<AdvancedComponent<FloatType>> roots = new ArrayList<>(tree.roots());
         AdvancedComponent<FloatType> res = roots.get(0);
-        Plotting.drawComponentTree2(tree, new ArrayList<>(), res.getSourceImage());
+        Plotting.showComponentForest(tree, new ArrayList<>(), res.getSourceImage());
     }
 
     public <T extends NativeType> ValuePair<AdvancedComponent<FloatType>, RandomAccessibleInterval<T>> getComponentWithImage(String imageFile,
@@ -115,7 +116,7 @@ public class TestUtils {
         imageProviderMock = new ImageProviderMock(input);
         RandomAccessibleInterval<FloatType> currentImage = Views.hyperSlice(input, 2, frameIndex);
         assertEquals(2, currentImage.numDimensions());
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         ComponentForest<AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProviderMock, frameIndex, 1.0f);
         return tree;
     }
@@ -129,12 +130,12 @@ public class TestUtils {
     }
 
     @NotNull
-    public ComponentForestGenerator getComponentTreeGenerator() {
+    public ComponentForestGenerator getComponentTreeGenerator(float thresholdForComponentMerging, float threshold, int sizeMinimumOfLeafComponent, int sizeMinimumOfParentComponent) {
         Imglib2Utils imglib2Utils = getImglib2Utils();
         ComponentProperties componentProperties = getComponentProperties();
         RecursiveComponentWatershedder recursiveComponentWatershedder = getRecursiveComponentWatershedder();
-        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0.5f, 0.5f);
-        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
+        WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(thresholdForComponentMerging, threshold);
+        ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(sizeMinimumOfLeafComponent, sizeMinimumOfParentComponent);
         ComponentForestGenerator componentForestGenerator = new ComponentForestGenerator(config, recursiveComponentWatershedder, componentProperties, watershedMaskGenerator, imglib2Utils);
         return componentForestGenerator;
     }
@@ -219,7 +220,7 @@ public class TestUtils {
 
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromProbabilityImage(Path imageFile, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromProbabilityImage(imageFile);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }
@@ -230,11 +231,18 @@ public class TestUtils {
         return component;
     }
 
-    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder, int frameIndexStart, int frameIndexStop, float componentSplittingThreshold) throws IOException {
+    public List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> getComponentForestListFromDataFolder(Path testDataFolder,
+                                                                                                                       int firstFrame,
+                                                                                                                       int lastFrame,
+                                                                                                                       float componentSplittingThreshold,
+                                                                                                                       float thresholdForComponentMerging,
+                                                                                                                       float threshold,
+                                                                                                                       int sizeMinimumOfLeafComponent,
+                                                                                                                       int sizeMinimumOfParentComponent) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(thresholdForComponentMerging, threshold, sizeMinimumOfLeafComponent, sizeMinimumOfParentComponent);
         List<AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>>> componentForests = new ArrayList<>();
-        for (int frameIndex = frameIndexStart; frameIndex < frameIndexStop; frameIndex++) {
+        for (int frameIndex = firstFrame; frameIndex <= lastFrame; frameIndex++) {
             componentForests.add(componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold));
         }
         return componentForests;
@@ -242,7 +250,7 @@ public class TestUtils {
 
     public AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> getComponentForestFromDataFolder(Path testDataFolder, int frameIndex, float componentSplittingThreshold) throws IOException {
         IImageProvider imageProvider = getImageProviderFromDataFolder(testDataFolder);
-        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator();
+        ComponentForestGenerator componentForestGenerator = getComponentTreeGenerator(0.5f, 0.5f, 60, Integer.MIN_VALUE);
         AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> tree = componentForestGenerator.buildComponentForest(imageProvider, frameIndex, componentSplittingThreshold);
         return tree;
     }
@@ -336,5 +344,38 @@ public class TestUtils {
         Img<FloatType> img = imgFactory.create(dims);
         img.spliterator().forEachRemaining(val -> val.set((float)(expectedStd * ThreadLocalRandom.current().nextGaussian() + expectedMean)));
         return img;
+    }
+
+    public PseudoDic getPseudoDicMock(boolean isTrackOnly, boolean isHeadless) {
+        PseudoDic dic = mock(PseudoDic.class);
+        when(dic.getAssignmentCreationTimer()).thenReturn(new Timer(isHeadless, isTrackOnly));
+        CommandLineArgumentsParser configCommandLineArgumentParser = mock(CommandLineArgumentsParser.class);
+        when(configCommandLineArgumentParser.isTrackOnly()).thenReturn(isTrackOnly);
+        when(configCommandLineArgumentParser.getIfRunningHeadless()).thenReturn(isHeadless);
+        when(dic.getCommandLineArgumentParser()).thenReturn(configCommandLineArgumentParser);
+        return dic;
+    }
+
+    public IConfiguration getConfigMock(boolean isHeadless,
+                                         int minTime,
+                                         int maxTime,
+                                         boolean migrationCostFeatureFlag,
+                                         boolean crossingConstraintFeatureFlag,
+                                         double lysisAssignmentCost,
+                                         int maxCellDrop,
+                                         double assignmentCostCutoff,
+                                         int cellDetectionRoiOffsetTop) {
+        IConfiguration configMock = mock(IConfiguration.class);
+        /* setup configurable setting values; all other values will return default values as selected by Mockito(!) */
+        when(configMock.getCrossingConstraintFeatureFlag()).thenReturn(crossingConstraintFeatureFlag);
+        when(configMock.getLysisAssignmentCost()).thenReturn((float) lysisAssignmentCost);
+        when(configMock.getMaxCellDrop()).thenReturn(maxCellDrop);
+        when(configMock.getAssignmentCostCutoff()).thenReturn((float) assignmentCostCutoff);
+        when(configMock.getMigrationCostFeatureFlag()).thenReturn(migrationCostFeatureFlag);
+        when(configMock.getCellDetectionRoiOffsetTop()).thenReturn(cellDetectionRoiOffsetTop);
+        when(configMock.getIfRunningHeadless()).thenReturn(isHeadless);
+        when(configMock.getMinTime()).thenReturn(minTime);
+        when(configMock.getMaxTime()).thenReturn(maxTime);
+        return configMock;
     }
 }

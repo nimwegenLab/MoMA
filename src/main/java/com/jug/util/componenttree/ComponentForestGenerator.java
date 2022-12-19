@@ -3,12 +3,13 @@ package com.jug.util.componenttree;
 import com.jug.config.IComponentForestGeneratorConfiguration;
 import com.jug.datahandling.IImageProvider;
 import com.jug.util.imglib2.Imglib2Utils;
+import com.moma.auxiliary.Plotting;
 import net.imglib2.algorithm.binary.Thresholder;
-import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.algorithm.componenttree.mser.MserTree;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgView;
 import net.imglib2.type.logic.BitType;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
@@ -87,6 +88,11 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
 //            }
 //        }
 
+//        Plotting.showComponentForest(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
+//        Img<ARGBType> img = Plotting.getComponentForestAsImg(tree, new ArrayList<>(), tree.getSourceImage()); // TODO-20221214: remove this, when done with debugging.
+//        Imglib2Utils.saveImage(img,
+//                "component_tree_frame_" + frameIndex,
+//                "/home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20220112-fix-spurious-ilp-infeasible-error/debug_scratch_folder/component_tree_frame_"+frameIndex+".tiff");
         return tree;
     }
 }

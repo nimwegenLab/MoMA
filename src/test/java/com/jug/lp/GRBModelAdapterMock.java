@@ -3,6 +3,9 @@ package com.jug.lp;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import gurobi.*;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class GRBModelAdapterMock implements IGRBModelAdapter {
     @Override
     public GRBConstr[] getConstrs() {
@@ -66,7 +69,10 @@ public class GRBModelAdapterMock implements IGRBModelAdapter {
 
     @Override
     public GRBVar addVar(double lb, double ub, double obj, char type, String name) throws GRBException {
-        return null;
+        GRBVar varMock = mock(GRBVar.class);
+        when(varMock.toString()).thenReturn(name);
+        when(varMock.get(GRB.StringAttr.VarName)).thenReturn(name);
+        return varMock;
     }
 
     @Override

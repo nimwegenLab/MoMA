@@ -30,7 +30,7 @@ public class ComponentTreeUtils {
     private static final ComponentPositionComparator verticalComponentPositionComparator = new ComponentPositionComparator(1);
 
     /**
-     * This method recursively adds all child components below {@param component} to {@param listOfChildren}.
+     * This method recursively adds all child components of {@param component} to {@param listOfChildren}.
      *
      * @param component component below which we want to get all child components in the component-tree
      * @param listOfChildren list of child components to which the parents will be added

@@ -2,7 +2,6 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
-import com.jug.MoMA;
 import com.jug.config.IConfiguration;
 import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
@@ -11,12 +10,16 @@ import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
 import com.jug.util.ComponentTreeUtils;
+import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
+import com.moma.auxiliary.Plotting;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -47,7 +50,6 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
 
-    private JFrame guiFrame;
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -65,6 +67,7 @@ public class GrowthlaneTrackingILP {
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
+    private PseudoDic dic;
     private IAssignmentFilter assignmentFilter;
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
@@ -73,8 +76,7 @@ public class GrowthlaneTrackingILP {
     // -------------------------------------------------------------------------------------
     // construction
     // -------------------------------------------------------------------------------------
-    public GrowthlaneTrackingILP(JFrame guiFrame,
-                                 final Growthlane gl,
+    public GrowthlaneTrackingILP(final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
                                  IConfiguration configurationManager,
@@ -83,8 +85,8 @@ public class GrowthlaneTrackingILP {
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
-                                 IAssignmentFilter assignmentFilter) {
-        this.guiFrame = guiFrame;
+                                 IAssignmentFilter assignmentFilter,
+                                 PseudoDic dic) {
         this.gl = gl;
         this.model = grbModel;
         this.versionString = versionString;
@@ -93,6 +95,7 @@ public class GrowthlaneTrackingILP {
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
+        this.dic = dic;
         this.progressListener = new ArrayList<>();
         this.assignmentPlausibilityTester = assignmentPlausibilityTester;
         this.assignmentFilter = assignmentFilter;
@@ -149,7 +152,7 @@ public class GrowthlaneTrackingILP {
 
     /**
      * @return the status. This status returns one of the following values:
-     * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASABLE, UNBOUNDED,
+     * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASIBLE, UNBOUNDED,
      * SUBOPTIMAL, NUMERIC, or LIMIT_REACHED. Values 2-6 correspond
      * directly to the ones from gurobi, the last one is set when none
      * of the others was actually returned by gurobi.
@@ -228,17 +231,20 @@ public class GrowthlaneTrackingILP {
 
             // add Hypothesis and Assignments
             if (isLoadedFromDisk) {
-                MoMA.dic.getAssignmentCreationTimer().start();
+                dic.getAssignmentCreationTimer().start();
                 loadAssignments();
-                MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
+                dic.getAssignmentCreationTimer().stop();
+                dic.getAssignmentCreationTimer().printExecutionTime("Timer result for loading assignments");
             } else {
-                MoMA.dic.getAssignmentCreationTimer().start();
+                dic.getAssignmentCreationTimer().start();
                 createAssignments();
                 model.update();
                 System.out.println("START: Filter assignments.");
                 filterAssignments();
                 System.out.println("FINISH: Filter assignments.");
+
+                nodes.assertHypothesesInHtAndHmapEqual();
+                nodes.assertSourceAndTargetHypothesesEqualHypothesesInHt();
 
     //            HypothesesAndAssignmentsSanityChecker sanityChecker = new HypothesesAndAssignmentsSanityChecker(gl, nodes, edgeSets);
     //            sanityChecker.checkIfAllComponentsHaveCorrespondingHypothesis();
@@ -273,24 +279,24 @@ public class GrowthlaneTrackingILP {
                 // UPDATE GUROBI-MODEL
                 // - - - - - - - - - -
                 model.update();
-                MoMA.dic.getAssignmentCreationTimer().stop();
-                MoMA.dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
+                dic.getAssignmentCreationTimer().stop();
+                dic.getAssignmentCreationTimer().printExecutionTime("Timer result for creating assignments");
             }
 
             printIlpStatistics();
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);
-            System.out.println(String.format("Aggregate old value: %d", aggregateVal));
+//            System.out.println(String.format("Aggregate old value: %d", aggregateVal));
             model.set(GRB.IntParam.Aggregate, 1);
             aggregateVal = model.get(GRB.IntParam.Aggregate);
-            System.out.println(String.format("Aggregate new value: %d", aggregateVal));
+//            System.out.println(String.format("Aggregate new value: %d", aggregateVal));
 
             int scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
-            System.out.println(String.format("scaleFlag old value: %d", scaleFlagVal));
+//            System.out.println(String.format("scaleFlag old value: %d", scaleFlagVal));
             model.set(GRB.IntParam.ScaleFlag, 2);
             scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
-            System.out.println(String.format("scaleFlag new value: %d", scaleFlagVal));
+//            System.out.println(String.format("scaleFlag new value: %d", scaleFlagVal));
 
 //			int numericFocusVal = model.get(GRB.IntParam.NumericFocus);
 //			System.out.println(String.format("numericFocus old value: %d", numericFocusVal));
@@ -354,8 +360,8 @@ public class GrowthlaneTrackingILP {
     }
 
     private void printIlpStatistics() {
-        boolean isTrackOnly = MoMA.dic.getCommandLineArgumentParser().isTrackOnly();
-        boolean isHeadless = MoMA.dic.getCommandLineArgumentParser().getIfRunningHeadless();
+        boolean isTrackOnly = dic.getCommandLineArgumentParser().isTrackOnly();
+        boolean isHeadless = dic.getCommandLineArgumentParser().getIfRunningHeadless();
         System.out.println("########### ILP STATISTICS START ###########");
         System.out.println("Number of all components in component-trees (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + allComponents.size());
         System.out.println("Number of components in ILP (IsTrackOnly: " + isTrackOnly + ", IsHeadless: " + isHeadless + "): " + getAllComponentsInIlp().size());
@@ -1004,13 +1010,13 @@ public class GrowthlaneTrackingILP {
 
     double bigM = 0;
 
-    private void addCrossingConstraints() throws GRBException {
+    public void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) { /* upper limit of FOR-loop is `gl.numberOfFrames() - 1` because we do not need crossing-constraints for the last time-step, which only contains exit-assignments */
-            calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
+            calculateBigMnew(gl.getFrames().get(t+1).getComponentForest()); /* calculate bigM for target components at t+1 */
 
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
-                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExisitingHypothesesForComponents(componentsBelow);
+                List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesBelow = getExistingHypothesesForComponents(componentsBelow);
                 addCrossingConstraint(hypothesisOfInterest, hypothesesBelow);
             }
         }
@@ -1027,12 +1033,14 @@ public class GrowthlaneTrackingILP {
      * big-M is thus guaranteed to be larger than any ordinal-value of the target-components and also larger than the
      * sum of any two ordinal.
      *
-     * @param alltargetHypotheses
+     * @param allTargetHypotheses
      */
-    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> alltargetHypotheses) {
+    private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> allTargetHypotheses) {
         double maxLeafRank = 0;
-        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : alltargetHypotheses) {
+//        List<Integer> res = allTargetHypotheses.stream().map(hyp -> hyp.getWrappedComponent().getChildren().size()).collect(Collectors.toList());
+        for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : allTargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
+//            System.out.println("component id: " + component.getStringId());
             if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();
                 maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
@@ -1041,17 +1049,32 @@ public class GrowthlaneTrackingILP {
         bigM = Math.pow(2, maxLeafRank + 1);
 
         if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
-            System.out.println("something went wrong");
+            throw new RuntimeException("Value for bigM was not correctly calculated!");
         }
     }
 
-    private List<Hypothesis<AdvancedComponent<FloatType>>> getExisitingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
+    private void calculateBigMnew(AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest) {
+        double maxLeafRank = 0;
+        for (AdvancedComponent<FloatType> component : componentForest.getAllComponents()) {
+            if (component.getChildren().size() == 0) {
+                double componentRank = component.getRankRelativeToLeafComponent();
+                maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
+            }
+        }
+        bigM = Math.pow(2, maxLeafRank + 1);
+
+        if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
+            throw new RuntimeException("Value for bigM was not correctly calculated!");
+        }
+    }
+
+    private List<Hypothesis<AdvancedComponent<FloatType>>> getExistingHypothesesForComponents(List<AdvancedComponent<FloatType>> components) {
         List<Hypothesis<AdvancedComponent<FloatType>>> hypothesisList = new ArrayList<>();
         for (AdvancedComponent<FloatType> component : components){
             try {
                 hypothesisList.add(nodes.findHypothesisContaining(component));
             } catch (IlpSetupException e) {
-                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of intereset  */
+                /* we catch IlpSetupException because this method returns _all existing_ hypothesis for the components of interest  */
             }
         }
         return hypothesisList;
@@ -1142,7 +1165,7 @@ public class GrowthlaneTrackingILP {
             hyp = ((MappingAssignment) assignment).getDestinationHypothesis();
             double ordinal = hyp.getWrappedComponent().getOrdinalValue();
             if(ordinal >= bigM){
-                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the ordinal value (=%f) of hypothesis %s; this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal, hyp.getStringId()));
             }
             double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());
@@ -1151,7 +1174,7 @@ public class GrowthlaneTrackingILP {
             Hypothesis<AdvancedComponent<FloatType>> upperHypothesis = ((DivisionAssignment) assignment).getUpperDestinationHypothesis();
             double ordinal = lowerHypothesis.getWrappedComponent().getOrdinalValue() + upperHypothesis.getWrappedComponent().getOrdinalValue();
             if(ordinal >= bigM){
-                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the largest ordinal value (=%f); this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal));
+                throw new AssertionError(String.format("The value of bigM (=%f) is smaller than the summed ordinal values (=%f) of hypotheses %s and %s; this is not allowed, because it will lead to an incorrect crossing-constraint", bigM, ordinal, lowerHypothesis.getStringId(), upperHypothesis.getStringId()));
             }
             double coefficient = coeff_sign * (ordinal - bigM);
             expr.addTerm(coefficient, assignment.getGRBVar());
@@ -1205,7 +1228,7 @@ public class GrowthlaneTrackingILP {
      * the MotherMachineGui is checked).
      */
     public synchronized void autosave() {
-        if (!configurationManager.getIfRunningHeadless() && MoMA.getGui().isAutosaveRequested()) {
+        if (!configurationManager.getIfRunningHeadless() && dic.getMomaGui().isAutosaveRequested()) {
             final File autosaveFile = new File(configurationManager.getPathForAutosaving());
             saveState(autosaveFile);
             System.out.println("Autosave to: " + autosaveFile.getAbsolutePath());
@@ -1251,12 +1274,12 @@ public class GrowthlaneTrackingILP {
 
             // RUN + return true if solution is feasible
             // - - - - - - - - - - - - - - - - - - - - -
-            MoMA.dic.getOptimizationTimer().start();
+            dic.getOptimizationTimer().start();
             status = IlpStatus.OPTIMIZATION_IS_RUNNING;
             fireStateChanged();
             model.optimize();
-            MoMA.dic.getOptimizationTimer().stop();
-            MoMA.dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
+            dic.getOptimizationTimer().stop();
+            dic.getOptimizationTimer().printExecutionTime("Timer result for optimization time");
             dialog.notifyGurobiTermination();
 
             // Read solution and extract interpretation
@@ -1265,8 +1288,8 @@ public class GrowthlaneTrackingILP {
                 status = IlpStatus.OPTIMAL;
                 if (!configurationManager.getIfRunningHeadless()) {
                     dialog.pushStatus("Optimum was found!");
-                    if (MoMA.getGui() != null) {
-                        MoMA.getGui().requestFocusOnTimeStepSlider();
+                    if (dic.getMomaGui() != null) {
+                        dic.getMomaGui().requestFocusOnTimeStepSlider();
                     }
                     dialog.setVisible(false);
                     dialog.dispose();
@@ -1311,8 +1334,8 @@ public class GrowthlaneTrackingILP {
             }
             fireStateChanged();
 
-            if (!isNull(MoMA.getGui())) {
-                MoMA.getGui().dataToDisplayChanged();
+            if (!isNull(dic.getMomaGui())) {
+                dic.getMomaGui().dataToDisplayChanged();
             }
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
@@ -2140,7 +2163,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }
-        MoMA.getGui().dataToDisplayChanged();
+        dic.getMomaGui().dataToDisplayChanged();
     }
 
     /**
@@ -2173,7 +2196,7 @@ public class GrowthlaneTrackingILP {
                     if (configurationManager.getMinTime() != readTmin || configurationManager.getMaxTime() != readTmax) {
                         if (!configurationManager.getIfRunningHeadless()) {
                             JOptionPane.showMessageDialog(
-                                    MoMA.getGui(),
+                                    dic.getMomaGui(),
                                     "Tracking to be loaded is at best a partial fit.\nMatching data will be loaded whereever possible...",
                                     "Warning",
                                     JOptionPane.WARNING_MESSAGE);
@@ -2287,7 +2310,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<?> hyp : pruneRoots) {
             hyp.setPruneRoot(true);
         }
-        MoMA.getGui().dataToDisplayChanged();
+        dic.getMomaGui().dataToDisplayChanged();
     }
 
     /**

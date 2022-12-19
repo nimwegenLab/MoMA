@@ -174,10 +174,15 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
     private void registerSliderListeners() {
         this.panelWithSliders.addListenerToTimeSlider((changeEvent) -> {
+            int currentTimeStep = ((JSlider) changeEvent.getSource()).getValue();
+            model.setCurrentGLF(currentTimeStep);
+            dataToDisplayChanged();
+        });
+
+        this.panelWithSliders.addListenerToTimeSlider((changeEvent) -> {
             if (spaceBarIsBeingHeld.isActive()) {
                 segmentationEditorPanelCenter.toggleGroundTruthSelectionCheckbox();
             }
-            dataToDisplayChanged();
         });
 
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {

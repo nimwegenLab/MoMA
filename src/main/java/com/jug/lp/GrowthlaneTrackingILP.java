@@ -287,16 +287,16 @@ public class GrowthlaneTrackingILP {
 
             /* Set Gurobi model parameters */
             int aggregateVal = model.get(GRB.IntParam.Aggregate);
-            System.out.println(String.format("Aggregate old value: %d", aggregateVal));
+//            System.out.println(String.format("Aggregate old value: %d", aggregateVal));
             model.set(GRB.IntParam.Aggregate, 1);
             aggregateVal = model.get(GRB.IntParam.Aggregate);
-            System.out.println(String.format("Aggregate new value: %d", aggregateVal));
+//            System.out.println(String.format("Aggregate new value: %d", aggregateVal));
 
             int scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
-            System.out.println(String.format("scaleFlag old value: %d", scaleFlagVal));
+//            System.out.println(String.format("scaleFlag old value: %d", scaleFlagVal));
             model.set(GRB.IntParam.ScaleFlag, 2);
             scaleFlagVal = model.get(GRB.IntParam.ScaleFlag);
-            System.out.println(String.format("scaleFlag new value: %d", scaleFlagVal));
+//            System.out.println(String.format("scaleFlag new value: %d", scaleFlagVal));
 
 //			int numericFocusVal = model.get(GRB.IntParam.NumericFocus);
 //			System.out.println(String.format("numericFocus old value: %d", numericFocusVal));

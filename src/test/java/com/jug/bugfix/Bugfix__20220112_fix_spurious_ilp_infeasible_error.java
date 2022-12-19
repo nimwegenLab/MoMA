@@ -33,8 +33,8 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
 //        tests.run_reloading__20220530_2_32();
 //        tests.run_trackonly__20220701_7_2();
 //        tests.run_reloading__20220701_7_2();
-        tests.run_trackonly__20211026_7_12();
-//        tests.run_reloading__20211026_7_12();
+//        tests.run_trackonly__20211026_7_12();
+        tests.run_reloading__20211026_7_12();
 //        tests.run_export();
     }
 

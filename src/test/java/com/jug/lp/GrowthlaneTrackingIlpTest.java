@@ -2,7 +2,6 @@ package com.jug.lp;
 
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
-import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ComponentForestGeneratorConfigurationMock;
 import com.jug.config.IConfiguration;
 import com.jug.config.ITrackingConfiguration;
@@ -10,17 +9,14 @@ import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
 import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
-import com.jug.gui.progress.DialogGurobiProgress;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.lp.costs.CostFactory;
 import com.jug.lp.costs.ICostFactory;
 import com.jug.mocks.ConfigMock;
 import com.jug.util.PseudoDic;
 import com.jug.util.TestUtils;
-import com.jug.util.Timer;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
-import gurobi.GRBCallback;
 import gurobi.GRBException;
 import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
@@ -31,7 +27,6 @@ import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -46,7 +41,7 @@ import static org.mockito.Mockito.when;
 public class GrowthlaneTrackingIlpTest {
     public static void main(String... args) throws IOException, GRBException {
 //        new GrowthlaneTrackingIlpTest().testMappingAssignmentGeneration();
-        new GrowthlaneTrackingIlpTest().reproduceAssertionError();
+        new GrowthlaneTrackingIlpTest().test_bigM_value_assertion_passes_for_20220701_7_2__frame_173();
     }
 
     private final TestUtils testUtils;
@@ -56,7 +51,7 @@ public class GrowthlaneTrackingIlpTest {
     }
 
     @Test
-   public void reproduceAssertionError() throws IOException, GRBException {
+   public void test_bigM_value_assertion_passes_for_20220701_7_2__frame_173() throws IOException, GRBException {
         int frameIndexStart = 0;
         int frameIndexStop = 1;
         Path testDataFolder = testUtils.getAbsolutTestFilePath("src/test/resources/00_probability_maps/20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2/frames_172-173__probability_maps__20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2");

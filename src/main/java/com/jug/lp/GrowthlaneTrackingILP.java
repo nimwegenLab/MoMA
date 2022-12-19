@@ -14,14 +14,9 @@ import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import com.moma.auxiliary.Plotting;
 import gurobi.*;
-import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -37,7 +32,6 @@ import java.util.stream.Collectors;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagUseAssignmentPlausibilityFilter;
 import static com.jug.util.ComponentTreeUtils.*;
-import static com.moma.auxiliary.Plotting.createImageWithComponents;
 import static java.util.Objects.isNull;
 
 /**
@@ -1040,36 +1034,16 @@ public class GrowthlaneTrackingILP {
      */
     private void calculateBigM(List<Hypothesis<AdvancedComponent<FloatType>>> allTargetHypotheses) {
         double maxLeafRank = 0;
-
 //        List<Integer> res = allTargetHypotheses.stream().map(hyp -> hyp.getWrappedComponent().getChildren().size()).collect(Collectors.toList());
-
-        List<AdvancedComponent<FloatType>> consideredComponents = new ArrayList<>();
-
         for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : allTargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
 //            System.out.println("component id: " + component.getStringId());
             if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();
                 maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
-                consideredComponents.add(component);
-//                if(componentRank > maxLeafRank){
-//                }
             }
         }
         bigM = Math.pow(2, maxLeafRank + 1);
-
-        RandomAccessibleInterval<FloatType> sourceImage = consideredComponents.get(0).getSourceImage();
-        int frameNumber = consideredComponents.get(0).getFrameNumber();
-
-        RandomAccessibleInterval<ARGBType> imageOfConsideredComponent = createImageWithComponents(consideredComponents, new ArrayList<>(), sourceImage);
-        ImageJFunctions.show(imageOfConsideredComponent, "considerComponents");
-
-        List<AdvancedComponent<FloatType>> allTargetComponents = allTargetHypotheses.stream().map(hyp -> hyp.getWrappedComponent()).collect(Collectors.toList());
-        RandomAccessibleInterval<ARGBType> imageOfAllComponent = createImageWithComponents(allTargetComponents, new ArrayList<>(), sourceImage);
-        ImageJFunctions.show(imageOfAllComponent, "allComponents");
-
-        Img<ARGBType> componentForestImage = Plotting.getComponentForestAsImg(gl.getFrames().get(frameNumber).getComponentForest(), allTargetComponents, sourceImage);
-        ImageJFunctions.show(componentForestImage, "componentForest");
 
         if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
             throw new RuntimeException("Value for bigM was not correctly calculated!");

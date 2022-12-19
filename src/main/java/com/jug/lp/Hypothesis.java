@@ -49,8 +49,8 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return true;
     }
 
-    public void setIsForced(boolean targetStateIsTrue) {
-        if (targetStateIsTrue == isForced()) {
+    public void setIsForced(boolean isForced) {
+        if (isForced == isForced()) {
             return;
         }
 
@@ -58,13 +58,13 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             setIsForceIgnored(false);
         }
 
-        if (!targetStateIsTrue) {
+        if (!isForced) {
             removeSegmentInSolutionConstraint();
             invalidateCache();
             return;
         }
 
-        if (targetStateIsTrue) {
+        if (isForced) {
             addSegmentInSolutionConstraint();
             invalidateCache();
             return;

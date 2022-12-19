@@ -14,9 +14,12 @@ import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
+import com.moma.auxiliary.Plotting;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
+import net.imglib2.img.Img;
+import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -1009,7 +1012,7 @@ public class GrowthlaneTrackingILP {
 
     public void addCrossingConstraints() throws GRBException {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) { /* upper limit of FOR-loop is `gl.numberOfFrames() - 1` because we do not need crossing-constraints for the last time-step, which only contains exit-assignments */
-            calculateBigM(nodes.getHypothesesAt(t+1)); /* calculate bigM for target components at t+1 */
+            calculateBigMnew(gl.getFrames().get(t+1).getComponentForest()); /* calculate bigM for target components at t+1 */
 
             for (final Hypothesis<AdvancedComponent<FloatType>> hypothesisOfInterest : nodes.getHypothesesAt(t)) {
                 List<AdvancedComponent<FloatType>> componentsBelow = hypothesisOfInterest.getWrappedComponent().getAllComponentsBelow();
@@ -1038,6 +1041,21 @@ public class GrowthlaneTrackingILP {
         for (Hypothesis<AdvancedComponent<FloatType>> hypothesis : allTargetHypotheses) {
             AdvancedComponent<FloatType> component = hypothesis.getWrappedComponent();
 //            System.out.println("component id: " + component.getStringId());
+            if (component.getChildren().size() == 0) {
+                double componentRank = component.getRankRelativeToLeafComponent();
+                maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;
+            }
+        }
+        bigM = Math.pow(2, maxLeafRank + 1);
+
+        if (Double.isNaN(bigM) || Double.isInfinite(bigM)) {
+            throw new RuntimeException("Value for bigM was not correctly calculated!");
+        }
+    }
+
+    private void calculateBigMnew(AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest) {
+        double maxLeafRank = 0;
+        for (AdvancedComponent<FloatType> component : componentForest.getAllComponents()) {
             if (component.getChildren().size() == 0) {
                 double componentRank = component.getRankRelativeToLeafComponent();
                 maxLeafRank = (componentRank > maxLeafRank) ? componentRank : maxLeafRank;

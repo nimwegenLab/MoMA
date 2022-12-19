@@ -32,9 +32,9 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
 //        tests.run_trackonly__20220530_2_32();
 //        tests.run_reloading__20220530_2_32();
 //        tests.run_trackonly__20220701_7_2();
-//        tests.run_reloading__20220701_7_2();
+        tests.run_reloading__20220701_7_2();
 //        tests.run_trackonly__20211026_7_12();
-        tests.run_reloading__20211026_7_12();
+//        tests.run_reloading__20211026_7_12();
 //        tests.run_export();
     }
 
@@ -52,9 +52,9 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, dataset1, "20220530_VNG1040_AB2h_1_MMStack_Pos2_GL32.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, dataset1, "20220530_2_32__mm.properties");
         analysisName = "test_batch_run";
-        tmin = 349;
-        tmax = 350;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+        tmin = null;
+        tmax = null;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void run_reloading__20220530_2_32() {
@@ -67,8 +67,8 @@ public class Bugfix__20220112_fix_spurious_ilp_infeasible_error {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, dataset2, "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos7_GL2.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, dataset2, "20220701_7_2__mm.properties");
         analysisName = "test_batch_run";
-        tmin = 172;
-        tmax = 173;
+        tmin = null;
+        tmax = null;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

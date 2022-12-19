@@ -697,12 +697,9 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         if (children.size() == 0) { /* this is a leaf component; so calculate its ordinal based on the number of leafs below */
             return Math.pow(2, getRankRelativeToLeafComponent());
         } else if (children.size() > 0) {
-            double ordinal = -1;
+            double ordinal = 0;
             for (AdvancedComponent<T> child : children){
-                ordinal = (child.getOrdinalValue() > ordinal) ? child.getOrdinalValue() : ordinal; /* this is not a leaf-component; its ordinal value is the sum of ordinals below it */
-            }
-            if (ordinal == -1) {
-                throw new RuntimeException(String.format("Failed to determine the ordinal value for component %s (ordinal=-1).", getStringId()));
+                ordinal += child.getOrdinalValue(); /* this is not a leaf-component; its ordinal value is the sum of ordinals below it */
             }
             return ordinal;
         }

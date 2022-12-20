@@ -16,8 +16,8 @@ public class AssignmentFilterFactory {
             return new DummyAssignmentFilter();
         }
         return new AssignmentFilterUsingFluorescencePerFrame(imageProperties,
-                configuration.getFluorescentAssignmentFilterChannel(),
-                configuration.getFluorescentAssignmentFilterIntensityRatioThresholdLower(),
-                configuration.getFluorescentAssignmentFilterIntensityRatioThresholdUpper());
+                configuration.getFluorescenceAssignmentFilterChannel(),
+                configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdLower(),
+                configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdUpper());
     }
 }

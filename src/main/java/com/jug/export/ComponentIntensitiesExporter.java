@@ -23,7 +23,7 @@ public class ComponentIntensitiesExporter implements ResultExporterInterface {
     @Override
     public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
         System.out.println("START: Export component intensities.");
-        int channelNumber = configuration.getFluorescentAssignmentFilterChannel();
+        int channelNumber = configuration.getFluorescenceAssignmentFilterChannel();
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
         this.table = new ResultTable(",");
         ResultTableColumn<String> regionNameCol = this.table.getColumn(String.class, "region_name");

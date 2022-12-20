@@ -11,17 +11,17 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
-    public int getFluorescentAssignmentFilterChannel() {
+    public int getFluorescenceAssignmentFilterChannel() {
         throw new NotImplementedException();
     }
 
     @Override
-    public double getFluorescentAssignmentFilterIntensityRatioThresholdUpper() {
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdUpper() {
         throw new NotImplementedException();
     }
 
     @Override
-    public double getFluorescentAssignmentFilterIntensityRatioThresholdLower() { throw new NotImplementedException(); }
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdLower() { throw new NotImplementedException(); }
 
     @Override
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {

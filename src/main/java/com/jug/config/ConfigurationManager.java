@@ -646,15 +646,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;
     }
 
-    public double getFluorescentAssignmentFilterIntensityRatioThresholdUpper() {
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdUpper() {
         return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER;
     }
 
-    public double getFluorescentAssignmentFilterIntensityRatioThresholdLower() {
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdLower() {
         return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER;
     }
 
-    public int getFluorescentAssignmentFilterChannel(){
+    public int getFluorescenceAssignmentFilterChannel(){
         return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER;
     }
 

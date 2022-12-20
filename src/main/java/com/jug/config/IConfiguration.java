@@ -17,7 +17,7 @@ public interface IConfiguration {
      * fluorescence image.
      * @return
      */
-    double getFluorescentAssignmentFilterNumberOfSigmas();
+    double getFluorescentAssignmentFilterIntensityRatioThresholdUpper();
 
     /**
      * Returns whether to use the fluorescence intensity of components to filter assignments.

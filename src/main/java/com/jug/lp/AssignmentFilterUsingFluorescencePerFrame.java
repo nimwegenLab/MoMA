@@ -7,22 +7,22 @@ import java.util.List;
 
 public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFilter {
     private final ImageProperties imageProperties;
-    private double numberOfSigmas;
+    private double intensityRatioThresholdUpper;
 
     int targetChannelNumber;
 
-    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, int channelNumber, double numberOfSigmas) {
+    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, int channelNumber, double intensityRatioThresholdUpper) {
         this.imageProperties = imageProperties;
         this.targetChannelNumber = channelNumber;
-        this.numberOfSigmas = numberOfSigmas;
+        this.intensityRatioThresholdUpper = intensityRatioThresholdUpper;
     }
 
-    public void setNumberOfSigmas(double numberOfSigmas) {
-        this.numberOfSigmas = numberOfSigmas;
+    public void setIntensityRatioThresholdUpper(double intensityRatioThresholdUpper) {
+        this.intensityRatioThresholdUpper = intensityRatioThresholdUpper;
     }
 
-    public double getNumberOfSigmas() {
-        return numberOfSigmas;
+    public double getIntensityRatioThresholdUpper() {
+        return intensityRatioThresholdUpper;
     }
 
     public int getTargetChannelNumber() {
@@ -40,12 +40,11 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
         double sourceComponentIntensityMean = sourceComponent.getMaskIntensityMean(targetChannelNumber);
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHyps = assignment.getTargetHypotheses();
         boolean targetsAreValid = true;
-        double ratio_threshold = numberOfSigmas * 0.068;
         for (Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHyps) {
             AdvancedComponent<FloatType> targetComponent = targetHypothesis.getWrappedComponent();
             double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(targetChannelNumber);
             double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean - 1;
-            if (intensity_ratio < -ratio_threshold || intensity_ratio > ratio_threshold) {
+            if (intensity_ratio < -ratio_threshold || intensity_ratio > intensityRatioThresholdUpper) {
                 targetsAreValid = false;
             }
         }

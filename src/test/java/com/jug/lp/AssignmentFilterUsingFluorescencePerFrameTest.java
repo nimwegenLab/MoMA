@@ -107,13 +107,13 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
 
     @Test
     public void getNumberOfSigmas__after_instantiation__returns_zero() {
-        Assertions.assertEquals(defaultNumberOfSigmas, sut.getNumberOfSigmas(), 1e-6);
+        Assertions.assertEquals(defaultNumberOfSigmas, sut.getIntensityRatioThresholdUpper(), 1e-6);
     }
 
     @Test
     public void getNumberOfSigmas__after_using_setFluorescenceThreshold__returns_set_value() {
         double expected = 1.234;
-        sut.setNumberOfSigmas(expected);
-        Assertions.assertEquals(expected, sut.getNumberOfSigmas(), 1e-6);
+        sut.setIntensityRatioThresholdUpper(expected);
+        Assertions.assertEquals(expected, sut.getIntensityRatioThresholdUpper(), 1e-6);
     }
 }

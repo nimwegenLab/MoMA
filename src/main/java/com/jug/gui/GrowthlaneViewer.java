@@ -238,7 +238,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 ValuePair<Integer, Integer> limits = component.getVerticalComponentLimits();
                 componentInfoString =
                         "\nI:" + component.getMaskIntensityMean(1) +
-                        "\nB:" + component.getMaskIntensityMean(1) +
+                        "\nσ:" + component.getMaskIntensitiesStd(1) +
                         "\nR:" + component.getRankRelativeToLeafComponent() +
                         "\nO:" + component.getOrdinalValue() +
                         "\nC:" + costFormat.format(optionalCost) +

@@ -29,8 +29,9 @@ public class Feature__20221213_use_fluorescence_signal_to_select_valid_component
 //        tests.run_reloading__20211026_7_12();
 //        tests.run_export();
 
+        tests.run_interactive__20220530_17_6();
 //        tests.run_trackonly__20220530_17_6();
-        tests.run_reloading__20220530_17_6();
+//        tests.run_reloading__20220530_17_6();
 
 //        tests.run_trackonly__20220701_10_3();
 //        tests.run_reloading__20220701_10_3();
@@ -59,6 +60,15 @@ public class Feature__20221213_use_fluorescence_signal_to_select_valid_component
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
         analysisName = "test_batch_run__20211026_7_12";
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void run_interactive__20220530_17_6() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/20220530_17_6/20220530_VNG1040_AB2h_1_MMStack_Pos17_GL6.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "test_interactive__20220530_17_6";
+        tmin = 305;
+        tmax = 306;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_trackonly__20220530_17_6() {

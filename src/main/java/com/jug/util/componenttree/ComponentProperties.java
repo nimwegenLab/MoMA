@@ -100,6 +100,11 @@ public class ComponentProperties {
         return imglib2Utils.getIntensityTotal(component.getRegion(), img);
     }
 
+    public synchronized double getIntensityPercentile(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img, double percent){
+        IterableInterval<FloatType> region = Views.interval(img, component.getRegion());
+        return ops.stats().percentile(region, percent).getRealDouble();
+    }
+
     public synchronized double getIntensityCoefficientOfVariation(AdvancedComponent<?> component, RandomAccessibleInterval<FloatType> img){
         return imglib2Utils.getIntensityCoeffVariation(component.getRegion(), img);
     }

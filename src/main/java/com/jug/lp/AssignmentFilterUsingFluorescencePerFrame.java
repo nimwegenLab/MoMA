@@ -46,10 +46,21 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
         boolean targetsAreValid = true;
         double ratio_threshold = numberOfSigmas * 0.068;
         for (Hypothesis<AdvancedComponent<FloatType>> hyp : targetHyps) {
-            AdvancedComponent<FloatType> component = hyp.getWrappedComponent();
-            double targetComponentIntensityMean = component.getMaskIntensityMean(targetChannelNumber);
+            AdvancedComponent<FloatType> targetComponent = hyp.getWrappedComponent();
+            double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(targetChannelNumber);
             double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean - 1;
             if (intensity_ratio < -ratio_threshold || intensity_ratio > ratio_threshold) {
+                if(assignment instanceof MappingAssignment){
+                    if(targetComponent.getStringId().equals("HypT1T430B470L44R56H704679286")){
+                        double sourcePercentile = sourceComponent.getMaskIntensityPercentile(targetChannelNumber, 70);
+                        double targetPercentile = targetComponent.getMaskIntensityPercentile(targetChannelNumber, 70);
+                        System.out.println("component: " + targetComponent.getStringId());
+                        System.out.println("sourceMean: " + sourceComponentIntensityMean);
+                        System.out.println("sourcePercentile: " + sourcePercentile);
+                        System.out.println("targetMean: " + targetComponentIntensityMean);
+                        System.out.println("targetPercentile: " + targetPercentile);
+                    }
+                }
 //            if (!(-ratio_threshold < intensity_ratio && intensity_ratio < ratio_threshold)) {
                 targetsAreValid = false;
             }

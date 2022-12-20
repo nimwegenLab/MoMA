@@ -419,6 +419,11 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return getMaskIntensityTotal(channelNumber) / size();
     }
 
+    public double getMaskIntensityPercentile(int channelNumber, double percent) {
+        final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
+        return componentProperties.getIntensityPercentile(this, channelFrame, percent);
+    }
+
     Map<Integer, Double> maskIntensities = new HashMap<>();
 
     @Override

@@ -245,7 +245,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * This is the minimal allowed intensity ratio, when comparing fluorescence intensities of source- and
      * target-components. Assignments will be deactivated, if the intensity ratio is below this value.
      */
-    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = -2.0;
+    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = 0.5;
 
     /**
      * Sets if the crossing constraints should be used.

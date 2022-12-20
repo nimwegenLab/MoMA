@@ -23,7 +23,7 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
         for (Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHyps) {
             AdvancedComponent<FloatType> targetComponent = targetHypothesis.getWrappedComponent();
             double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(configuration.getFluorescenceAssignmentFilterChannel());
-            double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean - 1;
+            double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean;
             if (intensity_ratio < configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdLower() || intensity_ratio > configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdUpper()) {
                 targetsAreValid = false;
             }

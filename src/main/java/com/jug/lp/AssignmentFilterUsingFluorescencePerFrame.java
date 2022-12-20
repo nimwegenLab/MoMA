@@ -1,5 +1,6 @@
 package com.jug.lp;
 
+import com.jug.config.IFluorescenceAssignmentFilterConfiguration;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 
@@ -7,46 +8,25 @@ import java.util.List;
 
 public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFilter {
     private final ImageProperties imageProperties;
-    private double intensityRatioThresholdLower;
-    private double intensityRatioThresholdUpper;
+    private IFluorescenceAssignmentFilterConfiguration configuration;
 
-    int targetChannelNumber;
-
-    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, int channelNumber, double intensityRatioThresholdLower, double intensityRatioThresholdUpper) {
+    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, IFluorescenceAssignmentFilterConfiguration configuration) {
         this.imageProperties = imageProperties;
-        this.targetChannelNumber = channelNumber;
-        this.intensityRatioThresholdLower = intensityRatioThresholdLower;
-        this.intensityRatioThresholdUpper = intensityRatioThresholdUpper;
-    }
-
-    public void setIntensityRatioThresholdUpper(double intensityRatioThresholdUpper) {
-        this.intensityRatioThresholdUpper = intensityRatioThresholdUpper;
-    }
-
-    public double getIntensityRatioThresholdUpper() {
-        return intensityRatioThresholdUpper;
-    }
-
-    public int getTargetChannelNumber() {
-        return targetChannelNumber;
-    }
-
-    public void setTargetChannelNumber(int targetChannelNumber) {
-        this.targetChannelNumber = targetChannelNumber;
+        this.configuration = configuration;
     }
 
     @Override
     public void evaluate(AbstractAssignment assignment) {
         Hypothesis<AdvancedComponent<FloatType>> sourceHyp = assignment.getSourceHypothesis();
         AdvancedComponent<FloatType> sourceComponent = sourceHyp.getWrappedComponent();
-        double sourceComponentIntensityMean = sourceComponent.getMaskIntensityMean(targetChannelNumber);
+        double sourceComponentIntensityMean = sourceComponent.getMaskIntensityMean(configuration.getFluorescenceAssignmentFilterChannel());
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHyps = assignment.getTargetHypotheses();
         boolean targetsAreValid = true;
         for (Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHyps) {
             AdvancedComponent<FloatType> targetComponent = targetHypothesis.getWrappedComponent();
-            double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(targetChannelNumber);
+            double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(configuration.getFluorescenceAssignmentFilterChannel());
             double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean - 1;
-            if (intensity_ratio < intensityRatioThresholdLower || intensity_ratio > intensityRatioThresholdUpper) {
+            if (intensity_ratio < configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdLower() || intensity_ratio > configuration.getFluorescenceAssignmentFilterIntensityRatioThresholdUpper()) {
                 targetsAreValid = false;
             }
         }

@@ -7,11 +7,9 @@ import net.imglib2.type.numeric.real.FloatType;
 import java.util.List;
 
 public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFilter {
-    private final ImageProperties imageProperties;
     private IFluorescenceAssignmentFilterConfiguration configuration;
 
-    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, IFluorescenceAssignmentFilterConfiguration configuration) {
-        this.imageProperties = imageProperties;
+    public AssignmentFilterUsingFluorescencePerFrame(IFluorescenceAssignmentFilterConfiguration configuration) {
         this.configuration = configuration;
     }
 

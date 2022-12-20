@@ -2,6 +2,7 @@ package com.jug.export;
 
 import com.jug.Growthlane;
 import com.jug.config.IConfiguration;
+import com.jug.config.IFluorescenceAssignmentFilterConfiguration;
 import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.lp.ImageProperties;
 import com.jug.util.componenttree.ComponentInterface;
@@ -11,19 +12,19 @@ import java.io.IOException;
 import java.util.List;
 
 public class ComponentIntensitiesExporter implements ResultExporterInterface {
-    private final IConfiguration configuration;
+    private IFluorescenceAssignmentFilterConfiguration fluorescenceAssignmentFilterConfiguration;
     private final ImageProperties imageProperties;
     private ResultTable table;
 
-    public ComponentIntensitiesExporter(IConfiguration configuration, ImageProperties imageProperties) {
-        this.configuration = configuration;
+    public ComponentIntensitiesExporter(IFluorescenceAssignmentFilterConfiguration fluorescenceAssignmentFilterConfiguration, ImageProperties imageProperties) {
+        this.fluorescenceAssignmentFilterConfiguration = fluorescenceAssignmentFilterConfiguration;
         this.imageProperties = imageProperties;
     }
 
     @Override
     public void export(Growthlane gl, IGlExportFilePathGetter exportFilePaths) throws GRBException {
         System.out.println("START: Export component intensities.");
-        int channelNumber = configuration.getFluorescenceAssignmentFilterChannel();
+        int channelNumber = fluorescenceAssignmentFilterConfiguration.getFluorescenceAssignmentFilterChannel();
         List<ComponentInterface> components = gl.getIlp().getAllComponentsInIlp();
         this.table = new ResultTable(",");
         ResultTableColumn<String> regionNameCol = this.table.getColumn(String.class, "region_name");

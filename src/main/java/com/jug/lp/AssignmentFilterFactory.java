@@ -16,6 +16,6 @@ public class AssignmentFilterFactory {
         if (!configuration.getFilterAssignmentsUsingFluorescenceFeatureFlag()) {
             return new DummyAssignmentFilter();
         }
-        return new AssignmentFilterUsingFluorescencePerFrame(imageProperties, configuration);
+        return new AssignmentFilterUsingFluorescencePerFrame(configuration);
     }
 }

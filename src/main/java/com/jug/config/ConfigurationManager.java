@@ -16,7 +16,7 @@ import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMa
 import static java.util.Objects.isNull;
 
 
-public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration {
+public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration, IFluorescenceAssignmentFilterConfiguration {
     /**
      * Properties to configure app (loaded and saved to properties file!).
      */
@@ -236,9 +236,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private int FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = 1;
 
     /**
-     * Sets the number of sigmas that the component fluorescence intensity needs to be above the background intensity.
+     * This is the maximal allowed intensity ratio, when comparing fluorescence intensities of source- and
+     * target-components. Assignments will be deactivated, if the intensity ratio is above this value.
      */
-    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = 5.0;
+    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER = 2.0;
+
+    /**
+     * This is the minimal allowed intensity ratio, when comparing fluorescence intensities of source- and
+     * target-components. Assignments will be deactivated, if the intensity ratio is below this value.
+     */
+    private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = 0.5;
 
     /**
      * Sets if the crossing constraints should be used.
@@ -331,7 +338,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
 
         FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
-        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR)));
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER)));
+        FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER)));
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = Integer.parseInt(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER)));
 
         /* process feature flags */
@@ -477,7 +485,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
-            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR));
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER));
+            props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER));
+
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER));
 
             setBooleanAsIntegerValue(props, "GUI_OPTIMIZE_ON_ILP_CHANGE", GUI_OPTIMIZE_ON_ILP_CHANGE);
@@ -636,11 +646,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;
     }
 
-    public double getFluorescentAssignmentFilterNumberOfSigmas() {
-        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR;
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdUpper() {
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER;
     }
 
-    public int getFluorescentAssignmentFilterChannel(){
+    public double getFluorescenceAssignmentFilterIntensityRatioThresholdLower() {
+        return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER;
+    }
+
+    public int getFluorescenceAssignmentFilterChannel(){
         return FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER;
     }
 

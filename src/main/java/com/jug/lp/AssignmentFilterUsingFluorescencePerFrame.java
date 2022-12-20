@@ -7,13 +7,15 @@ import java.util.List;
 
 public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFilter {
     private final ImageProperties imageProperties;
+    private double intensityRatioThresholdLower;
     private double intensityRatioThresholdUpper;
 
     int targetChannelNumber;
 
-    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, int channelNumber, double intensityRatioThresholdUpper) {
+    public AssignmentFilterUsingFluorescencePerFrame(ImageProperties imageProperties, int channelNumber, double intensityRatioThresholdLower, double intensityRatioThresholdUpper) {
         this.imageProperties = imageProperties;
         this.targetChannelNumber = channelNumber;
+        this.intensityRatioThresholdLower = intensityRatioThresholdLower;
         this.intensityRatioThresholdUpper = intensityRatioThresholdUpper;
     }
 
@@ -44,7 +46,7 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
             AdvancedComponent<FloatType> targetComponent = targetHypothesis.getWrappedComponent();
             double targetComponentIntensityMean = targetComponent.getMaskIntensityMean(targetChannelNumber);
             double intensity_ratio = targetComponentIntensityMean/sourceComponentIntensityMean - 1;
-            if (intensity_ratio < -ratio_threshold || intensity_ratio > intensityRatioThresholdUpper) {
+            if (intensity_ratio < intensityRatioThresholdLower || intensity_ratio > intensityRatioThresholdUpper) {
                 targetsAreValid = false;
             }
         }

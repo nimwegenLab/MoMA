@@ -21,6 +21,9 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
+    public double getFluorescentAssignmentFilterIntensityRatioThresholdLower() { throw new NotImplementedException(); }
+
+    @Override
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
         return false;
     }

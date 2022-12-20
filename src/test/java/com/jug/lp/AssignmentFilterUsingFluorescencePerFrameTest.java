@@ -19,7 +19,7 @@ class AssignmentFilterUsingFluorescencePerFrameTest {
     @BeforeEach
     void setUp() {
         imageProperties = mock(ImageProperties.class);
-        sut = new AssignmentFilterUsingFluorescencePerFrame(imageProperties, defaultTargetChannel, defaultNumberOfSigmas);
+        sut = new AssignmentFilterUsingFluorescencePerFrame(imageProperties, defaultTargetChannel, -2.0, 2.0);
     }
 
     @Test

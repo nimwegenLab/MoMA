@@ -13,11 +13,16 @@ public interface IConfiguration {
     int getFluorescentAssignmentFilterChannel();
 
     /**
-     * Returns the number of sigmas that the threshold of the filter has to be above background noise of the
-     * fluorescence image.
-     * @return
+     * This is the maximal allowed intensity ratio, when comparing fluorescence intensities of source- and
+     * target-components. Assignments will be deactivated, if the intensity ratio is above this value.
      */
     double getFluorescentAssignmentFilterIntensityRatioThresholdUpper();
+
+    /**
+     * This is the minimal allowed intensity ratio, when comparing fluorescence intensities of source- and
+     * target-components. Assignments will be deactivated, if the intensity ratio is below this value.
+     */
+    double getFluorescentAssignmentFilterIntensityRatioThresholdLower();
 
     /**
      * Returns whether to use the fluorescence intensity of components to filter assignments.

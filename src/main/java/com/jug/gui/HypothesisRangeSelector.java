@@ -163,18 +163,18 @@ public class HypothesisRangeSelector {
         updateGurobiModel();
         selectedHypotheses.stream().forEach(hypothesis -> hypothesis.setIsForceIgnored(false));
         updateGurobiModel();
-        List<MappingAssignment> mappingAssignments = getSelectedMappingAssignments();
-        mappingAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
+        List<AbstractAssignment> selectedAssignments = getSelectedMappingAssignments();
+        selectedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
         updateGurobiModel();
-        mappingAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
+        selectedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
         updateGurobiModel();
         updateMomaState();
     }
 
-    private List<MappingAssignment> getSelectedMappingAssignments() {
-        List<MappingAssignment> res = new ArrayList<>();
+    private List<AbstractAssignment> getSelectedMappingAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
-            MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();
             if (isNull(assignment)) {
                 continue;
             }

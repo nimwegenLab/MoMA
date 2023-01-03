@@ -137,7 +137,7 @@ public class HypothesisRangeSelector {
             assignments.add(assignment);
         }
         assignments.stream().forEach(assignment -> assignment.setGroundTruth(true));
-        updateMomaState();
+        updateGurobiModel();
     }
 
     public void forceCurrentlyActiveAssigmentBetweenSelectedHypotheses() {
@@ -151,7 +151,7 @@ public class HypothesisRangeSelector {
             assignments.add(assignment);
         }
         assignments.stream().forEach(assignment -> assignment.setGroundTruth(true));
-        updateMomaState();
+        updateGurobiModel();
     }
 
     private void updateMomaState() {

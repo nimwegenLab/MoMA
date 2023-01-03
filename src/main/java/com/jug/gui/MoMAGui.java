@@ -379,7 +379,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }));
 
         getActionMap().put("force_current_assignments", new FunctionalAction(a -> {
-            hypothesisRangeSelector.forceCurrentAssigmentBetweenSelectedHypotheses();
+            hypothesisRangeSelector.forceCurrentlyActiveAssigmentBetweenSelectedHypotheses();
             dataToDisplayChanged();
         }));
 

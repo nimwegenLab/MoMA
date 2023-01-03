@@ -37,6 +37,8 @@ public class Feature__20220103_add_functionality_force_current_assignments_in_se
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";
+        tmin = null;
+        tmax = 100;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 

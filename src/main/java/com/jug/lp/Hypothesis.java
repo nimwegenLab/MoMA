@@ -329,6 +329,22 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return null;
     }
 
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForcedOutgoingAssignments() {
+        try {
+            return  ilp.getForcedRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Gurobi threw an exception, while trying to find forced right assignments for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForceIgnoredOutgoingAssignments() {
+        try {
+            return  ilp.getForceIgnoredRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Gurobi threw an exception, while trying to find force-ignored right assignments for hypothesis: " + this.getStringId());
+        }
+    }
+
     public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveOutgoingAssignment() {
         try {
             return  ilp.getOptimalRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);

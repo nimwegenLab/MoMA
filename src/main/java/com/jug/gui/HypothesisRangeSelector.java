@@ -163,15 +163,45 @@ public class HypothesisRangeSelector {
         updateGurobiModel();
         selectedHypotheses.stream().forEach(hypothesis -> hypothesis.setIsForceIgnored(false));
         updateGurobiModel();
-        List<AbstractAssignment> selectedAssignments = getSelectedAssignments();
-        selectedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
+        List<AbstractAssignment> activeAssignments = getActiveAssignments();
+        activeAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
         updateGurobiModel();
-        selectedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
+        activeAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
+        updateGurobiModel();
+        List<AbstractAssignment> forcedAssignments = getForcedAssignments();
+        forcedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
+        updateGurobiModel();
+        List<AbstractAssignment> forceIgnoredAssignments = getForceIgnoredAssignments();
+        forceIgnoredAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
         updateGurobiModel();
         updateMomaState();
     }
 
-    private List<AbstractAssignment> getSelectedAssignments() {
+    private List<AbstractAssignment> getForcedAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = selectedHypotheses.get(i).getForcedOutgoingAssignments();
+            if (isNull(assignments)) {
+                continue;
+            }
+            res.addAll(assignments);
+        }
+        return res;
+    }
+
+    private List<AbstractAssignment> getForceIgnoredAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = selectedHypotheses.get(i).getForceIgnoredOutgoingAssignments();
+            if (isNull(assignments)) {
+                continue;
+            }
+            res.addAll(assignments);
+        }
+        return res;
+    }
+
+    private List<AbstractAssignment> getActiveAssignments() {
         List<AbstractAssignment> res = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();

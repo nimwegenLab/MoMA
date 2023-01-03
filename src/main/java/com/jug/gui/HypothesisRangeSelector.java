@@ -1,9 +1,12 @@
 package com.jug.gui;
 
 import com.jug.Growthlane;
+import com.jug.lp.AbstractAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
+import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -138,9 +141,10 @@ public class HypothesisRangeSelector {
     }
 
     public void forceCurrentAssigmentBetweenSelectedHypotheses() {
-        List<MappingAssignment> assignments = new ArrayList<>();
+        List<AbstractAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
-            MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
+//            MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();
             if (isNull(assignment)) { /* assignment is NULL, when user-selected start-/end-components are not connected by assignments; in this case abort action */
                 assignments.clear();
                 return;

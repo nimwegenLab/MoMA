@@ -260,15 +260,15 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return constraintValue < 0.5; /* condition for ground truth is LHS value == 0; we test against due 0.5 for numerical precision */
 	}
 
-	public void setGroundTruth(final boolean targetStateIsTrue) {
+	public void setGroundTruth(final boolean targetState) {
 		try {
-			if (targetStateIsTrue == isGroundTruth()) {
+			if (targetState == isGroundTruth()) {
 				return;
 			}
-			if (isGroundUntruth() && targetStateIsTrue) {
+			if (isGroundUntruth() && targetState) {
 				setGroundUntruth(false);
 			}
-			if (targetStateIsTrue) {
+			if (targetState) {
 				addGroundTruthConstraint();
 			} else {
 				removeGroundTruthConstraint();

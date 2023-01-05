@@ -24,9 +24,9 @@ public class Feature__20220103_add_functionality_force_current_assignments_in_se
     public static void main(String[] args) {
         Feature__20220103_add_functionality_force_current_assignments_in_selected_component_range tests = new Feature__20220103_add_functionality_force_current_assignments_in_selected_component_range();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -46,6 +46,8 @@ public class Feature__20220103_add_functionality_force_current_assignments_in_se
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_batch_run";
+        tmin = null;
+        tmax = 100;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

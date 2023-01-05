@@ -264,7 +264,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		try {
 			if (targetStateIsTrue != isGroundTruth()) {
 				if (isGroundUntruth() && targetStateIsTrue) {
-					removeGroundTruthConstraint();
+					setGroundUntruth(false);
 				}
 				if (targetStateIsTrue) {
 					addGroundTruthConstraint();

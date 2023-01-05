@@ -266,7 +266,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 				return;
 			}
 			if (isGroundUntruth() && targetState) {
-				setGroundUntruth(false);
+				removeGroundUntruthConstraint();
 			}
 			if (targetState) {
 				addGroundTruthConstraint();
@@ -281,16 +281,18 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	public void setGroundUntruth(final boolean targetState) {
 		try {
-			if (targetState) {
-				if (isGroundTruth()) {
-					removeGroundTruthConstraint();
-				}
-				addGroundUntruthConstraint();
-				invalidateCache();
-			} else if (isGroundUntruth()) {
-				removeGroundUntruthConstraint();
-				invalidateCache();
+			if (targetState == isGroundUntruth()) {
+				return;
 			}
+			if (isGroundTruth() && targetState) {
+				removeGroundTruthConstraint();
+			}
+			if (targetState) {
+				addGroundUntruthConstraint();
+			} else {
+				removeGroundUntruthConstraint();
+			}
+			invalidateCache();
 		} catch (GRBException e) {
 			throw new RuntimeException(e);
 		}

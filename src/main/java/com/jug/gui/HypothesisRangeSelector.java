@@ -2,15 +2,14 @@ package com.jug.gui;
 
 import com.jug.Growthlane;
 import com.jug.lp.AbstractAssignment;
+import com.jug.lp.DivisionAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -124,6 +123,16 @@ public class HypothesisRangeSelector {
             throw new RuntimeException(e);
         }
         updateMomaState();
+    }
+
+    public void forceIgnoreDivisionAssignments() {
+        Set<DivisionAssignment> divisionAssignments = new HashSet<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            Set<DivisionAssignment> assignments = selectedHypotheses.get(i).getRightAssignmentOfType(DivisionAssignment.class);
+            divisionAssignments.addAll(assignments);
+        }
+        divisionAssignments.stream().forEach(assignment -> assignment.setGroundUntruth(true));
+        updateGurobiModel();
     }
 
     public void forceMappingAssigmentBetweenSelectedHypotheses() {

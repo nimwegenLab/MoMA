@@ -336,6 +336,8 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK), "ignore_selected_component");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_R, KeyEvent.CTRL_DOWN_MASK), "clear_user_constraints_component");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK), "force_mapping_assignments");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_DOWN_MASK), "force_current_assignments");
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK), "ignore_selected_division_assignments");
         inputMap.put(KeyStroke.getKeyStroke('l'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('t'), "MMGUI_bindings");
         inputMap.put(KeyStroke.getKeyStroke('g'), "MMGUI_bindings");
@@ -374,6 +376,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
         getActionMap().put("force_mapping_assignments", new FunctionalAction(a -> {
             hypothesisRangeSelector.forceMappingAssigmentBetweenSelectedHypotheses();
+            dataToDisplayChanged();
+        }));
+
+        getActionMap().put("force_current_assignments", new FunctionalAction(a -> {
+            hypothesisRangeSelector.forceCurrentlyActiveAssigmentBetweenSelectedHypotheses();
+            dataToDisplayChanged();
+        }));
+
+        getActionMap().put("ignore_selected_division_assignments", new FunctionalAction(a -> {
+            hypothesisRangeSelector.forceIgnoreDivisionAssignments();
             dataToDisplayChanged();
         }));
 

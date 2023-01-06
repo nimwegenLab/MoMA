@@ -10,12 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add filtering of assignments based on the intensity of the target components using the image background intensity. This feature is controlled by the setting values `FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING`, `FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER` and `FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_SIGMA_FACTOR`.
-- Add functionality to select a range of hypotheses that have a assignments between them and modify that selection. Current functionality is:
-  - Ctrl + LeftClick: Set first hypothesis of the selection range.
-  - Ctrl + RightClick: Set last hypothesis of the selection range.
-  - Ctrl + m: Force mapping-assignments between selected hypotheses. 
-  - Ctrl + i: Force-ignore selected hypotheses. 
-  - Ctrl + c: Clear all constraints on the select hypotheses and assignments between them.
+- Add functionality to select a range of hypotheses that have assignments between them and modify that selection. Current functionality is:
+  - Selecting hypotheses:
+    - Ctrl + LeftClick: Set first hypothesis of the selection range.
+    - Ctrl + RightClick: Set last hypothesis of the selection range.
+    - ESC: Deselect currently selected hypotheses.
+  - Modifying hypotheses:
+    - Ctrl + F: Force currently active assignments between selected hypotheses. This helps avoid changes to a correctly tracked lineage, when performing further modification on the same time-steps later on.
+    - Ctrl + M: Force mapping-assignments between selected hypotheses. This will force the currently active mapping-assignments and replace active division assignments with forced mapping-assignments.
+    - Ctrl + Shift + D: Force-ignore all division assignments that start from selected hypotheses.
+    - Ctrl + I: Force-ignore selected hypotheses.
+    - Ctrl + C: Clear all constraints on the selected hypotheses and the assignments between them.
 - The user-selection for the checkbox "Run optimization on change" is now persisted to `GUI_OPTIMIZE_ON_ILP_CHANGE` in `mm.properties`.
 
 ### Changed

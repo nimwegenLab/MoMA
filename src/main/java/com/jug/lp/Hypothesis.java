@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -318,6 +319,17 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         }
     }
 
+    public <T extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> Set<T> getRightAssignmentOfType(Class<T> assignmentType) {
+        Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAllRightAssignmentsForHypothesis((Hypothesis<AdvancedComponent<FloatType>>) this);
+        HashSet<T> rightAssignments = new HashSet<>();
+        for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
+            if (assignmentType.isAssignableFrom(assignment.getClass())) {
+                rightAssignments.add((T) assignment);
+            }
+        }
+        return rightAssignments;
+    }
+
     public <T extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> T getRightAssignmentWithTarget(Class<T> assignmentType, Hypothesis<?> targetHypothesis) {
         Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAllRightAssignmentsForHypothesis((Hypothesis<AdvancedComponent<FloatType>>) this);
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments) {
@@ -327,6 +339,22 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
             }
         }
         return null;
+    }
+
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForcedOutgoingAssignments() {
+        try {
+            return  ilp.getForcedRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Gurobi threw an exception, while trying to find forced right assignments for hypothesis: " + this.getStringId());
+        }
+    }
+
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForceIgnoredOutgoingAssignments() {
+        try {
+            return  ilp.getForceIgnoredRightAssignment((Hypothesis<AdvancedComponent<FloatType>>) this);
+        } catch (GRBException e) {
+            throw new RuntimeException("Gurobi threw an exception, while trying to find force-ignored right assignments for hypothesis: " + this.getStringId());
+        }
     }
 
     public AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> getActiveOutgoingAssignment() {

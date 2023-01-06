@@ -1711,6 +1711,21 @@ public class GrowthlaneTrackingILP {
         return findActiveAssignment(edgeSets.getRightNeighborhood(hypothesis));
     }
 
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForcedRightAssignment(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
+        return edgeSets
+                .getRightNeighborhood(hypothesis)
+                .stream()
+                .filter(assignment -> assignment.isGroundTruth())
+                .collect(Collectors.toList());
+    }
+
+    public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getForceIgnoredRightAssignment(final Hypothesis<AdvancedComponent<FloatType>> hypothesis) throws GRBException {
+        return edgeSets
+                .getRightNeighborhood(hypothesis)
+                .stream()
+                .filter(assignment -> assignment.isGroundUntruth())
+                .collect(Collectors.toList());
+    }
 
     /**
      * Return set of all right-assignments that are outgoing from a given hypothesis.

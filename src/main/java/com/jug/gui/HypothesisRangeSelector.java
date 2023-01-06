@@ -1,13 +1,15 @@
 package com.jug.gui;
 
 import com.jug.Growthlane;
+import com.jug.lp.AbstractAssignment;
+import com.jug.lp.DivisionAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.lp.MappingAssignment;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
+import net.imglib2.type.numeric.real.FloatType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -123,6 +125,16 @@ public class HypothesisRangeSelector {
         updateMomaState();
     }
 
+    public void forceIgnoreDivisionAssignments() {
+        Set<DivisionAssignment> divisionAssignments = new HashSet<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            Set<DivisionAssignment> assignments = selectedHypotheses.get(i).getRightAssignmentOfType(DivisionAssignment.class);
+            divisionAssignments.addAll(assignments);
+        }
+        divisionAssignments.stream().forEach(assignment -> assignment.setGroundUntruth(true));
+        updateGurobiModel();
+    }
+
     public void forceMappingAssigmentBetweenSelectedHypotheses() {
         List<MappingAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
@@ -134,7 +146,21 @@ public class HypothesisRangeSelector {
             assignments.add(assignment);
         }
         assignments.stream().forEach(assignment -> assignment.setGroundTruth(true));
-        updateMomaState();
+        updateGurobiModel();
+    }
+
+    public void forceCurrentlyActiveAssigmentBetweenSelectedHypotheses() {
+        List<AbstractAssignment> assignments = new ArrayList<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();
+            if (isNull(assignment)) { /* assignment is NULL, when user-selected start-/end-components are not connected by assignments; in this case abort action */
+                assignments.clear();
+                return;
+            }
+            assignments.add(assignment);
+        }
+        assignments.stream().forEach(assignment -> assignment.setGroundTruth(true));
+        updateGurobiModel();
     }
 
     private void updateMomaState() {
@@ -146,18 +172,48 @@ public class HypothesisRangeSelector {
         updateGurobiModel();
         selectedHypotheses.stream().forEach(hypothesis -> hypothesis.setIsForceIgnored(false));
         updateGurobiModel();
-        List<MappingAssignment> mappingAssignments = getSelectedMappingAssignments();
-        mappingAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
+        List<AbstractAssignment> activeAssignments = getActiveAssignments();
+        activeAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
         updateGurobiModel();
-        mappingAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
+        activeAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
+        updateGurobiModel();
+        List<AbstractAssignment> forcedAssignments = getForcedAssignments();
+        forcedAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundTruth(false));
+        updateGurobiModel();
+        List<AbstractAssignment> forceIgnoredAssignments = getForceIgnoredAssignments();
+        forceIgnoredAssignments.stream().forEach(mappingAssignment -> mappingAssignment.setGroundUntruth(false));
         updateGurobiModel();
         updateMomaState();
     }
 
-    private List<MappingAssignment> getSelectedMappingAssignments() {
-        List<MappingAssignment> res = new ArrayList<>();
+    private List<AbstractAssignment> getForcedAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
-            MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = selectedHypotheses.get(i).getForcedOutgoingAssignments();
+            if (isNull(assignments)) {
+                continue;
+            }
+            res.addAll(assignments);
+        }
+        return res;
+    }
+
+    private List<AbstractAssignment> getForceIgnoredAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignments = selectedHypotheses.get(i).getForceIgnoredOutgoingAssignments();
+            if (isNull(assignments)) {
+                continue;
+            }
+            res.addAll(assignments);
+        }
+        return res;
+    }
+
+    private List<AbstractAssignment> getActiveAssignments() {
+        List<AbstractAssignment> res = new ArrayList<>();
+        for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
+            AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();
             if (isNull(assignment)) {
                 continue;
             }

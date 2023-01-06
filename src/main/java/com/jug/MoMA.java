@@ -223,7 +223,9 @@ public class MoMA {
 				dic.getGlDataLoader().runILPs();
 				System.out.println(" done!");
 
-				dic.getGlDataLoader().loadPruneRoots();
+				if (commandLineArgumentParser.isReloadingData()) {
+					dic.getGlDataLoader().loadPruneRoots();
+				}
 			}
 		} catch ( final Exception e ) {
 			e.printStackTrace();

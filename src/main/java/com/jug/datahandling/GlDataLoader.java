@@ -18,6 +18,7 @@ import net.imglib2.view.Views;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,6 +126,16 @@ public class GlDataLoader {
     public void generateILPs() {
         for ( final Growthlane gl : getGrowthlanes() ) {
             gl.generateILP( null );
+        }
+    }
+
+    public void loadPruneRoots() {
+        for (final Growthlane gl : getGrowthlanes()) {
+            try {
+                gl.getIlp().loadPruneRoots(glFileManager.getDotMomaFilePath().toFile());
+            } catch (IOException e) {
+                throw new RuntimeException("Error: Could load prune-roots from file: " + glFileManager.getDotMomaFilePath(), e);
+            }
         }
     }
 

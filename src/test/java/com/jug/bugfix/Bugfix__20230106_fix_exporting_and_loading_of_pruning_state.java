@@ -18,7 +18,7 @@ public class Bugfix__20230106_fix_exporting_and_loading_of_pruning_state {
         datasetSubfolder = "bugfix/20230106-fix-exporting-and-loading-of-pruning-state"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 10;
+        tmax = 20;
     }
 
     public static void main(String[] args) {

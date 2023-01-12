@@ -222,6 +222,10 @@ public class MoMA {
 				System.out.println("Running Integer Linear Program...");
 				dic.getGlDataLoader().runILPs();
 				System.out.println(" done!");
+
+				if (commandLineArgumentParser.isReloadingData()) {
+					dic.getGlDataLoader().loadPruneRoots();
+				}
 			}
 		} catch ( final Exception e ) {
 			e.printStackTrace();

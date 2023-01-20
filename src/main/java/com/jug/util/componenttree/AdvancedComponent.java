@@ -419,15 +419,22 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return getMaskIntensityTotal(channelNumber) / size();
     }
 
-    Map<Integer, Double> maskIntensities = new HashMap<>();
+    Map<Integer, Double> maskIntensities;
+
+    private Map<Integer, Double> getMaskIntensities() {
+        if (isNull(maskIntensities)) {
+            maskIntensities = new HashMap<>();
+        }
+        return maskIntensities;
+    }
 
     @Override
     public double getMaskIntensityTotal(int channelNumber) {
-        Double intensity = maskIntensities.get(channelNumber);
+        Double intensity = getMaskIntensities().get(channelNumber);
         if (isNull(intensity)) {
             final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getChannelImg(channelNumber), 2, frameNumber);
             intensity = componentProperties.getIntensityTotal(this, channelFrame);
-            maskIntensities.put(channelNumber, intensity);
+            getMaskIntensities().put(channelNumber, intensity);
         }
         return intensity;
     }
@@ -1064,7 +1071,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
                 getChildrenStringIds(),
                 ((FloatType) value()).getRealDouble(),
                 pixelList,
-                maskIntensities,
+                getMaskIntensities(),
                 maskIntensitiesStd,
                 backgroundIntensities,
                 backgroundIntensitiesStd,

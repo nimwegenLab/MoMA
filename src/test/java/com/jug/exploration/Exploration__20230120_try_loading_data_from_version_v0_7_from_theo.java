@@ -24,9 +24,10 @@ public class Exploration__20230120_try_loading_data_from_version_v0_7_from_theo 
     public static void main(String[] args) {
         Exploration__20230120_try_loading_data_from_version_v0_7_from_theo tests = new Exploration__20230120_try_loading_data_from_version_v0_7_from_theo();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
 //        tests.run_reloading();
+        tests.run_reloading_theos_analysis();
 //        tests.run_export();
     }
 
@@ -34,22 +35,28 @@ public class Exploration__20230120_try_loading_data_from_version_v0_7_from_theo 
      * Test-methods are below.
      */
     public void run_interactive() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "Pos2_GL10", "20221220_glu_spcm_1_MMStack_Pos2_GL10.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_trackonly() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "Pos2_GL10", "20221220_glu_spcm_1_MMStack_Pos2_GL10.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_batch_run";
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 
     public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "Pos2_GL10");
         analysisName = "test_batch_run";
+        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void run_reloading_theos_analysis() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "Pos2_GL10");
+        analysisName = "20221220_analysis";
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

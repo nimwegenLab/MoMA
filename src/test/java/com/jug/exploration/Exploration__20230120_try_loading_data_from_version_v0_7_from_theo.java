@@ -27,7 +27,8 @@ public class Exploration__20230120_try_loading_data_from_version_v0_7_from_theo 
 //        tests.run_interactive();
 //        tests.run_trackonly();
 //        tests.run_reloading();
-        tests.run_reloading_theos_analysis();
+//        tests.run_reloading_theos_analysis();
+        tests.run_export_theos_analysis();
 //        tests.run_export();
     }
 
@@ -60,9 +61,9 @@ public class Exploration__20230120_try_loading_data_from_version_v0_7_from_theo 
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
-    public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
+    public void run_export_theos_analysis() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "Pos2_GL10");
+        analysisName = "20221220_analysis";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

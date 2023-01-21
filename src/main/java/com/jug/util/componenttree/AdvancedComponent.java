@@ -1094,6 +1094,9 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         this.imageProvider = imageProvider;
         buildLabelRegion(pixelList, label, sourceImage);
         maskIntensities = pojo.getMaskIntensities();
+        maskIntensitiesStd = pojo.getMaskIntensitiesStd();
+        backgroundIntensities = pojo.getBackgroundIntensities();
+        backgroundIntensitiesStd = pojo.getBackgroundIntensitiesStd();
         cost = pojo.getCost();
     }
 

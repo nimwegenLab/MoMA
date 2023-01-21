@@ -104,11 +104,25 @@ public class AdvancedComponentPojo {
         return maskIntensities;
     }
 
+    public Map<Integer, Double> getMaskIntensitiesStd() {
+        if (isNull(maskIntensitiesStd)) {
+            maskIntensitiesStd = new HashMap<>();
+        }
+        return maskIntensitiesStd;
+    }
+
     public Map<Integer, Double> getBackgroundIntensities() {
         if (isNull(backgroundIntensities)) {
             backgroundIntensities = new HashMap<>();
         }
         return backgroundIntensities;
+    }
+
+    public Map<Integer, Double> getBackgroundIntensitiesStd() {
+        if (isNull(backgroundIntensitiesStd)) {
+            backgroundIntensitiesStd = new HashMap<>();
+        }
+        return backgroundIntensitiesStd;
     }
 
     public Float getCost() {

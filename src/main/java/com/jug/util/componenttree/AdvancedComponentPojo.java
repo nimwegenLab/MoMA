@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 public class AdvancedComponentPojo {
     private final String stringId;
     private final int frameNumber;
@@ -96,10 +98,16 @@ public class AdvancedComponentPojo {
     }
 
     public Map<Integer, Double> getMaskIntensities() {
+        if (isNull(maskIntensities)) {
+            maskIntensities = new HashMap<>();
+        }
         return maskIntensities;
     }
 
     public Map<Integer, Double> getBackgroundIntensities() {
+        if (isNull(backgroundIntensities)) {
+            backgroundIntensities = new HashMap<>();
+        }
         return backgroundIntensities;
     }
 

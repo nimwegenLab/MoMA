@@ -2118,6 +2118,7 @@ public class GrowthlaneTrackingILP {
                                     rhs,
                                     assmnt.getStringId()));
                         } catch (final GRBException e) {
+                            throw new RuntimeException(String.format("Export of curation state failed for assignment: %s", assmnt.getId()));
 //							out.write( String.format("\tASC, %d, %d, GUROBI_ERROR\n", t + timeOffset, assmnt.getId() ) );
                         }
                     }

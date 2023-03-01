@@ -41,11 +41,34 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	abstract public int getId();
 
-	/**
+	 /**
+	 * @deprecated
+	 * use instead one of the methods to simplify the code:
+	 * - {@link #isMappingAssignment()}.
+	 * - {@link #isDivisionAssignment()}.
+	 * - {@link #isExitAssignment()}.
+	 * - {@link #isLysisAssignment()}.
 	 * @return the type
 	 */
+	@Deprecated
 	public int getType() {
 		return type;
+	}
+
+	public boolean isMappingAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING;
+	}
+
+	public boolean isDivisionAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION;
+	}
+
+	public boolean isExitAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
+	}
+
+	public boolean isLysisAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
 	}
 
 	abstract public H getSourceHypothesis();

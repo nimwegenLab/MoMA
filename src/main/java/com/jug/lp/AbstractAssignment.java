@@ -67,6 +67,10 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
 	}
 
+	public boolean isEnterAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_ENTER;
+	}
+
 	public boolean isLysisAssignment() {
 		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS;
 	}

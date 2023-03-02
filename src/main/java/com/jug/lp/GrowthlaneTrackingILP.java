@@ -50,6 +50,8 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
 
+    public static final int ASSIGNMENT_ENTER = 0;
+
     // -------------------------------------------------------------------------------------
     // fields
     // -------------------------------------------------------------------------------------
@@ -570,11 +572,7 @@ public class GrowthlaneTrackingILP {
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
         addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        addEnterAssignment(sourceTimeStep, nodes.getHypothesesAt(targetTimeStep));   /* IMPORTANT:
-        1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
-        I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
-        2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
-        */
+        addEnterAssignment(targetTimeStep, nodes.getHypothesesAt(targetTimeStep));
         this.reportProgress();
     }
 
@@ -621,24 +619,20 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * This method adds instances EnterAssignments to the tracking problem. These are necessary to allow for the creation
+     * This method adds instances of EnterAssignments to the tracking problem. These are necessary to allow for the creation
      * of new cell lineages in cases where a cell enters the GL (which breaks tracking otherwise).
      *
-     * Note:
-     * 1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
-     * I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
-     * 2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
-     * @param sourceTimeStep
+     * @param targetTimeStep
      * @param targetHypotheses
      * @throws GRBException
      */
-    private void addEnterAssignment(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses) throws GRBException {
+    private void addEnterAssignment(final int targetTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses) throws GRBException {
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
             float cost = costModulationForSubstitutedILP(targetHypothesis.getCost());
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(targetTimeStep, targetHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
-            final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
-            nodes.addAssignment(sourceTimeStep, ea);
+            final EnterAssignment ea = new EnterAssignment(targetTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
+            nodes.addAssignment(targetTimeStep, ea);
             edgeSets.addToRightNeighborhood(targetHypothesis, ea);
         }
     }

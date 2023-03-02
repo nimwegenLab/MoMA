@@ -66,24 +66,14 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     /**
-     * Returns the segmentation hypothesis this exit-assignment is associated
-     * with.
-     *
-     * @return the associated segmentation-hypothesis.
-     */
-    public Hypothesis<AdvancedComponent<FloatType>> getAssociatedHypothesis() {
-        return targetHyp;
-    }
-
-    /**
      * @see AbstractAssignment#getId()
      */
     @Override
     public int getId() {
-        return targetHyp.getId() + GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
+        return targetHyp.getId() + GrowthlaneTrackingILP.ASSIGNMENT_ENTER;
     }
 
-    public static String buildStringId(int sourceTimeStep, ComponentInterface source) {
-        return "EnterT" + sourceTimeStep + "_" + source.getStringId();
+    public static String buildStringId(int targetTimeStep, ComponentInterface target) {
+        return "EnterT" + targetTimeStep + "_" + target.getStringId();
     }
 }

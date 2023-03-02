@@ -87,14 +87,6 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return getTargetHypothesis(componentInd).getWrappedComponent();
 	}
 
-	public List<ComponentInterface> getTargetComponents() {
-		List<ComponentInterface> list = new ArrayList<ComponentInterface>();
-		for (Hypothesis hyp : getTargetHypotheses()) {
-			list.add(getSourceHypothesis().getWrappedComponent());
-		}
-		return list;
-	}
-
 	/**
 	 * @return the ilpVar
 	 */

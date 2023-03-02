@@ -73,7 +73,7 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
         return targetHyp.getId() + GrowthlaneTrackingILP.ASSIGNMENT_ENTER;
     }
 
-    public static String buildStringId(int targetTimeStep, ComponentInterface target) {
-        return "EnterT" + targetTimeStep + "_" + target.getStringId();
+    public static String buildStringId(int sourceTimeStep, ComponentInterface target) {
+        return "EnterT" + sourceTimeStep + "_" + target.getStringId();
     }
 }

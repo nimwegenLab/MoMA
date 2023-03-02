@@ -43,7 +43,7 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
      */
     @Override
     public Hypothesis<AdvancedComponent<FloatType>> getSourceHypothesis() {
-        return null;
+        throw new RuntimeException(String.format("EnterAssignment does not have a source hypothesis (assignment id: %s).", getStringId()));
     } /* Enter assignments has no source hypothesis. */
 
     /**

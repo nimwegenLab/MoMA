@@ -630,10 +630,10 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
             float cost = costModulationForSubstitutedILP(targetHypothesis.getCost());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(targetTimeStep, targetHypothesis.getWrappedComponent()));
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses); // TODO-MM-20230302: I need make sure that the calculation for Hup is correct
             final EnterAssignment ea = new EnterAssignment(targetTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
             nodes.addAssignment(targetTimeStep, ea);
-            edgeSets.addToRightNeighborhood(targetHypothesis, ea);
+            edgeSets.addToLeftNeighborhood(targetHypothesis, ea);
         }
     }
 

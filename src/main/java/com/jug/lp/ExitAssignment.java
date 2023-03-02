@@ -52,7 +52,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      */
     @Override
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
-        return new ArrayList<>(); /* Lysis assignment has no target hypothesis. */
+        return new ArrayList<>(); /* Exit assignments have no target hypothesis. */
     }
 
     /**

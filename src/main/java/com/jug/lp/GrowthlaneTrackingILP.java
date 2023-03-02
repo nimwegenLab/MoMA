@@ -600,18 +600,18 @@ public class GrowthlaneTrackingILP {
      * exit-assignment.
      *
      * @param sourceTimeStep the time-point.
-     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
+     * @param sourceHypotheses           a list of hypothesis for which an <code>ExitAssignment</code>
      *                       should be added.
      * @throws GRBException
      */
-    private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            float cost = costModulationForSubstitutedILP(hyp.getCost());
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
-            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, hyp);
+    private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses) throws GRBException {
+        for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
+            float cost = costModulationForSubstitutedILP(sourceHypothesis.getCost());
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(sourceHypothesis, sourceHypotheses);
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, sourceHypothesis);
             nodes.addAssignment(sourceTimeStep, ea);
-            edgeSets.addToRightNeighborhood(hyp, ea);
+            edgeSets.addToRightNeighborhood(sourceHypothesis, ea);
         }
     }
 

@@ -60,18 +60,24 @@ public class IlpSolutionSanityChecker {
         Set<ExitAssignment> incomingExitAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, ExitAssignment.class);
         Set<LysisAssignment> incomingLysisAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, LysisAssignment.class);
         Set<DivisionAssignment> incomingDivisionAssignments = ilp.getEdgeSets().getAssignmentsOfType(incomingAssignments, DivisionAssignment.class);
+        Set<EnterAssignment> outgoingEnterAssignments = ilp.getEdgeSets().getAssignmentsOfType(outgoingAssignments, EnterAssignment.class);
+        int outgoingEnterAssignmentsCount = outgoingEnterAssignments.size();
         int incomingExitCount = incomingExitAssignments.size();
         int incomingLysisCount = incomingLysisAssignments.size();
         int incomingDivisionCount = incomingDivisionAssignments.size();
         int incomingTotalCount = incomingAssignments.size();
         int outgoingTotalCount = outgoingAssignments.size();
-        if (outgoingTotalCount - incomingDivisionCount != (incomingTotalCount - incomingExitCount - incomingLysisCount)) {
+        int outgoingCount = (outgoingTotalCount - incomingDivisionCount - outgoingEnterAssignmentsCount);
+        int incomingCount = (incomingTotalCount - incomingExitCount - incomingLysisCount);
+        if (outgoingCount != incomingCount) {
             errorMessageToAppendTo.append(String.format("ERROR: Continuity constraint violation at t=%d\n", t));
-            errorMessageToAppendTo.append(String.format("incoming total: %d\n", incomingTotalCount));
-            errorMessageToAppendTo.append(String.format("outgoing total: %d\n", outgoingTotalCount));
-            errorMessageToAppendTo.append(String.format("incoming exit: %d\n", incomingExitCount));
-            errorMessageToAppendTo.append(String.format("incoming lysis: %d\n", incomingLysisCount));
-            errorMessageToAppendTo.append(String.format("incoming division: %d\n", incomingDivisionCount));
+            errorMessageToAppendTo.append("Assignment counts:\n");
+            errorMessageToAppendTo.append(String.format("total incoming assignments: %d\n", incomingTotalCount));
+            errorMessageToAppendTo.append(String.format("total outgoing assignments: %d\n", outgoingTotalCount));
+            errorMessageToAppendTo.append(String.format("incoming lysis assignments: %d\n", incomingLysisCount));
+            errorMessageToAppendTo.append(String.format("incoming division assignments: %d\n", incomingDivisionCount));
+            errorMessageToAppendTo.append(String.format("incoming exit assignments: %d\n", incomingExitCount));
+            errorMessageToAppendTo.append(String.format("outgoing enter assignments: %d\n", outgoingEnterAssignmentsCount));
             myOptimizationFailedFlag = true;
         }
         return myOptimizationFailedFlag;

@@ -25,7 +25,7 @@ import static java.util.Objects.isNull;
 /**
  * @author jug
  */
-public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListener {
+public class AssignmentsEditorViewer extends JTabbedPane {
 
     // -------------------------------------------------------------------------------------
     // statics
@@ -154,26 +154,6 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
                 ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
                         .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
         activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
-    }
-
-    /**
-     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-     */
-    @Override
-    public void stateChanged(final ChangeEvent e) {
-        if (this.getSelectedComponent().equals(activeAssignments)) {
-            if (!isNull(ilpSupplier.get())) {
-                activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
-            }
-        } else if (this.getSelectedComponent().equals(inactiveMappingAssignments)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isMappingAssignment()));
-        } else if (this.getSelectedComponent().equals(inactiveDivisionAssignments)) {
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isDivisionAssignment()));
-        } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isExitAssignment()));
-        } else if (this.getSelectedComponent().equals(inactiveLysisAssignments)) {
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isLysisAssignment()));
-        }
     }
 
     /**

@@ -65,18 +65,8 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     @Override
     public void display() {
-        GrowthlaneTrackingILP ilp = momaModel.getCurrentGL().getIlp();
         updateSelectionCheckbox();
-
-        if (isNull(ilp)) {
-            assignmentsEditorViewer.display();
-            return;
-        }
-        if (!currentTimeStepIsValid()) {
-            assignmentsEditorViewer.display();
-            return;
-        }
-        assignmentsEditorViewer.display(ilp.getOptimalAssignments(getTimeStepToDisplay()));
+        assignmentsEditorViewer.display();
         assignmentsEditorViewer.setEnabled(isEnabled());
     }
 

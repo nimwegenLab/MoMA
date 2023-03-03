@@ -135,19 +135,9 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     }
 
     /**
-     * Draw this instance of assignmentViewer without having a fitting HashMap.
+     * Update assignment views.
      */
     public void display() {
-        display(new HashSet<>());
-    }
-
-    /**
-     * Receives and visualizes a new HashMap of assignments.
-     *
-     * @param data a <code>HashMap</code> containing pairs of segmentation
-     *                hypothesis at some time-point t and assignments towards t+1.
-     */
-    public void display(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
         if (isNull(ilpSupplier.get())) {
             return;
         }

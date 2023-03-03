@@ -1,7 +1,9 @@
 package com.jug.lp;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
+import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -454,7 +456,23 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return sourceTimeStep;
 	}
 
-	public int getTargetTimeStep() {
-		return sourceTimeStep + 1;
+	/**
+	 * @return true if assignment has at least one active target hypothesis.
+	 */
+	public boolean hasActiveTargetHypothesis() {
+		if (this instanceof ExitAssignment) {
+			return false;
+		}
+		return getTargetHypotheses().stream().anyMatch(hyp -> hyp.isActive());
+	}
+
+	/**
+	 * @return true if assignment has active source hypothesis.
+	 */
+	public boolean hasActiveSourceHypothesis() {
+		if (this instanceof EnterAssignment) {
+			return false;
+		}
+		return getSourceHypothesis().isActive();
 	}
 }

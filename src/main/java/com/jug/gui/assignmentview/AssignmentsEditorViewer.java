@@ -18,6 +18,7 @@ import java.awt.event.MouseEvent;
 import java.util.*;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -151,10 +152,18 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
             return;
         }
         if (!data.equals(this.data)) {
-            inactiveMappingAssignments.setData(ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get()));
-            inactiveDivisionAssignments.setData(ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get()));
-            inactiveExitAssignments.setData(ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get()));
-            inactiveLysisAssignments.setData(ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get()));
+            inactiveMappingAssignments.setData(
+                    ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get())
+                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+            inactiveDivisionAssignments.setData(
+                    ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get())
+                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+            inactiveExitAssignments.setData(
+                    ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get())
+                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+            inactiveLysisAssignments.setData(
+                    ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
+                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
         }
         if (!isNull(ilpSupplier.get())) {
             activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));

@@ -59,7 +59,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     AssignmentView selectedAssignment;
     private float filterMinCost = -100f;
     private float filterMaxCost = 100f;
-    private Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data;
+    private Set<? extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data;
     private int mousePosX;
     private int mousePosY;
     private int currentCostLine;
@@ -278,7 +278,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      *
      * @param data: assignment data to display
      */
-    public void setData(final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
+    public void setData(final Set<? extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
         this.data = data;
         initializeAssignmentViews();
         this.repaint();

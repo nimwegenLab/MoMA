@@ -146,12 +146,15 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      * @param data a <code>HashMap</code> containing pairs of segmentation
      *                hypothesis at some time-point t and assignments towards t+1.
      */
-    public void display(final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
+    public void display(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
+        if (isNull(ilpSupplier.get())) {
+            return;
+        }
         if (!data.equals(this.data)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isMappingAssignment()));
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isDivisionAssignment()));
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isExitAssignment()));
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isLysisAssignment()));
+            inactiveMappingAssignments.setData(ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get()));
+            inactiveDivisionAssignments.setData(ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get()));
+            inactiveExitAssignments.setData(ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get()));
+            inactiveLysisAssignments.setData(ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get()));
         }
         if (!isNull(ilpSupplier.get())) {
             activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));

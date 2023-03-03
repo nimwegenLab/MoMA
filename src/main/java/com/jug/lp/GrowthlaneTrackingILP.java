@@ -1630,6 +1630,26 @@ public class GrowthlaneTrackingILP {
         return new HashSet<>(nodes.getAssignmentsAt(t));
     }
 
+    public Set<MappingAssignment> getMappingAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof MappingAssignment).map(a -> (MappingAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<DivisionAssignment> getDivisionAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof DivisionAssignment).map(a -> (DivisionAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<ExitAssignment> getExitAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof ExitAssignment).map(a -> (ExitAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<LysisAssignment> getLysisAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof LysisAssignment).map(a -> (LysisAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<EnterAssignment> getEnterAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof EnterAssignment).map(a -> (EnterAssignment) a).collect(Collectors.toSet());
+    }
+
     /**
      * Get all optimal assignments from an Iterable of {@link AbstractAssignment}
      *

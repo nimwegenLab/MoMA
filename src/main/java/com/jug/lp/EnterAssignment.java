@@ -10,6 +10,8 @@ import gurobi.GRBVar;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,7 +31,7 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
      * @param targetHyp
      */
     public EnterAssignment(int sourceTimeStep, final GRBVar ilpVariable, final GrowthlaneTrackingILP ilp, final AssignmentsAndHypotheses<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>, Hypothesis<AdvancedComponent<FloatType>>> nodes, final HypothesisNeighborhoods<Hypothesis<AdvancedComponent<FloatType>>, AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> edges, final List<Hypothesis<AdvancedComponent<FloatType>>> Hup, final Hypothesis<AdvancedComponent<FloatType>> targetHyp) {
-        super(GrowthlaneTrackingILP.ASSIGNMENT_EXIT, ilpVariable, ilp, sourceTimeStep);
+        super(GrowthlaneTrackingILP.ASSIGNMENT_ENTER, ilpVariable, ilp, sourceTimeStep);
         this.Hup = Hup;
         this.edges = edges;
         this.targetHyp = targetHyp;
@@ -51,8 +53,8 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
      * @return
      */
     @Override
-    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
-        return new ArrayList<>();
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses() {
+        return Collections.singletonList(targetHyp);
     }
 
     /**

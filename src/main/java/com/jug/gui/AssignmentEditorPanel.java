@@ -16,7 +16,11 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     public AssignmentEditorPanel(final MoMAGui mmgui, MoMAModel momaModel, int viewHeight, int sourceTimeStepOffset, ConfigurationManager configurationManager) {
         this.momaModel = momaModel;
-        assignmentsEditorViewer = new AssignmentsEditorViewer(viewHeight, configurationManager);
+        assignmentsEditorViewer = new AssignmentsEditorViewer(
+                viewHeight,
+                configurationManager,
+                () -> momaModel.getCurrentGL().getIlp(),
+                () -> getTimeStepToDisplay());
         assignmentsEditorViewer.addChangeListener(mmgui);
         this.add(assignmentsEditorViewer);
         this.setAppearanceAndLayout();
@@ -72,7 +76,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
             assignmentsEditorViewer.display();
             return;
         }
-        assignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
+        assignmentsEditorViewer.display(ilp.getOptimalAssignments(getTimeStepToDisplay()));
         assignmentsEditorViewer.setEnabled(isEnabled());
     }
 

@@ -49,7 +49,6 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_MAPPING = 1;
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
-
     public static final int ASSIGNMENT_ENTER = 0;
 
     // -------------------------------------------------------------------------------------
@@ -103,31 +102,6 @@ public class GrowthlaneTrackingILP {
         this.assignmentFilter = assignmentFilter;
     }
 
-    /**
-     * Returns only the active assignments in this the data.
-     *
-     * @param data data to filter and keep only the active assignments
-     * @return
-     */
-    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getActiveAssignments(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
-        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
-        if (data != null) {
-            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
-                    try {
-                        if (ass.isChosen() || ass.isGroundTruth()) {
-                            activeSet.add(ass);
-                        }
-                    } catch (final GRBException e) {
-                        e.printStackTrace();
-                    }
-                    activeData.put(hypo, activeSet);
-                }
-            }
-        }
-        return activeData;
-    }
 
     /**
      * Returns the assignments in {@param data}, which fulfill the condition defined in {@param predicate}.
@@ -136,17 +110,11 @@ public class GrowthlaneTrackingILP {
      * @param predicate predicate that the assignment must fulfill in order to be returned
      * @return correct assignment types or null
      */
-    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> filterAssignmentsWithPredicate(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data, Function<AbstractAssignment, Boolean> predicate) {
-        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
-        if (data != null) {
-            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
-                    if (predicate.apply(ass)) {
-                        activeSet.add(ass);
-                    }
-                    activeData.put(hypo, activeSet);
-                }
+    public static Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filterAssignmentsWithPredicate(final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data, Function<AbstractAssignment, Boolean> predicate) {
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeData = new HashSet<>();
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data) {
+            if (predicate.apply(ass)) {
+                activeData.add(ass);
             }
         }
         return activeData;

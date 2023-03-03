@@ -1916,46 +1916,6 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Collects and returns all right-assignments given the optimal
-     * segmentation.
-     * Only those assignments are collected that are right-edges from one of the
-     * currently chosen (optimal) segmentation-hypotheses.
-     *
-     * @param t the time at which to look for inactive right-assignments.
-     *          Values for t make only sense if <code>>=0</code> and
-     *          <code>< nodes.getNumberOfTimeSteps()-1.</code>
-     * @return a hash-map that maps from segmentation hypothesis to a set of
-     * assignments that come in from the right (from t+1).
-     */
-    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getAllRightAssignmentsThatStartFromOptimalHypothesesAt(final int t) {
-        assert (t >= 0);
-        assert (t < nodes.getNumberOfTimeSteps() - 1);
-
-        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
-
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getRightNeighborhood(hyp);
-
-            if (set == null) continue;
-
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
-                if (innerSet == null) {
-                    innerSet = new HashSet<>();
-                    innerSet.add(a);
-                    ret.put(hyp, innerSet);
-                } else {
-                    innerSet.add(a);
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * One of the powerful user interaction constraints.
      * This method constraints a frame to contain a given number of segments
      * (cells).

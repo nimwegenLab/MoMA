@@ -106,10 +106,10 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         namesToRoll = new String[]{"O", "M", "D", "E", "L"};
 
         activeAssignments.display(GrowthlaneTrackingILP.getActiveAssignments(data));
-        inactiveMappingAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
-        inactiveDivisionAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
-        inactiveExitAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
-        inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
+        inactiveMappingAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isMappingAssignment()));
+        inactiveDivisionAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isDivisionAssignment()));
+        inactiveExitAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isExitAssignment()));
+        inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isLysisAssignment()));
 
         if (!OSValidator.isMac()) {
             this.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
@@ -147,10 +147,10 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
      */
     public void display(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> hashMap) {
         if (!hashMap.equals(this.data)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
+            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isMappingAssignment()));
+            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isDivisionAssignment()));
+            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isExitAssignment()));
+            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.isLysisAssignment()));
         }
         activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(hashMap));
         this.data = hashMap;
@@ -164,13 +164,13 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         if (this.getSelectedComponent().equals(activeAssignments)) {
             activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(data));
         } else if (this.getSelectedComponent().equals(inactiveMappingAssignments)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
+            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isMappingAssignment()));
         } else if (this.getSelectedComponent().equals(inactiveDivisionAssignments)) {
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
+            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isDivisionAssignment()));
         } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
+            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isExitAssignment()));
         } else if (this.getSelectedComponent().equals(inactiveLysisAssignments)) {
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
+            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.isLysisAssignment()));
         }
     }
 

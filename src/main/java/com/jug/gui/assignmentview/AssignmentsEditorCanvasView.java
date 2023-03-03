@@ -288,15 +288,15 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         assignmentViews.clear();
         for (final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> setOfAssignments : data.values()) {
             for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : setOfAssignments) {
-                if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
+                if (assignment.isMappingAssignment()) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+                } else if (assignment.isDivisionAssignment()) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
+                } else if (assignment.isExitAssignment()) {
                     assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_ENTER) {
+                } else if (assignment.isEnterAssignment()) {
                     assignmentViews.add(new EnterAssignmentView((EnterAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS) {
+                } else if (assignment.isLysisAssignment()) {
                     assignmentViews.add(new LysisAssignmentView((LysisAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }

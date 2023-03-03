@@ -151,24 +151,19 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         if (isNull(ilpSupplier.get())) {
             return;
         }
-        if (!data.equals(this.data)) {
-            inactiveMappingAssignments.setData(
-                    ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get())
-                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
-            inactiveDivisionAssignments.setData(
-                    ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get())
-                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
-            inactiveExitAssignments.setData(
-                    ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get())
-                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
-            inactiveLysisAssignments.setData(
-                    ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
-                            .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
-        }
-        if (!isNull(ilpSupplier.get())) {
-            activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
-        }
-        this.data = data;
+        inactiveMappingAssignments.setData(
+                ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveDivisionAssignments.setData(
+                ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveExitAssignments.setData(
+                ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveLysisAssignments.setData(
+                ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
     }
 
     /**

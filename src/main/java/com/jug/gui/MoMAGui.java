@@ -478,6 +478,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     switchAssignmentViewerTabs(4);
                     dataToDisplayChanged();
                 }
+                if (e.getActionCommand().equals("5")) {
+                    switchAssignmentViewerTabs(5);
+                    dataToDisplayChanged();
+                }
                 if (e.getActionCommand().equals("b")) {
                     showSegmentationAnnotations = !showSegmentationAnnotations;
                     for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {

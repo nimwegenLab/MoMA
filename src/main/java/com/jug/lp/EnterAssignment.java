@@ -58,13 +58,34 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
     }
 
     /**
+     * Add constraint that force EnterAssignments to only be the top-most assignment in the GL. If an EnterAssignment is
+     * active for a cell, which is not the top-most cell, then all _incoming_ assignment above this cell must also be
+     * type EnterAssignment.
+     * This constraint is analogous to how we constrain ExitAssignment to be the top-most _outgoing_ assignment
+     * (see method {@link ExitAssignment.addConstraintsToILP}).
+     *
      * @throws GRBException
      */
     @Override
-    public void addConstraintsToILP() throws GRBException { // builds equation 8, jug paper
-        /* TODO-MM-20230302: this does nothing for the moment; we will need to add a constraint later, which only
-        * allow enter assignments for the top-most cells - similar to how the exit assignment is handled.
-        */
+    public void addConstraintsToILP() throws GRBException {
+        final GRBLinExpr expr = new GRBLinExpr();
+
+        expr.addTerm(Hup.size(), this.getGRBVar());
+
+        boolean add = false;
+        for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
+            if (edges.getRightNeighborhood(upperHyp) != null) {
+                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getLeftNeighborhood(upperHyp)) {
+                    add = true;
+                    if (a_j instanceof EnterAssignment) { // add term if assignment is NOT another EnterAssignment
+                        continue;
+                    }
+                    expr.addTerm(1.0, a_j.getGRBVar());
+                }
+            }
+        }
+
+        ilp.model.addConstr(expr, GRB.LESS_EQUAL, Hup.size(), "EnterConstrT" + getSourceTimeStep() + "_" + getStringId());
     }
 
     /**

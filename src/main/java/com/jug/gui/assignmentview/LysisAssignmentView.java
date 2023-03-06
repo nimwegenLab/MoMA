@@ -30,23 +30,20 @@ public class LysisAssignmentView extends AssignmentView {
     }
 
     private void setupPolygon() {
-        final Hypothesis<AdvancedComponent<FloatType>> leftHyp = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
-        final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
+        final Hypothesis<AdvancedComponent<FloatType>> lysingHypothesis = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
+        final ValuePair<Integer, Integer> verticalLimits = lysingHypothesis.getLocation();
 
         float centeringOffset = .5f;
-        float xRightSide = this.width / 2.5f + centeringOffset;
-        final float x1 = 0;
-        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float x2 = 0;
-        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y3 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y4 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        float xRight = this.width / 2.5f + centeringOffset;
+        final float xLeft = 0;
+        final float yTop = verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float yBottom = verticalLimits.getB() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, y1);
-        polygon.lineTo(x2, y2);
-        polygon.lineTo(xRightSide, y3);
-        polygon.lineTo(xRightSide, y4);
+        polygon.moveTo(xLeft, yTop);
+        polygon.lineTo(xLeft, yBottom);
+        polygon.lineTo(xRight, yBottom);
+        polygon.lineTo(xRight, yTop);
         polygon.closePath();
     }
 }

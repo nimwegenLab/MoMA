@@ -30,14 +30,14 @@ public class EnterAssignmentView extends AssignmentView {
     }
 
     private void setupPolygon() {
-        final Hypothesis<AdvancedComponent<FloatType>> rightHyp = ((EnterAssignment) abstractAssignment).getTargetHypothesis(0);
-        final ValuePair<Integer, Integer> limitsLeft = rightHyp.getLocation();
+        final Hypothesis<AdvancedComponent<FloatType>> enteringHypothesis = ((EnterAssignment) abstractAssignment).getTargetHypothesis(0);
+        final ValuePair<Integer, Integer> verticalLimits = enteringHypothesis.getLocation();
 
         float centeringOffset = .5f;
         float xLeft = this.width - this.width / 2.5f - 1 - centeringOffset;
         float xRight = this.width - 1 - centeringOffset;
-        final float yTop = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float yBottom = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float yTop = verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float yBottom = verticalLimits.getB() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
         polygon.moveTo(xLeft, yTop);

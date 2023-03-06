@@ -491,8 +491,7 @@ public class GrowthlaneTrackingILP {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             createAssignmentsForTimeStep(t);
         }
-        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
-        addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+        addExitAssignments(gl.numberOfFrames() - 1); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
     }
 
     /**
@@ -538,9 +537,9 @@ public class GrowthlaneTrackingILP {
 
         addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
-        addExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        addEnterAssignment(sourceTimeStep, nodes.getHypothesesAt(targetTimeStep));   /* IMPORTANT:
+        addExitAssignments(sourceTimeStep);
+        addLysisAssignments(sourceTimeStep);
+        addEnterAssignment(sourceTimeStep);   /* IMPORTANT:
         1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
         I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
         2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
@@ -549,14 +548,13 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Add an lysis-assignment at time t to a bunch of segmentation hypotheses.
+     * Add a lysis-assignment at time t to a bunch of segmentation hypotheses.
      *
      * @param sourceTimeStep the time-point.
-     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
-     *                       should be added.
      * @throws GRBException
      */
-    private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+    private void addLysisAssignments(final int sourceTimeStep) throws GRBException {
+        List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             float cost = configurationManager.getLysisAssignmentCost();
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
@@ -575,11 +573,10 @@ public class GrowthlaneTrackingILP {
      * exit-assignment.
      *
      * @param sourceTimeStep the time-point.
-     * @param sourceHypotheses           a list of hypothesis for which an <code>ExitAssignment</code>
-     *                       should be added.
      * @throws GRBException
      */
-    private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses) throws GRBException {
+    private void addExitAssignments(final int sourceTimeStep) throws GRBException {
+        List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
             float cost = costModulationForSubstitutedILP(sourceHypothesis.getCost());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
@@ -599,10 +596,11 @@ public class GrowthlaneTrackingILP {
      * I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
      * 2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
      * @param sourceTimeStep
-     * @param targetHypotheses
      * @throws GRBException
      */
-    private void addEnterAssignment(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses) throws GRBException {
+    private void addEnterAssignment(final int sourceTimeStep) throws GRBException {
+        int targetTimeStep = sourceTimeStep + 1;
+        List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
             float cost = costModulationForSubstitutedILP(targetHypothesis.getCost());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));

@@ -7,7 +7,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 
 public class ExitAssignmentView extends AssignmentView {
     private final int ASSIGNMENT_DISPLAY_OFFSET;

@@ -44,6 +44,7 @@ public class AssignmentsEditorViewer extends JTabbedPane {
     private AssignmentsEditorCanvasView inactiveDivisionAssignments;
     private AssignmentsEditorCanvasView inactiveExitAssignments;
     private AssignmentsEditorCanvasView inactiveLysisAssignments;
+    private AssignmentsEditorCanvasView inactiveEnterAssignments;
     private int curTabIdx = 0;
     private Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data = new HashSet<>();
     private JComponent[] tabsToRoll;
@@ -108,11 +109,24 @@ public class AssignmentsEditorViewer extends JTabbedPane {
         inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveExitAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveEnterAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
 
-        assignmentViews = Arrays.asList(activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments);
+        assignmentViews = Arrays.asList(
+                activeAssignments,
+                inactiveMappingAssignments,
+                inactiveDivisionAssignments,
+                inactiveExitAssignments,
+                inactiveLysisAssignments,
+                inactiveEnterAssignments);
 
-        tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
-        namesToRoll = new String[]{"O", "M", "D", "E", "L"};
+        tabsToRoll = new JComponent[]{
+                activeAssignments,
+                inactiveMappingAssignments,
+                inactiveDivisionAssignments,
+                inactiveExitAssignments,
+                inactiveLysisAssignments,
+                inactiveEnterAssignments};
+        namesToRoll = new String[]{"O", "M", "D", "X", "L", "E"};
 
         if (!OSValidator.isMac()) {
             this.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
@@ -153,6 +167,9 @@ public class AssignmentsEditorViewer extends JTabbedPane {
         inactiveLysisAssignments.setData(
                 ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
                         .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveEnterAssignments.setData(
+                ilpSupplier.get().getEnterAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveTargetHypothesis()).collect(Collectors.toSet()));
         activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
     }
 
@@ -172,6 +189,7 @@ public class AssignmentsEditorViewer extends JTabbedPane {
         inactiveDivisionAssignments.addIlpModelChangedEventListener(listener);
         inactiveExitAssignments.addIlpModelChangedEventListener(listener);
         inactiveLysisAssignments.addIlpModelChangedEventListener(listener);
+        inactiveEnterAssignments.addIlpModelChangedEventListener(listener);
     }
 
     private boolean mouseIsOverDisplayPanel() {

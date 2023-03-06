@@ -34,19 +34,16 @@ public class EnterAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> limitsLeft = rightHyp.getLocation();
 
         float centeringOffset = .5f;
-        float xRightSide = this.width / 2.5f + centeringOffset;
-        final float x1 = 0 + centeringOffset;
-        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float x2 = 0 + centeringOffset;
-        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y3 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y4 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        float xLeft = this.width - this.width / 2.5f - 1 - centeringOffset;
+        float xRight = this.width - 1 - centeringOffset;
+        final float yTop = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
+        final float yBottom = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
 
         polygon = new GeneralPath();
-        polygon.moveTo(x1, y1);
-        polygon.lineTo(x2, y2);
-        polygon.lineTo(xRightSide, y3);
-        polygon.lineTo(xRightSide, y4);
+        polygon.moveTo(xLeft, yTop);
+        polygon.lineTo(xLeft, yBottom);
+        polygon.lineTo(xRight, yBottom);
+        polygon.lineTo(xRight, yTop);
         polygon.closePath();
     }
 }

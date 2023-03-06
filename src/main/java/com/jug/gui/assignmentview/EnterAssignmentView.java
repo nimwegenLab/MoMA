@@ -21,13 +21,11 @@ public class EnterAssignmentView extends AssignmentView {
 
     @Override
     Color GetDefaultColor() {
-        return Color.GREEN;
+        return new Color(0f, .5f, 0f, 1f);
     }
 
     @Override
-    Color GetPrunedColor() {
-        return new Color(1f, 0f, 0f, 0.2f);
-    }
+    Color GetPrunedColor() { return new Color(0f, .5f, 0f, 0.2f); }
 
     private void setupPolygon() {
         final Hypothesis<AdvancedComponent<FloatType>> enteringHypothesis = ((EnterAssignment) abstractAssignment).getTargetHypothesis(0);

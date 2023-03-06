@@ -7,7 +7,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
 import java.awt.*;
-import java.awt.geom.GeneralPath;
 
 public class EnterAssignmentView extends AssignmentView {
     private final int ASSIGNMENT_DISPLAY_OFFSET;
@@ -20,12 +19,12 @@ public class EnterAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return new Color(0f, .5f, 0f, 1f);
     }
 
     @Override
-    Color GetPrunedColor() { return new Color(0f, .5f, 0f, 0.2f); }
+    Color getDefaultEdgeColor() { return new Color(0f, .5f, 0f, 0.2f); }
 
     private void setupPolygon() {
         final Hypothesis<AdvancedComponent<FloatType>> enteringHypothesis = ((EnterAssignment) abstractAssignment).getTargetHypothesis(0);

@@ -20,12 +20,12 @@ public class LysisAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return Color.ORANGE;
     }
 
     @Override
-    Color GetPrunedColor() {
+    Color getDefaultEdgeColor() {
         return new Color(1f, 1f, 0f, 0.2f);
     }
 

@@ -14,8 +14,8 @@ public abstract class AssignmentView {
     boolean isHidden;
     private boolean isSelected;
 
-    abstract Color GetPrunedColor();
-    abstract Color GetDefaultColor();
+    abstract Color getDefaultEdgeColor();
+    abstract Color getDefaultFaceColor();
 
     public void hide() {
         isHidden = true;
@@ -81,7 +81,7 @@ public abstract class AssignmentView {
 
         g2.setStroke(new BasicStroke(1));
         if (!abstractAssignment.isPruned()) {
-            g2.setPaint(GetPrunedColor());
+            g2.setPaint(getDefaultEdgeColor());
             if (abstractAssignment.isGroundTruth() || abstractAssignment.isGroundUntruth()) {
                 g2.setPaint(g2.getColor().brighter().brighter());
             }
@@ -97,7 +97,7 @@ public abstract class AssignmentView {
             g2.setPaint(Color.BLACK.darker());
             g2.setStroke(new BasicStroke(3));
         } else {
-            g2.setPaint(GetDefaultColor());
+            g2.setPaint(getDefaultFaceColor());
         }
         g2.draw(polygon);
     }

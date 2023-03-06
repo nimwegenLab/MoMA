@@ -20,12 +20,12 @@ public class ExitAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return Color.RED;
     }
 
     @Override
-    Color GetPrunedColor() {
+    Color getDefaultEdgeColor() {
         return new Color(1f, 0f, 0f, 0.2f);
     }
 

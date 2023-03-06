@@ -34,16 +34,11 @@ public class LysisAssignmentView extends AssignmentView {
         final ValuePair<Integer, Integer> verticalLimits = lysingHypothesis.getLocation();
 
         float centeringOffset = .5f;
-        float xRight = this.width / 2.5f + centeringOffset;
-        final float xLeft = 0;
-        final float yTop = verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float yBottom = verticalLimits.getB() + ASSIGNMENT_DISPLAY_OFFSET;
 
-        polygon = new GeneralPath();
-        polygon.moveTo(xLeft, yTop);
-        polygon.lineTo(xLeft, yBottom);
-        polygon.lineTo(xRight, yBottom);
-        polygon.lineTo(xRight, yTop);
-        polygon.closePath();
+        drawPolygonRectangle(
+                centeringOffset,
+                verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET,
+                this.width / 2.5f, verticalLimits.getB() - verticalLimits.getA()
+        );
     }
 }

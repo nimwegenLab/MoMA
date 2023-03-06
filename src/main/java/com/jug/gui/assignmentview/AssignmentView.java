@@ -101,4 +101,16 @@ public abstract class AssignmentView {
         }
         g2.draw(polygon);
     }
+
+    protected void drawPolygonRectangle(float xLeft, float yTop, float width, float height) {
+        float yBottom = yTop + height;
+        float xRight = xLeft + width;
+
+        polygon = new GeneralPath();
+        polygon.moveTo(xLeft, yTop);
+        polygon.lineTo(xLeft, yBottom);
+        polygon.lineTo(xRight, yBottom);
+        polygon.lineTo(xRight, yTop);
+        polygon.closePath();
+    }
 }

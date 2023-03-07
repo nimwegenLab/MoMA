@@ -10,10 +10,14 @@ import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.Hypothesis;
 import com.jug.lp.IAssignmentFilter;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
 import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
@@ -21,6 +25,7 @@ import javax.swing.event.ChangeListener;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
 
 import static java.util.Objects.isNull;
 
@@ -194,7 +199,11 @@ public class Growthlane {
 		try {
 			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
 			CellTrackBuilder trackBuilder = new CellTrackBuilder();
-			trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+
+			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfStartingHypotheses =
+					firstGLF.getSortedActiveHypsAndPos();
+
+			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,
 					firstGLF.getParent().getIlp(),
 					getTimeStepMaximum());

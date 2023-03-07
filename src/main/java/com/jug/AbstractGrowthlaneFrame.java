@@ -189,7 +189,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
             // find out where this hypothesis is located along the GL
             int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
             for (Localizable localizable : hyp.getWrappedComponent()) {
-                final int ypos = localizable.getIntPosition(0);
+                final int ypos = localizable.getIntPosition(1);
                 min = Math.min(min, ypos);
                 max = Math.max(max, ypos);
             }

@@ -14,6 +14,7 @@ import net.imglib2.util.ValuePair;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /**
  * @author jug
@@ -186,16 +187,10 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
         final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
 
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
-            // find out where this hypothesis is located along the GL
-            int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-            for (Localizable localizable : hyp.getWrappedComponent()) {
-                final int ypos = localizable.getIntPosition(1);
-                min = Math.min(min, ypos);
-                max = Math.max(max, ypos);
-            }
+            ValuePair<Integer, Integer> val = hyp.getWrappedComponent().getVerticalComponentLimits();
 
             if (!hyp.isPruned()) {
-                positionedHyps.add(new ValuePair<>(-max, hyp));
+                positionedHyps.add(new ValuePair<>(-val.getB(), hyp));
             }
         }
 

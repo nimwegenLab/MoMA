@@ -437,7 +437,7 @@ public class GrowthlaneTrackingILP {
             String[] splits = varName.split("_");
             String mapId = splits[0];
 
-            int sourceTimeStep = Integer.parseInt(mapId.substring(5));
+            int sourceTimeStep = Integer.parseInt(mapId.substring(6));
             int targetTimeStep = sourceTimeStep + 1;
             AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[1]);
             if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
@@ -449,7 +449,7 @@ public class GrowthlaneTrackingILP {
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses); /* TODO-MichaelMell-20220908: This could be moved inside EnterAssignment.java */
             final EnterAssignment enterAssignment = new EnterAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, targetHypothesis);
             nodes.addAssignment(sourceTimeStep, enterAssignment);
-            edgeSets.addToRightNeighborhood(targetHypothesis, enterAssignment);
+            edgeSets.addToLeftNeighborhood(targetHypothesis, enterAssignment);
         }
     }
 

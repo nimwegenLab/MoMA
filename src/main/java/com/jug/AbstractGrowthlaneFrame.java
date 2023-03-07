@@ -196,6 +196,12 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
 
         positionedHyps.sort(Comparator.comparing(o -> o.a));
 
+        /**
+         * TODO-MM-20230307: Replace the above code with dedicate methods that do this; i.e. something like this (this still needs to be tested):
+         * List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesOfInterest = getParent().getIlp().getHypothesesAt(this.getTime()).stream().filter(hyp -> hyp.isActive()).filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+         * hypothesesOfInterest.sort(Comparator.comparing(hyp -> hyp.getWrappedComponent().getVerticalComponentLimits().getB()));
+         **/
+
         return positionedHyps;
     }
 }

@@ -7,6 +7,7 @@ import com.jug.export.CellTrackBuilder;
 import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.EnterAssignment;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
@@ -18,6 +19,7 @@ import gurobi.GRBException;
 import gurobi.GRBModel;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
@@ -26,6 +28,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -203,6 +206,8 @@ public class Growthlane {
 			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfStartingHypotheses =
 					firstGLF.getSortedActiveHypsAndPos();
 
+			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
+
 			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,
 					firstGLF.getParent().getIlp(),
@@ -212,6 +217,11 @@ public class Growthlane {
 		catch (GRBException grbException){
 			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);
 		}
+	}
+
+	private Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getListOfEnteringHypotheses() {
+		List<EnterAssignment> listOfActiveEnterAssignment = ilp.getAllEnterAssignments().stream().filter(a -> a.isActive()).collect(Collectors.toList());
+		throw new NotImplementedException("This method will determine hypotheses that entered the GL during the measurement. It is not yet implemented.");
 	}
 
 	public IGlExportFilePathGetter getExportPaths() {

@@ -2654,6 +2654,10 @@ public class GrowthlaneTrackingILP {
         return nodes.getAllAssignments();
     }
 
+    public Set<EnterAssignment> getAllEnterAssignments() {
+        return getAllAssignments().stream().filter(a -> a instanceof EnterAssignment).map(a -> (EnterAssignment) a).collect(Collectors.toSet());
+    }
+
     public List<Hypothesis<AdvancedComponent<FloatType>>> getAllHypotheses() {
         return nodes.getAllHypotheses();
     }

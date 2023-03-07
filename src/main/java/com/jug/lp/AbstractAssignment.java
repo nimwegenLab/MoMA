@@ -181,6 +181,20 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 	}
 
 	/**
+	 * This method determines, if the assignment is active. It directly queries the underlying Gurobi model and thus
+	 * is slow when used from the GUI. It should be used during e.g. export.
+	 *
+	 * @return
+	 */
+	public boolean isActive() {
+		try {
+			return getIsChosenStateFromIlp();
+		} catch (GRBException err) {
+			throw new RuntimeException(String.format("Failed to determine if assignment is active for assignment: %d", getStringId()));
+		}
+	}
+
+	/**
 	 * @return true, if the ilpVar of this Assignment is equal to 1.0.
 	 */
 	private boolean previousIsChoosen = false;

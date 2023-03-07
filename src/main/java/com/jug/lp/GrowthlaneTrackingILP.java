@@ -349,6 +349,7 @@ public class GrowthlaneTrackingILP {
         loadDivisionAssignments();
         loadExitAssignments();
         loadLysisAssignments();
+        loadEnterAssignments();
     }
 
     public void loadMappingAssignments() throws GRBException {
@@ -426,6 +427,29 @@ public class GrowthlaneTrackingILP {
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToRightNeighborhood(hyp, ea);
+        }
+    }
+
+    private void loadEnterAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("EnterT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(5));
+            int targetTimeStep = sourceTimeStep + 1;
+            AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[1]);
+            if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis =
+                    nodes.getOrAddHypothesis(targetTimeStep, new Hypothesis<>(targetTimeStep, targetComponent, this));
+            List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
+
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses); /* TODO-MichaelMell-20220908: This could be moved inside EnterAssignment.java */
+            final EnterAssignment enterAssignment = new EnterAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, targetHypothesis);
+            nodes.addAssignment(sourceTimeStep, enterAssignment);
+            edgeSets.addToRightNeighborhood(targetHypothesis, enterAssignment);
         }
     }
 
@@ -592,8 +616,8 @@ public class GrowthlaneTrackingILP {
      * of new cell lineages in cases where a cell enters the GL (which breaks tracking otherwise).
      *
      * Note:
-     * 1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
-     * I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
+     * 1. I associate the EnterAssignment instances with the _source_ frame (i.e. the frame _after_ which the cell
+     * appears for the first time in the GL). I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
      * 2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
      * @param sourceTimeStep
      * @throws GRBException
@@ -604,7 +628,7 @@ public class GrowthlaneTrackingILP {
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
             float cost = costModulationForSubstitutedILP(targetHypothesis.getCost());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses); // TODO-MM-20230302: I need make sure that the calculation for Hup is correct
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
             final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
             nodes.addAssignment(sourceTimeStep, ea);
             edgeSets.addToLeftNeighborhood(targetHypothesis, ea);

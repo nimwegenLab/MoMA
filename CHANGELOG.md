@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Ctrl + M: Force mapping-assignments between selected hypotheses. This will force the currently active mapping-assignments and replace active division assignments with forced mapping-assignments.
     - Ctrl + Shift + D: Force-ignore all division assignments that start from selected hypotheses.
     - Ctrl + I: Force-ignore selected hypotheses.
-    - Ctrl + C: Clear all constraints on the selected hypotheses and the assignments between them.
+    - Ctrl + R: Removed all constraints on the selected hypotheses and the assignments between them.
 - The user-selection for the checkbox "Run optimization on change" is now persisted to `GUI_OPTIMIZE_ON_ILP_CHANGE` in `mm.properties`.
 
 ### Changed

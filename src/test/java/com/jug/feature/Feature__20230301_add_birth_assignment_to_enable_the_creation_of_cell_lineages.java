@@ -26,7 +26,8 @@ public class Feature__20230301_add_birth_assignment_to_enable_the_creation_of_ce
 
 //        tests.run_interactive__lis_20221102_2_29();
 //        tests.run_trackonly__lis_20221102_2_29();
-        tests.run_reloading__lis_20221102_2_29();
+//        tests.run_reloading__lis_20221102_2_29();
+        tests.run_export__lis_20221102_2_29();
     }
 
     /**
@@ -54,5 +55,11 @@ public class Feature__20230301_add_birth_assignment_to_enable_the_creation_of_ce
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29");
         analysisName = "test_reloading__lis_20221102_2_29";
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void run_export__lis_20221102_2_29() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29");
+        analysisName = "test_reloading__lis_20221102_2_29";
+        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 }

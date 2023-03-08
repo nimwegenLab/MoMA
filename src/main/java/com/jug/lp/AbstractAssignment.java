@@ -190,7 +190,7 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		try {
 			return getIsChosenStateFromIlp();
 		} catch (GRBException err) {
-			throw new RuntimeException(String.format("Failed to determine if assignment is active for assignment: %d", getStringId()));
+			throw new RuntimeException(String.format("Failed to determine if assignment is active for assignment: %s", getStringId()), err);
 		}
 	}
 

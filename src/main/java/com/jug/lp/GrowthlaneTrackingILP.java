@@ -1262,12 +1262,12 @@ public class GrowthlaneTrackingILP {
     }
 
     private void invalidateCaches() {
-        getAllAssignments().stream().forEach(assigmnent -> assigmnent.invalidateCache());
+        getAllAssignments().stream().forEach(assignment -> assignment.invalidateCache());
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.invalidateCache());
     }
 
     private void fillCaches() {
-        getAllAssignments().stream().forEach(assigmnent -> assigmnent.cache());
+        getAllAssignments().stream().forEach(assignment -> assignment.cache());
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
     }
 

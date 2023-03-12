@@ -24,7 +24,8 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
     public static void main(String[] args) {
         Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost tests = new Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost();
 
-        tests.run_interactive__lis_20221102_2_29();
+//        tests.run_interactive__lis_20221102_2_29();
+        tests.run_interactive__lis_20220701_5_5();
     }
 
     /**
@@ -36,6 +37,15 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
         analysisName = "test_enter_assignment";
         tmin = 6;
         tmax = 30;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive__lis_20220701_5_5() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20220701_5_5/20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos5_GL5.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20220701_5_5/mm.properties");
+        analysisName = "test_enter_assignment";
+        tmin = null;
+        tmax = 10;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 }

@@ -181,7 +181,7 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
         return ret;
     }
 
-    public Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getSortedActiveHypsAndPos() {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getSortedActiveHypsAndPos() {
         Set<Hypothesis<AdvancedComponent<FloatType>>> hyps = getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet();
 
         final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
@@ -196,6 +196,11 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
 
         positionedHyps.sort(Comparator.comparing(o -> o.a));
 
+        List<Hypothesis<AdvancedComponent<FloatType>>> hypsToReturn = new ArrayList<>();
+        for (ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> val : positionedHyps){
+            hypsToReturn.add(val.getB());
+        }
+        return hypsToReturn;
 //        List<Hypothesis<AdvancedComponent<FloatType>>> hyps2 = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
 //        hyps2.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB()));
 
@@ -205,6 +210,6 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
          * hypothesesOfInterest.sort(Comparator.comparing(hyp -> hyp.getWrappedComponent().getVerticalComponentLimits().getB()));
          **/
 
-        return positionedHyps;
+//        return positionedHyps;
     }
 }

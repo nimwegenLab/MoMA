@@ -15,7 +15,7 @@ import java.util.Vector;
 public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
 
-    public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> segmentsInFirstFrameSorted,
+    public void buildSegmentTracks(List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses,
                                    GrowthlaneFrame firstGlf,
                                    final GrowthlaneTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
@@ -26,11 +26,11 @@ public class CellTrackBuilder {
 
         startingPoints = new ArrayList<>();
 
-        for (final ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> valuePair : segmentsInFirstFrameSorted) {
-            final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
+            final int cellRank = firstGlf.getSolutionStats_cellRank(hypothesis);
 
             final SegmentRecord point =
-                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank, ilp);
+                    new SegmentRecord(hypothesis, nextCellId++, -1, -1, cellRank, ilp);
             startingPoints.add(point);
 
             final SegmentRecord prepPoint = new SegmentRecord(point, 1, ilp);

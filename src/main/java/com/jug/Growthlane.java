@@ -203,8 +203,7 @@ public class Growthlane {
 			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
 			CellTrackBuilder trackBuilder = new CellTrackBuilder();
 
-			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfStartingHypotheses =
-					firstGLF.getSortedActiveHypsAndPos();
+			List<Hypothesis<AdvancedComponent<FloatType>>>  listOfStartingHypotheses = firstGLF.getSortedActiveHypsAndPos();
 
 //			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
 

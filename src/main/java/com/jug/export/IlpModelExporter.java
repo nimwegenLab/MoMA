@@ -18,6 +18,5 @@ public class IlpModelExporter implements ResultExporterInterface {
         model.write(exportFilePaths.getGurobiMpsFilePath().toString());
         model.write(exportFilePaths.getGurobiSolFilePath().toString());
         model.write(exportFilePaths.getGurobiMstFilePath().toString());
-        gl.getIlp().removeStorageLockConstraintsFromAssignments();
     }
 }

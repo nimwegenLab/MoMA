@@ -14,16 +14,12 @@ import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import com.moma.auxiliary.Plotting;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -1261,7 +1257,7 @@ public class GrowthlaneTrackingILP {
 
     public void run() {
         if (configurationManager.getRunIlpOnChange()) {
-            runImmediately();
+            runImmediatelyAfterRemovingStorageLocks();
         }
     }
 
@@ -1301,6 +1297,13 @@ public class GrowthlaneTrackingILP {
         } catch (GRBException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void runImmediatelyAfterRemovingStorageLocks() {
+        if (modelIsLockedForStorage()) {
+            removeStorageLockConstraintsFromAssignments();
+        }
+        runImmediately();
     }
 
     /**
@@ -1377,10 +1380,10 @@ public class GrowthlaneTrackingILP {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }
-            if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
-                removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
-                removeStorageLockConstraintAfterFirstOptimization = false;
-            }
+//            if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
+//                removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
+//                removeStorageLockConstraintAfterFirstOptimization = false;
+//            }
             if (getStatus() != IlpStatus.INFEASIBLE && getStatus() != IlpStatus.SUBOPTIMAL) {
                 fillCaches();
             }

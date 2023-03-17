@@ -858,7 +858,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //                }
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().getIlp().runImmediately();
+                model.getCurrentGL().getIlp().runImmediatelyAfterRemovingStorageLocks();
                 System.out.println("...done!");
                 buttonOptimizeMore.setForeground(Color.BLACK);
                 dataToDisplayChanged();
@@ -935,7 +935,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Finding optimal result...");
-        model.getCurrentGL().getIlp().runImmediately();
+        model.getCurrentGL().getIlp().runImmediatelyAfterRemovingStorageLocks();
         System.out.println("...done!");
 
         dataToDisplayChanged();

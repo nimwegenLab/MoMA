@@ -206,7 +206,7 @@ public class Growthlane {
 			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfStartingHypotheses =
 					firstGLF.getSortedActiveHypsAndPos();
 
-			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
+//			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
 
 			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,

@@ -1360,7 +1360,7 @@ public class GrowthlaneTrackingILP {
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
-            e.printStackTrace();
+            throw new RuntimeException(e); /* if we reach here something went so wrong, that we want the program to fail */
         }
     }
 
@@ -2021,6 +2021,11 @@ public class GrowthlaneTrackingILP {
      * of the Gurobi model, when it is read from disk and optimized when loading/restoring a previous curation.
      */
     public void addStorageLockConstraintsToAssignments() {
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
         for (AbstractAssignment assignment : nodes.getAllAssignments()) {
             assignment.addStorageLockConstraint();
         }

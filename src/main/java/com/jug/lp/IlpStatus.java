@@ -11,4 +11,5 @@ public enum IlpStatus {
     NUMERIC,
     LIMIT_REACHED,
     LOADED,
+    INTERRUPTED,
 }

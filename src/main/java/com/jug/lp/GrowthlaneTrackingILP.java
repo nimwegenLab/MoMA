@@ -122,7 +122,7 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * @deprecated Use getModelStatus() instead.
+     * @deprecated Use {@link #getModelStatus()} instead.
      *
      * @return the status. This status returns one of the following values:
      * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASIBLE, UNBOUNDED,
@@ -1275,7 +1275,7 @@ public class GrowthlaneTrackingILP {
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
     }
 
-    private IlpStatus getModelStatus() {
+    public IlpStatus getModelStatus() {
         status = IlpStatus.NUMERIC;
         try {
             int myStatus = model.get(GRB.IntAttr.Status);
@@ -1293,6 +1293,8 @@ public class GrowthlaneTrackingILP {
                 return IlpStatus.LOADED;
             } else if (myStatus == GRB.Status.INPROGRESS) {
                 return IlpStatus.OPTIMIZATION_IS_RUNNING;
+            } else if (myStatus == GRB.Status.INTERRUPTED) {
+                return IlpStatus.INTERRUPTED;
             } else {
                 throw new RuntimeException(String.format("The returned GRB.Status (=%d) is not mapped and will cause undefined behavior.", myStatus));
             }
@@ -1395,7 +1397,6 @@ public class GrowthlaneTrackingILP {
     }
 
     public boolean modelIsLockedForStorage() {
-        System.out.println("Model is locked.");
         return ! model.getConstraintsContaining("StoreLockConstr_").isEmpty(); /* model is locked, if it contains lock-constraints */
     }
 

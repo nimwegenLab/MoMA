@@ -182,27 +182,29 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     }
 
     public List<Hypothesis<AdvancedComponent<FloatType>>> getSortedActiveHypsAndPos() {
-        Set<Hypothesis<AdvancedComponent<FloatType>>> hyps = getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet();
+//        Set<Hypothesis<AdvancedComponent<FloatType>>> hyps = getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet();
+//
+//        final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
+//
+//        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
+//            ValuePair<Integer, Integer> val = hyp.getWrappedComponent().getVerticalComponentLimits();
+//
+//            if (!hyp.isPruned()) {
+//                positionedHyps.add(new ValuePair<>(-val.getB(), hyp));
+//            }
+//        }
+//
+//        positionedHyps.sort(Comparator.comparing(o -> o.a));
+//
+//        List<Hypothesis<AdvancedComponent<FloatType>>> hypsToReturn = new ArrayList<>();
+//        for (ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> val : positionedHyps){
+//            hypsToReturn.add(val.getB());
+//        }
+//        return hypsToReturn;
 
-        final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            ValuePair<Integer, Integer> val = hyp.getWrappedComponent().getVerticalComponentLimits();
-
-            if (!hyp.isPruned()) {
-                positionedHyps.add(new ValuePair<>(-val.getB(), hyp));
-            }
-        }
-
-        positionedHyps.sort(Comparator.comparing(o -> o.a));
-
-        List<Hypothesis<AdvancedComponent<FloatType>>> hypsToReturn = new ArrayList<>();
-        for (ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> val : positionedHyps){
-            hypsToReturn.add(val.getB());
-        }
-        return hypsToReturn;
-//        List<Hypothesis<AdvancedComponent<FloatType>>> hyps2 = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
-//        hyps2.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB()));
+        List<Hypothesis<AdvancedComponent<FloatType>>> hyps2 = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
+        hyps2.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
+        return hyps2;
 
         /**
          * TODO-MM-20230307: Replace the above code with dedicate methods that do this; i.e. something like this (this still needs to be tested):

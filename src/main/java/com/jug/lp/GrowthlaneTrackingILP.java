@@ -1543,6 +1543,10 @@ public class GrowthlaneTrackingILP {
      * the optimization procedure).
      */
     public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
+        /* TODO-MM-20230317: The code below can be replaced with this; I did not do this now, because I cannot test it ATM:
+         *   List<Hypothesis<AdvancedComponent<FloatType>>> resultNew = nodes.getHypothesesAt(t).stream().filter(hyp -> hyp.isActive()).collect(Collectors.toList());
+         */
+
         final ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
 
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);

@@ -182,9 +182,10 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     }
 
     public List<Hypothesis<AdvancedComponent<FloatType>>> getSortedActiveHypsAndPos() {
-        List<Hypothesis<AdvancedComponent<FloatType>>> hyps2 = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
-        hyps2.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
-        return hyps2;
+        List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
+        hypotheses = hypotheses.stream().filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+        hypotheses.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
+        return hypotheses;
 
         /**
          * TODO-MM-20230307: Replace the above code with dedicate methods that do this; i.e. something like this (this still needs to be tested):

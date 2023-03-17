@@ -122,6 +122,8 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
+     * @deprecated Use getModelStatus() instead.
+     *
      * @return the status. This status returns one of the following values:
      * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASIBLE, UNBOUNDED,
      * SUBOPTIMAL, NUMERIC, or LIMIT_REACHED. Values 2-6 correspond
@@ -130,6 +132,7 @@ public class GrowthlaneTrackingILP {
      * OPTIMIZATION_NEVER_PERFORMED shows, that the optimizer was never
      * started on this ILP setup.
      */
+    @Deprecated
     public IlpStatus getStatus() {
         return status;
     }
@@ -1272,6 +1275,32 @@ public class GrowthlaneTrackingILP {
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
     }
 
+    private IlpStatus getModelStatus() {
+        status = IlpStatus.NUMERIC;
+        try {
+            int myStatus = model.get(GRB.IntAttr.Status);
+            if (myStatus == GRB.Status.OPTIMAL) {
+                return IlpStatus.OPTIMAL;
+            } else if (myStatus == GRB.Status.INFEASIBLE) {
+                return IlpStatus.INFEASIBLE;
+            } else if (myStatus == GRB.Status.UNBOUNDED) {
+                return IlpStatus.UNBOUNDED;
+            } else if (myStatus == GRB.Status.SUBOPTIMAL) {
+                return IlpStatus.SUBOPTIMAL;
+            } else if (myStatus == GRB.Status.NUMERIC) {
+                return IlpStatus.NUMERIC;
+            } else if (myStatus == GRB.Status.LOADED) {
+                return IlpStatus.LOADED;
+            } else if (myStatus == GRB.Status.INPROGRESS) {
+                return IlpStatus.OPTIMIZATION_IS_RUNNING;
+            } else {
+                throw new RuntimeException(String.format("The returned GRB.Status (=%d) is not mapped and will cause undefined behavior.", myStatus));
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * This function takes the ILP built up in <code>model</code>
      * and starts the convex optimization procedure. This is actually the step
@@ -1345,9 +1374,6 @@ public class GrowthlaneTrackingILP {
                 if (!isNull(dialogManager)) {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
-            }
-            if(modelIsLockedForStorage()){
-                throw new NotImplementedException();
             }
             if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
                 removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */

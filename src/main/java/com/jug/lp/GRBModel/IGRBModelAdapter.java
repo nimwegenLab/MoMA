@@ -2,6 +2,11 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public interface IGRBModelAdapter {
     GRBConstr[] getConstrs();
 
@@ -38,4 +43,8 @@ public interface IGRBModelAdapter {
     void optimize() throws GRBException;
 
     int get(GRB.IntAttr attr) throws GRBException;
+
+    Set<GRBVar> getVariablesContaining(String string);
+
+    Set<GRBConstr> getConstraintsContaining(String string);
 }

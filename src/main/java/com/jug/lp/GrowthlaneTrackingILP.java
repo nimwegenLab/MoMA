@@ -23,6 +23,7 @@ import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -1345,6 +1346,9 @@ public class GrowthlaneTrackingILP {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }
+            if(modelIsLockedForStorage()){
+                throw new NotImplementedException();
+            }
             if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
                 removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
                 removeStorageLockConstraintAfterFirstOptimization = false;
@@ -1362,6 +1366,11 @@ public class GrowthlaneTrackingILP {
             System.out.println("Could not run the generated ILP!");
             throw new RuntimeException(e); /* if we reach here something went so wrong, that we want the program to fail */
         }
+    }
+
+    public boolean modelIsLockedForStorage() {
+        System.out.println("Model is locked.");
+        return ! model.getConstraintsContaining("StoreLockConstr_").isEmpty(); /* model is locked, if it contains lock-constraints */
     }
 
     /**

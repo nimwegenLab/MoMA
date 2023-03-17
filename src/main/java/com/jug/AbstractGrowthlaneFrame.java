@@ -11,9 +11,7 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -184,9 +182,11 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
     }
 
     public Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getSortedActiveHypsAndPos() {
+        Set<Hypothesis<AdvancedComponent<FloatType>>> hyps = getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet();
+
         final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
 
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
+        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             ValuePair<Integer, Integer> val = hyp.getWrappedComponent().getVerticalComponentLimits();
 
             if (!hyp.isPruned()) {
@@ -195,6 +195,9 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
         }
 
         positionedHyps.sort(Comparator.comparing(o -> o.a));
+
+//        List<Hypothesis<AdvancedComponent<FloatType>>> hyps2 = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
+//        hyps2.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB()));
 
         /**
          * TODO-MM-20230307: Replace the above code with dedicate methods that do this; i.e. something like this (this still needs to be tested):

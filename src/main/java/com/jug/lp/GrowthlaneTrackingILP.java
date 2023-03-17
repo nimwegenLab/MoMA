@@ -1542,7 +1542,7 @@ public class GrowthlaneTrackingILP {
      * that correspond to the active segmentation hypothesis (chosen by
      * the optimization procedure).
      */
-    private List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
         final ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
 
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);

@@ -5,7 +5,6 @@ import com.jug.lp.*;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -65,7 +64,7 @@ public class CellTrackBuilder {
 
                 prepPoint.parentId = prepPoint.id;
 //                prepPoint.setParentId(prepPoint.id);
-                prepPoint.timeOfBirth = prepPoint.timestep;
+                prepPoint.timeOfBirth = prepPoint.getTime();
 
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getLowerDestinationHypothesis();
@@ -74,7 +73,6 @@ public class CellTrackBuilder {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.LOWER);
                     startingPoints.add(newPoint.clone());
-                    newPoint.timestep++;
                     queue.add(newPoint);
                     nextCellId++;
                 }
@@ -86,7 +84,6 @@ public class CellTrackBuilder {
                     final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.UPPER);
                     startingPoints.add(newPoint.clone());
-                    newPoint.timestep++;
                     queue.add(newPoint);
                     nextCellId++;
                 }

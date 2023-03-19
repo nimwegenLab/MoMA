@@ -209,6 +209,7 @@ public class Growthlane {
 			List<Hypothesis<AdvancedComponent<FloatType>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
 
 			listOfStartingHypotheses.addAll(listOfEnteringHypotheses);
+//			List<Hypothesis<AdvancedComponent<FloatType>>> listOfStartingHypotheses = listOfEnteringHypotheses;
 
 			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,

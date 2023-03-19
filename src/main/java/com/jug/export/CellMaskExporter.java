@@ -112,7 +112,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         for (SegmentRecord segment : cellTrackStartingPoints) {
             int segmentCounter = 0;
             do {
-                IntervalView<IntType> z0slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.timestep);
+                IntervalView<IntType> z0slice = imglib2Utils.getImageSlice(imgResult, 0, 0, segment.getTime());
                 Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(segment.getId()), z0slice);
                 int sourceSegmentId;
                 if (segmentCounter == 0) { /* I use the cell counter to check, if this is the first segment in the track of the cell. If so we use the cell-ID of the parent-cell because it was a . Else use the ID of the previous instance of this cell, because it was a mapping-assignment in this case. This hack is needed, because I do not have a reference to the source-component from a given target-component. */
@@ -120,7 +120,7 @@ public class CellMaskExporter implements ResultExporterInterface {
                 } else {
                     sourceSegmentId = segment.getId();
                 }
-                IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 1, 0, segment.timestep);
+                IntervalView<IntType> z1slice = imglib2Utils.getImageSlice(imgResult, 1, 0, segment.getTime());
                 Plotting.drawSegmentToImage(segment.hyp.getWrappedComponent(), new IntType(sourceSegmentId), z1slice);
                 addComponentFeaturesToOverlay(segment);
                 segment = segment.nextSegmentInTime();
@@ -132,7 +132,7 @@ public class CellMaskExporter implements ResultExporterInterface {
 
     private Overlay overlay = new Overlay();
     private void addComponentFeaturesToOverlay(SegmentRecord segment) {
-        int timestep = segment.timestep;
+        int timestep = segment.getTime();
         ComponentInterface component = segment.hyp.getWrappedComponent();
         Set<String> featureNames = component.getComponentFeatureNames();
         for (String featureName : featureNames){
@@ -166,7 +166,7 @@ public class CellMaskExporter implements ResultExporterInterface {
         int lastFrame = -1;
         for (SegmentRecord segment : cellTrackStartingPoints) {
             while (segment.exists) {
-                int timestep = segment.timestep;
+                int timestep = segment.getTime();
                 if (timestep < firstFrame) {
                     firstFrame = timestep;
                 }

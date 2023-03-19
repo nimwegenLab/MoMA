@@ -84,7 +84,7 @@ public final class SegmentRecord {
         genealogy.add(daughterTypeOrPosition);
     }
 
-    SegmentRecord(final SegmentRecord point, final int frameOffset, GrowthlaneTrackingILP ilp) {
+    SegmentRecord(final SegmentRecord point, GrowthlaneTrackingILP ilp) {
         this.hyp = point.hyp;
         this.id = point.id;
         this.parentId = point.parentId;
@@ -157,7 +157,7 @@ public final class SegmentRecord {
             exists = false;
         } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
             final MappingAssignment ma = (MappingAssignment) rightAssmt;
-            ret = new SegmentRecord(this, 1, ilp);
+            ret = new SegmentRecord(this, ilp);
             ret.hyp = ma.getDestinationHypothesis();
         } else {
             terminated_by = rightAssmt.getType();

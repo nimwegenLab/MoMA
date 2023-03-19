@@ -33,7 +33,7 @@ public class CellTrackBuilder {
                     new SegmentRecord(hypothesis, nextCellId++, -1, -1, cellRank, ilp);
             startingPoints.add(point);
 
-            final SegmentRecord prepPoint = new SegmentRecord(point, 1, ilp);
+            final SegmentRecord prepPoint = new SegmentRecord(point, ilp);
             prepPoint.hyp = point.hyp;
 
             if (!prepPoint.hyp.isPruned()) {
@@ -52,7 +52,7 @@ public class CellTrackBuilder {
             // MAPPING -- JUST DROP SEGMENT STATS
             if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                 final MappingAssignment ma = (MappingAssignment) rightAssmt;
-                final SegmentRecord next = new SegmentRecord(prepPoint, 1, ilp);
+                final SegmentRecord next = new SegmentRecord(prepPoint, ilp);
                 next.hyp = ma.getDestinationHypothesis();
                 if (!prepPoint.hyp.isPruned()) {
                     queue.add(next);
@@ -70,7 +70,7 @@ public class CellTrackBuilder {
                 prepPoint.hyp = da.getLowerDestinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.LOWER);
                     startingPoints.add(newPoint.clone());
                     queue.add(newPoint);
@@ -81,7 +81,7 @@ public class CellTrackBuilder {
                 prepPoint.hyp = da.getUpperDestinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.UPPER);
                     startingPoints.add(newPoint.clone());
                     queue.add(newPoint);

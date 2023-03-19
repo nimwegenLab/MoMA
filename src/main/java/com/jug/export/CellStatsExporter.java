@@ -160,7 +160,11 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
-                int timeStep = segmentRecord.timestep;
+                int timeStep = segmentRecord.hyp.getTime();
+
+                if (timeStep != segmentRecord.timestep) {
+                    throw new AssertionError(String.format("The time of SegmentRecord (=%d) does not equal that of the stored hypothesis (=%d)", segmentRecord.timestep, timeStep));
+                }
 
                 AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =

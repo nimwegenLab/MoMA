@@ -26,8 +26,8 @@ public class Feature__20230301_add_birth_assignment_to_enable_the_creation_of_ce
 
 //        tests.run_interactive__lis_20221102_2_29();
 //        tests.run_trackonly__lis_20221102_2_29();
-        tests.run_reloading__lis_20221102_2_29();
-//        tests.run_export__lis_20221102_2_29();
+//        tests.run_reloading__lis_20221102_2_29();
+        tests.run_export__lis_20221102_2_29();
     }
 
     /**
@@ -37,8 +37,8 @@ public class Feature__20230301_add_birth_assignment_to_enable_the_creation_of_ce
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/20221102_VNG1040_SHU_1_MMStack_Pos2_GL29.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/mm.properties");
         analysisName = "test_enter_assignment";
-        tmin = null;
-        tmax = null;
+        tmin = 30;
+        tmax = 45;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
@@ -46,8 +46,8 @@ public class Feature__20230301_add_birth_assignment_to_enable_the_creation_of_ce
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/20221102_VNG1040_SHU_1_MMStack_Pos2_GL29.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/mm.properties");
         analysisName = "test_reloading__lis_20221102_2_29";
-        tmin = null;
-        tmax = null;
+        tmin = 30;
+        tmax = 45;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
 

@@ -10,7 +10,8 @@ import net.imglib2.util.ValuePair;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+
+import static java.util.Objects.isNull;
 
 public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
@@ -45,9 +46,10 @@ public class CellTrackBuilder {
 
             final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(prepPoint.hyp);
 
-            if (rightAssmt == null) {
-                continue;
+            if (isNull(rightAssmt)) {
+                throw new AssertionError("The optimal right-assigment should never be null here!");
             }
+
             // MAPPING -- JUST DROP SEGMENT STATS
             if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                 final MappingAssignment ma = (MappingAssignment) rightAssmt;

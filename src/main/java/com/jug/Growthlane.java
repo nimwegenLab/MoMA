@@ -25,6 +25,7 @@ import org.threadly.concurrent.collections.ConcurrentArrayList;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Vector;
@@ -203,9 +204,11 @@ public class Growthlane {
 			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
 			CellTrackBuilder trackBuilder = new CellTrackBuilder();
 
-			List<Hypothesis<AdvancedComponent<FloatType>>>  listOfStartingHypotheses = firstGLF.getSortedActiveHypsAndPos();
+			List<Hypothesis<AdvancedComponent<FloatType>>> listOfStartingHypotheses = firstGLF.getSortedActiveHypsAndPos();
 
-//			Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
+			List<Hypothesis<AdvancedComponent<FloatType>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
+
+			listOfStartingHypotheses.addAll(listOfEnteringHypotheses);
 
 			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,
@@ -218,9 +221,11 @@ public class Growthlane {
 		}
 	}
 
-	private Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getListOfEnteringHypotheses() {
-		List<EnterAssignment> listOfActiveEnterAssignment = ilp.getAllEnterAssignments().stream().filter(a -> a.isActive()).collect(Collectors.toList());
-		throw new NotImplementedException("This method will determine hypotheses that entered the GL during the measurement. It is not yet implemented.");
+	private List<Hypothesis<AdvancedComponent<FloatType>>> getListOfEnteringHypotheses() {
+		List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = ilp.getAllEnterAssignments().stream().filter(a -> a.isActive()).map(a -> a.getTargetHypotheses().get(0)).collect(Collectors.toList());
+		hypotheses = hypotheses.stream().filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+		hypotheses.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
+		return hypotheses;
 	}
 
 	public IGlExportFilePathGetter getExportPaths() {

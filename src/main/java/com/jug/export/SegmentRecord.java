@@ -47,7 +47,6 @@ public final class SegmentRecord {
     /**
      * The frame that this segments belongs to.
      */
-    int timestep;
     public Hypothesis<AdvancedComponent<FloatType>> hyp;
     int terminated_by = Integer.MIN_VALUE;
 
@@ -66,7 +65,6 @@ public final class SegmentRecord {
         this.daughterTypeOrPosition = daughterTypeOrPosition;
         this.genealogy = genealogy;
         this.ilp = ilp;
-        this.timestep = 0;
     }
 
     SegmentRecord(
@@ -84,25 +82,26 @@ public final class SegmentRecord {
         this.ilp = ilp;
         this.genealogy = new ArrayList<>();
         genealogy.add(daughterTypeOrPosition);
-        this.timestep = 0;
     }
 
-    SegmentRecord(final SegmentRecord point, final int frameOffset, GrowthlaneTrackingILP ilp) {
+    SegmentRecord(final SegmentRecord point, GrowthlaneTrackingILP ilp) {
         this.hyp = point.hyp;
         this.id = point.id;
         this.parentId = point.parentId;
         this.timeOfBirth = point.timeOfBirth;
         this.daughterTypeOrPosition = point.daughterTypeOrPosition;
         this.ilp = ilp;
-        this.timestep = point.timestep + frameOffset;
         this.genealogy = new ArrayList<>(point.genealogy);
+    }
+
+    int getTime() {
+        return hyp.getTime();
     }
 
     public SegmentRecord clone() {
         final SegmentRecord ret =
                 new SegmentRecord(this.hyp, this.id, this.parentId, this.timeOfBirth, this.daughterTypeOrPosition, this.genealogy, ilp);
         ret.exists = this.exists;
-        ret.timestep = this.timestep;
         ret.terminated_by = this.terminated_by;
         return ret;
     }
@@ -150,7 +149,7 @@ public final class SegmentRecord {
         SegmentRecord ret = this;
         exists = true;
         AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = this.hyp.getActiveOutgoingAssignment();
-        if (timestep == ilp.getNodes().getNumberOfTimeSteps() - 1) {
+        if (getTime() == ilp.getNodes().getNumberOfTimeSteps() - 1) {
             exists = false;
             terminated_by = SegmentRecord.ENDOFTRACKING;
         } else if (rightAssmt.isPruned()) {
@@ -158,7 +157,7 @@ public final class SegmentRecord {
             exists = false;
         } else if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
             final MappingAssignment ma = (MappingAssignment) rightAssmt;
-            ret = new SegmentRecord(this, 1, ilp);
+            ret = new SegmentRecord(this, ilp);
             ret.hyp = ma.getDestinationHypothesis();
         } else {
             terminated_by = rightAssmt.getType();

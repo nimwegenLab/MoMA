@@ -160,7 +160,7 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         for (SegmentRecord segmentRecord : cellTrackStartingPoints) {
             do {
-                int timeStep = segmentRecord.timestep;
+                int timeStep = segmentRecord.getTime();
 
                 AdvancedComponent<?> currentComponent = segmentRecord.hyp.getWrappedComponent();
                 ValuePair<Integer, Integer> limits =

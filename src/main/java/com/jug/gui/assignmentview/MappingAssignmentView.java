@@ -20,12 +20,12 @@ public class MappingAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return new Color(25 / 256f, 65 / 256f, 165 / 256f, 1.0f);
     }
 
     @Override
-    Color GetPrunedColor() {
+    Color getDefaultEdgeColor() {
         return new Color(25 / 256f, 65 / 256f, 165 / 256f, 0.2f);
     }
 

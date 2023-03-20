@@ -14,12 +14,9 @@ import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import com.moma.auxiliary.Plotting;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
-import net.imglib2.img.Img;
-import net.imglib2.type.numeric.ARGBType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
@@ -49,6 +46,7 @@ public class GrowthlaneTrackingILP {
     public static final int ASSIGNMENT_MAPPING = 1;
     public static final int ASSIGNMENT_DIVISION = 2;
     public static final int ASSIGNMENT_LYSIS = 3;
+    public static final int ASSIGNMENT_ENTER = 0;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -101,31 +99,6 @@ public class GrowthlaneTrackingILP {
         this.assignmentFilter = assignmentFilter;
     }
 
-    /**
-     * Returns only the active assignments in this the data.
-     *
-     * @param data data to filter and keep only the active assignments
-     * @return
-     */
-    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getActiveAssignments(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
-        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
-        if (data != null) {
-            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
-                    try {
-                        if (ass.isChosen() || ass.isGroundTruth()) {
-                            activeSet.add(ass);
-                        }
-                    } catch (final GRBException e) {
-                        e.printStackTrace();
-                    }
-                    activeData.put(hypo, activeSet);
-                }
-            }
-        }
-        return activeData;
-    }
 
     /**
      * Returns the assignments in {@param data}, which fulfill the condition defined in {@param predicate}.
@@ -134,23 +107,19 @@ public class GrowthlaneTrackingILP {
      * @param predicate predicate that the assignment must fulfill in order to be returned
      * @return correct assignment types or null
      */
-    public static HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> filterAssignmentsWithPredicate(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data, Function<AbstractAssignment, Boolean> predicate) {
-        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> activeData = new HashMap<>();
-        if (data != null) {
-            for (final Hypothesis<AdvancedComponent<FloatType>> hypo : data.keySet()) {
-                final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeSet = new HashSet<>();
-                for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data.get(hypo)) {
-                    if (predicate.apply(ass)) {
-                        activeSet.add(ass);
-                    }
-                    activeData.put(hypo, activeSet);
-                }
+    public static Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> filterAssignmentsWithPredicate(final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data, Function<AbstractAssignment, Boolean> predicate) {
+        final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> activeData = new HashSet<>();
+        for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> ass : data) {
+            if (predicate.apply(ass)) {
+                activeData.add(ass);
             }
         }
         return activeData;
     }
 
     /**
+     * @deprecated Use {@link #getModelStatus()} instead.
+     *
      * @return the status. This status returns one of the following values:
      * OPTIMIZATION_NEVER_PERFORMED, OPTIMAL, INFEASIBLE, UNBOUNDED,
      * SUBOPTIMAL, NUMERIC, or LIMIT_REACHED. Values 2-6 correspond
@@ -159,6 +128,7 @@ public class GrowthlaneTrackingILP {
      * OPTIMIZATION_NEVER_PERFORMED shows, that the optimizer was never
      * started on this ILP setup.
      */
+    @Deprecated
     public IlpStatus getStatus() {
         return status;
     }
@@ -379,6 +349,7 @@ public class GrowthlaneTrackingILP {
         loadDivisionAssignments();
         loadExitAssignments();
         loadLysisAssignments();
+        loadEnterAssignments();
     }
 
     public void loadMappingAssignments() throws GRBException {
@@ -459,6 +430,29 @@ public class GrowthlaneTrackingILP {
         }
     }
 
+    private void loadEnterAssignments() throws GRBException {
+        List<GRBVar> vars = getGrbVariablesContaining("EnterT");
+        for (GRBVar var : vars) {
+            String varName = var.get(GRB.StringAttr.VarName);
+            String[] splits = varName.split("_");
+            String mapId = splits[0];
+
+            int sourceTimeStep = Integer.parseInt(mapId.substring(6));
+            int targetTimeStep = sourceTimeStep + 1;
+            AdvancedComponent<FloatType> targetComponent = componentHashMap.get(splits[1]);
+            if(isNull(targetComponent)){new RuntimeException("component not found: " + targetComponent.getStringId());}
+
+            final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis =
+                    nodes.getOrAddHypothesis(targetTimeStep, new Hypothesis<>(targetTimeStep, targetComponent, this));
+            List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
+
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses); /* TODO-MichaelMell-20220908: This could be moved inside EnterAssignment.java */
+            final EnterAssignment enterAssignment = new EnterAssignment(sourceTimeStep, model.getVarByName(varName), this, nodes, edgeSets, Hup, targetHypothesis);
+            nodes.addAssignment(sourceTimeStep, enterAssignment);
+            edgeSets.addToLeftNeighborhood(targetHypothesis, enterAssignment);
+        }
+    }
+
     private void loadLysisAssignments() throws GRBException {
         List<GRBVar> vars = getGrbVariablesContaining("LysT");
         for (GRBVar var : vars) {
@@ -521,8 +515,7 @@ public class GrowthlaneTrackingILP {
         for (int t = 0; t < gl.numberOfFrames() - 1; t++) {
             createAssignmentsForTimeStep(t);
         }
-        final List<Hypothesis<AdvancedComponent<FloatType>>> curHyps = nodes.getHypothesesAt(gl.numberOfFrames() - 1);
-        addExitAssignments(gl.numberOfFrames() - 1, curHyps); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
+        addExitAssignments(gl.numberOfFrames() - 1); /* add exit assignment to last time-step, so we can assign to hypothesis in this time-step, while fulfilling the continuity constraint */
     }
 
     /**
@@ -568,20 +561,24 @@ public class GrowthlaneTrackingILP {
 
         addMappingAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
         addDivisionAssignments(sourceTimeStep, sourceComponentForest, targetComponentForest);
-        addExitAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
-        addLysisAssignments(sourceTimeStep, nodes.getHypothesesAt(sourceTimeStep));
+        addExitAssignments(sourceTimeStep);
+        addLysisAssignments(sourceTimeStep);
+        addEnterAssignment(sourceTimeStep);   /* IMPORTANT:
+        1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
+        I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
+        2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
+        */
         this.reportProgress();
     }
 
     /**
-     * Add an lysis-assignment at time t to a bunch of segmentation hypotheses.
+     * Add a lysis-assignment at time t to a bunch of segmentation hypotheses.
      *
      * @param sourceTimeStep the time-point.
-     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
-     *                       should be added.
      * @throws GRBException
      */
-    private void addLysisAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
+    private void addLysisAssignments(final int sourceTimeStep) throws GRBException {
+        List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
             float cost = configurationManager.getLysisAssignmentCost();
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
@@ -600,18 +597,41 @@ public class GrowthlaneTrackingILP {
      * exit-assignment.
      *
      * @param sourceTimeStep the time-point.
-     * @param hyps           a list of hypothesis for which an <code>ExitAssignment</code>
-     *                       should be added.
      * @throws GRBException
      */
-    private void addExitAssignments(final int sourceTimeStep, final List<Hypothesis<AdvancedComponent<FloatType>>> hyps) throws GRBException {
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            float cost = costModulationForSubstitutedILP(hyp.getCost());
-            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
-            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(hyp, hyps);
-            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, hyp);
+    private void addExitAssignments(final int sourceTimeStep) throws GRBException {
+        List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses = nodes.getHypothesesAt(sourceTimeStep);
+        for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
+            float cost = configurationManager.getExitAssignmentCost();
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(sourceHypothesis, sourceHypotheses);
+            final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, sourceHypothesis);
             nodes.addAssignment(sourceTimeStep, ea);
-            edgeSets.addToRightNeighborhood(hyp, ea);
+            edgeSets.addToRightNeighborhood(sourceHypothesis, ea);
+        }
+    }
+
+    /**
+     * This method adds instances of EnterAssignments to the tracking problem. These are necessary to allow for the creation
+     * of new cell lineages in cases where a cell enters the GL (which breaks tracking otherwise).
+     *
+     * Note:
+     * 1. I associate the EnterAssignment instances with the _source_ frame (i.e. the frame _after_ which the cell
+     * appears for the first time in the GL). I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
+     * 2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
+     * @param sourceTimeStep
+     * @throws GRBException
+     */
+    private void addEnterAssignment(final int sourceTimeStep) throws GRBException {
+        int targetTimeStep = sourceTimeStep + 1;
+        List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
+        for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
+            float cost = configurationManager.getEnterAssignmentCost();
+            final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
+            final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
+            final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
+            nodes.addAssignment(sourceTimeStep, ea);
+            edgeSets.addToLeftNeighborhood(targetHypothesis, ea);
         }
     }
 
@@ -1237,18 +1257,53 @@ public class GrowthlaneTrackingILP {
 
     public void run() {
         if (configurationManager.getRunIlpOnChange()) {
-            runImmediately();
+            runImmediatelyAfterRemovingStorageLocks();
         }
     }
 
     private void invalidateCaches() {
-        getAllAssignments().stream().forEach(assigmnent -> assigmnent.invalidateCache());
+        getAllAssignments().stream().forEach(assignment -> assignment.invalidateCache());
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.invalidateCache());
     }
 
     private void fillCaches() {
-        getAllAssignments().stream().forEach(assigmnent -> assigmnent.cache());
+        getAllAssignments().stream().forEach(assignment -> assignment.cache());
         getAllHypotheses().stream().forEach(hypothesis -> hypothesis.cache());
+    }
+
+    public IlpStatus getModelStatus() {
+        status = IlpStatus.NUMERIC;
+        try {
+            int myStatus = model.get(GRB.IntAttr.Status);
+            if (myStatus == GRB.Status.OPTIMAL) {
+                return IlpStatus.OPTIMAL;
+            } else if (myStatus == GRB.Status.INFEASIBLE) {
+                return IlpStatus.INFEASIBLE;
+            } else if (myStatus == GRB.Status.UNBOUNDED) {
+                return IlpStatus.UNBOUNDED;
+            } else if (myStatus == GRB.Status.SUBOPTIMAL) {
+                return IlpStatus.SUBOPTIMAL;
+            } else if (myStatus == GRB.Status.NUMERIC) {
+                return IlpStatus.NUMERIC;
+            } else if (myStatus == GRB.Status.LOADED) {
+                return IlpStatus.LOADED;
+            } else if (myStatus == GRB.Status.INPROGRESS) {
+                return IlpStatus.OPTIMIZATION_IS_RUNNING;
+            } else if (myStatus == GRB.Status.INTERRUPTED) {
+                return IlpStatus.INTERRUPTED;
+            } else {
+                throw new RuntimeException(String.format("The returned GRB.Status (=%d) is not mapped and will cause undefined behavior.", myStatus));
+            }
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void runImmediatelyAfterRemovingStorageLocks() {
+        if (modelIsLockedForStorage()) {
+            removeStorageLockConstraintsFromAssignments();
+        }
+        runImmediately();
     }
 
     /**
@@ -1325,10 +1380,10 @@ public class GrowthlaneTrackingILP {
                     dialogManager.showErrorDialogWithTextArea("ERROR: Missing assignments found", solutionSanityChecker.getErrorMessage());
                 }
             }
-            if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
-                removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
-                removeStorageLockConstraintAfterFirstOptimization = false;
-            }
+//            if (isReady() && removeStorageLockConstraintAfterFirstOptimization) {
+//                removeStorageLockConstraintsFromAssignments(); /* remove optimization locks after first successful optimization, when loading previous results */
+//                removeStorageLockConstraintAfterFirstOptimization = false;
+//            }
             if (getStatus() != IlpStatus.INFEASIBLE && getStatus() != IlpStatus.SUBOPTIMAL) {
                 fillCaches();
             }
@@ -1340,8 +1395,12 @@ public class GrowthlaneTrackingILP {
         } catch (final GRBException e) {
             status = IlpStatus.UNDEFINED;
             System.out.println("Could not run the generated ILP!");
-            e.printStackTrace();
+            throw new RuntimeException(e); /* if we reach here something went so wrong, that we want the program to fail */
         }
+    }
+
+    public boolean modelIsLockedForStorage() {
+        return ! model.getConstraintsContaining("StoreLockConstr_").isEmpty(); /* model is locked, if it contains lock-constraints */
     }
 
     /**
@@ -1483,7 +1542,11 @@ public class GrowthlaneTrackingILP {
      * that correspond to the active segmentation hypothesis (chosen by
      * the optimization procedure).
      */
-    private List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getOptimalHypotheses(final int t) {
+        /* TODO-MM-20230317: The code below can be replaced with this; I did not do this now, because I cannot test it ATM:
+         *   List<Hypothesis<AdvancedComponent<FloatType>>> resultNew = nodes.getHypothesesAt(t).stream().filter(hyp -> hyp.isActive()).collect(Collectors.toList());
+         */
+
         final ArrayList<Hypothesis<AdvancedComponent<FloatType>>> result = new ArrayList<>();
 
         final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
@@ -1630,6 +1693,26 @@ public class GrowthlaneTrackingILP {
      */
     public Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAssignmentsAt(final int t) {
         return new HashSet<>(nodes.getAssignmentsAt(t));
+    }
+
+    public Set<MappingAssignment> getMappingAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof MappingAssignment).map(a -> (MappingAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<DivisionAssignment> getDivisionAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof DivisionAssignment).map(a -> (DivisionAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<ExitAssignment> getExitAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof ExitAssignment).map(a -> (ExitAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<LysisAssignment> getLysisAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof LysisAssignment).map(a -> (LysisAssignment) a).collect(Collectors.toSet());
+    }
+
+    public Set<EnterAssignment> getEnterAssignmentsAt(final int t) {
+        return getAssignmentsAt(t).stream().filter(a -> a instanceof EnterAssignment).map(a -> (EnterAssignment) a).collect(Collectors.toSet());
     }
 
     /**
@@ -1898,46 +1981,6 @@ public class GrowthlaneTrackingILP {
     }
 
     /**
-     * Collects and returns all right-assignments given the optimal
-     * segmentation.
-     * Only those assignments are collected that are right-edges from one of the
-     * currently chosen (optimal) segmentation-hypotheses.
-     *
-     * @param t the time at which to look for inactive right-assignments.
-     *          Values for t make only sense if <code>>=0</code> and
-     *          <code>< nodes.getNumberOfTimeSteps()-1.</code>
-     * @return a hash-map that maps from segmentation hypothesis to a set of
-     * assignments that come in from the right (from t+1).
-     */
-    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getAllRightAssignmentsThatStartFromOptimalHypothesesAt(final int t) {
-        assert (t >= 0);
-        assert (t < nodes.getNumberOfTimeSteps() - 1);
-
-        final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
-
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = this.getOptimalHypotheses(t);
-
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> set = edgeSets.getRightNeighborhood(hyp);
-
-            if (set == null) continue;
-
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a : set) {
-                Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> innerSet = ret.get(hyp);
-                if (innerSet == null) {
-                    innerSet = new HashSet<>();
-                    innerSet.add(a);
-                    ret.put(hyp, innerSet);
-                } else {
-                    innerSet.add(a);
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
      * One of the powerful user interaction constraints.
      * This method constraints a frame to contain a given number of segments
      * (cells).
@@ -2021,6 +2064,11 @@ public class GrowthlaneTrackingILP {
      * of the Gurobi model, when it is read from disk and optimized when loading/restoring a previous curation.
      */
     public void addStorageLockConstraintsToAssignments() {
+        try {
+            model.update();
+        } catch (GRBException e) {
+            throw new RuntimeException(e);
+        }
         for (AbstractAssignment assignment : nodes.getAllAssignments()) {
             assignment.addStorageLockConstraint();
         }
@@ -2652,6 +2700,10 @@ public class GrowthlaneTrackingILP {
 
     public List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> getAllAssignments() {
         return nodes.getAllAssignments();
+    }
+
+    public Set<EnterAssignment> getAllEnterAssignments() {
+        return getAllAssignments().stream().filter(a -> a instanceof EnterAssignment).map(a -> (EnterAssignment) a).collect(Collectors.toSet());
     }
 
     public List<Hypothesis<AdvancedComponent<FloatType>>> getAllHypotheses() {

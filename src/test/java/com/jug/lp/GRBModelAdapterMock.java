@@ -3,6 +3,8 @@ package com.jug.lp;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import gurobi.*;
 
+import java.util.Set;
+
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -93,5 +95,15 @@ public class GRBModelAdapterMock implements IGRBModelAdapter {
     @Override
     public int get(GRB.IntAttr attr) throws GRBException {
         return 0;
+    }
+
+    @Override
+    public Set<GRBVar> getVariablesContaining(String string) {
+        return null;
+    }
+
+    @Override
+    public Set<GRBConstr> getConstraintsContaining(String string) {
+        return null;
     }
 }

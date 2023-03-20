@@ -1,6 +1,6 @@
 package com.jug.gui.assignmentview;
 
-import com.jug.lp.ExitAssignment;
+import com.jug.lp.EnterAssignment;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
@@ -8,11 +8,11 @@ import net.imglib2.util.ValuePair;
 
 import java.awt.*;
 
-public class ExitAssignmentView extends AssignmentView {
+public class EnterAssignmentView extends AssignmentView {
     private final int ASSIGNMENT_DISPLAY_OFFSET;
 
-    public ExitAssignmentView(final ExitAssignment exitAssignment, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
-        this.abstractAssignment = exitAssignment;
+    public EnterAssignmentView(final EnterAssignment enterAssignment, int width, int ASSIGNMENT_DISPLAY_OFFSET) {
+        this.abstractAssignment = enterAssignment;
         this.width = width;
         this.ASSIGNMENT_DISPLAY_OFFSET = ASSIGNMENT_DISPLAY_OFFSET;
         setupPolygon();
@@ -20,22 +20,20 @@ public class ExitAssignmentView extends AssignmentView {
 
     @Override
     Color getDefaultFaceColor() {
-        return Color.RED;
+        return new Color(0f, .5f, 0f, 1f);
     }
 
     @Override
-    Color getDefaultEdgeColor() {
-        return new Color(1f, 0f, 0f, 0.2f);
-    }
+    Color getDefaultEdgeColor() { return new Color(0f, .5f, 0f, 0.2f); }
 
     private void setupPolygon() {
-        final Hypothesis<AdvancedComponent<FloatType>> exitingHypothesis = ((ExitAssignment) abstractAssignment).getAssociatedHypothesis();
-        final ValuePair<Integer, Integer> verticalLimits = exitingHypothesis.getLocation();
+        final Hypothesis<AdvancedComponent<FloatType>> enteringHypothesis = ((EnterAssignment) abstractAssignment).getTargetHypothesis(0);
+        final ValuePair<Integer, Integer> verticalLimits = enteringHypothesis.getLocation();
 
         float centeringOffset = .5f;
 
         drawPolygonRectangle(
-                centeringOffset,
+                this.width - this.width / 2.5f - 1 - centeringOffset,
                 verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET,
                 this.width / 2.5f, verticalLimits.getB() - verticalLimits.getA()
         );

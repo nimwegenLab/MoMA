@@ -290,8 +290,8 @@ public class AssignmentsAndHypotheses<A extends AbstractAssignment<H>, H extends
     public void assertSourceAndTargetHypothesesEqualHypothesesInHt() {
         Set<H> h_t_flat = h_t.stream().flatMap(List::stream).collect(Collectors.toSet());
         Set<A> assignments = a_t.stream().flatMap(List::stream).collect(Collectors.toSet());
-        Set<H> sourceHyps = assignments.stream().map(a -> a.getSourceHypothesis()).collect(Collectors.toSet());
-        Set<H> targetHyps = assignments.stream().flatMap(a -> a.getTargetHypotheses().stream()).collect(Collectors.toSet());
+        Set<H> sourceHyps = assignments.stream().filter(a -> !a.isEnterAssignment()).map(a -> a.getSourceHypothesis()).collect(Collectors.toSet());
+        Set<H> targetHyps = assignments.stream().filter(a -> !a.isExitAssignment()).flatMap(a -> a.getTargetHypotheses().stream()).collect(Collectors.toSet());
         HashSet<H> hypothesesInAssignments = new HashSet<>(sourceHyps);
         hypothesesInAssignments.addAll(targetHyps);
         HashSet<H> union = new HashSet<>(hypothesesInAssignments);

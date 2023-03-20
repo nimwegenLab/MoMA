@@ -83,18 +83,47 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return ASSIGNMENT_COST_CUTOFF;
     }
     public float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
+
     /**
-     * This value sets the fixed cost for lysis assignments. It is set so high, that it will not be considered for
-     * assignment during optimization. However, it can be manually forced during curation.
+     * This value sets the fixed cost for lysis assignments (see {@link com.jug.lp.LysisAssignment}).
+     * The default value of 10.0, is high enough that it will not be considered during optimization.
+     * However, it can be manually forced during curation.
      */
+    public float LYSIS_ASSIGNMENT_COST = 10.0f;
+
     @Override
     public float getLysisAssignmentCost() {
         return LYSIS_ASSIGNMENT_COST;
     }
-    public float LYSIS_ASSIGNMENT_COST = 10.0f;
+
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
+
+    /**
+     * This value sets the fixed cost for enter assignments (see {@link com.jug.lp.EnterAssignment}).
+     * The default value of 10.0, is high enough that it will not be considered during optimization.
+     * However, it can be manually forced during curation.
+     */
+    public float ENTER_ASSIGNMENT_COST = 10.0f;
+
+    @Override
+    public float getEnterAssignmentCost() {
+        return ENTER_ASSIGNMENT_COST;
+    }
+
+    /**
+     * This value sets the fixed cost for exit assignments (see {@link com.jug.lp.ExitAssignment}).
+     * The default value is 0.0, so that the selection of an exit assignment does not change the value of the objective
+     * function.
+     */
+    public float EXIT_ASSIGNMENT_COST = 0;
+
+    @Override
+    public float getExitAssignmentCost() {
+        return EXIT_ASSIGNMENT_COST;
+    }
+
     public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
@@ -288,6 +317,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
         ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
+        ENTER_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST)));
+        EXIT_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("EXIT_ASSIGNMENT_COST", Float.toString(EXIT_ASSIGNMENT_COST)));
         SIZE_MINIMUM_FOR_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS)));
         SIZE_MINIMUM_FOR_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS)));
         MAXIMUM_COMPONENT_WIDTH = Integer.parseInt(props.getProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH)));
@@ -438,6 +469,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));
             props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
+            props.setProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST));
+            props.setProperty("EXIT_ASSIGNMENT_COST", Float.toString(EXIT_ASSIGNMENT_COST));
             props.setProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS));
             props.setProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS));
             props.setProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH));

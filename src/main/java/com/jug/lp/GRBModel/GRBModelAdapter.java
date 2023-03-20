@@ -2,7 +2,10 @@ package com.jug.lp.GRBModel;
 
 import gurobi.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GRBModelAdapter implements IGRBModelAdapter {
     private gurobi.GRBModel model;
@@ -141,5 +144,27 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     @Override
     public int get(GRB.IntAttr attr) throws GRBException {
         return model.get(attr);
+    }
+
+    @Override
+    public Set<GRBVar> getVariablesContaining(String string) {
+        return Arrays.stream(getVars()).filter(var -> {
+            try{
+                return var.get(GRB.StringAttr.VarName).contains(string);
+            } catch (GRBException err){
+                return false;
+            }
+        }).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<GRBConstr> getConstraintsContaining(String string) {
+        return Arrays.stream(getConstrs()).filter(var -> {
+            try {
+                return var.get(GRB.StringAttr.ConstrName).contains(string);
+            } catch (GRBException err) {
+                return false;
+            }
+        }).collect(Collectors.toSet());
     }
 }

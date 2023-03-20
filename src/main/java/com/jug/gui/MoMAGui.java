@@ -478,6 +478,10 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                     switchAssignmentViewerTabs(4);
                     dataToDisplayChanged();
                 }
+                if (e.getActionCommand().equals("5")) {
+                    switchAssignmentViewerTabs(5);
+                    dataToDisplayChanged();
+                }
                 if (e.getActionCommand().equals("b")) {
                     showSegmentationAnnotations = !showSegmentationAnnotations;
                     for (IlpVariableEditorPanel entry : ilpVariableEditorPanels) {
@@ -854,7 +858,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 //                }
 
                 System.out.println("Finding optimal result...");
-                model.getCurrentGL().getIlp().runImmediately();
+                model.getCurrentGL().getIlp().runImmediatelyAfterRemovingStorageLocks();
                 System.out.println("...done!");
                 buttonOptimizeMore.setForeground(Color.BLACK);
                 dataToDisplayChanged();
@@ -931,7 +935,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         }
 
         System.out.println("Finding optimal result...");
-        model.getCurrentGL().getIlp().runImmediately();
+        model.getCurrentGL().getIlp().runImmediatelyAfterRemovingStorageLocks();
         System.out.println("...done!");
 
         dataToDisplayChanged();

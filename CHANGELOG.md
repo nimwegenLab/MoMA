@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Add new assignment type: enter-assignment. The enter-assignment allows MoMA to handle cells that enter the GL during
+the measurement. It is needed for Mothermachine devices with media flowing through the GL, which causes cells to be
+pulled into the GL _after_ loading and starting the experiment.
+  - New functionality:
+    - The parameter `ENTER_ASSIGNMENT_COST` sets the cost for the enter-assignment which is the same for each assignment.
+    - A new assignment-view allows the manual selection/modification of enter-assignments. It can be selected by:
+      - Pressing the number key `5` with the mouse hovered above the assignment panel changes only the hovered
+      panel or pressing `5` with the mouse outside any panel changes all assignment-panels.
+    - Cell-lineages starting from an enter-assignment are exported to the CellStats CSV-file.
+
+### Changed
+
+- Make the cost of the exit-assignment configurable with parameter `EXIT_ASSIGNMENT_COST`. Until now, it was hard-coded
+with value `0.0`. ([ff51ea28](https://github.com/michaelmell/moma/commit/ff51ea28))
+- Storage locks are now only removed, when the user manually runs optimization with the 'Optimize' button in the
+UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can query the variable states
+(any modifications to the Gurobi model changes its state it to LOADED, where we cannot query variable state). ([5c11abbf](https://github.com/michaelmell/moma/commit/5c11abbf))
+
 ## [0.9.0] - 2023-03-20
 
 ### Added

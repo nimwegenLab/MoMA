@@ -15,15 +15,17 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 /**
  * @author jug
  */
-public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListener {
+public class AssignmentsEditorViewer extends JTabbedPane {
 
     // -------------------------------------------------------------------------------------
     // statics
@@ -31,6 +33,8 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private static final long serialVersionUID = 6588846114839723373L;
 
     private ConfigurationManager configurationManager;
+    private Supplier<GrowthlaneTrackingILP> ilpSupplier;
+    private Supplier<Integer> displayTimeGetter;
 
     // -------------------------------------------------------------------------------------
     // fields
@@ -40,8 +44,9 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     private AssignmentsEditorCanvasView inactiveDivisionAssignments;
     private AssignmentsEditorCanvasView inactiveExitAssignments;
     private AssignmentsEditorCanvasView inactiveLysisAssignments;
+    private AssignmentsEditorCanvasView inactiveEnterAssignments;
     private int curTabIdx = 0;
-    private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data = new HashMap<>();
+    private Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data = new HashSet<>();
     private JComponent[] tabsToRoll;
     private String[] namesToRoll;
     private List<AssignmentsEditorCanvasView> assignmentViews;
@@ -53,8 +58,13 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     /**
      *
      */
-    public AssignmentsEditorViewer(final int height, ConfigurationManager configurationManager) {
+    public AssignmentsEditorViewer(final int height,
+                                   ConfigurationManager configurationManager,
+                                   Supplier<GrowthlaneTrackingILP> ilpSupplier,
+                                   Supplier<Integer> displayTimeSupplier) {
         this.configurationManager = configurationManager;
+        this.ilpSupplier = ilpSupplier;
+        this.displayTimeGetter = displayTimeSupplier;
         this.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         buildGui(height);
     }
@@ -99,17 +109,24 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveExitAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
         inactiveLysisAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
+        inactiveEnterAssignments = new AssignmentsEditorCanvasView(height, configurationManager);
 
-        assignmentViews = Arrays.asList(activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments);
+        assignmentViews = Arrays.asList(
+                activeAssignments,
+                inactiveMappingAssignments,
+                inactiveDivisionAssignments,
+                inactiveExitAssignments,
+                inactiveLysisAssignments,
+                inactiveEnterAssignments);
 
-        tabsToRoll = new JComponent[]{activeAssignments, inactiveMappingAssignments, inactiveDivisionAssignments, inactiveExitAssignments, inactiveLysisAssignments};
-        namesToRoll = new String[]{"O", "M", "D", "E", "L"};
-
-        activeAssignments.display(GrowthlaneTrackingILP.getActiveAssignments(data));
-        inactiveMappingAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
-        inactiveDivisionAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
-        inactiveExitAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
-        inactiveLysisAssignments.display(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
+        tabsToRoll = new JComponent[]{
+                activeAssignments,
+                inactiveMappingAssignments,
+                inactiveDivisionAssignments,
+                inactiveExitAssignments,
+                inactiveLysisAssignments,
+                inactiveEnterAssignments};
+        namesToRoll = new String[]{"O", "M", "D", "X", "L", "E"};
 
         if (!OSValidator.isMac()) {
             this.add(namesToRoll[curTabIdx], tabsToRoll[curTabIdx]);
@@ -132,46 +149,28 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
     }
 
     /**
-     * Draw this instance of assignmentViewer without having a fitting HashMap.
+     * Update assignment views.
      */
     public void display() {
-        HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> emptyHashMap = new HashMap<>();
-        display(emptyHashMap);
-    }
-
-    /**
-     * Receives and visualizes a new HashMap of assignments.
-     *
-     * @param hashMap a <code>HashMap</code> containing pairs of segmentation
-     *                hypothesis at some time-point t and assignments towards t+1.
-     */
-    public void display(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> hashMap) {
-        if (!hashMap.equals(this.data)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(hashMap, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
+        if (isNull(ilpSupplier.get())) {
+            return;
         }
-        activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(hashMap));
-        this.data = hashMap;
-    }
-
-    /**
-     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-     */
-    @Override
-    public void stateChanged(final ChangeEvent e) {
-        if (this.getSelectedComponent().equals(activeAssignments)) {
-            activeAssignments.setData(GrowthlaneTrackingILP.getActiveAssignments(data));
-        } else if (this.getSelectedComponent().equals(inactiveMappingAssignments)) {
-            inactiveMappingAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING));
-        } else if (this.getSelectedComponent().equals(inactiveDivisionAssignments)) {
-            inactiveDivisionAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION));
-        } else if (this.getSelectedComponent().equals(inactiveExitAssignments)) {
-            inactiveExitAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT));
-        } else if (this.getSelectedComponent().equals(inactiveLysisAssignments)) {
-            inactiveLysisAssignments.setData(GrowthlaneTrackingILP.filterAssignmentsWithPredicate(data, aa -> aa.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS));
-        }
+        inactiveMappingAssignments.setData(
+                ilpSupplier.get().getMappingAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveDivisionAssignments.setData(
+                ilpSupplier.get().getDivisionAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveExitAssignments.setData(
+                ilpSupplier.get().getExitAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveLysisAssignments.setData(
+                ilpSupplier.get().getLysisAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveSourceHypothesis()).collect(Collectors.toSet()));
+        inactiveEnterAssignments.setData(
+                ilpSupplier.get().getEnterAssignmentsAt(displayTimeGetter.get())
+                        .stream().filter(a -> a.hasActiveTargetHypothesis()).collect(Collectors.toSet()));
+        activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
     }
 
     /**
@@ -190,6 +189,7 @@ public class AssignmentsEditorViewer extends JTabbedPane implements ChangeListen
         inactiveDivisionAssignments.addIlpModelChangedEventListener(listener);
         inactiveExitAssignments.addIlpModelChangedEventListener(listener);
         inactiveLysisAssignments.addIlpModelChangedEventListener(listener);
+        inactiveEnterAssignments.addIlpModelChangedEventListener(listener);
     }
 
     private boolean mouseIsOverDisplayPanel() {

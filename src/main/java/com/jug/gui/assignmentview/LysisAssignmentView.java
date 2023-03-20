@@ -20,33 +20,25 @@ public class LysisAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return Color.ORANGE;
     }
 
     @Override
-    Color GetPrunedColor() {
+    Color getDefaultEdgeColor() {
         return new Color(1f, 1f, 0f, 0.2f);
     }
 
     private void setupPolygon() {
-        final Hypothesis<AdvancedComponent<FloatType>> leftHyp = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
-        final ValuePair<Integer, Integer> limitsLeft = leftHyp.getLocation();
+        final Hypothesis<AdvancedComponent<FloatType>> lysingHypothesis = ((LysisAssignment) abstractAssignment).getAssociatedHypothesis();
+        final ValuePair<Integer, Integer> verticalLimits = lysingHypothesis.getLocation();
 
         float centeringOffset = .5f;
-        float xRightSide = this.width / 2.5f + centeringOffset;
-        final float x1 = 0;
-        final float y1 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float x2 = 0;
-        final float y2 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y3 = limitsLeft.getB() + ASSIGNMENT_DISPLAY_OFFSET;
-        final float y4 = limitsLeft.getA() + ASSIGNMENT_DISPLAY_OFFSET;
 
-        polygon = new GeneralPath();
-        polygon.moveTo(x1, y1);
-        polygon.lineTo(x2, y2);
-        polygon.lineTo(xRightSide, y3);
-        polygon.lineTo(xRightSide, y4);
-        polygon.closePath();
+        drawPolygonRectangle(
+                centeringOffset,
+                verticalLimits.getA() + ASSIGNMENT_DISPLAY_OFFSET,
+                this.width / 2.5f, verticalLimits.getB() - verticalLimits.getA()
+        );
     }
 }

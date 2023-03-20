@@ -15,6 +15,9 @@ public class AssignmentFilterUsingFluorescencePerFrame implements IAssignmentFil
 
     @Override
     public void evaluate(AbstractAssignment assignment) {
+        if(assignment.isExitAssignment() | assignment.isEnterAssignment()) {
+            return; /* comparing fluorescence intensities between source and target hypotheses is not possible for exit and enter assignments */
+        }
         Hypothesis<AdvancedComponent<FloatType>> sourceHyp = assignment.getSourceHypothesis();
         AdvancedComponent<FloatType> sourceComponent = sourceHyp.getWrappedComponent();
         double sourceComponentIntensityMean = sourceComponent.getMaskIntensityMean(configuration.getFluorescenceAssignmentFilterChannel());

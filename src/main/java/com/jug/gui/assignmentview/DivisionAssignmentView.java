@@ -20,12 +20,12 @@ public class DivisionAssignmentView extends AssignmentView {
     }
 
     @Override
-    Color GetDefaultColor() {
+    Color getDefaultFaceColor() {
         return new Color(250 / 256f, 150 / 256f, 40 / 256f, 1.0f);
     }
 
     @Override
-    Color GetPrunedColor() {
+    Color getDefaultEdgeColor() {
         return new Color(250 / 256f, 150 / 256f, 40 / 256f, 0.2f);
     }
 

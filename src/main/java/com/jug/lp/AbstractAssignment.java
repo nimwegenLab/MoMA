@@ -1,7 +1,9 @@
 package com.jug.lp;
 
+import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.ComponentInterface;
 import gurobi.*;
+import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -63,8 +65,21 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION;
 	}
 
+	/**
+	 * @deprecated use `instanceof ExitAssignment` instead
+	 * @return
+	 */
+	@Deprecated
 	public boolean isExitAssignment() {
 		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT;
+	}
+
+	/**
+	 * @deprecated use `instanceof EnterAssignment` instead
+	 * @return
+	 */
+	public boolean isEnterAssignment() {
+		return getType() == GrowthlaneTrackingILP.ASSIGNMENT_ENTER;
 	}
 
 	public boolean isLysisAssignment() {
@@ -81,14 +96,6 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 
 	public ComponentInterface getTargetComponent(int componentInd) {
 		return getTargetHypothesis(componentInd).getWrappedComponent();
-	}
-
-	public List<ComponentInterface> getTargetComponents() {
-		List<ComponentInterface> list = new ArrayList<ComponentInterface>();
-		for (Hypothesis hyp : getTargetHypotheses()) {
-			list.add(getSourceHypothesis().getWrappedComponent());
-		}
-		return list;
 	}
 
 	/**
@@ -170,6 +177,20 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 			return (float) getGRBVar().get(GRB.DoubleAttr.Obj);
 		} catch (final GRBException e) {
 			throw new RuntimeException("ERROR: Assignment cost could not be read from Gurobi model for assignment: " + getStringId());
+		}
+	}
+
+	/**
+	 * This method determines, if the assignment is active. It directly queries the underlying Gurobi model and thus
+	 * is slow when used from the GUI. It should be used during e.g. export.
+	 *
+	 * @return
+	 */
+	public boolean isActive() {
+		try {
+			return getIsChosenStateFromIlp();
+		} catch (GRBException err) {
+			throw new RuntimeException(String.format("Failed to determine if assignment is active for assignment: %s", getStringId()), err);
 		}
 	}
 
@@ -458,7 +479,23 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		return sourceTimeStep;
 	}
 
-	public int getTargetTimeStep() {
-		return sourceTimeStep + 1;
+	/**
+	 * @return true if assignment has at least one active target hypothesis.
+	 */
+	public boolean hasActiveTargetHypothesis() {
+		if (this instanceof ExitAssignment) {
+			return false;
+		}
+		return getTargetHypotheses().stream().anyMatch(hyp -> hyp.isActive());
+	}
+
+	/**
+	 * @return true if assignment has active source hypothesis.
+	 */
+	public boolean hasActiveSourceHypothesis() {
+		if (this instanceof EnterAssignment) {
+			return false;
+		}
+		return getSourceHypothesis().isActive();
 	}
 }

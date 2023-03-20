@@ -7,20 +7,29 @@ import com.jug.export.CellTrackBuilder;
 import com.jug.export.SegmentRecord;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.lp.EnterAssignment;
 import com.jug.lp.GRBModel.GRBModelAdapter;
 import com.jug.lp.GRBModel.GRBModelFactory;
 import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.lp.Hypothesis;
 import com.jug.lp.IAssignmentFilter;
+import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBEnv;
 import gurobi.GRBException;
 import gurobi.GRBModel;
+import net.imglib2.type.numeric.real.FloatType;
+import net.imglib2.util.ValuePair;
+import org.apache.commons.lang.NotImplementedException;
 import org.threadly.concurrent.collections.ConcurrentArrayList;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Vector;
+import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 
@@ -194,7 +203,15 @@ public class Growthlane {
 		try {
 			GrowthlaneFrame firstGLF = getFirstGrowthlaneFrame();
 			CellTrackBuilder trackBuilder = new CellTrackBuilder();
-			trackBuilder.buildSegmentTracks(firstGLF.getSortedActiveHypsAndPos(),
+
+			List<Hypothesis<AdvancedComponent<FloatType>>> listOfStartingHypotheses = firstGLF.getSortedActiveHypsAndPos();
+
+			List<Hypothesis<AdvancedComponent<FloatType>>> listOfEnteringHypotheses = getListOfEnteringHypotheses();
+
+			listOfStartingHypotheses.addAll(listOfEnteringHypotheses);
+//			List<Hypothesis<AdvancedComponent<FloatType>>> listOfStartingHypotheses = listOfEnteringHypotheses;
+
+			trackBuilder.buildSegmentTracks(listOfStartingHypotheses,
 					firstGLF,
 					firstGLF.getParent().getIlp(),
 					getTimeStepMaximum());
@@ -203,6 +220,13 @@ public class Growthlane {
 		catch (GRBException grbException){
 			throw new RuntimeException("Could not get track starting points, because the Gurobi model failed during querying.", grbException);
 		}
+	}
+
+	private List<Hypothesis<AdvancedComponent<FloatType>>> getListOfEnteringHypotheses() {
+		List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = ilp.getAllEnterAssignments().stream().filter(a -> a.isActive()).map(a -> a.getTargetHypotheses().get(0)).collect(Collectors.toList());
+		hypotheses = hypotheses.stream().filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+		hypotheses.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
+		return hypotheses;
 	}
 
 	public IGlExportFilePathGetter getExportPaths() {

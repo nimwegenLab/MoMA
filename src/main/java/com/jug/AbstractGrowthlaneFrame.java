@@ -11,9 +11,8 @@ import net.imglib2.img.Img;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
 
-import java.util.Comparator;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author jug
@@ -182,25 +181,16 @@ public abstract class AbstractGrowthlaneFrame<C extends Component<FloatType, C>>
         return ret;
     }
 
-    public Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> getSortedActiveHypsAndPos() {
-        final Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> positionedHyps = new Vector<>();
+    public List<Hypothesis<AdvancedComponent<FloatType>>> getSortedActiveHypsAndPos() {
+        List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses = new ArrayList(getParent().getIlp().getOptimalHypotheses(getTime()));
+        hypotheses = hypotheses.stream().filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+        hypotheses.sort(Comparator.comparing(o -> -o.getWrappedComponent().getVerticalComponentLimits().getB())); /* return list of hypotheses sorted by the inverse value of their bottom boundary; taking the inverse gives the mother-cell the smallest value and makes it first in the list */
+        return hypotheses;
 
-        for (final Hypothesis<AdvancedComponent<FloatType>> hyp : getParent().getIlp().getOptimalRightAssignments(this.getTime()).keySet()) {
-            // find out where this hypothesis is located along the GL
-            int min = Integer.MAX_VALUE, max = Integer.MIN_VALUE;
-            for (Localizable localizable : hyp.getWrappedComponent()) {
-                final int ypos = localizable.getIntPosition(0);
-                min = Math.min(min, ypos);
-                max = Math.max(max, ypos);
-            }
-
-            if (!hyp.isPruned()) {
-                positionedHyps.add(new ValuePair<>(-max, hyp));
-            }
-        }
-
-        positionedHyps.sort(Comparator.comparing(o -> o.a));
-
-        return positionedHyps;
+        /**
+         * TODO-MM-20230307: Replace the above code with dedicate methods that do this; i.e. something like this (this still needs to be tested):
+         * List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesOfInterest = getParent().getIlp().getHypothesesAt(this.getTime()).stream().filter(hyp -> hyp.isActive()).filter(hyp -> !hyp.isPruned()).collect(Collectors.toList());
+         * hypothesesOfInterest.sort(Comparator.comparing(hyp -> hyp.getWrappedComponent().getVerticalComponentLimits().getB()));
+         **/
     }
 }

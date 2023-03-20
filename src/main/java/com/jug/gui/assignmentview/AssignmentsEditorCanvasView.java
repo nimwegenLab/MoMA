@@ -59,7 +59,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
     AssignmentView selectedAssignment;
     private float filterMinCost = -100f;
     private float filterMaxCost = 100f;
-    private HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data;
+    private Set<? extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data;
     private int mousePosX;
     private int mousePosY;
     private int currentCostLine;
@@ -165,7 +165,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      * @param data a <code>HashMap</code> containing pairs of segmentation
      *             hypothesis at some time-point t and assignments towards t+1.
      */
-    public void display(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
+    public void display(final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
         setData(data);
 
         this.repaint();
@@ -278,7 +278,7 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
      *
      * @param data: assignment data to display
      */
-    public void setData(final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> data) {
+    public void setData(final Set<? extends AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> data) {
         this.data = data;
         initializeAssignmentViews();
         this.repaint();
@@ -286,19 +286,19 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
 
     private void initializeAssignmentViews() {
         assignmentViews.clear();
-        for (final Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> setOfAssignments : data.values()) {
-            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : setOfAssignments) {
-                if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
+            for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : data) {
+                if (assignment instanceof MappingAssignment) {
                     assignmentViews.add(new MappingAssignmentView((MappingAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {
+                } else if (assignment instanceof DivisionAssignment) {
                     assignmentViews.add(new DivisionAssignmentView((DivisionAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_EXIT) {
+                } else if (assignment instanceof ExitAssignment) {
                     assignmentViews.add(new ExitAssignmentView((ExitAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
-                } else if (assignment.getType() == GrowthlaneTrackingILP.ASSIGNMENT_LYSIS) {
+                } else if (assignment instanceof EnterAssignment) {
+                    assignmentViews.add(new EnterAssignmentView((EnterAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
+                } else if (assignment instanceof LysisAssignment) {
                     assignmentViews.add(new LysisAssignmentView((LysisAssignment) assignment, width, ASSIGNMENT_DISPLAY_OFFSET));
                 }
             }
-        }
         sortAssignmentViews(assignmentViews);
     }
 

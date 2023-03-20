@@ -52,7 +52,7 @@ public class ExitAssignment extends AbstractAssignment<Hypothesis<AdvancedCompon
      */
     @Override
     public List<Hypothesis<AdvancedComponent<FloatType>>> getTargetHypotheses(){
-        return new ArrayList<>(); /* Lysis assignment has no target hypothesis. */
+        throw new RuntimeException(String.format("ExitAssignment does not have a source hypothesis (assignment id: %s).", getStringId())); /* Exit assignments have no target hypothesis. */
     }
 
     /**

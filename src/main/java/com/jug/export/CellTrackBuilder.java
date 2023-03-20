@@ -5,17 +5,17 @@ import com.jug.lp.*;
 import com.jug.util.componenttree.AdvancedComponent;
 import gurobi.GRBException;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.ValuePair;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
+
+import static java.util.Objects.isNull;
 
 public class CellTrackBuilder {
     private List<SegmentRecord> startingPoints = new ArrayList<>();
 
-    public void buildSegmentTracks(Vector<ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>>> segmentsInFirstFrameSorted,
+    public void buildSegmentTracks(List<Hypothesis<AdvancedComponent<FloatType>>> hypotheses,
                                    GrowthlaneFrame firstGlf,
                                    final GrowthlaneTrackingILP ilp,
                                    int userRangeMaximum) throws GRBException {
@@ -26,14 +26,14 @@ public class CellTrackBuilder {
 
         startingPoints = new ArrayList<>();
 
-        for (final ValuePair<Integer, Hypothesis<AdvancedComponent<FloatType>>> valuePair : segmentsInFirstFrameSorted) {
-            final int cellRank = firstGlf.getSolutionStats_cellRank(valuePair.b);
+        for (final Hypothesis<AdvancedComponent<FloatType>> hypothesis : hypotheses) {
+            final int cellRank = firstGlf.getSolutionStats_cellRank(hypothesis);
 
             final SegmentRecord point =
-                    new SegmentRecord(valuePair.b, nextCellId++, -1, -1, cellRank, ilp);
+                    new SegmentRecord(hypothesis, nextCellId++, -1, -1, cellRank, ilp);
             startingPoints.add(point);
 
-            final SegmentRecord prepPoint = new SegmentRecord(point, 1, ilp);
+            final SegmentRecord prepPoint = new SegmentRecord(point, ilp);
             prepPoint.hyp = point.hyp;
 
             if (!prepPoint.hyp.isPruned()) {
@@ -45,13 +45,14 @@ public class CellTrackBuilder {
 
             final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> rightAssmt = ilp.getOptimalRightAssignment(prepPoint.hyp);
 
-            if (rightAssmt == null) {
-                continue;
+            if (isNull(rightAssmt)) {
+                throw new AssertionError("The optimal right-assigment should never be null here!");
             }
+
             // MAPPING -- JUST DROP SEGMENT STATS
             if (rightAssmt.getType() == GrowthlaneTrackingILP.ASSIGNMENT_MAPPING) {
                 final MappingAssignment ma = (MappingAssignment) rightAssmt;
-                final SegmentRecord next = new SegmentRecord(prepPoint, 1, ilp);
+                final SegmentRecord next = new SegmentRecord(prepPoint, ilp);
                 next.hyp = ma.getDestinationHypothesis();
                 if (!prepPoint.hyp.isPruned()) {
                     queue.add(next);
@@ -63,16 +64,15 @@ public class CellTrackBuilder {
 
                 prepPoint.parentId = prepPoint.id;
 //                prepPoint.setParentId(prepPoint.id);
-                prepPoint.timeOfBirth = prepPoint.timestep;
+                prepPoint.timeOfBirth = prepPoint.getTime();
 
                 prepPoint.id = nextCellId;
                 prepPoint.hyp = da.getLowerDestinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.LOWER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.LOWER);
                     startingPoints.add(newPoint.clone());
-                    newPoint.timestep++;
                     queue.add(newPoint);
                     nextCellId++;
                 }
@@ -81,10 +81,9 @@ public class CellTrackBuilder {
                 prepPoint.hyp = da.getUpperDestinationHypothesis();
                 prepPoint.daughterTypeOrPosition = SegmentRecord.UPPER;
                 if (!prepPoint.hyp.isPruned() && !(prepPoint.timeOfBirth > userRangeMaximum)) {
-                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, 0, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
+                    final SegmentRecord newPoint = new SegmentRecord(prepPoint, ilp); // NOTE: this is not a bug, due to the call below to 'newPoint.timestep++'; but this is extremely convoluted!!
                     newPoint.genealogy.add(SegmentRecord.UPPER);
                     startingPoints.add(newPoint.clone());
-                    newPoint.timestep++;
                     queue.add(newPoint);
                     nextCellId++;
                 }

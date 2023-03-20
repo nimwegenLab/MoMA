@@ -277,9 +277,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = 0.5;
 
     /**
-     * Sets if the crossing constraints should be used.
+     * Sets if the migration cost should be used.
      */
-    public boolean FEATURE_FLAG_MIGRATION_COSTS = true;
+    public boolean FEATURE_FLAG_MIGRATION_COST = true;
 
     private int minTime = -1;
     private int maxTime = -1;
@@ -366,7 +366,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
         FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
-        FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+        FEATURE_FLAG_MIGRATION_COST = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
 
         FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER)));
@@ -515,7 +515,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS));
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
-            setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER));
@@ -673,7 +673,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public boolean getCrossingConstraintFeatureFlag() { return FEATURE_FLAG_CROSSING_CONSTRAINTS; }
 
-    public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COSTS; }
+    public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COST; }
 
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
         return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;

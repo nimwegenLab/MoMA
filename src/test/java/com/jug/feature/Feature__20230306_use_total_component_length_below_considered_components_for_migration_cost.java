@@ -24,8 +24,8 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
     public static void main(String[] args) {
         Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost tests = new Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost();
 
-//        tests.run_interactive__lis_20221102_2_29();
-        tests.run_interactive__lis_20220701_5_5();
+        tests.run_interactive__lis_20221102_2_29();
+//        tests.run_interactive__lis_20220701_5_5();
 //        tests.run_trackonly__lis_20220701_5_5();
     }
 
@@ -36,8 +36,8 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/20221102_VNG1040_SHU_1_MMStack_Pos2_GL29.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/lis_20221102_2_29/mm.properties");
         analysisName = "test_enter_assignment";
-        tmin = 6;
-        tmax = 30;
+        tmin = null;
+        tmax = null;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 

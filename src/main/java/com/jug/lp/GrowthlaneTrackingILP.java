@@ -626,7 +626,7 @@ public class GrowthlaneTrackingILP {
         int targetTimeStep = sourceTimeStep + 1;
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
-            float cost = costModulationForSubstitutedILP(targetHypothesis.getCost());
+            float cost = configurationManager.getEnterAssignmentCost();
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
             final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);

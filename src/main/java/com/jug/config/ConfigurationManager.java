@@ -95,6 +95,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
+
+    @Override
+    public float getEnterAssignmentCost() {
+        return ENTER_ASSIGNMENT_COST;
+    }
+    public float ENTER_ASSIGNMENT_COST = 10.0f;
     public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
@@ -288,6 +294,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         GL_OFFSET_TOP = Integer.parseInt(props.getProperty("GL_OFFSET_TOP", Integer.toString(GL_OFFSET_TOP)));
         ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
+        ENTER_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST)));
         SIZE_MINIMUM_FOR_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS)));
         SIZE_MINIMUM_FOR_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS)));
         MAXIMUM_COMPONENT_WIDTH = Integer.parseInt(props.getProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH)));
@@ -438,6 +445,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("THRESHOLD_FOR_COMPONENT_MERGING", Float.toString(THRESHOLD_FOR_COMPONENT_MERGING));
             props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
+            props.setProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST));
             props.setProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS));
             props.setProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS));
             props.setProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH));

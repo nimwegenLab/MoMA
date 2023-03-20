@@ -88,6 +88,11 @@ public class ConfigMock implements IConfiguration {
     }
 
     @Override
+    public float getEnterAssignmentCost() {
+        return 0;
+    }
+
+    @Override
     public int getMaxCellDrop() {
         int MAX_CELL_DROP = 50;
         return MAX_CELL_DROP;

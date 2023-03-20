@@ -11,6 +11,7 @@ import com.jug.gui.DialogManagerMock;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.lp.costs.CostFactory;
+import com.jug.lp.costs.ICostCalculator;
 import com.jug.lp.costs.ICostFactory;
 import com.jug.mocks.ConfigMock;
 import com.jug.util.PseudoDic;
@@ -105,7 +106,11 @@ public class GrowthlaneTrackingIlpTest {
 
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl,
                 mockGrbModel,
-                assignmentPlausibilityTester, configMock, "mockVersionString", new CostFactory(configMock),
+                assignmentPlausibilityTester,
+                configMock,
+                "mockVersionString",
+                new CostFactory(configMock),
+                mock(ICostCalculator.class),
                 false,
                 () -> new GurobiCallbackMock(),
                 () -> new DialogGurobiProgressMock(),
@@ -150,7 +155,11 @@ public class GrowthlaneTrackingIlpTest {
         PseudoDic dic = mock(PseudoDic.class);
         GrowthlaneTrackingILP ilp = new GrowthlaneTrackingILP(gl,
                 mockGrbModel,
-                new AssignmentPlausibilityTester(new TrackingConfigMock()), configMock, "mockVersionString", new CostFactory(configMock),
+                new AssignmentPlausibilityTester(new TrackingConfigMock()),
+                configMock,
+                "mockVersionString",
+                new CostFactory(configMock),
+                mock(ICostCalculator.class),
                 false,
                 () -> new GurobiCallbackMock(),
                 () -> new DialogGurobiProgressMock(),

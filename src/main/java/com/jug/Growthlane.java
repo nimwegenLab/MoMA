@@ -136,6 +136,7 @@ public class Growthlane {
 				configurationManager,
 				MoMA.dic.getVersionProvider().getVersion().toString(),
 				MoMA.dic.getCostFactory(),
+				MoMA.dic.getMigrationCostCalculator(),
 				isLoadedFromDisk(),
 				MoMA.dic.getGurobiCallbackFactory(),
 				MoMA.dic.getGurobiProgressDialogFactory(),

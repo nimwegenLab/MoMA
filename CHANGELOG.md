@@ -18,6 +18,15 @@ pulled into the GL _after_ loading and starting the experiment.
       - Pressing the number key `5` with the mouse hovered above the assignment panel changes only the hovered
       panel or pressing `5` with the mouse outside any panel changes all assignment-panels.
     - Cell-lineages starting from an enter-assignment are exported to the CellStats CSV-file.
+- Add new way of calculating the migration cost, which uses the total length of components below the source- and target-
+components under consideration.
+  - New functionality:
+    - The parameter `FEATURE_FLAG_MIGRATION_COST_CALCULATION` controls, which method should be use for calculating the 
+    migration cost:
+      - `absolute_position`: calculates the migration cost based on the absolute position of the bottom edge of the
+      component bounding-box. This corresponds to the legacy behavior.
+      - `total_component_length_below`: calculates the migration cost based on the total length of components below the 
+      source- and target-components under consideration.
 
 ### Changed
 

@@ -7,10 +7,10 @@ import net.imglib2.type.numeric.real.FloatType;
 
 import java.util.List;
 
-public class PositionMismatchPlausibilityTesterLegacy implements IAssignmentPlausibilityTester {
+public class AssignmentPlausibilityTesterLegacyPositionMismatch implements IAssignmentPlausibilityTester {
     private final ConfigurationManager configurationManager;
 
-    public PositionMismatchPlausibilityTesterLegacy(ConfigurationManager configurationManager) {
+    public AssignmentPlausibilityTesterLegacyPositionMismatch(ConfigurationManager configurationManager) {
         this.configurationManager = configurationManager;
     }
 

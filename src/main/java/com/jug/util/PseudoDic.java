@@ -640,7 +640,7 @@ public class PseudoDic {
     public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {
         switch (configurationManager.getMigrationCalculationMethod()){
             case ABSOLUTE_POSITION:
-                return new PositionMismatchPlausibilityTesterLegacy(getConfigurationManager());
+                return new AssignmentPlausibilityTesterLegacyPositionMismatch(getConfigurationManager());
             case TOTAL_COMPONENT_LENGTH_BELOW:
                 throw new NotImplementedException();
             default:

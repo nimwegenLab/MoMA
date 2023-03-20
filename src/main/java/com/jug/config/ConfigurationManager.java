@@ -281,6 +281,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      */
     public boolean FEATURE_FLAG_MIGRATION_COST = true;
 
+    /**
+     * Sets the method used for calculating the migration cost. Valid options are:
+     * {"legacy","total_component_length_below"}
+     */
+    public String FEATURE_FLAG_MIGRATION_COST_CALCULATION = "legacy";
+
     private int minTime = -1;
     private int maxTime = -1;
 

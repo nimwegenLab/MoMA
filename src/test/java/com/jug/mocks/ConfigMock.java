@@ -89,7 +89,7 @@ public class ConfigMock implements IConfiguration {
 
     @Override
     public float getEnterAssignmentCost() {
-        return 0;
+        return 10.0f;
     }
 
     @Override

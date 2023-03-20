@@ -83,24 +83,35 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return ASSIGNMENT_COST_CUTOFF;
     }
     public float ASSIGNMENT_COST_CUTOFF = Float.MAX_VALUE;
+
     /**
-     * This value sets the fixed cost for lysis assignments. It is set so high, that it will not be considered for
-     * assignment during optimization. However, it can be manually forced during curation.
+     * This value sets the fixed cost for lysis assignments (see {@link com.jug.lp.LysisAssignment}).
+     * The default value of 10.0, is high enough that it will not be considered during optimization.
+     * However, it can be manually forced during curation.
      */
+    public float LYSIS_ASSIGNMENT_COST = 10.0f;
+
     @Override
     public float getLysisAssignmentCost() {
         return LYSIS_ASSIGNMENT_COST;
     }
-    public float LYSIS_ASSIGNMENT_COST = 10.0f;
+
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
+
+    /**
+     * This value sets the fixed cost for enter assignments (see {@link com.jug.lp.EnterAssignment}).
+     * The default value of 10.0, is high enough that it will not be considered during optimization.
+     * However, it can be manually forced during curation.
+     */
+    public float ENTER_ASSIGNMENT_COST = 10.0f;
 
     @Override
     public float getEnterAssignmentCost() {
         return ENTER_ASSIGNMENT_COST;
     }
-    public float ENTER_ASSIGNMENT_COST = 10.0f;
+
     public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.

@@ -719,25 +719,9 @@ public class GrowthlaneTrackingILP {
         final long sourceComponentSize = getComponentSize(sourceComponent, 1);
         final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
-//        final float sourceUpperBoundary = sourceComponentBoundaries.getA();
-//        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
-//        final float targetUpperBoundary = targetComponentBoundaries.getA();
-//        final float targetLowerBoundary = targetComponentBoundaries.getB();
-
-//        float averageMigrationCost = 0;
-//        if(configurationManager.getMigrationCostFeatureFlag()){
-//            final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
-//            final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
-//            averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
-//        }
-
         double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
-
-//        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), targetComponent.getTotalLengthOfComponentsBelow());
-//        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
@@ -906,39 +890,19 @@ public class GrowthlaneTrackingILP {
             final AdvancedComponent<FloatType> upperTargetComponent,
             final AdvancedComponent<FloatType> lowerTargetComponent) {
 
-
-        final ValuePair<Integer, Integer> sourceBoundaries = sourceComponent.getVerticalComponentLimits();
         final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
-        final ValuePair<Integer, Integer> lowerTargetBoundaries = lowerTargetComponent.getVerticalComponentLimits();
 
         final long sourceSize = getComponentSize(sourceComponent, 1);
         final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
         final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-//        final float sourceUpperBoundary = sourceBoundaries.getA();
-//        final float sourceLowerBoundary = sourceBoundaries.getB();
-//        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
-//        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
-//
-//        float averageMigrationCost = 0;
-//        if(configurationManager.getMigrationCostFeatureFlag()){
-//            final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
-//            final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
-//            averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
-//        }
-
         double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
-
-//        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), lowerTargetComponent.getTotalLengthOfComponentsBelow());
-//        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
         final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
-//        final float divisionLikelihoodCost = costFactory.getDivisionLikelihoodCost(sourceComponent);
 
-//        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
         float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
     }

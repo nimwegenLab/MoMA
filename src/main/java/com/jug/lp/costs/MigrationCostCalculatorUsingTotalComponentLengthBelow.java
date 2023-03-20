@@ -19,14 +19,6 @@ public class MigrationCostCalculatorUsingTotalComponentLengthBelow implements IC
 
     @Override
     public double calculateCost(AdvancedComponent<FloatType> sourceComponent, List<AdvancedComponent<FloatType>> targetComponents) {
-        // migration cost for mapping:
-//        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), targetComponent.getTotalLengthOfComponentsBelow());
-//        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
-
-        // migration cost for division:
-//        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), lowerTargetComponent.getTotalLengthOfComponentsBelow());
-//        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
-
         AdvancedComponent<FloatType>lowerTargetComponent = targetComponents.get(0);
         final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), lowerTargetComponent.getTotalLengthOfComponentsBelow());
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();

@@ -637,6 +637,17 @@ public class PseudoDic {
         }
     }
 
+    public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {
+        switch (configurationManager.getMigrationCalculationMethod()){
+            case ABSOLUTE_POSITION:
+                return new PositionMismatchPlausibilityTesterLegacy(getConfigurationManager());
+            case TOTAL_COMPONENT_LENGTH_BELOW:
+                throw new NotImplementedException();
+            default:
+                throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
+        }
+    }
+
     class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{
         private boolean isfirstOptimizationRun = true;
         @Override

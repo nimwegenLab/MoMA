@@ -60,6 +60,7 @@ public class GrowthlaneTrackingILP {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
+    private IAssignmentPlausibilityTester positionPlausibilityTester;
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
@@ -79,6 +80,7 @@ public class GrowthlaneTrackingILP {
     public GrowthlaneTrackingILP(final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
+                                 IAssignmentPlausibilityTester positionPlausibilityTester,
                                  IConfiguration configurationManager,
                                  String versionString,
                                  CostFactory costFactory,
@@ -90,6 +92,7 @@ public class GrowthlaneTrackingILP {
                                  PseudoDic dic) {
         this.gl = gl;
         this.model = grbModel;
+        this.positionPlausibilityTester = positionPlausibilityTester;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
@@ -669,7 +672,11 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
+
+//                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
+//                    continue;
+//                }
+                if (!positionPlausibilityTester.assignmentIsPlausible(sourceComponent, Collections.singletonList(targetComponent))) {
                     continue;
                 }
 
@@ -833,7 +840,10 @@ public class GrowthlaneTrackingILP {
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+//                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+//                        continue;
+//                    }
+                    if (!positionPlausibilityTester.assignmentIsPlausible(sourceComponent, Collections.singletonList(lowerTargetComponent))) {
                         continue;
                     }
 

@@ -133,6 +133,7 @@ public class Growthlane {
 		ilp = new GrowthlaneTrackingILP(this,
 				model,
 				MoMA.dic.getAssignmentPlausibilityTester(),
+				MoMA.dic.getAssignmentPlausibilityTesterForPosition(),
 				configurationManager,
 				MoMA.dic.getVersionProvider().getVersion().toString(),
 				MoMA.dic.getCostFactory(),

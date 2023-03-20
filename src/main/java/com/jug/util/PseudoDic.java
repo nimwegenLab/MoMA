@@ -13,10 +13,7 @@ import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
 import com.jug.lp.*;
-import com.jug.lp.costs.CostFactory;
-import com.jug.lp.costs.DummyMigrationCostCalculator;
-import com.jug.lp.costs.ICostCalculator;
-import com.jug.lp.costs.MigrationCostCalculatorLegacy;
+import com.jug.lp.costs.*;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
@@ -633,7 +630,7 @@ public class PseudoDic {
                 case ABSOLUTE_POSITION:
                     return new MigrationCostCalculatorLegacy(getCostFactory());
                 case TOTAL_COMPONENT_LENGTH_BELOW:
-                    throw new NotImplementedException("Calculation of migration cost using total cell length is not yet implemented.");
+                    return new MigrationCostCalculatorUsingTotalComponentLengthBelow(getCostFactory());
                 default:
                     throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
             }

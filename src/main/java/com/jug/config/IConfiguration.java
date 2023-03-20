@@ -83,6 +83,8 @@ public interface IConfiguration {
 
     float getEnterAssignmentCost();
 
+    float getExitAssignmentCost();
+
     int getMaxCellDrop();
 
     int getCellDetectionRoiOffsetTop();

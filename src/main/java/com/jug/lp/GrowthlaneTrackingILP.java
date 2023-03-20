@@ -602,7 +602,7 @@ public class GrowthlaneTrackingILP {
     private void addExitAssignments(final int sourceTimeStep) throws GRBException {
         List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
-            float cost = costModulationForSubstitutedILP(sourceHypothesis.getCost());
+            float cost = configurationManager.getExitAssignmentCost();
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(sourceHypothesis, sourceHypotheses);
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, sourceHypothesis);

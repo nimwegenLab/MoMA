@@ -112,6 +112,18 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return ENTER_ASSIGNMENT_COST;
     }
 
+    /**
+     * This value sets the fixed cost for exit assignments (see {@link com.jug.lp.ExitAssignment}).
+     * The default value is 0.0, so that the selection of an exit assignment does not change the value of the objective
+     * function.
+     */
+    public float EXIT_ASSIGNMENT_COST = 0;
+
+    @Override
+    public float getExitAssignmentCost() {
+        return EXIT_ASSIGNMENT_COST;
+    }
+
     public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
@@ -306,6 +318,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         ASSIGNMENT_COST_CUTOFF = Float.parseFloat(props.getProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF)));
         LYSIS_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST)));
         ENTER_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST)));
+        EXIT_ASSIGNMENT_COST = Float.parseFloat(props.getProperty("EXIT_ASSIGNMENT_COST", Float.toString(EXIT_ASSIGNMENT_COST)));
         SIZE_MINIMUM_FOR_LEAF_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS)));
         SIZE_MINIMUM_FOR_ROOT_COMPONENTS = Integer.parseInt(props.getProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS)));
         MAXIMUM_COMPONENT_WIDTH = Integer.parseInt(props.getProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH)));
@@ -457,6 +470,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("ASSIGNMENT_COST_CUTOFF", Float.toString(ASSIGNMENT_COST_CUTOFF));
             props.setProperty("LYSIS_ASSIGNMENT_COST", Float.toString(LYSIS_ASSIGNMENT_COST));
             props.setProperty("ENTER_ASSIGNMENT_COST", Float.toString(ENTER_ASSIGNMENT_COST));
+            props.setProperty("EXIT_ASSIGNMENT_COST", Float.toString(EXIT_ASSIGNMENT_COST));
             props.setProperty("SIZE_MINIMUM_FOR_LEAF_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_LEAF_COMPONENTS));
             props.setProperty("SIZE_MINIMUM_FOR_ROOT_COMPONENTS", Integer.toString(SIZE_MINIMUM_FOR_ROOT_COMPONENTS));
             props.setProperty("MAXIMUM_COMPONENT_WIDTH", Integer.toString(MAXIMUM_COMPONENT_WIDTH));

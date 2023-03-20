@@ -642,7 +642,7 @@ public class PseudoDic {
             case ABSOLUTE_POSITION:
                 return new AssignmentPlausibilityTesterLegacyPositionMismatch(getConfigurationManager());
             case TOTAL_COMPONENT_LENGTH_BELOW:
-                throw new NotImplementedException();
+                return new AssignmentPlausibilityTesterUsingTotalCellLengthBelowComponents(getConfigurationManager());
             default:
                 throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
         }

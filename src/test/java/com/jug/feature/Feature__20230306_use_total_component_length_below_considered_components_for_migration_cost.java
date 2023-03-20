@@ -24,9 +24,10 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
     public static void main(String[] args) {
         Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost tests = new Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost();
 
-        tests.run_interactive__lis_20221102_2_29();
+//        tests.run_interactive__lis_20221102_2_29();
 //        tests.run_interactive__lis_20220701_5_5();
 //        tests.run_trackonly__lis_20220701_5_5();
+        tests.run_interactive__theo_20221220_28_35();
     }
 
     /**
@@ -57,5 +58,14 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
         tmin = null;
         tmax = 10;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void run_interactive__theo_20221220_28_35() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "/data/theo_20221220_28_35/20221220_glu_spcm_1_MMStack_Pos28_GL35.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "/data/theo_20221220_28_35/mm.properties");
+        analysisName = "examine_tracking_errors_1";
+        tmin = null;
+        tmax = 300;
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 }

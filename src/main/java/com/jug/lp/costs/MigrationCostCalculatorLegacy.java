@@ -10,10 +10,10 @@ import java.util.List;
 /**
  * This class implements the legacy method for calculating the migration cost.
  */
-public class LegacyMigrationCostCalculator implements ICostCalculator {
+public class MigrationCostCalculatorLegacy implements ICostCalculator {
     private CostFactory costFactory;
 
-    public LegacyMigrationCostCalculator(CostFactory costFactory) {
+    public MigrationCostCalculatorLegacy(CostFactory costFactory) {
         this.costFactory = costFactory;
     }
 

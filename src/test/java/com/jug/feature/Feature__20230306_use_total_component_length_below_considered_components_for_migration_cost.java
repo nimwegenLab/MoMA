@@ -25,8 +25,8 @@ public class Feature__20230306_use_total_component_length_below_considered_compo
         Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost tests = new Feature__20230306_use_total_component_length_below_considered_components_for_migration_cost();
 
 //        tests.run_interactive__lis_20221102_2_29();
-//        tests.run_interactive__lis_20220701_5_5();
-        tests.run_trackonly__lis_20220701_5_5();
+        tests.run_interactive__lis_20220701_5_5();
+//        tests.run_trackonly__lis_20220701_5_5();
     }
 
     /**

@@ -4,10 +4,12 @@ import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
+/**
+ * This class implements the legacy method for calculating the migration cost.
+ */
 public class LegacyMigrationCostCalculator implements ICostCalculator {
     private CostFactory costFactory;
 

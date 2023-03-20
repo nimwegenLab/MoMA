@@ -26,6 +26,7 @@ with value `0.0`. ([ff51ea28](https://github.com/michaelmell/moma/commit/ff51ea2
 - Storage locks are now only removed, when the user manually runs optimization with the 'Optimize' button in the
 UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can query the variable states
 (any modifications to the Gurobi model changes its state it to LOADED, where we cannot query variable state). ([5c11abbf](https://github.com/michaelmell/moma/commit/5c11abbf))
+- Change parameter name of the feature flag for the migration cost to `FEATURE_FLAG_MIGRATION_COST` (previously it was called `FEATURE_FLAG_MIGRATION_COSTS`). ([598ae56b](https://github.com/michaelmell/moma/commit/598ae56b))
 
 ## [0.9.0] - 2023-03-20
 

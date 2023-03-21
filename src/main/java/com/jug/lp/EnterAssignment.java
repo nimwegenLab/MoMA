@@ -72,11 +72,9 @@ public class EnterAssignment extends AbstractAssignment<Hypothesis<AdvancedCompo
 
         expr.addTerm(Hup.size(), this.getGRBVar());
 
-        boolean add = false;
         for (final Hypothesis<AdvancedComponent<FloatType>> upperHyp : Hup) {
             if (edges.getRightNeighborhood(upperHyp) != null) {
                 for (final AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> a_j : edges.getLeftNeighborhood(upperHyp)) {
-                    add = true;
                     if (a_j instanceof EnterAssignment) { // add term if assignment is NOT another EnterAssignment
                         continue;
                     }

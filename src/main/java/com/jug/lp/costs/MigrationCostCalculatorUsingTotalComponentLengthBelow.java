@@ -20,7 +20,10 @@ public class MigrationCostCalculatorUsingTotalComponentLengthBelow implements IC
     @Override
     public double calculateCost(AdvancedComponent<FloatType> sourceComponent, List<AdvancedComponent<FloatType>> targetComponents) {
         AdvancedComponent<FloatType>lowerTargetComponent = targetComponents.get(0);
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceComponent.getTotalLengthOfComponentsBelow(), lowerTargetComponent.getTotalLengthOfComponentsBelow());
+        final Pair<Float, float[]> migrationCostOfLowerBoundary =
+                costFactory.getMigrationCost(
+                        -sourceComponent.getTotalLengthOfComponentsBelow(),
+                        -lowerTargetComponent.getTotalLengthOfComponentsBelow()); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
         return averageMigrationCost;
     }

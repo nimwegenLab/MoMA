@@ -9,6 +9,7 @@ import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
+import com.jug.lp.costs.ICostCalculator;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -59,9 +60,11 @@ public class GrowthlaneTrackingILP {
     private final AssignmentPlausibilityTester assignmentPlausibilityTester;
     private final List<ProgressListener> progressListener;
     public IGRBModelAdapter model;
+    private IAssignmentPlausibilityTester positionPlausibilityTester;
     private String versionString;
     private IConfiguration configurationManager;
     private CostFactory costFactory;
+    private ICostCalculator migrationCostCalculator;
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
@@ -77,9 +80,11 @@ public class GrowthlaneTrackingILP {
     public GrowthlaneTrackingILP(final Growthlane gl,
                                  IGRBModelAdapter grbModel,
                                  AssignmentPlausibilityTester assignmentPlausibilityTester,
+                                 IAssignmentPlausibilityTester positionPlausibilityTester,
                                  IConfiguration configurationManager,
                                  String versionString,
                                  CostFactory costFactory,
+                                 ICostCalculator migrationCostCalculator,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
@@ -87,9 +92,11 @@ public class GrowthlaneTrackingILP {
                                  PseudoDic dic) {
         this.gl = gl;
         this.model = grbModel;
+        this.positionPlausibilityTester = positionPlausibilityTester;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
+        this.migrationCostCalculator = migrationCostCalculator;
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
@@ -665,7 +672,11 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
+
+//                if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, targetComponent, configurationManager.getMaxCellDrop())) {
+//                    continue;
+//                }
+                if (!positionPlausibilityTester.assignmentIsPlausible(sourceComponent, Collections.singletonList(targetComponent))) {
                     continue;
                 }
 
@@ -715,26 +726,15 @@ public class GrowthlaneTrackingILP {
         final long sourceComponentSize = getComponentSize(sourceComponent, 1);
         final long targetComponentSize = getComponentSize(targetComponent, 1);
 
-        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
-        final float sourceUpperBoundary = sourceComponentBoundaries.getA();
-        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
-        final float targetUpperBoundary = targetComponentBoundaries.getA();
-        final float targetLowerBoundary = targetComponentBoundaries.getB();
-
-        float averageMigrationCost = 0;
-        if(configurationManager.getMigrationCostFeatureFlag()){
-            final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
-            final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
-            averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
-        }
+        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
         final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
-        float mappingCost = growthCost.getA() + averageMigrationCost;
+        float mappingCost = growthCost.getA() + (float)averageMigrationCost;
         return mappingCost;
     }
 
@@ -840,7 +840,10 @@ public class GrowthlaneTrackingILP {
                 final List<AdvancedComponent<FloatType>> lowerNeighborComponents = ((AdvancedComponent) upperTargetComponent).getLowerNeighbors();
 
                 for (final AdvancedComponent<FloatType> lowerTargetComponent : lowerNeighborComponents) {
-                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+//                    if (ComponentTreeUtils.isBelowByMoreThen(sourceComponent, lowerTargetComponent, configurationManager.getMaxCellDrop())) {
+//                        continue;
+//                    }
+                    if (!positionPlausibilityTester.assignmentIsPlausible(sourceComponent, Collections.singletonList(lowerTargetComponent))) {
                         continue;
                     }
 
@@ -897,35 +900,20 @@ public class GrowthlaneTrackingILP {
             final AdvancedComponent<FloatType> upperTargetComponent,
             final AdvancedComponent<FloatType> lowerTargetComponent) {
 
-
-        final ValuePair<Integer, Integer> sourceBoundaries = sourceComponent.getVerticalComponentLimits();
         final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
-        final ValuePair<Integer, Integer> lowerTargetBoundaries = lowerTargetComponent.getVerticalComponentLimits();
 
         final long sourceSize = getComponentSize(sourceComponent, 1);
         final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
         final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-        final float sourceUpperBoundary = sourceBoundaries.getA();
-        final float sourceLowerBoundary = sourceBoundaries.getB();
-        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
-        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
-
-        float averageMigrationCost = 0;
-        if(configurationManager.getMigrationCostFeatureFlag()){
-            final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
-            final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
-            averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
-        }
+        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
         final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
-//        final float divisionLikelihoodCost = costFactory.getDivisionLikelihoodCost(sourceComponent);
 
-//        float divisionCost = growthCost.getA() + averageMigrationCost + divisionLikelihoodCost;
-        float divisionCost = growthCost.getA() + averageMigrationCost;
+        float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
     }
 

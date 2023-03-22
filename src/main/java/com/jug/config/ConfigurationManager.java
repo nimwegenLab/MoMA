@@ -7,10 +7,7 @@ import javax.swing.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static java.util.Objects.isNull;
@@ -277,9 +274,17 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     private double FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = 0.5;
 
     /**
-     * Sets if the crossing constraints should be used.
+     * Sets if the migration cost should be used.
      */
-    public boolean FEATURE_FLAG_MIGRATION_COSTS = true;
+    public boolean FEATURE_FLAG_MIGRATION_COST = true;
+
+    /**
+     * Sets the method used for calculating the migration cost. Valid options are:
+     * {"legacy","total_component_length_below"}
+     */
+    public String FEATURE_FLAG_MIGRATION_COST_CALCULATION = "absolute_position";
+
+    public HashMap<String, MigrationCostCalculationMethod> migrationCostCalculationMethod;
 
     private int minTime = -1;
     private int maxTime = -1;
@@ -366,7 +371,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         INTENSITY_FIT_INITIAL_WIDTH = Double.parseDouble(props.getProperty("INTENSITY_FIT_INITIAL_WIDTH", Double.toString(INTENSITY_FIT_INITIAL_WIDTH)));
 
         FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
-        FEATURE_FLAG_MIGRATION_COSTS = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+        FEATURE_FLAG_MIGRATION_COST = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
+        readFeatureFlagMigrationCostCalculation();
 
         FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER)));
@@ -380,6 +386,24 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             this.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
         }
 
+    }
+
+    private void readFeatureFlagMigrationCostCalculation() {
+        FEATURE_FLAG_MIGRATION_COST_CALCULATION = props.getProperty("FEATURE_FLAG_MIGRATION_COST_CALCULATION", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+        FEATURE_FLAG_MIGRATION_COST_CALCULATION = FEATURE_FLAG_MIGRATION_COST_CALCULATION.replace("\"", "");
+        validateFeatureFlagMigrationCostCalculation();
+    }
+
+    public MigrationCostCalculationMethod getMigrationCalculationMethod() {
+        switch (FEATURE_FLAG_MIGRATION_COST_CALCULATION) {
+            case "absolute_position":
+                return MigrationCostCalculationMethod.ABSOLUTE_POSITION;
+            case "total_component_length_below":
+                return MigrationCostCalculationMethod.TOTAL_COMPONENT_LENGTH_BELOW;
+            default:
+                String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {legacy,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+                throw new RuntimeException(errorMsg);
+        }
     }
 
     /**
@@ -515,7 +539,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS", Double.toString(SPINE_MEASUREMENT_MEDIALLINE_OFFSET_FROM_CONTOUR_ENDS));
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
-            setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COSTS", FEATURE_FLAG_MIGRATION_COSTS);
+            setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
+            props.setProperty("FEATURE_FLAG_MIGRATION_COST_CALCULATION", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER));
@@ -673,7 +698,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     public boolean getCrossingConstraintFeatureFlag() { return FEATURE_FLAG_CROSSING_CONSTRAINTS; }
 
-    public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COSTS; }
+    public boolean getMigrationCostFeatureFlag() { return FEATURE_FLAG_MIGRATION_COST; }
 
     public boolean getFilterAssignmentsUsingFluorescenceFeatureFlag() {
         return FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING;
@@ -694,4 +719,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     long backgroundRoiWidth = 5; /* ROI width in pixels*/
 
     public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
+
+    public void validateFeatureFlagMigrationCostCalculation() {
+        if (FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("absolute_position") | FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("total_component_length_below")) {
+            return;
+        }
+        String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {legacy,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+        System.out.println(errorMsg);
+        System.out.println("Aborting run.");
+        throw new RuntimeException(errorMsg);
+    }
 }

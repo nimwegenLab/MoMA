@@ -3,10 +3,7 @@ package com.jug.util;
 import com.jug.MoMA;
 import com.jug.commands.CloseCommand;
 import com.jug.commands.ICommand;
-import com.jug.config.CommandLineArgumentsParser;
-import com.jug.config.ConfigurationManager;
-import com.jug.config.ITrackingConfiguration;
-import com.jug.config.IUnetProcessingConfiguration;
+import com.jug.config.*;
 import com.jug.datahandling.*;
 import com.jug.export.*;
 import com.jug.export.measurements.*;
@@ -16,7 +13,7 @@ import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.logging.LoggerAdapterForSystemOutErr;
 import com.jug.logging.LoggerToFile;
 import com.jug.lp.*;
-import com.jug.lp.costs.CostFactory;
+import com.jug.lp.costs.*;
 import com.jug.util.componenttree.*;
 import com.jug.util.imglib2.Imglib2Utils;
 import com.jug.util.imglib2.OverlayUtils;
@@ -24,6 +21,7 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
+import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -622,6 +620,32 @@ public class PseudoDic {
             componentIntensitiesExporter = new ComponentIntensitiesExporter(getConfigurationManager(), getImageProperties());
         }
         return componentIntensitiesExporter;
+    }
+
+    public ICostCalculator getMigrationCostCalculator() {
+        if (!configurationManager.getMigrationCostFeatureFlag()) {
+            return new DummyMigrationCostCalculator();
+        } else {
+            switch (configurationManager.getMigrationCalculationMethod()){
+                case ABSOLUTE_POSITION:
+                    return new MigrationCostCalculatorLegacy(getCostFactory());
+                case TOTAL_COMPONENT_LENGTH_BELOW:
+                    return new MigrationCostCalculatorUsingTotalComponentLengthBelow(getCostFactory());
+                default:
+                    throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
+            }
+        }
+    }
+
+    public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {
+        switch (configurationManager.getMigrationCalculationMethod()){
+            case ABSOLUTE_POSITION:
+                return new AssignmentPlausibilityTesterLegacyPositionMismatch(getConfigurationManager());
+            case TOTAL_COMPONENT_LENGTH_BELOW:
+                return new AssignmentPlausibilityTesterUsingTotalCellLengthBelowComponents(getConfigurationManager());
+            default:
+                throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
+        }
     }
 
     class GurobiCallbackFactory implements Supplier<GurobiCallbackAbstract>{

@@ -432,6 +432,22 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         return intensity;
     }
 
+    private int totalComponentLengthBelow = -1;
+    public int getTotalLengthOfComponentsBelow() {
+        if (totalComponentLengthBelow < 0) {
+            totalComponentLengthBelow = calculateTotalLengthOfComponentsBelow();
+        }
+        return totalComponentLengthBelow;
+    }
+
+    private int calculateTotalLengthOfComponentsBelow(){
+        List<AdvancedComponent<T>> componentsBelow = getComponentsBelowClosestToRoot();
+        int totalComponentLength = 0;
+        for (AdvancedComponent<T> component : componentsBelow) {
+            totalComponentLength += component.getMajorAxisLength();
+        }
+        return totalComponentLength;
+    }
 
     Map<Integer, Double> backgroundIntensities = new HashMap<>();
 

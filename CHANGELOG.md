@@ -18,6 +18,15 @@ pulled into the GL _after_ loading and starting the experiment.
       - Pressing the number key `5` with the mouse hovered above the assignment panel changes only the hovered
       panel or pressing `5` with the mouse outside any panel changes all assignment-panels.
     - Cell-lineages starting from an enter-assignment are exported to the CellStats CSV-file.
+- Add new way of calculating the migration cost, which uses the total length of components below the source- and target-
+components under consideration.
+  - New functionality:
+    - The parameter `FEATURE_FLAG_MIGRATION_COST_CALCULATION` controls, which method should be use for calculating the 
+    migration cost:
+      - `absolute_position`: calculates the migration cost based on the absolute position of the bottom edge of the
+      component bounding-box. This corresponds to the legacy behavior.
+      - `total_component_length_below`: calculates the migration cost based on the total length of components below the 
+      source- and target-components under consideration.
 
 ### Changed
 
@@ -26,6 +35,7 @@ with value `0.0`. ([ff51ea28](https://github.com/michaelmell/moma/commit/ff51ea2
 - Storage locks are now only removed, when the user manually runs optimization with the 'Optimize' button in the
 UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can query the variable states
 (any modifications to the Gurobi model changes its state it to LOADED, where we cannot query variable state). ([5c11abbf](https://github.com/michaelmell/moma/commit/5c11abbf))
+- Change parameter name of the feature flag for the migration cost to `FEATURE_FLAG_MIGRATION_COST` (previously it was called `FEATURE_FLAG_MIGRATION_COSTS`). ([598ae56b](https://github.com/michaelmell/moma/commit/598ae56b))
 
 ## [0.9.0] - 2023-03-20
 

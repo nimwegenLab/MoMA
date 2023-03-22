@@ -9,6 +9,9 @@ import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,8 +44,9 @@ public class AssignmentCostExporter implements ResultExporterInterface {
 
         int tmax = growthlane.getFrames().size();
         for (int t = 0; t < tmax; t++) {
-            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments = ilp.getAssignmentsAt(t);
-            exportAssignmentInformation(allAssignments);
+            List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> assignmentList = new ArrayList(ilp.getAssignmentsAt(t));
+            assignmentList.sort(Comparator.comparing(a -> a.getStringId()));
+            exportAssignmentInformation(assignmentList);
         }
         File outputCsvFile = exportFilePaths.getAssignmentCostsCsvFilePath().toFile();
         try {
@@ -61,7 +65,7 @@ public class AssignmentCostExporter implements ResultExporterInterface {
         System.out.println("");
     }
 
-    private void exportAssignmentInformation(Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
+    private void exportAssignmentInformation(List<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>> allAssignments){
         for (AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment : allAssignments){
 
             /* Write results to table */

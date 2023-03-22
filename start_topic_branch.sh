@@ -18,7 +18,7 @@ if [[ ! $session_name ]]; then
   exit 1
 fi
 
-allowed_session_types=("feature" "bugfix" "exploration")
+allowed_session_types=("feature" "bugfix" "exploration" "refactor")
 
 if [[ ! " ${allowed_session_types[*]} " =~ " ${session_type} " ]]; then
   printf "ERROR: The provided session type \"%s\" is invalid. Allowed values are: ${allowed_session_types[*]}\n" "${session_type}"

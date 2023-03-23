@@ -20,14 +20,6 @@ public class DataExportIntegrationTest {
 
     @Test
     public void tracking_and_exporting_yields_same_result() throws IOException {
-//        String methodName = ExplorationTestHelpers.getMethodName();
-
-//        Path temporaryWorkingDirectory = Files.createTempDirectory("Moma-DataExportIntegrationTest-" + methodName);
-
-        /* create and save model */
-//        pathToTempDir
-//        System.out.println("Temporary Directory: " + pathToTempDir.toAbsolutePath());
-
         Path testDataSourcePath = Paths.get(new File("").getAbsolutePath(), "src/test/resources/test/integration/lis_20221102_2_29/");
 
         FileUtils.copyDirectory(testDataSourcePath.toFile(), temporaryWorkingDirectory.toFile());
@@ -40,9 +32,6 @@ public class DataExportIntegrationTest {
         Integer tmin = null;
         Integer tmax = null;
 
-//        startMoma(false, inputPath.toString(),      null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
-//        startMoma(false, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
-//        startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName, "-trackonly"});
         startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
     }
 }

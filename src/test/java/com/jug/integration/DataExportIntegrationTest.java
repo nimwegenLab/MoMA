@@ -1,5 +1,6 @@
 package com.jug.integration;
 
+import com.jug.exploration.ExplorationTestHelpers;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
 
@@ -14,8 +15,9 @@ import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 public class DataExportIntegrationTest {
     @Test
     public void tracking_and_exporting_yields_same_result() throws IOException {
-        Path temporaryWorkingDirectory = null;
-        temporaryWorkingDirectory = Files.createTempDirectory("java-DataExportIntegrationTest-");
+        String methodName = ExplorationTestHelpers.getMethodName();
+
+        Path temporaryWorkingDirectory = Files.createTempDirectory("Moma-DataExportIntegrationTest-" + methodName);
 
         /* create and save model */
 //        pathToTempDir

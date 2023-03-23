@@ -81,4 +81,17 @@ public class ExplorationTestHelpers {
         List<Path> matchingFiles = getMatchingFilesInDirectory(parentFolder.toPath(), "*__model_*.tif*");
         deleteFiles(matchingFiles);
     }
+
+    /**
+     * Get the name of the method that is calling this method. This method uses the idea presented here:
+     * https://www.baeldung.com/java-name-of-executing-method
+     *
+     * @return
+     */
+    public static String getMethodName() {
+        StackTraceElement[] stackTrace = Thread.currentThread()
+                .getStackTrace();
+        String name = stackTrace[2].getMethodName();
+        return name;
+    }
 }

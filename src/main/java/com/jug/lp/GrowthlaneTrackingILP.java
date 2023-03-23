@@ -15,6 +15,7 @@ import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
+import com.sun.xml.internal.ws.policy.spi.AssertionCreationException;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -1728,7 +1729,7 @@ public class GrowthlaneTrackingILP {
      * Calling this function makes only sense if the <code>run</code>-method was
      * called and the convex optimizer could find a optimal feasible solution.
      *
-     * @param t the time at which to look for active right-assignments.
+     * @param timeStep the time at which to look for active right-assignments.
      *          Values for t make only sense if <code>>=0</code> and
      *          <code>< nodes.getNumberOfTimeSteps() - 1.</code>
      * @return a hash-map that maps from segmentation hypothesis to a sets
@@ -1737,13 +1738,22 @@ public class GrowthlaneTrackingILP {
      * Note that segmentation hypothesis that are not active will NOT be
      * included in the hash-map.
      */
-    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getOptimalRightAssignments(final int t) {
-        assert (t >= 0);
-        assert (t < nodes.getNumberOfTimeSteps() - 1) : String.format("Assert failed: t<nodes.getNumberOfTimeSteps()-1, because t=%d and nodes.getNumberOfTimeSteps()-1=%d", t, nodes.getNumberOfTimeSteps() - 1);
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>,
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>>
+    getOptimalRightAssignments(final int timeStep) {
+        if (!(timeStep >= 0)) {
+            throw new AssertionError(String.format("Invalid value for timeStep (=%d). timeStep must be >=0.", timeStep));
+        }
+        if(!(timeStep < nodes.getNumberOfTimeSteps())){
+            throw new AssertionError(String.format("Invalid value for timeStep (=%d). timeStep must fulfill:" +
+                    "timeStep<nodes.getNumberOfTimeSteps() (but nodes.getNumberOfTimeSteps()=%d).",
+                    timeStep,
+                    nodes.getNumberOfTimeSteps()));
+        }
 
         final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(timeStep);
 
         if (hyps == null) return ret;
 

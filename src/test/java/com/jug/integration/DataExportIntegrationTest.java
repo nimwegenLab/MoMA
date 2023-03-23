@@ -24,14 +24,18 @@ public class DataExportIntegrationTest {
         Path testDataSourcePath = Paths.get(new File("").getAbsolutePath(), "src/test/resources/test/integration/lis_20221102_2_29/");
 
         FileUtils.copyDirectory(testDataSourcePath.toFile(), temporaryWorkingDirectory.toFile());
-        System.out.println("stop");
+        System.out.println(String.format("Test working directory: %s", temporaryWorkingDirectory));
 
         Path inputImagePath = Paths.get(temporaryWorkingDirectory.toString(), "20221102_VNG1040_SHU_1_MMStack_Pos2_GL29.tif");
         Path propertiesFilePath = Paths.get(temporaryWorkingDirectory.toString(), "mm.properties");
         Path referenceDataPath = Paths.get(temporaryWorkingDirectory.toString(), "reference_output_data");
-        String analysisName = "test_analysis";
+        String analysisName = "test_output";
         Integer tmin = null;
         Integer tmax = null;
-        startMoma(false, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
+
+//        startMoma(false, inputPath.toString(),      null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+//        startMoma(false, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
+//        startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName, "-trackonly"});
+        startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
     }
 }

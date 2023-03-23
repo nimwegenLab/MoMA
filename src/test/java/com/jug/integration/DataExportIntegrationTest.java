@@ -3,6 +3,7 @@ package com.jug.integration;
 import com.jug.exploration.ExplorationTestHelpers;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,11 +14,15 @@ import java.nio.file.Paths;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
 public class DataExportIntegrationTest {
+
+    @TempDir
+    Path temporaryWorkingDirectory;
+
     @Test
     public void tracking_and_exporting_yields_same_result() throws IOException {
-        String methodName = ExplorationTestHelpers.getMethodName();
+//        String methodName = ExplorationTestHelpers.getMethodName();
 
-        Path temporaryWorkingDirectory = Files.createTempDirectory("Moma-DataExportIntegrationTest-" + methodName);
+//        Path temporaryWorkingDirectory = Files.createTempDirectory("Moma-DataExportIntegrationTest-" + methodName);
 
         /* create and save model */
 //        pathToTempDir

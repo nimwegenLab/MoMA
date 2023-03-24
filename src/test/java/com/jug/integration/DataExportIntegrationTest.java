@@ -38,5 +38,12 @@ public class DataExportIntegrationTest {
         Integer tmax = null;
 
         startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
+
+        Path trackDataPath = Paths.get(referenceDataPath.toString(), "track_data__test_output");
+        Path mmpropertiesActual = trackDataPath.resolve("mm.properties");
+        Path mmpropertiesExpected = temporaryWorkingDirectory.resolve("mm.properties");
+        ExplorationTestHelpers.filesCompareByLine(mmpropertiesExpected, mmpropertiesActual, 0);
+
+        throw new NotImplementedException("test not finished.");
     }
 }

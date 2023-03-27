@@ -1,7 +1,6 @@
 package com.jug.exploration;
 
 import com.jug.MoMA;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
@@ -108,26 +107,54 @@ public class ExplorationTestHelpers {
         long numberOfLines1 = countNumberOfLines(file1);
         long numberOfLines2 = countNumberOfLines(file2);
         if (numberOfLines1 != numberOfLines2) {
-            throw new AssertionError(String.format("Number of lines in file1 differs from file2 (file1: %d, file2: %d, file1: %s, file2: %s)",
-                    numberOfLines1,
-                    numberOfLines2,
-                    file1,
-                    file2));
+            throwAssertionErrorForUnequalNumberOfLines(file1, file2, numberOfLines1, numberOfLines2);
         }
+
         List<String> differingLines = getDifferingLinesInTextFile(file1, file2, numberOfLinesToSkip, ignoreStrings);
         if (!differingLines.isEmpty()) {
-            throw new AssertionError(String.format("file1 contains lines that are not in file2. Additional information:\nfile1: %s\nfile2: %s\ndiffering lines: %s",
-                    file1,
-                    file2,
-                    differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line)));
+            throwAssertionErrorForDifferingLines(file1, file2, differingLines);
         }
+
         differingLines = getDifferingLinesInTextFile(file2, file1, numberOfLinesToSkip, ignoreStrings);
         if (!differingLines.isEmpty()) {
-            throw new AssertionError(String.format("file2 contains lines that are not in file1. Additional information:\nfile1: %s\nfile2: %s\ndiffering lines: %s",
-                    file1,
-                    file2,
-                    differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line)));
+            throwAssertionErrorForDifferingLines(file2, file1, differingLines);
         }
+    }
+
+    private static void throwAssertionErrorForUnequalNumberOfLines(Path file1, Path file2, long numberOfLines1, long numberOfLines2) {
+        String msg = String.format(
+                "Number of lines in file1 differs from file2. To diff the files run:\n" +
+                        "diff %s %s\n" +
+                        "Additional information:\n" +
+                        "lines in file1: %d\n" +
+                        "lines in file2: %d\n" +
+                        "file1: %s\n" +
+                        "file2: %s\n",
+                file1,
+                file2,
+                numberOfLines1,
+                numberOfLines2,
+                file1,
+                file2);
+        throw new AssertionError(msg);
+    }
+
+    private static void throwAssertionErrorForDifferingLines(Path file1, Path file2, List<String> differingLines) {
+        String msg = String.format(
+                "file1 contains lines that are not in file2. To diff the files run:\n" +
+                        "diff %s %s\n" +
+                        "Additional information:\n" +
+                        "file1: %s\n" +
+                        "file2: %s\n" +
+                        "differing lines:\n" +
+                        "%s\n" +
+                        "",
+                file1,
+                file2,
+                file1,
+                file2,
+                differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line));
+        throw new AssertionError(msg);
     }
 
     /**

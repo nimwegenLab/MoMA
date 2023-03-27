@@ -47,6 +47,11 @@ public class DataExportIntegrationTest {
 
         /* ASSERT */
         assertAll(
+                /* Check files create by MoMA (i.e. not by Gurobi). */
+                /* NOTES:
+                We ignore the file "moma.log", which contains time-stamps on each line, which makes it difficult to compare.
+                Also, it would not add much to compare the log (it is still available for debugging, if something goes wrong).
+                */
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("mm.properties"), temporaryWorkingDirectory.resolve("mm.properties")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_costs.csv"), actualTrackDataPath.resolve("assignment_costs.csv")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_filter_intensities.csv"), actualTrackDataPath.resolve("assignment_filter_intensities.csv")),
@@ -56,7 +61,21 @@ public class DataExportIntegrationTest {
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("curation.moma"), actualTrackDataPath.resolve("curation.moma")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("file_format.json"), actualTrackDataPath.resolve("file_format.json")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("hypothesis_states.csv"), actualTrackDataPath.resolve("hypothesis_states.csv")),
-                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("hypothesis_states_initial.csv"), actualTrackDataPath.resolve("hypothesis_states_initial.csv"))
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("hypothesis_states_initial.csv"), actualTrackDataPath.resolve("hypothesis_states_initial.csv")),
+                /* Check files create by Gurobi. */
+                /* NOTES:
+                We ignore files "gurobi_model.lp" amd "gurobi_model.mps", because they are very large so that comparison
+                takes very long. Also, the files "gurobi_model.mst" and "gurobi_model.sol" contain a subset of their
+                information, which would also be different, if the Gurobi model were different (in other words their
+                assertions would fail as well, if assertions of "gurobi_model.lp" amd "gurobi_model.mps" were to fail).
+
+                These would be the corresponding assertions for "gurobi_model.lp" and "gurobi_model.mps":
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.lp"), actualTrackDataPath.resolve("gurobi_model.lp")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.mps"), actualTrackDataPath.resolve("gurobi_model.mps")),
+                */
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.mst"), actualTrackDataPath.resolve("gurobi_model.mst")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.sol"), actualTrackDataPath.resolve("gurobi_model.sol")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_environment.log"), actualTrackDataPath.resolve("gurobi_environment.log"))
         );
     }
 
@@ -65,6 +84,6 @@ public class DataExportIntegrationTest {
                 expectedFile,
                 actualFile,
                 0,
-                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION", "IMPORT_PATH"));
+                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION", "IMPORT_PATH", "logging started"));
     }
 }

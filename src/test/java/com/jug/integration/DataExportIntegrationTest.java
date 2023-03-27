@@ -41,22 +41,14 @@ public class DataExportIntegrationTest {
         startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
 
         Path trackDataPath = Paths.get(referenceDataPath.toString(), "track_data__test_output");
+
+        /* check that mm.properties is unchanged from expected */
         Path mmpropertiesActual = trackDataPath.resolve("mm.properties");
         Path mmpropertiesExpected = temporaryWorkingDirectory.resolve("mm.properties");
-
         ExplorationTestHelpers.assertFilesAreEqual(
                 mmpropertiesExpected,
                 mmpropertiesActual,
                 0,
-//                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION"),
-                Arrays.asList());
-//        ExplorationTestHelpers.getDifferingLinesInTextFile(
-//                mmpropertiesExpected,
-//                mmpropertiesActual,
-//                0,
-////                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION"),
-//                Arrays.asList());
-
-        throw new NotImplementedException("test not finished.");
+                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION", "IMPORT_PATH"));
     }
 }

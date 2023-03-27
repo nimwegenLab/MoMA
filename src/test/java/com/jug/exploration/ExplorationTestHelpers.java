@@ -104,28 +104,26 @@ public class ExplorationTestHelpers {
     /**
      * Compare text files line-by-line with option to skip the first user-defined number of lines.
      *
-     * @param path1
-     * @param path2
+     * @param file1
+     * @param file2
      * @return
      * @throws IOException
      */
-    public static long compareTextFilesByLine(Path path1,
-                                              Path path2,
-                                              int numberOfLinesToSkip,
-                                              List<String> ignoreStrings,
-                                              boolean sortLinesAlphabetically) throws IOException {
-        List<String> linesFromFile1 = readFileToStringList(path1, numberOfLinesToSkip);
-        List<String> linesFromFile2 = readFileToStringList(path2, numberOfLinesToSkip);
+    public static long getDifferingLinesInTextFile(Path file1,
+                                                   Path file2,
+                                                   int numberOfLinesToSkip,
+                                                   List<String> ignoreStrings,
+                                                   boolean sortLinesAlphabetically) throws IOException {
+        List<String> linesFromFile1 = readFileToStringList(file1, numberOfLinesToSkip);
+        List<String> linesFromFile2 = readFileToStringList(file2, numberOfLinesToSkip);
 
         linesFromFile1 = removeLinesContaining(ignoreStrings, linesFromFile1);
         linesFromFile2 = removeLinesContaining(ignoreStrings, linesFromFile2);
 
         List<String> finalLinesFromFile2 = linesFromFile2;
-//        boolean val = linesFromFile1.stream().anyMatch(line1 -> finalLinesFromFile.stream().anyMatch(line2 -> line2.equals(line1)));
         List<String> unmatchedLines = linesFromFile1.stream().filter(
                 line1 -> !finalLinesFromFile2.stream().anyMatch(line2 -> line2.equals(line1))
         ).collect(Collectors.toList());
-//        return val;
 
         if(sortLinesAlphabetically) {
             Collections.sort(linesFromFile1);

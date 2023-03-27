@@ -13,16 +13,16 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 /**
  * This class implements the legacy methods for calculating the assignment costs.
  * The method for calculating the migration cost is defined by injecting different implementations for
- * {@link LegacyCostCalculator#migrationCostCalculator}.
+ * {@link LegacyAssignmentCostCalculator#migrationCostCalculator}.
  */
-public class LegacyCostCalculator implements IAssignmentCostCalculator {
+public class LegacyAssignmentCostCalculator implements IAssignmentCostCalculator {
     private CostFactory costFactory;
     private ICostCalculator migrationCostCalculator;
     private IConfiguration configurationManager;
 
-    public LegacyCostCalculator(CostFactory costFactory,
-                                ICostCalculator migrationCostCalculator,
-                                IConfiguration configurationManager) {
+    public LegacyAssignmentCostCalculator(CostFactory costFactory,
+                                          ICostCalculator migrationCostCalculator,
+                                          IConfiguration configurationManager) {
         this.costFactory = costFactory;
         this.migrationCostCalculator = migrationCostCalculator;
         this.configurationManager = configurationManager;

@@ -52,7 +52,7 @@ public class DataExportIntegrationTest {
                 We ignore the file "moma.log", which contains time-stamps on each line, which makes it difficult to compare.
                 Also, it would not add much to compare the log (it is still available for debugging, if something goes wrong).
                 */
-                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("mm.properties"), temporaryWorkingDirectory.resolve("mm.properties")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("mm.properties"), actualTrackDataPath.resolve("mm.properties")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_costs.csv"), actualTrackDataPath.resolve("assignment_costs.csv")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_filter_intensities.csv"), actualTrackDataPath.resolve("assignment_filter_intensities.csv")),
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_states.csv"), actualTrackDataPath.resolve("assignment_states.csv")),

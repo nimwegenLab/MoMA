@@ -101,6 +101,35 @@ public class ExplorationTestHelpers {
         return name;
     }
 
+    public static void assertFilesAreEqual(Path file1,
+                                           Path file2,
+                                           int numberOfLinesToSkip,
+                                           List<String> ignoreStrings) throws IOException {
+        long numberOfLines1 = countNumberOfLines(file1);
+        long numberOfLines2 = countNumberOfLines(file2);
+        if (numberOfLines1 != numberOfLines2) {
+            throw new AssertionError(String.format("Number of lines in file1 differs from file2 (file1: %d, file2: %d, file1: %s, file2: %s)",
+                    numberOfLines1,
+                    numberOfLines2,
+                    file1,
+                    file2));
+        }
+        List<String> differingLines = getDifferingLinesInTextFile(file1, file2, numberOfLinesToSkip, ignoreStrings);
+        if (!differingLines.isEmpty()) {
+            throw new AssertionError(String.format("file1 contains lines that are not in file2. Additional information:\nfile1: %s\nfile2: %s\ndiffering lines: %s",
+                    file1,
+                    file2,
+                    differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line)));
+        }
+        differingLines = getDifferingLinesInTextFile(file2, file1, numberOfLinesToSkip, ignoreStrings);
+        if (!differingLines.isEmpty()) {
+            throw new AssertionError(String.format("file2 contains lines that are not in file1. Additional information:\nfile1: %s\nfile2: %s\ndiffering lines: %s",
+                    file1,
+                    file2,
+                    differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line)));
+        }
+    }
+
     /**
      * Compare text files line-by-line with option to skip the first user-defined number of lines.
      *
@@ -109,11 +138,10 @@ public class ExplorationTestHelpers {
      * @return
      * @throws IOException
      */
-    public static long getDifferingLinesInTextFile(Path file1,
-                                                   Path file2,
-                                                   int numberOfLinesToSkip,
-                                                   List<String> ignoreStrings,
-                                                   boolean sortLinesAlphabetically) throws IOException {
+    public static List<String> getDifferingLinesInTextFile(Path file1,
+                                                           Path file2,
+                                                           int numberOfLinesToSkip,
+                                                           List<String> ignoreStrings) throws IOException {
         List<String> linesFromFile1 = readFileToStringList(file1, numberOfLinesToSkip);
         List<String> linesFromFile2 = readFileToStringList(file2, numberOfLinesToSkip);
 
@@ -125,32 +153,7 @@ public class ExplorationTestHelpers {
                 line1 -> !finalLinesFromFile2.stream().anyMatch(line2 -> line2.equals(line1))
         ).collect(Collectors.toList());
 
-        if(sortLinesAlphabetically) {
-            Collections.sort(linesFromFile1);
-            Collections.sort(linesFromFile2);
-        }
-
-        throw new NotImplementedException();
-
-//        try (BufferedReader bf1 = Files.newBufferedReader(path1);
-//             BufferedReader bf2 = Files.newBufferedReader(path2)) {
-//
-//            long lineNumber = 1;
-//            String line1 = "", line2 = "";
-//            while ((line1 = bf1.readLine()) != null) {
-//                line2 = bf2.readLine();
-//                if (lineNumber > numberOfLinesToSkip & (line2 == null || !line1.equals(line2))) {
-//                    return lineNumber;
-//                }
-//                lineNumber++;
-//            }
-//            if (bf2.readLine() == null) {
-//                return -1;
-//            }
-//            else {
-//                return lineNumber;
-//            }
-//        }
+        return unmatchedLines;
     }
 
     @NotNull
@@ -161,8 +164,19 @@ public class ExplorationTestHelpers {
         return lines;
     }
 
-    private static List<String> readFileToStringList(Path path1, int numberOfLinesToSkip) throws IOException {
-        try (BufferedReader bf1 = Files.newBufferedReader(path1)) {
+    private static long countNumberOfLines(Path file) throws IOException {
+        try (BufferedReader bf1 = Files.newBufferedReader(file)) {
+            ArrayList<String> linesFile1 = new ArrayList<>();
+            long lineNumber = 0;
+            while (bf1.readLine() != null) {
+                lineNumber++;
+            }
+            return lineNumber;
+        }
+    }
+
+    private static List<String> readFileToStringList(Path path, int numberOfLinesToSkip) throws IOException {
+        try (BufferedReader bf1 = Files.newBufferedReader(path)) {
             ArrayList<String> linesFile1 = new ArrayList<>();
             String line1;
             long lineNumber = 0;

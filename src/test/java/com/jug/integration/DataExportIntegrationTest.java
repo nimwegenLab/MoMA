@@ -1,6 +1,7 @@
 package com.jug.integration;
 
 import com.jug.exploration.ExplorationTestHelpers;
+import net.imagej.ops.Ops;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.junit.jupiter.api.Test;
@@ -42,13 +43,19 @@ public class DataExportIntegrationTest {
         Path trackDataPath = Paths.get(referenceDataPath.toString(), "track_data__test_output");
         Path mmpropertiesActual = trackDataPath.resolve("mm.properties");
         Path mmpropertiesExpected = temporaryWorkingDirectory.resolve("mm.properties");
-        ExplorationTestHelpers.getDifferingLinesInTextFile(
+
+        ExplorationTestHelpers.assertFilesAreEqual(
                 mmpropertiesExpected,
                 mmpropertiesActual,
                 0,
 //                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION"),
-                Arrays.asList(),
-                true);
+                Arrays.asList());
+//        ExplorationTestHelpers.getDifferingLinesInTextFile(
+//                mmpropertiesExpected,
+//                mmpropertiesActual,
+//                0,
+////                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION"),
+//                Arrays.asList());
 
         throw new NotImplementedException("test not finished.");
     }

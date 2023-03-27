@@ -638,10 +638,13 @@ public class PseudoDic {
     }
 
     public IAssignmentCostCalculator getAssignmentCostCalculator() {
-        return new LegacyCostCalculator(
-                getCostFactory(),
-                getMigrationCostCalculator(),
-                getConfigurationManager());
+        if (configurationManager.getAssignmentCostCalculationMethod() == AssignmentCostCalculationMethod.LEGACY) {
+            return new LegacyCostCalculator(
+                    getCostFactory(),
+                    getMigrationCostCalculator(),
+                    getConfigurationManager());
+        }
+        throw new RuntimeException("Method for calculating the assignment cost was not correctly specified.");
     }
 
     public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {

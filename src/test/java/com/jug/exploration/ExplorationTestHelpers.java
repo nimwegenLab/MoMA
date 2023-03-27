@@ -106,7 +106,10 @@ public class ExplorationTestHelpers {
      * @return
      * @throws IOException
      */
-    public static long filesCompareByLine(Path path1, Path path2, int numberOfLinesToSkip) throws IOException {
+    public static long filesCompareByLine(Path path1,
+                                          Path path2,
+                                          int numberOfLinesToSkip,
+                                          List<String> ignoreLine) throws IOException {
         try (BufferedReader bf1 = Files.newBufferedReader(path1);
              BufferedReader bf2 = Files.newBufferedReader(path2)) {
 

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
@@ -42,7 +43,11 @@ public class DataExportIntegrationTest {
         Path trackDataPath = Paths.get(referenceDataPath.toString(), "track_data__test_output");
         Path mmpropertiesActual = trackDataPath.resolve("mm.properties");
         Path mmpropertiesExpected = temporaryWorkingDirectory.resolve("mm.properties");
-        ExplorationTestHelpers.filesCompareByLine(mmpropertiesExpected, mmpropertiesActual, 0);
+        ExplorationTestHelpers.filesCompareByLine(
+                mmpropertiesExpected,
+                mmpropertiesActual,
+                0,
+                new ArrayList<>());
 
         throw new NotImplementedException("test not finished.");
     }

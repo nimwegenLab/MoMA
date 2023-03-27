@@ -65,8 +65,6 @@ public class GrowthlaneTrackingILP {
     private IAssignmentPlausibilityTester positionPlausibilityTester;
     private String versionString;
     private IConfiguration configurationManager;
-    private CostFactory costFactory;
-    private ICostCalculator migrationCostCalculator;
     private IAssignmentCostCalculator assignmentCostCalculator;
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
@@ -86,8 +84,6 @@ public class GrowthlaneTrackingILP {
                                  IAssignmentPlausibilityTester positionPlausibilityTester,
                                  IConfiguration configurationManager,
                                  String versionString,
-                                 CostFactory costFactory,
-                                 ICostCalculator migrationCostCalculator,
                                  IAssignmentCostCalculator assignmentCostCalculator,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
@@ -99,8 +95,6 @@ public class GrowthlaneTrackingILP {
         this.positionPlausibilityTester = positionPlausibilityTester;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
-        this.costFactory = costFactory;
-        this.migrationCostCalculator = migrationCostCalculator;
         this.assignmentCostCalculator = assignmentCostCalculator;
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;

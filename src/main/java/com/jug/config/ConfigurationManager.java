@@ -280,11 +280,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     /**
      * Sets the method used for calculating the migration cost. Valid options are:
-     * {"legacy","total_component_length_below"}
+     * {"absolute_position","total_component_length_below"}
      */
     public String FEATURE_FLAG_MIGRATION_COST_CALCULATION = "absolute_position";
 
-    public HashMap<String, MigrationCostCalculationMethod> migrationCostCalculationMethod;
+    /**
+     * Sets the method used for calculating assignment costs. Valid options are {"legacy"}:
+     * legacy: use the old method for calculating assignment costs.
+     */
+    public String FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION = "legacy";
 
     private int minTime = -1;
     private int maxTime = -1;
@@ -373,6 +377,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         FEATURE_FLAG_CROSSING_CONSTRAINTS = parseBooleanFromIntegerValue("FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
         FEATURE_FLAG_MIGRATION_COST = parseBooleanFromIntegerValue("FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
         readFeatureFlagMigrationCostCalculation();
+        readFeatureFlagAssignmentCostCalculation();
 
         FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING = parseBooleanFromIntegerValue("FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER)));
@@ -388,20 +393,56 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
     }
 
+    public MigrationCostCalculationMethod getMigrationCalculationMethod(){
+        return migrationCostCalculationMethod;
+    }
+    private MigrationCostCalculationMethod migrationCostCalculationMethod;
+
     private void readFeatureFlagMigrationCostCalculation() {
         FEATURE_FLAG_MIGRATION_COST_CALCULATION = props.getProperty("FEATURE_FLAG_MIGRATION_COST_CALCULATION", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
         FEATURE_FLAG_MIGRATION_COST_CALCULATION = FEATURE_FLAG_MIGRATION_COST_CALCULATION.replace("\"", "");
         validateFeatureFlagMigrationCostCalculation();
-    }
-
-    public MigrationCostCalculationMethod getMigrationCalculationMethod() {
         switch (FEATURE_FLAG_MIGRATION_COST_CALCULATION) {
             case "absolute_position":
-                return MigrationCostCalculationMethod.ABSOLUTE_POSITION;
+                migrationCostCalculationMethod = MigrationCostCalculationMethod.ABSOLUTE_POSITION;
+                break;
             case "total_component_length_below":
-                return MigrationCostCalculationMethod.TOTAL_COMPONENT_LENGTH_BELOW;
+                migrationCostCalculationMethod = MigrationCostCalculationMethod.TOTAL_COMPONENT_LENGTH_BELOW;
+                break;
             default:
-                String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {legacy,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+                String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {absolute_position,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+                System.out.println(errorMsg);
+                System.out.println("Aborting run.");
+                throw new RuntimeException(errorMsg);
+        }
+    }
+
+    public void validateFeatureFlagMigrationCostCalculation() {
+        if (FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("absolute_position") | FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("total_component_length_below")) {
+            return;
+        }
+        String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {absolute_position,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+        System.out.println(errorMsg);
+        System.out.println("Aborting run.");
+        throw new RuntimeException(errorMsg);
+    }
+
+    public AssignmentCostCalculationMethod getAssignmentCostCalculationMethod() {
+        return assignmentCostCalculationMethod;
+    }
+    private AssignmentCostCalculationMethod assignmentCostCalculationMethod;
+
+    private void readFeatureFlagAssignmentCostCalculation() {
+        FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION = props.getProperty("FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION", FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION);
+        FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION = FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION.replace("\"", "");
+        switch (FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION) {
+            case "legacy":
+                assignmentCostCalculationMethod = AssignmentCostCalculationMethod.LEGACY;
+                break;
+            default:
+                String errorMsg = String.format("Parameter value FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION is invalid (=%s). Must be one of: {legacy} ().", FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION);
+                System.out.println(errorMsg);
+                System.out.println("Aborting run.");
                 throw new RuntimeException(errorMsg);
         }
     }
@@ -541,6 +582,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_CROSSING_CONSTRAINTS", FEATURE_FLAG_CROSSING_CONSTRAINTS);
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_MIGRATION_COST", FEATURE_FLAG_MIGRATION_COST);
             props.setProperty("FEATURE_FLAG_MIGRATION_COST_CALCULATION", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
+            props.setProperty("FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION", FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION);
 
             setBooleanAsIntegerValue(props, "FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING", FEATURE_FLAG_FLUORESCENCE_ASSIGNMENT_FILTERING);
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_UPPER));
@@ -719,14 +761,4 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     long backgroundRoiWidth = 5; /* ROI width in pixels*/
 
     public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
-
-    public void validateFeatureFlagMigrationCostCalculation() {
-        if (FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("absolute_position") | FEATURE_FLAG_MIGRATION_COST_CALCULATION.equals("total_component_length_below")) {
-            return;
-        }
-        String errorMsg = String.format("Parameter value FEATURE_FLAG_MIGRATION_COST_CALCULATION is invalid (=%s). Must be one of: {legacy,total_component_length_below} ().", FEATURE_FLAG_MIGRATION_COST_CALCULATION);
-        System.out.println(errorMsg);
-        System.out.println("Aborting run.");
-        throw new RuntimeException(errorMsg);
-    }
 }

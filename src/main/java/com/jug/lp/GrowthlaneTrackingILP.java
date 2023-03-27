@@ -9,6 +9,7 @@ import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
+import com.jug.lp.costs.IAssignmentCostCalculator;
 import com.jug.lp.costs.ICostCalculator;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.PseudoDic;
@@ -66,7 +67,7 @@ public class GrowthlaneTrackingILP {
     private IConfiguration configurationManager;
     private CostFactory costFactory;
     private ICostCalculator migrationCostCalculator;
-    private ICostCalculator assignmentCostCalculator;
+    private IAssignmentCostCalculator assignmentCostCalculator;
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
@@ -87,7 +88,7 @@ public class GrowthlaneTrackingILP {
                                  String versionString,
                                  CostFactory costFactory,
                                  ICostCalculator migrationCostCalculator,
-                                 ICostCalculator assignmentCostCalculator,
+                                 IAssignmentCostCalculator assignmentCostCalculator,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
@@ -684,7 +685,7 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                float cost = (float)assignmentCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
+                float cost = (float)assignmentCostCalculator.calculateMappingCost(sourceComponent, targetComponent);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
@@ -793,7 +794,7 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    float cost = (float) assignmentCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
+                    float cost = (float) assignmentCostCalculator.calculateDivisionCost(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;

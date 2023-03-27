@@ -637,7 +637,7 @@ public class PseudoDic {
         }
     }
 
-    public ICostCalculator getAssignmentCostCalculator() {
+    public IAssignmentCostCalculator getAssignmentCostCalculator() {
         return new LegacyCostCalculator(
                 getCostFactory(),
                 getMigrationCostCalculator(),

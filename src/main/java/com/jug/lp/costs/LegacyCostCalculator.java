@@ -12,7 +12,7 @@ import java.util.List;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
-public class LegacyCostCalculator implements ICostCalculator {
+public class LegacyCostCalculator implements IAssignmentCostCalculator {
     private CostFactory costFactory;
     private ICostCalculator migrationCostCalculator;
     private IConfiguration configurationManager;
@@ -25,16 +25,16 @@ public class LegacyCostCalculator implements ICostCalculator {
         this.configurationManager = configurationManager;
     }
 
-    @Override
-    public double calculateCost(AdvancedComponent<FloatType> sourceComponent,
-                                List<AdvancedComponent<FloatType>> targetComponents) {
-        if (targetComponents.size() == 1) {
-            return calculateCostForMapping(sourceComponent, targetComponents.get(0));
-        } else if (targetComponents.size() == 2){
-            return calculateCostForDivision(sourceComponent, targetComponents.get(0), targetComponents.get(1));
-        }
-        throw new RuntimeException(String.format("Cost calculation is not defined for the number of targetComponents that was passed (=%d).", targetComponents.size()));
-    }
+//    @Override
+//    public double calculateCost(AdvancedComponent<FloatType> sourceComponent,
+//                                List<AdvancedComponent<FloatType>> targetComponents) {
+//        if (targetComponents.size() == 1) {
+//            return calculateCostForMapping(sourceComponent, targetComponents.get(0));
+//        } else if (targetComponents.size() == 2){
+//            return calculateCostForDivision(sourceComponent, targetComponents.get(0), targetComponents.get(1));
+//        }
+//        throw new RuntimeException(String.format("Cost calculation is not defined for the number of targetComponents that was passed (=%d).", targetComponents.size()));
+//    }
 
     private float calculateCostForDivision(AdvancedComponent<FloatType> sourceComponent,
                                            AdvancedComponent<FloatType> lowerTargetComponent,
@@ -152,5 +152,33 @@ public class LegacyCostCalculator implements ICostCalculator {
             final float lowerTargetComponentCost,
             final float compatibilityCostOfDivision) {
         return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
+    }
+
+    @Override
+    public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent,
+                                       AdvancedComponent<FloatType> targetComponent) {
+        return calculateCostForMapping(sourceComponent, targetComponent);
+    }
+
+    @Override
+    public double calculateDivisionCost(AdvancedComponent<FloatType> sourceComponent,
+                                        AdvancedComponent<FloatType> lowerTargetComponent,
+                                        AdvancedComponent<FloatType> upperTargetComponent) {
+        return calculateCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
+    }
+
+    @Override
+    public double calculateExitCost(AdvancedComponent<FloatType> sourceComponent) {
+        return 0;
+    }
+
+    @Override
+    public double calculateLysisCost(AdvancedComponent<FloatType> sourceComponent) {
+        return 0;
+    }
+
+    @Override
+    public double calculateEnterCost(AdvancedComponent<FloatType> targetComponent) {
+        return 0;
     }
 }

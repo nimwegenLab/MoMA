@@ -592,7 +592,7 @@ public class GrowthlaneTrackingILP {
     private void addLysisAssignments(final int sourceTimeStep) throws GRBException {
         List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            float cost = configurationManager.getLysisAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateLysisCost(hyp.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
             final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
@@ -614,7 +614,7 @@ public class GrowthlaneTrackingILP {
     private void addExitAssignments(final int sourceTimeStep) throws GRBException {
         List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
-            float cost = configurationManager.getExitAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateExitCost(sourceHypothesis.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(sourceHypothesis, sourceHypotheses);
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, sourceHypothesis);
@@ -638,7 +638,7 @@ public class GrowthlaneTrackingILP {
         int targetTimeStep = sourceTimeStep + 1;
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
-            float cost = configurationManager.getEnterAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateEnterCost(targetHypothesis.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
             final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);

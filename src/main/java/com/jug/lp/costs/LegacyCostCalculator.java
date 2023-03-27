@@ -10,6 +10,11 @@ import java.util.Arrays;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
+/**
+ * This class implements the legacy methods for calculating the assignment costs.
+ * The method for calculating the migration cost is defined by injecting different implementations for
+ * {@link LegacyCostCalculator#migrationCostCalculator}.
+ */
 public class LegacyCostCalculator implements IAssignmentCostCalculator {
     private CostFactory costFactory;
     private ICostCalculator migrationCostCalculator;
@@ -146,16 +151,16 @@ public class LegacyCostCalculator implements IAssignmentCostCalculator {
 
     @Override
     public double calculateExitCost(AdvancedComponent<FloatType> sourceComponent) {
-        return 0;
+        return configurationManager.getExitAssignmentCost();
     }
 
     @Override
     public double calculateLysisCost(AdvancedComponent<FloatType> sourceComponent) {
-        return 0;
+        return configurationManager.getLysisAssignmentCost();
     }
 
     @Override
     public double calculateEnterCost(AdvancedComponent<FloatType> targetComponent) {
-        return 0;
+        return configurationManager.getEnterAssignmentCost();
     }
 }

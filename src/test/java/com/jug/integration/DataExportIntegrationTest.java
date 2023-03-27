@@ -8,10 +8,10 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 
@@ -43,11 +43,12 @@ public class DataExportIntegrationTest {
         Path trackDataPath = Paths.get(referenceDataPath.toString(), "track_data__test_output");
         Path mmpropertiesActual = trackDataPath.resolve("mm.properties");
         Path mmpropertiesExpected = temporaryWorkingDirectory.resolve("mm.properties");
-        ExplorationTestHelpers.filesCompareByLine(
+        ExplorationTestHelpers.compareTextFilesByLine(
                 mmpropertiesExpected,
                 mmpropertiesActual,
                 0,
-                new ArrayList<>());
+                Arrays.asList("#", "GENERATED_BY_MOMA_VERSION"),
+                true);
 
         throw new NotImplementedException("test not finished.");
     }

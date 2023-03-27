@@ -1,6 +1,8 @@
 package com.jug.exploration;
 
 import com.jug.MoMA;
+import org.apache.commons.lang.NotImplementedException;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jug.util.io.FileUtils.*;
 import static java.util.Objects.isNull;
@@ -106,28 +109,72 @@ public class ExplorationTestHelpers {
      * @return
      * @throws IOException
      */
-    public static long filesCompareByLine(Path path1,
-                                          Path path2,
-                                          int numberOfLinesToSkip,
-                                          List<String> ignoreLine) throws IOException {
-        try (BufferedReader bf1 = Files.newBufferedReader(path1);
-             BufferedReader bf2 = Files.newBufferedReader(path2)) {
+    public static long compareTextFilesByLine(Path path1,
+                                              Path path2,
+                                              int numberOfLinesToSkip,
+                                              List<String> ignoreStrings,
+                                              boolean sortLinesAlphabetically) throws IOException {
+        List<String> linesFromFile1 = readFileToStringList(path1, numberOfLinesToSkip);
+        List<String> linesFromFile2 = readFileToStringList(path2, numberOfLinesToSkip);
 
-            long lineNumber = 1;
-            String line1 = "", line2 = "";
+        linesFromFile1 = removeLinesContaining(ignoreStrings, linesFromFile1);
+        linesFromFile2 = removeLinesContaining(ignoreStrings, linesFromFile2);
+
+        List<String> finalLinesFromFile2 = linesFromFile2;
+//        boolean val = linesFromFile1.stream().anyMatch(line1 -> finalLinesFromFile.stream().anyMatch(line2 -> line2.equals(line1)));
+        List<String> unmatchedLines = linesFromFile1.stream().filter(
+                line1 -> !finalLinesFromFile2.stream().anyMatch(line2 -> line2.equals(line1))
+        ).collect(Collectors.toList());
+//        return val;
+
+        if(sortLinesAlphabetically) {
+            Collections.sort(linesFromFile1);
+            Collections.sort(linesFromFile2);
+        }
+
+        throw new NotImplementedException();
+
+//        try (BufferedReader bf1 = Files.newBufferedReader(path1);
+//             BufferedReader bf2 = Files.newBufferedReader(path2)) {
+//
+//            long lineNumber = 1;
+//            String line1 = "", line2 = "";
+//            while ((line1 = bf1.readLine()) != null) {
+//                line2 = bf2.readLine();
+//                if (lineNumber > numberOfLinesToSkip & (line2 == null || !line1.equals(line2))) {
+//                    return lineNumber;
+//                }
+//                lineNumber++;
+//            }
+//            if (bf2.readLine() == null) {
+//                return -1;
+//            }
+//            else {
+//                return lineNumber;
+//            }
+//        }
+    }
+
+    @NotNull
+    private static List<String> removeLinesContaining(List<String> ignoreStrings, List<String> lines) {
+        lines = lines.stream().filter(
+                line -> !ignoreStrings.stream().anyMatch(string -> line.contains(string))
+        ).collect(Collectors.toList());
+        return lines;
+    }
+
+    private static List<String> readFileToStringList(Path path1, int numberOfLinesToSkip) throws IOException {
+        try (BufferedReader bf1 = Files.newBufferedReader(path1)) {
+            ArrayList<String> linesFile1 = new ArrayList<>();
+            String line1;
+            long lineNumber = 0;
             while ((line1 = bf1.readLine()) != null) {
-                line2 = bf2.readLine();
-                if (lineNumber > numberOfLinesToSkip & (line2 == null || !line1.equals(line2))) {
-                    return lineNumber;
+                if (lineNumber >= numberOfLinesToSkip) {
+                    linesFile1.add(line1);
                 }
                 lineNumber++;
             }
-            if (bf2.readLine() == null) {
-                return -1;
-            }
-            else {
-                return lineNumber;
-            }
+            return linesFile1;
         }
     }
 }

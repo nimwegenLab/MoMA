@@ -48,7 +48,15 @@ public class DataExportIntegrationTest {
         /* ASSERT */
         assertAll(
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("mm.properties"), temporaryWorkingDirectory.resolve("mm.properties")),
-                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_costs.csv"), actualTrackDataPath.resolve("assignment_costs.csv"))
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_costs.csv"), actualTrackDataPath.resolve("assignment_costs.csv")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_filter_intensities.csv"), actualTrackDataPath.resolve("assignment_filter_intensities.csv")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_states.csv"), actualTrackDataPath.resolve("assignment_states.csv")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("assignment_states_initial.csv"), actualTrackDataPath.resolve("assignment_states_initial.csv")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("component_forests.json"), actualTrackDataPath.resolve("component_forests.json")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("curation.moma"), actualTrackDataPath.resolve("curation.moma")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("file_format.json"), actualTrackDataPath.resolve("file_format.json")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("hypothesis_states.csv"), actualTrackDataPath.resolve("hypothesis_states.csv")),
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("hypothesis_states_initial.csv"), actualTrackDataPath.resolve("hypothesis_states_initial.csv"))
         );
     }
 

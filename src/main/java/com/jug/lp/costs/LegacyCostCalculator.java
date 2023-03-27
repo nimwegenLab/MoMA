@@ -5,10 +5,8 @@ import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 
@@ -23,38 +21,6 @@ public class LegacyCostCalculator implements IAssignmentCostCalculator {
         this.costFactory = costFactory;
         this.migrationCostCalculator = migrationCostCalculator;
         this.configurationManager = configurationManager;
-    }
-
-//    @Override
-//    public double calculateCost(AdvancedComponent<FloatType> sourceComponent,
-//                                List<AdvancedComponent<FloatType>> targetComponents) {
-//        if (targetComponents.size() == 1) {
-//            return calculateCostForMapping(sourceComponent, targetComponents.get(0));
-//        } else if (targetComponents.size() == 2){
-//            return calculateCostForDivision(sourceComponent, targetComponents.get(0), targetComponents.get(1));
-//        }
-//        throw new RuntimeException(String.format("Cost calculation is not defined for the number of targetComponents that was passed (=%d).", targetComponents.size()));
-//    }
-
-    private float calculateCostForDivision(AdvancedComponent<FloatType> sourceComponent,
-                                           AdvancedComponent<FloatType> lowerTargetComponent,
-                                           AdvancedComponent<FloatType> upperTargetComponent) {
-            final Float compatibilityCostOfDivision = compatibilityCostOfDivision(
-                    sourceComponent,
-                    lowerTargetComponent,
-                    upperTargetComponent);
-
-            float cost = costModulationForSubstitutedILP(
-                    sourceComponent.getCost(),
-                    upperTargetComponent.getCost(),
-                    lowerTargetComponent.getCost(),
-                    compatibilityCostOfDivision);
-            return cost;
-    }
-
-    private double calculateCostForMapping(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
-        final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-        return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
     }
 
     /**
@@ -157,14 +123,25 @@ public class LegacyCostCalculator implements IAssignmentCostCalculator {
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent,
                                        AdvancedComponent<FloatType> targetComponent) {
-        return calculateCostForMapping(sourceComponent, targetComponent);
+        final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
+        return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
     }
 
     @Override
     public double calculateDivisionCost(AdvancedComponent<FloatType> sourceComponent,
                                         AdvancedComponent<FloatType> lowerTargetComponent,
                                         AdvancedComponent<FloatType> upperTargetComponent) {
-        return calculateCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
+        final Float compatibilityCostOfDivision = compatibilityCostOfDivision(
+                sourceComponent,
+                lowerTargetComponent,
+                upperTargetComponent);
+
+        float cost = costModulationForSubstitutedILP(
+                sourceComponent.getCost(),
+                upperTargetComponent.getCost(),
+                lowerTargetComponent.getCost(),
+                compatibilityCostOfDivision);
+        return cost;
     }
 
     @Override

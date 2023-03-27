@@ -737,24 +737,6 @@ public class GrowthlaneTrackingILP {
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
     }
 
-    private float sourceWeightingFactor = 0.5f;
-
-    private float targetWeightingFactor = (1 - sourceWeightingFactor);
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
-     * of exit assignments during the ILP hypotheses substitution takes place.
-     *
-     * @param fromCosts costs for the segment to exit
-     * @return the modulated costs.
-     */
-    public float costModulationForSubstitutedILP(final float fromCosts) {
-        return 0.0f;
-//        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
-        // fromCosts/2: 1/2 has to do with the folding of the node-cost into the assignments (e.g. mapping: 1/2 to left und 1/2 to right)
-        // Math.min: because exit assignment should never cost something
-    }
-
     /**
      * Add a division-assignment for given timestep between component in {@param sourceComponentForest} and
      * {@param targetComponentForest}. This function also looks for suitable pairs of components in

@@ -66,6 +66,7 @@ public class GrowthlaneTrackingILP {
     private IConfiguration configurationManager;
     private CostFactory costFactory;
     private ICostCalculator migrationCostCalculator;
+    private ICostCalculator assignmentCostCalculator;
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
@@ -86,6 +87,7 @@ public class GrowthlaneTrackingILP {
                                  String versionString,
                                  CostFactory costFactory,
                                  ICostCalculator migrationCostCalculator,
+                                 ICostCalculator assignmentCostCalculator,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
@@ -98,6 +100,7 @@ public class GrowthlaneTrackingILP {
         this.configurationManager = configurationManager;
         this.costFactory = costFactory;
         this.migrationCostCalculator = migrationCostCalculator;
+        this.assignmentCostCalculator = assignmentCostCalculator;
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
@@ -681,8 +684,7 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                float cost = costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
+                float cost = (float)assignmentCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
@@ -711,51 +713,6 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    /**
-     * Computes the compatibility-mapping-costs between the two given
-     * hypothesis.
-     *
-     * @param sourceComponent the segmentation hypothesis from which the mapping originates.
-     * @param targetComponent the segmentation hypothesis towards which the
-     *                        mapping-assignment leads.
-     * @return the cost we want to set for the given combination of segmentation
-     * hypothesis.
-     */
-    public Float compatibilityCostOfMapping(
-            final AdvancedComponent<FloatType> sourceComponent,
-            final AdvancedComponent<FloatType> targetComponent) {
-        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
-        final long targetComponentSize = getComponentSize(targetComponent, 1);
-
-        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
-
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
-
-        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
-
-        float mappingCost = growthCost.getA() + (float)averageMigrationCost;
-        return mappingCost;
-    }
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
-     * of mapping assignments during the ILP hypotheses substitution takes
-     * place.
-     *
-     * @param sourceComponentCost
-     * @param targetComponentCost
-     * @param mappingCosts
-     * @return
-     */
-    public float costModulationForSubstitutedILP(
-            final float sourceComponentCost,
-            final float targetComponentCost,
-            final float mappingCosts) {
-        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * targetComponentCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
-																  we should probably do 50%/50%, but we did different and it's ok */
-    }
 
     /**
      * This function scales the cost of given assignment by the number of leaves

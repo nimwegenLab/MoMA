@@ -637,6 +637,13 @@ public class PseudoDic {
         }
     }
 
+    public ICostCalculator getAssignmentCostCalculator() {
+        return new LegacyCostCalculator(
+                getCostFactory(),
+                getMigrationCostCalculator(),
+                getConfigurationManager());
+    }
+
     public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {
         switch (configurationManager.getMigrationCalculationMethod()){
             case ABSOLUTE_POSITION:

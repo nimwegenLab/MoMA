@@ -742,23 +742,6 @@ public class GrowthlaneTrackingILP {
 
     /**
      * This method defines how the segmentation costs are influencing the costs
-     * of division assignments during the ILP hypotheses substitution takes
-     * place.
-     *
-     * @param sourceComponentCost
-     * @param compatibilityCostOfDivision
-     * @return
-     */
-    public float costModulationForSubstitutedILP(
-            final float sourceComponentCost,
-            final float upperTargetComponentCost,
-            final float lowerTargetComponentCost,
-            final float compatibilityCostOfDivision) {
-        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
-    }
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
      * of exit assignments during the ILP hypotheses substitution takes place.
      *
      * @param fromCosts costs for the segment to exit
@@ -810,14 +793,7 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
-                            upperTargetComponent, lowerTargetComponent);
-
-                    float cost = costModulationForSubstitutedILP(
-                            sourceComponent.getCost(),
-                            upperTargetComponent.getCost(),
-                            lowerTargetComponent.getCost(),
-                            compatibilityCostOfDivision);
+                    float cost = (float) assignmentCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
@@ -843,36 +819,6 @@ public class GrowthlaneTrackingILP {
                 }
             }
         }
-    }
-
-    /**
-     * Computes the compatibility-mapping-costs between the two given
-     * hypothesis.
-     *
-     * @param sourceComponent the segmentation hypothesis from which the mapping originates.
-     * @return the cost we want to set for the given combination of segmentation
-     * hypothesis.
-     */
-    public Float compatibilityCostOfDivision(
-            final AdvancedComponent<FloatType> sourceComponent,
-            final AdvancedComponent<FloatType> upperTargetComponent,
-            final AdvancedComponent<FloatType> lowerTargetComponent) {
-
-        final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
-
-        final long sourceSize = getComponentSize(sourceComponent, 1);
-        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
-        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
-        final long summedTargetSize = upperTargetSize + lowerTargetSize;
-
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
-
-        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
-
-        float divisionCost = growthCost.getA() + (float) averageMigrationCost;
-        return divisionCost;
     }
 
     /**

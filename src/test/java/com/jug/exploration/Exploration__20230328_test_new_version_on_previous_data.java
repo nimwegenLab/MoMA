@@ -24,9 +24,9 @@ public class Exploration__20230328_test_new_version_on_previous_data {
     public static void main(String[] args) {
         Exploration__20230328_test_new_version_on_previous_data tests = new Exploration__20230328_test_new_version_on_previous_data();
 
-        tests.run_interactive();
+//        tests.run_interactive();
 //        tests.run_trackonly();
-//        tests.run_reloading();
+        tests.run_reloading();
 //        tests.run_export();
     }
 
@@ -48,14 +48,14 @@ public class Exploration__20230328_test_new_version_on_previous_data {
     }
 
     public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos13_GL5/");
+        analysisName = "prj_mm_antibio_analysis_pos13";
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos13_GL5/");
+        analysisName = "prj_mm_antibio_analysis_pos13";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

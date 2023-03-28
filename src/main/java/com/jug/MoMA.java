@@ -105,6 +105,11 @@ public class MoMA {
 			}
 			dic.getFilePaths().setModelFilePath(dic.getConfigurationManager().SEGMENTATION_MODEL_PATH);
 			dic.getFilePaths().setInputImagePath(Paths.get(configurationManager.getInputImagePath()));
+			if (!dic.getFilePaths().getInputImagePath().toFile().exists()) {
+				dic.getLogger().print("Input image path does not exist (check the mm.properties file): " + dic.getFilePaths().getInputImagePath());
+				dic.getLogger().print("Aborting run.");
+				return;
+			}
 			datasetProperties.readDatasetProperties(dic.getFilePaths().getInputImagePath().toFile());
 		} else {
 			checkPropertiesFileExists(commandLineArgumentParser.getOptionalPropertyFile());

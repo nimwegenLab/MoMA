@@ -9,12 +9,14 @@ import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
 import com.jug.lp.costs.CostFactory;
+import com.jug.lp.costs.IAssignmentCostCalculator;
 import com.jug.lp.costs.ICostCalculator;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
+import com.sun.xml.internal.ws.policy.spi.AssertionCreationException;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
@@ -63,8 +65,7 @@ public class GrowthlaneTrackingILP {
     private IAssignmentPlausibilityTester positionPlausibilityTester;
     private String versionString;
     private IConfiguration configurationManager;
-    private CostFactory costFactory;
-    private ICostCalculator migrationCostCalculator;
+    private IAssignmentCostCalculator assignmentCostCalculator;
     private boolean isLoadedFromDisk;
     private Supplier<GurobiCallbackAbstract> gurobiCallbackFactory;
     private Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory;
@@ -83,8 +84,7 @@ public class GrowthlaneTrackingILP {
                                  IAssignmentPlausibilityTester positionPlausibilityTester,
                                  IConfiguration configurationManager,
                                  String versionString,
-                                 CostFactory costFactory,
-                                 ICostCalculator migrationCostCalculator,
+                                 IAssignmentCostCalculator assignmentCostCalculator,
                                  boolean isLoadedFromDisk,
                                  Supplier<GurobiCallbackAbstract> gurobiCallbackFactory,
                                  Supplier<IDialogGurobiProgress> gurobiProgressDialogFactory,
@@ -95,8 +95,7 @@ public class GrowthlaneTrackingILP {
         this.positionPlausibilityTester = positionPlausibilityTester;
         this.versionString = versionString;
         this.configurationManager = configurationManager;
-        this.costFactory = costFactory;
-        this.migrationCostCalculator = migrationCostCalculator;
+        this.assignmentCostCalculator = assignmentCostCalculator;
         this.isLoadedFromDisk = isLoadedFromDisk;
         this.gurobiCallbackFactory = gurobiCallbackFactory;
         this.gurobiProgressDialogFactory = gurobiProgressDialogFactory;
@@ -587,7 +586,7 @@ public class GrowthlaneTrackingILP {
     private void addLysisAssignments(final int sourceTimeStep) throws GRBException {
         List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp : hyps) {
-            float cost = configurationManager.getLysisAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateLysisCost(hyp.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, LysisAssignment.buildStringId(sourceTimeStep, hyp.getWrappedComponent()));
             final LysisAssignment ea = new LysisAssignment(sourceTimeStep, newLPVar, this, hyp);
             nodes.addAssignment(sourceTimeStep, ea);
@@ -609,7 +608,7 @@ public class GrowthlaneTrackingILP {
     private void addExitAssignments(final int sourceTimeStep) throws GRBException {
         List<Hypothesis<AdvancedComponent<FloatType>>> sourceHypotheses = nodes.getHypothesesAt(sourceTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> sourceHypothesis : sourceHypotheses) {
-            float cost = configurationManager.getExitAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateExitCost(sourceHypothesis.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, ExitAssignment.buildStringId(sourceTimeStep, sourceHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(sourceHypothesis, sourceHypotheses);
             final ExitAssignment ea = new ExitAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, sourceHypothesis);
@@ -633,7 +632,7 @@ public class GrowthlaneTrackingILP {
         int targetTimeStep = sourceTimeStep + 1;
         List<Hypothesis<AdvancedComponent<FloatType>>> targetHypotheses = nodes.getHypothesesAt(targetTimeStep);
         for (final Hypothesis<AdvancedComponent<FloatType>> targetHypothesis : targetHypotheses) {
-            float cost = configurationManager.getEnterAssignmentCost();
+            float cost = (float) assignmentCostCalculator.calculateEnterCost(targetHypothesis.getWrappedComponent());
             final GRBVar newLPVar = model.addVar(0.0, 1.0, cost, GRB.BINARY, EnterAssignment.buildStringId(sourceTimeStep, targetHypothesis.getWrappedComponent()));
             final List<Hypothesis<AdvancedComponent<FloatType>>> Hup = LpUtils.getHup(targetHypothesis, targetHypotheses);
             final EnterAssignment ea = new EnterAssignment(sourceTimeStep, newLPVar, this, nodes, edgeSets, Hup, targetHypothesis);
@@ -680,8 +679,7 @@ public class GrowthlaneTrackingILP {
                     continue;
                 }
 
-                final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-                float cost = costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
+                float cost = (float)assignmentCostCalculator.calculateMappingCost(sourceComponent, targetComponent);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
@@ -710,51 +708,6 @@ public class GrowthlaneTrackingILP {
         }
     }
 
-    /**
-     * Computes the compatibility-mapping-costs between the two given
-     * hypothesis.
-     *
-     * @param sourceComponent the segmentation hypothesis from which the mapping originates.
-     * @param targetComponent the segmentation hypothesis towards which the
-     *                        mapping-assignment leads.
-     * @return the cost we want to set for the given combination of segmentation
-     * hypothesis.
-     */
-    public Float compatibilityCostOfMapping(
-            final AdvancedComponent<FloatType> sourceComponent,
-            final AdvancedComponent<FloatType> targetComponent) {
-        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
-        final long targetComponentSize = getComponentSize(targetComponent, 1);
-
-        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
-
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
-
-        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
-
-        float mappingCost = growthCost.getA() + (float)averageMigrationCost;
-        return mappingCost;
-    }
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
-     * of mapping assignments during the ILP hypotheses substitution takes
-     * place.
-     *
-     * @param sourceComponentCost
-     * @param targetComponentCost
-     * @param mappingCosts
-     * @return
-     */
-    public float costModulationForSubstitutedILP(
-            final float sourceComponentCost,
-            final float targetComponentCost,
-            final float mappingCosts) {
-        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * targetComponentCost + mappingCosts; /* here again we fold the costs from the nodes into the corresponding assignment;
-																  we should probably do 50%/50%, but we did different and it's ok */
-    }
 
     /**
      * This function scales the cost of given assignment by the number of leaves
@@ -776,41 +729,6 @@ public class GrowthlaneTrackingILP {
         if (numberOfLeavesUnderSource == 0) numberOfLeavesUnderSource = 1;
         if (numberOfLeavesUnderTarget == 0) numberOfLeavesUnderTarget = 1;
         return cost * (0.1f * numberOfLeavesUnderSource + 0.9f * numberOfLeavesUnderTarget);
-    }
-
-    private float sourceWeightingFactor = 0.5f;
-
-    private float targetWeightingFactor = (1 - sourceWeightingFactor);
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
-     * of division assignments during the ILP hypotheses substitution takes
-     * place.
-     *
-     * @param sourceComponentCost
-     * @param compatibilityCostOfDivision
-     * @return
-     */
-    public float costModulationForSubstitutedILP(
-            final float sourceComponentCost,
-            final float upperTargetComponentCost,
-            final float lowerTargetComponentCost,
-            final float compatibilityCostOfDivision) {
-        return sourceWeightingFactor * sourceComponentCost + targetWeightingFactor * (upperTargetComponentCost + lowerTargetComponentCost) + compatibilityCostOfDivision;
-    }
-
-    /**
-     * This method defines how the segmentation costs are influencing the costs
-     * of exit assignments during the ILP hypotheses substitution takes place.
-     *
-     * @param fromCosts costs for the segment to exit
-     * @return the modulated costs.
-     */
-    public float costModulationForSubstitutedILP(final float fromCosts) {
-        return 0.0f;
-//        return Math.min(0.0f, fromCosts / 2f); // NOTE: 0 or negative but only hyp/4 to prefer map or div if exists...
-        // fromCosts/2: 1/2 has to do with the folding of the node-cost into the assignments (e.g. mapping: 1/2 to left und 1/2 to right)
-        // Math.min: because exit assignment should never cost something
     }
 
     /**
@@ -852,14 +770,7 @@ public class GrowthlaneTrackingILP {
                     }
 
                     @SuppressWarnings("unchecked")
-                    final Float compatibilityCostOfDivision = compatibilityCostOfDivision(sourceComponent,
-                            upperTargetComponent, lowerTargetComponent);
-
-                    float cost = costModulationForSubstitutedILP(
-                            sourceComponent.getCost(),
-                            upperTargetComponent.getCost(),
-                            lowerTargetComponent.getCost(),
-                            compatibilityCostOfDivision);
+                    float cost = (float) assignmentCostCalculator.calculateDivisionCost(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
@@ -885,36 +796,6 @@ public class GrowthlaneTrackingILP {
                 }
             }
         }
-    }
-
-    /**
-     * Computes the compatibility-mapping-costs between the two given
-     * hypothesis.
-     *
-     * @param sourceComponent the segmentation hypothesis from which the mapping originates.
-     * @return the cost we want to set for the given combination of segmentation
-     * hypothesis.
-     */
-    public Float compatibilityCostOfDivision(
-            final AdvancedComponent<FloatType> sourceComponent,
-            final AdvancedComponent<FloatType> upperTargetComponent,
-            final AdvancedComponent<FloatType> lowerTargetComponent) {
-
-        final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
-
-        final long sourceSize = getComponentSize(sourceComponent, 1);
-        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
-        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
-        final long summedTargetSize = upperTargetSize + lowerTargetSize;
-
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
-
-        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
-
-        float divisionCost = growthCost.getA() + (float) averageMigrationCost;
-        return divisionCost;
     }
 
     /**
@@ -1728,7 +1609,7 @@ public class GrowthlaneTrackingILP {
      * Calling this function makes only sense if the <code>run</code>-method was
      * called and the convex optimizer could find a optimal feasible solution.
      *
-     * @param t the time at which to look for active right-assignments.
+     * @param timeStep the time at which to look for active right-assignments.
      *          Values for t make only sense if <code>>=0</code> and
      *          <code>< nodes.getNumberOfTimeSteps() - 1.</code>
      * @return a hash-map that maps from segmentation hypothesis to a sets
@@ -1737,13 +1618,22 @@ public class GrowthlaneTrackingILP {
      * Note that segmentation hypothesis that are not active will NOT be
      * included in the hash-map.
      */
-    public HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> getOptimalRightAssignments(final int t) {
-        assert (t >= 0);
-        assert (t < nodes.getNumberOfTimeSteps() - 1) : String.format("Assert failed: t<nodes.getNumberOfTimeSteps()-1, because t=%d and nodes.getNumberOfTimeSteps()-1=%d", t, nodes.getNumberOfTimeSteps() - 1);
+    public HashMap<Hypothesis<AdvancedComponent<FloatType>>,
+            Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>>
+    getOptimalRightAssignments(final int timeStep) {
+        if (!(timeStep >= 0)) {
+            throw new AssertionError(String.format("Invalid value for timeStep (=%d). timeStep must be >=0.", timeStep));
+        }
+        if(!(timeStep < nodes.getNumberOfTimeSteps())){
+            throw new AssertionError(String.format("Invalid value for timeStep (=%d). timeStep must fulfill:" +
+                    "timeStep<nodes.getNumberOfTimeSteps() (but nodes.getNumberOfTimeSteps()=%d).",
+                    timeStep,
+                    nodes.getNumberOfTimeSteps()));
+        }
 
         final HashMap<Hypothesis<AdvancedComponent<FloatType>>, Set<AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>>>> ret = new HashMap<>();
 
-        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(t);
+        final List<Hypothesis<AdvancedComponent<FloatType>>> hyps = nodes.getHypothesesAt(timeStep);
 
         if (hyps == null) return ret;
 

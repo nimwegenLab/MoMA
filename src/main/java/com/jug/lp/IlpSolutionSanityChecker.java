@@ -103,8 +103,9 @@ public class IlpSolutionSanityChecker {
             int incomingAssignmentCount = incomingAssignments.size();
             int outgoingAssignmentCount = outgoingAssignments.size();
 
-            assert (outgoingAssignmentCount != incomingAssignmentCount) :
-                    String.format("ERROR: Continuity constraint violation at t=%d\n", t);
+            if (outgoingAssignmentCount != incomingAssignmentCount) {
+                throw new AssertionError(String.format("ERROR: Continuity constraint violation at t=%d\n", t));
+            }
             if (outgoingAssignmentCount != incomingAssignmentCount) {
                 errorMessageToAppendTo.append(String.format("ERROR: Continuity constraint violation at t=%d\n", t));
                 errorMessageToAppendTo.append(String.format("timestep %d:\n", t));

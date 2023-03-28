@@ -1,6 +1,5 @@
 package com.jug.lp.costs;
 
-import com.jug.config.ConfigurationManager;
 import com.jug.config.IConfiguration;
 import com.jug.development.featureflags.ComponentCostCalculationMethod;
 import com.jug.util.componenttree.AdvancedComponent;

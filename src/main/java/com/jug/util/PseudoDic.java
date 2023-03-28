@@ -21,7 +21,6 @@ import com.jug.util.math.GeomUtils;
 import com.jug.util.math.Vector2DPolyline;
 import net.imagej.ops.OpService;
 import net.miginfocom.swing.MigLayout;
-import org.apache.commons.lang.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
 import org.scijava.Context;
 import org.scijava.convert.ConvertService;
@@ -635,6 +634,16 @@ public class PseudoDic {
                     throw new RuntimeException("Method for calculating the migration cost was not correctly specified.");
             }
         }
+    }
+
+    public IAssignmentCostCalculator getAssignmentCostCalculator() {
+        if (configurationManager.getAssignmentCostCalculationMethod() == AssignmentCostCalculationMethod.LEGACY) {
+            return new LegacyAssignmentCostCalculator(
+                    getCostFactory(),
+                    getMigrationCostCalculator(),
+                    getConfigurationManager());
+        }
+        throw new RuntimeException("Method for calculating the assignment cost was not correctly specified.");
     }
 
     public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {

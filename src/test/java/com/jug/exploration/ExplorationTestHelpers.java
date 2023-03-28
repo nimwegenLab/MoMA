@@ -1,13 +1,18 @@
 package com.jug.exploration;
 
 import com.jug.MoMA;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.jug.util.io.FileUtils.*;
 import static java.util.Objects.isNull;
@@ -80,5 +85,135 @@ public class ExplorationTestHelpers {
         File parentFolder = new File(path.toFile().getParent());
         List<Path> matchingFiles = getMatchingFilesInDirectory(parentFolder.toPath(), "*__model_*.tif*");
         deleteFiles(matchingFiles);
+    }
+
+    /**
+     * Get the name of the method that is calling this method. This method uses the idea presented here:
+     * https://www.baeldung.com/java-name-of-executing-method
+     *
+     * @return
+     */
+    public static String getMethodName() {
+        StackTraceElement[] stackTrace = Thread.currentThread()
+                .getStackTrace();
+        String name = stackTrace[2].getMethodName();
+        return name;
+    }
+
+    public static void assertFilesAreEqual(Path file1,
+                                           Path file2,
+                                           int numberOfLinesToSkip,
+                                           List<String> ignoreStrings) throws IOException {
+        long numberOfLines1 = countNumberOfLines(file1);
+        long numberOfLines2 = countNumberOfLines(file2);
+        if (numberOfLines1 != numberOfLines2) {
+            throwAssertionErrorForUnequalNumberOfLines(file1, file2, numberOfLines1, numberOfLines2);
+        }
+
+        List<String> differingLines = getDifferingLinesInTextFile(file1, file2, numberOfLinesToSkip, ignoreStrings);
+        if (!differingLines.isEmpty()) {
+            throwAssertionErrorForDifferingLines(file1, file2, differingLines);
+        }
+
+        differingLines = getDifferingLinesInTextFile(file2, file1, numberOfLinesToSkip, ignoreStrings);
+        if (!differingLines.isEmpty()) {
+            throwAssertionErrorForDifferingLines(file2, file1, differingLines);
+        }
+    }
+
+    private static void throwAssertionErrorForUnequalNumberOfLines(Path file1, Path file2, long numberOfLines1, long numberOfLines2) {
+        String msg = String.format(
+                "Number of lines in file1 differs from file2. To diff the files run:\n" +
+                        "diff %s %s\n" +
+                        "Additional information:\n" +
+                        "lines in file1: %d\n" +
+                        "lines in file2: %d\n" +
+                        "file1: %s\n" +
+                        "file2: %s\n",
+                file1,
+                file2,
+                numberOfLines1,
+                numberOfLines2,
+                file1,
+                file2);
+        throw new AssertionError(msg);
+    }
+
+    private static void throwAssertionErrorForDifferingLines(Path file1, Path file2, List<String> differingLines) {
+        String msg = String.format(
+                "file1 contains lines that are not in file2. To diff the files run:\n" +
+                        "diff %s %s\n" +
+                        "Additional information:\n" +
+                        "file1: %s\n" +
+                        "file2: %s\n" +
+                        "differing lines:\n" +
+                        "%s\n" +
+                        "",
+                file1,
+                file2,
+                file1,
+                file2,
+                differingLines.stream().reduce("", (concatenatedLines, line) -> concatenatedLines + "\n" + line));
+        throw new AssertionError(msg);
+    }
+
+    /**
+     * Compare text files line-by-line with option to skip the first user-defined number of lines.
+     *
+     * @param file1
+     * @param file2
+     * @return
+     * @throws IOException
+     */
+    public static List<String> getDifferingLinesInTextFile(Path file1,
+                                                           Path file2,
+                                                           int numberOfLinesToSkip,
+                                                           List<String> ignoreStrings) throws IOException {
+        List<String> linesFromFile1 = readFileToStringList(file1, numberOfLinesToSkip);
+        List<String> linesFromFile2 = readFileToStringList(file2, numberOfLinesToSkip);
+
+        linesFromFile1 = removeLinesContaining(ignoreStrings, linesFromFile1);
+        linesFromFile2 = removeLinesContaining(ignoreStrings, linesFromFile2);
+
+        List<String> finalLinesFromFile2 = linesFromFile2;
+        List<String> unmatchedLines = linesFromFile1.stream().filter(
+                line1 -> !finalLinesFromFile2.stream().anyMatch(line2 -> line2.equals(line1))
+        ).collect(Collectors.toList());
+
+        return unmatchedLines;
+    }
+
+    @NotNull
+    private static List<String> removeLinesContaining(List<String> ignoreStrings, List<String> lines) {
+        lines = lines.stream().filter(
+                line -> !ignoreStrings.stream().anyMatch(string -> line.contains(string))
+        ).collect(Collectors.toList());
+        return lines;
+    }
+
+    private static long countNumberOfLines(Path file) throws IOException {
+        try (BufferedReader bf1 = Files.newBufferedReader(file)) {
+            ArrayList<String> linesFile1 = new ArrayList<>();
+            long lineNumber = 0;
+            while (bf1.readLine() != null) {
+                lineNumber++;
+            }
+            return lineNumber;
+        }
+    }
+
+    private static List<String> readFileToStringList(Path path, int numberOfLinesToSkip) throws IOException {
+        try (BufferedReader bf1 = Files.newBufferedReader(path)) {
+            ArrayList<String> linesFile1 = new ArrayList<>();
+            String line1;
+            long lineNumber = 0;
+            while ((line1 = bf1.readLine()) != null) {
+                if (lineNumber >= numberOfLinesToSkip) {
+                    linesFile1.add(line1);
+                }
+                lineNumber++;
+            }
+            return linesFile1;
+        }
     }
 }

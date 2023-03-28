@@ -1046,32 +1046,27 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             return null;
         }
 
-        Path folderToUse;
-        if (!configurationManager.getIfRunningHeadless()) {
+        if (configurationManager.getIfRunningHeadless()) { /* if running headless: use default output path */
+            return glFileManager.getOutputPath();
+        } else {
             if (!showFitRangeWarningDialogIfNeeded()) return null;
 
-            folderToUse = OsDependentFileChooser.showSaveFolderChooser(this,
+            File folderToUseFile = OsDependentFileChooser.showSaveFolderChooser(this,
                     glFileManager.getOutputPath().toString(),
-                    "Choose export folder...").toPath();
-            if (folderToUse == null) {
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Illegal save location chosen!",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+                    "Choose export folder...");
+            if (folderToUseFile == null) {
                 return null;
+            } else {
+                return folderToUseFile.toPath();
             }
-        } else { /* if running headless: use default output path */
-            folderToUse = glFileManager.getOutputPath();
         }
-        return folderToUse;
     }
 
     private boolean showFitRangeWarningDialogIfNeeded() {
         final IntervalView<FloatType> channelFrame = Views.hyperSlice(imageProvider.getRawChannelImgs().get(0), 2, 0);
 
         if (channelFrame.dimension(0) >= configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS)
-            return true; /* Image wider then fit range. No need to warn. */
+            return true; /* Image wider than fit range. No need to warn. */
 
         int userSelection = JOptionPane.showConfirmDialog(null,
                 String.format("Intensity fit range (%dpx) exceeds image width (%dpx). Image width will be use instead. Do you want to proceed?", configurationManager.INTENSITY_FIT_RANGE_IN_PIXELS, channelFrame.dimension(0)),

@@ -638,7 +638,7 @@ public class PseudoDic {
 
     public IAssignmentCostCalculator getAssignmentCostCalculator() {
         if (configurationManager.getAssignmentCostCalculationMethod() == AssignmentCostCalculationMethod.LEGACY) {
-            return new LegacyAssignmentCostCalculator(
+            return new AssignmentCostCalculatorLegacy(
                     getCostFactory(),
                     getMigrationCostCalculator(),
                     getConfigurationManager());

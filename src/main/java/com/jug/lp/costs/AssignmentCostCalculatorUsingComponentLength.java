@@ -2,8 +2,9 @@ package com.jug.lp.costs;
 
 import com.jug.config.IConfiguration;
 import com.jug.util.componenttree.AdvancedComponent;
-import com.jug.util.componenttree.ComponentInterface;
 import net.imglib2.type.numeric.real.FloatType;
+
+import java.util.List;
 
 public class AssignmentCostCalculatorUsingComponentLength implements IAssignmentCostCalculator {
     private final IConfiguration configuration;
@@ -19,16 +20,42 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
 
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
-        double totalComponentBenefit =
-                costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
-                + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
-        double sizeMismatchCost = sizeMismatchCostScalingFactor *
+        double totalComponentBenefit = sourceComponent.getCost() + targetComponent.getCost(); /* TODO-MM-20230329: This only returns floating precision. I should use costFactory.calculateLogLikelihoodComponentCost to get double precision, but that does not cache the results, which hurts performance. */
+//        double totalComponentBenefit =
+//                costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
+//                + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
+        double sizeMismatchCost = calculateSizeMismatchCostForMapping(targetComponent,sourceComponent);
+        double positionMismatchCost = calculatePositionMismatchCostForMapping(targetComponent,sourceComponent);
+        return totalComponentBenefit - sizeMismatchCost - positionMismatchCost;
+    }
+
+    private double calculateSizeMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
+                                                       AdvancedComponent<FloatType> targetComponent) {
+        return sizeMismatchCostScalingFactor *
                 Math.abs(
-                        (targetComponent.getMajorAxisLength() - sourceComponent.getMajorAxisLength())
-                        /
-                        sourceComponent.getMajorAxisLength()
+                        relativeChangeToSourceValue(
+                                sourceComponent.getMajorAxisLength(),
+                                targetComponent.getMajorAxisLength())
                 );
-        return totalComponentBenefit - sizeMismatchCost;
+    }
+
+    private double calculatePositionMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
+                                                           AdvancedComponent<FloatType> targetComponent) {
+        double totalComponentLengthBelowSource = calculatedTotalComponentLengthBelow(sourceComponent);
+        double totalComponentLengthBelowTarget = calculatedTotalComponentLengthBelow(targetComponent);
+        return Math.abs(relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget));
+    }
+
+    private double relativeChangeToSourceValue(double sourceValue, double targetValue) {
+        return (targetValue - sourceValue) / sourceValue;
+    }
+
+    private double calculatedTotalComponentLengthBelow(AdvancedComponent<FloatType> component){
+        List<AdvancedComponent<FloatType>> componentsBelow = component.getComponentsBelowClosestToRoot();
+        double totalLength = componentsBelow.stream()
+                .map(cmp -> cmp.getMajorAxisLength())
+                .reduce(0.0, (acc, length) -> acc + length);
+        return totalLength;
     }
 
     @Override

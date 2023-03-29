@@ -174,7 +174,7 @@ public class GrowthlaneTrackingIlpTest {
     private ComponentForestGenerator getComponentTreeGenerator(ImageJ ij) {
         OpService ops = ij.op();
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
-        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), mock(IConfiguration.class));
+        ComponentProperties componentProperties = new ComponentProperties(ops, imglib2Utils, mock(ICostFactory.class), mock(IConfiguration.class));
         RecursiveComponentWatershedder recursiveComponentWatershedder = new RecursiveComponentWatershedder(ij.op());
         WatershedMaskGenerator watershedMaskGenerator = new WatershedMaskGenerator(0, 0.5f);
         ComponentForestGeneratorConfigurationMock config = new ComponentForestGeneratorConfigurationMock(60, Integer.MIN_VALUE);
@@ -185,13 +185,6 @@ public class GrowthlaneTrackingIlpTest {
     class TrackingConfigMock implements ITrackingConfiguration {
         @Override
         public double getMaximumGrowthRate() {
-            return 0;
-        }
-    }
-
-    class CostFactoryMock implements ICostFactory {
-        @Override
-        public float getComponentCost(ComponentInterface component) {
             return 0;
         }
     }

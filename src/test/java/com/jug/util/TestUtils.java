@@ -126,7 +126,7 @@ public class TestUtils {
         Imglib2Utils imglib2Utils = new Imglib2Utils(ops);
         IConfiguration configurationMock = mock(IConfiguration.class);
         when(configurationMock.getBackgroundRoiWidth()).thenReturn(5L);
-        return new ComponentProperties(ops, imglib2Utils, new CostFactoryMock(), configurationMock);
+        return new ComponentProperties(ops, imglib2Utils, mock(ICostFactory.class), configurationMock);
     }
 
     @NotNull
@@ -303,13 +303,6 @@ public class TestUtils {
 
     public void showProbabilityMaps(IImageProvider imageProvider) {
         ImageJFunctions.show(imageProvider.getImgProbs());
-    }
-
-    class CostFactoryMock implements ICostFactory {
-        @Override
-        public float getComponentCost(ComponentInterface component) {
-            return 0;
-        }
     }
 
     public ImagePlus showComponent(ComponentInterface component) {

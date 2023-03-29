@@ -637,13 +637,19 @@ public class PseudoDic {
     }
 
     public IAssignmentCostCalculator getAssignmentCostCalculator() {
-        if (configurationManager.getAssignmentCostCalculationMethod() == AssignmentCostCalculationMethod.LEGACY) {
-            return new AssignmentCostCalculatorLegacy(
-                    getCostFactory(),
-                    getMigrationCostCalculator(),
-                    getConfigurationManager());
+        switch (configurationManager.getAssignmentCostCalculationMethod()) {
+            case LEGACY:
+                return new AssignmentCostCalculatorLegacy(
+                        getCostFactory(),
+                        getMigrationCostCalculator(),
+                        getConfigurationManager());
+            case USING_COMPONENT_LENGTH:
+                return new AssignmentCostCalculatorUsingComponentLength(
+                        getConfigurationManager(),
+                        getCostFactory());
+            default:
+                throw new RuntimeException("Method for calculating the assignment cost was not correctly specified.");
         }
-        throw new RuntimeException("Method for calculating the assignment cost was not correctly specified.");
     }
 
     public IAssignmentPlausibilityTester getAssignmentPlausibilityTesterForPosition() {

@@ -33,7 +33,7 @@ public class Feature__20230329_add_calculation_of_assignment_cost_using_componen
     public void run_interactive__lis__20211026__Pos7_GL12() {
         String glSubfolder = "data/lis__20211026__Pos7_GL12";
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "mm.properties");
         analysisName = "output_interactive__lis__20211026__Pos7_GL12";
         tmin = null;
         tmax = 100;

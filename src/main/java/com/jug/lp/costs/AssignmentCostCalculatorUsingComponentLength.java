@@ -17,15 +17,17 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
     }
 
     private double sizeMismatchCostScalingFactor = 0.1;
+    private double positionMismatchCostScalingFactor = 0.1;
 
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
+//        return -1.0;
         double totalComponentBenefit = sourceComponent.getCost() + targetComponent.getCost(); /* TODO-MM-20230329: This only returns floating precision. I should use costFactory.calculateLogLikelihoodComponentCost to get double precision, but that does not cache the results, which hurts performance. */
 //        double totalComponentBenefit =
 //                costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
 //                + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
-        double sizeMismatchCost = calculateSizeMismatchCostForMapping(targetComponent,sourceComponent);
-        double positionMismatchCost = calculatePositionMismatchCostForMapping(targetComponent,sourceComponent);
+        double sizeMismatchCost = calculateSizeMismatchCostForMapping(sourceComponent, targetComponent);
+        double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
         return totalComponentBenefit - sizeMismatchCost - positionMismatchCost;
     }
 
@@ -43,7 +45,10 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                                                            AdvancedComponent<FloatType> targetComponent) {
         double totalComponentLengthBelowSource = calculatedTotalComponentLengthBelow(sourceComponent);
         double totalComponentLengthBelowTarget = calculatedTotalComponentLengthBelow(targetComponent);
-        return Math.abs(relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget));
+        return positionMismatchCostScalingFactor
+                * Math.abs(
+                        relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget)
+        );
     }
 
     private double relativeChangeToSourceValue(double sourceValue, double targetValue) {

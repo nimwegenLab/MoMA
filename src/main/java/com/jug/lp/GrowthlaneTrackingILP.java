@@ -1141,7 +1141,6 @@ public class GrowthlaneTrackingILP {
     }
 
     public IlpStatus getModelStatus() {
-        status = IlpStatus.NUMERIC;
         try {
             int myStatus = model.get(GRB.IntAttr.Status);
             if (myStatus == GRB.Status.OPTIMAL) {

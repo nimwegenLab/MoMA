@@ -1,5 +1,6 @@
 package com.jug.config;
 
 public enum AssignmentCostCalculationMethod {
-    LEGACY
+    LEGACY,
+    BASED_ON_COMPONENT_LENGTH
 }

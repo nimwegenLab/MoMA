@@ -285,7 +285,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public String FEATURE_FLAG_MIGRATION_COST_CALCULATION = "absolute_position";
 
     /**
-     * Sets the method used for calculating assignment costs. Valid options are {"legacy"}:
+     * Sets the method used for calculating assignment costs. Valid options are {"legacy","using_component_length"}:
      * legacy: use the old method for calculating assignment costs.
      */
     public String FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION = "legacy";
@@ -438,6 +438,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         switch (FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION) {
             case "legacy":
                 assignmentCostCalculationMethod = AssignmentCostCalculationMethod.LEGACY;
+                break;
+            case "using_component_length":
+                assignmentCostCalculationMethod = AssignmentCostCalculationMethod.USING_COMPONENT_LENGTH;
                 break;
             default:
                 String errorMsg = String.format("Parameter value FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION is invalid (=%s). Must be one of: {legacy} ().", FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION);

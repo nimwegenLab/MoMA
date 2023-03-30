@@ -1150,4 +1150,9 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
     public IImageProvider getImageProvider() {
         return imageProvider;
     }
+
+    @Override
+    public String toString(){
+        return getStringId();
+    }
 }

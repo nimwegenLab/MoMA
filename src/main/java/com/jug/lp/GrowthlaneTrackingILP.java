@@ -8,20 +8,16 @@ import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.IDialogGurobiProgress;
 import com.jug.gui.progress.ProgressListener;
 import com.jug.lp.GRBModel.IGRBModelAdapter;
-import com.jug.lp.costs.CostFactory;
 import com.jug.lp.costs.IAssignmentCostCalculator;
-import com.jug.lp.costs.ICostCalculator;
 import com.jug.util.ComponentTreeUtils;
 import com.jug.util.PseudoDic;
 import com.jug.util.componenttree.AdvancedComponent;
 import com.jug.util.componenttree.AdvancedComponentForest;
 import com.jug.util.componenttree.ComponentInterface;
-import com.sun.xml.internal.ws.policy.spi.AssertionCreationException;
 import gurobi.*;
 import net.imglib2.algorithm.componenttree.Component;
 import net.imglib2.algorithm.componenttree.ComponentForest;
 import net.imglib2.type.numeric.real.FloatType;
-import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
 import javax.swing.*;
@@ -682,6 +678,9 @@ public class GrowthlaneTrackingILP {
                 float cost = (float)assignmentCostCalculator.calculateMappingCost(sourceComponent, targetComponent);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
+                AssertNotNan(cost, String.format("Cost is NaN for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s).", sourceComponent, targetComponent));
+                AssertNotInfinite(cost, String.format("Cost is Infinite for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s).", sourceComponent, targetComponent));
+
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
                     continue;
                 }
@@ -705,6 +704,18 @@ public class GrowthlaneTrackingILP {
                     throw new RuntimeException(String.format("ERROR: Mapping-assignment could not be added to left neighborhood at time-step: t=%d", sourceTimeStep));
                 }
             }
+        }
+    }
+
+    private static void AssertNotNan(float value, String message) {
+        if(Double.isNaN(value)){
+            throw new AssertionError(message);
+        }
+    }
+
+    private static void AssertNotInfinite(float value, String message) {
+        if(Double.isInfinite(value)){
+            throw new AssertionError(message);
         }
     }
 
@@ -771,6 +782,14 @@ public class GrowthlaneTrackingILP {
 
                     @SuppressWarnings("unchecked")
                     float cost = (float) assignmentCostCalculator.calculateDivisionCost(sourceComponent, lowerTargetComponent, upperTargetComponent);
+                    AssertNotNan(cost, String.format("Cost is NaN for DivisionAssignment from sourceComponent (=%s) to lowerTargetComponent (=%s) and  upperTargetComponent (=%s)",
+                            sourceComponent,
+                            lowerTargetComponent,
+                            upperTargetComponent));
+                    AssertNotNan(cost, String.format("Cost is Infinite for DivisionAssignment from sourceComponent (=%s) to lowerTargetComponent (=%s) and  upperTargetComponent (=%s)",
+                            sourceComponent,
+                            lowerTargetComponent,
+                            upperTargetComponent));
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;
@@ -1141,7 +1160,6 @@ public class GrowthlaneTrackingILP {
     }
 
     public IlpStatus getModelStatus() {
-        status = IlpStatus.NUMERIC;
         try {
             int myStatus = model.get(GRB.IntAttr.Status);
             if (myStatus == GRB.Status.OPTIMAL) {

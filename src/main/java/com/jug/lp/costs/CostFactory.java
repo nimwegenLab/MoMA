@@ -85,10 +85,14 @@ public class CostFactory implements ICostFactory {
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingFullProbabilityMaps) {
 			return getComponentCostUsingFullProbabilityMap(component);
 		} else if (featureFlagComponentCost == ComponentCostCalculationMethod.UsingLogLikelihoodCost) {
-			ValuePair<Double, Double> valueRange = new ValuePair<>(minPosteriorProbability, maxPosteriorProbability); /* cap the maximum value of the probability pixels, so that the log-likelihood is still defined */
-			return (float) getLogLikelihoodComponentCost((AdvancedComponent<FloatType>) component, valueRange);
+			return (float) calculateLogLikelihoodComponentCost(component);
 		}
 		throw new NotImplementedException(); /* this will be thrown if no valid feature-flag was set */
+	}
+
+	public double calculateLogLikelihoodComponentCost(ComponentInterface component) {
+		ValuePair<Double, Double> valueRange = new ValuePair<>(minPosteriorProbability, maxPosteriorProbability); /* cap the maximum value of the probability pixels, so that the log-likelihood is still defined */
+		return getLogLikelihoodComponentCost(component, valueRange);
 	}
 
 	public double maximumComponentCost = 0.2; // maximum component cost

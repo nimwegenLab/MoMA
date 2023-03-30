@@ -3,7 +3,6 @@ package com.jug.lp.costs;
 import com.jug.config.IConfiguration;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
@@ -22,18 +21,17 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
 
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
-//        return -1.0;
-        double totalComponentBenefit = sourceComponent.getCost() + targetComponent.getCost(); /* TODO-MM-20230329: This only returns floating precision. I should use costFactory.calculateLogLikelihoodComponentCost to get double precision, but that does not cache the results, which hurts performance. */
-//        double totalComponentBenefit =
-//                costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
-//                + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
+        double totalComponentBenefit = sourceComponent.getCost() + targetComponent.getCost(); /* TODO-MM-20230329:
+        This only returns floating precision. I should use costFactory.calculateLogLikelihoodComponentCost to
+        get double precision, but that does not cache the results, which hurts performance; i.e.:
+        double totalComponentBenefit =
+                   costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
+                    + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
+        */
         double sizeMismatchCost = calculateSizeMismatchCostForMapping(sourceComponent, targetComponent);
         double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
-//        double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
         double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
         return cost;
-//        return totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
-//        return totalComponentBenefit;
     }
 
     private double calculateSizeMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
@@ -46,6 +44,9 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                 );
     }
 
+    private final double delta = 1;
+    private double typicalCellLengthInPixel = 1/0.065; /* TODO-MM-20230630: This magic number needs to be replaced with values, that are read from the config-file; namely the pixel-size and the typical cell-size after division. */
+
     private double calculatePositionMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
                                                            AdvancedComponent<FloatType> targetComponent) {
         double totalComponentLengthBelowSource = calculatedTotalComponentLengthBelow(sourceComponent);
@@ -54,7 +55,7 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget < delta) {
             return 0.0;
         } else if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget >= delta) {
-            return 1.0;
+            return totalComponentLengthBelowTarget / typicalCellLengthInPixel;
         }
 
         double cost = positionMismatchCostScalingFactor
@@ -69,8 +70,6 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         }
         return cost;
     }
-
-    private final double delta = 1;
 
     private double relativeChangeToSourceValue(double sourceValue, double targetValue) {
         return (targetValue - sourceValue) / sourceValue;

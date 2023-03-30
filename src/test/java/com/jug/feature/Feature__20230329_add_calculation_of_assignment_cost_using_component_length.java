@@ -35,8 +35,8 @@ public class Feature__20230329_add_calculation_of_assignment_cost_using_componen
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, glSubfolder, "mm.properties");
         analysisName = "output_interactive__lis__20211026__Pos7_GL12";
-        tmin = null;
-        tmax = 5;
+        tmin = 300;
+        tmax = 450;
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 

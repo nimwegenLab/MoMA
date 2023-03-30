@@ -28,19 +28,19 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                    costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
                     + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
         */
-        double sizeMismatchCost = calculateSizeMismatchCostForMapping(sourceComponent, targetComponent);
+        double sizeMismatchCost = calculateSizeMismatchCost(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength());
         double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
         double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
         return cost;
     }
 
-    private double calculateSizeMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
-                                                       AdvancedComponent<FloatType> targetComponent) {
+    private double calculateSizeMismatchCost(double sourceComponentLength,
+                                             double targetComponentLength) {
         return sizeMismatchCostScalingFactor *
                 Math.abs(
                         relativeChangeToSourceValue(
-                                sourceComponent.getMajorAxisLength(),
-                                targetComponent.getMajorAxisLength())
+                                sourceComponentLength,
+                                targetComponentLength)
                 );
     }
 

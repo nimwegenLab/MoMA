@@ -37,7 +37,7 @@ public class Feature__20230329_add_calculation_of_assignment_cost_using_componen
         analysisName = "output_interactive__lis__20211026__Pos7_GL12";
         tmin = null;
         tmax = 5;
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_interactive__dany__20200812__Pos25_GL7() {

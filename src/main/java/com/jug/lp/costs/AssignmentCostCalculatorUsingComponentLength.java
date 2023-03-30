@@ -28,7 +28,17 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
 //                + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
         double sizeMismatchCost = calculateSizeMismatchCostForMapping(sourceComponent, targetComponent);
         double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
-        return totalComponentBenefit - sizeMismatchCost - positionMismatchCost;
+//        double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
+        double cost = totalComponentBenefit + sizeMismatchCost;
+        if(Double.isNaN(cost)){
+            throw new AssertionError("Assignment cost is NaN for MappingAssignment from " + sourceComponent + " to " + targetComponent + ".");
+        }
+        if(Double.isInfinite(cost)){
+            throw new AssertionError("Assignment cost is Infinite for MappingAssignment from " + sourceComponent + " to " + targetComponent + ".");
+        }
+        return cost;
+//        return totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
+//        return totalComponentBenefit;
     }
 
     private double calculateSizeMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,

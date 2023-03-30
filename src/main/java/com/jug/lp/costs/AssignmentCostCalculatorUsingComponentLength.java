@@ -9,7 +9,7 @@ import java.util.List;
 
 public class AssignmentCostCalculatorUsingComponentLength implements IAssignmentCostCalculator {
     private final IConfiguration configuration;
-    private ICostFactory costFactory;
+    private final ICostFactory costFactory;
 
     public AssignmentCostCalculatorUsingComponentLength(IConfiguration configuration,
                                                         ICostFactory costFactory) {
@@ -17,8 +17,8 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         this.costFactory = costFactory;
     }
 
-    private double sizeMismatchCostScalingFactor = 0.1;
-    private double positionMismatchCostScalingFactor = 0.1;
+    private final double sizeMismatchCostScalingFactor = 0.1;
+    private final double positionMismatchCostScalingFactor = 0.1;
 
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
@@ -51,9 +51,9 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         double totalComponentLengthBelowSource = calculatedTotalComponentLengthBelow(sourceComponent);
         double totalComponentLengthBelowTarget = calculatedTotalComponentLengthBelow(targetComponent);
 
-        if(totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget < delta){
+        if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget < delta) {
             return 0.0;
-        } else if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget >= delta){
+        } else if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget >= delta) {
             return 1.0;
         }
 
@@ -61,7 +61,7 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                 * Math.abs(
                 relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget)
         );
-        if (Double.isNaN(cost)){
+        if (Double.isNaN(cost)) {
             throw new RuntimeException("NaN cost");
         }
         if (Double.isInfinite(cost)) {
@@ -70,13 +70,13 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         return cost;
     }
 
-    private double delta = 1;
+    private final double delta = 1;
 
     private double relativeChangeToSourceValue(double sourceValue, double targetValue) {
         return (targetValue - sourceValue) / sourceValue;
     }
 
-    private double calculatedTotalComponentLengthBelow(AdvancedComponent<FloatType> component){
+    private double calculatedTotalComponentLengthBelow(AdvancedComponent<FloatType> component) {
         List<AdvancedComponent<FloatType>> componentsBelow = component.getComponentsBelowClosestToRoot();
         double totalLength = componentsBelow.stream()
                 .map(cmp -> cmp.getMajorAxisLength())

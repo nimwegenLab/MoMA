@@ -29,13 +29,7 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         double sizeMismatchCost = calculateSizeMismatchCostForMapping(sourceComponent, targetComponent);
         double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
 //        double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
-        double cost = totalComponentBenefit + sizeMismatchCost;
-        if(Double.isNaN(cost)){
-            throw new AssertionError("Assignment cost is NaN for MappingAssignment from " + sourceComponent + " to " + targetComponent + ".");
-        }
-        if(Double.isInfinite(cost)){
-            throw new AssertionError("Assignment cost is Infinite for MappingAssignment from " + sourceComponent + " to " + targetComponent + ".");
-        }
+        double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
         return cost;
 //        return totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
 //        return totalComponentBenefit;

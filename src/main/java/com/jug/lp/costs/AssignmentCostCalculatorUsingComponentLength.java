@@ -16,8 +16,10 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
         this.costFactory = costFactory;
     }
 
-    private final double sizeMismatchCostScalingFactor = 1.0;
-    private final double positionMismatchCostScalingFactor = 1.0;
+    private final double sizeMismatchCostScalingFactor = 0.0001;
+    private final double positionMismatchCostScalingFactor = 0.01;
+
+
 
     @Override
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {

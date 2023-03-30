@@ -28,24 +28,24 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                    costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
                     + costFactory.calculateLogLikelihoodComponentCost(targetComponent);
         */
-        double sizeMismatchCost = calculateSizeMismatchCost(sourceComponent.getMajorAxisLength(), targetComponent.getMajorAxisLength());
+        double sizeMismatchCost = calculateSizeMismatchCost(getLength(sourceComponent), getLength(targetComponent));
         double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, targetComponent);
         double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
         return cost;
     }
 
     private double calculateSizeMismatchCost(double sourceComponentLength,
-                                             double targetComponentLength) {
+                                             double totalTargetComponentLength) {
         return sizeMismatchCostScalingFactor *
                 Math.abs(
                         relativeChangeToSourceValue(
                                 sourceComponentLength,
-                                targetComponentLength)
+                                totalTargetComponentLength)
                 );
     }
 
     private final double delta = 1;
-    private double typicalCellLengthInPixel = 1/0.065; /* TODO-MM-20230630: This magic number needs to be replaced with values, that are read from the config-file; namely the pixel-size and the typical cell-size after division. */
+    private final double typicalCellLengthInPixel = 1 / 0.065; /* TODO-MM-20230630: This magic number needs to be replaced with values, that are read from the config-file; namely the pixel-size and the typical cell-size after division. */
 
     private double calculatePositionMismatchCostForMapping(AdvancedComponent<FloatType> sourceComponent,
                                                            AdvancedComponent<FloatType> targetComponent) {
@@ -85,7 +85,22 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
 
     @Override
     public double calculateDivisionCost(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> lowerTargetComponent, AdvancedComponent<FloatType> upperTargetComponent) {
-        return -1;
+        double totalComponentBenefit = sourceComponent.getCost() + lowerTargetComponent.getCost() + upperTargetComponent.getCost(); /* TODO-MM-20230329:
+        This only returns floating precision. I should use costFactory.calculateLogLikelihoodComponentCost to
+        get double precision, but that does not cache the results, which hurts performance; i.e.:
+        double totalComponentBenefit =
+                   costFactory.calculateLogLikelihoodComponentCost(sourceComponent)
+                    + costFactory.calculateLogLikelihoodComponentCost(lowerTargetComponent);
+                    + costFactory.calculateLogLikelihoodComponentCost(upperTargetComponent);
+        */
+        double sizeMismatchCost = calculateSizeMismatchCost(getLength(sourceComponent), getLength(lowerTargetComponent) + getLength(upperTargetComponent));
+        double positionMismatchCost = calculatePositionMismatchCostForMapping(sourceComponent, lowerTargetComponent);
+        double cost = totalComponentBenefit + sizeMismatchCost + positionMismatchCost;
+        return cost;
+    }
+
+    private static double getLength(AdvancedComponent<FloatType> component) {
+        return component.getMajorAxisLength();
     }
 
     @Override

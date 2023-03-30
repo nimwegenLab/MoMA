@@ -678,8 +678,8 @@ public class GrowthlaneTrackingILP {
                 float cost = (float)assignmentCostCalculator.calculateMappingCost(sourceComponent, targetComponent);
 //                cost = scaleAssignmentCost(sourceComponent, targetComponent, cost);
 
-                AssertNotNan(cost, String.format("Cost is NaN for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s)", sourceComponent, targetComponent));
-                AssertNotInfinite(cost, String.format("Cost is Infinite for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s)", sourceComponent, targetComponent));
+                AssertNotNan(cost, String.format("Cost is NaN for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s).", sourceComponent, targetComponent));
+                AssertNotInfinite(cost, String.format("Cost is Infinite for MappingAssignment from sourceComponent (=%s) and targetComponent (=%s).", sourceComponent, targetComponent));
 
                 if (cost > configurationManager.getAssignmentCostCutoff()) {
                     continue;
@@ -782,17 +782,14 @@ public class GrowthlaneTrackingILP {
 
                     @SuppressWarnings("unchecked")
                     float cost = (float) assignmentCostCalculator.calculateDivisionCost(sourceComponent, lowerTargetComponent, upperTargetComponent);
-                    AssertNotNan(cost, "Division cost is NaN for MappingAssignment from " + sourceComponent + " to " + upperTargetComponent + " and " + lowerTargetComponent + ".");
-                    AssertNotInfinite(cost, "Division cost is NaN for MappingAssignment from " + sourceComponent + " to " + upperTargetComponent + " and " + lowerTargetComponent + ".");
-
                     AssertNotNan(cost, String.format("Cost is NaN for DivisionAssignment from sourceComponent (=%s) to lowerTargetComponent (=%s) and  upperTargetComponent (=%s)",
-                            sourceComponent.getStringId(),
-                            lowerTargetComponent.getStringId(),
-                            upperTargetComponent.getStringId()));
+                            sourceComponent,
+                            lowerTargetComponent,
+                            upperTargetComponent));
                     AssertNotNan(cost, String.format("Cost is Infinite for DivisionAssignment from sourceComponent (=%s) to lowerTargetComponent (=%s) and  upperTargetComponent (=%s)",
-                            sourceComponent.getStringId(),
-                            lowerTargetComponent.getStringId(),
-                            upperTargetComponent.getStringId()));
+                            sourceComponent,
+                            lowerTargetComponent,
+                            upperTargetComponent));
 
                     if (cost > configurationManager.getAssignmentCostCutoff()) {
                         continue;

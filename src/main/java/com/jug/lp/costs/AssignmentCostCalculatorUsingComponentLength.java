@@ -3,6 +3,7 @@ package com.jug.lp.costs;
 import com.jug.config.IConfiguration;
 import com.jug.util.componenttree.AdvancedComponent;
 import net.imglib2.type.numeric.real.FloatType;
+import org.apache.commons.lang.NotImplementedException;
 
 import java.util.List;
 
@@ -49,11 +50,27 @@ public class AssignmentCostCalculatorUsingComponentLength implements IAssignment
                                                            AdvancedComponent<FloatType> targetComponent) {
         double totalComponentLengthBelowSource = calculatedTotalComponentLengthBelow(sourceComponent);
         double totalComponentLengthBelowTarget = calculatedTotalComponentLengthBelow(targetComponent);
-        return positionMismatchCostScalingFactor
+
+        if(totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget < delta){
+            return 0.0;
+        } else if (totalComponentLengthBelowSource < delta && totalComponentLengthBelowTarget >= delta){
+            return 1.0;
+        }
+
+        double cost = positionMismatchCostScalingFactor
                 * Math.abs(
-                        relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget)
+                relativeChangeToSourceValue(totalComponentLengthBelowSource, totalComponentLengthBelowTarget)
         );
+        if (Double.isNaN(cost)){
+            throw new RuntimeException("NaN cost");
+        }
+        if (Double.isInfinite(cost)) {
+            throw new RuntimeException("NaN cost");
+        }
+        return cost;
     }
+
+    private double delta = 1;
 
     private double relativeChangeToSourceValue(double sourceValue, double targetValue) {
         return (targetValue - sourceValue) / sourceValue;

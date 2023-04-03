@@ -9,6 +9,7 @@ import net.imglib2.util.ValuePair;
 import java.util.Arrays;
 
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
+import static java.util.Objects.isNull;
 
 /**
  * This class implements the legacy methods for calculating the assignment costs.
@@ -41,9 +42,15 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
         double averageMigrationCost = calculateCostForMapping(sourceComponent, targetComponent);
 
-        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
+        int offset = 15;
+        Integer componentBoundaryTop = targetComponentBoundaries.getA();
+        boolean targetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offset);
 
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
+
+        if (targetTouchesCellDetectionRoiTop && !isNull(targetComponent.getParent()) && targetComponent.value().getRealDouble() > 0.9) {
+            return 10.0f;
+        }
 
         float mappingCost = growthCost.getA() + (float)averageMigrationCost;
         return mappingCost;

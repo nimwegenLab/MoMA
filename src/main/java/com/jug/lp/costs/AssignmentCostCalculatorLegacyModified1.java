@@ -67,8 +67,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         final float targetLowerBoundary = targetComponentBoundaries.getB();
 
         float averageMigrationCost = 0;
-        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = this.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = this.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
         averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
 
         return averageMigrationCost;
@@ -144,8 +144,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         float averageMigrationCost = 0;
 //        if(configurationManager.getMigrationCostFeatureFlag()){
-        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
-        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = this.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = this.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
         averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
 //        }
         return averageMigrationCost;

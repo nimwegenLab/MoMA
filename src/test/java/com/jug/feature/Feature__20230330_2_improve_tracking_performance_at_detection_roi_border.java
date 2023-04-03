@@ -27,10 +27,12 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
 //        tests.run_interactive__theo_20221220_25_36();
 //        tests.run_interactive__theo_20221220_28_35();
 //        tests.run_interactive__lis_20211026_7_12();
-        tests.run_interactive__lis_20220530_19_7();
 //        tests.run_interactive__lis_20220530_11_29();
+        tests.run_interactive__lis_20220530_12_7();
 //        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_18_2();
+//        tests.run_interactive__lis_20220530_19_7_175ff();
+//        tests.run_interactive__lis_20220530_19_7_75ff();
     }
 
     /**
@@ -54,7 +56,16 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
-    public void run_interactive__lis_20220530_19_7() {
+    public void run_interactive__lis_20220530_19_7_75ff() {
+        tmin = 75;
+        tmax = 100;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20220530_19_7/20220530_VNG1040_AB2h_1_MMStack_Pos19_GL7.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive__lis_20220530_19_7_175ff() {
         tmin = 175;
         tmax = 195;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20220530_19_7/20220530_VNG1040_AB2h_1_MMStack_Pos19_GL7.tif");
@@ -85,6 +96,15 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
         tmin = 45;
         tmax = 55;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20220530_12_26/20220530_VNG1040_AB2h_1_MMStack_Pos12_GL26.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive__lis_20220530_12_7() {
+        tmin = 148;
+        tmax = 158;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20220530_12_7/20220530_VNG1040_AB2h_1_MMStack_Pos12_GL7.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});

@@ -46,7 +46,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
+//        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
+        double averageMigrationCost = calculateCostForMapping(sourceComponent, targetComponent);
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
@@ -54,6 +55,23 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         float mappingCost = growthCost.getA() + (float)averageMigrationCost;
         return mappingCost;
+    }
+
+    private double calculateCostForMapping(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
+        final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
+
+        final float sourceUpperBoundary = sourceComponentBoundaries.getA();
+        final float sourceLowerBoundary = sourceComponentBoundaries.getB();
+        final float targetUpperBoundary = targetComponentBoundaries.getA();
+        final float targetLowerBoundary = targetComponentBoundaries.getB();
+
+        float averageMigrationCost = 0;
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, targetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, targetLowerBoundary);
+        averageMigrationCost = 0.5f * migrationCostOfLowerBoundary.getA() + 0.5f * migrationCostOfUpperBoundary.getA();
+
+        return averageMigrationCost;
     }
 
     /**
@@ -98,7 +116,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
         final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
+//        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
+        double averageMigrationCost = this.calculateCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
@@ -106,6 +125,30 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
+    }
+
+    private float calculateCostForDivision(AdvancedComponent<FloatType> sourceComponent,
+                                           AdvancedComponent<FloatType> lowerTargetComponent,
+                                           AdvancedComponent<FloatType> upperTargetComponent) {
+//        AdvancedComponent<FloatType> lowerTargetComponent = targetComponents.get(0);
+//        AdvancedComponent<FloatType> upperTargetComponent = targetComponents.get(1);
+
+        final ValuePair<Integer, Integer> sourceBoundaries = sourceComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
+        final ValuePair<Integer, Integer> lowerTargetBoundaries = lowerTargetComponent.getVerticalComponentLimits();
+
+        final float sourceUpperBoundary = sourceBoundaries.getA();
+        final float sourceLowerBoundary = sourceBoundaries.getB();
+        final float upperTargetUpperBoundary = upperTargetBoundaries.getA();
+        final float lowerTargetLowerBoundary = lowerTargetBoundaries.getB();
+
+        float averageMigrationCost = 0;
+//        if(configurationManager.getMigrationCostFeatureFlag()){
+        final Pair<Float, float[]> migrationCostOfUpperBoundary = costFactory.getMigrationCost(sourceUpperBoundary, upperTargetUpperBoundary);
+        final Pair<Float, float[]> migrationCostOfLowerBoundary = costFactory.getMigrationCost(sourceLowerBoundary, lowerTargetLowerBoundary);
+        averageMigrationCost = .5f * migrationCostOfLowerBoundary.getA() + .5f * migrationCostOfUpperBoundary.getA();
+//        }
+        return averageMigrationCost;
     }
 
     /**
@@ -167,6 +210,22 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
     /**
      * Code below was copied from CostFactory.java and adapted to improve tracking performance.
      */
+    private Pair<Float, float[]> getMigrationCost(final float sourcePosition, final float targetPosition) {
+        float scaledPositionDifference = (sourcePosition - targetPosition) / normalizer;
+        float exponent;
+        float migrationCost;
+        if (scaledPositionDifference > 0) { // upward migration
+            scaledPositionDifference = Math.max(0, scaledPositionDifference - 0.05f); // going upwards for up to 5% is for free...
+            exponent = 3.0f;
+        } else { // downward migration
+            Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
+            exponent = 6.0f;
+        }
+        scaledPositionDifference = Math.abs(scaledPositionDifference);
+        migrationCost = scaledPositionDifference * (float) Math.pow(1 + scaledPositionDifference, exponent);
+        return new ValuePair<>(migrationCost, new float[]{migrationCost});
+    }
+
     private float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
 	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
 	It should be removed in favor of having costs based on relative growth and/or movement at some point.

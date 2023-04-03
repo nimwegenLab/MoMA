@@ -50,7 +50,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
+        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
         float mappingCost = growthCost.getA() + (float)averageMigrationCost;
         return mappingCost;
@@ -102,7 +102,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
-        final Pair<Float, float[]> growthCost = costFactory.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
+        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 
         float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
@@ -162,5 +162,33 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
     @Override
     public double calculateEnterCost(AdvancedComponent<FloatType> targetComponent) {
         return configurationManager.getEnterAssignmentCost();
+    }
+
+    /**
+     * Code below was copied from CostFactory.java and adapted to improve tracking performance.
+     */
+    private float normalizer = 340; /* TODO-MM-20191111: This fixed parameter was added to remove dependence on
+	the length of the growthlane, which was previously passed as normalizer to the functions, that use this.
+	It should be removed in favor of having costs based on relative growth and/or movement at some point.
+	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
+	we are keeping for the moment.*/
+
+    private Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize, boolean touchesCellDetectionRoiTop) {
+        float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
+        float exponent;
+        if (scaledSizeDifference > 0) { // growth
+            scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
+            exponent = 4.0f;
+        } else { // shrinkage
+            if (touchesCellDetectionRoiTop) {
+                return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
+            }
+            exponent = 40.0f;
+        }
+        scaledSizeDifference = Math.abs(scaledSizeDifference);
+
+        float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
+
+        return new ValuePair<>(growthCost, new float[]{growthCost});
     }
 }

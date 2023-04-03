@@ -643,6 +643,11 @@ public class PseudoDic {
                         getCostFactory(),
                         getMigrationCostCalculator(),
                         getConfigurationManager());
+            case LEGACY_WITH_MODIFICATIONS_V001:
+                return new AssignmentCostCalculatorLegacyModified1(
+                        getCostFactory(),
+                        getMigrationCostCalculator(),
+                        getConfigurationManager());
             case USING_COMPONENT_LENGTH:
                 return new AssignmentCostCalculatorUsingComponentLength(
                         getConfigurationManager(),

@@ -26,10 +26,9 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
 
 //        tests.run_interactive__theo_20221220_25_36();
 //        tests.run_interactive__theo_20221220_28_35();
+        tests.run_interactive__lis_20211026_7_12();
 //        tests.run_interactive__lis_20220530_19_7();
-//        tests.run_interactive__lis_20211026_7_12();
 //        tests.run_interactive__lis_20220530_11_29();
-//        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_18_2();
     }
@@ -65,8 +64,8 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     }
 
     public void run_interactive__lis_20211026_7_12() {
-        tmin = 300;
-        tmax = 400;
+        tmin = 320;
+        tmax = 370;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20211026_7_12/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";

@@ -26,10 +26,10 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
 
 //        tests.run_interactive__theo_20221220_25_36_400ff();
 //        tests.run_interactive__theo_20221220_25_36_940ff();
-        tests.run_interactive__theo_20221220_28_35_260ff();
+//        tests.run_interactive__theo_20221220_28_35_260ff();
 //        tests.run_interactive__theo_20221220_28_35();
 //        tests.run_interactive__lis_20211026_7_12();
-//        tests.run_interactive__lis_20220530_11_29();
+        tests.run_interactive__lis_20220530_11_29_360ff();
 //        tests.run_interactive__lis_20220530_12_7();
 //        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_18_2();
@@ -111,7 +111,7 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
-    public void run_interactive__lis_20220530_11_29() {
+    public void run_interactive__lis_20220530_11_29_360ff() {
         tmin = 360;
         tmax = 370;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/lis_20220530_11_29/20220530_VNG1040_AB2h_1_MMStack_Pos11_GL29.tif");

@@ -26,14 +26,23 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
 
 //        tests.run_interactive__theo_20221220_25_36_400ff();
 //        tests.run_interactive__theo_20221220_25_36_940ff();
+        tests.run_interactive__theo_20221220_28_35_260ff();
 //        tests.run_interactive__theo_20221220_28_35();
 //        tests.run_interactive__lis_20211026_7_12();
 //        tests.run_interactive__lis_20220530_11_29();
 //        tests.run_interactive__lis_20220530_12_7();
 //        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_18_2();
-        tests.run_interactive__lis_20220530_19_7_175ff();
+//        tests.run_interactive__lis_20220530_19_7_175ff();
 //        tests.run_interactive__lis_20220530_19_7_75ff();
+
+        /* Additional tests to include:
+        - theo_20221220_21_9_245ff, why: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 13
+        - DONE - theo_20221220_28_35_260ff, why: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 17
+        - 20220530_19_11_28ff, why: multiple splitting; see: 20230404__errors_overview.pptx, slide 9
+        - 20220530_18_8_147ff, why: splitting of component; see: 20230404__errors_overview.pptx, slide 12
+        - 20220530_18_8_238ff, why: incorrect division; see: 20230404__errors_overview.pptx, slide 12
+        */
     }
 
     /**
@@ -52,6 +61,15 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
         tmin = 400;
         tmax = 500;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/theo_20221220_25_36/20221220_glu_spcm_1_MMStack_Pos25_GL36.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive__theo_20221220_28_35_260ff() {
+        tmin = 260;
+        tmax = 280;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/theo_20221220_28_35/20221220_glu_spcm_1_MMStack_Pos28_GL35.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});

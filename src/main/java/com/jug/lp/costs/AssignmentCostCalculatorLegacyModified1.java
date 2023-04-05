@@ -240,9 +240,12 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
             exponent = 4.0f;
         } else { // shrinkage
             if (touchesCellDetectionRoiTop) {
-                return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
+//                return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
+                exponent = 1.0f;
+            } else {
+                exponent = 40.0f;
+
             }
-            exponent = 40.0f;
         }
         scaledSizeDifference = Math.abs(scaledSizeDifference);
 

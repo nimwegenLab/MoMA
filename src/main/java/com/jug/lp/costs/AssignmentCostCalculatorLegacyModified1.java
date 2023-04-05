@@ -17,8 +17,6 @@ import static java.util.Objects.isNull;
 public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostCalculator {
     private IConfiguration configurationManager;
 
-    int offset = 15;
-
     public AssignmentCostCalculatorLegacyModified1(IConfiguration configurationManager) {
         this.configurationManager = configurationManager;
     }
@@ -44,6 +42,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
         double averageMigrationCost = calculateCostForMapping(sourceComponent, targetComponent);
 
+        int offset = 15;
         Integer componentBoundaryTop = targetComponentBoundaries.getA();
         boolean targetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offset);
 
@@ -111,13 +110,6 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
 
-        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop() + offset);
-
-        double addedCostToAvoidIncorrectDivisions = 0;
-        if (upperTargetTouchesCellDetectionRoiTop) {
-            addedCostToAvoidIncorrectDivisions = 0.01;
-        }
-
         final long sourceSize = getComponentSize(sourceComponent, 1);
         final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
@@ -126,9 +118,11 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
         double averageMigrationCost = this.calculateCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
+        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
+
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 
-        float divisionCost = growthCost.getA() + (float) averageMigrationCost + (float) addedCostToAvoidIncorrectDivisions;
+        float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
     }
 

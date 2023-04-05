@@ -24,7 +24,7 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     public static void main(String[] args) {
         Feature__20230330_2_improve_tracking_performance_at_detection_roi_border tests = new Feature__20230330_2_improve_tracking_performance_at_detection_roi_border();
 
-//        tests.run_interactive__theo_20221220_25_36_400ff();
+        tests.run_interactive__theo_20221220_25_36_400ff();
 //        tests.run_interactive__theo_20221220_25_36_940ff();
 //        tests.run_interactive__theo_20221220_28_35();
 //        tests.run_interactive__lis_20211026_7_12();
@@ -32,8 +32,14 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
 //        tests.run_interactive__lis_20220530_12_7();
 //        tests.run_interactive__lis_20220530_12_26();
 //        tests.run_interactive__lis_20220530_18_2();
-        tests.run_interactive__lis_20220530_19_7_175ff();
+//        tests.run_interactive__lis_20220530_19_7_175ff();
 //        tests.run_interactive__lis_20220530_19_7_75ff();
+
+        /* Additional tests to include:
+        - 20220530_19_11_28ff, why: multiple splitting; see: 20230404__errors_overview.pptx, slide 9
+        - 20220530_18_8_147ff, why: splitting of component; see: 20230404__errors_overview.pptx, slide 12
+        - 20220530_18_8_238ff, why: incorrect division; see: 20230404__errors_overview.pptx, slide 12
+        */
     }
 
     /**

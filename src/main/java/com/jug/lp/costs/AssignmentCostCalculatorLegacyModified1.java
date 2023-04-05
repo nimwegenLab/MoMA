@@ -6,8 +6,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
-import java.util.Arrays;
-
 import static com.jug.util.ComponentTreeUtils.getComponentSize;
 import static java.util.Objects.isNull;
 
@@ -39,8 +37,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
-//        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
-        double averageMigrationCost = calculateCostForMapping(sourceComponent, targetComponent);
+        double averageMigrationCost = calculateMigrationCostForMapping(sourceComponent, targetComponent);
 
         int offset = 15;
         Integer componentBoundaryTop = targetComponentBoundaries.getA();
@@ -56,7 +53,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         return mappingCost;
     }
 
-    private double calculateCostForMapping(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
+    private double calculateMigrationCostForMapping(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> targetComponent) {
         final ValuePair<Integer, Integer> sourceComponentBoundaries = sourceComponent.getVerticalComponentLimits();
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
@@ -115,8 +112,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
         final long summedTargetSize = upperTargetSize + lowerTargetSize;
 
-//        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
-        double averageMigrationCost = this.calculateCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
+        double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
         boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
 
@@ -126,9 +122,9 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         return divisionCost;
     }
 
-    private float calculateCostForDivision(AdvancedComponent<FloatType> sourceComponent,
-                                           AdvancedComponent<FloatType> lowerTargetComponent,
-                                           AdvancedComponent<FloatType> upperTargetComponent) {
+    private float calculateMigrationCostForDivision(AdvancedComponent<FloatType> sourceComponent,
+                                                    AdvancedComponent<FloatType> lowerTargetComponent,
+                                                    AdvancedComponent<FloatType> upperTargetComponent) {
 //        AdvancedComponent<FloatType> lowerTargetComponent = targetComponents.get(0);
 //        AdvancedComponent<FloatType> upperTargetComponent = targetComponents.get(1);
 

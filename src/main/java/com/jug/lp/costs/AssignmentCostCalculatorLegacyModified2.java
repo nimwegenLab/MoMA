@@ -248,10 +248,10 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
         float exponent;
         if (scaledSizeDifference > 0) { // growth
-//            scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
+            scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
             exponent = 4.0f;
         } else { // shrinkage
-//            scaledSizeDifference = Math.min(0, scaledSizeDifference + 0.05f); // shrinking up 5% is free
+            scaledSizeDifference = Math.min(0, scaledSizeDifference + 0.05f); // shrinking up 5% is free
             exponent = 4.0f;
         }
         scaledSizeDifference = Math.abs(scaledSizeDifference);

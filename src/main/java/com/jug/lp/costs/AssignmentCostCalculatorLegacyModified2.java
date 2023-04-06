@@ -259,10 +259,13 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     }
 
     public double calculateMigrationCostUsingTotalCellLengthBelow(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> lowerTargetComponent) {
+        int sourceComponentTotalCellLengthBelow = sourceComponent.getTotalLengthOfComponentsBelow();
+        int targetComponentTotalCellLengthBelow = lowerTargetComponent.getTotalLengthOfComponentsBelow();
+
         final Pair<Float, float[]> migrationCostOfLowerBoundary =
                 getMigrationCost(
-                        -sourceComponent.getTotalLengthOfComponentsBelow(),
-                        -lowerTargetComponent.getTotalLengthOfComponentsBelow()); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
+                        -sourceComponentTotalCellLengthBelow,
+                        -targetComponentTotalCellLengthBelow); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
         return averageMigrationCost;
     }

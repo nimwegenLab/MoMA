@@ -443,6 +443,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             case "legacy_with_modifications_v001":
                 assignmentCostCalculationMethod = AssignmentCostCalculationMethod.LEGACY_WITH_MODIFICATIONS_V001;
                 break;
+            case "legacy_with_modifications_v002":
+                assignmentCostCalculationMethod = AssignmentCostCalculationMethod.LEGACY_WITH_MODIFICATIONS_V002;
+                break;
             case "using_component_length":
                 assignmentCostCalculationMethod = AssignmentCostCalculationMethod.USING_COMPONENT_LENGTH;
                 break;

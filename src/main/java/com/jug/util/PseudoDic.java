@@ -645,6 +645,8 @@ public class PseudoDic {
                         getConfigurationManager());
             case LEGACY_WITH_MODIFICATIONS_V001:
                 return new AssignmentCostCalculatorLegacyModified1(getConfigurationManager());
+            case LEGACY_WITH_MODIFICATIONS_V002:
+                return new AssignmentCostCalculatorLegacyModified2(getConfigurationManager());
             case USING_COMPONENT_LENGTH:
                 return new AssignmentCostCalculatorUsingComponentLength(
                         getConfigurationManager(),

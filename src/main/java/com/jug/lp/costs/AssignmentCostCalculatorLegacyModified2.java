@@ -14,6 +14,8 @@ import static com.jug.util.ComponentTreeUtils.getComponentSize;
 public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostCalculator {
     private IConfiguration configurationManager;
 
+    int offsetForDetectingIfCellTouchesRoiTop = 15;
+
     public AssignmentCostCalculatorLegacyModified2(IConfiguration configurationManager) {
         this.configurationManager = configurationManager;
     }
@@ -46,9 +48,10 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         double averageMigrationCost = calculateMigrationCostUsingTotalCellAreaBelow(sourceComponent, targetComponent);
 
 //        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-        boolean targetTouchesCellDetectionRoiTop = false;
+//        boolean targetTouchesCellDetectionRoiTop = false;
+        boolean targetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
 
-        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
+        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize);
 
         float mappingCost = growthCost.getA() + (float)averageMigrationCost;
         return mappingCost;
@@ -127,10 +130,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 //        double averageMigrationCost = calculateMigrationCostUsingTotalCellLengthBelow(sourceComponent, lowerTargetComponent);
         double averageMigrationCost = calculateMigrationCostUsingTotalCellAreaBelow(sourceComponent, lowerTargetComponent);
 
-//        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-        boolean upperTargetTouchesCellDetectionRoiTop = false;
-
-        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
+        final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize);
 
         float divisionCost = growthCost.getA() + (float) averageMigrationCost;
         return divisionCost;
@@ -181,6 +181,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent,
                                        AdvancedComponent<FloatType> targetComponent) {
         final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
+//        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
         return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
     }
 
@@ -192,6 +193,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                 sourceComponent,
                 lowerTargetComponent,
                 upperTargetComponent);
+
+//        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(upperTargetComponent);
 
         float cost = costModulationForSubstitutedILP(
                 sourceComponent.getCost(),
@@ -241,16 +244,13 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 	NOTE: 340px is roughly the length of the GL, when Florian Jug designed the cost functions, so that is, the value that
 	we are keeping for the moment.*/
 
-    private Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize, boolean touchesCellDetectionRoiTop) {
+    private Pair<Float, float[]> getGrowthCost(final float sourceSize, final float targetSize) {
         float scaledSizeDifference = (targetSize - sourceSize) / normalizer; /* TODO-MM-20191119: here we scale the size change with typical GL length; this does not make sense; it makes more sense to look at the relative size change */
         float exponent;
         if (scaledSizeDifference > 0) { // growth
             scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
             exponent = 4.0f;
         } else { // shrinkage
-            if (touchesCellDetectionRoiTop) {
-                return new ValuePair<>(0.0f, new float[]{0.0f}); /* do not penalize shrinkage, when the target component(s) touch ROI detect boundary; we do this because in this situation cells usually are moving out of the GL/detection-ROI and thus shrink only "apparently", because only part of them is observed */
-            }
             exponent = 40.0f;
         }
         scaledSizeDifference = Math.abs(scaledSizeDifference);
@@ -284,5 +284,10 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                         -targetComponentTotalCellLengthBelow); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
         final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
         return averageMigrationCost;
+    }
+
+    private boolean componentTouchesDetectionRoiTop(AdvancedComponent<FloatType> component) {
+        Integer componentBoundaryTop = component.getVerticalComponentLimits().getA();
+        return (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
     }
 }

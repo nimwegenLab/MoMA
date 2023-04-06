@@ -43,8 +43,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         double averageMigrationCost = calculateMigrationCostForMapping(sourceComponent, targetComponent);
 
-        Integer componentBoundaryTop = targetComponentBoundaries.getA();
-        boolean targetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
+        boolean targetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
 
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
@@ -120,8 +119,7 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
-        Integer componentBoundaryTop = upperTargetBoundaries.getA();
-        boolean upperTargetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
+        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(upperTargetComponent);
 
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 
@@ -254,5 +252,10 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
         float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
 
         return new ValuePair<>(growthCost, new float[]{growthCost});
+    }
+
+    private boolean componentTouchesDetectionRoiTop(AdvancedComponent<FloatType> component) {
+        Integer componentBoundaryTop = component.getVerticalComponentLimits().getA();
+        return (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
     }
 }

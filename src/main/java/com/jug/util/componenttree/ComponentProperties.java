@@ -13,13 +13,13 @@ import net.imglib2.roi.geom.real.Polygon2D;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.ValuePair;
-import net.imglib2.view.Views;
 import org.javatuples.Sextet;
 import org.jetbrains.annotations.NotNull;
 
 public class ComponentProperties {
     private final LabelRegionToPolygonConverter regionToPolygonConverter;
     private final OpService ops;
+    private final OrientedBoundingBoxCalculator boundingBoxCalculator;
     private Imglib2Utils imglib2Utils;
     private ICostFactory costFactory;
     private IConfiguration configuration;
@@ -33,6 +33,14 @@ public class ComponentProperties {
         regionToPolygonConverter.setContext(ops.context());
         polygonMomentsCalculator = new CentralMomentsCalculator();
         this.ops = ops;
+        boundingBoxCalculator = new OrientedBoundingBoxCalculator();
+    }
+
+    public BoundingBoxProperties calculateOrientedBoundingBoxProperties(AdvancedComponent<?> component) {
+        final Polygon2D poly = regionToPolygonConverter.convert(component.getRegion(), Polygon2D.class);
+        Polygon2D orientedBoundingBoxPolygon = boundingBoxCalculator.calculate(poly);
+        BoundingBoxProperties result = new BoundingBoxProperties(orientedBoundingBoxPolygon);
+        return result;
     }
 
     public synchronized float getCost(AdvancedComponent<?> component) {

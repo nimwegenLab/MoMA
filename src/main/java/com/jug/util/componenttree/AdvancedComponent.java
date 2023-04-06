@@ -66,6 +66,7 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
     private List<AdvancedComponent<T>> componentTreeRoots;
 
     private IImageProvider imageProvider;
+    private BoundingBoxProperties orientedBoundingBoxProperties = null;
 
     /**
      * Constructor for fully connected component-node (with parent or children).
@@ -315,9 +316,14 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         }
     }
 
-    double majorAxisLength = -1;
-    double minorAxisLength = -1;
+    public BoundingBoxProperties getOrientedBoundingBoxProperties() {
+        if (isNull(orientedBoundingBoxProperties)) {
+            orientedBoundingBoxProperties = componentProperties.calculateOrientedBoundingBoxProperties(this);
+        }
+        return orientedBoundingBoxProperties;
+    }
 
+    double majorAxisLength = -1;
     public double getMajorAxisLength() {
         if (majorAxisLength > 0) {
             return majorAxisLength;
@@ -327,6 +333,8 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
         majorAxisLength = minorAndMajorAxis.getB();
         return majorAxisLength;
     }
+
+    double minorAxisLength = -1;
 
     public double getMinorAxisLength() {
         if (minorAxisLength > 0) {

@@ -33,8 +33,10 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             final AdvancedComponent<FloatType> targetComponent) {
 //        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
 //        final long targetComponentSize = getComponentSize(targetComponent, 1);
-        final float sourceComponentSize = (float)sourceComponent.getMajorAxisLength();
-        final float targetComponentSize = (float)targetComponent.getMajorAxisLength();
+//        final float sourceComponentSize = (float)sourceComponent.getMajorAxisLength();
+//        final float targetComponentSize = (float)targetComponent.getMajorAxisLength();
+        final float sourceComponentSize = (float) sourceComponent.getOrientedBoundingBoxProperties().getHeight();
+        final float targetComponentSize = (float) targetComponent.getOrientedBoundingBoxProperties().getHeight();
 
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
@@ -107,9 +109,15 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 //        final long sourceSize = getComponentSize(sourceComponent, 1);
 //        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
 //        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
-        final float sourceSize = (float) sourceComponent.getMajorAxisLength();
-        final float upperTargetSize = (float) upperTargetComponent.getMajorAxisLength();
-        final float lowerTargetSize = (float) lowerTargetComponent.getMajorAxisLength();
+
+//        final float sourceSize = (float) sourceComponent.getMajorAxisLength();
+//        final float upperTargetSize = (float) upperTargetComponent.getMajorAxisLength();
+//        final float lowerTargetSize = (float) lowerTargetComponent.getMajorAxisLength();
+
+        final float sourceSize = (float) sourceComponent.getOrientedBoundingBoxProperties().getHeight();
+        final float upperTargetSize = (float) upperTargetComponent.getOrientedBoundingBoxProperties().getHeight();
+        final float lowerTargetSize = (float) lowerTargetComponent.getOrientedBoundingBoxProperties().getHeight();
+
         final float summedTargetSize = upperTargetSize + lowerTargetSize;
 
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));

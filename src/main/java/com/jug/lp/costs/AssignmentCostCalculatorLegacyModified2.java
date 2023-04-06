@@ -41,7 +41,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(targetComponent));
-        double averageMigrationCost = calculateMigrationCostForMapping(sourceComponent, targetComponent);
+//        double averageMigrationCost = calculateMigrationCostForMapping(sourceComponent, targetComponent);
+        double averageMigrationCost = calculateMigrationCostUsingTotalCellLengthBelow(sourceComponent, targetComponent);
 
 //        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
         boolean targetTouchesCellDetectionRoiTop = false;
@@ -121,7 +122,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         final float summedTargetSize = upperTargetSize + lowerTargetSize;
 
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
-        double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
+//        double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
+        double averageMigrationCost = calculateMigrationCostUsingTotalCellLengthBelow(sourceComponent, lowerTargetComponent);
 
 //        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
         boolean upperTargetTouchesCellDetectionRoiTop = false;
@@ -254,5 +256,14 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         float growthCost = scaledSizeDifference * (float) Math.pow(1 + scaledSizeDifference, exponent); // since deltaL is <1 we add 1 before taking its power
 
         return new ValuePair<>(growthCost, new float[]{growthCost});
+    }
+
+    public double calculateMigrationCostUsingTotalCellLengthBelow(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> lowerTargetComponent) {
+        final Pair<Float, float[]> migrationCostOfLowerBoundary =
+                getMigrationCost(
+                        -sourceComponent.getTotalLengthOfComponentsBelow(),
+                        -lowerTargetComponent.getTotalLengthOfComponentsBelow()); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
+        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
+        return averageMigrationCost;
     }
 }

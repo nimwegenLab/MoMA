@@ -251,6 +251,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             scaledSizeDifference = Math.max(0, scaledSizeDifference - 0.05f); // growing up 5% is free
             exponent = 4.0f;
         } else { // shrinkage
+            scaledSizeDifference = Math.min(0, scaledSizeDifference + 0.05f); // shrinking up 5% is free
             exponent = 4.0f;
         }
         scaledSizeDifference = Math.abs(scaledSizeDifference);

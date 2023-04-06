@@ -15,6 +15,8 @@ import static java.util.Objects.isNull;
 public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostCalculator {
     private IConfiguration configurationManager;
 
+    int offsetForDetectingIfCellTouchesRoiTop = 15;
+
     public AssignmentCostCalculatorLegacyModified1(IConfiguration configurationManager) {
         this.configurationManager = configurationManager;
     }
@@ -41,9 +43,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         double averageMigrationCost = calculateMigrationCostForMapping(sourceComponent, targetComponent);
 
-        int offset = 15;
         Integer componentBoundaryTop = targetComponentBoundaries.getA();
-        boolean targetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offset);
+        boolean targetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
 
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize, targetTouchesCellDetectionRoiTop);
 
@@ -119,7 +120,8 @@ public class AssignmentCostCalculatorLegacyModified1 implements IAssignmentCostC
 
         double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);
 
-        boolean upperTargetTouchesCellDetectionRoiTop = (upperTargetBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
+        Integer componentBoundaryTop = upperTargetBoundaries.getA();
+        boolean upperTargetTouchesCellDetectionRoiTop = (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
 
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceSize, summedTargetSize, upperTargetTouchesCellDetectionRoiTop);
 

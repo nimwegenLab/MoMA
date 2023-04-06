@@ -31,8 +31,10 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     public Float compatibilityCostOfMapping(
             final AdvancedComponent<FloatType> sourceComponent,
             final AdvancedComponent<FloatType> targetComponent) {
-        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
-        final long targetComponentSize = getComponentSize(targetComponent, 1);
+//        final long sourceComponentSize = getComponentSize(sourceComponent, 1);
+//        final long targetComponentSize = getComponentSize(targetComponent, 1);
+        final float sourceComponentSize = (float)sourceComponent.getMajorAxisLength();
+        final float targetComponentSize = (float)targetComponent.getMajorAxisLength();
 
         final ValuePair<Integer, Integer> targetComponentBoundaries = targetComponent.getVerticalComponentLimits();
 
@@ -101,10 +103,13 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 
         final ValuePair<Integer, Integer> upperTargetBoundaries = upperTargetComponent.getVerticalComponentLimits();
 
-        final long sourceSize = getComponentSize(sourceComponent, 1);
-        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
-        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
-        final long summedTargetSize = upperTargetSize + lowerTargetSize;
+//        final long sourceSize = getComponentSize(sourceComponent, 1);
+//        final long upperTargetSize = getComponentSize(upperTargetComponent, 1);
+//        final long lowerTargetSize = getComponentSize(lowerTargetComponent, 1);
+        final float sourceSize = (float) sourceComponent.getMajorAxisLength();
+        final float upperTargetSize = (float) upperTargetComponent.getMajorAxisLength();
+        final float lowerTargetSize = (float) lowerTargetComponent.getMajorAxisLength();
+        final float summedTargetSize = upperTargetSize + lowerTargetSize;
 
 //        double averageMigrationCost = migrationCostCalculator.calculateCost(sourceComponent, Arrays.asList(lowerTargetComponent, upperTargetComponent));
         double averageMigrationCost = this.calculateMigrationCostForDivision(sourceComponent, lowerTargetComponent, upperTargetComponent);

@@ -231,7 +231,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             exponent = 3.0f;
         } else { // downward migration
 //            Math.max(0, scaledPositionDifference - 0.01f);  // going downwards for up to 1% is for free...
-            exponent = 6.0f;
+            scaledPositionDifference = Math.min(0, scaledPositionDifference + 0.05f); // going upwards for up to 5% is for free...
+            exponent = 3.0f;
         }
         scaledPositionDifference = Math.abs(scaledPositionDifference);
         migrationCost = scaledPositionDifference * (float) Math.pow(1 + scaledPositionDifference, exponent);

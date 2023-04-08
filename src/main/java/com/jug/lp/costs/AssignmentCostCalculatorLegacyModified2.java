@@ -274,18 +274,17 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     }
 
     public double calculateMigrationCostUsingTotalCellAreaBelow(AdvancedComponent<FloatType> sourceComponent, AdvancedComponent<FloatType> lowerTargetComponent) {
-//        float averageCellWidth = 8; /* average cell width in [px]; we use it to scale the cell area to a roughly corresponding cell length */
-//
-//        float sourceComponentTotalCellLengthBelow = ((float) sourceComponent.getTotalAreaOfComponentsBelow()) / averageCellWidth;
-//        float targetComponentTotalCellLengthBelow = ((float) lowerTargetComponent.getTotalAreaOfComponentsBelow()) / averageCellWidth;
-//
-//        final Pair<Float, float[]> migrationCostOfLowerBoundary =
-//                getMigrationCost(
-//                        -sourceComponentTotalCellLengthBelow,
-//                        -targetComponentTotalCellLengthBelow); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
-//        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
-//        return averageMigrationCost;
-        return 0;
+        float averageCellWidth = 8; /* average cell width in [px]; we use it to scale the cell area to a roughly corresponding cell length */
+
+        float sourceComponentTotalCellLengthBelow = ((float) sourceComponent.getTotalAreaOfComponentsBelow()) / averageCellWidth;
+        float targetComponentTotalCellLengthBelow = ((float) lowerTargetComponent.getTotalAreaOfComponentsBelow()) / averageCellWidth;
+
+        final Pair<Float, float[]> migrationCostOfLowerBoundary =
+                getMigrationCost(
+                        -sourceComponentTotalCellLengthBelow,
+                        -targetComponentTotalCellLengthBelow); /* NOTE: We need to pass the negative total cell mass to CostFactory.getMigrationCost(), because getMigrationCost() assumes the y-axis points from the image top towards the bottom (ie. matrix-coordinates as used images). But this is the inverse for the total cell mass.*/
+        final float averageMigrationCost = migrationCostOfLowerBoundary.getA();
+        return averageMigrationCost;
     }
 
     private boolean componentTouchesDetectionRoiTop(AdvancedComponent<FloatType> component) {

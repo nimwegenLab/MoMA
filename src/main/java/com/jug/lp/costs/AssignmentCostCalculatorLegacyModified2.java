@@ -47,10 +47,6 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 //        double averageMigrationCost = calculateMigrationCostUsingTotalCellLengthBelow(sourceComponent, targetComponent);
         double averageMigrationCost = calculateMigrationCostUsingTotalCellAreaBelow(sourceComponent, targetComponent);
 
-//        boolean targetTouchesCellDetectionRoiTop = (targetComponentBoundaries.getA() <= configurationManager.getCellDetectionRoiOffsetTop());
-//        boolean targetTouchesCellDetectionRoiTop = false;
-        boolean targetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
-
         final Pair<Float, float[]> growthCost = this.getGrowthCost(sourceComponentSize, targetComponentSize);
 
         float mappingCost = growthCost.getA() + (float)averageMigrationCost;
@@ -181,7 +177,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent,
                                        AdvancedComponent<FloatType> targetComponent) {
         final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-//        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
+        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
         return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
     }
 
@@ -194,13 +190,14 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                 lowerTargetComponent,
                 upperTargetComponent);
 
-//        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(upperTargetComponent);
-
         float cost = costModulationForSubstitutedILP(
                 sourceComponent.getCost(),
                 upperTargetComponent.getCost(),
                 lowerTargetComponent.getCost(),
                 compatibilityCostOfDivision);
+
+        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(upperTargetComponent);
+
         return cost;
     }
 

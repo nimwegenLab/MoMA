@@ -6,8 +6,6 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
-import static com.jug.util.ComponentTreeUtils.getComponentSize;
-
 /**
  * This class implements the legacy methods for calculating the assignment costs.
  */
@@ -15,6 +13,14 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     private IConfiguration configurationManager;
 
     int offsetForDetectingIfCellTouchesRoiTop = 15;
+
+    /**
+     * If the size of a component at the detection ROI border is below this threshold, it is considered to be too small
+     * to be correctly detected by U-Net.
+     */
+    private float sizeThresholdForComponentsAtDetectionRoiTop = 15;
+
+    private double maxAssignmentCost = 10.0;
 
     public AssignmentCostCalculatorLegacyModified2(IConfiguration configurationManager) {
         this.configurationManager = configurationManager;
@@ -177,7 +183,11 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
     public double calculateMappingCost(AdvancedComponent<FloatType> sourceComponent,
                                        AdvancedComponent<FloatType> targetComponent) {
         final Float compatibilityCostOfMapping = compatibilityCostOfMapping(sourceComponent, targetComponent);
-        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(targetComponent);
+
+        if (componentIsCloseToDetectionRoiTop(targetComponent) && componentIsTooSmallAtDetectionRoiTop(targetComponent)) {
+            return maxAssignmentCost;
+        }
+
         return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
     }
 
@@ -196,7 +206,9 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                 lowerTargetComponent.getCost(),
                 compatibilityCostOfDivision);
 
-        boolean upperTargetTouchesCellDetectionRoiTop = componentTouchesDetectionRoiTop(upperTargetComponent);
+        if (componentIsCloseToDetectionRoiTop(upperTargetComponent) && componentIsTooSmallAtDetectionRoiTop(upperTargetComponent)) {
+            return maxAssignmentCost;
+        }
 
         return cost;
     }
@@ -285,8 +297,13 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         return averageMigrationCost;
     }
 
-    private boolean componentTouchesDetectionRoiTop(AdvancedComponent<FloatType> component) {
+    private boolean componentIsCloseToDetectionRoiTop(AdvancedComponent<FloatType> component) {
         Integer componentBoundaryTop = component.getVerticalComponentLimits().getA();
         return (componentBoundaryTop <= configurationManager.getCellDetectionRoiOffsetTop() + offsetForDetectingIfCellTouchesRoiTop);
+    }
+
+    private boolean componentIsTooSmallAtDetectionRoiTop(AdvancedComponent<FloatType> component) {
+        final float sourceComponentSize = (float) component.getOrientedBoundingBoxProperties().getHeight();
+        return sourceComponentSize < sizeThresholdForComponentsAtDetectionRoiTop;
     }
 }

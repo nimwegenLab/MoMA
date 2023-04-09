@@ -24,7 +24,8 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     public static void main(String[] args) {
         Feature__20230330_2_improve_tracking_performance_at_detection_roi_border tests = new Feature__20230330_2_improve_tracking_performance_at_detection_roi_border();
 
-        tests.run_interactive__theo_20221220_21_9_240ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 13*/
+//        tests.run_interactive__theo_20221220_21_9_240ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 13*/
+        tests.run_interactive__theo_20221220_21_9_isolate_tracking_error();
 //        tests.run_interactive__theo_20221220_25_36_400ff();
 //        tests.run_interactive__theo_20221220_25_36_940ff();
 //        tests.run_interactive__theo_20221220_28_35_260ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 17 */
@@ -50,6 +51,15 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     public void run_interactive__theo_20221220_21_9_240ff() {
         tmin = 240;
         tmax = 260;
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/theo_20221220_21_9/20221220_glu_spcm_1_MMStack_Pos21_GL9.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_interactive__theo_20221220_21_9_isolate_tracking_error() {
+        tmin = 245;
+        tmax = 248;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/theo_20221220_21_9/20221220_glu_spcm_1_MMStack_Pos21_GL9.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_interactive";

@@ -253,6 +253,9 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 
     @Override
     public double calculateEnterCost(AdvancedComponent<FloatType> targetComponent) {
+        if (componentIsCloseToDetectionRoiTop(targetComponent) && componentIsTooSmallAtDetectionRoiTop(targetComponent)) {
+            return 0;
+        }
         return configurationManager.getEnterAssignmentCost();
     }
 

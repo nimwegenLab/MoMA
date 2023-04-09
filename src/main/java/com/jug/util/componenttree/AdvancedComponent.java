@@ -276,6 +276,10 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
 //        return new RegionLocalizableIterator(region);
 //    }
 
+    public int getNumberOfChildren() {
+        return children.size();
+    }
+
     @Override
     public List<AdvancedComponent<T>> getChildren() {
         return children;

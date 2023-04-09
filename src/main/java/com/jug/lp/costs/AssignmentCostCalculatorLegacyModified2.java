@@ -6,6 +6,9 @@ import net.imglib2.type.numeric.real.FloatType;
 import net.imglib2.util.Pair;
 import net.imglib2.util.ValuePair;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class implements the legacy methods for calculating the assignment costs.
  */
@@ -188,7 +191,9 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             return maxAssignmentCost;
         }
 
-        return costModulationForSubstitutedILP(sourceComponent.getCost(), targetComponent.getCost(), compatibilityCostOfMapping);
+        double targetComponentCost = calculateCostOfComponentThatCanTouchBorder(targetComponent);
+
+        return costModulationForSubstitutedILP(sourceComponent.getCost(), (float) targetComponentCost, compatibilityCostOfMapping);
     }
 
     @Override
@@ -200,9 +205,11 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                 lowerTargetComponent,
                 upperTargetComponent);
 
+        double upperComponentCost = calculateCostOfComponentThatCanTouchBorder(upperTargetComponent);
+
         float cost = costModulationForSubstitutedILP(
                 sourceComponent.getCost(),
-                upperTargetComponent.getCost(),
+                (float) upperComponentCost,
                 lowerTargetComponent.getCost(),
                 compatibilityCostOfDivision);
 
@@ -211,6 +218,27 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         }
 
         return cost;
+    }
+
+    private double calculateCostOfComponentThatCanTouchBorder(AdvancedComponent<FloatType> component) {
+        double upperChildCost = 0;
+        if (componentIsCloseToDetectionRoiTop(component) && !component.getChildren().isEmpty()) { /* component has child components, which could be smaller than the threshold for component size */
+            List<AdvancedComponent> upperChildren = recursivelyGetListOfUpperChildrenInTree(new ArrayList<>(), component); /* list of upper child components in component tree */
+            for (AdvancedComponent<FloatType> upperChild : upperChildren){
+                if (componentIsTooSmallAtDetectionRoiTop(upperChild) && componentIsCloseToDetectionRoiTop(upperChild)){
+                    upperChildCost = upperChild.getCost();
+                }
+            }
+        }
+        return component.getCost() - upperChildCost;
+    }
+
+    private List<AdvancedComponent> recursivelyGetListOfUpperChildrenInTree(List<AdvancedComponent> componentList, AdvancedComponent<FloatType> component) {
+        if (component.getNumberOfChildren() < 1) {
+            return componentList;
+        }
+        AdvancedComponent<FloatType> upperChild = component.getChildren().get(0);
+        return recursivelyGetListOfUpperChildrenInTree(componentList, upperChild);
     }
 
     @Override

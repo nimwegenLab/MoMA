@@ -24,8 +24,8 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     public static void main(String[] args) {
         Feature__20230330_2_improve_tracking_performance_at_detection_roi_border tests = new Feature__20230330_2_improve_tracking_performance_at_detection_roi_border();
 
-//        tests.run_interactive__theo_20221220_21_9_240ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 13*/
-        tests.run_interactive__theo_20221220_21_9_isolate_tracking_error();
+        /* TEST FOR ASSESSING TRACKING PERFORMANCE */
+        tests.run_interactive__theo_20221220_21_9_240ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 13*/
 //        tests.run_interactive__theo_20221220_25_36_400ff();
 //        tests.run_interactive__theo_20221220_25_36_940ff();
 //        tests.run_interactive__theo_20221220_28_35_260ff(); /* note: tracking error that is likely due to the component-lengths to being accurate enough (i.e. using the vertical bounding box instead of the oriented one); see: 20230404__errors_overview.pptx, slide 17 */
@@ -43,6 +43,9 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
         - 20220530_18_8_147ff, why: splitting of component; see: 20230404__errors_overview.pptx, slide 12
         - 20220530_18_8_238ff, why: incorrect division; see: 20230404__errors_overview.pptx, slide 12
         */
+
+        /* TEST FOR DEBUGGING TRACKING PERFORMANCE */
+//        tests.run_interactive__theo_20221220_21_9_isolate_tracking_error();
     }
 
     /**

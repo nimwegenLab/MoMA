@@ -21,7 +21,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
      * If the size of a component at the detection ROI border is below this threshold, it is considered to be too small
      * to be correctly detected by U-Net.
      */
-    private float sizeThresholdForComponentsAtDetectionRoiTop = 25;
+    private float sizeThresholdForComponentsAtDetectionRoiTop = 15;
 
     private double maxAssignmentCost = 10.0;
 
@@ -191,7 +191,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             return maxAssignmentCost;
         }
 
-        double targetComponentCost = calculateCostOfComponentThatCanTouchBorder(targetComponent);
+//        double targetComponentCost = calculateCostOfComponentThatCanTouchBorder(targetComponent);
+        double targetComponentCost = targetComponent.getCost();
 
         return costModulationForSubstitutedILP(sourceComponent.getCost(), (float) targetComponentCost, compatibilityCostOfMapping);
     }
@@ -205,7 +206,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
                 lowerTargetComponent,
                 upperTargetComponent);
 
-        double upperComponentCost = calculateCostOfComponentThatCanTouchBorder(upperTargetComponent);
+//        double upperComponentCost = calculateCostOfComponentThatCanTouchBorder(upperTargetComponent);
+        double upperComponentCost = upperTargetComponent.getCost();
 
         float cost = costModulationForSubstitutedILP(
                 sourceComponent.getCost(),

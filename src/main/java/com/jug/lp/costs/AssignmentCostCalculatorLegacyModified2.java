@@ -224,8 +224,8 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
         double upperChildCost = 0;
         if (componentIsCloseToDetectionRoiTop(component) && !component.getChildren().isEmpty()) { /* component has child components, which could be smaller than the threshold for component size */
             List<AdvancedComponent> upperChildren = recursivelyGetListOfUpperChildrenInTree(new ArrayList<>(), component); /* list of upper child components in component tree */
-            for (AdvancedComponent<FloatType> upperChild : upperChildren){
-                if (componentIsTooSmallAtDetectionRoiTop(upperChild) && componentIsCloseToDetectionRoiTop(upperChild)){
+            for (AdvancedComponent<FloatType> upperChild : upperChildren) {
+                if (componentIsTooSmallAtDetectionRoiTop(upperChild) && componentIsCloseToDetectionRoiTop(upperChild)) {
                     upperChildCost = upperChild.getCost();
                 }
             }
@@ -238,6 +238,7 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
             return componentList;
         }
         AdvancedComponent<FloatType> upperChild = component.getChildren().get(0);
+        componentList.add(upperChild);
         return recursivelyGetListOfUpperChildrenInTree(componentList, upperChild);
     }
 

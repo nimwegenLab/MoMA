@@ -58,7 +58,7 @@ public class Feature__20230330_2_improve_tracking_performance_at_detection_roi_b
     }
 
     public void run_interactive__theo_20221220_21_9_isolate_tracking_error() {
-        tmin = 245;
+        tmin = 247;
         tmax = 248;
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/theo_20221220_21_9/20221220_glu_spcm_1_MMStack_Pos21_GL9.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");

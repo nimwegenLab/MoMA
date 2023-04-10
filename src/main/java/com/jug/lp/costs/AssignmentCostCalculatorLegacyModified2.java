@@ -246,6 +246,9 @@ public class AssignmentCostCalculatorLegacyModified2 implements IAssignmentCostC
 
     @Override
     public double calculateExitCost(AdvancedComponent<FloatType> sourceComponent) {
+        if (sourceComponent.value().getRealDouble() > 0.9) {
+            return maxAssignmentCost;
+        }
         return configurationManager.getExitAssignmentCost();
     }
 

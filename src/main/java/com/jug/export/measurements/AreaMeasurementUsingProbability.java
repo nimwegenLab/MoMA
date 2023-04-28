@@ -33,6 +33,17 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
         areaCol.addValue(area);
     }
 
+    /**
+     * Calculates the area of the component using the probability map.
+     * The area is calculated by summing the values of the pixels in the "core" area of the mask and the values of the
+     * pixels in the border mask os provided {@link com.jug.util.componenttree.AdvancedComponent#getBorderMask}.
+     * Pixel values of the border pixels that overlap with neighboring components are counted only one-half.
+     *
+     * @param component
+     * @param probabilityMap
+     * @param neighbors
+     * @return
+     */
     private double calculateArea(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap, List<ComponentInterface> neighbors) {
         MaskInterval componentBorderMask = component.getBorderMask();
 

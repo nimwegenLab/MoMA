@@ -24,39 +24,36 @@ public class Bugfix__20230427_fix_index_out_of_bounds_exception_when_calculating
     public static void main(String[] args) {
         Bugfix__20230427_fix_index_out_of_bounds_exception_when_calculating_area_using_probability_maps tests = new Bugfix__20230427_fix_index_out_of_bounds_exception_when_calculating_area_using_probability_maps();
 
-//        tests.run_interactive();
-//        tests.run_trackonly();
-//        tests.run_reloading();
-        tests.run_export();
+//        tests.run_export_reproduce_error();
+//        tests.run_trackonly_isolate_error();
+        tests.run_export_isolate_error();
     }
 
     /**
      * Test-methods are below.
      */
-//    public void run_interactive() {
-//        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-//        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-//        analysisName = "test_interactive";
-//        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
-//    }
-//
-//    public void run_trackonly() {
-//        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-//        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-//        analysisName = "test_batch_run";
-//        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
-//    }
-//
-//    public void run_reloading() {
-//        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10/prj_mm_antibio_analysis_2");
-//        analysisName = "test_batch_run";
-//        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-//    }
-
-    public void run_export() {
+    public void run_export_reproduce_error() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10");
 //        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
         analysisName = "prj_mm_antibio_analysis_2";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
+
+    public void run_trackonly_isolate_error() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10","20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos2_GL10.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+        analysisName = "run_trackonly_isolate_error";
+        tmin = 160;
+        tmax = 170;
+        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void run_export_isolate_error() {
+//        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10","20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos2_GL10.tif");
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10");
+        analysisName = "run_trackonly_isolate_error";
+//        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
 }

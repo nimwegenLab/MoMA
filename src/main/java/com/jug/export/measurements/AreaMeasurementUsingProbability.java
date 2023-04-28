@@ -24,10 +24,10 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
     @Override
     public void measure(SegmentMeasurementDataInterface data) {
         ComponentInterface component = data.getComponentToMeasure();
-        List<ComponentInterface> allComponents = data.getAllOptimalComponents();
+        List<ComponentInterface> allOptimalComponents = data.getAllOptimalComponents();
         RandomAccessibleInterval<FloatType> probabilityMap = data.getImageProvider().getImgProbsAt(data.getFrameIndex());
 
-        List<ComponentInterface> neighbors = ComponentTreeUtils.getNeighborComponents(component, allComponents);
+        List<ComponentInterface> neighbors = ComponentTreeUtils.getNeighborComponents(component, allOptimalComponents);
 
         double area = calculateArea(component, probabilityMap, neighbors);
         areaCol.addValue(area);

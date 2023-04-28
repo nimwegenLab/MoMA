@@ -43,7 +43,7 @@ public class Bugfix__20230427_fix_index_out_of_bounds_exception_when_calculating
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos2_GL10","20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos2_GL10.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "run_trackonly_isolate_error";
-        tmin = 160;
+        tmin = 167;
         tmax = 170;
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
@@ -55,5 +55,4 @@ public class Bugfix__20230427_fix_index_out_of_bounds_exception_when_calculating
 //        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
-
 }

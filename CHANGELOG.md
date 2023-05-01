@@ -7,13 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
+## [0.10.0] - 2023-05-01
 
+- Add new method for calculating the assignment cost by considering the component lengths of source and target components as
+given by the size of the oriented bounding box. The legacy way of calculating the assignment cost is maintained as DEFAULT.
+  - New functionality:
+    - `FEATURE_FLAG_ASSIGNMENT_COST_CALCULATION`: Parameter that sets the method for calculating the assignment cost:
+      - `legacy` (DEFAULT): Calculates the assignment cost based on the height of the vertically oriented bounding-box. This corresponds to the legacy behavior.
+      - `oriented_bounding_box`: Calculates the assignment cost based on the size of the oriented bounding box of each component.
 - Add new assignment type: enter-assignment. The enter-assignment allows MoMA to handle cells that enter the GL during
 the measurement. It is needed for Mothermachine devices with media flowing through the GL, which causes cells to be
 pulled into the GL _after_ loading and starting the experiment.
   - New functionality:
-    - The parameter `ENTER_ASSIGNMENT_COST` sets the cost for the enter-assignment which is the same for each assignment.
+    - `ENTER_ASSIGNMENT_COST` (DEFAULT=10.0): Parameter that sets the cost for the enter-assignment which is the same for each assignment.
     - A new assignment-view allows the manual selection/modification of enter-assignments. It can be selected by:
       - Pressing the number key `5` with the mouse hovered above the assignment panel changes only the hovered
       panel or pressing `5` with the mouse outside any panel changes all assignment-panels.
@@ -23,7 +29,7 @@ components under consideration.
   - New functionality:
     - The parameter `FEATURE_FLAG_MIGRATION_COST_CALCULATION` controls, which method should be use for calculating the 
     migration cost:
-      - `absolute_position`: calculates the migration cost based on the absolute position of the bottom edge of the
+      - `absolute_position` (DEFAULT): Calculates the migration cost based on the absolute position of the bottom edge of the
       component bounding-box. This corresponds to the legacy behavior.
       - `total_component_length_below`: calculates the migration cost based on the total length of components below the 
       source- and target-components under consideration.
@@ -35,7 +41,7 @@ with value `0.0`. ([ff51ea28](https://github.com/michaelmell/moma/commit/ff51ea2
 - Storage locks are now only removed, when the user manually runs optimization with the 'Optimize' button in the
 UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can query the variable states
 (any modifications to the Gurobi model changes its state it to LOADED, where we cannot query variable state). ([5c11abbf](https://github.com/michaelmell/moma/commit/5c11abbf))
-- Change parameter name of the feature flag for the migration cost to `FEATURE_FLAG_MIGRATION_COST` (previously it was called `FEATURE_FLAG_MIGRATION_COSTS`). ([598ae56b](https://github.com/michaelmell/moma/commit/598ae56b))
+- Change parameter name of the feature flag for the migration cost to `FEATURE_FLAG_MIGRATION_COST` to be consistent in using singular form as in other parameter names (previously it was called `FEATURE_FLAG_MIGRATION_COSTS`). ([598ae56b](https://github.com/michaelmell/moma/commit/598ae56b))
 
 ## [0.9.0] - 2023-03-20
 

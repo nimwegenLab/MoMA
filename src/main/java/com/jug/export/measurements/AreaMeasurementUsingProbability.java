@@ -10,6 +10,7 @@ import net.imglib2.RandomAccessibleInterval;
 import net.imglib2.roi.MaskInterval;
 import net.imglib2.roi.Regions;
 import net.imglib2.type.numeric.real.FloatType;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -34,10 +35,8 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
     }
 
     /**
-     * Calculates the area of the component using the probability map.
-     * The area is calculated by summing the values of the pixels in the "core" area of the mask and the values of the
-     * pixels in the border mask os provided {@link com.jug.util.componenttree.AdvancedComponent#getBorderMask}.
-     * Pixel values of the border pixels that overlap with neighboring components are counted only one-half.
+     * Calculates the area of the component using the probability map. Depending on the number of neighboring components
+     * it will take into account the overlapping pixels of neighboring components by calling the appropriate method.
      *
      * @param component
      * @param probabilityMap
@@ -45,6 +44,52 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
      * @return
      */
     private double calculateArea(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap, List<ComponentInterface> neighbors) {
+        if (neighbors.isEmpty()) {
+            return calculateAreaWithoutNeighboringComponents(component, probabilityMap);
+        } else {
+            return calculateAreaConsideringNeighboringComponents(component, probabilityMap, neighbors);
+        }
+    }
+
+    /**
+     * Calculates the area of the component using the probability map.
+     * The area is calculated by counting the pixels in the "core" area of the component and the summing the probability
+     * values of the pixels in the border mask as provided {@link com.jug.util.componenttree.AdvancedComponent#getBorderMask}.
+     *
+     * @param component
+     * @param probabilityMap
+     * @return
+     */
+    @NotNull
+    private static Double calculateAreaWithoutNeighboringComponents(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap) {
+        Double totalArea = 0D;
+
+        totalArea += Regions.countTrue(component.getCoreMaskImg()); /* add sum of the number of pixels in the "core" area of the mask */
+
+        MaskInterval componentBorderMask = component.getBorderMask();
+        IterableInterval<FloatType> borderPixels = Regions.sample(componentBorderMask, probabilityMap);
+        Cursor<FloatType> c2 = borderPixels.cursor();
+        while (c2.hasNext()) {
+            c2.next();
+            double val = c2.get().getRealDouble();
+            totalArea += val; /* add sum of the values of border pixels in probabilityMap that do not overlap with other components */
+        }
+        return totalArea;
+    }
+
+    /**
+     * Calculates the area of the component using the probability map.
+     * The area is calculated by counting the pixels in the "core" area of the component and the summing the probability
+     * values of the pixels in the border mask as provided {@link com.jug.util.componenttree.AdvancedComponent#getBorderMask}.
+     * Pixel values of the border pixels that overlap with neighboring components are counted only one-half.
+     *
+     * @param component
+     * @param probabilityMap
+     * @param neighbors
+     * @return
+     */
+    @NotNull
+    private static Double calculateAreaConsideringNeighboringComponents(ComponentInterface component, RandomAccessibleInterval<FloatType> probabilityMap, List<ComponentInterface> neighbors) {
         MaskInterval componentBorderMask = component.getBorderMask();
 
         MaskInterval neighborBorderMaskUnion = neighbors.get(0).getBorderMask();
@@ -74,7 +119,6 @@ public class AreaMeasurementUsingProbability implements SegmentMeasurementInterf
             double val = c3.get().getRealDouble() / 2; /* sum the number of values of the border pixels in probabilityMap that overlap with other components; we count intersecting border pixels only half, because they belong to two neighboring components */
             totalArea += val;
         }
-
         return totalArea;
     }
 }

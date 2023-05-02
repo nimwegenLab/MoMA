@@ -424,7 +424,8 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     }
 
     public void setPruneRoot(final boolean value) {
-        if (getTime()!=0 && getSourceHypothesis().isPruned()) {
+        Hypothesis<AdvancedComponent<FloatType>> tmp = getSourceHypothesis();
+        if (getTime()!=0 && tmp.isPruned()) {
             throw new InvalidPruningInteractionException("Cannot prune this segment", "This segment cannot be pruned, because previous segments in this lineage are pruned. Please remove the pruning from the first pruned segment in this lineage.");
         }
         if (getTime()!=0 && getActiveIncomingAssignment().getType() == GrowthlaneTrackingILP.ASSIGNMENT_DIVISION) {

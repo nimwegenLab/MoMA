@@ -24,13 +24,13 @@ public class Bugfix__20230502_loading_prune_roots_throws_exception {
     public static void main(String[] args) {
         Bugfix__20230502_loading_prune_roots_throws_exception tests = new Bugfix__20230502_loading_prune_roots_throws_exception();
 
-        tests.reproduce_export_error();
+        tests.reproduce_export_NullPointerException();
     }
 
     /**
      * Test-methods are below.
      */
-    public void reproduce_export_error() {
+    public void reproduce_export_NullPointerException() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos1_GL12");
         analysisName = "20230418_analysis";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});

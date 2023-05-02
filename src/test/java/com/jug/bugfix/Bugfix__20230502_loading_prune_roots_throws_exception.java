@@ -24,38 +24,15 @@ public class Bugfix__20230502_loading_prune_roots_throws_exception {
     public static void main(String[] args) {
         Bugfix__20230502_loading_prune_roots_throws_exception tests = new Bugfix__20230502_loading_prune_roots_throws_exception();
 
-        tests.run_interactive();
-//        tests.run_trackonly();
-//        tests.run_reloading();
-//        tests.run_export();
+        tests.reproduce_export_error();
     }
 
     /**
      * Test-methods are below.
      */
-    public void run_interactive() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        analysisName = "test_interactive";
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
-    }
-
-    public void run_trackonly() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        analysisName = "test_batch_run";
-        startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
-    }
-
-    public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
-        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-    }
-
-    public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
+    public void reproduce_export_error() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos1_GL12");
+        analysisName = "20230418_analysis";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

@@ -24,7 +24,8 @@ public class Bugfix__20230502_loading_prune_roots_throws_exception {
     public static void main(String[] args) {
         Bugfix__20230502_loading_prune_roots_throws_exception tests = new Bugfix__20230502_loading_prune_roots_throws_exception();
 
-        tests.reproduce_export_NullPointerException();
+//        tests.reproduce_export_NullPointerException();
+        tests.reproduce_export_InvalidPruningInteractionException();
     }
 
     /**
@@ -36,4 +37,9 @@ public class Bugfix__20230502_loading_prune_roots_throws_exception {
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
+    public void reproduce_export_InvalidPruningInteractionException() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder,"/data/Pos1_GL8");
+        analysisName = "20230418_analysis";
+        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
 }

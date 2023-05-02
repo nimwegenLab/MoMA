@@ -966,6 +966,14 @@ public class AdvancedComponent<T extends Type<T>> implements ComponentInterface<
 
     MaskInterval componentBorderMask;
 
+    /**
+     * Returns the border mask of the component. The border mask is defined as the union of contour pixels of the
+     * component and the contour pixels of the dilated component. Therefore, the border mask will in general be two
+     * pixels wide along the contour of the component. This is the image region inside which value in the probability
+     * map fall from 1 to 0.
+     *
+     * @return
+     */
     public MaskInterval getBorderMask() {
         if (componentBorderMask != null) {
             return componentBorderMask;

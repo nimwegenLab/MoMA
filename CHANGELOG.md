@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.1] - 2023-05-05
+
+- Fix error calculating the cell area using probability map. ([a37e71ee](https://github.com/michaelmell/moma/commit/a37e71ee))
+
 ## [0.10.0] - 2023-05-01
 
 - Add new method for calculating the assignment cost by considering the component lengths of source and target components as
@@ -103,7 +107,10 @@ UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can 
 - Fix issue with cell masks not being stored to `ExportedCellMasks__*.tif`, when the cell track contains only one cell.
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
-[unreleased]: https://github.com/michaelmell/moma/compare/v0.9.0...dev
+[unreleased]: https://github.com/michaelmell/moma/compare/v0.10.0...dev
+[0.10.1]: https://github.com/michaelmell/moma/compare/v0.10.0...v0.10.1
+[0.10.0]: https://github.com/michaelmell/moma/compare/v0.9.0...v0.10.0
+[0.9.1]: https://github.com/michaelmell/moma/compare/v0.9.0...v0.9.1
 [0.9.0]: https://github.com/michaelmell/moma/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/michaelmell/moma/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/michaelmell/moma/compare/v0.6.0...v0.7.0

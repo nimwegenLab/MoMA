@@ -112,23 +112,27 @@ public class ComponentTreeUtils {
         }
     }
 
-    public static List<ComponentInterface> getNeighborComponents(ComponentInterface component, List<ComponentInterface> allComponents) {
-        if (!allComponents.contains(component))
+    public static List<ComponentInterface> getNeighborComponents(ComponentInterface component, List<ComponentInterface> allOptimalComponents) {
+        if (!allOptimalComponents.contains(component))
             throw new RuntimeException("target component must be in list of all components");
 
-        ComponentTreeUtils.sortComponentsByPosition(allComponents);
-        int componentIndex = allComponents.indexOf(component);
+        if (allOptimalComponents.size() == 1) { /* only one optimal component exists, so no neighbor exists */
+            return new ArrayList<>();
+        }
+
+        ComponentTreeUtils.sortComponentsByPosition(allOptimalComponents);
+        int componentIndex = allOptimalComponents.indexOf(component);
 
         List<ComponentInterface> neighbors = new ArrayList();
         if (componentIndex == 0) {
-            neighbors.add(allComponents.get(componentIndex + 1));
+            neighbors.add(allOptimalComponents.get(componentIndex + 1));
             return neighbors;
-        } else if (componentIndex == allComponents.size() - 1) {
-            neighbors.add(allComponents.get(componentIndex - 1));
+        } else if (componentIndex == allOptimalComponents.size() - 1) {
+            neighbors.add(allOptimalComponents.get(componentIndex - 1));
             return neighbors;
         } else {
-            neighbors.add(allComponents.get(componentIndex - 1));
-            neighbors.add(allComponents.get(componentIndex + 1));
+            neighbors.add(allOptimalComponents.get(componentIndex - 1));
+            neighbors.add(allOptimalComponents.get(componentIndex + 1));
             return neighbors;
         }
     }

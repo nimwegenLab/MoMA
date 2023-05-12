@@ -33,7 +33,7 @@ public class Bugfix__20230512_export_fails_with_ilp_infeasible_error {
      */
     public void run_export_with_failing_original_data() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos6_GL7");
-        analysisName = "prj_mm_antibio_analysis_2_ORIG";
+        analysisName = "prj_mm_antibio_analysis_2_REPRODUCE";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 

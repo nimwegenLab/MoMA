@@ -814,6 +814,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
+            System.out.println("UI action performed: \"<-\" button pressed");
             final Thread t = new Thread(() -> {
                 final int t1 = panelWithSliders.getTimeStepSliderPosition();
                 if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
@@ -827,6 +828,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonRestart)) {
+            System.out.println("UI action performed: \"buttonRestart\"");
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
@@ -838,6 +840,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(buttonOptimizeMore)) {
+            System.out.println("UI action performed: \"buttonOptimizeMore\"");
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();

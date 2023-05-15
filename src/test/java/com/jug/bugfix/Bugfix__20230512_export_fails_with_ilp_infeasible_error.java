@@ -25,7 +25,9 @@ public class Bugfix__20230512_export_fails_with_ilp_infeasible_error {
         Bugfix__20230512_export_fails_with_ilp_infeasible_error tests = new Bugfix__20230512_export_fails_with_ilp_infeasible_error();
 
 //        tests.run_export_with_failing_original_data();
-        tests.run_reloading_with_fixed_mps_file();
+//        tests.run_reloading_with_fixed_mps_file();
+        tests.run_interactive();
+//        tests.run_reloading_interactive_result();
     }
 
     /**
@@ -40,6 +42,19 @@ public class Bugfix__20230512_export_fails_with_ilp_infeasible_error {
     public void run_reloading_with_fixed_mps_file() {
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos6_GL7");
         analysisName = "prj_mm_antibio_analysis_2_FIXED";
+        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void run_interactive() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos6_GL7", "20220701_VNG1040_AB2h_4_MMStack_Pos0_Pos6_GL7.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos6_GL7", "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
+    }
+
+    public void run_reloading_interactive_result() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "data/Pos6_GL7");
+        analysisName = "test_interactive";
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 }

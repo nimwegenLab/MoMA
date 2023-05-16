@@ -11,6 +11,7 @@ import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.JavaUtils;
 import ij.ImageJ;
@@ -784,7 +785,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             ImageJFunctions.show(imageProvider.getRawChannelImgs().get(0), "raw data (ch.0)");
         }
         if (e.getSource().equals(buttonSet)) {
-            logUiAction(buttonSet);
+            LoggingHelper.logUiAction(buttonSet);
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -800,7 +801,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonReset)) {
-            logUiAction(buttonReset);
+            LoggingHelper.logUiAction(buttonReset);
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -816,7 +817,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
-            logUiAction(buttonFreezePreviousTimeSteps);
+            LoggingHelper.logUiAction(buttonFreezePreviousTimeSteps);
             final Thread t = new Thread(() -> {
                 final int t1 = panelWithSliders.getTimeStepSliderPosition();
                 if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
@@ -830,20 +831,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonRestart)) {
-            logUiAction(buttonRestart);
+            LoggingHelper.logUiAction(buttonRestart);
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
                             "Do you really want to restart the optimization?\nYou will lose all manual edits performed so far!",
                             "Are you sure?",
                             JOptionPane.YES_NO_OPTION);
-            logUiAction(choice);
+            LoggingHelper.logUiAction(choice);
             if (choice == JOptionPane.OK_OPTION) {
                 restartTrackingAsync();
             }
         }
         if (e.getSource().equals(buttonOptimizeMore)) {
-            logUiAction(buttonOptimizeMore);
+            LoggingHelper.logUiAction(buttonOptimizeMore);
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
@@ -868,12 +869,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonExportHtml)) {
-            logUiAction(buttonExportHtml);
+            LoggingHelper.logUiAction(buttonExportHtml);
             final Thread t = new Thread(this::exportHtmlOverview);
             t.start();
         }
         if (e.getSource().equals(buttonExportData)) {
-            logUiAction(buttonExportData);
+            LoggingHelper.logUiAction(buttonExportData);
             Path outputPath = queryUserForOutputPath();
             if (outputPathIsValid(outputPath)) {
                 model.getCurrentGL().setOutputPath(outputPath);
@@ -882,7 +883,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(buttonSaveTracking)) {
-            logUiAction(buttonSaveTracking);
+            LoggingHelper.logUiAction(buttonSaveTracking);
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
@@ -891,7 +892,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(buttonSaveTrackingAndExit)) {
-            logUiAction(buttonSaveTrackingAndExit);
+            LoggingHelper.logUiAction(buttonSaveTrackingAndExit);
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
@@ -903,29 +904,6 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         requestFocusOnTimeStepSlider();
-    }
-
-    private void logUiAction(int dialogChoice) {
-        String replyString = "UNDEFINED";
-        switch (dialogChoice) {
-            case JOptionPane.YES_OPTION: /* this has same value as JOptionPane.OK_OPTION */
-                replyString = "YES_OPTION";
-                break;
-            case JOptionPane.NO_OPTION:
-                replyString = "NO_OPTION";
-                break;
-            case JOptionPane.CANCEL_OPTION:
-                replyString = "CANCEL_OPTION";
-                break;
-            case JOptionPane.CLOSED_OPTION:
-                replyString = "CLOSED_OPTION";
-                break;
-        }
-        System.out.println("UI action: Dialog reply: " + replyString);
-    }
-
-    private static void logUiAction(JButton button) {
-        System.out.println("UI action: Button press: " + button.getText());
     }
 
     private boolean outputPathIsValid(Path folderToUse) {

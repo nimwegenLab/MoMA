@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.exceptions.GuiInteractionException;
+import com.jug.logging.LoggingHelper;
 
 import javax.swing.*;
 import java.util.function.Supplier;
@@ -26,7 +27,7 @@ public class DialogManager implements IDialogManager {
     @Override
     public void showErrorDialogWithTextArea(String title, String message) {
         MoMAGui gui = guiSupplier.get();
-
+        LoggingHelper.logString("Error message shown:\n" + "Title: " + message + "\n" + "Message: " + message);
         SwingUtilities.invokeLater(() -> {
             JTextArea textArea = new JTextArea(12, 55);
             textArea.setText(message);

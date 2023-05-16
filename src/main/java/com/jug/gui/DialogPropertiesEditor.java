@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
+import com.jug.logging.LoggingHelper;
 import com.jug.util.PseudoDic;
 import com.l2fprod.common.propertysheet.DefaultProperty;
 import com.l2fprod.common.propertysheet.Property;
@@ -312,7 +313,7 @@ public class DialogPropertiesEditor extends JDialog implements ActionListener {
                             message,
                             title,
                             JOptionPane.YES_NO_OPTION);
-
+            LoggingHelper.logUiAction(choice);
             if (choice != JOptionPane.OK_OPTION) {
                 abortCallback.run();
             } else {

@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
 
 import javax.swing.*;
@@ -42,6 +43,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
 
     private void addSelectionCheckbox(MoMAGui mmgui) {
         checkboxIsSelected = new JCheckBox();
+        checkboxIsSelected.addActionListener((e) -> LoggingHelper.logUiAction(checkboxIsSelected, " AssignmentEditorPanel.checkboxIsSelected for timeStep=" + getTimeStepToDisplay()));
         checkboxIsSelected.addActionListener(mmgui);
         checkboxIsSelected.setAlignmentX(java.awt.Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelected);

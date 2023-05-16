@@ -1,5 +1,7 @@
 package com.jug.logging;
 
+import com.jug.gui.assignmentview.AssignmentView;
+
 import javax.swing.*;
 
 public class LoggingHelper {
@@ -44,6 +46,10 @@ public class LoggingHelper {
 
     public static void logUiAction(JCheckBox checkBox, String additionalInfo) {
         System.out.println("UI action: checkBox selected: " + checkBox.isSelected() + "; " + additionalInfo);
+    }
+
+    public static void logUiAction(AssignmentView assignmentView, String additionalInfo) {
+        System.out.println("UI action: assignment view: " + assignmentView.getAssignmentIdString() + "; " + additionalInfo);
     }
 
     public static void logString(String message) {

@@ -344,11 +344,11 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
             return;
         }
 
-        System.out.println("shift:    " + e.isShiftDown());
-        System.out.println("ctrl:     " + e.isControlDown());
-        System.out.println("alt:      " + e.isAltDown());
-        System.out.println("click-c.: " + e.getClickCount());
-        System.out.println("button:   " + e.getButton());
+//        System.out.println("shift:    " + e.isShiftDown());
+//        System.out.println("ctrl:     " + e.isControlDown());
+//        System.out.println("alt:      " + e.isAltDown());
+//        System.out.println("click-c.: " + e.getClickCount());
+//        System.out.println("button:   " + e.getButton());
 
         // shift-click   --   hide assignments
         if (!e.isAltDown() && !e.isControlDown() && e.isShiftDown() && e.getButton() == MouseEvent.BUTTON1) {

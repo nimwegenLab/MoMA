@@ -19,11 +19,23 @@ public class LoggingHelper {
                 replyString = "CLOSED_OPTION";
                 break;
         }
-        System.out.println("UI action: Dialog reply: " + replyString);
+        System.out.println("UI action: dialog reply: " + replyString);
     }
 
     public static void logUiAction(JButton button) {
-        System.out.println("UI action: Button press: " + button.getText());
+        System.out.println("UI action: button press: " + button.getText());
+    }
+
+    public static void logUiAction(JButton button, String additionalInfo) {
+        System.out.println("UI action: button press: " + button.getText() + "; info: " + additionalInfo);
+    }
+
+    public static void logUiAction(JTextField button) {
+        System.out.println("UI action: text input: " + button.getText());
+    }
+
+    public static void logUiAction(JTextField button, String additionalInfo) {
+        System.out.println("UI action: text input: " + button.getText() + "; info: " + additionalInfo);
     }
 
     public static void logString(String message) {

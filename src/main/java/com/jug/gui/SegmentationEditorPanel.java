@@ -244,6 +244,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
 
     private void addCheckboxForSettingIlpConstraints(MoMAGui mmgui) {
         checkboxIsSelectedForSettingIlpConstraints = new JCheckBox();
+        checkboxIsSelectedForSettingIlpConstraints.addActionListener((x) -> LoggingHelper.logUiAction(checkboxIsSelectedForSettingIlpConstraints, "checkboxIsSelectedForSettingIlpConstraints for timeStep=" + timeStepToDisplay()));
         checkboxIsSelectedForSettingIlpConstraints.addActionListener(mmgui);
         checkboxIsSelectedForSettingIlpConstraints.setAlignmentX(Component.CENTER_ALIGNMENT);
         this.add(checkboxIsSelectedForSettingIlpConstraints);
@@ -252,6 +253,7 @@ public class SegmentationEditorPanel extends IlpVariableEditorPanel {
     private void addCheckboxForSelectingGtExport(MoMAGui mmgui) {
         checkboxIsSelectedAsGroundTruth = new JCheckBox();
         groundTruthCheckboxDefaultColor = checkboxIsSelectedAsGroundTruth.getBackground();
+        checkboxIsSelectedAsGroundTruth.addActionListener((x) -> LoggingHelper.logUiAction(checkboxIsSelectedAsGroundTruth, "checkboxIsSelectedAsGroundTruth for timeStep=" + timeStepToDisplay()));
         checkboxIsSelectedAsGroundTruth.addActionListener((x)->{
             if(checkboxIsSelectedAsGroundTruth.isSelected()){
                 selectGroundTruthSelectionCheckbox();

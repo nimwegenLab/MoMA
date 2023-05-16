@@ -27,7 +27,7 @@ public class LoggingHelper {
     }
 
     public static void logUiAction(JButton button, String additionalInfo) {
-        System.out.println("UI action: button press: " + button.getText() + "; info: " + additionalInfo);
+        System.out.println("UI action: button press: " + button.getText() + "; " + additionalInfo);
     }
 
     public static void logUiAction(JTextField button) {
@@ -35,7 +35,15 @@ public class LoggingHelper {
     }
 
     public static void logUiAction(JTextField button, String additionalInfo) {
-        System.out.println("UI action: text input: " + button.getText() + "; info: " + additionalInfo);
+        System.out.println("UI action: text input: " + button.getText() + "; " + additionalInfo);
+    }
+
+    public static void logUiAction(JCheckBox checkBox) {
+        System.out.println("UI action: checkBox selected: " + checkBox.isSelected());
+    }
+
+    public static void logUiAction(JCheckBox checkBox, String additionalInfo) {
+        System.out.println("UI action: checkBox selected: " + checkBox.isSelected() + "; " + additionalInfo);
     }
 
     public static void logString(String message) {

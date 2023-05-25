@@ -500,4 +500,8 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
     public boolean deselect() {
         return isSelected = false;
     }
+
+    public String toString() {
+        return getStringId();
+    }
 }

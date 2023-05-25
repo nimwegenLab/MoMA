@@ -1,8 +1,11 @@
 package com.jug.logging;
 
 import com.jug.gui.assignmentview.AssignmentView;
+import com.jug.lp.Hypothesis;
 
 import javax.swing.*;
+
+import static java.util.Objects.isNull;
 
 public class LoggingHelper {
     public static void logUiAction(int dialogChoice) {
@@ -52,6 +55,15 @@ public class LoggingHelper {
         System.out.println("UI action: assignment view: " + assignmentView.getAssignmentIdString() + "; " + additionalInfo);
     }
 
+    public static void logHypothesisAction(String actionDescription, Hypothesis hypothesis) {
+        if (!isNull(hypothesis)) {
+            System.out.println("UI action: " + actionDescription + "; " + hypothesis);
+        }
+    }
+
+    public static void logUiAction(String actionDescription) {
+        System.out.println("UI action: " + actionDescription);
+    }
     public static void logString(String message) {
         System.out.println(message);
     }

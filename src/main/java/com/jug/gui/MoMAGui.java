@@ -516,6 +516,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void switchAssignmentViewerTabs(int tabIndex) {
         AssignmentEditorPanel hoveredAssignmentEditorPanel = getHoveredAssignmentEditorPanel();
         if (hoveredAssignmentEditorPanel != null) {
+            LoggingHelper.logUiAction("switch AssignmentEditorView with keyboard; tabIndex: " + tabIndex + "; timeStep: " + hoveredAssignmentEditorPanel.getTimeStepToDisplay() + "; MoMAGUI.switchAssignmentViewerTabs()");
             hoveredAssignmentEditorPanel.switchToTab(tabIndex);
             return;
         }
@@ -523,6 +524,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void switchAllAssignmentViewerTabs(int tabIndex) {
+        LoggingHelper.logUiAction("switch all AssignmentEditorView instances with keyboard; tabIndex: " + tabIndex + "; MoMAGUI.switchAllAssignmentViewerTabs()" + "; MoMAGUI.switchAllAssignmentViewerTabs()");
         for (AssignmentEditorPanel entry : assignmentEditorPanels) {
             entry.switchToTab(tabIndex);
         }

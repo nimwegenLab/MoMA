@@ -82,6 +82,7 @@ public class LoggingHelper {
     public static void logUiAction(String actionDescription) {
         System.out.println(idString + "" + actionDescription);
     }
+
     public static void logString(String message) {
         System.out.println(message);
     }

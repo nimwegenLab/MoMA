@@ -74,6 +74,7 @@ public class AssignmentEditorPanel extends IlpVariableEditorPanel {
             assignmentsEditorViewer.display();
             return;
         }
+        assignmentsEditorViewer.setTimeStep(getTimeStepToDisplay());
         assignmentsEditorViewer.display(ilp.getAllRightAssignmentsThatStartFromOptimalHypothesesAt(getTimeStepToDisplay()));
         assignmentsEditorViewer.setEnabled(isEnabled());
     }

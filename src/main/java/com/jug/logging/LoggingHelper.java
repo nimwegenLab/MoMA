@@ -41,11 +41,11 @@ public class LoggingHelper {
     }
 
     public static void logUiAction(JCheckBox checkBox) {
-        System.out.println("UI action: checkBox selected: " + checkBox.isSelected());
+        System.out.println("UI action: checkbox selected: " + checkBox.isSelected());
     }
 
     public static void logUiAction(JCheckBox checkBox, String additionalInfo) {
-        System.out.println("UI action: checkBox selected: " + checkBox.isSelected() + "; " + additionalInfo);
+        System.out.println("UI action: checkbox selected: " + checkBox.isSelected() + "; " + additionalInfo);
     }
 
     public static void logUiAction(AssignmentView assignmentView, String additionalInfo) {

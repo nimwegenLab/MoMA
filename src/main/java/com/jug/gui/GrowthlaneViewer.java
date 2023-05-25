@@ -310,6 +310,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             indexOfCurrentHoveredHypothesis += increment;
         }
         selectedHypothesis = hypothesesAtHoverPosition.get(indexOfCurrentHoveredHypothesis);
+//       TODO: LOG SELECTED COMPONENT HERE
         repaint();
     }
 
@@ -334,6 +335,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (!isEnabled()) {
             return;
         }
+
+        // TODO: LOG: getSelectedHypothesis()
 
         if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
@@ -380,7 +383,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
                 }
             } else {
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                    ilp.removeSegmentConstraints(hyp2avoid);
+                    hyp2avoid.removeConstraints();
                 }
             }
 
@@ -407,13 +410,13 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (isNull(hyp2add)) return; /* failed to get a non-null hypothesis, so return */
 
         if (hyp2add.isForced()) {
-            ilp.removeSegmentConstraints(hyp2add);
+            hyp2add.removeConstraints();
         } else {
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getConflictingHypotheses(hyp2add);
 
             try {
                 if (hyp2add.getSegmentSpecificConstraint() != null) {
-                    ilp.removeSegmentConstraints(hyp2add);
+                    hyp2add.removeConstraints();
                 }
                 ilp.addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp2add, hyps2remove);
             } catch (final GRBException e1) {
@@ -534,6 +537,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
     private void updateHoveredHypotheses() {
         updateHoveredOptimalHypothesis();
         updateHypothesesAtHoverPosition();
+        // TODO: LOG HOVERED COMPONENT
+        // TODO: LOG OPTIMAL HYPOTHESIS
     }
 
     /**

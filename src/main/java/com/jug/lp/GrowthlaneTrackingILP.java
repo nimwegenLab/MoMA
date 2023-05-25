@@ -1979,18 +1979,8 @@ public class GrowthlaneTrackingILP {
      */
     private void removeSegmentConstraints(List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp2remove : hypothesesToRemove) {
-            removeSegmentConstraints(hyp2remove);
+            hyp2remove.removeConstraints();
         }
-    }
-
-    /**
-     * Remove constraints for the provided hypothesis.
-     *
-     * @param hypothesisToRemove
-     */
-    public void removeSegmentConstraints(Hypothesis<AdvancedComponent<FloatType>> hypothesisToRemove) {
-        hypothesisToRemove.setIsForced(false);
-        hypothesisToRemove.setIsForceIgnored(false);
     }
 
     /**

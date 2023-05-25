@@ -373,7 +373,6 @@ public class AssignmentsEditorCanvasView extends JComponent implements MouseInpu
         // plain click to initiate dragging
         if (!e.isShiftDown() && !e.isControlDown() && !e.isAltDown() &&
                 (e.getButton() == MouseEvent.BUTTON1 || e.getButton() == MouseEvent.BUTTON3)) {
-            System.out.println("Dragging!");
             this.isDragging = true;
             this.dragX = e.getX();
             this.dragY = e.getY();

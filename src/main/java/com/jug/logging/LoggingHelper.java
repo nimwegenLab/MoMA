@@ -1,6 +1,7 @@
 package com.jug.logging;
 
 import com.jug.gui.assignmentview.AssignmentView;
+import com.jug.gui.slider.RangeSlider;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.Hypothesis;
 
@@ -52,6 +53,14 @@ public class LoggingHelper {
 
     public static void logUiAction(JCheckBox checkBox, String additionalInfo) {
         System.out.println(idString + "checkbox selected: " + checkBox.isSelected() + "; " + additionalInfo);
+    }
+
+    public static <T extends JSlider> void logUiAction(String actionDescription, T slider) {
+        if (slider instanceof RangeSlider) {
+            System.out.println(idString + actionDescription + "; RangeSlider.getValue(): " + slider.getValue() + "; RangeSlider.getUpperValue(): " + ((RangeSlider) slider).getUpperValue());
+        } else if (slider instanceof JSlider) {
+            System.out.println(idString + actionDescription + "; JSlider.getValue(): " + slider.getValue());
+        }
     }
 
     public static void logUiAction(AssignmentView assignmentView, String additionalInfo) {

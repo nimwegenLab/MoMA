@@ -11,6 +11,7 @@ import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.gui.slider.RangeSlider;
 import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.JavaUtils;
@@ -189,12 +190,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
             JSlider slider = (JSlider) changeEvent.getSource();
             if (!slider.getValueIsAdjusting()) {
+                LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener fired", (RangeSlider) changeEvent.getSource());
+                LoggingHelper.logString("model.getCurrentGL().getIlp().isReady(): " + model.getCurrentGL().getIlp().isReady());
                 if (model.getCurrentGL().getIlp().isReady()) {
                     if(panelWithSliders.getTrackingRangeStart() != previousTrackingRangeStart){
+                        LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener called getIlp().addPreOptimizationRangeLockConstraintsBefore(..) with start-value", (RangeSlider) changeEvent.getSource());
                         model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
                         previousTrackingRangeStart = panelWithSliders.getTrackingRangeStart();
                     }
                     if(panelWithSliders.getTrackingRangeEnd() != previousTrackingRangeEnd) {
+                        LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener called getIlp().addPostOptimizationRangeLockConstraintsAfter(..) with end-value", (RangeSlider) changeEvent.getSource());
                         model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
                         previousTrackingRangeEnd = panelWithSliders.getTrackingRangeEnd();
                     }

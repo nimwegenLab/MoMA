@@ -8,6 +8,8 @@ import javax.swing.*;
 import static java.util.Objects.isNull;
 
 public class LoggingHelper {
+    private static String idString = "ui_action: ";
+
     public static void logUiAction(int dialogChoice) {
         String replyString = "UNDEFINED";
         switch (dialogChoice) {
@@ -24,45 +26,45 @@ public class LoggingHelper {
                 replyString = "CLOSED_OPTION";
                 break;
         }
-        System.out.println("UI action: dialog reply: " + replyString);
+        System.out.println(idString + "dialog reply: " + replyString);
     }
 
     public static void logUiAction(JButton button) {
-        System.out.println("UI action: button press: " + button.getText());
+        System.out.println(idString + "button press: " + button.getText());
     }
 
     public static void logUiAction(JButton button, String additionalInfo) {
-        System.out.println("UI action: button press: " + button.getText() + "; " + additionalInfo);
+        System.out.println(idString + "button press: " + button.getText() + "; " + additionalInfo);
     }
 
     public static void logUiAction(JTextField button) {
-        System.out.println("UI action: text input: " + button.getText());
+        System.out.println(idString + "text input: " + button.getText());
     }
 
     public static void logUiAction(JTextField button, String additionalInfo) {
-        System.out.println("UI action: text input: " + button.getText() + "; " + additionalInfo);
+        System.out.println(idString + "text input: " + button.getText() + "; " + additionalInfo);
     }
 
     public static void logUiAction(JCheckBox checkBox) {
-        System.out.println("UI action: checkbox selected: " + checkBox.isSelected());
+        System.out.println(idString + "checkbox selected: " + checkBox.isSelected());
     }
 
     public static void logUiAction(JCheckBox checkBox, String additionalInfo) {
-        System.out.println("UI action: checkbox selected: " + checkBox.isSelected() + "; " + additionalInfo);
+        System.out.println(idString + "checkbox selected: " + checkBox.isSelected() + "; " + additionalInfo);
     }
 
     public static void logUiAction(AssignmentView assignmentView, String additionalInfo) {
-        System.out.println("UI action: assignment view: " + assignmentView.getAssignmentIdString() + "; " + additionalInfo);
+        System.out.println(idString + "assignment view: " + assignmentView.getAssignmentIdString() + "; " + additionalInfo);
     }
 
     public static void logHypothesisAction(String actionDescription, Hypothesis hypothesis) {
         if (!isNull(hypothesis)) {
-            System.out.println("UI action: " + actionDescription + "; " + hypothesis);
+            System.out.println(idString + "" + actionDescription + "; " + hypothesis);
         }
     }
 
     public static void logUiAction(String actionDescription) {
-        System.out.println("UI action: " + actionDescription);
+        System.out.println(idString + "" + actionDescription);
     }
     public static void logString(String message) {
         System.out.println(message);

@@ -49,13 +49,13 @@ public abstract class AssignmentView {
     }
 
     public void toggleGroundTruth() {
-        LoggingHelper.logUiAction(this, "AssignmentView.toggleGroundTruth(); AssignmentView.isGroundTruth(" + !abstractAssignment.isGroundTruth() + ")");
+        LoggingHelper.logUiAction("AbstractAssignment.setGroundTruth(" + !abstractAssignment.isGroundTruth() + ")", abstractAssignment);
         abstractAssignment.setGroundTruth(!abstractAssignment.isGroundTruth());
         abstractAssignment.reoptimize();
     }
 
     public void toggleGroundUntruth() {
-        LoggingHelper.logUiAction(this, "AssignmentView.toggleGroundUntruth(); AssignmentView.setGroundUntruth(" + !abstractAssignment.isGroundUntruth() + ")");
+        LoggingHelper.logUiAction("AbstractAssignment.setGroundUntruth(" + !abstractAssignment.isGroundUntruth() + ")", abstractAssignment);
         abstractAssignment.setGroundUntruth(!abstractAssignment.isGroundUntruth());
         abstractAssignment.reoptimize();
     }

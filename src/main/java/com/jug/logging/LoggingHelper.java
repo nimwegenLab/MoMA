@@ -1,6 +1,7 @@
 package com.jug.logging;
 
 import com.jug.gui.assignmentview.AssignmentView;
+import com.jug.lp.AbstractAssignment;
 import com.jug.lp.Hypothesis;
 
 import javax.swing.*;
@@ -55,6 +56,12 @@ public class LoggingHelper {
 
     public static void logUiAction(AssignmentView assignmentView, String additionalInfo) {
         System.out.println(idString + "assignment view: " + assignmentView.getAssignmentIdString() + "; " + additionalInfo);
+    }
+
+    public static void logUiAction(String actionDescription, AbstractAssignment assignment) {
+        if (!isNull(assignment)) {
+            System.out.println(idString + "" + actionDescription + "; " + assignment);
+        }
     }
 
     public static void logHypothesisAction(String actionDescription, Hypothesis hypothesis) {

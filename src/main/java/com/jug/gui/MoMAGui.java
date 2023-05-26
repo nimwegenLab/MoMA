@@ -11,6 +11,8 @@ import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
 import com.jug.gui.progress.DialogProgress;
+import com.jug.gui.slider.RangeSlider;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.util.JavaUtils;
 import ij.ImageJ;
@@ -188,12 +190,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         this.panelWithSliders.addListenerToRangeSlider((changeEvent) -> {
             JSlider slider = (JSlider) changeEvent.getSource();
             if (!slider.getValueIsAdjusting()) {
+                LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener fired", (RangeSlider) changeEvent.getSource());
+                LoggingHelper.logString("model.getCurrentGL().getIlp().isReady(): " + model.getCurrentGL().getIlp().isReady());
                 if (model.getCurrentGL().getIlp().isReady()) {
                     if(panelWithSliders.getTrackingRangeStart() != previousTrackingRangeStart){
+                        LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener called getIlp().addPreOptimizationRangeLockConstraintsBefore(..) with start-value", (RangeSlider) changeEvent.getSource());
                         model.getCurrentGL().getIlp().addPreOptimizationRangeLockConstraintsBefore(panelWithSliders.getTrackingRangeStart());
                         previousTrackingRangeStart = panelWithSliders.getTrackingRangeStart();
                     }
                     if(panelWithSliders.getTrackingRangeEnd() != previousTrackingRangeEnd) {
+                        LoggingHelper.logUiAction("PanelWithSliders.trackingRangeSlider.ChangeListener called getIlp().addPostOptimizationRangeLockConstraintsAfter(..) with end-value", (RangeSlider) changeEvent.getSource());
                         model.getCurrentGL().getIlp().addPostOptimizationRangeLockConstraintsAfter(panelWithSliders.getTrackingRangeEnd());
                         previousTrackingRangeEnd = panelWithSliders.getTrackingRangeEnd();
                     }
@@ -214,14 +220,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final Menu menuFile = new Menu("File");
         menuProps = new MenuItem("Preferences");
         menuProps.addActionListener(this);
-        menuLoad = new MenuItem("Load tracking");
-        menuLoad.addActionListener(this);
-        menuSave = new MenuItem("Save tracking");
-        menuSave.addActionListener(this);
+//        menuLoad = new MenuItem("Load tracking");
+//        menuLoad.addActionListener(this);
+//        menuSave = new MenuItem("Save tracking");
+//        menuSave.addActionListener(this);
         menuFile.add(menuProps);
-        menuFile.addSeparator();
-        menuFile.add(menuLoad);
-        menuFile.add(menuSave);
+//        menuFile.addSeparator();
+//        menuFile.add(menuLoad);
+//        menuFile.add(menuSave);
         menuBar.add(menuFile);
 
         final Menu menuView = new Menu("View");
@@ -229,10 +235,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuViewShowConsole.addActionListener(this);
         menuShowImgRaw = new MenuItem("Show raw images...");
         menuShowImgRaw.addActionListener(this);
-        MenuItem menuTrain = new MenuItem("Show trainer window...");
-        menuTrain.addActionListener(this);
         menuView.add(menuViewShowConsole);
-        menuView.add(menuTrain);
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);
@@ -510,6 +513,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     private void switchAssignmentViewerTabs(int tabIndex) {
         AssignmentEditorPanel hoveredAssignmentEditorPanel = getHoveredAssignmentEditorPanel();
         if (hoveredAssignmentEditorPanel != null) {
+            LoggingHelper.logUiAction("switch AssignmentEditorView with keyboard; tabIndex: " + tabIndex + "; timeStep: " + hoveredAssignmentEditorPanel.getTimeStepToDisplay() + "; MoMAGUI.switchAssignmentViewerTabs()");
             hoveredAssignmentEditorPanel.switchToTab(tabIndex);
             return;
         }
@@ -517,6 +521,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     }
 
     private void switchAllAssignmentViewerTabs(int tabIndex) {
+        LoggingHelper.logUiAction("switch all AssignmentEditorView instances with keyboard; tabIndex: " + tabIndex + "; MoMAGUI.switchAllAssignmentViewerTabs()" + "; MoMAGUI.switchAllAssignmentViewerTabs()");
         for (AssignmentEditorPanel entry : assignmentEditorPanels) {
             entry.switchToTab(tabIndex);
         }
@@ -725,6 +730,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource().equals(menuProps)) {
+            LoggingHelper.logUiAction("MenuItem: menuProps");
             dialogManager.showPropertiesEditor();
         }
         if (e.getSource().equals(menuLoad)) {
@@ -776,14 +782,17 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(menuViewShowConsole)) {
+            LoggingHelper.logUiAction("MenuItem: menuViewShowConsole");
             loggerWindow.showConsoleWindow(!loggerWindow.isConsoleVisible());
             guiFrame.setVisible(true);
         }
         if (e.getSource().equals(menuShowImgRaw)) {
+            LoggingHelper.logUiAction("MenuItem: menuShowImgRaw");
             new ImageJ();
             ImageJFunctions.show(imageProvider.getRawChannelImgs().get(0), "raw data (ch.0)");
         }
         if (e.getSource().equals(buttonSet)) {
+            LoggingHelper.logUiAction(buttonSet);
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -799,6 +808,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonReset)) {
+            LoggingHelper.logUiAction(buttonReset);
             final Thread t = new Thread(() -> {
                 model.getCurrentGL().getIlp().autosave();
 
@@ -814,6 +824,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonFreezePreviousTimeSteps)) {
+            LoggingHelper.logUiAction(buttonFreezePreviousTimeSteps);
             final Thread t = new Thread(() -> {
                 final int t1 = panelWithSliders.getTimeStepSliderPosition();
                 if (panelWithSliders.getTrackingRangeEnd() < panelWithSliders.getTrackingRangeSliderMaximum()) {
@@ -827,17 +838,20 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonRestart)) {
+            LoggingHelper.logUiAction(buttonRestart);
             final int choice =
                     JOptionPane.showConfirmDialog(
                             this,
                             "Do you really want to restart the optimization?\nYou will lose all manual edits performed so far!",
                             "Are you sure?",
                             JOptionPane.YES_NO_OPTION);
+            LoggingHelper.logUiAction(choice);
             if (choice == JOptionPane.OK_OPTION) {
                 restartTrackingAsync();
             }
         }
         if (e.getSource().equals(buttonOptimizeMore)) {
+            LoggingHelper.logUiAction(buttonOptimizeMore);
             final Thread t = new Thread(() -> {
                 if (model.getCurrentGL().getIlp() == null) {
                     prepareOptimization();
@@ -862,10 +876,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             t.start();
         }
         if (e.getSource().equals(buttonExportHtml)) {
+            LoggingHelper.logUiAction(buttonExportHtml);
             final Thread t = new Thread(this::exportHtmlOverview);
             t.start();
         }
         if (e.getSource().equals(buttonExportData)) {
+            LoggingHelper.logUiAction(buttonExportData);
             Path outputPath = queryUserForOutputPath();
             if (outputPathIsValid(outputPath)) {
                 model.getCurrentGL().setOutputPath(outputPath);
@@ -874,6 +890,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(buttonSaveTracking)) {
+            LoggingHelper.logUiAction(buttonSaveTracking);
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);
@@ -882,6 +899,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(buttonSaveTrackingAndExit)) {
+            LoggingHelper.logUiAction(buttonSaveTrackingAndExit);
             Path folderToUse = queryUserForOutputPath();
             if (outputPathIsValid(folderToUse)) {
                 model.getCurrentGL().setOutputPath(folderToUse);

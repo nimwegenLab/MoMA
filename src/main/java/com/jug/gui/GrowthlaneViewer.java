@@ -2,6 +2,7 @@ package com.jug.gui;
 
 import com.jug.GrowthlaneFrame;
 import com.jug.exceptions.GuiInteractionException;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
 import com.jug.util.componenttree.AdvancedComponent;
@@ -335,6 +336,8 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             return;
         }
 
+        // TODO: LOG: getSelectedHypothesis()
+
         if (isNull(glf))
             return; /* this prevents a null pointer exception, when the view does not have corresponding a time-step; e.g. the left view, when t=0 is shown in the center-view */
 
@@ -361,6 +364,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             // ----------------------
             Hypothesis<AdvancedComponent<FloatType>> hyp = getHoveredOptimalHypothesis();
             labelEditorDialog.edit(hyp);
+            LoggingHelper.logHypothesisAction("LabelEditorDialog.edit(hyp)", hyp);
             mmgui.requestFocusOnTimeStepSlider();
             return;
         }
@@ -377,10 +381,12 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (!selectedParentHypothesis.isForceIgnored()) {
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
                     hyp2avoid.setIsForceIgnored(true);
+                    LoggingHelper.logHypothesisAction("Hypothesis.setIsForceIgnored(true)", hyp2avoid);
                 }
             } else {
                 for (final Hypothesis<AdvancedComponent<FloatType>> hyp2avoid : hyps2avoid) {
-                    ilp.removeSegmentConstraints(hyp2avoid);
+                    hyp2avoid.removeConstraints();
+                    LoggingHelper.logHypothesisAction("Hypothesis.removeConstraints()", hyp2avoid);
                 }
             }
 
@@ -394,6 +400,7 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
             if (isNull(getSelectedHypothesis())) return;
             try {
                 getSelectedHypothesis().toggleIsPrunedRoot();
+                LoggingHelper.logHypothesisAction("Hypothesis.toggleIsPrunedRoot()", getSelectedHypothesis());
             } catch (GuiInteractionException exception) {
                 dialogManager.showUserInteractionError(exception);
             }
@@ -407,15 +414,18 @@ public class GrowthlaneViewer extends JComponent implements MouseInputListener, 
         if (isNull(hyp2add)) return; /* failed to get a non-null hypothesis, so return */
 
         if (hyp2add.isForced()) {
-            ilp.removeSegmentConstraints(hyp2add);
+            hyp2add.removeConstraints();
+            LoggingHelper.logHypothesisAction("Hypothesis.removeConstraints()", hyp2add);
         } else {
             final List<Hypothesis<AdvancedComponent<FloatType>>> hyps2remove = ilp.getConflictingHypotheses(hyp2add);
 
             try {
                 if (hyp2add.getSegmentSpecificConstraint() != null) {
-                    ilp.removeSegmentConstraints(hyp2add);
+                    hyp2add.removeConstraints();
+                    LoggingHelper.logHypothesisAction("Hypothesis.removeConstraints()", hyp2add);
                 }
                 ilp.addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp2add, hyps2remove);
+                LoggingHelper.logHypothesisAction("GrowthlaneTrackingILP.addSegmentInSolutionConstraintAndRemoveConflictingSegmentConstraints(hyp2add, hyps2remove)", hyp2add);
             } catch (final GRBException e1) {
                 e1.printStackTrace();
             }

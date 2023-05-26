@@ -7,12 +7,8 @@ public class GRBModelFactory {
     private static GRBModelAdapter model;
     private static GRBEnv env;
 
-    public static GRBModelAdapter getModel(){
-        if (model != null){
-            return model;
-        }
-        model = getModelInstance();
-        return model;
+    public static GRBModelAdapter getModel() {
+        return getModelInstance();
     }
 
     private static GRBModelAdapter getModelInstance() {

@@ -1,5 +1,6 @@
 package com.jug.gui.assignmentview;
 
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.AbstractAssignment;
 import gurobi.GRBException;
 
@@ -18,10 +19,12 @@ public abstract class AssignmentView {
     abstract Color GetDefaultColor();
 
     public void hide() {
+        LoggingHelper.logUiAction(this, "AssignmentView.hide()");
         isHidden = true;
     }
 
     public void unhide() {
+        LoggingHelper.logUiAction(this, "AssignmentView.unhide()");
         isHidden = false;
     }
 
@@ -46,11 +49,13 @@ public abstract class AssignmentView {
     }
 
     public void toggleGroundTruth() {
+        LoggingHelper.logUiAction("AbstractAssignment.setGroundTruth(" + !abstractAssignment.isGroundTruth() + ")", abstractAssignment);
         abstractAssignment.setGroundTruth(!abstractAssignment.isGroundTruth());
         abstractAssignment.reoptimize();
     }
 
     public void toggleGroundUntruth() {
+        LoggingHelper.logUiAction("AbstractAssignment.setGroundUntruth(" + !abstractAssignment.isGroundUntruth() + ")", abstractAssignment);
         abstractAssignment.setGroundUntruth(!abstractAssignment.isGroundUntruth());
         abstractAssignment.reoptimize();
     }
@@ -61,6 +66,10 @@ public abstract class AssignmentView {
         } else {
             return "NA";
         }
+    }
+
+    public String getAssignmentIdString() {
+        return abstractAssignment.getStringId();
     }
 
     public double getCost() {

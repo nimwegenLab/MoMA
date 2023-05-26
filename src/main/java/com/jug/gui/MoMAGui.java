@@ -730,6 +730,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
     @Override
     public void actionPerformed(final ActionEvent e) {
         if (e.getSource().equals(menuProps)) {
+            LoggingHelper.logUiAction("MenuItem: menuProps");
             dialogManager.showPropertiesEditor();
         }
         if (e.getSource().equals(menuLoad)) {
@@ -781,10 +782,12 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
             }
         }
         if (e.getSource().equals(menuViewShowConsole)) {
+            LoggingHelper.logUiAction("MenuItem: menuViewShowConsole");
             loggerWindow.showConsoleWindow(!loggerWindow.isConsoleVisible());
             guiFrame.setVisible(true);
         }
         if (e.getSource().equals(menuShowImgRaw)) {
+            LoggingHelper.logUiAction("MenuItem: menuShowImgRaw");
             new ImageJ();
             ImageJFunctions.show(imageProvider.getRawChannelImgs().get(0), "raw data (ch.0)");
         }

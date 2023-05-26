@@ -220,14 +220,14 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         final Menu menuFile = new Menu("File");
         menuProps = new MenuItem("Preferences");
         menuProps.addActionListener(this);
-        menuLoad = new MenuItem("Load tracking");
-        menuLoad.addActionListener(this);
-        menuSave = new MenuItem("Save tracking");
-        menuSave.addActionListener(this);
+//        menuLoad = new MenuItem("Load tracking");
+//        menuLoad.addActionListener(this);
+//        menuSave = new MenuItem("Save tracking");
+//        menuSave.addActionListener(this);
         menuFile.add(menuProps);
-        menuFile.addSeparator();
-        menuFile.add(menuLoad);
-        menuFile.add(menuSave);
+//        menuFile.addSeparator();
+//        menuFile.add(menuLoad);
+//        menuFile.add(menuSave);
         menuBar.add(menuFile);
 
         final Menu menuView = new Menu("View");

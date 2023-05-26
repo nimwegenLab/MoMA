@@ -235,10 +235,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         menuViewShowConsole.addActionListener(this);
         menuShowImgRaw = new MenuItem("Show raw images...");
         menuShowImgRaw.addActionListener(this);
-        MenuItem menuTrain = new MenuItem("Show trainer window...");
-        menuTrain.addActionListener(this);
         menuView.add(menuViewShowConsole);
-        menuView.add(menuTrain);
         menuView.addSeparator();
         menuView.add(menuShowImgRaw);
         menuBar.add(menuView);

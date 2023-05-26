@@ -5,7 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.9.0] - 2023-05-26
+## [0.9.2] - 2023-05-26
+
+### Changed
+
+- Add basic logging of user interactions.
+
+## [0.9.1] - 2023-05-02
+
+### Changed
+
+- Fix crashing issue exporting cell area using the probability map. 
+
+## [0.9.0-alpha6] - 2023-01-21
 
 ### Added
 
@@ -20,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Ctrl + M: Force mapping-assignments between selected hypotheses. This will force the currently active mapping-assignments and replace active division assignments with forced mapping-assignments.
     - Ctrl + Shift + D: Force-ignore all division assignments that start from selected hypotheses.
     - Ctrl + I: Force-ignore selected hypotheses.
-    - Ctrl + C: Clear all constraints on the selected hypotheses and the assignments between them.
+    - Ctrl + R: Remove all constraints on the selected hypotheses and the assignments between them.
 - The user-selection for the checkbox "Run optimization on change" is now persisted to `GUI_OPTIMIZE_ON_ILP_CHANGE` in `mm.properties`.
 
 ### Changed
@@ -65,8 +77,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue with cell masks not being stored to `ExportedCellMasks__*.tif`, when the cell track contains only one cell.
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
-[unreleased]: https://github.com/michaelmell/moma/compare/v0.6.0...dev
-[0.9.0]: https://github.com/michaelmell/moma/compare/v0.8.0...v0.9.0
+[unreleased]: https://github.com/michaelmell/moma/compare/v0.9...dev
+[0.9.3]: https://github.com/michaelmell/moma/compare/v0.9.1...v0.9.3
+[0.9.2]: https://github.com/michaelmell/moma/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/michaelmell/moma/compare/v0.9.0-alpha6...v0.9.1
+[0.9.0-alpha6]: https://github.com/michaelmell/moma/compare/v0.8.0...v0.9.0-alpha6
 [0.8.0]: https://github.com/michaelmell/moma/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/michaelmell/moma/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/michaelmell/moma/compare/v0.5.1...v0.6.0

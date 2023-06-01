@@ -63,7 +63,7 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
     public String readGitVersion() throws IOException
     {
 //        String command = "git describe --abbrev=0 --tags";
-        String command = "git describe --abbrev=8 --dirty"; /* describes the closest *annotated* tag*/
+        String command = "git describe --abbrev=8 --dirty --long"; /* describes the closest *annotated* tag*/
         Process p = Runtime.getRuntime().exec(command);
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
         return input.readLine();

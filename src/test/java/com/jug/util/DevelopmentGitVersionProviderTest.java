@@ -35,8 +35,8 @@ public class DevelopmentGitVersionProviderTest {
     @Test
     void formatVersionString__returns_correct_version_string_5() {
         DevelopmentGitVersionProvider sut = new DevelopmentGitVersionProvider();
-        String actual = sut.formatVersionString("0.7.0-4+g45bcea65");
-        Assertions.assertEquals("0.6.0-beta6", actual);
+        String actual = sut.formatVersionString("v0.7.0-4+g45bcea65");
+        Assertions.assertEquals("0.7.0-4+g45bcea65", actual);
     }
 
     @Test

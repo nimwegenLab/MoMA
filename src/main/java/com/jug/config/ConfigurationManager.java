@@ -12,9 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static java.util.Objects.isNull;
-
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration, IFluorescenceAssignmentFilterConfiguration {
     /**
@@ -157,9 +155,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
 
     public int getMaxCellDrop(){
-        return MAX_CELL_DROP;
+        return MAXIMUM_DOWNWARD_MOVEMENT;
     }
-    public int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
+    public int MAXIMUM_DOWNWARD_MOVEMENT = 50; /* value is set using feature flag featureFlagUseMaxCellDrop */
     /**
      * X-position of the main GUI-window. This value will be loaded from and
      * stored in the properties file!
@@ -342,13 +340,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER)));
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = Integer.parseInt(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER)));
 
-        /* process feature flags */
-        if (featureFlagDisableMaxCellDrop) {
-            this.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-        } else {
-            this.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-        }
-
+        MAXIMUM_DOWNWARD_MOVEMENT = Integer.parseInt(props.getProperty("MAXIMUM_DOWNWARD_MOVEMENT", Integer.toString(MAXIMUM_DOWNWARD_MOVEMENT)));
     }
 
     /**
@@ -491,6 +483,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
             props.setProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER));
 
             setBooleanAsIntegerValue(props, "GUI_OPTIMIZE_ON_ILP_CHANGE", GUI_OPTIMIZE_ON_ILP_CHANGE);
+
+            props.setProperty("MAXIMUM_DOWNWARD_MOVEMENT", Integer.toString(MAXIMUM_DOWNWARD_MOVEMENT));
 
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {

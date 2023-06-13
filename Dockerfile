@@ -51,4 +51,6 @@ ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
 ARG moma_dir="/moma"
 WORKDIR ${moma_dir}
 
+RUN ln -s /build_dir/target/MotherMachine-v0.9.3.20230613-135612.d6e49c8.jar MoMA_fiji.jar
+
 COPY docker/moma ${moma_dir}/moma

@@ -19,11 +19,15 @@ if [ ! -f "$CONFIG_FILE" ]; then
 fi
 
 
-cd $MOMA_HOME
+#cd $MOMA_HOME
 # Notes:
 # 1. CLASSPATH is loaded by module load myGurobi
 # 2. This contains the paths to the CUDA enabled TensorFlow Java libraries: /scicore/home/nimwegen/GROUP/Moma/MM_Analysis/unstable/Tools/Fiji.app/lib/linux64
 GUROBI_LIB_PATH=$GUROBI_HOME/lib/
 TF_JAVA_LIB_PATH=$MOMA_HOME/../Tools/Fiji.app/lib/linux64
+
+echo "CONFIG_DIRECTORY: $CONFIG_DIRECTORY"
+echo "TF_JAVA_LIB_PATH: $TF_JAVA_LIB_PATH"
+
 java -Xmx32g -Djava.io.tmpdir=$TMPDIR -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
-cd -
+#cd -

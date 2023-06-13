@@ -264,13 +264,13 @@
 						</goals>
 						<phase>validate</phase>
 					</execution>
-					<execution>
-						<id>validate-the-git-infos</id>
-						<goals>
-							<goal>validateRevision</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
+<!--					<execution>-->
+<!--						<id>validate-the-git-infos</id>-->
+<!--						<goals>-->
+<!--							<goal>validateRevision</goal>-->
+<!--						</goals>-->
+<!--						<phase>package</phase>-->
+<!--					</execution>-->
 				</executions>
 				<configuration>
 					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>

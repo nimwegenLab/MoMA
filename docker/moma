@@ -2,7 +2,7 @@
 #[ -z "$MOMA_HOME" ] && { echo "Environment variable MOMA_HOME need to be set!"; echo; exit 1; }
 
 # store script arguments to pass it to the executable
-ARGS=$@
+#ARGS=$@
 
 # setup .moma directory in home-directory, if it does not exist
 CONFIG_DIRECTORY=$HOME/.moma
@@ -35,7 +35,7 @@ fi
 
 MOMA_JAR_FILENAME=$(ls "${MOMA_JAR_PATH}"/*.jar | grep -P '^((?!original|tests|sources).)*.jar$' | grep -o '[^\/]*$')
 
-echo java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_FILENAME}" "${ARGS}"
-java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" "${ARGS}"
+echo java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" "$@"
+java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" "$@"
 
 #cd -

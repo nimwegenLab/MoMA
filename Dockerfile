@@ -48,6 +48,8 @@ ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
+RUN apt-get install -y vim tmux
+
 ### Setup MoMA
 ARG moma_dir="/moma"
 
@@ -62,4 +64,7 @@ WORKDIR ${moma_dir}
 COPY docker/tensorflow ${moma_dir}/tensorflow
 COPY docker/moma ${moma_dir}/moma
 
+
 WORKDIR /
+
+ENTRYPOINT ["/moma/moma"]

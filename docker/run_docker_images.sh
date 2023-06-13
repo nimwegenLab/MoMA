@@ -1,19 +1,30 @@
 #!/usr/bin/env bash
 
+#docker run --rm -it \
+# --entrypoint /bin/bash \
+# --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
+# --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
+# --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
+#moma:v0.9.3
+
 docker run --rm -it \
  --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
  --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
  --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
-moma:v0.9.3 /bin/bash
+moma:v0.9.3 \
+ -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -headless
 
-ln -s -f /build_dir/target/MotherMachine-v0.9.3.20230613-183815.617f156.jar /moma/MoMA_fiji.jar
+
+#ln -s -f /build_dir/target/MotherMachine-v0.9.3.20230613-183815.617f156.jar /moma/MoMA_fiji.jar
 
 
-/moma/moma -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
-
-./moma -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -p /data/mm.properties
-
-./moma -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -p /data/mm.properties -analysis test_batch_run -trackonly -headless
+#/moma/moma -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
+#
+#java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
+#
+#./moma -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -p /data/mm.properties
+#
+#./moma -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -p /data/mm.properties -analysis test_batch_run -trackonly -headless
 
 
 # running in headless mode throws error about GurobiJni81 not being found

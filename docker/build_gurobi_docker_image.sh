@@ -1,0 +1,1 @@
+docker build . -t gurobi_image -f ./Dockerfile.gurobi

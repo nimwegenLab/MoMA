@@ -14,7 +14,7 @@ COPY pom.xml ${build_dir}/pom.xml
 WORKDIR ${build_dir}
 
 # this caches the maven dependencies to a separate layer so we do not have to download them every time
-RUN mvn verify --fail-never
+#RUN mvn verify --fail-never
 
-RUN chmod +x ${build_dir}/deploy.sh && \
+RUN  --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
     ${build_dir}/deploy.sh

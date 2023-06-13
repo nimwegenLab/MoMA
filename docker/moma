@@ -33,7 +33,9 @@ fi
 #java -Xmx32g -Djava.io.tmpdir=$TMPDIR -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
 #java -Xmx32g -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
 
-echo java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar MoMA_fiji.jar "${ARGS}"
-java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar MoMA_fiji.jar "${ARGS}"
+MOMA_JAR_FILENAME=$(ls "${MOMA_JAR_PATH}"/*.jar | grep -P '^((?!original|tests|sources).)*.jar$' | grep -o '[^\/]*$')
+
+echo java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_FILENAME}" "${ARGS}"
+java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" "${ARGS}"
 
 #cd -

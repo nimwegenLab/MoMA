@@ -47,13 +47,19 @@ ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
-ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow
 
 ### Setup MoMA
 ARG moma_dir="/moma"
+
+ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow
+#ENV MOMA_JAR_PATH ${moma_dir}/MoMA_fiji.jar
+ENV MOMA_JAR_PATH ${build_dir}/target/
+
 WORKDIR ${moma_dir}
 
-RUN ln -s /build_dir/target/MotherMachine-v0.9.3.20230613-135612.d6e49c8.jar ${moma_dir}/MoMA_fiji.jar
+#RUN ln -s /build_dir/target/MotherMachine-v0.9.3.20230613-135612.d6e49c8.jar ${moma_dir}/MoMA_fiji.jar
 
 COPY docker/tensorflow ${moma_dir}/tensorflow
 COPY docker/moma ${moma_dir}/moma
+
+WORKDIR /

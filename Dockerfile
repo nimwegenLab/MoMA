@@ -46,3 +46,9 @@ COPY --from=buildoptimizer /opt/gurobi .
 ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
+
+### Setup MoMA
+ARG moma_dir="/moma"
+WORKDIR ${moma_dir}
+
+COPY docker/moma ${moma_dir}/moma

@@ -2,7 +2,7 @@
 # Docker file to create a Python Environment
 #
 
-FROM ubuntu:20.04 as buildoptimizer
+FROM ubuntu:18.04 as buildoptimizer
 ARG GRB_VERSION=9.1.2
 ARG GRB_SHORT_VERSION=9.1
 

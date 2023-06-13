@@ -30,6 +30,7 @@ COPY .git ${build_dir}/.git
 COPY deploy.sh ${build_dir}/deploy.sh
 COPY src ${build_dir}/src
 COPY lib ${build_dir}/lib
+COPY --from=buildoptimizer /opt/gurobi/linux64/lib/* ${build_dir}/lib
 COPY pom.xml ${build_dir}/pom.xml
 WORKDIR ${build_dir}
 
@@ -56,6 +57,8 @@ ARG moma_dir="/moma"
 ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow
 #ENV MOMA_JAR_PATH ${moma_dir}/MoMA_fiji.jar
 ENV MOMA_JAR_PATH ${build_dir}/target/
+
+#COPY /opt/gurobi811/linux64/lib/libGurobiJni81.so /opt/gurobi/linux64/lib/libGurobiJni81.so
 
 WORKDIR ${moma_dir}
 

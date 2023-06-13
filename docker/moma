@@ -29,5 +29,11 @@ TF_JAVA_LIB_PATH=$MOMA_HOME/../Tools/Fiji.app/lib/linux64
 echo "CONFIG_DIRECTORY: $CONFIG_DIRECTORY"
 echo "TF_JAVA_LIB_PATH: $TF_JAVA_LIB_PATH"
 
-java -Xmx32g -Djava.io.tmpdir=$TMPDIR -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
+#echo "java -Xmx32g -Djava.io.tmpdir=$TMPDIR -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log"
+#java -Xmx32g -Djava.io.tmpdir=$TMPDIR -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
+#java -Xmx32g -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH -jar MoMA_fiji.jar $ARGS 2>moma_track.log
+
+echo java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar MoMA_fiji.jar "${ARGS}"
+java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar MoMA_fiji.jar "${ARGS}"
+
 #cd -

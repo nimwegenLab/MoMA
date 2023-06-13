@@ -46,6 +46,8 @@ COPY --from=buildoptimizer /opt/gurobi .
 ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
+ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
+ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow
 
 ### Setup MoMA
 ARG moma_dir="/moma"

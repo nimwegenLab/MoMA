@@ -106,9 +106,20 @@
 <!--			<id>local-repo</id>-->
 <!--			<url>file://${basedir}/maven-repository</url>-->
 <!--		</repository>-->
+		<repository>
+			<id>my-local-repo</id>
+			<url>file://${basedir}/maven-repository</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>gurobi</groupId>
+			<artifactId>gurobi-jar</artifactId>
+			<version>9.5.2</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>

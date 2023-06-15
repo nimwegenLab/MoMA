@@ -108,7 +108,7 @@
 <!--		</repository>-->
 		<repository>
 			<id>maven-local-repository</id>
-			<url>file://${basedir}/maven-repository</url>
+			<url>file://${basedir}/maven-local-repository</url>
 		</repository>
 	</repositories>
 

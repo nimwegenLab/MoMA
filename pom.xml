@@ -14,7 +14,15 @@
 
 	<groupId>com.jug</groupId>
 	<artifactId>MotherMachine</artifactId>
-	<version>${version.number}</version>
+	<version>${revision}</version>
+
+<!--	<properties>-->
+<!--		<revision>${version.number}</revision>-->
+<!--	</properties>-->
+
+<!--	<modules>-->
+<!--		<module>repository</module>-->
+<!--	</modules>-->
 
 	<name>MotherMachine_</name>
 	<description>The Mother Machine Analyzer.</description>
@@ -80,6 +88,7 @@
 	</ciManagement>
 
 	<properties>
+		<revision>${version.number}</revision>
 		<!--suppress UnresolvedMavenProperty -->
 		<version.number>${git.closest.tag.name}.${git.commit.time}.${git.commit.id.abbrev}</version.number>
         <license.licenseName>BSD_3</license.licenseName>

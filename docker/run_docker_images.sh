@@ -18,7 +18,7 @@ moma:v0.9.3
 #ln -s -f /build_dir/target/MotherMachine-v0.9.3.20230613-183815.617f156.jar /moma/MoMA_fiji.jar
 
 
-#/moma/moma -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
+#/moma/moma -headless -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
 #
 #java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
 #

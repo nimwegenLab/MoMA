@@ -30,7 +30,7 @@ COPY .git ${build_dir}/.git
 COPY deploy.sh ${build_dir}/deploy.sh
 COPY src ${build_dir}/src
 COPY lib ${build_dir}/lib
-COPY --from=buildoptimizer /opt/gurobi/linux64/lib/* ${build_dir}/lib
+#COPY --from=buildoptimizer /opt/gurobi/linux64/lib/* ${build_dir}/lib
 COPY pom.xml ${build_dir}/pom.xml
 WORKDIR ${build_dir}
 
@@ -46,7 +46,7 @@ COPY --from=buildoptimizer /opt/gurobi .
 
 ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
-ENV LD_LIBRARY_PATH $GUROBI_HOME/lib
+ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
 RUN apt-get install -y vim tmux

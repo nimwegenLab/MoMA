@@ -14,16 +14,21 @@
     <artifactId>repository</artifactId>
 
     <dependencies>
+<!--        <dependency>-->
+<!--            <groupId>ancient-artifact</groupId>-->
+<!--            <artifactId>ancient-artifact</artifactId>-->
+<!--            <version>3.1.0.2</version>-->
+<!--        </dependency>-->
         <dependency>
-            <groupId>ancient-artifact</groupId>
-            <artifactId>ancient-artifact</artifactId>
-            <version>3.1.0.2</version>
+            <groupId>gurobi</groupId>
+            <artifactId>gurobi-jar</artifactId>
+            <version>9.5.2</version>
         </dependency>
     </dependencies>
     <repositories>
         <repository>
             <id>local</id>
-            <url>file:${basedir}/src/repository</url>
+            <url>file:${basedir}/maven-repository</url>
         </repository>
     </repositories>
 </project>

@@ -116,7 +116,7 @@
 		<dependency>
 			<groupId>gurobi</groupId>
 			<artifactId>gurobi-jar</artifactId>
-			<version>9.5.2</version>
+			<version>10.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 

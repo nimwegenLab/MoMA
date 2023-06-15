@@ -1,6 +1,6 @@
 FROM ubuntu:18.04 as buildoptimizer
-ARG GRB_VERSION=9.5.2
-ARG GRB_SHORT_VERSION=9.5
+ARG GRB_VERSION=10.0.2
+ARG GRB_SHORT_VERSION=10.0
 
 # install gurobi package and copy the files
 WORKDIR /opt

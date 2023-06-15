@@ -14,16 +14,7 @@
 
 	<groupId>com.jug</groupId>
 	<artifactId>MotherMachine</artifactId>
-<!--	<version>${revision}</version>-->
 	<version>${version.number}</version>
-
-<!--	<properties>-->
-<!--		<revision>${version.number}</revision>-->
-<!--	</properties>-->
-
-<!--	<modules>-->
-<!--		<module>repository</module>-->
-<!--	</modules>-->
 
 	<name>MotherMachine_</name>
 	<description>The Mother Machine Analyzer.</description>
@@ -102,10 +93,6 @@
 			<id>imagej.public</id>
 			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
-<!--		<repository>-->
-<!--			<id>local-repo</id>-->
-<!--			<url>file://${basedir}/maven-repository</url>-->
-<!--		</repository>-->
 		<repository>
 			<id>maven-local-repository</id>
 			<url>file://${basedir}/maven-local-repository</url>
@@ -160,24 +147,6 @@
 			<artifactId>JMathPlot</artifactId>
 			<version>1.0.1</version>
 		</dependency>
-
-<!--		<dependency>-->
-<!--			<groupId>com.gurobi</groupId>-->
-<!--			<artifactId>gurobi-jar</artifactId>-->
-<!--			<version>8.1.0</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>gurobi</groupId>-->
-<!--			<artifactId>gurobi-jar</artifactId>-->
-<!--			<version>local.gurobi</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>gurobi</groupId>-->
-<!--			<artifactId>gurobi</artifactId>-->
-<!--			<scope>system</scope>-->
-<!--			<version>9.5.2</version>-->
-<!--			<systemPath>${basedir}/lib/gurobi.jar</systemPath>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>sc.fiji</groupId>
@@ -356,7 +325,6 @@
 								<filter>
 									<artifact>*:*</artifact>
 									<excludes>
-<!--										<exclude>module-info.class</exclude>-->
 										<exclude>META-INF/*.SF</exclude>
 										<exclude>META-INF/*.DSA</exclude>
 										<exclude>META-INF/*.RSA</exclude>

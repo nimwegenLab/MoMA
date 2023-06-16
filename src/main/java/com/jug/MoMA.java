@@ -88,11 +88,7 @@ public class MoMA {
 		/* initialize logging */
 		dic.getLogger().initialize();
 
-		System.out.println("Breakpoint 6");
-
 		dic.getLoggerWindow().initializeConsoleWindow();
-
-		System.out.println("Breakpoint 7");
 
 		/* setup configuration manager and read configuration */
 		ConfigurationManager configurationManager = dic.getConfigurationManager();

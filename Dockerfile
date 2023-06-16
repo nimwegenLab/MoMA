@@ -20,9 +20,33 @@ RUN apt-get update \
 ### Build image based on nvidia/cuda image
 FROM nvidia/cuda:10.0-base-ubuntu18.04
 
-RUN apt-get update && \
-    apt-get install -y maven && \
-    apt-get install -y openjdk-8-jre
+# Setup demo environment variables
+ENV HOME=/root \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 \
+    RUN_XTERM=yes \
+    RUN_FLUXBOX=yes
+
+RUN apt-get update ; \
+    apt-get install -y maven ; \
+    apt-get install -y openjdk-8-jre ; \
+    apt-get install -y vim tmux; \
+    apt-get install -y \
+      bash \
+      fluxbox \
+      git \
+      net-tools \
+      novnc \
+      supervisor \
+      x11vnc \
+      xterm \
+      xvfb; \
+    set -exs
 
 ARG build_dir="/build_dir"
 
@@ -49,35 +73,21 @@ ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
-RUN apt-get install -y vim tmux
-
 ## Setup noVNC
 
-# Setup demo environment variables
-ENV HOME=/root \
-    DEBIAN_FRONTEND=noninteractive \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8 \
-    LC_ALL=C.UTF-8 \
-    DISPLAY=:0.0 \
-    DISPLAY_WIDTH=1024 \
-    DISPLAY_HEIGHT=768 \
-    RUN_XTERM=yes \
-    RUN_FLUXBOX=yes
-
 # Install git, supervisor, VNC, & X11 packages
-RUN set -ex; \
-    apt-get update; \
-    apt-get install -y \
-      bash \
-      fluxbox \
-      git \
-      net-tools \
-      novnc \
-      supervisor \
-      x11vnc \
-      xterm \
-      xvfb
+#RUN set -ex; \
+#    apt-get update; \
+#    apt-get install -y \
+#      bash \
+#      fluxbox \
+#      git \
+#      net-tools \
+#      novnc \
+#      supervisor \
+#      x11vnc \
+#      xterm \
+#      xvfb
 
 COPY . /app
 #CMD ["/app/entrypoint.sh"]

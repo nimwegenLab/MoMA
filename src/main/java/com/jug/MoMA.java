@@ -61,23 +61,38 @@ public class MoMA {
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
+		System.out.println("Breakpoint 1");
+
 		commandLineArgumentParser.parse(args);
+
+		System.out.println("Breakpoint 2");
 
 		dic.getLoadingTimer().start();
 		dic.getTotalRuntimeTimer().start();
+
+		System.out.println("Breakpoint 3");
 
 		if (commandLineArgumentParser.isVersionRequested()) {
 			System.out.println(dic.getVersionProvider().getVersion().toString());
 			System.exit(0);
 		}
 
+		System.out.println("Breakpoint 4");
+
 		if (SetupValidator.checkGurobiInstallation(commandLineArgumentParser.getIfRunningHeadless(), runningAsFijiPlugin)) {
 			System.exit(-1);
 		}
 
+		System.out.println("Breakpoint 5");
+
 		/* initialize logging */
 		dic.getLogger().initialize();
+
+		System.out.println("Breakpoint 6");
+
 		dic.getLoggerWindow().initializeConsoleWindow();
+
+		System.out.println("Breakpoint 7");
 
 		/* setup configuration manager and read configuration */
 		ConfigurationManager configurationManager = dic.getConfigurationManager();

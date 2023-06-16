@@ -51,6 +51,37 @@ ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
 RUN apt-get install -y vim tmux
 
+## Setup noVNC
+
+# Setup demo environment variables
+ENV HOME=/root \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 \
+    RUN_XTERM=yes \
+    RUN_FLUXBOX=yes
+
+# Install git, supervisor, VNC, & X11 packages
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y \
+      bash \
+      fluxbox \
+      git \
+      net-tools \
+      novnc \
+      supervisor \
+      x11vnc \
+      xterm \
+      xvfb
+
+COPY . /app
+#CMD ["/app/entrypoint.sh"]
+
 ### Setup MoMA
 ARG moma_dir="/moma"
 
@@ -71,3 +102,5 @@ COPY docker/moma ${moma_dir}/moma
 WORKDIR /
 
 ENTRYPOINT ["/moma/moma"]
+
+EXPOSE 8080

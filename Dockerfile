@@ -70,7 +70,41 @@ WORKDIR ${moma_dir}
 COPY docker/tensorflow ${moma_dir}/tensorflow
 COPY docker/moma ${moma_dir}/moma
 
+## setup noVNC
+
+# Setup demo environment variables
+ENV HOME=/root \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    DISPLAY=:0.0 \
+    DISPLAY_WIDTH=1024 \
+    DISPLAY_HEIGHT=768 \
+    RUN_XTERM=yes \
+    RUN_FLUXBOX=yes
+
+# Install git, supervisor, VNC, & X11 packages
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y \
+      bash \
+      fluxbox \
+      git \
+      net-tools \
+      novnc \
+      supervisor \
+      x11vnc \
+      xterm \
+      xvfb
+
+#COPY . /app
+ARG novnc_dir="docker/novnc"
+COPY $novnc_dir /app
 
 WORKDIR /
 
-ENTRYPOINT ["/moma/moma"]
+#ENTRYPOINT ["/moma/moma"]
+ENTRYPOINT ["/app/entrypoint.sh"]
+
+EXPOSE 8080

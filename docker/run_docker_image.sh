@@ -1,13 +1,28 @@
 #!/usr/bin/env bash
 
-docker run --rm -it \
+
+docker run \
+ -p 8080:8080 \
+ --rm \
  --runtime=nvidia --gpus all \
- --entrypoint /bin/bash \
  --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
  --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
  --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
  --mount type=bind,src="$HOME",target="$HOME" \
 moma:v0.9.3
+
+
+#docker run \
+# --rm \
+# --runtime=nvidia --gpus all \
+# -it \
+# --entrypoint /bin/bash \
+# --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
+# --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
+# --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
+# --mount type=bind,src="$HOME",target="$HOME" \
+#moma:v0.9.3
+
 
 #docker run --rm -it \
 # --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \

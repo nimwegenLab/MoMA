@@ -19,6 +19,8 @@ RUN apt-get update \
 
 ### Build image based on nvidia/cuda image
 FROM nvidia/cuda:10.0-base-ubuntu18.04
+#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+
 
 RUN apt-get update && \
     apt-get install -y maven && \
@@ -50,6 +52,7 @@ ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
 RUN apt-get install -y vim tmux
+RUN apt-get install -y xvfb openjdk-11-jdk
 
 ### Setup MoMA
 ARG moma_dir="/moma"

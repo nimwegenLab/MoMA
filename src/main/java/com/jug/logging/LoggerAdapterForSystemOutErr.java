@@ -66,11 +66,11 @@ public class LoggerAdapterForSystemOutErr {
 
         System.out.println("Breakpoint 9");
 
-        System.setOut(new PrintStream(out, true));
+//        System.setOut(new PrintStream(out, true));
 
         System.out.println("Breakpoint 10");
 
-        System.setErr(new PrintStream(out, true));
+//        System.setErr(new PrintStream(out, true));
 
         System.out.println("Breakpoint 11");
     }

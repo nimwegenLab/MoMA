@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 docker run --rm -it \
+ --runtime=nvidia --gpus all \
  --entrypoint /bin/bash \
  --mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
  --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
  --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
+ --mount type=bind,src="$HOME",target="$HOME" \
 moma:v0.9.3
 
 #docker run --rm -it \
@@ -19,7 +21,18 @@ moma:v0.9.3
 
 
 #/moma/moma -headless -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
-#
+
+#xvfb-run /moma/moma -headless -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
+
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda/lib64
+# xvfb-run /moma/moma -headless -tmax 5 -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
+
+
+
+#xvfb-run java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" "$@"
+
+
+
 #java -Xmx32g -Djava.library.path="${GUROBI_LIB_PATH}":"${TF_JAVA_LIB_PATH}" -jar "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" -p /data/mm.properties -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
 #
 #./moma -i /data/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif -p /data/mm.properties

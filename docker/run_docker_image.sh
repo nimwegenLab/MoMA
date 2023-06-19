@@ -9,8 +9,9 @@ docker run \
  --mount type=bind,src="$HOME/.moma",target="/root/.moma" \
  --mount type=bind,src="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma",target="/data" \
  --mount type=bind,src="$HOME",target="$HOME" \
-moma:v0.9.3
+moma:v0.9.3 &
 
+firefox --new-window "http://localhost:8080/vnc_auto.html"
 
 #docker run \
 # --rm \

@@ -1,3 +1,6 @@
+TRASH*
+maven_logs
+
 src/test/resources/
 /*.log
 /*.properties

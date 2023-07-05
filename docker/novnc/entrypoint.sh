@@ -17,7 +17,12 @@ case $RUN_XTERM in
 esac
 
 #exec supervisord -c /app/supervisord.conf
-supervisord -c /app/supervisord.conf &
+#supervisord -c /app/supervisord.conf &
+
+Xvfb :0 -screen 0 "%(ENV_DISPLAY_WIDTH)s"x"%(ENV_DISPLAY_HEIGHT)s"x24 -listen tcp -ac &
+websockify --web /usr/share/novnc 8080 localhost:5900 &
+x11vnc -forever -shared &
+fluxbox &
 
 echo "Starting MoMA" > /data/moma.log
 

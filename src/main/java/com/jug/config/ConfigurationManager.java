@@ -93,11 +93,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
-    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 10;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
      */
-    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 10;
     /**
      * The maximal width allow for a component in pixels. Components with a width larger than this value will be removed.
      */

@@ -221,7 +221,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = true;
+    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = false;
 
     /**
      * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.

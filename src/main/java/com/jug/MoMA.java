@@ -81,6 +81,7 @@ public class MoMA {
 
 		/* setup configuration manager and read configuration */
 		ConfigurationManager configurationManager = dic.getConfigurationManager();
+		configurationManager.setMultithreaded(commandLineArgumentParser.isMultithreaded());
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 

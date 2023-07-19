@@ -33,6 +33,7 @@ public class CommandLineArgumentsParser {
 
     private boolean forceOperation;
     private boolean versionRequested;
+    private boolean multithreaded;
 
     public void setRunningAsFijiPlugin(boolean runningAsFijiPlugin){
         this.runningAsFijiPlugin = runningAsFijiPlugin;
@@ -59,6 +60,8 @@ public class CommandLineArgumentsParser {
         final Option reloadOption = new Option( "rl", "reload", true, "reloads previously curated data; any additional arguments will be ignored" );
 
         final Option trackOnlyOption = new Option("trk", "trackonly", false, "run and save tracking without exporting cell measurement; must be combined with option -headless");
+
+        final Option multithreadOption = new Option("m", "multithreaded", false, "run and save tracking without exporting cell measurement; must be combined with option -headless");
 
         final Option groundTruthGeneration = new Option( "gtexport", "ground_truth_export", false, "start user interface with possibility for exporting ground truth frames" );
         groundTruthGeneration.setRequired( false );
@@ -89,6 +92,7 @@ public class CommandLineArgumentsParser {
         options.addOption(headless);
         options.addOption(reloadOption);
         options.addOption(trackOnlyOption);
+        options.addOption(multithreadOption);
         options.addOption(groundTruthGeneration);
         options.addOption(timeFirst);
         options.addOption(timeLast);
@@ -167,6 +171,10 @@ public class CommandLineArgumentsParser {
                 System.exit(-1);
             }
             trackOnly = true;
+        }
+
+        if(cmd.hasOption("multithreaded")){
+            multithreaded = true;
         }
 
         if ( cmd.hasOption( "i" ) ) {
@@ -276,6 +284,14 @@ public class CommandLineArgumentsParser {
 
     public boolean isTrackOnly() {
         return trackOnly;
+    }
+
+    /**
+     * Returns whether the MoMA instance is running multithreaded.
+     * @return true if user requested multithreaded operation
+     */
+    public boolean isMultithreaded() {
+        return multithreaded;
     }
 
     public Path getReloadFolderPath() {

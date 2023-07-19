@@ -88,4 +88,6 @@ public interface IConfiguration {
     float getMaximumShrinkagePerFrame();
 
     float getMaximumGrowthPerFrame();
+
+    boolean isMultithreaded();
 }

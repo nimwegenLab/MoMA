@@ -25,8 +25,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * tracking solution. (After that period of time GUROBI will stop and best
      * solution found so far will be used.)
      */
-    public double GUROBI_TIME_LIMIT = 15.0;
-    public double GUROBI_TIME_LIMIT_DURING_CURATION = 5.0;
+    public double GUROBI_TIME_LIMIT = 60.0;
+    public double GUROBI_TIME_LIMIT_DURING_CURATION = 15.0;
     public boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
     /**
@@ -93,11 +93,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
      */
-    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 10;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
      */
-    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 10;
     /**
      * The maximal width allow for a component in pixels. Components with a width larger than this value will be removed.
      */
@@ -221,7 +221,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = true;
+    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = false;
 
     /**
      * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.

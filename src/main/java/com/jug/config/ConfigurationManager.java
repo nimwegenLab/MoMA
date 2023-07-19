@@ -53,6 +53,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * What happens if exit constraints are NOT part of the model?
      */
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
+    private boolean multithreaded;
 
     /*********************************** CONFIG VALUES DEFINITION START ***********************************************/
     public float getMaximumGrowthPerFrame(){
@@ -655,4 +656,21 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     long backgroundRoiWidth = 5; /* ROI width in pixels*/
 
     public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
+
+    /**
+     * Sets whether the MoMA instance is running multithreaded.
+     * @return
+     */
+    public void setMultithreaded(boolean multithreaded) {
+        this.multithreaded = multithreaded;
+    }
+
+    /**
+     * Returns whether the MoMA instance is running multithreaded.
+     * @return
+     */
+    @Override
+    public boolean isMultithreaded() {
+        return multithreaded;
+    }
 }

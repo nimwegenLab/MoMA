@@ -51,7 +51,12 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
                 return p[0] + "-" + p[1]; /* versionString has format: "v0.6.0-beta6" */
             }
             else if(p.length == 3) {
-                return p[0] + "-" + p[1] + "+" + p[2]; /* versionString has form: "v0.7.0-4-g45bcea65" */
+                if("0".equals(p[1])) {
+                    return p[0]; /* versionString has form: "v0.7.0-4-g45bcea65" */
+                }
+                else {
+                    return p[0] + "-" + p[1] + "+" + p[2]; /* versionString has form: "v0.7.0-4-g45bcea65" */
+                }
             } else if(p.length == 4) {
                 return p[0] + "-" + p[1] + "-" + p[2] + "+" + p[3]; /* versionString has form: "v0.6.0-beta5-1-g6a457d3f" */
             } else {

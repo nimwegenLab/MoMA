@@ -19,3 +19,5 @@ dependency-reduced-pom.xml
 .idea/tasks.xml
 /models/
 /test_datasets/
+TRASH/
+maven_logs/

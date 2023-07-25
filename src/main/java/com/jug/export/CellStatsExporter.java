@@ -26,6 +26,7 @@ import net.imglib2.view.Views;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,6 +91,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         System.out.println("...done!");
     }
 
+    ImageFileNameParser positionStringParser = new ImageFileNameParser();
+
     private void writeCellStatsExportData(Writer writer, List<SegmentRecord> cellTrackStartingPoints, long avgXpos) throws IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
@@ -141,7 +144,8 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
-        Pattern positionPattern = Pattern.compile("Pos(\\d+)");
+        Pattern positionPattern = Pattern.compile("_(.*Pos\\d+).tif");
+//        imagePath = Paths.get(configurationManager.getInputImagePath());
         Matcher positionMatcher = positionPattern.matcher(configurationManager.getInputImagePath());
         positionMatcher.find();
         String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want

@@ -55,11 +55,11 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
     private boolean multithreaded;
 
-    public String getPositionIdRegex() {
+    public static String getPositionIdRegex() {
         return POSITION_ID_REGEX;
     }
 
-    public String getGrowthlaneIdRegex() {
+    public static String getGrowthlaneIdRegex() {
         return GROWTHLANE_ID_REGEX;
     }
 
@@ -88,12 +88,12 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Default value for the position id regex. This is used to extract the position id from the filename.
      */
-    private String POSITION_ID_REGEX = "([-1-9]*Pos\\d+)_";
+    private static String POSITION_ID_REGEX = "([-0-9]*Pos\\d+)_";
 
     /**
      * Default value for the growthlane id regex. This is used to extract the growthlane id from the filename.
      */
-    private String GROWTHLANE_ID_REGEX = "_(GL[0-9]*)\\.tif";
+    private static String GROWTHLANE_ID_REGEX = "_(GL[0-9]*)\\.tif";
 
     @Override
     public float getAssignmentCostCutoff() {

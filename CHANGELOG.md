@@ -10,9 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Added
 
 - Add setting `GROWTHLANE_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
-  growthlane id from the filename of  the image.
+  growthlane id from the filename of  the image. Default value: `_(GL[0-9]*)\\.tif`
 - Add setting `POSITION_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
-  position id from the filename of  the image.
+  position id from the filename of  the image. Default value: `([-0-9]*Pos\\d+)_`
 
 ## [0.9.4] - 2023-07-20
 

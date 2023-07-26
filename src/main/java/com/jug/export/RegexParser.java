@@ -13,7 +13,6 @@ public class RegexParser {
     public void parse(String filename) {
         Matcher matcher = Pattern.compile(this.regex).matcher(filename);
         matcher.find();
-        matcher.group();
         match = matcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
     }
 

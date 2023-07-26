@@ -18,12 +18,11 @@ public class Bugfix__20230725_fix_csv_position_column_header_for_new_position_na
         datasetSubfolder = "bugfix/20230725-fix-csv-position-column-header-for-new-position-naming-scheme"; /* DO NOT CHANGE: value is overwritten by the script start_topic_branch.sh, which uses this template to create a session for e.g. feature-development or bug-fixing */
         analysisName = "test_analysis"; /* you can change this if you want to; but it is not needed */
         tmin = null;
-        tmax = 10;
+        tmax = 5;
     }
 
     public static void main(String[] args) {
         Bugfix__20230725_fix_csv_position_column_header_for_new_position_naming_scheme tests = new Bugfix__20230725_fix_csv_position_column_header_for_new_position_naming_scheme();
-
         tests.run_track_and_export();
     }
 

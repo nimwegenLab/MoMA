@@ -44,6 +44,9 @@ public class CellStatsExporter implements ResultExporterInterface {
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
+    private RegexParser positionStringParser;
+
+    private RegexParser glStringParser;
 
     public CellStatsExporter(final MoMAGui gui,
                              final ConfigurationManager configurationManager,
@@ -59,6 +62,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         this.imageProvider = imageProvider;
         this.versionString = versionString;
         this.measurements = measurements;
+        positionStringParser = new RegexParser(configurationManager.getPositionIdRegex());
+        glStringParser = new RegexParser(configurationManager.getGrowthlaneIdRegex());
     }
 
     @Override
@@ -90,8 +95,6 @@ public class CellStatsExporter implements ResultExporterInterface {
         }
         System.out.println("...done!");
     }
-
-    ImageFileNameParser positionStringParser = new ImageFileNameParser();
 
     private void writeCellStatsExportData(Writer writer, List<SegmentRecord> cellTrackStartingPoints, long avgXpos) throws IOException {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
@@ -144,18 +147,10 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
-        Pattern positionPattern = Pattern.compile("_(.*Pos\\d+).tif");
-//        imagePath = Paths.get(configurationManager.getInputImagePath());
-        Matcher positionMatcher = positionPattern.matcher(configurationManager.getInputImagePath());
-        positionMatcher.find();
-        String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
-
-        Pattern growthlanePattern = Pattern.compile("GL(\\d+)");
-        Matcher growthlaneMatcher = growthlanePattern.matcher(configurationManager.getInputImagePath());
-        growthlaneMatcher.find();
-        String growthlaneNumber = growthlaneMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
-
-        String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
+        String filename = Paths.get(configurationManager.getInputImagePath()).getFileName().toString();
+        positionStringParser.parse(filename);
+        glStringParser.parse(filename);
+        String laneID = positionStringParser.getMatch() + "_" + glStringParser.getMatch();
 
         writer.write(String.format("# moma_version=\"%s\"\n", versionString));
         writer.write(String.format("# input_image=\"%s\"\n", configurationManager.getInputImagePath()));

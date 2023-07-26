@@ -55,6 +55,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
     private boolean multithreaded;
 
+    public static String getPositionIdRegex() {
+        return POSITION_ID_REGEX;
+    }
+
+    public static String getGrowthlaneIdRegex() {
+        return GROWTHLANE_ID_REGEX;
+    }
+
     /*********************************** CONFIG VALUES DEFINITION START ***********************************************/
     public float getMaximumGrowthPerFrame(){
         return MAXIMUM_GROWTH_PER_FRAME;
@@ -76,6 +84,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * This value is critical(!): Assignments with costs higher than this value will be ignored.
      */
+
+    /**
+     * Default value for the position id regex. This is used to extract the position id from the filename.
+     */
+    private static String POSITION_ID_REGEX = "([-0-9]*Pos\\d+)_";
+
+    /**
+     * Default value for the growthlane id regex. This is used to extract the growthlane id from the filename.
+     */
+    private static String GROWTHLANE_ID_REGEX = "_(GL[0-9]*)\\.tif";
 
     @Override
     public float getAssignmentCostCutoff() {
@@ -296,6 +314,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         THRESHOLD_FOR_COMPONENT_SPLITTING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Float.toString(THRESHOLD_FOR_COMPONENT_SPLITTING)));
         MAXIMUM_GROWTH_RATE = Double.parseDouble(props.getProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE)));
         SEGMENTATION_MODEL_PATH = props.getProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
+        GROWTHLANE_ID_REGEX = props.getProperty("GROWTHLANE_ID_REGEX", GROWTHLANE_ID_REGEX);
+        POSITION_ID_REGEX = props.getProperty("POSITION_ID_REGEX", POSITION_ID_REGEX);
         DEFAULT_PATH = props.getProperty("DEFAULT_PATH", DEFAULT_PATH);
         CELL_LABELS = props.getProperty("CELL_LABELS", CELL_LABELS);
         CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));

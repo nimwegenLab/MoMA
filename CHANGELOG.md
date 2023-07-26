@@ -5,11 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.5] - 2023-07-26
+
+## Added
+
+- Add setting `GROWTHLANE_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
+  growthlane id from the filename of  the image. Default value: `_(GL[0-9]*)\\.tif`
+- Add setting `POSITION_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
+  position id from the filename of  the image. Default value: `([-0-9]*Pos\\d+)_`
+
+## [0.9.4] - 2023-07-20
+
+### Added
+
+- Add command line flag `multithreaded` to enable multithreading. This is disabled by default. Using e.g.
+  `moma -multithreaded ...` will use multi-threading, when generating the component-trees.
+
+### Changed
+
+- Disable all multithreading by default.
+
+### Fixed
+
+- Fixed parsing of version string from the Git.
+
 ## [0.9.3] - 2023-06-01
 
 ### Changed
 
-- Add parameter `MAXIMUM_DOWNWARD_MOVEMENT` which sets the maximum allowed downward movement for cells. Default value [pixel]: 50
+- Add parameter `MAXIMUM_DOWNWARD_MOVEMENT` which sets the maximum allowed downward movement for cells.
+  Default value [pixel]: 50
 
 ## [0.9.2] - 2023-05-26
 
@@ -84,6 +109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
 [unreleased]: https://github.com/michaelmell/moma/compare/v0.9...dev
+[0.9.5]: https://github.com/michaelmell/moma/compare/v0.9.4...v0.9.5
+[0.9.4]: https://github.com/michaelmell/moma/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/michaelmell/moma/compare/v0.9.2...v0.9.3
 [0.9.2]: https://github.com/michaelmell/moma/compare/v0.9.1...v0.9.2
 [0.9.1]: https://github.com/michaelmell/moma/compare/v0.9.0-alpha6...v0.9.1

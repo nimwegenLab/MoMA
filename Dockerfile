@@ -18,7 +18,8 @@ RUN apt-get update \
 
 
 ### Build image based on nvidia/cuda image
-FROM nvidia/cuda:10.0-base-ubuntu18.04
+FROM ubuntu:18.04
+#FROM nvidia/cuda:10.0-base-ubuntu18.04
 #FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 

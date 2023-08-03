@@ -18,7 +18,8 @@ RUN apt-get update \
     && rm -rf gurobi/linux64/docs
 
 ### Build container with MoMA
-FROM ubuntu:18.04 as moma_builder
+#FROM ubuntu:18.04 as moma_builder
+FROM ubuntu:18.04
 
 RUN apt-get update && \
     apt-get install -y maven && \
@@ -43,12 +44,12 @@ RUN --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
 #    ${build_dir}/deploy.sh
 
 ### Build image based on nvidia/cuda image
-FROM ubuntu:18.04
+#FROM ubuntu:18.04
 
 RUN --mount=type=cache,target=/var/cache/apt/ apt-get update && \
     apt-get install -y vim tmux xvfb openjdk-11-jdk
 
-ARG build_dir="/build_dir"
+#ARG build_dir="/build_dir"
 
 # setup Gurobi
 COPY --from=gurobi_builder /opt/gurobi /opt/gurobi
@@ -58,7 +59,7 @@ ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
 ### Setup MoMA
-COPY --from=moma_builder ${build_dir}/target ${build_dir}/target
+#COPY --from=moma_builder ${build_dir}/target ${build_dir}/target
 ENV MOMA_JAR_PATH ${build_dir}/target/
 
 ### Setup environment variables

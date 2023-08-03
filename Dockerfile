@@ -69,9 +69,9 @@ WORKDIR ${moma_dir}
 #RUN ln -s /build_dir/target/MotherMachine-v0.9.3.20230613-135612.d6e49c8.jar ${moma_dir}/MoMA_fiji.jar
 
 COPY docker/tensorflow ${moma_dir}/tensorflow
-COPY docker/moma ${moma_dir}/moma
+COPY docker/moma_in_container.sh ${moma_dir}/moma_in_container.sh
 
 
 WORKDIR /
 
-ENTRYPOINT ["/moma/moma"]
+ENTRYPOINT ["/moma/moma_in_container.sh"]

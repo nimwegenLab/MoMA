@@ -37,35 +37,34 @@ WORKDIR ${build_dir}
 # this caches the maven dependencies to a separate layer so we do not have to download them every time
 #RUN mvn verify --fail-never
 
-RUN --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
+#RUN --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
+#    ${build_dir}/deploy.sh
+RUN chmod +x ${build_dir}/deploy.sh && \
     ${build_dir}/deploy.sh
 
 ### Build image based on nvidia/cuda image
 FROM ubuntu:18.04
-#FROM nvidia/cuda:10.0-base-ubuntu18.04
-#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
+RUN --mount=type=cache,target=/var/cache/apt/ apt-get update && \
+    apt-get install -y vim tmux xvfb openjdk-11-jdk
 
-# copy gurobi files from buildoptimizer
-#WORKDIR /opt/gurobi
+ARG build_dir="/build_dir"
+
+# setup Gurobi
 COPY --from=gurobi_builder /opt/gurobi /opt/gurobi
-
 ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
-RUN apt-get update && \
-    apt-get install -y vim tmux xvfb openjdk-11-jdk
-
 ### Setup MoMA
-COPY --from=moma_builder /build_dir/target /build_dir/target
+COPY --from=moma_builder ${build_dir}/target ${build_dir}/target
+ENV MOMA_JAR_PATH ${build_dir}/target/
 
+### Setup environment variables
 ARG moma_dir="/moma"
-
 ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow
 #ENV MOMA_JAR_PATH ${moma_dir}/MoMA_fiji.jar
-ENV MOMA_JAR_PATH ${build_dir}/target/
 
 #COPY /opt/gurobi811/linux64/lib/libGurobiJni81.so /opt/gurobi/linux64/lib/libGurobiJni81.so
 

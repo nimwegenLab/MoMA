@@ -1,4 +1,5 @@
-FROM ubuntu:18.04 as buildoptimizer
+FROM ubuntu:18.04 as gurobi_builder
+
 ARG GRB_VERSION=10.0.2
 ARG GRB_SHORT_VERSION=10.0
 
@@ -16,12 +17,8 @@ RUN apt-get update \
     && mv -f gurobi* gurobi \
     && rm -rf gurobi/linux64/docs
 
-
-### Build image based on nvidia/cuda image
-FROM ubuntu:18.04
-#FROM nvidia/cuda:10.0-base-ubuntu18.04
-#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
-
+### Build container with MoMA
+FROM ubuntu:18.04 as moma_builder
 
 RUN apt-get update && \
     apt-get install -y maven && \
@@ -40,22 +37,30 @@ WORKDIR ${build_dir}
 # this caches the maven dependencies to a separate layer so we do not have to download them every time
 #RUN mvn verify --fail-never
 
-RUN  --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
+RUN --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
     ${build_dir}/deploy.sh
 
+### Build image based on nvidia/cuda image
+FROM ubuntu:18.04
+#FROM nvidia/cuda:10.0-base-ubuntu18.04
+#FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+
+
 # copy gurobi files from buildoptimizer
-WORKDIR /opt/gurobi
-COPY --from=buildoptimizer /opt/gurobi .
+#WORKDIR /opt/gurobi
+COPY --from=gurobi_builder /opt/gurobi /opt/gurobi
 
 ENV GUROBI_HOME /opt/gurobi/linux64
 ENV PATH $PATH:$GUROBI_HOME/bin
 ENV LD_LIBRARY_PATH $GUROBI_HOME:$GUROBI_HOME/lib
 ENV GUROBI_LIB_PATH $GUROBI_HOME/lib/
 
-RUN apt-get install -y vim tmux
-RUN apt-get install -y xvfb openjdk-11-jdk
+RUN apt-get update && \
+    apt-get install -y vim tmux xvfb openjdk-11-jdk
 
 ### Setup MoMA
+COPY --from=moma_builder /build_dir/target /build_dir/target
+
 ARG moma_dir="/moma"
 
 ENV TF_JAVA_LIB_PATH ${moma_dir}/tensorflow

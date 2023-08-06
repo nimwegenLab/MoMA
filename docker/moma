@@ -101,7 +101,9 @@ do
   fi
 done
 
-source "${properties_path}"
+#source "${properties_path}"
+#source <(grep yourfilter /path/to/yourfile)
+source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
 
 echo "SEGMENTATION_MODEL_PATH: ${SEGMENTATION_MODEL_PATH}"
 mount_string="${mount_string} --mount type=bind,src=$(get_directory_path "${SEGMENTATION_MODEL_PATH}"),target=$(get_directory_path "${SEGMENTATION_MODEL_PATH}")"

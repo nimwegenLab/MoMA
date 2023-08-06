@@ -90,7 +90,7 @@ mount_string=""
 
 while :
 do
-  if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" ]]; then
+  if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" || $1 == "-rl" ]]; then
     current_path=$(get_directory_path "$2")
     if [[ ! "${mount_string}" == *"${current_path}"* ]]; then
 #      mount_string="${mount_string} --mount type=bind,src=${current_path},target=${current_path}"
@@ -146,7 +146,10 @@ echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
 #--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
 
 #eval docker run -it --rm --entrypoint /bin/bash -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" "${mount_string}" "moma:v0.9.3"
-eval docker run -it --rm -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+#eval docker run -it --rm -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+
+#docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" cmsopendata/cmssw_5_3_32 /bin/bash
+eval docker run -it --rm --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
 #echo ""
 #echo "${args_copy}"
 

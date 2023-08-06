@@ -118,7 +118,13 @@ echo "mount_string: ${mount_string}"
 #docker run --rm "${mount_string}" "michaelmell/moma:v0.9.3" "${args_copy}"
 
 #echo docker run --rm "${mount_string}" "moma:v0.9.3" "${args_copy}"
-eval docker run --rm "${mount_string}" "moma:v0.9.3" "${args_copy}"
+#eval docker run --rm "${mount_string}" "moma:v0.9.3" "${args_copy}"
+
+#eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
+
+#eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
+eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3"
+
 #docker run --rm "moma:v0.9.3"
 
 

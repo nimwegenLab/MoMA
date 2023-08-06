@@ -25,6 +25,12 @@ eval set -- "$OPTS"
 
 CMD_ARGUMENTS=""
 
+function get_bind_mount_arg {
+  local path=$1
+  echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\""
+  return 0
+}
+
 function get_directory_path {
     # This function takes the path of a file or directory. If file-path is passed it returns the path to the parent
     # directory. If a directory is passed, it returns the path to the directory itself.
@@ -87,7 +93,8 @@ do
   if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" ]]; then
     current_path=$(get_directory_path "$2")
     if [[ ! "${mount_string}" == *"${current_path}"* ]]; then
-      mount_string="${mount_string} --mount type=bind,src=${current_path},target=${current_path}"
+#      mount_string="${mount_string} --mount type=bind,src=${current_path},target=${current_path}"
+      mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
     fi
     if [[ $1 == "-p" ]]; then
       properties_path="$2"
@@ -105,10 +112,16 @@ done
 #source <(grep yourfilter /path/to/yourfile)
 source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
 
-echo "SEGMENTATION_MODEL_PATH: ${SEGMENTATION_MODEL_PATH}"
-mount_string="${mount_string} --mount type=bind,src=$(get_directory_path "${SEGMENTATION_MODEL_PATH}"),target=$(get_directory_path "${SEGMENTATION_MODEL_PATH}")"
+#echo "SEGMENTATION_MODEL_PATH: ${SEGMENTATION_MODEL_PATH}"
+#mount_string="${mount_string} --mount type=bind,src=$(get_directory_path "${SEGMENTATION_MODEL_PATH}"),target=$(get_directory_path "${SEGMENTATION_MODEL_PATH}")"
+mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
+#get_bind_mount_arg
+
+mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 
 echo "mount_string: ${mount_string}"
+
+echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
 #echo "${CONTAINER_TAG}"
 
 #echo "args_copy: ${args_copy}"
@@ -125,7 +138,15 @@ echo "mount_string: ${mount_string}"
 #eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
 
 #eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
-eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3"
+
+#--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic"
+
+#$GRB_LICENSE_FILE
+#--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
+
+eval docker run -it --rm --entrypoint /bin/bash -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" "${mount_string}" "moma:v0.9.3"
+echo ""
+echo "${args_copy}"
 
 #docker run --rm "moma:v0.9.3"
 

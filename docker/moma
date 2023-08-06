@@ -115,9 +115,10 @@ source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
 #echo "SEGMENTATION_MODEL_PATH: ${SEGMENTATION_MODEL_PATH}"
 #mount_string="${mount_string} --mount type=bind,src=$(get_directory_path "${SEGMENTATION_MODEL_PATH}"),target=$(get_directory_path "${SEGMENTATION_MODEL_PATH}")"
 mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
-#get_bind_mount_arg
 
 mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
+
+mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")" # mount home directory to access ~/.moma directory
 
 echo "mount_string: ${mount_string}"
 
@@ -144,9 +145,10 @@ echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
 #$GRB_LICENSE_FILE
 #--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
 
-eval docker run -it --rm --entrypoint /bin/bash -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" "${mount_string}" "moma:v0.9.3"
-echo ""
-echo "${args_copy}"
+#eval docker run -it --rm --entrypoint /bin/bash -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" "${mount_string}" "moma:v0.9.3"
+eval docker run -it --rm -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+#echo ""
+#echo "${args_copy}"
 
 #docker run --rm "moma:v0.9.3"
 

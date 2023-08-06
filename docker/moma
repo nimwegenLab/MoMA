@@ -85,7 +85,10 @@ mount_string=""
 while :
 do
   if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" ]]; then
-    mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
+    current_path=$(get_directory_path "$2")
+    if [[ ! "${mount_string}" == *"${current_path}"* ]]; then
+      mount_string="${mount_string} --mount type=bind,src=\"${current_path}\",target=\"${current_path}\""
+    fi
     shift 2
   elif [[ -z $1 ]]; then # we parse all arguments; exit loop
     break

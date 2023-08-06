@@ -1,0 +1,110 @@
+#!/bin/bash
+
+###
+# This script parses the command options, mounts the required paths for MoMA, and calls the containerized instance of
+# MoMA.
+###
+
+CONTAINER_TAG="moma:0.9.3"
+
+printf "Started docker container wrapper script.\n"
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+#source "${DIR}/helpers.sh"
+#source "${DIR}/functions.sh"
+
+args_copy="$@"
+
+SHORT=i:,o:,p:,r:
+LONG=tmin:,tmax:,analysis:,headless:,trackonly:
+
+OPTS=$(getopt --alternative --name moma --options $SHORT --longoptions $LONG -- "$@")
+
+eval set -- "$OPTS"
+
+CMD_ARGUMENTS=""
+
+function get_directory_path {
+    # This function takes the path of a file or directory. If file-path is passed it returns the path to the parent
+    # directory. If a directory is passed, it returns the path to the directory itself.
+    local TARGET_PATH=$1
+    if [[ -d "$TARGET_PATH" ]]; then
+      echo "$TARGET_PATH"
+      return 0
+    elif [[ -f "$TARGET_PATH" ]]; then
+      RET=$(dirname "$TARGET_PATH")
+      echo "$RET"
+      return 0
+    else
+      # an invalid value was passed
+      echo "ERROR: Path does not exist: ${TARGET_PATH}"
+      exit 1
+    fi
+}
+
+mount_string=""
+
+## This while loop captures paths that will be mount directories to the container.
+## Other arguments are appended to the variable CMD_ARGUMENTS, which is passed as command line argument to the container.
+#while :
+#do
+#  case "$1" in
+#    -i )
+#      input_path=$(get_directory_path "$2")
+#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
+#      echo "input_path: ${input_path}"
+#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
+#      shift 2
+#      ;;
+#    -o )
+#      output_path=$(get_directory_path "$2")
+#      echo "output_path: ${output_path}"
+#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
+#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
+#      shift 2
+#      ;;
+#    -p )
+#      properties_path=$(get_directory_path "$2")
+#      echo "properties_path: ${properties_path}"
+#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
+#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
+#      shift 2
+#      ;;
+#    -- )
+#      shift;
+#      break
+#      ;;
+#    * )
+#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
+#      shift 2;
+#      ;;
+#  esac
+#done
+
+while :
+do
+  if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" ]]; then
+    mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
+    shift 2
+  elif [[ -z $1 ]]; then # we parse all arguments; exit loop
+    break
+  else
+#    echo "$@"
+    shift
+  fi
+done
+
+#echo "mount_string: ${mount_string}"
+#echo "${CONTAINER_TAG}"
+
+#echo "args_copy: ${args_copy}"
+#echo "cmd args: ${CMD_ARGUMENTS}"
+
+echo docker run --rm "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
+#docker pull "${CONTAINER_TAG}"
+#docker run --rm --mount type=bind,src="${input_path}",target="${input_path}" --mount type=bind,src="${gl_detection_template_path}",target="${gl_detection_template_path}" --mount type=bind,src="${output_path}",target="${output_path}" --mount type=bind,src="${log_path}",target="${log_path}" "${CONTAINER_TAG}" "${CMD_ARGUMENTS}"
+
+echo "DONE"
+
+exit 0

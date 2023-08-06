@@ -6,7 +6,7 @@ ARG GRB_SHORT_VERSION=10.0
 # install gurobi package and copy the files
 WORKDIR /opt
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt/ apt-get update \
     && apt-get install --no-install-recommends -y\
        ca-certificates  \
        wget \
@@ -22,8 +22,7 @@ RUN apt-get update \
 FROM ubuntu:18.04
 
 RUN apt-get update && \
-    apt-get install -y maven && \
-    apt-get install -y openjdk-8-jre
+    apt-get install -y maven openjdk-8-jre
 
 ARG build_dir="/build_dir"
 
@@ -38,7 +37,7 @@ WORKDIR ${build_dir}
 # this caches the maven dependencies to a separate layer so we do not have to download them every time
 #RUN mvn verify --fail-never
 
-RUN --mount=type=cache,target=/root/.m2 chmod +x ${build_dir}/deploy.sh && \
+RUN --mount=type=cache,target=/root/.m2/ chmod +x ${build_dir}/deploy.sh && \
     ${build_dir}/deploy.sh
 #RUN chmod +x ${build_dir}/deploy.sh && \
 #    ${build_dir}/deploy.sh

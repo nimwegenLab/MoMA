@@ -324,6 +324,7 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         try {
             writer = new BufferedWriter(new FileWriter(path.getPath()));
             writer.write(message);
+            writer.write("\n");
             writer.close();
         } catch (IOException e) {
             throw new RuntimeException(e);

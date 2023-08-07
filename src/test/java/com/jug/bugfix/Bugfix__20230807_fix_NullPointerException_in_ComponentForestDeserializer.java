@@ -25,26 +25,22 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
         Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer tests = new Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer();
 
 //        tests.run_trackonly__1_Pos001_GL53();
-        tests.run_export__1_Pos001_GL53__2();
+//        tests.run_export__1_Pos001_GL53__2();
+//        tests.run_interactive__1_Pos001_GL53();
 //        tests.run_export__1_Pos001_GL53();
 //        tests.run_export__1_Pos006_GL16();
+        tests.run_interactive__1_Pos006_GL16();
     }
 
     /**
      * Test-methods are below.
      */
-    public void run_interactive() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
+    public void run_interactive__1_Pos001_GL53() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53", "wt_zwf_oxi_rep2_1_MMStack__1-Pos001_GL53.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53", "mm.properties");
         analysisName = "test_interactive";
         startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
-
-//    public void run_reloading() {
-//        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-//        analysisName = "test_batch_run";
-//        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-//    }
 
     public void run_trackonly__1_Pos001_GL53() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53", "wt_zwf_oxi_rep2_1_MMStack__1-Pos001_GL53.tif");
@@ -63,6 +59,13 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
         Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53");
         analysisName = "slurm_test_3";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
+
+    public void run_interactive__1_Pos006_GL16() {
+        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos006_GL16", "wt_zwf_oxi_rep2_1_MMStack__1-Pos006_GL16.tif");
+        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos006_GL16", "mm.properties");
+        analysisName = "test_interactive";
+        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
     }
 
     public void run_export__1_Pos006_GL16() {

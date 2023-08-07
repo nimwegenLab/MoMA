@@ -162,7 +162,7 @@ public class PseudoDic {
     }
 
     public CellStatsExporter getCellStatsExporter() {
-        return new CellStatsExporter(getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersion().toString(), getMeasurements());
+        return new CellStatsExporter(getDialogManager(), getMomaGui(), getConfigurationManager(), getMixtureModelFit(), getComponentProperties(), getImageProvider(), getVersionProvider().getVersion().toString(), getMeasurements());
     }
 
     private List<SegmentMeasurementInterface> getMeasurements() {

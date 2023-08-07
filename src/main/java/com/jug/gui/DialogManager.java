@@ -1,10 +1,13 @@
 package com.jug.gui;
 
 import com.jug.exceptions.GuiInteractionException;
+import com.jug.gui.progress.DialogProgress;
 import com.jug.logging.LoggingHelper;
 
 import javax.swing.*;
 import java.util.function.Supplier;
+
+import static java.util.Objects.isNull;
 
 /**
  * This class manages the showing of dialogs within in MoMA. It is also meant to allow for correct behavior, when
@@ -46,5 +49,31 @@ public class DialogManager implements IDialogManager {
     @Override
     public void showUserInteractionError(GuiInteractionException exception) {
         showErrorDialogWithTextArea(exception.getDialogTitle(), exception.getDialogMessage());
+    }
+
+    DialogProgress currentProgressDialog = null;
+
+    @Override
+    public DialogProgress getNewProgressDialog(final JComponent parent, final String message, final int totalProgressNotificationsToCome) {
+        currentProgressDialog = new DialogProgress(parent, message, totalProgressNotificationsToCome);
+        return currentProgressDialog;
+    }
+
+    @Override
+    public DialogProgress getProgressDialog() {
+        if(isNull(currentProgressDialog)){
+            throw new RuntimeException("No progress dialog has been created yet. Please create one first.");
+        }
+        return currentProgressDialog;
+    }
+
+    @Override
+    public void closeProgressDialog() {
+        if (isNull(currentProgressDialog)) {
+            throw new RuntimeException("No progress dialog has been created yet. Please create one first.");
+        }
+        currentProgressDialog.setVisible(false);
+        currentProgressDialog.dispose();
+        currentProgressDialog = null;
     }
 }

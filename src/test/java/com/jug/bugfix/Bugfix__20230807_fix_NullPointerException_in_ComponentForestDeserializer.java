@@ -24,10 +24,8 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
     public static void main(String[] args) {
         Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer tests = new Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer();
 
-        tests.run_interactive();
-//        tests.run_trackonly();
-//        tests.run_reloading();
-//        tests.run_export();
+//        tests.run_export__1_Pos001_GL53();
+        tests.run_export__1_Pos006_GL16();
     }
 
     /**
@@ -53,10 +51,15 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
         startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
-    public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
+    public void run_export__1_Pos001_GL53() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53");
+        analysisName = "slurm_test_3";
         startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
+    public void run_export__1_Pos006_GL16() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos006_GL16");
+        analysisName = "slurm_test_3";
+        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
+    }
 }

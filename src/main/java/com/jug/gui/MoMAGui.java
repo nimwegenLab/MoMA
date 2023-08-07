@@ -876,9 +876,9 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
 
             Thread.UncaughtExceptionHandler h = (th, ex) -> {
                 if (ex instanceof GrowthlaneFrameEmptyException) {
-                    System.out.println(ex.getMessage());
-                    dialogManager.showErrorDialogWithTextArea("Error: Growthlane is empty at start.", ex.getMessage());
+                    dialogManager.showErrorDialogWithTextArea("Error: Growthlane is empty at t=0.", ex.getMessage());
                     dialogManager.closeProgressDialog();
+                    MoMA.dic.getUiStateController().getComponentsToDeactivateWhenOptimizationIsRunning().stream().forEach(jComponent -> jComponent.setEnabled(true));
                 }
             };
 

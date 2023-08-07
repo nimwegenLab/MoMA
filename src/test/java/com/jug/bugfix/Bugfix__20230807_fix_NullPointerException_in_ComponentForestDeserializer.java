@@ -26,10 +26,10 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
 
 //        tests.run_trackonly__1_Pos001_GL53();
 //        tests.run_export__1_Pos001_GL53__2();
-//        tests.run_interactive__1_Pos001_GL53();
+        tests.run_interactive__1_Pos001_GL53();
 //        tests.run_export__1_Pos001_GL53();
 //        tests.run_export__1_Pos006_GL16();
-        tests.run_interactive__1_Pos006_GL16();
+//        tests.run_interactive__1_Pos006_GL16();
     }
 
     /**

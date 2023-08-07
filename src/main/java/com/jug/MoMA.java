@@ -4,6 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
+import com.jug.exceptions.GrowthlaneFrameEmptyException;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -228,7 +229,19 @@ public class MoMA {
 					dic.getGlDataLoader().loadPruneRoots();
 				}
 			}
-		} catch ( final Exception e ) {
+		}
+		catch ( final GrowthlaneFrameEmptyException e ) {
+			System.out.println(e.getMessage());
+			dic.getFilePaths().createEmptyGrowthlaneIndicatorFilePath(e.getMessage());
+			dic.getLoadingTimer().stop();
+			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
+			System.exit(0);
+		}
+		catch ( final Exception e ) {
 			e.printStackTrace();
 			if (!runningAsFijiPlugin) {
 				System.exit( 11 );

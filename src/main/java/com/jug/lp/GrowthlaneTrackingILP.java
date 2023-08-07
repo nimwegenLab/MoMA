@@ -3,6 +3,7 @@ package com.jug.lp;
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.IConfiguration;
+import com.jug.exceptions.GrowthlaneFrameEmptyException;
 import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.IDialogGurobiProgress;
@@ -209,6 +210,9 @@ public class GrowthlaneTrackingILP {
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = gl.getFrames().get(t).getComponentForest();
+            if(t==0 && componentForest.getAllComponents().size() == 0){
+                throw new GrowthlaneFrameEmptyException("WARNING: Growthlane is empty at t=0! MoMA cannot track a growthlane when the first frame is empty.");
+            }
             allComponents.addAll(componentForest.getAllComponents());
         }
     }

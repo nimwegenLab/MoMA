@@ -308,6 +308,11 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         }
     }
 
+    public boolean isGrowthlaneIndicatorFilePresent() {
+        File path = Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY").toFile();
+        return path.exists();
+    }
+
     public void createEmptyGrowthlaneIndicatorFilePath(String message) {
         File path = Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY").toFile();
         createFile(path);

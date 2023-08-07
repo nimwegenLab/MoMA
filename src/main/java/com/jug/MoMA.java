@@ -98,6 +98,10 @@ public class MoMA {
 			dic.getLogger().print("analysis name: " + commandLineArgumentParser.getAnalysisName());
 			dic.getLogger().print("######################################################");
 			dic.getLogger().print("");
+			if(dic.getFilePaths().isGrowthlaneIndicatorFilePresent()) {
+				System.out.println("WARNING: Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
+				System.exit(0);
+			}
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());

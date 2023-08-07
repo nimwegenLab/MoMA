@@ -210,8 +210,8 @@ public class GrowthlaneTrackingILP {
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = gl.getFrames().get(t).getComponentForest();
-            if(t==0 && componentForest.getAllComponents().size() == 0){
-                throw new GrowthlaneFrameEmptyException("WARNING: Growthlane is empty at t=0! MoMA cannot track a growthlane when the first frame is empty.");
+            if (t == 0 && componentForest.getAllComponents().size() == 0) {
+                throw new GrowthlaneFrameEmptyException("WARNING: Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
             }
             allComponents.addAll(componentForest.getAllComponents());
         }

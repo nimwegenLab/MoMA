@@ -24,7 +24,8 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
     public static void main(String[] args) {
         Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer tests = new Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeserializer();
 
-        tests.run_trackonly__1_Pos001_GL53();
+//        tests.run_trackonly__1_Pos001_GL53();
+        tests.run_export__1_Pos001_GL53__2();
 //        tests.run_export__1_Pos001_GL53();
 //        tests.run_export__1_Pos006_GL16();
     }
@@ -48,8 +49,14 @@ public class Bugfix__20230807_fix_NullPointerException_in_ComponentForestDeseria
     public void run_trackonly__1_Pos001_GL53() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53", "wt_zwf_oxi_rep2_1_MMStack__1-Pos001_GL53.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53", "mm.properties");
-        analysisName = "test_trackonly";
+        analysisName = "implement_handle_empty_growthlane_frames";
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-headless", "-f", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
+    }
+
+    public void run_export__1_Pos001_GL53__2() {
+        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder, "1-Pos001_GL53");
+        analysisName = "implement_handle_empty_growthlane_frames";
+        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
     }
 
     public void run_export__1_Pos001_GL53() {

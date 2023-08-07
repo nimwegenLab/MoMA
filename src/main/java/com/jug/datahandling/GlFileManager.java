@@ -308,13 +308,17 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
         }
     }
 
+    public Path getGrowthlaneIndicatorFilePresent() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY");
+    }
+
     public boolean isGrowthlaneIndicatorFilePresent() {
-        File path = Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY").toFile();
+        File path = getGrowthlaneIndicatorFilePresent().toFile();
         return path.exists();
     }
 
     public void createEmptyGrowthlaneIndicatorFilePath(String message) {
-        File path = Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY").toFile();
+        File path = getGrowthlaneIndicatorFilePresent().toFile();
         createFile(path);
         BufferedWriter writer = null;
         try {

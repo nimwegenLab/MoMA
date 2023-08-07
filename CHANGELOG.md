@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.6] - 2023-08-07
+
+## Added
+
+- Add logic to handle the case, when the first frame of a GL is empty:
+  - Output indicator file `WARNING_GROWTHLANE_EMPTY` to the tracking-data directory to indicate that the first frame of
+    the GL is empty and therefore the the GL cannot be tracked. This indicator file is used subsequently, when loading
+    the GL to not perform any further operations after the "TRACKING" stage of the batch-tracking workflow.
+  - Show error message during interactive run, when optimizing GLs with no cells in the first frame.
+
 ## [0.9.5] - 2023-07-26
 
 ## Added
@@ -109,6 +119,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
 [unreleased]: https://github.com/michaelmell/moma/compare/v0.9...dev
+[0.9.6]: https://github.com/michaelmell/moma/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/michaelmell/moma/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/michaelmell/moma/compare/v0.9.3...v0.9.4
 [0.9.3]: https://github.com/michaelmell/moma/compare/v0.9.2...v0.9.3

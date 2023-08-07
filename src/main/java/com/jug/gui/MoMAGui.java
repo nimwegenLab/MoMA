@@ -6,11 +6,11 @@ import com.jug.commands.ICommand;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.GlFileManager;
 import com.jug.datahandling.IImageProvider;
+import com.jug.exceptions.GrowthlaneFrameEmptyException;
 import com.jug.export.HtmlOverviewExporterWriter;
 import com.jug.export.ResultExporter;
 import com.jug.export.ResultExporterInterface;
 import com.jug.gui.assignmentview.AssignmentsEditorViewer;
-import com.jug.gui.progress.DialogProgress;
 import com.jug.gui.slider.RangeSlider;
 import com.jug.logging.LoggingHelper;
 import com.jug.lp.GrowthlaneTrackingILP;
@@ -873,6 +873,16 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
                 buttonOptimizeMore.setForeground(Color.BLACK);
                 dataToDisplayChanged();
             });
+
+            Thread.UncaughtExceptionHandler h = (th, ex) -> {
+                if (ex instanceof GrowthlaneFrameEmptyException) {
+                    dialogManager.showErrorDialogWithTextArea("Error: Growthlane is empty at t=0.", ex.getMessage());
+                    dialogManager.closeProgressDialog();
+                    MoMA.dic.getUiStateController().getComponentsToDeactivateWhenOptimizationIsRunning().stream().forEach(jComponent -> jComponent.setEnabled(true));
+                }
+            };
+
+            t.setUncaughtExceptionHandler(h);
             t.start();
         }
         if (e.getSource().equals(buttonExportHtml)) {
@@ -970,8 +980,7 @@ public class MoMAGui extends JPanel implements ChangeListener, ActionListener {
         if (configurationManager.getIfRunningHeadless()) {
             model.getCurrentGL().generateILP(null);
         } else {
-            model.getCurrentGL().generateILP(
-                    new DialogProgress(this, "Building tracking model...", model.getTimeStepMaximumOfCurrentGl()));
+            model.getCurrentGL().generateILP(dialogManager.getNewProgressDialog(this, "Building tracking model...", model.getTimeStepMaximumOfCurrentGl()));
         }
     }
 

@@ -8,6 +8,7 @@ import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
+import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthlaneTrackingILP;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
  */
 public class CellStatsExporter implements ResultExporterInterface {
 
+    private final IDialogManager dialogManager;
     private final MoMAGui gui;
     private final IImageProvider imageProvider;
     private String versionString;
@@ -48,13 +50,15 @@ public class CellStatsExporter implements ResultExporterInterface {
 
     private RegexParser glStringParser;
 
-    public CellStatsExporter(final MoMAGui gui,
+    public CellStatsExporter(final IDialogManager dialogManager,
+                             final MoMAGui gui,
                              final ConfigurationManager configurationManager,
                              MixtureModelFit mixtureModelFit,
                              ComponentProperties componentProperties,
                              IImageProvider imageProvider,
                              String versionString,
                              List<SegmentMeasurementInterface> measurements) {
+        this.dialogManager = dialogManager;
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
@@ -100,7 +104,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
         // INITIALIZE PROGRESS-BAR if not run headless
-        final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
+        final DialogProgress dialogProgress = dialogManager.getNewProgressDialog(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
         if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(true);
         }

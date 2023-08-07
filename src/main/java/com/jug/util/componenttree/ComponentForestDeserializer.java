@@ -38,6 +38,9 @@ public class ComponentForestDeserializer
             frameToPojosMap = buildMappingFrameToPojos(jsonString);
         }
         Map<String, AdvancedComponentPojo> pojosInFrame = frameToPojosMap.get(frameIndex);
+        if (isNull(pojosInFrame)) {
+            return new AdvancedComponentForest<>(new ArrayList<>());
+        }
         return buildForest(pojosInFrame, imageProvider.getImgProbsAt(frameIndex));
     }
 

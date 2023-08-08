@@ -27,7 +27,9 @@ CMD_ARGUMENTS=""
 
 function get_bind_mount_arg {
   local path=$1
-  echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\""
+  echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\"" # DOCKER BIND MOUNT
+#  echo --bind $(get_directory_path "$path"):$(get_directory_path "$path") # SINGULARITY BIND MOUNT
+#  --bind "${input_path}":"${input_path}"
   return 0
 }
 
@@ -120,8 +122,12 @@ mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 
 mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")" # mount home directory to access ~/.moma directory
 
+echo "args_copy: ${args_copy}"
+echo ""
+echo ""
 echo "mount_string: ${mount_string}"
-
+echo ""
+#exit 1
 echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
 #echo "${CONTAINER_TAG}"
 
@@ -149,7 +155,11 @@ echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
 #eval docker run -it --rm -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
 
 #docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" cmsopendata/cmssw_5_3_32 /bin/bash
-eval docker run -it --rm --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+
+echo starting container
+mkdir /tmp/models
+eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+echo stopping container
 #echo ""
 #echo "${args_copy}"
 

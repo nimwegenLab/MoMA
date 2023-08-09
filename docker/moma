@@ -11,9 +11,6 @@ printf "Started docker container wrapper script.\n"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-#source "${DIR}/helpers.sh"
-#source "${DIR}/functions.sh"
-
 args_copy="$@"
 
 SHORT=i:,o:,p:,r:
@@ -29,7 +26,6 @@ function get_bind_mount_arg {
   local path=$1
   echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\"" # DOCKER BIND MOUNT
 #  echo --bind $(get_directory_path "$path"):$(get_directory_path "$path") # SINGULARITY BIND MOUNT
-#  --bind "${input_path}":"${input_path}"
   return 0
 }
 
@@ -53,49 +49,11 @@ function get_directory_path {
 
 mount_string=""
 
-## This while loop captures paths that will be mount directories to the container.
-## Other arguments are appended to the variable CMD_ARGUMENTS, which is passed as command line argument to the container.
-#while :
-#do
-#  case "$1" in
-#    -i )
-#      input_path=$(get_directory_path "$2")
-#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
-#      echo "input_path: ${input_path}"
-#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
-#      shift 2
-#      ;;
-#    -o )
-#      output_path=$(get_directory_path "$2")
-#      echo "output_path: ${output_path}"
-#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
-#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
-#      shift 2
-#      ;;
-#    -p )
-#      properties_path=$(get_directory_path "$2")
-#      echo "properties_path: ${properties_path}"
-#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
-#      mount_string="${mount_string} --mount type=bind,src=\"$(get_directory_path "$2")\",target=\"$(get_directory_path "$2")\""
-#      shift 2
-#      ;;
-#    -- )
-#      shift;
-#      break
-#      ;;
-#    * )
-#      CMD_ARGUMENTS="${CMD_ARGUMENTS} $1 $2"
-#      shift 2;
-#      ;;
-#  esac
-#done
-
 while :
 do
   if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" || $1 == "-rl" ]]; then
     current_path=$(get_directory_path "$2")
     if [[ ! "${mount_string}" == *"${current_path}"* ]]; then
-#      mount_string="${mount_string} --mount type=bind,src=${current_path},target=${current_path}"
       mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
     fi
     if [[ $1 == "-p" ]]; then
@@ -105,17 +63,12 @@ do
   elif [[ -z $1 ]]; then # we parse all arguments; exit loop
     break
   else
-#    echo "$@"
     shift
   fi
 done
 
-#source "${properties_path}"
-#source <(grep yourfilter /path/to/yourfile)
 source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
 
-#echo "SEGMENTATION_MODEL_PATH: ${SEGMENTATION_MODEL_PATH}"
-#mount_string="${mount_string} --mount type=bind,src=$(get_directory_path "${SEGMENTATION_MODEL_PATH}"),target=$(get_directory_path "${SEGMENTATION_MODEL_PATH}")"
 mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
 
 mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
@@ -127,47 +80,13 @@ echo ""
 echo ""
 echo "mount_string: ${mount_string}"
 echo ""
-#exit 1
+
 echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
-#echo "${CONTAINER_TAG}"
-
-#echo "args_copy: ${args_copy}"
-#echo "cmd args: ${CMD_ARGUMENTS}"
-
-#echo docker run --rm "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
-#docker run --rm "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
-#echo docker run --rm "${mount_string}" "michaelmell/moma:v0.9.3" "${args_copy}"
-#docker run --rm "${mount_string}" "michaelmell/moma:v0.9.3" "${args_copy}"
-
-#echo docker run --rm "${mount_string}" "moma:v0.9.3" "${args_copy}"
-#eval docker run --rm "${mount_string}" "moma:v0.9.3" "${args_copy}"
-
-#eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
-
-#eval docker run -it --rm --entrypoint /bin/bash "${mount_string}" "moma:v0.9.3" "${args_copy}"
-
-#--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic"
-
-#$GRB_LICENSE_FILE
-#--mount type=bind,src="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic",target="/opt/gurobi/gurobi.lic" \
-
-#eval docker run -it --rm --entrypoint /bin/bash -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" "${mount_string}" "moma:v0.9.3"
-#eval docker run -it --rm -e GRB_LICENSE_FILE="${GRB_LICENSE_FILE}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
-
-#docker run -it --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" cmsopendata/cmssw_5_3_32 /bin/bash
 
 echo starting container
 mkdir /tmp/models
 eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
 echo stopping container
-#echo ""
-#echo "${args_copy}"
-
-#docker run --rm "moma:v0.9.3"
-
-
-#docker pull "${CONTAINER_TAG}"
-#docker run --rm --mount type=bind,src="${input_path}",target="${input_path}" --mount type=bind,src="${gl_detection_template_path}",target="${gl_detection_template_path}" --mount type=bind,src="${output_path}",target="${output_path}" --mount type=bind,src="${log_path}",target="${log_path}" "${CONTAINER_TAG}" "${CMD_ARGUMENTS}"
 
 echo "DONE"
 

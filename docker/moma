@@ -101,8 +101,7 @@ x_forwarding_option=""
 case $containerization in
  "singularity")
     printf "Using Singularity.\n"
-    echo ERROR: Not implemented yet.; exit 1
-#    eval singularity run --bind /tmp/models:/build_dir/models "${DIR}/${CONTAINER_TAG}" "${args_copy}"
+    eval singularity run "${mount_string}" "${SINGULARITY_CONTAINER_FILE_PATH}" "${args_copy}"
     ;;
   "docker")
     printf "Using Docker.\n"

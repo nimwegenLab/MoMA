@@ -77,6 +77,9 @@ WORKDIR ${moma_dir}
 COPY docker/tensorflow ${moma_dir}/tensorflow
 COPY docker/moma_in_container.sh ${moma_dir}/moma_in_container.sh
 
+ARG host_scripts="/host_scripts"
+RUN mkdir $host_scripts
+COPY docker/moma $host_scripts/moma
 
 WORKDIR /
 

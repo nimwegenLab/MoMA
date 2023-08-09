@@ -96,9 +96,6 @@ mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 # Add home-directory path to mount options to access ~/.moma directory.
 mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
 
-# Add path to temporary directory to mount options to access temporary files.
-mkdir /tmp/models # TODO: get the path to the temporary directory from the system using e.g. mktemp
-
 # Start containerized instance of MoMA with selected containerization tool.
 x_forwarding_option=""
 case $containerization in
@@ -112,7 +109,7 @@ case $containerization in
     if [[ -z $headless_option ]]; then # option '-headless' not provided; running with GUI
       x_forwarding_options="--net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw""
     fi
-    eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" "${x_forwarding_options}" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+    eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" "${x_forwarding_options}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
     ;;
 esac
 

@@ -13,19 +13,33 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 args_copy="$@"
 
-SHORT=i:,o:,p:,r:
-LONG=tmin:,tmax:,analysis:,headless:,trackonly:
+# TODO: FAIL, if $@ does not contain `-headless`  DISPLAY is not set
 
-OPTS=$(getopt --alternative --name moma --options $SHORT --longoptions $LONG -- "$@")
-
-eval set -- "$OPTS"
+containerization="none"
+if command -v singularity &> /dev/null
+then
+  containerization="singularity"
+elif command -v docker &> /dev/null
+then
+  containerization="docker"
+else
+    echo "ERROR: No containerization tool found. Please install docker or singularity."
+    exit 1
+fi
 
 CMD_ARGUMENTS=""
 
 function get_bind_mount_arg {
   local path=$1
-  echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\"" # DOCKER BIND MOUNT
-#  echo --bind $(get_directory_path "$path"):$(get_directory_path "$path") # SINGULARITY BIND MOUNT
+  # TODO: check if path is valid
+  case $containerization in
+     "singularity")
+      echo --bind $(get_directory_path "$path"):$(get_directory_path "$path") # SINGULARITY BIND MOUNT STRING OPTION
+      ;;
+    "docker")
+      echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\"" # DOCKER BIND MOUNT OPTION
+      ;;
+  esac
   return 0
 }
 
@@ -75,18 +89,18 @@ mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 
 mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")" # mount home directory to access ~/.moma directory
 
-echo "args_copy: ${args_copy}"
-echo ""
-echo ""
-echo "mount_string: ${mount_string}"
-echo ""
-
-echo GRB_LICENSE_FILE: "${GRB_LICENSE_FILE}"
-
-echo starting container
-mkdir /tmp/models
-eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
-echo stopping container
+case $containerization in
+ "singularity")
+    printf "Using Singularity.\n"
+    echo ERROR: Not implemented yet.; exit 1
+#    eval singularity run --bind /tmp/models:/build_dir/models "${DIR}/${CONTAINER_TAG}" "${args_copy}"
+    ;;
+  "docker")
+    printf "Using Docker.\n"
+    mkdir /tmp/models
+    eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" --net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+    ;;
+esac
 
 echo "DONE"
 

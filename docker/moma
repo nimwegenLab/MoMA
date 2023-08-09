@@ -7,8 +7,6 @@
 
 CONTAINER_TAG="moma:0.9.3"
 
-printf "Started docker container wrapper script.\n"
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 args_copy="$@"
@@ -111,7 +109,7 @@ case $containerization in
     ;;
   "docker")
     printf "Using Docker.\n"
-    if [[ -z $headless_option ]]; then
+    if [[ -z $headless_option ]]; then # option '-headless' not provided; running with GUI
       x_forwarding_options="--net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw""
     fi
     eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" "${x_forwarding_options}" --mount type=bind,source=/tmp/models,target=/build_dir/models --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"

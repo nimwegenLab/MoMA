@@ -13,8 +13,17 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 args_copy="$@"
 
-# TODO: FAIL, if $@ does not contain `-headless`  DISPLAY is not set
+if [[ "${args_copy}" == *"-headless"* ]]; then
+  headless_option=true
+fi
 
+# Fail when running without option '-headless' and DISPLAY is unset.
+if [[ -z "$DISPLAY" ]] && [[ -z $headless_option ]]; then
+  echo "ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. DISPLAY is not set)."
+  exit 1
+fi
+
+# Determine containerization tool that will be used.
 containerization="none"
 if command -v singularity &> /dev/null
 then
@@ -26,8 +35,6 @@ else
     echo "ERROR: No containerization tool found. Please install docker or singularity."
     exit 1
 fi
-
-CMD_ARGUMENTS=""
 
 function get_bind_mount_arg {
   local path=$1
@@ -61,13 +68,13 @@ function get_directory_path {
     fi
 }
 
+# Build mount options string for mounting paths to container.
 mount_string=""
-
 while :
 do
   if [[ $1 == "-i" || $1 == "-o" || $1 == "-p" || $1 == "-rl" ]]; then
     current_path=$(get_directory_path "$2")
-    if [[ ! "${mount_string}" == *"${current_path}"* ]]; then
+    if [[ ! "${mount_string}" == *"${current_path}"* ]]; then # check if path is already included in the mounts
       mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
     fi
     if [[ $1 == "-p" ]]; then
@@ -81,14 +88,17 @@ do
   fi
 done
 
+# Parse and add path to segmentation model to mount options from mm.properties file.
 source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
-
 mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
 
+# Add path to license file to mount options.
 mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 
-mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")" # mount home directory to access ~/.moma directory
+# Add home-directory path to mount options to access ~/.moma directory.
+mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
 
+# Start containerized instance of MoMA with selected containerization tool.
 case $containerization in
  "singularity")
     printf "Using Singularity.\n"

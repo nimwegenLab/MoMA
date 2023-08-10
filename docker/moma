@@ -69,7 +69,8 @@ function get_directory_path {
 }
 
 # Build mount options string for mounting paths to container.
-if [[ $# -ne 0 ]]; then  # arguments were passed; try to parse the paths
+if [[ $# -gt 1 ]]; then  # arguments were passed; try to parse the paths
+  echo parsing paths
   path_args=("-i", "--infolder", "-o", "--outfolder" "-p", "--props", "-rl", "--reload") # arguments that are followed by a path
   mount_string=""
   while :

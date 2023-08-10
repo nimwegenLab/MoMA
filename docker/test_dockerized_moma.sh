@@ -1,5 +1,6 @@
 #!/bin/bash
 
+export CONTAINER_TAG="moma:0.9.6"
 export GRB_LICENSE_FILE="/home/micha/Documents/LicenseFiles/gurobi_web_license.lic"
 base_path="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/feature/20230612-containerize-moma"
 

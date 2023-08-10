@@ -5,8 +5,6 @@
 # MoMA.
 ###
 
-CONTAINER_TAG="moma:0.9.3"
-
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 args_copy="$@"
@@ -108,7 +106,8 @@ case $containerization in
     if [[ -z $headless_option ]]; then # option '-headless' not provided; running with GUI
       x_forwarding_options="--net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw""
     fi
-    eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" "${x_forwarding_options}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${mount_string}" "moma:v0.9.3" "${args_copy}"
+    echo "CONTAINER_TAG: ${CONTAINER_TAG}"
+    eval docker run -it --rm --user $(id -u):$(id -g) --env "GRB_LICENSE_FILE" "${x_forwarding_options}" "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
     ;;
 esac
 

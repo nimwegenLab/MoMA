@@ -37,11 +37,7 @@ public class LoggerAdapterForSystemOutErr {
     private OutputStream out;
 
     public void initialize() {
-        System.out.println("Breakpoint 7");
-
         originalSystemOutputStream = new PrintStream(System.out);
-
-        System.out.println("Breakpoint 8");
 
         out = new OutputStream() {
             @Override
@@ -64,15 +60,9 @@ public class LoggerAdapterForSystemOutErr {
             }
         };
 
-        System.out.println("Breakpoint 9");
-
 //        System.setOut(new PrintStream(out, true));
 
-        System.out.println("Breakpoint 10");
-
 //        System.setErr(new PrintStream(out, true));
-
-        System.out.println("Breakpoint 11");
     }
 
     public void print(String toPrint) {

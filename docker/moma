@@ -82,6 +82,9 @@ if [[ $# -gt 1 ]]; then  # arguments were passed; try to parse the paths
       fi
       if [[ $1 == "-p" || $1 == "--props" ]]; then
         properties_path="$2"
+        # Parse and add path to segmentation model to mount options from mm.properties file.
+        source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
+        mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
       fi
       shift 2
     elif [[ -z $1 ]]; then # we parsed all arguments; exit loop
@@ -90,10 +93,6 @@ if [[ $# -gt 1 ]]; then  # arguments were passed; try to parse the paths
       shift
     fi
   done
-
-  # Parse and add path to segmentation model to mount options from mm.properties file.
-  source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
-  mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
 fi
 
 # Add path to license file to mount options.

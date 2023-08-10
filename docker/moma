@@ -100,10 +100,20 @@ mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")
 fi
 
 # Add path to license file to mount options.
-mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
+if [[ -n ${GRB_LICENSE_FILE} ]]; then
+  mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
+else
+  printf "ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE"
+  exit 1
+fi
 
 # Add home-directory path to mount options to access ~/.moma directory.
-mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
+if [[ -n ${HOME} ]]; then
+  mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
+else
+  printf "ERROR: Could not determine home-directory path. Variable not set: HOME"
+  exit 1
+fi
 
 # Start containerized instance of MoMA with selected containerization tool.
 x_forwarding_option=""

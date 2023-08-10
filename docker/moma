@@ -124,7 +124,7 @@ case $containerization in
       x_forwarding_options="--net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw""
     fi
     echo "CONTAINER_TAG: ${CONTAINER_TAG}"
-    eval docker run -it --rm --user $(id -u):$(id -g) --env "HOME" --env "GRB_LICENSE_FILE" "${x_forwarding_options}" "${mount_string}" --mount type=bind,source=./moma_in_container.sh,target=/moma/moma_in_container.sh "${CONTAINER_TAG}" "${args_copy}"
+    eval docker run -it --rm --user $(id -u):$(id -g) --env "HOME" --env "GRB_LICENSE_FILE" "${x_forwarding_options}" "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
     ;;
 esac
 

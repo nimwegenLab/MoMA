@@ -60,9 +60,9 @@ public class LoggerAdapterForSystemOutErr {
             }
         };
 
-//        System.setOut(new PrintStream(out, true));
+        System.setOut(new PrintStream(out, true));
 
-//        System.setErr(new PrintStream(out, true));
+        System.setErr(new PrintStream(out, true));
     }
 
     public void print(String toPrint) {

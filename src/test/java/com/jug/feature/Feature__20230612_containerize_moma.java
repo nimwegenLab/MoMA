@@ -24,7 +24,9 @@ public class Feature__20230612_containerize_moma {
     public static void main(String[] args) {
         Feature__20230612_containerize_moma tests = new Feature__20230612_containerize_moma();
 
-        tests.run_interactive();
+        tests.run_without_argument();
+//        tests.run_with_help_argument();
+//        tests.run_interactive();
 //        tests.run_trackonly();
 //        tests.run_reloading();
 //        tests.run_export();
@@ -33,6 +35,14 @@ public class Feature__20230612_containerize_moma {
     /**
      * Test-methods are below.
      */
+    public void run_without_argument() {
+        startMoma(false, null, null, null, null, false, null);
+    }
+
+    public void run_with_help_argument() {
+        startMoma(false, null, null, null, null, false, new String[]{"-h"});
+    }
+
     public void run_interactive() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");

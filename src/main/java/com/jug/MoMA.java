@@ -62,7 +62,11 @@ public class MoMA {
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
 
-		commandLineArgumentParser.parse(args);
+		if (args.length > 0) {
+			commandLineArgumentParser.parse(args);
+		} else {
+			commandLineArgumentParser.parse(new String[]{"-h"});
+		}
 
 		dic.getLoadingTimer().start();
 		dic.getTotalRuntimeTimer().start();

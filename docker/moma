@@ -68,8 +68,10 @@ function get_directory_path {
     fi
 }
 
+echo args_copy: "${args_copy}"
+
 # Build mount options string for mounting paths to container.
-path_args=("-i", "-o", "-p", "-rl") # arguments that are followed by a path
+path_args=("-i", "--infolder", "-o", "--outfolder" "-p", "--props", "-rl", "--reload") # arguments that are followed by a path
 mount_string=""
 while :
 do
@@ -78,7 +80,7 @@ do
     if [[ ! "${mount_string}" == *"${current_path}"* ]]; then # check if path is already included in the mounts
       mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
     fi
-    if [[ $1 == "-p" ]]; then
+    if [[ $1 == "-p" || $1 == "--props" ]]; then
       properties_path="$2"
     fi
     shift 2
@@ -88,6 +90,8 @@ do
     shift
   fi
 done
+
+echo "mount_string: ${mount_string}"
 
 # Parse and add path to segmentation model to mount options from mm.properties file.
 source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")

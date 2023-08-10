@@ -12,11 +12,11 @@ base_path="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/featu
 #./moma
 
 # run moma with help argument
-./moma -help
+#./moma -help
 
 # command for testing the "TRACK" stage of the batch-run workflow:
-#export DISPLAY=""
-#./moma -p "${base_path}/mm.properties" -f -tmax 10 -analysis slurm_test_3 -headless -trackonly -i "${base_path}/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
+export DISPLAY=""
+./moma -p "${base_path}/mm.properties" -f -tmax 10 -analysis slurm_test_3 -headless -trackonly -i "${base_path}/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 
 # command for testing the "TRACK" stage of the batch-run workflow with long arguments:
 #export DISPLAY=""

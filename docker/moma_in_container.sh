@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create .moma directory in home-directory, if it does not exist
-CONFIG_DIRECTORY=$HOME/.moma
+CONFIG_DIRECTORY=${HOME}/.moma
 if [ ! -d "$CONFIG_DIRECTORY" ]; then
   mkdir $CONFIG_DIRECTORY
   printf "Config directory did not exist: $CONFIG_DIRECTORY\nCreated it.\n"

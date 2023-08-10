@@ -68,35 +68,31 @@ function get_directory_path {
     fi
 }
 
-echo args_copy: "${args_copy}"
-
 # Build mount options string for mounting paths to container.
 if [[ $# -ne 0 ]]; then  # arguments were passed; try to parse the paths
-path_args=("-i", "--infolder", "-o", "--outfolder" "-p", "--props", "-rl", "--reload") # arguments that are followed by a path
-mount_string=""
-while :
-do
-  if [[ "${path_args[*]}" == *"$1"* && "$1" != "" ]]; then
-    current_path=$(get_directory_path "$2")
-    if [[ ! "${mount_string}" == *"${current_path}"* ]]; then # check if path is already included in the mounts
-      mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
+  path_args=("-i", "--infolder", "-o", "--outfolder" "-p", "--props", "-rl", "--reload") # arguments that are followed by a path
+  mount_string=""
+  while :
+  do
+    if [[ "${path_args[*]}" == *"$1"* && "$1" != "" ]]; then
+      current_path=$(get_directory_path "$2")
+      if [[ ! "${mount_string}" == *"${current_path}"* ]]; then # check if path is already included in the mounts
+        mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
+      fi
+      if [[ $1 == "-p" || $1 == "--props" ]]; then
+        properties_path="$2"
+      fi
+      shift 2
+    elif [[ -z $1 ]]; then # we parsed all arguments; exit loop
+      break
+    else
+      shift
     fi
-    if [[ $1 == "-p" || $1 == "--props" ]]; then
-      properties_path="$2"
-    fi
-    shift 2
-  elif [[ -z $1 ]]; then # we parsed all arguments; exit loop
-    break
-  else
-    shift
-  fi
-done
+  done
 
-echo "mount_string: ${mount_string}"
-
-# Parse and add path to segmentation model to mount options from mm.properties file.
-source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
-mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
+  # Parse and add path to segmentation model to mount options from mm.properties file.
+  source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
+  mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
 fi
 
 # Add path to license file to mount options.

@@ -1,0 +1,133 @@
+#!/bin/bash
+
+###
+# This script parses the command options, mounts the required paths for MoMA, and calls the containerized instance of
+# MoMA.
+###
+
+trap "exit 1" TERM
+export TOP_PID=$$
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+args_copy="$@"
+
+if [[ "${args_copy}" == *"-headless"* ]]; then
+  headless_option=true
+fi
+
+# Fail when running without option '-headless' and DISPLAY is unset.
+if [[ -z "$DISPLAY" ]] && [[ -z $headless_option ]]; then
+  echo "ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. DISPLAY is not set)."
+  exit 1
+fi
+
+# Determine containerization tool that will be used.
+containerization="none"
+if command -v singularity &> /dev/null
+then
+  containerization="singularity"
+elif command -v docker &> /dev/null
+then
+  containerization="docker"
+else
+    echo "ERROR: No containerization tool found. Please install docker or singularity."
+    exit 1
+fi
+
+function get_bind_mount_arg {
+  local path=$1
+  # TODO: check if path is valid
+  case $containerization in
+     "singularity")
+      echo --bind $(get_directory_path "$path"):$(get_directory_path "$path") # SINGULARITY BIND MOUNT STRING OPTION
+      ;;
+    "docker")
+      echo "--mount type=bind,src=\"$(get_directory_path "$path")\",target=\"$(get_directory_path "$path")\"" # DOCKER BIND MOUNT OPTION
+      ;;
+  esac
+  return 0
+}
+
+function get_directory_path {
+    # This function takes the path of a file or directory. If file-path is passed it returns the path to the parent
+    # directory. If a directory is passed, it returns the path to the directory itself.
+    local TARGET_PATH=$1
+    if [[ -d "$TARGET_PATH" ]]; then
+      echo "$TARGET_PATH"
+      return 0
+    elif [[ -f "$TARGET_PATH" ]]; then
+      RET=$(dirname "$TARGET_PATH")
+      echo "$RET"
+      return 0
+    else
+      # an invalid value was passed
+      echo "ERROR: Path does not exist: ${TARGET_PATH}"
+      kill -s TERM $TOP_PID
+      exit 1
+    fi
+}
+
+# Build mount options string for mounting paths to container.
+if [[ $# -gt 1 ]]; then  # arguments were passed; try to parse the paths
+  echo parsing paths
+  path_args=("-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload") # arguments that are followed by a path
+  mount_string=""
+  while :
+  do
+    if [[ "${path_args[*]}" == *"$1"* && "$1" != "" ]]; then
+      current_path=$(get_directory_path "$2")
+      if [[ ! "${mount_string}" == *"${current_path}"* ]]; then # check if path is already included in the mounts
+        mount_string="${mount_string} $(get_bind_mount_arg "${current_path}")"
+      fi
+      if [[ $1 == "-p" || $1 == "--props" ]]; then
+        properties_path="$2"
+        # Parse and add path to segmentation model to mount options from mm.properties file.
+        source <(grep "SEGMENTATION_MODEL_PATH" "${properties_path}")
+        mount_string="${mount_string} $(get_bind_mount_arg "${SEGMENTATION_MODEL_PATH}")"
+      fi
+      shift 2
+    elif [[ -z $1 ]]; then # we parsed all arguments; exit loop
+      break
+    else
+      shift
+    fi
+  done
+fi
+
+# Add path to license file to mount options.
+if [[ -n ${GRB_LICENSE_FILE} ]]; then
+  mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
+else
+  printf "ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE"
+  exit 1
+fi
+
+# Add home-directory path to mount options to access ~/.moma directory.
+if [[ -n ${HOME} ]]; then
+  mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
+else
+  printf "ERROR: Could not determine home-directory path. Variable not set: HOME"
+  exit 1
+fi
+
+# Start containerized instance of MoMA with selected containerization tool.
+x_forwarding_option=""
+case $containerization in
+ "singularity")
+    printf "Using Singularity.\n"
+    eval singularity run "${mount_string}" "${SINGULARITY_CONTAINER_FILE_PATH}" "${args_copy}"
+    ;;
+  "docker")
+    printf "Using Docker.\n"
+    if [[ -z $headless_option ]]; then # option '-headless' not provided; running with GUI
+      x_forwarding_options="--net=host --env="DISPLAY" --volume="$HOME/.Xauthority:/root/.Xauthority:rw""
+    fi
+    echo "CONTAINER_TAG: ${CONTAINER_TAG}"
+    eval docker run -it --rm --user $(id -u):$(id -g) --env "HOME" --env "GRB_LICENSE_FILE" "${x_forwarding_options}" "${mount_string}" "${CONTAINER_TAG}" "${args_copy}"
+    ;;
+esac
+
+echo "DONE"
+
+exit 0

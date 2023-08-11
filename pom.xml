@@ -80,6 +80,7 @@
 	</ciManagement>
 
 	<properties>
+<!--		<revision>${version.number}</revision>-->
 		<!--suppress UnresolvedMavenProperty -->
 		<version.number>${git.closest.tag.name}.${git.commit.time}.${git.commit.id.abbrev}</version.number>
         <license.licenseName>BSD_3</license.licenseName>
@@ -92,9 +93,20 @@
 			<id>imagej.public</id>
 			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
+		<repository>
+			<id>maven-local-repository</id>
+			<url>file://${basedir}/maven-local-repository</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>gurobi</groupId>
+			<artifactId>gurobi-jar</artifactId>
+			<version>10.0.2</version>
+			<scope>compile</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
@@ -134,12 +146,6 @@
 			<groupId>com.github.yannrichet</groupId>
 			<artifactId>JMathPlot</artifactId>
 			<version>1.0.1</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.gurobi</groupId>
-			<artifactId>gurobi-jar</artifactId>
-			<version>8.1.0</version>
 		</dependency>
 
 		<dependency>
@@ -264,13 +270,13 @@
 						</goals>
 						<phase>validate</phase>
 					</execution>
-					<execution>
-						<id>validate-the-git-infos</id>
-						<goals>
-							<goal>validateRevision</goal>
-						</goals>
-						<phase>package</phase>
-					</execution>
+<!--					<execution>-->
+<!--						<id>validate-the-git-infos</id>-->
+<!--						<goals>-->
+<!--							<goal>validateRevision</goal>-->
+<!--						</goals>-->
+<!--						<phase>package</phase>-->
+<!--					</execution>-->
 				</executions>
 				<configuration>
 					<dotGitDirectory>${project.basedir}/.git</dotGitDirectory>

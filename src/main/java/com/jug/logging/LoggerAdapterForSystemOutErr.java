@@ -61,6 +61,7 @@ public class LoggerAdapterForSystemOutErr {
         };
 
         System.setOut(new PrintStream(out, true));
+
         System.setErr(new PrintStream(out, true));
     }
 

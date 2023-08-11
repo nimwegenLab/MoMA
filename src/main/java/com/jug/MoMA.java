@@ -62,7 +62,12 @@ public class MoMA {
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
-		commandLineArgumentParser.parse(args);
+
+		if (args.length > 0) {
+			commandLineArgumentParser.parse(args);
+		} else {
+			commandLineArgumentParser.parse(new String[]{"-h"});
+		}
 
 		dic.getLoadingTimer().start();
 		dic.getTotalRuntimeTimer().start();
@@ -78,6 +83,7 @@ public class MoMA {
 
 		/* initialize logging */
 		dic.getLogger().initialize();
+
 		dic.getLoggerWindow().initializeConsoleWindow();
 
 		/* setup configuration manager and read configuration */

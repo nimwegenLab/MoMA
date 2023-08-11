@@ -124,7 +124,7 @@ public class GRBModelAdapter implements IGRBModelAdapter {
     }
 
     @Override
-    public void setCallback(GRBCallback cb) {
+    public void setCallback(GRBCallback cb) throws GRBException {
         model.setCallback(cb);
     }
 

@@ -33,7 +33,7 @@ public interface IGRBModelAdapter {
 
     GRBEnv getEnv() throws GRBException;
 
-    void setCallback(GRBCallback cb);
+    void setCallback(GRBCallback cb) throws GRBException;
 
     void optimize() throws GRBException;
 

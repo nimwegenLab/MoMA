@@ -2,20 +2,27 @@ FROM continuumio/miniconda3:22.11.1
 # build container for building stand-alone Python package of moma_batch_run
 
 RUN apt-get update && \
-    apt-get install -y git
+    apt-get install -y git binutils
 
 WORKDIR /build_dir
 
 # REFs:
 # https://anaconda.org/conda-forge/pyinstaller
 # https://anaconda.org/anaconda/pyyaml
-RUN git clone git@github.com:michaelmell/moma-batch-run.git && \
-    cd moma-batch-run && \
-    conda create -y -n moma-batch-run python=3.7 && \
-    conda activate moma-batch-run && \
-    conda install -y pyyaml && \
+RUN git clone https://github.com/michaelmell/moma-batch-run.git && \
+    conda create -y -n moma-batch-run python=3.7
+
+WORKDIR /build_dir/moma-batch-run
+# Use `conda run`, because `conda activate` fails in containers; see here: https://pythonspeed.com/articles/activate-conda-dockerfile/#working
+SHELL ["conda", "run", "--no-capture-output", "-n", "moma-batch-run", "/bin/bash", "-c"]
+# The following RUN commands are now executed with the `conda run` command using `/bin/bash` as the shell.
+RUN conda install -y pyyaml && \
     conda install -y -c conda-forge pyinstaller && \
     pyinstaller --onefile --name moma_batch_run moma_batch_run.py
+
+# Path to stand-alone build of moma_batch_run: /build_dir/moma-batch-run/dist/moma_batch_run
+
+#RUN git clone git@github.com:michaelmell/moma-batch-run.git
 
 #FROM ubuntu:18.04 as gurobi_builder
 #

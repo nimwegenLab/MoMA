@@ -2,7 +2,8 @@
 
 source helpers.sh
 
-IMAGE_TAG=$(get_image_tag)
+#IMAGE_TAG=$(get_image_tag)
+IMAGE_TAG="michaelmell/moma:v0.9.6"
 
 echo "$IMAGE_TAG"
 

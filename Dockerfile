@@ -1,4 +1,4 @@
-FROM continuumio/miniconda3:22.11.1
+FROM continuumio/miniconda3:22.11.1 as moma_batch_run_builder
 # build container for building stand-alone Python package of moma_batch_run
 
 RUN apt-get update && \
@@ -20,9 +20,7 @@ RUN conda install -y pyyaml && \
     conda install -y -c conda-forge pyinstaller && \
     pyinstaller --onefile --name moma_batch_run moma_batch_run.py
 
-# Path to stand-alone build of moma_batch_run: /build_dir/moma-batch-run/dist/moma_batch_run
-
-RUN git clone git@github.com:michaelmell/moma-batch-run.git
+## Output path of the stand-alone `moma_batch_run` build is: /build_dir/moma-batch-run/dist/moma_batch_run
 
 FROM ubuntu:18.04 as gurobi_builder
 
@@ -106,6 +104,7 @@ COPY docker/moma_in_container ${moma_dir}/moma
 ARG host_scripts="/host_scripts"
 RUN mkdir $host_scripts
 COPY docker/moma $host_scripts/moma
+COPY --from=moma_batch_run_builder /build_dir/moma-batch-run/dist/moma_batch_run $host_scripts/moma_batch_run
 
 WORKDIR /
 

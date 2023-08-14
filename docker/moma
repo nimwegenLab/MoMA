@@ -18,7 +18,7 @@ fi
 
 # Fail when running without option '-headless' and DISPLAY is unset.
 if [[ -z "$DISPLAY" ]] && [[ -z $headless_option ]]; then
-  echo "ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. DISPLAY is not set)."
+  echo "ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. DISPLAY is not set)." >&2
   exit 1
 fi
 
@@ -31,7 +31,7 @@ elif command -v docker &> /dev/null
 then
   containerization="docker"
 else
-    echo "ERROR: No containerization tool found. Please install docker or singularity."
+    echo "ERROR: No containerization tool found. Please install docker or singularity." >&2
     exit 1
 fi
 
@@ -62,7 +62,7 @@ function get_directory_path {
       return 0
     else
       # an invalid value was passed
-      echo "ERROR: Path does not exist: ${TARGET_PATH}"
+      echo "ERROR: Path does not exist: ${TARGET_PATH}" >&2
       kill -s TERM $TOP_PID
       exit 1
     fi
@@ -99,7 +99,7 @@ fi
 if [[ -n ${GRB_LICENSE_FILE} ]]; then
   mount_string="${mount_string} $(get_bind_mount_arg "${GRB_LICENSE_FILE}")"
 else
-  printf "ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE"
+  printf "ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE" >&2
   exit 1
 fi
 
@@ -107,7 +107,7 @@ fi
 if [[ -n ${HOME} ]]; then
   mount_string="${mount_string} $(get_bind_mount_arg "${HOME}")"
 else
-  printf "ERROR: Could not determine home-directory path. Variable not set: HOME"
+  printf "ERROR: Could not determine home-directory path. Variable not set: HOME" >&2
   exit 1
 fi
 

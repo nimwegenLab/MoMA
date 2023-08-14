@@ -15,16 +15,15 @@ def get_bind_mount_arg(path, container_engine):
     if container_engine == "singularity":
         return f'--bind {get_directory_path(path)}:{get_directory_path(path)}'
     elif container_engine == "docker":
-        return f'--mount type=bind,src="{get_directory_path(path)}",target="{get_directory_path(path)}"'
+        return f'--mount type=bind,src={get_directory_path(path)},target={get_directory_path(path)}'
     else:
         raise ValueError(f"ERROR: Invalid containerization value: {container_engine}")
 
 
 def get_directory_path(target_path):
-    # This function takes the path of a file or directory. If file-path is passed it returns the path to the parent
-    # directory. If a directory is passed, it returns the path to the directory itself.
+    """This function takes the path of a file or directory. If file-path is passed it returns the path to the parent
+    directory. If a directory is passed, it returns the path to the directory itself."""
     if not os.path.exists(target_path):
-        # an invalid value was passed
         print(f"ERROR: Path does not exist: {target_path}", file=sys.stderr)
         sys.exit(1)
     if os.path.isdir(target_path):
@@ -48,30 +47,23 @@ def process_args(args, container_engine):
     path_args = ["-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload"]
     mount_string = ""
 
-    while args:
-        if any(arg in path_args for arg in args) and args[0] != "":
-            current_path = get_directory_path(args[1])  # You need to implement get_directory_path
+    for ind, arg in enumerate(args):
+        if arg in path_args:
+            path = args[ind+1]
+            current_path = get_directory_path(path)
             if current_path not in mount_string:
-                mount_string += f" {get_bind_mount_arg(current_path, container_engine)}"  # You need to implement get_bind_mount_arg
+                mount_string += f" {get_bind_mount_arg(current_path, container_engine)}"
 
-            if args[0] in ["-p", "--props"]:
-                properties_path = args[1]
+            if arg in ["-p", "--props"]:
+                properties_path = args[ind+1]
                 segmentation_model_path = parse_segmentation_model_path(properties_path)
                 if segmentation_model_path and segmentation_model_path not in mount_string:
-                    mount_string += f" {get_bind_mount_arg(segmentation_model_path, container_engine)}"  # You need to implement get_bind_mount_arg
-
-            args = args[2:]
-        elif not args[0]:
-            break
-        else:
-            args = args[1:]
+                    mount_string += f" {get_bind_mount_arg(segmentation_model_path, container_engine)}"
 
     return mount_string
 
 
 if __name__ == "__main__":
-    dir_path = os.path.dirname(os.path.abspath(__file__))
-
     args = sys.argv[1:]
 
     headless_option = False
@@ -95,7 +87,7 @@ if __name__ == "__main__":
     # Add path to license file to mount options.
     grb_license_file = os.environ.get("GRB_LICENSE_FILE")
     if grb_license_file:
-        mount_string += f" {get_bind_mount_arg(grb_license_file)}"
+        mount_string += f" {get_bind_mount_arg(grb_license_file, container_engine)}"
     else:
         print("ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE")
         exit(1)
@@ -103,23 +95,16 @@ if __name__ == "__main__":
     # Add home-directory path to mount options to access ~/.moma directory.
     home_directory = os.environ.get("HOME")
     if home_directory:
-        mount_string += f" {get_bind_mount_arg(home_directory)}"
+        mount_string += f" {get_bind_mount_arg(home_directory, container_engine)}"
     else:
         print("ERROR: Could not determine home-directory path. Variable not set: HOME")
         exit(1)
 
-    print(mount_string)
-
-    x_forwarding_option = ""
-    containerization = "docker"  # Replace with the actual containerization value
-    mount_string = ""  # Replace with the actual mount options
-    args_copy = ""  # Replace with the actual args_copy
-
-    if containerization == "singularity":
+    if container_engine == "singularity":
         print("Using Singularity.")
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
-        subprocess.run(["singularity", "run"] + mount_string.split() + [singularity_container_file_path] + args_copy.split())
-    elif containerization == "docker":
+        subprocess.run(["singularity", "run"] + mount_string.split() + [singularity_container_file_path] + args)
+    elif container_engine == "docker":
         print("Using Docker.")
         headless_option = ""  # Replace with the actual headless_option value
         if not headless_option:  # option '-headless' not provided; running with GUI
@@ -128,4 +113,6 @@ if __name__ == "__main__":
             x_forwarding_options = []
         container_tag = os.environ.get("CONTAINER_TAG")
         print(f"CONTAINER_TAG: {container_tag}")
-        subprocess.run(["docker", "run", "-it", "--rm", f"--user={os.getuid()}:{os.getgid()}", "--env=HOME", f"--env=GRB_LICENSE_FILE={os.environ.get('GRB_LICENSE_FILE')}", *x_forwarding_options, *mount_string.split(), container_tag, *args_copy.split()])
+        gurobi_license_file = os.environ.get('GRB_LICENSE_FILE')
+        arr = ["docker", "run", "-it", "--rm", f"--user={os.getuid()}:{os.getgid()}", "--env=HOME", f"--env=GRB_LICENSE_FILE={gurobi_license_file}", *x_forwarding_options, *mount_string.split(), container_tag] + args
+        subprocess.run(arr)

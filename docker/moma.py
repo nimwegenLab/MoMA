@@ -8,6 +8,10 @@ import configparser
 from pathlib import Path
 
 
+"""These are arguments to MoMA that defined a path. We need to mount them or their parent paths in the container."""
+path_args = ["-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload"]
+
+
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
     return which(name) is not None
@@ -19,7 +23,7 @@ def get_bind_mount_arg(path, container_engine):
     elif container_engine == "docker":
         return f'--mount type=bind,src={get_directory_path(path)},target={get_directory_path(path)}'
     else:
-        raise ValueError(f"ERROR: Invalid containerization value: {container_engine}")
+        raise ValueError(f"ERROR: Invalid containerization value: {container_engine}\n", file=sys.stderr)
 
 
 def get_directory_path(target_path):
@@ -37,17 +41,13 @@ def get_directory_path(target_path):
 def parse_segmentation_model_path(file_path):
     with open(file_path, 'r') as file:
         lines = file.readlines()
-
     for line in lines:
         if line.strip().startswith('SEGMENTATION_MODEL_PATH='):
             return line.strip().split('=')[1]
-
     return None
 
 
 def get_mount_paths_from_args(args):
-    path_args = ["-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload"]
-
     mount_paths = []
     for ind, arg in enumerate(args):
         if arg in path_args:
@@ -55,30 +55,18 @@ def get_mount_paths_from_args(args):
     return mount_paths
 
 
-def process_args(args, container_engine):
-    path_args = ["-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload"]
-    mount_string = ""
-
+def get_segmentation_model_path(args):
     for ind, arg in enumerate(args):
-        if arg in path_args:
-            path = args[ind+1]
-            current_path = get_directory_path(path)
-            if current_path not in mount_string:
-                mount_string += f" {get_bind_mount_arg(current_path, container_engine)}"
-
-            if arg in ["-p", "--props"]:
-                properties_path = args[ind+1]
-                segmentation_model_path = parse_segmentation_model_path(properties_path)
-                if segmentation_model_path and segmentation_model_path not in mount_string:
-                    mount_string += f" {get_bind_mount_arg(segmentation_model_path, container_engine)}"
-
-    return mount_string
+        if arg in ["-p", "--props", "-props"]:
+            properties_path = args[ind+1]
+            return parse_segmentation_model_path(properties_path)
+    print("ERROR: No segmentation model path found in arguments.", file=sys.stderr)
+    sys.exit(1)
 
 
 def is_parent_path(parent_path, child_path):
     parent = Path(parent_path)
     child = Path(child_path)
-
     return child.is_relative_to(parent) and not child == parent
 
 
@@ -105,7 +93,7 @@ def get_path_from_env_var(var_name: str):
 
 def fail_non_existing_env_var(var_name: str):
     if not os.environ.get(var_name):
-        print(f"ERROR: Environment variable '{var_name}' not set.")
+        print(f"ERROR: Environment variable '{var_name}' not set.", file=sys.stderr)
         sys.exit(1)
 
 
@@ -117,7 +105,8 @@ if __name__ == "__main__":
         headless_option = True
 
     if not os.environ.get('DISPLAY') and not headless_option:
-        print("ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. DISPLAY is not set).\n")
+        print("ERROR: Running non-headless (i.e. without option '-headless'), but no display is available (i.e. "
+              "DISPLAY is not set).\n", file=sys.stderr)
         sys.exit(1)
 
     if is_tool("singularity"):
@@ -125,11 +114,12 @@ if __name__ == "__main__":
     elif is_tool("docker"):
         container_engine = "docker"
     else:
-        print("ERROR: No supported containerization tool found. Please install Docker or Singularity.\n")
+        print("ERROR: No supported containerization tool found. Please install Docker or Singularity.\n", file=sys.stderr)
         sys.exit(1)
 
     # mount_string = process_args(args, container_engine)
     mount_paths = get_mount_paths_from_args(args)
+    mount_paths += [get_segmentation_model_path(args)]
 
     # Add path from environment variables
     mount_paths += [get_path_from_env_var("GRB_LICENSE_FILE")]

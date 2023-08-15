@@ -5,6 +5,7 @@ import subprocess
 import sys
 from shutil import which
 import configparser
+from pathlib import Path
 
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
@@ -27,9 +28,9 @@ def get_directory_path(target_path):
         print(f"ERROR: Path does not exist: {target_path}", file=sys.stderr)
         sys.exit(1)
     if os.path.isdir(target_path):
-        return target_path
+        return Path(target_path)
     elif os.path.isfile(target_path):
-        return os.path.dirname(target_path)
+        return Path(os.path.dirname(target_path))
 
 
 def parse_segmentation_model_path(file_path):
@@ -41,6 +42,16 @@ def parse_segmentation_model_path(file_path):
             return line.strip().split('=')[1]
 
     return None
+
+
+def get_mount_paths_from_args(args):
+    path_args = ["-i", "--infolder", "-infolder", "-o", "--outfolder", "-outfolder", "-p", "--props", "-props", "-rl", "--reload", "-reload"]
+
+    mount_paths = []
+    for ind, arg in enumerate(args):
+        if arg in path_args:
+            mount_paths += [get_directory_path(args[ind+1])]
+    return mount_paths
 
 
 def process_args(args, container_engine):
@@ -63,6 +74,29 @@ def process_args(args, container_engine):
     return mount_string
 
 
+def is_parent_path(parent_path, child_path):
+    parent = Path(parent_path)
+    child = Path(child_path)
+
+    return child.is_relative_to(parent) and not child == parent
+
+
+def get_top_level_paths(paths: list[Path]):
+    top_level_paths = set(paths.copy())
+    for path1 in paths:
+        for path2 in paths:
+            if is_parent_path(path1, path2) and path2 in top_level_paths:
+                top_level_paths.remove(path2)
+    return list(top_level_paths)
+
+
+def build_mount_args(mount_paths: list[Path], container_engine: str):
+    mount_args = []
+    for path in mount_paths:
+        mount_args += [get_bind_mount_arg(path, container_engine)]
+    return mount_args
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
 
@@ -82,12 +116,14 @@ if __name__ == "__main__":
         print("ERROR: No supported containerization tool found. Please install Docker or Singularity.\n")
         sys.exit(1)
 
-    mount_string = process_args(args, container_engine)
+    # mount_string = process_args(args, container_engine)
+    mount_paths = get_mount_paths_from_args(args)
 
     # Add path to license file to mount options.
     grb_license_file = os.environ.get("GRB_LICENSE_FILE")
     if grb_license_file:
-        mount_string += f" {get_bind_mount_arg(grb_license_file, container_engine)}"
+        # mount_string += f" {get_bind_mount_arg(grb_license_file, container_engine)}"
+        mount_paths += [get_directory_path(grb_license_file)]
     else:
         print("ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE")
         exit(1)
@@ -95,15 +131,20 @@ if __name__ == "__main__":
     # Add home-directory path to mount options to access ~/.moma directory.
     home_directory = os.environ.get("HOME")
     if home_directory:
-        mount_string += f" {get_bind_mount_arg(home_directory, container_engine)}"
+        # mount_string += f" {get_bind_mount_arg(home_directory, container_engine)}"
+        mount_paths += [get_directory_path(home_directory)]
     else:
         print("ERROR: Could not determine home-directory path. Variable not set: HOME")
         exit(1)
 
+    print(mount_paths)
+    mount_paths = get_top_level_paths(mount_paths)
+    mount_args = build_mount_args(mount_paths, container_engine)
+
     if container_engine == "singularity":
         print("Using Singularity.")
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
-        subprocess.run(["singularity", "run"] + mount_string.split() + [singularity_container_file_path] + args)
+        subprocess.run(["singularity", "run"] + mount_args + [singularity_container_file_path] + args)
     elif container_engine == "docker":
         print("Using Docker.")
         headless_option = ""  # Replace with the actual headless_option value
@@ -114,5 +155,6 @@ if __name__ == "__main__":
         container_tag = os.environ.get("CONTAINER_TAG")
         print(f"CONTAINER_TAG: {container_tag}")
         gurobi_license_file = os.environ.get('GRB_LICENSE_FILE')
-        arr = ["docker", "run", "-it", "--rm", f"--user={os.getuid()}:{os.getgid()}", "--env=HOME", f"--env=GRB_LICENSE_FILE={gurobi_license_file}", *x_forwarding_options, *mount_string.split(), container_tag] + args
+        arr = ["docker", "run", "-it", "--rm", f"--user={os.getuid()}:{os.getgid()}", "--env=HOME", f"--env=GRB_LICENSE_FILE={gurobi_license_file}", *x_forwarding_options, *mount_args, container_tag, *args]
+        print(" ".join(arr))
         subprocess.run(arr)

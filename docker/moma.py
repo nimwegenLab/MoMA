@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 from shutil import which
-import configparser
 from pathlib import Path
 
 
@@ -19,7 +18,7 @@ def is_tool(name):
 
 def get_bind_mount_arg(path, container_engine):
     if container_engine == "singularity":
-        return f'--bind {get_directory_path(path)}:{get_directory_path(path)}'
+        return f'--bind {get_directory_path(path)}'
     elif container_engine == "docker":
         return f'--mount type=bind,src={get_directory_path(path)},target={get_directory_path(path)}'
     else:

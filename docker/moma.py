@@ -126,7 +126,7 @@ if __name__ == "__main__":
         mount_paths += [get_directory_path(grb_license_file)]
     else:
         print("ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE")
-        exit(1)
+        sys.exit(1)
 
     # Add home-directory path to mount options to access ~/.moma directory.
     home_directory = os.environ.get("HOME")
@@ -135,7 +135,7 @@ if __name__ == "__main__":
         mount_paths += [get_directory_path(home_directory)]
     else:
         print("ERROR: Could not determine home-directory path. Variable not set: HOME")
-        exit(1)
+        sys.exit(1)
 
     mount_paths = get_top_level_paths(mount_paths)
     mount_args = build_mount_args(mount_paths, container_engine)
@@ -144,7 +144,10 @@ if __name__ == "__main__":
     if container_engine == "singularity":
         print("Using Singularity.")
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
-        subprocess.run(["singularity", "run"] + mount_args + [singularity_container_file_path] + args)
+        subprocess.run(["singularity", "run",
+                        *mount_args_string.split(),
+                        singularity_container_file_path,
+                        *args])
     elif container_engine == "docker":
         print("Using Docker.")
         headless_option = ""  # Replace with the actual headless_option value

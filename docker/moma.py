@@ -137,9 +137,9 @@ if __name__ == "__main__":
         print("ERROR: Could not determine home-directory path. Variable not set: HOME")
         exit(1)
 
-    print(mount_paths)
     mount_paths = get_top_level_paths(mount_paths)
     mount_args = build_mount_args(mount_paths, container_engine)
+    mount_args_string = " ".join(mount_args)
 
     if container_engine == "singularity":
         print("Using Singularity.")
@@ -155,6 +155,11 @@ if __name__ == "__main__":
         container_tag = os.environ.get("CONTAINER_TAG")
         print(f"CONTAINER_TAG: {container_tag}")
         gurobi_license_file = os.environ.get('GRB_LICENSE_FILE')
-        arr = ["docker", "run", "-it", "--rm", f"--user={os.getuid()}:{os.getgid()}", "--env=HOME", f"--env=GRB_LICENSE_FILE={gurobi_license_file}", *x_forwarding_options, *mount_args, container_tag, *args]
-        print(" ".join(arr))
-        subprocess.run(arr)
+        subprocess.run(["docker", "run", "-it", "--rm",
+                        f"--user={os.getuid()}:{os.getgid()}",
+                        "--env=HOME",
+                        f"--env=GRB_LICENSE_FILE={gurobi_license_file}",
+                        *x_forwarding_options,
+                        *mount_args_string.split(),
+                        container_tag,
+                        *args])

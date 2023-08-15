@@ -15,7 +15,7 @@ base_path="/home/micha/Documents/01_work/15_moma_notes/02_moma_development/featu
 #./moma -help
 
 # command for testing the "TRACK" stage of the batch-run workflow:
-export DISPLAY=""
+#export DISPLAY=""
 ./moma.py -p "${base_path}/mm.properties" -f -tmax 10 -analysis slurm_test_3 -headless -trackonly -i "${base_path}/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif"
 
 # command for testing the "TRACK" stage of the batch-run workflow with long arguments:

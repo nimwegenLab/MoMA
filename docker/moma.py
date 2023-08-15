@@ -7,6 +7,7 @@ from shutil import which
 import configparser
 from pathlib import Path
 
+
 def is_tool(name):
     """Check whether `name` is on PATH and marked as executable."""
     return which(name) is not None
@@ -97,6 +98,17 @@ def build_mount_args(mount_paths: list[Path], container_engine: str):
     return mount_args
 
 
+def get_path_from_env_var(var_name: str):
+    fail_non_existing_env_var(var_name)
+    return get_directory_path(os.environ.get(var_name))
+
+
+def fail_non_existing_env_var(var_name: str):
+    if not os.environ.get(var_name):
+        print(f"ERROR: Environment variable '{var_name}' not set.")
+        sys.exit(1)
+
+
 if __name__ == "__main__":
     args = sys.argv[1:]
 
@@ -119,30 +131,18 @@ if __name__ == "__main__":
     # mount_string = process_args(args, container_engine)
     mount_paths = get_mount_paths_from_args(args)
 
-    # Add path to license file to mount options.
-    grb_license_file = os.environ.get("GRB_LICENSE_FILE")
-    if grb_license_file:
-        # mount_string += f" {get_bind_mount_arg(grb_license_file, container_engine)}"
-        mount_paths += [get_directory_path(grb_license_file)]
-    else:
-        print("ERROR: Could not determine path to Gurobi license file. Variable not set: GRB_LICENSE_FILE")
-        sys.exit(1)
-
-    # Add home-directory path to mount options to access ~/.moma directory.
-    home_directory = os.environ.get("HOME")
-    if home_directory:
-        # mount_string += f" {get_bind_mount_arg(home_directory, container_engine)}"
-        mount_paths += [get_directory_path(home_directory)]
-    else:
-        print("ERROR: Could not determine home-directory path. Variable not set: HOME")
-        sys.exit(1)
+    # Add path from environment variables
+    mount_paths += [get_path_from_env_var("GRB_LICENSE_FILE")]
+    mount_paths += [get_path_from_env_var("HOME")]
 
     mount_paths = get_top_level_paths(mount_paths)
+
     mount_args = build_mount_args(mount_paths, container_engine)
     mount_args_string = " ".join(mount_args)
 
     if container_engine == "singularity":
         print("Using Singularity.")
+        fail_non_existing_env_var('SINGULARITY_CONTAINER_FILE_PATH')
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
         subprocess.run(["singularity", "run",
                         *mount_args_string.split(),
@@ -150,6 +150,7 @@ if __name__ == "__main__":
                         *args])
     elif container_engine == "docker":
         print("Using Docker.")
+        fail_non_existing_env_var('CONTAINER_TAG')
         headless_option = ""  # Replace with the actual headless_option value
         if not headless_option:  # option '-headless' not provided; running with GUI
             x_forwarding_options = ["--net=host", "--env=DISPLAY", f"--volume={os.path.expanduser('~')}/.Xauthority:/root/.Xauthority:rw"]

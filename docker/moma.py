@@ -133,7 +133,6 @@ if __name__ == "__main__":
     gurobi_license_file = os.environ.get('MOMA_GRB_LICENSE_FILE')
 
     if container_engine == "singularity":
-        print("Using Singularity.")
         fail_non_existing_env_var('SINGULARITY_CONTAINER_FILE_PATH')
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
         subprocess.run(["singularity", "run",
@@ -142,7 +141,6 @@ if __name__ == "__main__":
                         singularity_container_file_path,
                         *args])
     elif container_engine == "docker":
-        print("Using Docker.")
         fail_non_existing_env_var('CONTAINER_TAG')
         headless_option = ""  # Replace with the actual headless_option value
         if not headless_option:  # option '-headless' not provided; running with GUI

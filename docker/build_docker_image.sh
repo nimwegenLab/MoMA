@@ -7,7 +7,9 @@ IMAGE_TAG="michaelmell/moma:v0.9.6"
 
 echo "$IMAGE_TAG"
 
-docker build .. -t "${IMAGE_TAG}"
+source ../env_vars.sh
+
+docker build .. --build-arg="GRB_VERSION=${GRB_VERSION}" --build-arg="GRB_SHORT_VERSION=${GRB_SHORT_VERSION}" -t "${IMAGE_TAG}"
 
 #docker tag 1b7127033a75 michaelmell/moma:v0.9.6
 #docker push michaelmell/moma:v0.9.6

@@ -30,8 +30,8 @@ RUN pyinstaller --onefile --name moma moma.py
 
 FROM ubuntu:18.04 as gurobi_builder
 
-ARG GRB_VERSION=10.0.2
-ARG GRB_SHORT_VERSION=10.0
+ARG GRB_VERSION
+ARG GRB_SHORT_VERSION
 
 # install gurobi package and copy the files
 WORKDIR /opt
@@ -58,6 +58,7 @@ ARG build_dir="/build_dir"
 
 COPY .git ${build_dir}/.git
 COPY deploy.sh ${build_dir}/deploy.sh
+COPY env_vars.sh ${build_dir}/env_vars.sh
 COPY src ${build_dir}/src
 COPY lib ${build_dir}/lib
 #COPY --from=buildoptimizer /opt/gurobi/linux64/lib/* ${build_dir}/lib
@@ -67,7 +68,7 @@ WORKDIR ${build_dir}
 # this caches the maven dependencies to a separate layer so we do not have to download them every time
 #RUN mvn verify --fail-never
 
-RUN #chmod +x ${build_dir}/deploy.sh
+#RUN chmod +x ${build_dir}/deploy.sh
 RUN ${build_dir}/deploy.sh
 #RUN --mount=type=cache,target=/root/.m2/ chmod +x ${build_dir}/deploy.sh && \
 #    ${build_dir}/deploy.sh
@@ -110,7 +111,6 @@ COPY docker/moma_in_container ${moma_dir}/moma
 ARG host_scripts="/host_scripts"
 RUN mkdir $host_scripts
 COPY docker/moma.py $host_scripts/moma.py
-COPY docker/moma.sh $host_scripts/moma.sh
 COPY --from=moma_batch_run_builder /build_dir/moma/dist/moma $host_scripts/moma
 COPY --from=moma_batch_run_builder /build_dir/moma-batch-run/dist/moma_batch_run $host_scripts/moma_batch_run
 

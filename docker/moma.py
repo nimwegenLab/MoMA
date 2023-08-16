@@ -122,7 +122,7 @@ if __name__ == "__main__":
     mount_paths += [get_segmentation_model_path(args)]
 
     # Add path from environment variables
-    mount_paths += [get_path_from_env_var("GRB_LICENSE_FILE")]
+    mount_paths += [get_path_from_env_var("MOMA_GRB_LICENSE_FILE")]
     mount_paths += [get_path_from_env_var("HOME")]
 
     mount_paths = get_top_level_paths(mount_paths)
@@ -130,11 +130,14 @@ if __name__ == "__main__":
     mount_args = build_mount_args(mount_paths, container_engine)
     mount_args_string = " ".join(mount_args)
 
+    gurobi_license_file = os.environ.get('MOMA_GRB_LICENSE_FILE')
+
     if container_engine == "singularity":
         print("Using Singularity.")
         fail_non_existing_env_var('SINGULARITY_CONTAINER_FILE_PATH')
         singularity_container_file_path = os.environ.get("SINGULARITY_CONTAINER_FILE_PATH")
         subprocess.run(["singularity", "run",
+                        f"--env=GRB_LICENSE_FILE={gurobi_license_file}",
                         *mount_args_string.split(),
                         singularity_container_file_path,
                         *args])
@@ -148,7 +151,6 @@ if __name__ == "__main__":
             x_forwarding_options = []
         container_tag = os.environ.get("CONTAINER_TAG")
         print(f"CONTAINER_TAG: {container_tag}")
-        gurobi_license_file = os.environ.get('GRB_LICENSE_FILE')
         subprocess.run(["docker", "run", "-it", "--rm",
                         f"--user={os.getuid()}:{os.getgid()}",
                         "--env=HOME",

@@ -22,3 +22,4 @@ dependency-reduced-pom.xml
 /test_datasets/
 TRASH/
 maven_logs/
+maven-local-repository/

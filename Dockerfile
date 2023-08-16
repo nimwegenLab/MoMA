@@ -111,6 +111,7 @@ COPY docker/moma_in_container ${moma_dir}/moma
 ARG host_scripts="/host_scripts"
 RUN mkdir $host_scripts
 COPY docker/moma.py $host_scripts/moma.py
+COPY default_moma_configuration/mm.properties $host_scripts/mm.properties
 COPY --from=moma_batch_run_builder /build_dir/moma/dist/moma $host_scripts/moma
 COPY --from=moma_batch_run_builder /build_dir/moma-batch-run/dist/moma_batch_run $host_scripts/moma_batch_run
 

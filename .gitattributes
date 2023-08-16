@@ -1,0 +1,2 @@
+docker/tensorflow/*.o filter=lfs diff=lfs merge=lfs -text
+docker/tensorflow/*.so filter=lfs diff=lfs merge=lfs -text

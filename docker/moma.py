@@ -55,11 +55,21 @@ def get_mount_paths_from_args(args):
     return mount_paths
 
 
+def default_mm_properties_path():
+    return Path(Path(os.path.expanduser("~"))/".moma"/"mm.properties")
+
+
 def get_segmentation_model_path(args):
+    properties_path = None
     for ind, arg in enumerate(args):
         if arg in ["-p", "--props", "-props"]:
             properties_path = args[ind+1]
             return parse_segmentation_model_path(properties_path)
+    if not properties_path:
+        if default_mm_properties_path().is_file():
+            print(f"ERROR: Properties file does not exist: {default_mm_properties_path()}", file=sys.stderr)
+            sys.exit(1)
+        return parse_segmentation_model_path(default_mm_properties_path())
     print("ERROR: No segmentation model path found in arguments.", file=sys.stderr)
     sys.exit(1)
 

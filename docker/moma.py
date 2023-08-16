@@ -5,6 +5,7 @@ import subprocess
 import sys
 from shutil import which
 from pathlib import Path
+from typing import List
 
 
 """These are arguments to MoMA that defined a path. We need to mount them or their parent paths in the container."""
@@ -69,7 +70,7 @@ def is_parent_path(parent_path, child_path):
     return child.is_relative_to(parent) and not child == parent
 
 
-def get_top_level_paths(paths: list[Path]):
+def get_top_level_paths(paths: List[Path]):
     top_level_paths = set(paths.copy())
     for path1 in paths:
         for path2 in paths:
@@ -78,7 +79,7 @@ def get_top_level_paths(paths: list[Path]):
     return list(top_level_paths)
 
 
-def build_mount_args(mount_paths: list[Path], container_engine: str):
+def build_mount_args(mount_paths: List[Path], container_engine: str):
     mount_args = []
     for path in mount_paths:
         mount_args += [get_bind_mount_arg(path, container_engine)]

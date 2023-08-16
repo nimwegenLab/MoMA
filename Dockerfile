@@ -10,17 +10,23 @@ WORKDIR /build_dir
 # https://anaconda.org/conda-forge/pyinstaller
 # https://anaconda.org/anaconda/pyyaml
 RUN git clone https://github.com/michaelmell/moma-batch-run.git && \
-    conda create -y -n moma-batch-run python=3.7
+    conda create -y -n moma-batch-run python=3.10
 
 WORKDIR /build_dir/moma-batch-run
 # Use `conda run`, because `conda activate` fails in containers; see here: https://pythonspeed.com/articles/activate-conda-dockerfile/#working
 SHELL ["conda", "run", "--no-capture-output", "-n", "moma-batch-run", "/bin/bash", "-c"]
 # The following RUN commands are now executed with the `conda run` command using `/bin/bash` as the shell.
+# Output path of the stand-alone `moma_batch_run` build is: /build_dir/moma-batch-run/dist/moma_batch_run
 RUN conda install -y pyyaml && \
     conda install -y -c conda-forge pyinstaller && \
     pyinstaller --onefile --name moma_batch_run moma_batch_run.py
 
-## Output path of the stand-alone `moma_batch_run` build is: /build_dir/moma-batch-run/dist/moma_batch_run
+# Build stand-alone `moma` executable of `moma` Python script
+# Output path is: /build_dir/moma/dist/moma
+WORKDIR /build_dir/moma
+COPY docker/moma.py moma.py
+RUN pyinstaller --onefile --name moma moma.py
+
 
 FROM ubuntu:18.04 as gurobi_builder
 
@@ -103,7 +109,9 @@ COPY docker/moma_in_container ${moma_dir}/moma
 
 ARG host_scripts="/host_scripts"
 RUN mkdir $host_scripts
-COPY docker/moma $host_scripts/moma
+COPY docker/moma.py $host_scripts/moma.py
+COPY docker/moma.sh $host_scripts/moma.sh
+COPY --from=moma_batch_run_builder /build_dir/moma/dist/moma $host_scripts/moma
 COPY --from=moma_batch_run_builder /build_dir/moma-batch-run/dist/moma_batch_run $host_scripts/moma_batch_run
 
 WORKDIR /

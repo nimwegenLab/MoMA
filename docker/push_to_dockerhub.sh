@@ -22,7 +22,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-IMAGE_TAG="michaelmell/moma:${version}"
+source ../env_vars.sh
+
+IMAGE_TAG="${CONTAINER_NAMESPACE}/moma:${version}"
 
 echo "Pushing to Dockerhub image: ${IMAGE_TAG}"
 docker push "${IMAGE_TAG}"

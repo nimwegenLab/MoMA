@@ -22,9 +22,9 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-IMAGE_TAG="michaelmell/moma:${version}"
-
 source ../env_vars.sh
+
+IMAGE_TAG="${CONTAINER_NAMESPACE}/moma:${version}"
 
 echo "Building image: ${IMAGE_TAG}"
 docker build .. --build-arg="GRB_VERSION=${GRB_VERSION}" --build-arg="GRB_SHORT_VERSION=${GRB_SHORT_VERSION}" -t "${IMAGE_TAG}"

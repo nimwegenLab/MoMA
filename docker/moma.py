@@ -59,6 +59,14 @@ def default_mm_properties_path():
     return Path(Path(os.path.expanduser("~"))/".moma"/"mm.properties")
 
 
+def get_properties_path(args):
+    # get the properties path from the arguments ["-p", "--props", "-props"]
+    for ind, arg in enumerate(args):
+        if arg in ["-p", "--props", "-props"]:
+            return Path(args[ind+1])
+    pass
+
+
 def get_segmentation_model_path(args):
     properties_path = None
     for ind, arg in enumerate(args):

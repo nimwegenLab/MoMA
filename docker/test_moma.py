@@ -39,6 +39,16 @@ class MyTestCase(unittest.TestCase):
         prop_path = get_properties_path(["-props", "/test/path3/mm.properties"])
         self.assertEqual(Path("/test/path3/mm.properties"), prop_path)
 
+    def test__get_properties_path__without_prop_AND_without_reload_option__returns_default_path(self):
+        from moma import get_properties_path, default_mm_properties_path
+        prop_path = get_properties_path([])
+        self.assertEqual(default_mm_properties_path(), prop_path)
+
+    def test__get_properties_path__with_reload_option__returns_empty_array(self):
+        from moma import get_properties_path
+        prop_path = get_properties_path(["-reload"])
+        self.assertEqual(None, prop_path)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -43,7 +43,7 @@ def parse_segmentation_model_path(file_path):
         lines = file.readlines()
     for line in lines:
         if line.strip().startswith('SEGMENTATION_MODEL_PATH='):
-            return line.strip().split('=')[1]
+            return Path(line.strip().split('=')[1])
     return None
 
 
@@ -60,26 +60,36 @@ def default_mm_properties_path():
 
 
 def get_properties_path(args):
-    # get the properties path from the arguments ["-p", "--props", "-props"]
+    # get the properties path from arguments ["-p", "--props", "-props"], if specified
     for ind, arg in enumerate(args):
         if arg in ["-p", "--props", "-props"]:
             return Path(args[ind+1])
-    pass
+    # use the default path, if no properties path was found in the arguments and not running with option '-reload'
+    if "-reload" not in args:
+        return default_mm_properties_path()
+    # if running with option '-reload', we do not need to get path to the U-Net model from the mm.properties file,
+    # because it is not used (in this case the previous U-Net output is read from disk)
+    if "-reload" in args:
+        return None
+    raise ValueError(f"ERROR: Invalid combination of arguments: {args}\n", file=sys.stderr)
 
 
-def get_segmentation_model_path(args):
-    properties_path = None
-    for ind, arg in enumerate(args):
-        if arg in ["-p", "--props", "-props"]:
-            properties_path = args[ind+1]
-            return parse_segmentation_model_path(properties_path)
-    if not properties_path:
-        if default_mm_properties_path().is_file():
-            print(f"ERROR: Properties file does not exist: {default_mm_properties_path()}", file=sys.stderr)
-            sys.exit(1)
-        return parse_segmentation_model_path(default_mm_properties_path())
-    print("ERROR: No segmentation model path found in arguments.", file=sys.stderr)
-    sys.exit(1)
+def error_if_file_not_existent(file_path):
+    if not file_path.is_file():
+        print(f"ERROR: File does not exist: {default_mm_properties_path()}", file=sys.stderr)
+        sys.exit(1)
+
+
+def append_segmentation_model_path(args, mount_paths):
+    properties_path = get_properties_path(args)
+    if properties_path:
+        error_if_file_not_existent(properties_path)
+        segmentation_model_path = parse_segmentation_model_path(properties_path)
+        error_if_file_not_existent(segmentation_model_path)
+        mount_paths.append(segmentation_model_path)
+        return mount_paths
+    else:
+        return mount_paths
 
 
 def is_parent_path(parent_path, child_path):
@@ -139,7 +149,7 @@ if __name__ == "__main__":
 
     # mount_string = process_args(args, container_engine)
     mount_paths = get_mount_paths_from_args(args)
-    mount_paths += [get_segmentation_model_path(args)]
+    mount_paths = append_segmentation_model_path(args, mount_paths)
 
     # Add path from environment variables
     mount_paths += [get_path_from_env_var("MOMA_GRB_LICENSE_FILE")]

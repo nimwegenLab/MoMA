@@ -86,7 +86,9 @@ def get_top_level_paths(paths: List[Path]):
         for path2 in paths:
             if is_parent_path(path1, path2) and path2 in top_level_paths:
                 top_level_paths.remove(path2)
-    return list(top_level_paths)
+    ret = list(top_level_paths)
+    ret.sort()
+    return ret
 
 
 def build_mount_args(mount_paths: List[Path], container_engine: str):

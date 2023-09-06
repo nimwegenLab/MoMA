@@ -32,6 +32,26 @@ fi
 
 full_topic_branch_name="$session_type"/"$session_name"
 
+# Print full_topic_branch_name and ask user to confirm that it is correct
+printf "The full topic branch name is:\n\t%s\n" "${full_topic_branch_name}"
+read -p "Continue? (y/n)" -n 1 -r answer
+printf "\n"
+if [[ "$answer" != "y" ]]; then
+  printf "Aborting.\n"
+  exit 1
+fi
+printf "\n"
+
+current_branch_name=$(git branch --show-current)
+printf "Branching from current branch:\n\t%s\n" "${current_branch_name}"
+read -p "Continue? (y/n)" -n 1 -r answer
+printf "\n"
+if [[ "$answer" != "y" ]]; then
+  printf "Aborting.\n"
+  exit 1
+fi
+printf "\n"
+
 printf "Session type:\n\t%s\n" "$session_type"
 printf "Session name:\n\t%s\n" "$session_name"
 

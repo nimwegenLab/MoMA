@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.8] - 2023-09-04
+
+### Fixed
+- Fixed issue that occurred when running with option `-reload`. In this situation, we would not have an `mm.properties` 
+and the `moma.py` would try to load the default `mm.properties`, which is not what we want (we want to load the 
+`mm.properties` file from the path that is being loaded). 
+
+## [0.9.7] - 2023-08-17
+
+### Changed
+- First containerized version that can be run using Docker and Singularity.
+
 ## [0.9.6] - 2023-08-07
 
 ## Added
@@ -119,6 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
 [unreleased]: https://github.com/michaelmell/moma/compare/v0.9...dev
+[0.9.8]: https://github.com/michaelmell/moma/compare/v0.9.7...v0.9.8
+[0.9.7]: https://github.com/michaelmell/moma/compare/v0.9.6...v0.9.7
 [0.9.6]: https://github.com/michaelmell/moma/compare/v0.9.5...v0.9.6
 [0.9.5]: https://github.com/michaelmell/moma/compare/v0.9.4...v0.9.5
 [0.9.4]: https://github.com/michaelmell/moma/compare/v0.9.3...v0.9.4

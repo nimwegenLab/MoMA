@@ -42,6 +42,14 @@ if [[ "$answer" != "y" ]]; then
 fi
 printf "\n"
 
+printf "Did you update README.md (if needed) for this new version (%s)? (y/n)\n" "${version_tag}"
+read -r answer
+if [[ "$answer" != "y" ]]; then
+  printf "Aborting.\n"
+  exit 1
+fi
+printf "\n"
+
 printf "\n"
 printf "Tagging version: %s\n" "$version_tag"
 

@@ -24,41 +24,19 @@ public class Bugfix__20230906_fix_moma_process_not_shutting_down_at_end {
     public static void main(String[] args) {
         Bugfix__20230906_fix_moma_process_not_shutting_down_at_end tests = new Bugfix__20230906_fix_moma_process_not_shutting_down_at_end();
 
-//        tests.run_interactive();
         tests.run_trackonly();
-//        tests.run_reloading();
-//        tests.run_export();
     }
 
     /**
      * Test-methods are below.
      */
-    public void run_interactive() {
-        Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
-        Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
-        analysisName = "test_interactive";
-        startMoma(false, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-p", properties_file_path.toString(), "-analysis", analysisName});
-    }
-
-    // moma -f -tmax 5 -p /home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20230906-fix-moma-process-not-shutting-down-at-end/mm.properties -analysis test_run_from_terminal -headless -trackonly -i /home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20230906-fix-moma-process-not-shutting-down-at-end/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
     public void run_trackonly() {
         Path inputPath = Paths.get(datasetsBasePath, datasetSubfolder, "20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif");
         Path properties_file_path = Paths.get(datasetsBasePath, datasetSubfolder, "mm.properties");
         analysisName = "test_run_from_ide";
         tmax = 5;
+        // command below corresponds to command-line call:
+        // moma -f -tmax 5 -p /home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20230906-fix-moma-process-not-shutting-down-at-end/mm.properties -analysis test_run_from_terminal -headless -trackonly -i /home/micha/Documents/01_work/15_moma_notes/02_moma_development/bugfix/20230906-fix-moma-process-not-shutting-down-at-end/20211026_VNG1040_AB6min_2h_1_MMStack_Pos7_GL12.tif
         startMoma(true, inputPath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", properties_file_path.toString(), "-analysis", analysisName, "-trackonly"});
     }
-
-    public void run_reloading() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
-        startMoma(false, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-    }
-
-    public void run_export() {
-        Path reload_folder_path = Paths.get(datasetsBasePath, datasetSubfolder);
-        analysisName = "test_batch_run";
-        startMoma(true, null, null, null, null, false, new String[]{"-analysis", analysisName, "-reload", reload_folder_path.toString()});
-    }
-
 }

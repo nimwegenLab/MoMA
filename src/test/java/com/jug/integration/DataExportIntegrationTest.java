@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import static com.github.stefanbirkner.systemlambda.SystemLambda.catchSystemExit;
 import static com.jug.exploration.ExplorationTestHelpers.startMoma;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -22,7 +23,7 @@ public class DataExportIntegrationTest {
     static String CACHE_DIR_PROPERTY_KEY = "imagej.tensorflow.models.dir";
 
     @Test
-    public void tracking_and_exporting_yields_same_result() throws IOException {
+    public void tracking_and_exporting_yields_same_result() throws IOException, Exception {
         /* ARRANGE */
         Path testDataSourcePath = Paths.get(new File("").getAbsolutePath(), "src/test/resources/test/integration/lis_20221102_2_29/");
 
@@ -43,7 +44,10 @@ public class DataExportIntegrationTest {
         Integer tmax = null;
 
         /* ACT */
-        startMoma(true, inputImagePath.toString(), null, tmin, tmax, false, new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName});
+        int statusCode = catchSystemExit(() ->
+                startMoma(true, inputImagePath.toString(), null, tmin, tmax, false,
+                        new String[]{"-f", "-headless", "-p", propertiesFilePath.toString(), "-analysis", analysisName})
+        );
 
         /* ASSERT */
         assertAll(

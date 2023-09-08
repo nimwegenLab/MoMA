@@ -47,6 +47,71 @@ UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can 
 (any modifications to the Gurobi model changes its state it to LOADED, where we cannot query variable state). ([5c11abbf](https://github.com/michaelmell/moma/commit/5c11abbf))
 - Change parameter name of the feature flag for the migration cost to `FEATURE_FLAG_MIGRATION_COST` to be consistent in using singular form as in other parameter names (previously it was called `FEATURE_FLAG_MIGRATION_COSTS`). ([598ae56b](https://github.com/michaelmell/moma/commit/598ae56b))
 
+## [0.9.8] - 2023-09-04
+
+### Fixed
+- Fixed issue that occurred when running with option `-reload`. In this situation, we would not have an `mm.properties`
+  and the `moma.py` would try to load the default `mm.properties`, which is not what we want (we want to load the
+  `mm.properties` file from the path that is being loaded).
+
+## [0.9.7] - 2023-08-17
+
+### Changed
+- First containerized version that can be run using Docker and Singularity.
+
+## [0.9.6] - 2023-08-07
+
+## Added
+
+- Add logic to handle the case, when the first frame of a GL is empty:
+    - Output indicator file `WARNING_GROWTHLANE_EMPTY` to the tracking-data directory to indicate that the first frame of
+      the GL is empty and therefore the the GL cannot be tracked. This indicator file is used subsequently, when loading
+      the GL to not perform any further operations after the "TRACKING" stage of the batch-tracking workflow.
+    - Show error message during interactive run, when optimizing GLs with no cells in the first frame.
+
+## [0.9.5] - 2023-07-26
+
+## Added
+
+- Add setting `GROWTHLANE_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
+  growthlane id from the filename of  the image. Default value: `_(GL[0-9]*)\\.tif`
+- Add setting `POSITION_ID_REGEX` to `mm.properties` to set the regular expression, which is used to extract the
+  position id from the filename of  the image. Default value: `([-0-9]*Pos\\d+)_`
+
+## [0.9.4] - 2023-07-20
+
+### Added
+
+- Add command line flag `multithreaded` to enable multithreading. This is disabled by default. Using e.g.
+  `moma -multithreaded ...` will use multi-threading, when generating the component-trees.
+
+### Changed
+
+- Disable all multithreading by default.
+
+### Fixed
+
+- Fixed parsing of version string from the Git.
+
+## [0.9.3] - 2023-06-01
+
+### Changed
+
+- Add parameter `MAXIMUM_DOWNWARD_MOVEMENT` which sets the maximum allowed downward movement for cells.
+  Default value [pixel]: 50
+
+## [0.9.2] - 2023-05-26
+
+### Changed
+
+- Add basic logging of user interactions.
+
+## [0.9.1] - 2023-05-02
+
+### Changed
+
+- Fix crashing issue exporting cell area using the probability map.
+
 ## [0.9.0] - 2023-03-20
 
 ### Added
@@ -62,7 +127,7 @@ UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can 
     - Ctrl + M: Force mapping-assignments between selected hypotheses. This will force the currently active mapping-assignments and replace active division assignments with forced mapping-assignments.
     - Ctrl + Shift + D: Force-ignore all division assignments that start from selected hypotheses.
     - Ctrl + I: Force-ignore selected hypotheses.
-    - Ctrl + R: Removed all constraints on the selected hypotheses and the assignments between them.
+    - Ctrl + R: Remove all constraints on the selected hypotheses and the assignments between them.
 - The user-selection for the checkbox "Run optimization on change" is now persisted to `GUI_OPTIMIZE_ON_ILP_CHANGE` in `mm.properties`.
 
 ### Changed
@@ -110,7 +175,14 @@ UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can 
 [unreleased]: https://github.com/michaelmell/moma/compare/v0.10.0...dev
 [0.10.1]: https://github.com/michaelmell/moma/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/michaelmell/moma/compare/v0.9.0...v0.10.0
-[0.9.1]: https://github.com/michaelmell/moma/compare/v0.9.0...v0.9.1
+[0.9.8]: https://github.com/michaelmell/moma/compare/v0.9.7...v0.9.8
+[0.9.7]: https://github.com/michaelmell/moma/compare/v0.9.6...v0.9.7
+[0.9.6]: https://github.com/michaelmell/moma/compare/v0.9.5...v0.9.6
+[0.9.5]: https://github.com/michaelmell/moma/compare/v0.9.4...v0.9.5
+[0.9.4]: https://github.com/michaelmell/moma/compare/v0.9.3...v0.9.4
+[0.9.3]: https://github.com/michaelmell/moma/compare/v0.9.2...v0.9.3
+[0.9.2]: https://github.com/michaelmell/moma/compare/v0.9.1...v0.9.2
+[0.9.1]: https://github.com/michaelmell/moma/compare/v0.9.0-alpha6...v0.9.1
 [0.9.0]: https://github.com/michaelmell/moma/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/michaelmell/moma/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/michaelmell/moma/compare/v0.6.0...v0.7.0

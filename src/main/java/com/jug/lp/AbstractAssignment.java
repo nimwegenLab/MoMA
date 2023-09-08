@@ -498,4 +498,8 @@ public abstract class AbstractAssignment<H extends Hypothesis<?>> {
 		}
 		return getSourceHypothesis().isActive();
 	}
+
+	public String toString() {
+		return getStringId();
+	}
 }

@@ -63,7 +63,7 @@ public class UiStateController {
         return list;
     }
 
-    private List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning(){
+    public List<JComponent> getComponentsToDeactivateWhenOptimizationIsRunning(){
         List<JComponent> list = new ArrayList<>(momaGui.getComponentsToDeactivateWhenOptimizationIsRunning());
         list.add(sliderPanel.getTrackingRangeSlider());
         list.add(sliderPanel.getTimestepSlider());

@@ -3,7 +3,7 @@ package com.jug.gui;
 import com.jug.Growthlane;
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.slider.RangeSlider;
-import com.jug.lp.GrowthlaneTrackingILP;
+import com.jug.logging.LoggingHelper;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -54,6 +54,11 @@ public class PanelWithSliders extends JPanel {
         timestepSlider.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 3));
 
         labelCurrentTime = new JLabel(String.format(" t = %4d", timestepSlider.getValue()));
+        timestepSlider.addChangeListener((e) -> {
+            if (!timestepSlider.getValueIsAdjusting()) {
+                LoggingHelper.logUiAction("PanelWithSliders.timeStepSlider.ChangeListener fired", timestepSlider);
+            }
+        });
         timestepSlider.addChangeListener((e) -> {
             this.labelCurrentTime.setText(String.format(" t = %4d", timestepSlider.getValue()));
             this.model.setCurrentGLF(timestepSlider.getValue());

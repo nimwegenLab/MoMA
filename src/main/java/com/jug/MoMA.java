@@ -4,6 +4,7 @@ import com.jug.config.CommandLineArgumentsParser;
 import com.jug.config.ConfigurationManager;
 import com.jug.datahandling.DatasetProperties;
 import com.jug.datahandling.ImageProvider;
+import com.jug.exceptions.GrowthlaneFrameEmptyException;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.WindowFocusListenerImplementation;
 import com.jug.intialization.SetupValidator;
@@ -61,7 +62,12 @@ public class MoMA {
 		/* parse command line arguments */
 		CommandLineArgumentsParser commandLineArgumentParser = dic.getCommandLineArgumentParser();
 		commandLineArgumentParser.setRunningAsFijiPlugin(runningAsFijiPlugin);
-		commandLineArgumentParser.parse(args);
+
+		if (args.length > 0) {
+			commandLineArgumentParser.parse(args);
+		} else {
+			commandLineArgumentParser.parse(new String[]{"-h"});
+		}
 
 		dic.getLoadingTimer().start();
 		dic.getTotalRuntimeTimer().start();
@@ -77,10 +83,12 @@ public class MoMA {
 
 		/* initialize logging */
 		dic.getLogger().initialize();
+
 		dic.getLoggerWindow().initializeConsoleWindow();
 
 		/* setup configuration manager and read configuration */
 		ConfigurationManager configurationManager = dic.getConfigurationManager();
+		configurationManager.setMultithreaded(commandLineArgumentParser.isMultithreaded());
 		configurationManager.setIfRunningHeadless(commandLineArgumentParser.getIfRunningHeadless());
 		configurationManager.GUI_SHOW_GROUND_TRUTH_EXPORT_FUNCTIONALITY = commandLineArgumentParser.getShowGroundTruthFunctionality();
 
@@ -96,6 +104,10 @@ public class MoMA {
 			dic.getLogger().print("analysis name: " + commandLineArgumentParser.getAnalysisName());
 			dic.getLogger().print("######################################################");
 			dic.getLogger().print("");
+			if(dic.getFilePaths().isGrowthlaneIndicatorFilePresent()) {
+				System.out.println("WARNING: Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
+				System.exit(0);
+			}
 			Path prop_file = dic.getFilePaths().getAnalysisPropertiesFile();
 			checkPropertiesFileExists(prop_file);
 			configurationManager.load(dic.getFilePaths().getAnalysisPropertiesFile());
@@ -232,7 +244,19 @@ public class MoMA {
 					dic.getGlDataLoader().loadPruneRoots();
 				}
 			}
-		} catch ( final Exception e ) {
+		}
+		catch ( final GrowthlaneFrameEmptyException e ) {
+			System.out.println(e.getMessage());
+			dic.getFilePaths().createEmptyGrowthlaneIndicatorFilePath(e.getMessage());
+			dic.getLoadingTimer().stop();
+			dic.getLoadingTimer().printExecutionTime("Timer result for loading GL");
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
+			dic.getTotalRuntimeTimer().stop();
+			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
+			System.exit(0);
+		}
+		catch ( final Exception e ) {
 			e.printStackTrace();
 			if (!runningAsFijiPlugin) {
 				System.exit( 11 );

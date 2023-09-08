@@ -28,7 +28,7 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
+import java.util.stream.Stream;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -183,13 +183,21 @@ public class Growthlane {
 	public void generateSegmentationHypotheses() {
 		MoMA.dic.getComponentForestTimer().start();
 		int numberOfFrames = getFrames().size();
-		getFrames().parallelStream().forEach((glf) -> {
-			int currentFrame = glf.getFrameIndex() + 1;
-			glf.generateSimpleSegmentationHypotheses();
-			System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
-		});
+		Stream<GrowthlaneFrame> frameStream;
+		if (configurationManager.isMultithreaded()) {
+			frameStream = getFrames().parallelStream();
+		} else {
+			frameStream = getFrames().stream();
+		}
+		frameStream.forEach((glf) -> processGrowthlaneFrame(numberOfFrames, glf));
 		MoMA.dic.getComponentForestTimer().stop();
 		MoMA.dic.getComponentForestTimer().printExecutionTime("Timer result for generating components");
+	}
+
+	private static void processGrowthlaneFrame(int numberOfFrames, GrowthlaneFrame glf) {
+		int currentFrame = glf.getFrameIndex() + 1;
+		glf.generateSimpleSegmentationHypotheses();
+		System.out.print("Frame: " + currentFrame + "/" + numberOfFrames + "\n");
 	}
 
 	public int getTimeStepMaximum() {

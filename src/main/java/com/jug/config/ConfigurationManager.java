@@ -9,9 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-import static com.jug.development.featureflags.FeatureFlags.featureFlagDisableMaxCellDrop;
 import static java.util.Objects.isNull;
-
 
 public class ConfigurationManager implements ITrackingConfiguration, IUnetProcessingConfiguration, IComponentForestGeneratorConfiguration, IConfiguration, IFluorescenceAssignmentFilterConfiguration {
     /**
@@ -24,8 +22,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * tracking solution. (After that period of time GUROBI will stop and best
      * solution found so far will be used.)
      */
-    public double GUROBI_TIME_LIMIT = 15.0;
-    public double GUROBI_TIME_LIMIT_DURING_CURATION = 5.0;
+    public double GUROBI_TIME_LIMIT = 60.0;
+    public double GUROBI_TIME_LIMIT_DURING_CURATION = 15.0;
     public boolean GUI_OPTIMIZE_ON_ILP_CHANGE = true;
 
     /**
@@ -52,6 +50,15 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * What happens if exit constraints are NOT part of the model?
      */
     public static final boolean DISABLE_EXIT_CONSTRAINTS = false;
+    private boolean multithreaded;
+
+    public static String getPositionIdRegex() {
+        return POSITION_ID_REGEX;
+    }
+
+    public static String getGrowthlaneIdRegex() {
+        return GROWTHLANE_ID_REGEX;
+    }
 
     /*********************************** CONFIG VALUES DEFINITION START ***********************************************/
     public float getMaximumGrowthPerFrame(){
@@ -75,6 +82,16 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
      * This value is critical(!): Assignments with costs higher than this value will be ignored.
      */
 
+    /**
+     * Default value for the position id regex. This is used to extract the position id from the filename.
+     */
+    private static String POSITION_ID_REGEX = "([-0-9]*Pos\\d+)_";
+
+    /**
+     * Default value for the growthlane id regex. This is used to extract the growthlane id from the filename.
+     */
+    private static String GROWTHLANE_ID_REGEX = "_(GL[0-9]*)\\.tif";
+
     @Override
     public float getAssignmentCostCutoff() {
         return ASSIGNMENT_COST_CUTOFF;
@@ -93,9 +110,6 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return LYSIS_ASSIGNMENT_COST;
     }
 
-    /**
-     * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
-     */
 
     /**
      * This value sets the fixed cost for enter assignments (see {@link com.jug.lp.EnterAssignment}).
@@ -121,11 +135,14 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         return EXIT_ASSIGNMENT_COST;
     }
 
-    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 50;
+    /**
+     * The minimal size in pixel for leaf components. Any possible components smaller than this will not be considered.
+     */
+    public int SIZE_MINIMUM_FOR_LEAF_COMPONENTS = 10;
     /**
      * The minimal size in pixel for root components. Any possible components smaller than this will not be considered.
      */
-    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 50;
+    public int SIZE_MINIMUM_FOR_ROOT_COMPONENTS = 10;
     /**
      * The maximal width allow for a component in pixels. Components with a width larger than this value will be removed.
      */
@@ -183,9 +200,9 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     public double INTENSITY_FIT_INITIAL_WIDTH = 5.5; /* Starting width for the fit. */
 
     public int getMaxCellDrop(){
-        return MAX_CELL_DROP;
+        return MAXIMUM_DOWNWARD_MOVEMENT;
     }
-    public int MAX_CELL_DROP = -1; /* value is set using feature flag featureFlagUseMaxCellDrop */
+    public int MAXIMUM_DOWNWARD_MOVEMENT = 50; /* value is set using feature flag featureFlagUseMaxCellDrop */
     /**
      * X-position of the main GUI-window. This value will be loaded from and
      * stored in the properties file!
@@ -249,7 +266,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Sets if the crossing constraints should be used.
      */
-    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = true;
+    public boolean FEATURE_FLAG_CROSSING_CONSTRAINTS = false;
 
     /**
      * Sets if the fluorescence intensity of a component will be used to enable/disable assignments point to it.
@@ -337,6 +354,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         THRESHOLD_FOR_COMPONENT_SPLITTING = Float.parseFloat(props.getProperty("THRESHOLD_FOR_COMPONENT_SPLITTING", Float.toString(THRESHOLD_FOR_COMPONENT_SPLITTING)));
         MAXIMUM_GROWTH_RATE = Double.parseDouble(props.getProperty("MAXIMUM_GROWTH_RATE", Double.toString(MAXIMUM_GROWTH_RATE)));
         SEGMENTATION_MODEL_PATH = props.getProperty("SEGMENTATION_MODEL_PATH", SEGMENTATION_MODEL_PATH);
+        GROWTHLANE_ID_REGEX = props.getProperty("GROWTHLANE_ID_REGEX", GROWTHLANE_ID_REGEX);
+        POSITION_ID_REGEX = props.getProperty("POSITION_ID_REGEX", POSITION_ID_REGEX);
         DEFAULT_PATH = props.getProperty("DEFAULT_PATH", DEFAULT_PATH);
         CELL_LABELS = props.getProperty("CELL_LABELS", CELL_LABELS);
         CELL_LABEL_LIST = new ArrayList<>(Arrays.asList(CELL_LABELS.split(";")));
@@ -384,13 +403,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER = Double.parseDouble(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER", Double.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_INTENSITY_RATIO_THRESHOLD_LOWER)));
         FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER = Integer.parseInt(props.getProperty("FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER", Integer.toString(FEATURE_FLUORESCENCE_ASSIGNMENT_FILTERING_CHANNEL_NUMBER)));
 
-        /* process feature flags */
-        if (featureFlagDisableMaxCellDrop) {
-            this.MAX_CELL_DROP = Integer.MAX_VALUE; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-        } else {
-            this.MAX_CELL_DROP = 50; // [px]; not in Props; if vertical distance between two Hyps is larger than this, the corresponding assignment never exists!!! (see e.g. addMappingAssignments)
-        }
-
+        MAXIMUM_DOWNWARD_MOVEMENT = Integer.parseInt(props.getProperty("MAXIMUM_DOWNWARD_MOVEMENT", Integer.toString(MAXIMUM_DOWNWARD_MOVEMENT)));
     }
 
     public MigrationCostCalculationMethod getMigrationCalculationMethod(){
@@ -595,6 +608,8 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
 
             setBooleanAsIntegerValue(props, "GUI_OPTIMIZE_ON_ILP_CHANGE", GUI_OPTIMIZE_ON_ILP_CHANGE);
 
+            props.setProperty("MAXIMUM_DOWNWARD_MOVEMENT", Integer.toString(MAXIMUM_DOWNWARD_MOVEMENT));
+
             props.store(out, "MotherMachine properties");
         } catch (final Exception e) {
             e.printStackTrace();
@@ -764,4 +779,21 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     long backgroundRoiWidth = 5; /* ROI width in pixels*/
 
     public long getBackgroundRoiWidth() { return backgroundRoiWidth; }
+
+    /**
+     * Sets whether the MoMA instance is running multithreaded.
+     * @return
+     */
+    public void setMultithreaded(boolean multithreaded) {
+        this.multithreaded = multithreaded;
+    }
+
+    /**
+     * Returns whether the MoMA instance is running multithreaded.
+     * @return
+     */
+    @Override
+    public boolean isMultithreaded() {
+        return multithreaded;
+    }
 }

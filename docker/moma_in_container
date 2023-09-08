@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Create .moma directory in home-directory, if it does not exist
+CONFIG_DIRECTORY=${HOME}/.moma
+if [ ! -d "$CONFIG_DIRECTORY" ]; then
+  mkdir $CONFIG_DIRECTORY
+  printf "Config directory did not exist: $CONFIG_DIRECTORY\nCreated it.\n"
+fi
+
+### Setup temporary directories for MoMA ###
+# I set TMPDIR="/tmp", so that mktemp creates the temporary directory in /tmp. Otherwise, mktemp can fail, if the
+# container host has TMPDIR set to a directory, which is not accessible from within the container.
+###
+export TMPDIR="/tmp"
+MOMA_TMP_WORK_DIR=$(mktemp -d -t moma.$(date +%Y%m%d-%H%M%S).XXXXX)
+MOMA_TMP_WORK_DIR_TF="${MOMA_TMP_WORK_DIR}/tensorflow"
+JAVA_TMPDIR="${MOMA_TMP_WORK_DIR}/java.io.tmpdir"
+mkdir -p "${MOMA_TMP_WORK_DIR_TF}"
+mkdir -p "${JAVA_TMPDIR}"
+printf "MOMA_TMP_WORK_DIR: ${MOMA_TMP_WORK_DIR}\n"
+printf "MOMA_TMP_WORK_DIR_TF: ${MOMA_TMP_WORK_DIR_TF}\n"
+printf "JAVA_TMPDIR: ${JAVA_TMPDIR}\n"
+
+### Set LOCALE to C if not set, to avoid error message:
+# Error: invalid user locale; possible fix is to set the system environment variable 'LC_ALL' to a valid locale (e.g., to 'C')
+if [ -z "$VARIABLE_NAME" ]; then
+  export LC_ALL=C
+fi
+
+### Get path to MoMA JAR file ###
+MOMA_JAR_FILENAME=$(ls "${MOMA_JAR_PATH}"/*.jar | grep -P '^((?!original|tests|sources).)*.jar$' | grep -o '[^\/]*$')
+
+### Run MoMA ###
+# Run MoMA in headless mode using xvfb-run, if DISPLAY is not set.
+# Otherwise run MoMA with X forwarding (MoMA will throw an exception, if X server/X forwarding is not available).
+###
+if [[ -z "${DISPLAY}" ]]; then
+  xvfb-run java -Xmx24g \
+       -Djava.io.tmpdir=$JAVA_TMPDIR \
+       -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH \
+       -Dimagej.tensorflow.models.dir="${MOMA_TMP_WORK_DIR_TF}" \
+       -Djava.util.prefs.systemRoot="${MOMA_TMP_WORK_DIR}" \
+       -Djava.util.prefs.userRoot="${MOMA_TMP_WORK_DIR}" \
+       -jar  "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" \
+       "$@"
+else
+  java -Xmx24g \
+       -Djava.io.tmpdir=$JAVA_TMPDIR \
+       -Djava.library.path=$GUROBI_LIB_PATH:$TF_JAVA_LIB_PATH \
+       -Dimagej.tensorflow.models.dir="${MOMA_TMP_WORK_DIR_TF}" \
+       -Djava.util.prefs.systemRoot="${MOMA_TMP_WORK_DIR}" \
+       -Djava.util.prefs.userRoot="${MOMA_TMP_WORK_DIR}" \
+       -jar  "${MOMA_JAR_PATH}"/"${MOMA_JAR_FILENAME}" \
+       "$@"
+fi

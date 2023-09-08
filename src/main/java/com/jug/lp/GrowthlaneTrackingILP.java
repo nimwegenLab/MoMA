@@ -3,6 +3,7 @@ package com.jug.lp;
 import com.jug.Growthlane;
 import com.jug.GrowthlaneFrame;
 import com.jug.config.IConfiguration;
+import com.jug.exceptions.GrowthlaneFrameEmptyException;
 import com.jug.exceptions.IlpSetupException;
 import com.jug.gui.IDialogManager;
 import com.jug.gui.progress.IDialogGurobiProgress;
@@ -70,6 +71,8 @@ public class GrowthlaneTrackingILP {
     private IlpStatus status = IlpStatus.OPTIMIZATION_NEVER_PERFORMED;
     private IDialogManager dialogManager;
     private boolean removeStorageLockConstraintAfterFirstOptimization;
+
+    private boolean firstGrowthlaneFrameIsEmpty=false;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -181,6 +184,10 @@ public class GrowthlaneTrackingILP {
     public void getAllComponents() {
         for (int t = 0; t < gl.numberOfFrames(); t++) {
             AdvancedComponentForest<FloatType, AdvancedComponent<FloatType>> componentForest = gl.getFrames().get(t).getComponentForest();
+            if (t == 0 && componentForest.getAllComponents().size() == 0) {
+                firstGrowthlaneFrameIsEmpty = true;
+                throw new GrowthlaneFrameEmptyException("WARNING: Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
+            }
             allComponents.addAll(componentForest.getAllComponents());
         }
     }
@@ -1144,6 +1151,9 @@ public class GrowthlaneTrackingILP {
     }
 
     public void run() {
+        if(firstGrowthlaneFrameIsEmpty){
+            dialogManager.showErrorDialogWithTextArea("ERROR: First frame is empty", "Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
+        }
         if (configurationManager.getRunIlpOnChange()) {
             runImmediatelyAfterRemovingStorageLocks();
         }
@@ -1200,6 +1210,10 @@ public class GrowthlaneTrackingILP {
      * segmentation and tracking problem.
      */
     public void runImmediately() {
+        if (firstGrowthlaneFrameIsEmpty){
+            dialogManager.showErrorDialogWithTextArea("ERROR: First frame is empty", "Growthlane is empty at t=0. MoMA cannot track a growthlane when the first frame is empty.");
+            return;
+        }
         try {
             invalidateCaches();
 
@@ -1918,18 +1932,8 @@ public class GrowthlaneTrackingILP {
      */
     private void removeSegmentConstraints(List<Hypothesis<AdvancedComponent<FloatType>>> hypothesesToRemove) {
         for (final Hypothesis<AdvancedComponent<FloatType>> hyp2remove : hypothesesToRemove) {
-            removeSegmentConstraints(hyp2remove);
+            hyp2remove.removeConstraints();
         }
-    }
-
-    /**
-     * Remove constraints for the provided hypothesis.
-     *
-     * @param hypothesisToRemove
-     */
-    public void removeSegmentConstraints(Hypothesis<AdvancedComponent<FloatType>> hypothesisToRemove) {
-        hypothesisToRemove.setIsForced(false);
-        hypothesisToRemove.setIsForceIgnored(false);
     }
 
     /**

@@ -118,4 +118,9 @@ public class ConfigMock implements IConfiguration {
     public float getMaximumGrowthPerFrame() {
         return 0;
     }
+
+    @Override
+    public boolean isMultithreaded() {
+        return false;
+    }
 }

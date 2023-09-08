@@ -8,7 +8,9 @@ import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -303,6 +305,29 @@ public class GlFileManager implements IGlExportFilePathGetter, IGlExportFilePath
             file.createNewFile();
         } catch (IOException e) {
             throw new RuntimeException("Could not create file: " + file.getAbsolutePath(), e);
+        }
+    }
+
+    public Path getGrowthlaneIndicatorFilePresent() {
+        return Paths.get(getTrackingDataOutputPath().toString(), "WARNING_GROWTHLANE_EMPTY");
+    }
+
+    public boolean isGrowthlaneIndicatorFilePresent() {
+        File path = getGrowthlaneIndicatorFilePresent().toFile();
+        return path.exists();
+    }
+
+    public void createEmptyGrowthlaneIndicatorFilePath(String message) {
+        File path = getGrowthlaneIndicatorFilePresent().toFile();
+        createFile(path);
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(path.getPath()));
+            writer.write(message);
+            writer.write("\n");
+            writer.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

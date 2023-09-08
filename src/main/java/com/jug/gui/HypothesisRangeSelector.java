@@ -1,6 +1,7 @@
 package com.jug.gui;
 
 import com.jug.Growthlane;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.DivisionAssignment;
 import com.jug.lp.Hypothesis;
@@ -23,6 +24,7 @@ public class HypothesisRangeSelector {
     }
 
     public void setStartHypothesis(Hypothesis<?> hypothesis) {
+        LoggingHelper.logHypothesisAction("HypothesisRangeSelector.setStartHypothesis()", hypothesis);
         if (isNull(hypothesis)) {
             throw new RuntimeException("hypothesis is null.");
         }
@@ -36,6 +38,7 @@ public class HypothesisRangeSelector {
     }
 
     public void setEndHypothesis(Hypothesis<?> hypothesis) {
+        LoggingHelper.logHypothesisAction("HypothesisRangeSelector.setEndHypothesis()", hypothesis);
         if (isNull(hypothesis)) {
             throw new RuntimeException("hypothesis is null.");
         }
@@ -71,6 +74,7 @@ public class HypothesisRangeSelector {
     List<Hypothesis<?>> selectedHypotheses = new ArrayList<>();
 
     public void clearSelectedHypotheses() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.clearSelectedHypotheses()");
         for (Hypothesis<?> hyp : selectedHypotheses) {
             hyp.deselect();
         }
@@ -116,6 +120,7 @@ public class HypothesisRangeSelector {
     }
 
     public void forceIgnoreSelectedHypotheses() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.forceIgnoreSelectedHypotheses()");
         selectedHypotheses.stream().forEach(hyp -> hyp.setIsForceIgnored(true));
         try {
             growthlane.getIlp().model.update();
@@ -126,6 +131,7 @@ public class HypothesisRangeSelector {
     }
 
     public void forceIgnoreDivisionAssignments() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.forceIgnoreDivisionAssignments()");
         Set<DivisionAssignment> divisionAssignments = new HashSet<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             Set<DivisionAssignment> assignments = selectedHypotheses.get(i).getRightAssignmentOfType(DivisionAssignment.class);
@@ -136,6 +142,7 @@ public class HypothesisRangeSelector {
     }
 
     public void forceMappingAssigmentBetweenSelectedHypotheses() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.forceMappingAssigmentBetweenSelectedHypotheses()");
         List<MappingAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             MappingAssignment assignment = selectedHypotheses.get(i).getRightAssignmentWithTarget(MappingAssignment.class, selectedHypotheses.get(i + 1));
@@ -150,6 +157,7 @@ public class HypothesisRangeSelector {
     }
 
     public void forceCurrentlyActiveAssigmentBetweenSelectedHypotheses() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.forceCurrentlyActiveAssigmentBetweenSelectedHypotheses()");
         List<AbstractAssignment> assignments = new ArrayList<>();
         for (int i = 0; i < selectedHypotheses.size() - 1; i++) {
             AbstractAssignment<Hypothesis<AdvancedComponent<FloatType>>> assignment = selectedHypotheses.get(i).getActiveOutgoingAssignment();
@@ -168,6 +176,7 @@ public class HypothesisRangeSelector {
     }
 
     public void clearUserConstraints() {
+        LoggingHelper.logUiAction("HypothesisRangeSelector.clearUserConstraints()");
         selectedHypotheses.stream().forEach(hypothesis -> hypothesis.setIsForced(false));
         updateGurobiModel();
         selectedHypotheses.stream().forEach(hypothesis -> hypothesis.setIsForceIgnored(false));

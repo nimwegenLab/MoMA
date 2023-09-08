@@ -50,6 +50,14 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
         return true;
     }
 
+    /**
+     * Remove constraints for this hypothesis.
+     */
+    public void removeConstraints() {
+        this.setIsForced(false);
+        this.setIsForceIgnored(false);
+    }
+
     public void setIsForced(boolean isForced) {
         if (isForced == isForced()) {
             return;
@@ -491,5 +499,9 @@ public class Hypothesis<C extends AdvancedComponent<FloatType>> {
 
     public boolean deselect() {
         return isSelected = false;
+    }
+
+    public String toString() {
+        return getStringId();
     }
 }

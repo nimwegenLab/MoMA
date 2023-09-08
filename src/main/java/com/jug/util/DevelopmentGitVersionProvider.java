@@ -33,27 +33,32 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
         return new Version(getVersionString());
     }
 
-    private String formatVersionString(String versionString){
+    public String formatVersionString(String versionString){
         versionString = versionString.substring(1);
         String[] p = versionString.split("-");
         if(versionString.contains("dirty")){
             if(p.length == 3){
-                return p[0]+"-"+p[1]+"-"+p[2]; /* versionString has format: "0.6.0-beta6-dirty" */
+                return p[0]+"-"+p[1]+"-"+p[2]; /* versionString has format: "v0.6.0-beta6-dirty" */
             } else if (p.length == 4) {
-                return p[0]+"-"+p[1]+"-"+p[3]+"+"+p[2]; /* versionString has format: "0.7.0-1-g2509542b-dirty" */
+                return p[0]+"-"+p[1]+"-"+p[3]+"+"+p[2]; /* versionString has format: "v0.7.0-1-g2509542b-dirty" */
             } else if (p.length == 5) {
-                return p[0]+"-"+p[1]+"-"+p[2]+"-"+p[4]+"+"+p[3]; /* versionString has format: "0.6.0-beta5-1-g6a457d3f-dirty" */
+                return p[0]+"-"+p[1]+"-"+p[2]+"-"+p[4]+"+"+p[3]; /* versionString has format: "v0.6.0-beta5-1-g6a457d3f-dirty" */
             } else {
                 throw new RuntimeException("Could not build version string. 'versionString' is of unknown format: " + versionString);
             }
         } else {
             if(p.length == 2) {
-                return p[0] + "-" + p[1]; /* versionString has format: "0.6.0-beta6" */
+                return p[0] + "-" + p[1]; /* versionString has format: "v0.6.0-beta6" */
             }
             else if(p.length == 3) {
-                return p[0] + "-" + p[1] + "+" + p[2]; /* versionString has form: "0.7.0-4-g45bcea65" */
+                if("0".equals(p[1])) {
+                    return p[0]; /* versionString has form: "v0.7.0-4-g45bcea65" */
+                }
+                else {
+                    return p[0] + "-" + p[1] + "+" + p[2]; /* versionString has form: "v0.7.0-4-g45bcea65" */
+                }
             } else if(p.length == 4) {
-                return p[0] + "-" + p[1] + "-" + p[2] + "+" + p[3]; /* versionString has form: "0.6.0-beta5-1-g6a457d3f" */
+                return p[0] + "-" + p[1] + "-" + p[2] + "+" + p[3]; /* versionString has form: "v0.6.0-beta5-1-g6a457d3f" */
             } else {
                 throw new RuntimeException("Could not build version string. 'versionString' is of unknown format: " + versionString);
             }
@@ -63,7 +68,7 @@ public class DevelopmentGitVersionProvider implements IVersionProvider {
     public String readGitVersion() throws IOException
     {
 //        String command = "git describe --abbrev=0 --tags";
-        String command = "git describe --abbrev=8 --dirty"; /* describes the closest *annotated* tag*/
+        String command = "git describe --abbrev=8 --dirty --long"; /* describes the closest *annotated* tag*/
         Process p = Runtime.getRuntime().exec(command);
         BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
         return input.readLine();

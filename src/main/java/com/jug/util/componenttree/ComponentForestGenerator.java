@@ -48,7 +48,7 @@ public class ComponentForestGenerator implements IComponentForestGenerator {
 
         Img<FloatType> raiFktMasked = imglib2Utils.maskImage(raiFkt, mask, new FloatType(.0f));
 
-        /* set values >componentSplittingThreshold to 1; this avoids over segmentation during component generation */
+        /* set values >componentSplittingThreshold to 1; this avoids over-segmentation during component generation */
         Img<BitType> mask2 = Thresholder.threshold(raiFktMasked, new FloatType(componentSplittingThreshold), false, 1);
         raiFktMasked = imglib2Utils.maskImage(raiFktMasked, mask2, new FloatType(1.0f));
 

@@ -8,6 +8,7 @@ import com.jug.datahandling.IGlExportFilePathGetter;
 import com.jug.datahandling.IImageProvider;
 import com.jug.export.measurements.SegmentMeasurementData;
 import com.jug.export.measurements.SegmentMeasurementInterface;
+import com.jug.gui.IDialogManager;
 import com.jug.gui.MoMAGui;
 import com.jug.gui.progress.DialogProgress;
 import com.jug.lp.GrowthlaneTrackingILP;
@@ -26,6 +27,7 @@ import net.imglib2.view.Views;
 
 import javax.swing.*;
 import java.io.*;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +38,7 @@ import java.util.stream.Collectors;
  */
 public class CellStatsExporter implements ResultExporterInterface {
 
+    private final IDialogManager dialogManager;
     private final MoMAGui gui;
     private final IImageProvider imageProvider;
     private String versionString;
@@ -43,14 +46,19 @@ public class CellStatsExporter implements ResultExporterInterface {
     private ConfigurationManager configurationManager;
     private MixtureModelFit mixtureModelFit;
     private ComponentProperties componentProperties;
+    private RegexParser positionStringParser;
 
-    public CellStatsExporter(final MoMAGui gui,
+    private RegexParser glStringParser;
+
+    public CellStatsExporter(final IDialogManager dialogManager,
+                             final MoMAGui gui,
                              final ConfigurationManager configurationManager,
                              MixtureModelFit mixtureModelFit,
                              ComponentProperties componentProperties,
                              IImageProvider imageProvider,
                              String versionString,
                              List<SegmentMeasurementInterface> measurements) {
+        this.dialogManager = dialogManager;
         this.gui = gui;
         this.configurationManager = configurationManager;
         this.mixtureModelFit = mixtureModelFit;
@@ -58,6 +66,8 @@ public class CellStatsExporter implements ResultExporterInterface {
         this.imageProvider = imageProvider;
         this.versionString = versionString;
         this.measurements = measurements;
+        positionStringParser = new RegexParser(configurationManager.getPositionIdRegex());
+        glStringParser = new RegexParser(configurationManager.getGrowthlaneIdRegex());
     }
 
     @Override
@@ -94,7 +104,7 @@ public class CellStatsExporter implements ResultExporterInterface {
         Locale.setDefault(new Locale("en", "US")); /* use US-style number formats! (e.g. '.' as decimal point) */
 
         // INITIALIZE PROGRESS-BAR if not run headless
-        final DialogProgress dialogProgress = new DialogProgress(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
+        final DialogProgress dialogProgress = dialogManager.getNewProgressDialog(gui, "Exporting selected cell-statistics...", cellTrackStartingPoints.size());
         if (!configurationManager.getIfRunningHeadless()) {
             dialogProgress.setVisible(true);
         }
@@ -141,17 +151,10 @@ public class CellStatsExporter implements ResultExporterInterface {
 
         measurements.forEach((measurement) -> measurement.setOutputTable(resultTable));
 
-        Pattern positionPattern = Pattern.compile("Pos(\\d+)");
-        Matcher positionMatcher = positionPattern.matcher(configurationManager.getInputImagePath());
-        positionMatcher.find();
-        String positionNumber = positionMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
-
-        Pattern growthlanePattern = Pattern.compile("GL(\\d+)");
-        Matcher growthlaneMatcher = growthlanePattern.matcher(configurationManager.getInputImagePath());
-        growthlaneMatcher.find();
-        String growthlaneNumber = growthlaneMatcher.group(1); // group(0) is the whole match; group(1) is just the number, which is what we want
-
-        String laneID = "pos_" + positionNumber + "_GL_" + growthlaneNumber;
+        String filename = Paths.get(configurationManager.getInputImagePath()).getFileName().toString();
+        positionStringParser.parse(filename);
+        glStringParser.parse(filename);
+        String laneID = positionStringParser.getMatch() + "_" + glStringParser.getMatch();
 
         writer.write(String.format("# moma_version=\"%s\"\n", versionString));
         writer.write(String.format("# input_image=\"%s\"\n", configurationManager.getInputImagePath()));

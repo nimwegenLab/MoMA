@@ -2,6 +2,7 @@ package com.jug.gui.assignmentview;
 
 import com.jug.config.ConfigurationManager;
 import com.jug.gui.IlpModelChangedEventListener;
+import com.jug.logging.LoggingHelper;
 import com.jug.lp.AbstractAssignment;
 import com.jug.lp.GrowthlaneTrackingILP;
 import com.jug.lp.Hypothesis;
@@ -50,6 +51,7 @@ public class AssignmentsEditorViewer extends JTabbedPane {
     private JComponent[] tabsToRoll;
     private String[] namesToRoll;
     private List<AssignmentsEditorCanvasView> assignmentViews;
+    private int timeStep;
 
     // -------------------------------------------------------------------------------------
     // construction
@@ -145,6 +147,7 @@ public class AssignmentsEditorViewer extends JTabbedPane {
     private void switchToNextTab() {
         int indexOfNextTab = curTabIdx + 1;
         if (indexOfNextTab >= tabsToRoll.length) indexOfNextTab = 0;
+        LoggingHelper.logUiAction("switch AssignmentEditorView with mouse; tabIndex: " + indexOfNextTab + "; timeStep: " + this.timeStep + "; AssignmentsEditorViewer.switchToNextTab()");
         switchToTab(indexOfNextTab);
     }
 
@@ -172,6 +175,11 @@ public class AssignmentsEditorViewer extends JTabbedPane {
                         .stream().filter(a -> a.hasActiveTargetHypothesis()).collect(Collectors.toSet()));
         activeAssignments.display(ilpSupplier.get().getOptimalAssignments(displayTimeGetter.get()));
     }
+
+    public void setTimeStep(int timeStep) {
+        this.timeStep = timeStep;
+    }
+
 
     /**
      * Returns the <code>AssignmentsEditorCanvasView</code> that holds all active

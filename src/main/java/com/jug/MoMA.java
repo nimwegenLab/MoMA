@@ -306,6 +306,10 @@ public class MoMA {
 
 			dic.getTotalRuntimeTimer().stop();
 			dic.getTotalRuntimeTimer().printExecutionTime("Timer result for total runtime");
+
+			if (!runningAsFijiPlugin) {
+				System.exit(0);
+			}
 		}
 	}
 

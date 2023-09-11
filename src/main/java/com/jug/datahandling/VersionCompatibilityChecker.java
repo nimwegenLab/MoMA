@@ -14,6 +14,13 @@ public class VersionCompatibilityChecker {
                     add("0.9");
                     add("0.7");
                 }});
+        datasetCompatibility.put(
+                "0.10",
+                new HashSet() {{
+                    add("0.10");
+                    add("0.9");
+                    add("0.7");
+                }});
     }
 
     public Set<String> getCompatibleDatasetVersions(String momaVersion) throws NoVersionFoundException {

@@ -172,7 +172,7 @@ UI. This is done to maintain the Gurobi model in th OPTIMAL state, where we can 
 - Fix issue with cell masks not being stored to `ExportedCellMasks__*.tif`, when the cell track contains only one cell.
 - Fix issue with end of tracking identifier not being output to the CSV file during export.
 
-[unreleased]: https://github.com/michaelmell/moma/compare/v0.10.0...dev
+[unreleased]: https://github.com/michaelmell/moma/compare/v0.10.1...dev
 [0.10.1]: https://github.com/michaelmell/moma/compare/v0.10.0...v0.10.1
 [0.10.0]: https://github.com/michaelmell/moma/compare/v0.9.0...v0.10.0
 [0.9.8]: https://github.com/michaelmell/moma/compare/v0.9.7...v0.9.8

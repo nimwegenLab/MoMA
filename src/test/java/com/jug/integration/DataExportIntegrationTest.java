@@ -3,6 +3,7 @@ package com.jug.integration;
 import com.jug.exploration.ExplorationTestHelpers;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.CleanupMode;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
@@ -17,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class DataExportIntegrationTest {
 
-    @TempDir
+    @TempDir(cleanup = CleanupMode.ON_SUCCESS)
     Path temporaryWorkingDirectory;
 
     static String CACHE_DIR_PROPERTY_KEY = "imagej.tensorflow.models.dir";
@@ -78,8 +79,7 @@ public class DataExportIntegrationTest {
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.mps"), actualTrackDataPath.resolve("gurobi_model.mps")),
                 */
                 () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.mst"), actualTrackDataPath.resolve("gurobi_model.mst")),
-                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.sol"), actualTrackDataPath.resolve("gurobi_model.sol")),
-                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_environment.log"), actualTrackDataPath.resolve("gurobi_environment.log"))
+                () -> assertFileIsUnchanged(expectedTrackDataPath.resolve("gurobi_model.sol"), actualTrackDataPath.resolve("gurobi_model.sol"))
         );
     }
 

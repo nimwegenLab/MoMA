@@ -150,7 +150,7 @@ public class ConfigurationManager implements ITrackingConfiguration, IUnetProces
     /**
      * Vertical center position on which the exit range defined with COMPONENT_EXIT_RANGE is centered.
      */
-    public int GL_OFFSET_TOP = 65;
+    public int GL_OFFSET_TOP = -1000;
 
     @Override
     public int getGlOffsetTop(){

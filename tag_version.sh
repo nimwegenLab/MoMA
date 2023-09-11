@@ -29,7 +29,8 @@ printf "\nPlease answer the following questions before tagging the new version:\
 printf "Here is a list of existing version tags:\n\n%s\n\n" "$existing_versions_tags"
 
 prompt_and_check "Do you want to continue with this version tag?" "$version_tag"
-prompt_and_check "If you changed/added/removed new settings: Did you update the default settings (in: default_moma_configuration/mm.properties) for this new version?"
+prompt_and_check "Did you update the default settings (in: default_moma_configuration/mm.properties)? (i.e. if you changed/added/removed new settings)"
+prompt_and_check "Did you adapt the containerization wrapper-code, if needed? (i.e. if you added CMD arguments that require mounting of volumes)"
 prompt_and_check "Did you update CHANGELOG.md for this new version ($version_tag)?"
 prompt_and_check "Did you update README.md (if needed) for this new version ($version_tag)?"
 

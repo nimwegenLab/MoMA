@@ -573,7 +573,7 @@ public class GrowthlaneTrackingILP {
         addExitAssignments(sourceTimeStep);
         addLysisAssignments(sourceTimeStep);
         addEnterAssignment(sourceTimeStep);   /* IMPORTANT:
-        1. I associate the ExitAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
+        1. I associate the EnterAssignment instances with the _source_ frame (i.e. _after_ which the cell enters the GL).
         I do this to be consistent with the other assignments, which are named with the source time-step as well (to avoid confusion).
         2. We use nodes.getHypothesesAt(targetTimeStep) because the EnterAssignment is associated with hypothesis in the target time step;
         */

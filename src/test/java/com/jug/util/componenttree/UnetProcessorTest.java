@@ -6,6 +6,7 @@ import com.jug.util.TestUtils;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.ImageJ;
+import net.imagej.patcher.LegacyInjector;
 import net.imglib2.img.Img;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.numeric.real.FloatType;
@@ -18,6 +19,10 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class UnetProcessorTest {
+
+    static {
+        LegacyInjector.preinit();
+    }
 
     public static void main(String[] args) throws FileNotFoundException {
         new UnetProcessorTest().process_runs_on_datasets_shapes_below_unet_input_layer();

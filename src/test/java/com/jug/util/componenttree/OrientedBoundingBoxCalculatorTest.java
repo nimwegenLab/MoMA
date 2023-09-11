@@ -9,6 +9,7 @@ import ij.plugin.HyperStackMaker;
 import net.imagej.ImageJ;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import net.imagej.patcher.LegacyInjector;
 import net.imagej.roi.DefaultROITree;
 import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
@@ -34,6 +35,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class OrientedBoundingBoxCalculatorTest {
+
+    static {
+        LegacyInjector.preinit();
+    }
+
     private final ImageJ ij;
     private final TestUtils testUtils;
 

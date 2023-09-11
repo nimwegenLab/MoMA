@@ -13,6 +13,7 @@ import net.imagej.ImageJ;
 import net.imagej.ops.OpService;
 import net.imagej.ops.geom.geom2d.DefaultConvexHull2D;
 import net.imagej.ops.geom.geom2d.LabelRegionToPolygonConverter;
+import net.imagej.patcher.LegacyInjector;
 import net.imagej.roi.DefaultROITree;
 import net.imagej.roi.ROITree;
 import net.imglib2.RandomAccessibleInterval;
@@ -45,6 +46,11 @@ import static org.mockito.Mockito.mock;
 
 
 public class ComponentPropertiesTest {
+
+    static {
+        LegacyInjector.preinit();
+    }
+
     private final ImageJ ij;
 
     public static void main(String... args) throws IOException {

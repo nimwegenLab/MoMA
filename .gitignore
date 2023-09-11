@@ -1,3 +1,5 @@
+test_results/
+docker/__pycache__/
 TRASH/
 src/test/resources/
 /*.log
@@ -23,3 +25,4 @@ dependency-reduced-pom.xml
 TRASH/
 maven_logs/
 maven-local-repository/
+/test_results/

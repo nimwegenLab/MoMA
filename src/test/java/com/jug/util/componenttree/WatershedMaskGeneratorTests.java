@@ -2,6 +2,7 @@ package com.jug.util.componenttree;
 
 import com.jug.util.imglib2.Imglib2Utils;
 import net.imagej.ImageJ;
+import net.imagej.patcher.LegacyInjector;
 import net.imglib2.img.Img;
 import net.imglib2.type.logic.BitType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -11,6 +12,10 @@ import java.io.File;
 import java.io.IOException;
 
 public class WatershedMaskGeneratorTests {
+    static {
+        LegacyInjector.preinit();
+    }
+
     ImageJ ij = new ImageJ();
 
     public static void main(String... args) throws IOException, InterruptedException {

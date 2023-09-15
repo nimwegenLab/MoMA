@@ -9,7 +9,7 @@ WORKDIR /build_dir
 # REFs:
 # https://anaconda.org/conda-forge/pyinstaller
 # https://anaconda.org/anaconda/pyyaml
-RUN git clone https://github.com/michaelmell/moma-batch-run.git && \
+RUN git clone https://github.com/nimwegenLab/moma-batch-run.git && \
     conda create -y -n moma-batch-run python=3.10
 
 WORKDIR /build_dir/moma-batch-run

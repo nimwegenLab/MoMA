@@ -26,12 +26,12 @@ reevaluation of the model.
 
 ## Application
 To get started, read our
-* [Installation guide](https://github.com/fjug/MoMA/wiki/Installation%20guide)
-* [Quick user guide](https://github.com/fjug/MoMA/wiki/Quick%20user%20guide)
+* [Installation guide](https://github.com/nimwegenlab/moma/wiki/Installation%20guide)
+* [Quick user guide](https://github.com/nimwegenlab/moma/wiki/Quick%20user%20guide)
 
 and download
-* [Example datasets](https://github.com/fjug/MoMA/wiki/MoMA%20Datasets)
-* [Tutorial movies](https://github.com/fjug/MoMA/wiki/MoMA%20Movies)
+* [Example datasets](https://github.com/nimwegenlab/moma/wiki/MoMA%20Datasets)
+* [Tutorial movies](https://github.com/nimwegenlab/moma/wiki/MoMA%20Movies)
 
 ## Publications
 [Optimal Joint Segmentation and Tracking of Escherichia Coli in the Mother Machine](http://link.springer.com/chapter/10.1007/978-3-319-12289-2_3#page-1)
@@ -49,4 +49,4 @@ IMIC@MICCAI, 2014
 2. Get the right license for you from [Gurobi](http://www.gurobi.com)
 3. Install & run MoMA
 ## Wiki
-Find more information [here](https://github.com/fjug/MoMA/wiki).
+Find more information [here](https://github.com/nimwegenlab/moma/wiki).

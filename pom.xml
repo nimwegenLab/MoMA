@@ -18,7 +18,7 @@
 
 	<name>MotherMachine_</name>
 	<description>The Mother Machine Analyzer.</description>
-	<url>https://github.com/fjug/MoMA</url>
+	<url>https://github.com/nimwegenlab/moma</url>
 	<inceptionYear>2013</inceptionYear>
 	<organization>
 		<name>CSBD (MPI-CBG)</name>
@@ -66,14 +66,14 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/fjug/MoMA.git</connection>
-		<developerConnection>scm:git:git@github.com:fjug/MoMA.git</developerConnection>
+		<connection>scm:git:git://github.com/nimwegenlab/moma.git</connection>
+		<developerConnection>scm:git:git@github.com:nimwegenlab/moma.git</developerConnection>
 		<tag>HEAD</tag>
-		<url>https://github.com/fjug/MoMA.git</url>
+		<url>https://github.com/nimwegenlab/moma.git</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/fjug/moMA/issues</url>
+		<url>https://github.com/nimwegenlab/moma/issues</url>
 	</issueManagement>
 	<ciManagement>
 		<system>None</system>

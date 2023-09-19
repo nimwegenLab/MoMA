@@ -24,16 +24,22 @@ After interactively pointing at a single mistake, multiple segmentation and trac
 reevaluation of the model.
 
 
-## Application
-To get started, read our
-* [Installation guide](https://github.com/nimwegenlab/moma/wiki/Installation%20guide)
-* [Quick user guide](https://github.com/nimwegenlab/moma/wiki/Quick%20user%20guide)
+## Getting started
 
-and download
-* [Example datasets](https://github.com/nimwegenlab/moma/wiki/MoMA%20Datasets)
-* [Tutorial movies](https://github.com/nimwegenlab/moma/wiki/MoMA%20Movies)
+### Installation
+
+Please see the [installation guide](https://github.com/nimwegenlab/moma/wiki/installation-guide) for setup instructions.
+
+
+### Usage
+
+Please see the [user guide](https://github.com/nimwegenLab/moma/wiki/moma-introductory-tutorial) to learn how to use MoMA to process your data.
+Additionally, these resources may provide you with an idea of how MoMA works and what kind of data you can process with it:
+* [Example datasets](https://github.com/nimwegenlab/moma/wiki/moma-datasets)
+* [Tutorial movies](https://github.com/nimwegenlab/moma/wiki/moma-movies)
 
 ## Publications
+
 [Optimal Joint Segmentation and Tracking of Escherichia Coli in the Mother Machine](http://link.springer.com/chapter/10.1007/978-3-319-12289-2_3#page-1)
 F Jug, T Pietzsch, D Kainmüller, J Funke, M Kaiser, E van Nimwegen, G Myers
 BAMBI@MICCAI, 2014
@@ -41,12 +47,3 @@ BAMBI@MICCAI, 2014
 [Tracking by Assignment Facilitates Data Curation](https://www.researchgate.net/profile/Florian_Jug/publication/265850602_Tracking_by_Assignment_Facilitates_Data_Curation/links/541f16b60cf2218008d3e3a5.pdf)
 F Jug, T Pietzsch, D Kainmüller, G Myers
 IMIC@MICCAI, 2014
-
-## Installation
-
-1. Download Gurobi binary in [Gurobi Download Center](http://www.gurobi.com/downloads/download-center) 
-  - The current version is 6.5.2 supporting Windows 32/64, Linux 64, MacOSX 64, AIX 64 architectures
-2. Get the right license for you from [Gurobi](http://www.gurobi.com)
-3. Install & run MoMA
-## Wiki
-Find more information [here](https://github.com/nimwegenlab/moma/wiki).
